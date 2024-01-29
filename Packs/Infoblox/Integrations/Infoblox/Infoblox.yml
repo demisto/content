@@ -27,11 +27,11 @@ name: Infoblox
 script:
   commands:
   - arguments:
-    - description: The IP address for which to retrieve information, e.g. "192.168.1.1". Cannot be used in conjunction with `network` or `from/to_ip`
+    - description: The IP address for which to retrieve information, e.g. "192.168.1.1". Cannot be used in conjunction with `network` or `from/to_ip` arguments.
       name: ip
       required: false
     - name: network
-      description: The network that the IP belongs in FQDN/CIDR format, e.g. "192.168.1.0/24"
+      description: The network that the IP belongs in FQDN/CIDR format, e.g. "192.168.1.0/24". Cannot be used in conjunction with `ip` or `from/to_ip` arguments.
       required: false
     - name: from_ip
       description: The beginning of the IP range, e.g. "192.168.1.0". Must be used in conjunction with `to_ip`.
@@ -92,7 +92,8 @@ script:
     - description: The IP address for which to search.
       name: ip
       required: true
-    - description: The maximum results to return.
+    - description: The maximum results to return. Default is 50, maximum is 1000.
+      defaultvalue: 50
       name: max_results
     description: Searches IP related objects by a given IP.
     name: infoblox-search-related-objects-by-ip
@@ -135,7 +136,7 @@ script:
       description: Retrieves the next page of the search. The last NextpageID corresponds to the last search performed.
       type: string
   - arguments:
-    - description: Maximum results to return. (default is 50).
+    - description: Maximum results to return. Default is 50, maximum is 1000.
       name: max_results
     description: List all response policy zones.
     name: infoblox-list-response-policy-zones
@@ -723,7 +724,7 @@ script:
       description: comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue"
       required: false
     - name: max_results
-      description: The maximum number of records to return. Default is 50.
+      description: The maximum number of records to return. Default is 50, maximum is 1000.
       defaultvalue: 50
     outputs:
       - contextPath: Infoblox.Host

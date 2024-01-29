@@ -4,7 +4,7 @@ from Infoblox import (
     INTEGRATION_CONTEXT_NAME,
     INTEGRATION_HOST_RECORDS_CONTEXT_NAME,
     INTEGRATION_IPV4_CONTEXT_NAME,
-    RESULTS_LIMIT_DEFAULT,
+    INTEGRATION_MAX_RESULTS_DEFAULT,
     IPv4AddressStatus,
     InfoBloxNIOSClient,
     InvalidIPAddress,
@@ -66,10 +66,10 @@ GET_USER_LIST = {
     ]
 }
 
-REQUEST_PARAM_ZONE = '?_return_as_object=1&_return_fields%2B=fqdn%2Crpz_policy%2Crpz_severity%2Crpz_type%2C' \
+REQUEST_PARAM_ZONE = f'?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&_return_fields%2B=fqdn%2Crpz_policy%2Crpz_severity%2Crpz_type%2C' \
                      'substitute_name%2Ccomment%2Cdisable'
 
-client = InfoBloxNIOSClient('https://example.com/v1/', params={'_return_as_object': '1'})
+client = InfoBloxNIOSClient('https://example.com/v1/')
 
 
 class TestHelperFunctions:
@@ -233,7 +233,7 @@ class TestHelperFunctions:
         """
 
         ip = "192.168.1.256"
-        with pytest.raises(InvalidIPAddress, match=f"'{ip}' is not a valid IP address"):
+        with pytest.raises(InvalidIPAddress, match=f"'{ip}' is not a valid IPv4 address"):
             valid_ip(ip)
 
     def test_valid_netmask(self):
@@ -257,7 +257,7 @@ class TestHelperFunctions:
         from_address = "192.168.1.100"
         to_address = "192.168.1.50"
 
-        with pytest.raises(InvalidIPRange, match=f"'{from_address}' to '{to_address}' is not a valid IP range: last IP address must be greater than first"):
+        with pytest.raises(InvalidIPRange, match=f"'{from_address}' to '{to_address}' is not a valid IPv4 range: last IP address must be greater than first"):
             valid_ip_range(from_address, to_address)
 
     def test_valid_ip_range_invalid_ip(self):
@@ -265,7 +265,7 @@ class TestHelperFunctions:
         from_address = "192.168.1.254"
         to_address = "192.168.2.256"
 
-        with pytest.raises(InvalidIPRange, match=f"'{from_address}' to '{to_address}' is not a valid IP range: '{to_address}' does not appear to be an IPv4 or IPv6 address"):
+        with pytest.raises(InvalidIPRange, match=f"'{from_address}' to '{to_address}' is not a valid IPv4 range: Octet 256 \(\> 255\) not permitted in '{to_address}'"):
             valid_ip_range(from_address, to_address)
 
     def test_transform_ipv4_range(self):
@@ -319,8 +319,6 @@ class TestZonesOperations:
                 'view': 'default'
             }}
 
-    # def test_delete_response_policy_zone_command(self, mocker, requests_mock):
-
 
 class TestIPOperations:
 
@@ -369,6 +367,25 @@ class TestIPOperations:
         with pytest.raises(ValueError, match=("Please specify either the `ip`, `network` or `from_ip`/`to_ip` argument")):
             get_ip_command(client, {"status": IPv4AddressStatus.ACTIVE.value, "extended_attrs": "attr1=val1,attr2=val2"})
 
+    def test_get_ip_command_to_ip_defined_from_ip_not_defined(self):
+        """
+        Test the command argument input when the `to_ip` argument is specified
+        without the `from_ip` argument.
+
+        Given:
+            - The execution of the `get_ip_command`
+        When:
+            - The `ip` argument is not provided.
+            - The `network` argument is not provided.
+            - The `from_ip` argument is not provided.
+            - The `to_ip` argument is provided.
+        Then:
+            - Ensure that a validation error is raised.
+        """
+
+        with pytest.raises(ValueError, match=("Please specify either the `ip`, `network` or `from_ip`/`to_ip` argument")):
+            get_ip_command(client, {"to_ip": self.VALID_IP_ADDRESS, "extended_attrs": "attr1=val1,attr2=val2"})
+
     def test_get_ip_command_from_ip_not_to_ip(self):
         """
         Test the command argument input when `from_ip` is specified but not `to_ip`.
@@ -405,14 +422,14 @@ class TestIPOperations:
                          / "get_ipv4_address_from_ip_address.json").read_text()
 
         requests_mock.get(
-            f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?_return_as_object=1&ip_address={self.VALID_IP_ADDRESS}",
+            f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}",
             json=json.loads(mock_response)
         )
 
         actual_hr, actual_context, _ = get_ip_command(client, {"ip": self.VALID_IP_ADDRESS})
 
         actual_hr_lines = actual_hr.splitlines()
-        assert f"Infoblox Integration - IP: {self.VALID_IP_ADDRESS} info" in actual_hr_lines[0]
+        assert "Infoblox Integration - IP info" in actual_hr_lines[0]
         assert self.VALID_IP_ADDRESS in actual_hr_lines[3]
         assert actual_context.get(self.CONTEXT_PATH).get("IpAddress") == self.VALID_IP_ADDRESS
 
@@ -438,7 +455,7 @@ class TestIPOperations:
                          / "get_ipv4_address_from_ip_address.json").read_text()
 
         requests_mock.get(
-            f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?_return_as_object=1&ip_address={self.VALID_IP_ADDRESS}&status={IPv4AddressStatus.USED.value}",
+            f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}&status={IPv4AddressStatus.USED.value}",
             json=json.loads(mock_response)
         )
 
@@ -446,7 +463,7 @@ class TestIPOperations:
             client, {"ip": self.VALID_IP_ADDRESS, "status": IPv4AddressStatus.USED.value})
 
         actual_hr_lines = actual_hr.splitlines()
-        assert f"Infoblox Integration - IP: {self.VALID_IP_ADDRESS} info" in actual_hr_lines[0]
+        assert "Infoblox Integration - IP info" in actual_hr_lines[0]
         assert self.VALID_IP_ADDRESS in actual_hr_lines[3]
         assert actual_context.get(self.CONTEXT_PATH).get("Status") == IPv4AddressStatus.USED.value
 
@@ -486,7 +503,6 @@ class TestIPOperations:
         - Ensure a validation error is raised.
         """
 
-    # TODO
     def test_get_ip_command_from_netmask(self, requests_mock):
         """
         Test retrieval of an IP address in case netmask is provided.
@@ -508,14 +524,15 @@ class TestIPOperations:
                          / "get_ipv4_addresses_from_network.json").read_text()
 
         requests_mock.get(
-            f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?_return_as_object=1&network={self.VALID_NETMASK}&status={IPv4AddressStatus.USED.value}",
+            f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&network={self.VALID_NETMASK}&status={IPv4AddressStatus.USED.value}",
             json=json.loads(mock_response)
         )
 
         actual_hr, actual_context, _ = get_ip_command(client, {"network": self.VALID_NETMASK})
 
         actual_hr_lines = actual_hr.splitlines()
-        assert f"Infoblox Integration - Netmask: {self.VALID_NETMASK} info" in actual_hr_lines[0]
+        assert "Infoblox Integration - IP info" in actual_hr_lines[0]
+        assert actual_context.get(self.CONTEXT_PATH).get("IpAddress") == "192.168.1.0"
 
     # TODO
     def test_get_ip_command_no_response(self):
@@ -560,14 +577,14 @@ class TestHostRecordsOperations:
                          / self.__class__.__name__ / "get_records.json").read_text()
 
         requests_mock.get(
-            f"{client._base_url}{InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT}?_return_as_object=1",
+            f"{client._base_url}{InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1",
             json=json.loads(mock_response)
         )
 
         hr, records, _ = get_host_records_command(client, {})
 
         assert len(records.get(self.CONTEXT_KEY)) == 4
-        assert f"Host records (first {RESULTS_LIMIT_DEFAULT})" in hr
+        assert f"Host records (first {INTEGRATION_MAX_RESULTS_DEFAULT})" in hr
         assert "extattrs" not in hr
 
     def test_get_records_from_hostname(self, requests_mock):
@@ -589,7 +606,8 @@ class TestHostRecordsOperations:
         host_name = "ciac-3607.test"
 
         requests_mock.get(
-            client._base_url + InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT + f"?_return_as_object=1&name={host_name}",
+            client._base_url + InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT
+            + f"?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&name={host_name}",
             json=json.loads(mock_response)
         )
 

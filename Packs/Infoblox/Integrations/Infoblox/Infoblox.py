@@ -18,14 +18,7 @@ INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
 INTEGRATION_HOST_RECORDS_CONTEXT_NAME = "Host"
 INTEGRATION_IPV4_CONTEXT_NAME = "IP"
-RESULTS_LIMIT_DEFAULT = 50
-REQUEST_PARAMS_RETURN_AS_OBJECT = {'_return_as_object': '1'}
-REQUEST_PARAM_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
-REQUEST_PARAM_ZONE = {'_return_fields+': 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'}
-REQUEST_PARAM_CREATE_RULE = {'_return_fields+': 'name,rp_zone,comment,canonical,disable'}
-REQUEST_PARAM_LIST_RULES = {'_return_fields+': 'name,zone,comment,disable,type'}
-REQUEST_PARAM_SEARCH_RULES = {'_return_fields+': 'name,zone,comment,disable'}
-REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
+INTEGRATION_MAX_RESULTS_DEFAULT = 50
 
 RESPONSE_TRANSLATION_DICTIONARY = {
     '_ref': 'ReferenceID',
@@ -106,10 +99,40 @@ class InfoBloxNIOSClient(BaseClient):
 
     GET_HOST_RECORDS_ENDPOINT = "record:host"
     IPV4ADDRESS_ENDPOINT = "ipv4address"
+    POLICY_ZONES_ENDPOINT = "zone_rp"
 
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, params=None):
+    REQUEST_PARAMS_RETURN_AS_OBJECT_KEY = '_return_as_object'
+    REQUEST_PARAM_RETURN_FIELDS_KEY = '_return_fields+'
+
+    REQUEST_PARAM_EXTRA_ATTRIBUTES = {REQUEST_PARAM_RETURN_FIELDS_KEY: 'extattrs'}
+    REQUEST_PARAM_ZONE = {
+        REQUEST_PARAM_RETURN_FIELDS_KEY: 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'
+    }
+    REQUEST_PARAM_CREATE_RULE = {REQUEST_PARAM_RETURN_FIELDS_KEY: 'name,rp_zone,comment,canonical,disable'}
+    REQUEST_PARAM_LIST_RULES = {REQUEST_PARAM_RETURN_FIELDS_KEY: 'name,zone,comment,disable,type'}
+    REQUEST_PARAM_SEARCH_RULES = {REQUEST_PARAM_RETURN_FIELDS_KEY: 'name,zone,comment,disable'}
+
+    # Paging
+    # To start a paging request, the initial search request must have `_paging` and `_return_as_object` set to 1,
+    # and _max_results set to the desired page size.
+    # The server will then return a results object that contains the `next_page_id`` field
+    # and the result field set to the first page of results.
+    # Note that the `next_page_id` field only contains URL-safe characters so it can be used as is and no quotation characters
+    # are required for subsequent requests.
+    # To get more results, you should send GET requests to the original object and set
+    # `_page_id`` to the ID string returned in the previous page of results.
+    # The server does not return a `next_page_id` field in the last page of results.
+    # Paging requests are considered independent requests, so the set of results might change between requests
+    # if objects are added or removed from the server at the same time when the requests are occurring.
+
+    REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
+    REQUEST_PARAM_MAX_RESULTS_KEY = "_max_results"
+    REQUEST_PARAM_MAX_RESULTS_VALUE_DEFAULT = 1000
+
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
-        self.params = params
+        self.params: dict[str, Any] = {}
+        self.params.update({self.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY: '1'})
 
     def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None, params=None,
                       data=None, files=None, timeout=10, resp_type='json', ok_codes=None, **kwargs):
@@ -122,6 +145,9 @@ class InfoBloxNIOSClient(BaseClient):
         except DemistoException as error:
             raise parse_demisto_exception(error, 'text')
 
+    def set_param(self, p: dict[str, Any]):
+        self.params.update(p)
+
     def test_module(self) -> dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication
         is successful.
@@ -131,7 +157,7 @@ class InfoBloxNIOSClient(BaseClient):
         """
         return self.list_response_policy_zones()
 
-    def list_response_policy_zones(self, max_results: str | None = None) -> dict:
+    def list_response_policy_zones(self, max_results: int | None = None) -> dict:
         """List all response policy zones.
         Args:
                 max_results:  maximum number of results
@@ -140,16 +166,15 @@ class InfoBloxNIOSClient(BaseClient):
         """
         suffix = 'zone_rp'
         request_params = assign_params(_max_results=max_results)
-        request_params.update(REQUEST_PARAM_ZONE)
+        request_params.update(self.REQUEST_PARAM_ZONE)
         return self._http_request('GET', suffix, params=request_params)
 
-    def get_ipv4_address_from_ip(self, ip: str, status: str, ext_attrs: list[dict] | None) -> dict:
+    def get_ipv4_address_from_ip(self, ip: str, status: str) -> dict:
         """
         Get IPv4 information based on an IP address.
         Args:
         - `ip` (``str``): ip to retrieve.
         - `status` (``str``): status of the IP address.
-        - `ext_attrs` (``list[dict]``): list of extended attribute dictionaries to include in request.
 
         Returns:
             Response JSON
@@ -158,22 +183,15 @@ class InfoBloxNIOSClient(BaseClient):
         # Dictionary of params for the request
         request_params = assign_params(ip_address=ip, status=status)
 
-        if ext_attrs:
-            request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
-
-            for e in ext_attrs:
-                request_params.update(e)
-
         return self._get_ipv4_addresses(params=request_params)
 
-    def get_ipv4_address_from_netmask(self, network: str, status: str, ext_attrs: list[dict] | None) -> dict:
+    def get_ipv4_address_from_netmask(self, network: str, status: str) -> dict:
         """
         Get IPv4 network information based on a netmask.
 
         Args:
         - `network` (``str``): Netmask to retrieve the IPv4 for.
         - `status` (``str``): Status of the network.
-        - `ext_attrs` (``list[dict]``): List of extended attribute dictionaries to include in request.
 
         Returns:
         - `dict` with response.
@@ -181,34 +199,21 @@ class InfoBloxNIOSClient(BaseClient):
 
         request_params = assign_params(network=network, status=status)
 
-        if ext_attrs:
-            request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
-
-            for e in ext_attrs:
-                request_params.update(e)
-
         return self._get_ipv4_addresses(params=request_params)
 
-    def get_ipv4_address_range(self, start_ip: str, end_ip: str, ext_attrs: list[dict] | None) -> dict:
+    def get_ipv4_address_range(self, start_ip: str, end_ip: str) -> dict:
         """
         Get IPv4 address range information based on a start and end IP.
 
         Args:
         - `start_ip` (``str``): Start IP of the range.
         - `end_ip` (``str``): End IP of the range.
-        - `ext_attrs` (``list[dict]``): List of extended attribute dictionaries to include in request.
 
         Returns:
         - `dict` with response.
         """
 
         request_params = assign_params(transform_ipv4_range(start_ip, end_ip))
-
-        if ext_attrs:
-            request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
-
-            for e in ext_attrs:
-                request_params.update(e)
 
         return self._get_ipv4_addresses(params=request_params)
 
@@ -247,8 +252,8 @@ class InfoBloxNIOSClient(BaseClient):
         suffix = 'allrpzrecords'
         # Dictionary of params for the request
         request_params = assign_params(zone=zone, view=view, _max_results=max_results, _page_id=next_page_id)
-        request_params.update(REQUEST_PARAM_PAGING_FLAG)
-        request_params.update(REQUEST_PARAM_LIST_RULES)
+        request_params.update(self.REQUEST_PARAM_PAGING_FLAG)
+        request_params.update(self.REQUEST_PARAM_LIST_RULES)
 
         return self._http_request('GET', suffix, params=request_params)
 
@@ -268,8 +273,7 @@ class InfoBloxNIOSClient(BaseClient):
 
         data = assign_params(fqdn=fqdn, rpz_policy=rpz_policy, rpz_severity=rpz_severity,
                              substitute_name=substitute_name, rpz_type=rpz_type)
-        suffix = 'zone_rp'
-        return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_ZONE)
+        return self._http_request('POST', self.POLICY_ZONES_ENDPOINT, data=json.dumps(data), params=self.REQUEST_PARAM_ZONE)
 
     def delete_response_policy_zone(self, ref_id: str | None) -> dict:
         """Delete new response policy zone
@@ -312,7 +316,7 @@ class InfoBloxNIOSClient(BaseClient):
                 'canonical': canonical
             }
         )
-        request_params = REQUEST_PARAM_CREATE_RULE
+        request_params = self.REQUEST_PARAM_CREATE_RULE
         suffix = demisto.get(RPZ_RULES_DICT, f'{rule_type}.{object_type}.infoblox_object_type')
 
         rule = self._http_request('POST', suffix, data=json.dumps(data), params=request_params)
@@ -359,7 +363,7 @@ class InfoBloxNIOSClient(BaseClient):
         """
         request_data = assign_params(disable=disable)
         suffix = reference_id
-        return self._http_request('PUT', suffix, data=json.dumps(request_data), params=REQUEST_PARAM_SEARCH_RULES)
+        return self._http_request('PUT', suffix, data=json.dumps(request_data), params=self.REQUEST_PARAM_SEARCH_RULES)
 
     def get_object_fields(self, object_type: str | None) -> dict:
         """Retrieve a given object fields.
@@ -399,7 +403,7 @@ class InfoBloxNIOSClient(BaseClient):
         suffix = reference_id
         return self._http_request('DELETE', suffix)
 
-    def get_host_records(self, name: str | None, extattrs: list[dict] | None) -> dict:
+    def get_host_records(self, name: str | None) -> dict:
         """
         Get the host records.
 
@@ -412,13 +416,6 @@ class InfoBloxNIOSClient(BaseClient):
         """
 
         params = assign_params(name=name)
-
-        if extattrs:
-            params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
-
-            for e in extattrs:
-                params.update(e)
-
         return self._http_request('GET', self.GET_HOST_RECORDS_ENDPOINT, params=params)
 
 
@@ -439,7 +436,7 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text
     return DemistoException(err_msg)
 
 
-def transform_ext_attrs(ext_attrs: str) -> list[dict] | None:
+def transform_ext_attrs(ext_attrs: str) -> list:
     """
     Helper function to transform the extension attributes.
     The user supplies a string of key/value pairs separated by commas.
@@ -466,7 +463,7 @@ def transform_ext_attrs(ext_attrs: str) -> list[dict] | None:
 
     # In case there are no delimiters present in the input
     if "," not in ext_attrs and "=" not in ext_attrs:
-        return None
+        return []
 
     l_ext_attrs: list[dict] = []
 
@@ -554,37 +551,54 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
     # Input validation
 
     # If too many arguments are supplied, return an error
-    if sum(arg is not None for arg in [ip, network, from_ip, to_ip]) > 1:
+    if sum(arg is not None for arg in [ip, network, from_ip and to_ip]) > 1:
         raise ValueError("Please specify only one of the `ip`, `network` or `from_ip`/`to_ip` arguments")
 
     # If neither ip, network nor from/to_ip were specified, return an error.
-    if not ip and not network and not (from_ip and to_ip):
+    elif sum(arg is not None for arg in [ip, network, from_ip and to_ip]) == 0:
         raise ValueError("Please specify either the `ip`, `network` or `from_ip`/`to_ip` argument")
 
-    extended_attributes = transform_ext_attrs(args.get("extended_attrs")) if args.get("extended_attrs") else None
+    extended_attributes = args.get("extended_attrs", None)
+    if extended_attributes:
+        client.set_param(client.REQUEST_PARAM_EXTRA_ATTRIBUTES)
+
+        extended_attributes_params = transform_ext_attrs(extended_attributes)
+
+        for e in extended_attributes_params:
+            client.set_param(e)
+
+    max_results = arg_to_number(args.get('max_results', INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
+    client.params[InfoBloxNIOSClient.REQUEST_PARAM_MAX_RESULTS_KEY] = max_results
+
     # Check if the network/IPs supplied are valid.
     if ip:
         valid_ip(ip)
         status = args.get('status', IPv4AddressStatus.USED.value)
-        raw_response = client.get_ipv4_address_from_ip(ip, status=status, ext_attrs=extended_attributes)
+        raw_response = client.get_ipv4_address_from_ip(ip, status=status)
     elif network:
         valid_netmask(network)
         status = args.get('status', IPv4AddressStatus.USED.value)
-        raw_response = client.get_ipv4_address_from_netmask(network, status=status, ext_attrs=extended_attributes)
+        raw_response = client.get_ipv4_address_from_netmask(network, status=status)
     elif from_ip and to_ip:
         valid_ip_range(from_ip, to_ip)
-        raw_response = client.get_ipv4_address_range(from_ip, to_ip, ext_attrs=extended_attributes)
+        raw_response = client.get_ipv4_address_range(from_ip, to_ip)
 
     ip_list = raw_response.get('result')
 
     # If no IP object was returned
     if not ip_list:
         return f'{INTEGRATION_NAME} - Could not find any data corresponds to: {ip}', {}, {}
+
+    # TODO check why we're only taking the first IP address when the service
+    # returns a list
+    # usetest_get_ip_command_from_netmask to demonstrate
     fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
                       ip_list[0].items()}
-    title = f'{INTEGRATION_NAME} - IP: {ip} info.'
+    title = f'{INTEGRATION_NAME} - IP info.'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': fixed_keys_obj}
+        f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}(val.ReferenceID && val.ReferenceID === obj.ReferenceID)':
+        fixed_keys_obj
+    }
     human_readable = tableToMarkdown(title, fixed_keys_obj, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -629,7 +643,7 @@ def list_response_policy_zone_rules_command(client: InfoBloxNIOSClient, args: di
     """
     zone = args.get('response_policy_zone_name')
     view = args.get('view')
-    max_results = args.get('page_size', 50)
+    max_results = args.get('page_size', INTEGRATION_MAX_RESULTS_DEFAULT)
     next_page_id = args.get('next_page_id')
     if not zone and not next_page_id:
         raise DemistoException('To run this command either a zone or a next page ID must be given')
@@ -670,7 +684,7 @@ def list_response_policy_zones_command(client: InfoBloxNIOSClient, args: dict) -
     Returns:
         Outputs
     """
-    max_results = args.get('max_results', 50)
+    max_results = arg_to_number(args.get('max_results', INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
     raw_response = client.list_response_policy_zones(max_results)
     zones_list = raw_response.get('result')
     if not zones_list:
@@ -1151,22 +1165,28 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
     """
 
     hostname = args.get("host_name", None)
-    extension_attributes = args.get("extattrs", None)
-    max_records = args.get("max_records", RESULTS_LIMIT_DEFAULT)
 
-    # We need to add an asterisk (*) to the extension attributes
-    if extension_attributes:
-        extension_attributes = transform_ext_attrs(extension_attributes)
+    extended_attributes = args.get("extattrs", None)
+    if extended_attributes:
+        client.set_param(client.REQUEST_PARAM_EXTRA_ATTRIBUTES)
 
-    raw = client.get_host_records(name=hostname, extattrs=extension_attributes)
-    records = raw.get("result", [])[:max_records]
+        extended_attributes_params = transform_ext_attrs(extended_attributes)
+
+        for e in extended_attributes_params:
+            client.set_param(e)
+
+    max_results = arg_to_number(args.get('max_records', INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
+    client.set_param({InfoBloxNIOSClient.REQUEST_PARAM_MAX_RESULTS_KEY: max_results})
+
+    raw = client.get_host_records(name=hostname)
+    records = raw.get("result", [])
 
     demisto.debug(f"Found {len(records)} host records")
 
     if not hostname:
-        title = f"Host records (first {max_records})"
+        title = f"Host records (first {max_results})"
     else:
-        title = f"Host records for {hostname} (first {max_records})"
+        title = f"Host records for {hostname} (first {max_results})"
 
     human_readable = tableToMarkdown(title, records)
 
@@ -1199,8 +1219,7 @@ def main():  # pragma: no cover
         base_url,
         verify=verify,
         proxy=proxy,
-        auth=(user, password),
-        params=REQUEST_PARAMS_RETURN_AS_OBJECT
+        auth=(user, password)
     )
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
