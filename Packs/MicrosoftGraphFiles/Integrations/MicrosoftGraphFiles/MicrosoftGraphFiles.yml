@@ -617,6 +617,12 @@ script:
         To get the ID of the file you want to download, use the msgraph-list-drive-content command.
       name: item_id
       required: true
+    - name: file_name
+      description: |-
+        The file name to download.
+        Use msgraph-list-drive-content to retrieve the name of a file,
+        if not provided, the file name will be the value of the item_id argument.
+      required: false
     description: Downloads the file contents of the drive item.
     name: msgraph-download-file
     outputs:

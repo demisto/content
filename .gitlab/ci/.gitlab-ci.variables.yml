@@ -8,6 +8,7 @@ variables:
   GCS_MARKET_XSOAR_SAAS_BUCKET: "marketplace-saas-dist"
   GCS_MARKET_BUCKET_DEV: "marketplace-dist-dev"
   GCS_MARKET_V2_BUCKET_DEV: "marketplace-v2-dist-dev"
+  GCS_MARKET_XSOAR_SAAS_BUCKET_DEV: "marketplace-saas-dist-dev"
   STORAGE_BASE_PATH: ""
   SLACK_CHANNEL: "dmst-build-test"
   DEMISTO_README_VALIDATION: "true"

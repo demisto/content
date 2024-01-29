@@ -1,11 +1,12 @@
-!kenna-search-vulnerabilities id=123
+!kenna-search-vulnerabilities id=123 limit=2 to_context=True
 !kenna-run-connector id=123
-!kenna-search-fixes min-score=7 limit=100
+!kenna-search-fixes limit=2 id=123 to_context=True
 !kenna-update-asset id=123 notes="New asset info"
-!kenna-update-vulnerability id=123 status="open"
+!kenna-update-vulnerability id=123 status=open notes="Test"
 !kenna-get-connectors
-!kenna-search-assets hostname="some.hostname.com"
-!kenna-get-asset-vulnerabilities id=123 limit=250
-!kenna-add-tag tag="comma,seperated,tags" id=123
-!kenna-delete-tag id=123 tag="sometag"
+!kenna-search-assets limit=2 to_context=True
+!kenna-get-asset-vulnerabilities id=123 limit=2 to_context=True
+!kenna-add-tag tag="Test tag" id=123
+!kenna-delete-tag id=123 tag="Test tag"
 !kenna-get-connector-runs connector_id=123
+!kenna-search-assets-by-external-id external_id=123 limit=2 to_context=true

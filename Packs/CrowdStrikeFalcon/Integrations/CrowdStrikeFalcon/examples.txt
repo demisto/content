@@ -29,3 +29,4 @@ cs-falcon-cspm-update-policy_settings policy_id=1 enabled=true regions="eu-centr
 cs-falcon-resolve-identity-detection ids="id_1,id_2" add_tag="Demo tag" append_comment="Demo comment" assign_to_name="morganf" show_in_ui=true update_status=in_progress
 cs-falcon-list-users limit=1
 cs-falcon-get-incident-behavior behavior_ids=ind:046761c46ec84f40b27b6f79ce7cd32c:1718483878780-364-892944
+cs-falcon-get-ioarules rule_ids=7471ba0636b34cbb8c65fae7979a6a9b:2003

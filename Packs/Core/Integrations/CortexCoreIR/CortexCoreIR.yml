@@ -35,6 +35,119 @@ name: Cortex Core - IR
 script:
   commands:
   - arguments:
+    - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
+      name: lte_creation_time
+    - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.
+      name: gte_creation_time
+    - description: Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00.
+      name: lte_modification_time
+    - description: Filters returned incidents that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00.
+      name: gte_modification_time
+    - description: An array or CSV string of incident IDs.
+      isArray: true
+      name: incident_id_list
+    - description: Filters returned incidents that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+      name: since_creation_time
+    - description: Filters returned incidents that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+      name: since_modification_time
+    - auto: PREDEFINED
+      description: Sorts returned incidents by the date/time that the incident was last modified ("asc" - ascending, "desc" - descending).
+      name: sort_by_modification_time
+      predefined:
+      - asc
+      - desc
+    - auto: PREDEFINED
+      description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
+      name: sort_by_creation_time
+      predefined:
+      - asc
+      - desc
+    - defaultValue: '0'
+      description: Page number (for pagination). The default is 0 (the first page).
+      name: page
+    - defaultValue: '100'
+      description: Maximum number of incidents to return per page. The default and maximum is 100.
+      name: limit
+    - description: 'Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
+      name: status
+    - auto: PREDEFINED
+      description: 'Whether the incident is starred (Boolean value: true or false).'
+      name: starred
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
+      defaultValue: 3 days
+      name: starred_incidents_fetch_window
+    description: |-
+      Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
+      If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
+    name: core-get-incidents
+    outputs:
+    - contextPath: Core.Incident.incident_id
+      description: Unique ID assigned to each returned incident.
+      type: String
+    - contextPath: Core.Incident.manual_severity
+      description: Incident severity assigned by the user. This does not affect the calculated severity. Can be "low", "medium", "high".
+      type: String
+    - contextPath: Core.Incident.manual_description
+      description: Incident description provided by the user.
+      type: String
+    - contextPath: Core.Incident.assigned_user_mail
+      description: Email address of the assigned user.
+      type: String
+    - contextPath: Core.Incident.high_severity_alert_count
+      description: Number of alerts with the severity HIGH.
+      type: String
+    - contextPath: Core.Incident.host_count
+      description: Number of hosts involved in the incident.
+      type: number
+    - contextPath: Core.Incident.xdr_url
+      description: A link to the incident view on Cortex XDR.
+      type: String
+    - contextPath: Core.Incident.assigned_user_pretty_name
+      description: Full name of the user assigned to the incident.
+      type: String
+    - contextPath: Core.Incident.alert_count
+      description: Total number of alerts in the incident.
+      type: number
+    - contextPath: Core.Incident.med_severity_alert_count
+      description: Number of alerts with the severity MEDIUM.
+      type: number
+    - contextPath: Core.Incident.user_count
+      description: Number of users involved in the incident.
+      type: number
+    - contextPath: Core.Incident.severity
+      description: |-
+        Calculated severity of the incident. Valid values are:
+        "low","medium","high".
+      type: String
+    - contextPath: Core.Incident.low_severity_alert_count
+      description: Number of alerts with the severity LOW.
+      type: String
+    - contextPath: Core.Incident.status
+      description: |
+        Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
+      type: String
+    - contextPath: Core.Incident.description
+      description: Dynamic calculated description of the incident.
+      type: String
+    - contextPath: Core.Incident.resolve_comment
+      description: Comments entered by the user when the incident was resolved.
+      type: String
+    - contextPath: Core.Incident.notes
+      description: Comments entered by the user regarding the incident.
+      type: String
+    - contextPath: Core.Incident.creation_time
+      description: Date and time the incident was created on Cortex XDR.
+      type: date
+    - contextPath: Core.Incident.detection_time
+      description: Date and time that the first alert occurred in the incident.
+      type: date
+    - contextPath: Core.Incident.modification_time
+      description: Date and time that the incident was last modified.
+      type: date
+  - arguments:
     - description: Links the response action to the triggered incident.
       name: incident_id
     - description: Interval in seconds between each poll.
@@ -2818,59 +2931,11 @@ script:
     - contextPath: Core.UserGroup.source
       description: Type of user group.
       type: String
-  - arguments:
-    - description: A comma-separated list of one or more role names in your environment for which you want detailed information.
-      name: role_names
-      required: true
-    name: core-list-roles
-    description: Retrieve information about one or more roles created in your environment.
-    outputs:
-    - contextPath: Core.Role.pretty_name
-      description: Name of the role as it appears in the management console.
-      type: String
-    - contextPath: Core.Role.permissions
-      description: List of permissions associated with this role.
-      type: array
-    - contextPath: Core.Role.insert_time
-      description: Timestamp of when the role was created.
-      type: Number
-    - contextPath: Core.Role.update_time
-      description: Timestamp of when the role was last updated.
-      type: Number
-    - contextPath: Core.Role.created_by
-      description: Email of the user who created the role.
-      type: String
-    - contextPath: Core.Role.description
-      description: Description of the role, if available.
-      type: String
-    - contextPath: Core.Role.groups
-      description: Group names associated with the role.
-      type: array
-    - contextPath: Core.Role.users
-      description: Email address of users associated with the role.
-      type: array
-  - arguments:
-    - description: A comma-separated list of one or more user emails of users you want to add to a role.
-      name: user_emails
-      required: true
-      isArray: true
-    - description: Name of the role you want to add a user to.
-      name: role_name
-      required: true
-    name: core-set-user-role
-    description: Add one or more users to a role.
-  - arguments:
-    - description: A comma-separated list of one or more user emails of users you want to remove from a role.
-      name: user_emails
-      required: true
-      isArray: true
-    name: core-remove-user-role
-    description: Remove one or more users from a role.
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.85667
 tests:
 - No tests
 fromversion: 6.2.0
