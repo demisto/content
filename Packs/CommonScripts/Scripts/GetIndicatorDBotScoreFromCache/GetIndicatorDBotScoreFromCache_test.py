@@ -176,6 +176,6 @@ def test_no_iocs_returned_from_search_indicators(mocker):
 
     GetIndicatorDBotScoreFromCache.main()
     return_results_calls = GetIndicatorDBotScoreFromCache.return_results.call_args_list
-
-    indicators_results = return_results_calls[0][0][0]["Contents"]
-    assert {i["Indicator"] for i in indicators_results} == {}
+    expected_result = set()
+    indicators_results = return_results_calls[0][1]
+    assert {i["Indicator"] for i in indicators_results} == expected_result
