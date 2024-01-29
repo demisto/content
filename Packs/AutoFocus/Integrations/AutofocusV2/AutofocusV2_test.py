@@ -634,13 +634,14 @@ def test_metrics(mocker):
         }),
         verify=True
     )
-    assert return_results_mock.call_args_list[0][0][0].readable_output == 'API Rate limit exceeded.\nRerunning command:'
+    assert return_results_mock.call_args_list[0][0][0].readable_output == 'API Rate limit exceeded, rerunning command.'
     assert return_results_mock.call_args_list[0][0][0].scheduled_command._args == {
-        'unit42': 'True', 'class': 'Actor', 'rate_limit_auto_retry': 'false'
+        'unit42': 'True', 'class': 'Actor', 'rate_limit_auto_retry': 'false',
+        'create_relationships': True, 'reliability': 'B - Usually reliable'
     }
     assert return_results_mock.call_args_list[1][0][0].execution_metrics == [{'APICallsCount': 1, 'Type': 'QuotaError'}]
     assert return_results_mock.call_args_list[2][0][0].readable_output == '''### Autofocus API Points
-|Remaining number of points per day|Timestamp for when the current daily allotment started|Total number of points allowed per day|
-|---|---|---|
-| 4578 | 2015-09-01 17:08:40 | 30000 |
+|Daily allotment started|Daily points used|Minute allotment started|Minute points used|
+|---|---|---|---|
+| 2015-09-01 17:08:40 | 4578/30000 | 2015-09-02 10:55:33 | 0/200 |
 '''
