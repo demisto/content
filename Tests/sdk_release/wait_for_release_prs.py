@@ -73,16 +73,17 @@ def main():
     logging.info('SLACK_CHANGELOG_FILE created')
 
     # get the sdk and content pull requests
-    content_pr = get_pr_from_branch('content', release_branch_name, access_token)
+    # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
     # sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
     # logging.info(f'demisto-sdk pull request created: {sdk_pr.get("html_url")}')
     logging.info(f'content pull request created: {content_pr.get("html_url")}')
 
-    content_pr_id = content_pr.get('number')
+    # content_pr_id = content_pr.get('number')
     # sdk_pr_id = sdk_pr.get('number')
     content_pr_state = 'open'
     # sdk_pr_state = 'open'
 
+    content_pr_id = '32454'
     # initialize timer
     start = time.time()
     elapsed: float = 0
