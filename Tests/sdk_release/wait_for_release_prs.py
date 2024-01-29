@@ -48,7 +48,7 @@ def main():
     # get the content pr id from the file
     try:
         content_pr_file = os.path.join(artifacts_folder, CONTENT_PR_NUMBER_FILE)
-        file = open(content_pr_file, "r")
+        file = open(content_pr_file)
         content_pr_id = file.read()
     except Exception as e:
         logging.error(f'Failed to read the file {CONTENT_PR_NUMBER_FILE}, error: {str(e)}')
@@ -59,7 +59,7 @@ def main():
     # get the sdk pr id from the file
     try:
         sdk_pr_file = os.path.join(artifacts_folder, SDK_PR_NUMBER_FILE)
-        file = open(sdk_pr_file, "r")
+        file = open(sdk_pr_file)
         sdk_pr_id = file.read()
     except Exception as e:
         logging.error(f'Failed to read the file {SDK_PR_NUMBER_FILE}, error: {str(e)}')

@@ -3,7 +3,6 @@ import sys
 import json
 import time
 import argparse
-from typing import Tuple
 
 import requests
 from Tests.scripts.utils.log_util import install_logging
@@ -16,7 +15,7 @@ import urllib3
 urllib3.disable_warnings()
 
 
-def get_workflow_status(github_token: str, workflow_id: str) -> Tuple[str, str, str]:
+def get_workflow_status(github_token: str, workflow_id: str) -> tuple[str, str, str]:
     """ Returns a set with the workflow job status, job conclusion and current step that running now in the job
         for the given workflow id.
 
@@ -95,7 +94,7 @@ def main():
         sys.exit(0)
 
     # gets workflow id from the file
-    with open(workflow_id_file, 'r') as f:
+    with open(workflow_id_file) as f:
         workflow_id = f.read()
 
     # gets the workflow status
