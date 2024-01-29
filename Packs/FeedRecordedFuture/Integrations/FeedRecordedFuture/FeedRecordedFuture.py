@@ -1,6 +1,5 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
+import demistomock as demisto  
+from CommonServerPython import *  
 import zlib
 import json
 
@@ -48,9 +47,10 @@ class Client(BaseClient):
     headers = {'X-RF-User-Agent': 'Demisto',
                'content-type': 'application/json'}
 
-    def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str = None,  # type: ignore
-                 fusion_file_path: str = None, insecure: bool = False,  # type: ignore
-                 polling_timeout: int = 20, proxy: bool = False, malicious_threshold: int = 65, suspicious_threshold: int = 25, risk_score_threshold: int = 0,  # noqa: E501
+    def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str = None,   
+                 fusion_file_path: str = None, insecure: bool = False,   
+                 polling_timeout: int = 20, proxy: bool = False, 
+                 malicious_threshold: int = 65, suspicious_threshold: int = 25, risk_score_threshold: int = 0,
                  tags: list | None = None, tlp_color: str | None = None):
         """
         Attributes:
@@ -124,7 +124,7 @@ class Client(BaseClient):
             else:
                 fusion_path = self.fusion_file_path
 
-            fusion_path = urllib.parse.quote_plus(fusion_path)  # type: ignore
+            fusion_path = urllib.parse.quote_plus(fusion_path)   
             response = requests.Request('GET',
                                         url + fusion_path,
                                         headers=self.headers,
@@ -167,7 +167,7 @@ class Client(BaseClient):
                              " requests made to Recorded Future. ")
             else:
                 return_error(
-                    f'{self.SOURCE_NAME} - exception in request: {response.status_code} {response.content}'  # type: ignore
+                    f'{self.SOURCE_NAME} - exception in request: {response.status_code} {response.content}'   
                 )
 
         if service == 'connectApi':
@@ -240,7 +240,7 @@ class Client(BaseClient):
         demisto.info('reading from file')
         # we do this try to make sure the file gets deleted at the end
         try:
-            file_stream = open("response.txt", 'rt')  # noqa: UP015
+            file_stream = open("response.txt", 'rt')  
             columns = file_stream.readline()  # get the headers from the csv file.
             columns = columns.replace("\"", "").strip().split(",")  # type:ignore  # '"a","b"\n' -> ["a", "b"]
 
@@ -540,7 +540,7 @@ def get_indicators_command(client, args) -> tuple[str, dict[Any, Any], list[dict
             if limit and len(indicators_list) >= limit:
                 break
 
-        entry_results = camelize(indicators_list)  # type: ignore
+        entry_results = camelize(indicators_list)   
         human_readable = tableToMarkdown('Indicators from RecordedFuture Feed:', entry_results,
                                          headers=['Value', 'Type'], removeNull=True)
 
@@ -574,11 +574,11 @@ def main():  # pragma: no cover
     api_token = params.get('credentials_api_token', {}).get('password') or params.get('api_token')
     if not api_token:
         raise DemistoException('API Token must be provided.')
-    client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], api_token, params.get('services'),  # type: ignore
-                    params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),  # type: ignore
-                    params.get('polling_timeout'), params.get('proxy'), params.get('malicious_threshold'),  # type: ignore
-                    params.get('suspicious_threshold'), params.get('risk_score_threshold'), argToList(params.get('feedTags')),  # type: ignore  # noqa: E501
-                    params.get('tlp_color'))
+    client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], api_token, params.get('services'),   
+                    params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),   
+                    params.get('polling_timeout'), params.get('proxy'), params.get('malicious_threshold'),   
+                    params.get('suspicious_threshold'), params.get('risk_score_threshold'), 
+                    argToList(params.get('feedTags')), params.get('tlp_color'))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     # Switch case
