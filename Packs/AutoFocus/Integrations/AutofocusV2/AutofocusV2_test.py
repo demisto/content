@@ -617,7 +617,7 @@ def test_metrics(mocker):
         status_code = 503
 
     mocker.patch.object(demisto, 'command', return_value='autofocus-top-tags-search')
-    mocker.patch.object(demisto, 'args', return_value={'unit42': 'True', 'class': 'Actor', 'rate_limit_auto_retry': 'true'})
+    mocker.patch.object(demisto, 'args', return_value={'unit42': 'True', 'class': 'Actor', 'retry_on_rate_limit': 'true'})
     mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.9.0', 'buildNumber': '12345'})
     mock_request: MagicMock = mocker.patch.object(requests, 'request', return_value=MockResponse)
     return_results_mock: MagicMock = mocker.patch('AutofocusV2.return_results')
@@ -636,7 +636,7 @@ def test_metrics(mocker):
     )
     assert return_results_mock.call_args_list[0][0][0].readable_output == 'API Rate limit exceeded, rerunning command.'
     assert return_results_mock.call_args_list[0][0][0].scheduled_command._args == {
-        'unit42': 'True', 'class': 'Actor', 'rate_limit_auto_retry': 'false',
+        'unit42': 'True', 'class': 'Actor', 'retry_on_rate_limit': 'false',
     }
     assert return_results_mock.call_args_list[1][0][0].execution_metrics == [{'APICallsCount': 1, 'Type': 'QuotaError'}]
     assert return_results_mock.call_args_list[2][0][0].readable_output == '''### Autofocus API Points

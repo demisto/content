@@ -291,23 +291,23 @@ def return_metrics():
         return_results(API_POINTS_TABLE)
 
 
-def rerun_command_if_required(api_res: dict, rate_limit_auto_retry: bool):
+def rerun_command_if_required(api_res: dict, retry_on_rate_limit: bool):
     daily_points_remaining = dict_safe_get(api_res, ('bucket_info', 'daily_points_remaining'), 0)
-    if not (rate_limit_auto_retry and daily_points_remaining):
-        results = CommandResults(
-            readable_output=(
-                f'Error in API call to AutoFocus:\nMessage: {api_res.get("message")}\n'),
-            entry_type=EntryType.ERROR
-        )
-    else:
-        next_run_in_seconds = int(dict_safe_get(api_res, ('bucket_info', 'wait_in_seconds'), 70)) + 1  # type: ignore
+    if retry_on_rate_limit and daily_points_remaining:
+        next_run_in_seconds = min(int(dict_safe_get(api_res, ('bucket_info', 'wait_in_seconds'), 70)) + 20, 300)  # type: ignore
         results = CommandResults(
             readable_output='API Rate limit exceeded, rerunning command.',
             scheduled_command=ScheduledCommand(
                 command=demisto.command(),
-                args=(demisto.args() | {'rate_limit_auto_retry': 'false'}),
+                args=(demisto.args() | {'retry_on_rate_limit': 'false'}),
                 next_run_in_seconds=next_run_in_seconds,
             )
+        )
+    else:
+        results = CommandResults(
+            readable_output=(
+                f'Error in API call to AutoFocus:\nMessage: {api_res.get("message")}\n'),
+            entry_type=EntryType.ERROR
         )
     return_results(results)
 
@@ -1976,7 +1976,7 @@ def main():
                 raise NotImplementedError(f'Command {command!r} is not implemented.')
 
     except RateLimitExceededError as e:
-        rerun_command_if_required(e.api_res, argToBoolean(args.get('rate_limit_auto_retry', False)))
+        rerun_command_if_required(e.api_res, argToBoolean(args.get('retry_on_rate_limit', False)))
 
     except Exception as e:
         return_error(f'Unexpected error: {e}.\ntraceback: {traceback.format_exc()}')
