@@ -2040,6 +2040,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):      # pra
 def handle_attached_email_with_incorrect_id(attached_email):
     """This function handles a malformed Message-ID value which can be returned in the header of certain email objects.
     This issue happens due to a current bug in "email" library and further explained in XSUP-32074.
+    Public issue link: https://github.com/python/cpython/issues/105802
 
     The function will run on every attached email if exists, check its Message-ID header value and correct it if necessary.
     Args:
@@ -2054,17 +2055,23 @@ def handle_attached_email_with_incorrect_id(attached_email):
             message_id = attached_email._headers[i][1]
             try:
                 if message_id.endswith("]>") and message_id.startswith("<["):
-                    demisto.debug(f"the message id is incorrect {message_id=}")
+                    demisto.debug(f"Fixing invalid {message_id=} attachment header by removing its square bracket \
+                        wrapper (see XSUP-32074 for further information)")
                     attached_email._headers.pop(i)
                     message_id_value = f"<{message_id[2:-2]}>"
 
             except Exception as e:
-                demisto.debug(f"the message id is incorrect {message_id=}, Error: {e}")
+                # The function is designed to handle a specific format error for the Message-ID header
+                # as explained in the docstring.
+                # That being said, we do expect the header to be in a known format.
+                # If this function encounters a header format which is not in the known format and can't be fixed,
+                # the header will be ignored completely to prevent crashing the fetch command.
+                demisto.debug(f"Invalid {message_id=}, Error: {e}")
                 break
             break
     if message_id_value:
+        # If the Message-ID header was fixed in the context of this function, it will be inserted again to the _headers list
         attached_email._headers.append(("Message-ID", message_id_value))
-    demisto.debug("the message id is correct")
     return attached_email
 
 
@@ -2174,66 +2181,61 @@ def parse_incident_from_item(item):     # pragma: no cover
                     attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
                         if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content, policy=email_policy)
-                    try:
-                        if attachment.item.headers:
-                            # compare header keys case-insensitive
-                            attached_email_headers = []
-                            demisto.debug("before the bug")
-                            attached_email = handle_attached_email_with_incorrect_id(attached_email)
-                            for h, v in attached_email.items():
-                                if not isinstance(v, str):
+                    if attachment.item.headers:
+                        # compare header keys case-insensitive
+                        attached_email_headers = []
+                        attached_email = handle_attached_email_with_incorrect_id(attached_email)
+                        for h, v in attached_email.items():
+                            if not isinstance(v, str):
+                                try:
+                                    v = str(v)
+                                except:  # noqa: E722
+                                    demisto.debug(f'cannot parse the header "{h}"')
+                                    continue
+
+                            v = ' '.join(map(str.strip, v.split('\r\n')))
+                            attached_email_headers.append((h.lower(), v))
+                        demisto.debug(f'{attached_email_headers=}')
+                        for header in attachment.item.headers:
+                            demisto.debug(f'{header.name.lower()}, {header.value}')
+                            if (
+                                    (header.name.lower(), header.value)
+                                    not in attached_email_headers
+                                    and header.name.lower() != "content-type"
+                            ):
+                                if header.name.lower() == "message-id":
+                                    # add the message-id to the headers
+                                    demisto.debug('adding message-id to the headers')
                                     try:
-                                        v = str(v)
-                                    except:  # noqa: E722
-                                        demisto.debug(f'cannot parse the header "{h}"')
-                                        continue
+                                        attached_email.add_header(header.name, header.value)
+                                    except ValueError as err:
+                                        if "There may be at most" not in str(err):
+                                            raise err
+                                else:
+                                    try:
+                                        attached_email.add_header(header.name, header.value)
+                                    except ValueError as err:
+                                        if "There may be at most" not in str(err):
+                                            raise err
 
-                                v = ' '.join(map(str.strip, v.split('\r\n')))
-                                attached_email_headers.append((h.lower(), v))
-                            demisto.debug(f'{attached_email_headers=}')
-                            for header in attachment.item.headers:
-                                demisto.debug(f'{header.name.lower()}, {header.value}')
-                                if (
-                                        (header.name.lower(), header.value)
-                                        not in attached_email_headers
-                                        and header.name.lower() != "content-type"
-                                ):
-                                    if header.name.lower() == "message-id":
-                                        # add the message-id to the headers
-                                        demisto.debug('adding message-id to the headers')
-                                        try:
-                                            attached_email.add_header(header.name, header.value)
-                                        except ValueError as err:
-                                            if "There may be at most" not in str(err):
-                                                raise err
-                                    else:
-                                        try:
-                                            attached_email.add_header(header.name, header.value)
-                                        except ValueError as err:
-                                            if "There may be at most" not in str(err):
-                                                raise err
-                            demisto.debug('the bug is solved')
-
-                        attached_email_bytes = attached_email.as_bytes()
-                        chardet_detection = chardet.detect(attached_email_bytes)
-                        encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
+                    attached_email_bytes = attached_email.as_bytes()
+                    chardet_detection = chardet.detect(attached_email_bytes)
+                    encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
+                    try:
+                        # Trying to decode using the detected encoding
+                        data = attached_email_bytes.decode(encoding)
+                    except UnicodeDecodeError:
+                        # In case the detected encoding fails apply the default encoding
+                        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
+                                        f'using utf-8.\nAttached email:\n{attached_email}')
                         try:
-                            # Trying to decode using the detected encoding
-                            data = attached_email_bytes.decode(encoding)
+                            data = attached_email_bytes.decode('utf-8')
                         except UnicodeDecodeError:
-                            # In case the detected encoding fails apply the default encoding
-                            demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
-                                         f'using utf-8.\nAttached email:\n{attached_email}')
-                            try:
-                                data = attached_email_bytes.decode('utf-8')
-                            except UnicodeDecodeError:
-                                demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
-                                data = attached_email_bytes  # type: ignore
+                            demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
+                            data = attached_email_bytes  # type: ignore
 
-                        file_result = fileResult(get_attachment_name(attachment.name, eml_extension=True), data)
+                    file_result = fileResult(get_attachment_name(attachment.name, eml_extension=True), data)
 
-                    except Exception as e:
-                        raise DemistoException(f'An error while handling attachment.item.headers object. Error: {e}')
 
                 if file_result:
                     # check for error
