@@ -2217,7 +2217,7 @@ inputs:
           conditionInBetween: {}
           else:
             value:
-              simple: ${alert= '(initiatorsha256:"' + val.initiatorsha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+              simple: ${alert= '(initiatorsha256:"' + val.initiatorsha256 + '" or agentid:"' + val.agentid + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
           equals: {}
           lhs:
             value:
@@ -2230,13 +2230,13 @@ inputs:
           rhsB: {}
           then:
             value:
-              simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+              simple: ${alert= '(filesha256:"' + val.filesha256 + '" or agentid:"' + val.agentid + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
   required: false
   description: The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file.
   playbookInputQuery:
 - key: ShouldOpenTicket
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: Whether to open a ticket automatically in a ticketing system. (True/False).
   playbookInputQuery:
@@ -2334,6 +2334,56 @@ inputs:
   required: false
   description: Comment for the ticket.
   playbookInputQuery:
+inputSections:
+- inputs:
+  - AutoCloseAlert
+  - ShouldManualReviewFP
+  name: Alert Management
+  description: Alert management settings and data, including escalation processes, and user engagements.
+- inputs:
+  - Query
+  - SHA256
+  - Path
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
+  - GraywareAsMalware
+  - ShouldRescanBenign
+  name: Investigation
+  description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
+- inputs:
+  - AutoEradication
+  - AutoContainment
+  - FileRemediation
+  - AutoRecovery
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - ShouldOpenTicket
+  - serviceNowShortDescription
+  - serviceNowImpact
+  - serviceNowUrgency
+  - serviceNowSeverity
+  - serviceNowTicketType
+  - serviceNowCategory
+  - serviceNowAssignmentGroup
+  - ZendeskPriority
+  - ZendeskRequester
+  - ZendeskStatus
+  - ZendeskSubject
+  - ZendeskTags
+  - ZendeskType
+  - ZendeskAssigne
+  - ZendeskCollaborators
+  - description
+  - addCommentPerEndpoint
+  - CommentToAdd
+  name: Ticket Management
+  description: Ticket management settings and data.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)

@@ -59,53 +59,53 @@ script:
       isArray: true
       name: ip
       required: true
-    description: Queries Qintel for IP reputation data
+    description: Queries Qintel for IP reputation data.
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: IP.ASN
-      description: The autonomous system number for the IP address
+      description: The autonomous system number for the IP address.
       type: string
     - contextPath: IP.ASOwner
-      description: The autonomous system name for the IP address
+      description: The autonomous system name for the IP address.
       type: string
     - contextPath: IP.Malicious.Vendor
-      description: The vendor reporting the IP address as malicious
+      description: The vendor reporting the IP address as malicious.
       type: string
     - contextPath: IP.Malicious.Description
-      description: A description explaining why the IP address was reported as malicious
+      description: A description explaining why the IP address was reported as malicious.
       type: string
     - contextPath: Qintel.IP.Address
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: Qintel.IP.Tags
-      description: Threat tags
+      description: Threat tags.
       type: string
     - contextPath: Qintel.IP.Description
-      description: IP description
+      description: IP description.
       type: string
     - contextPath: Qintel.IP.LastObserved
-      description: Last observed time
+      description: Last observed time.
       type: string
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.84405
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

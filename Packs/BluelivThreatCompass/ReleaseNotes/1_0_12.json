@@ -1,0 +1,4 @@
+{
+    "breakingChanges":true,
+    "breakingChangesNotes":"**fetch-incidents** command will now return results by ascending order. If you have a pre-configured instance, pleas make sure to reset last run from the integration's configuration window after the pack update."
+  }
