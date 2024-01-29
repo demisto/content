@@ -926,7 +926,7 @@ def detonate_sample_command():
         response = da.detonate_sample(sample_sha1=sha1, platform=platform)
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, "
+            return_error(f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
                          f"message: {e.response_object.text}")  # type: ignore[attr-defined]
 
         return_error(str(e))
@@ -968,7 +968,7 @@ def sample_dynamic_analysis_results_command():
         )
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, "
+            return_error(f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
                          f"message: {e.response_object.text}")  # type: ignore[attr-defined]
 
         return_error(str(e))
@@ -1036,7 +1036,7 @@ def detonate_url_command():
         response = da.detonate_url(url_string=url, platform=platform)
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, "
+            return_error(f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
                          f"message: {e.response_object.text}")  # type: ignore[attr-defined]
 
         return_error(str(e))
@@ -1084,7 +1084,7 @@ def url_dynamic_analysis_results_command():
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, "
+            return_error(f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
                          f"message: {e.response_object.text}")  # type: ignore[attr-defined]
 
         return_error(str(e))
