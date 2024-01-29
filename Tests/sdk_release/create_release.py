@@ -15,14 +15,13 @@ REGEX = re.compile(r"^(.*) \[(#\d+)\]\((http.*)\)")
 
 def get_changelog_text(release_branch_name, text_format='markdown'):
     # get release changelog file
-    url = f"https://raw.githubusercontent.com/demisto/demisto-sdk/master/CHANGELOG.md"
+    url = f"https://raw.githubusercontent.com/demisto/demisto-sdk/{release_branch_name}/CHANGELOG.md"
     response = requests.request("GET", url, verify=False)
     if response.status_code != 200:
         logging.error(f'Failed to get the CHANGELOG.md file from branch {release_branch_name}')
         logging.error(response.text)
         sys.exit(1)
     file_text = response.text
-    release_branch_name = '1.26.0'
     release_changes = (
         file_text.split(f"## {release_branch_name}\n")[1].split("\n\n")[0].split("\n")
     )
