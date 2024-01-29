@@ -77,13 +77,13 @@ def main():
     inputs = {
         'reviewer': reviewer,
         'release_version': release_branch_name,
-        # 'is_draft': is_draft
+        'is_draft': is_draft,
         'release_changes': get_changelog_text(release_branch_name)
     }
 
     data = {
         'ref': 'master',
-        # 'ref': 'sdk-release',
+        'ref': 'sdk-release',
         'inputs': inputs
     }
 
