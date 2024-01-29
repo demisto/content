@@ -471,7 +471,7 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     feed_tags = argToList(params.get("feedTags", []))
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
-    page = arg_to_number(args.get('page', '1')) or 0
+    page = arg_to_number(args.get('page')) or 1
     params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type=attribute_type, limit=limit,
                                                                           page=page)
     response = client.search_query(params_dict)
