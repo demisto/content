@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://cloud.tenable.com/
-  display: URL
+  display: Server URL
   name: url
   required: true
   type: 0
@@ -18,7 +18,7 @@ configuration:
   hidden: true
   required: false
   section: Connect
-- displaypassword: Access key
+- displaypassword: Access Key
   name: credentials_access_key
   hiddenusername: true
   type: 9
@@ -30,7 +30,7 @@ configuration:
   hidden: true
   required: false
   section: Connect
-- displaypassword: Secret key
+- displaypassword: Secret Key
   name: credentials_secret_key
   hiddenusername: true
   type: 9
@@ -48,27 +48,19 @@ configuration:
   required: false
   advanced: true
   section: Connect
-- display: Events Settings
-  name: events
-  type: 20
-  section: Collect
 - defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  display: Events first fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   required: false
   section: Collect
 - additionalinfo: The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section.
   defaultvalue: '1000'
-  display: Max Fetch
+  display: Events max fetch
   name: max_fetch
   type: 0
   required: false
   advanced: true
-  section: Collect
-- display: Assets Settings
-  name: assets
-  type: 20
   section: Collect
 - display: Vulnerability severity
   additionalinfo: The severity of the vulnerabilities to include in the export.
@@ -81,6 +73,7 @@ configuration:
   - critical
   type: 16
   required: false
+  advanced: true
   section: Collect
 - defaultvalue: '720'
   display: Assets and vulnerabilities fetch interval
