@@ -1,33 +1,19 @@
 import argparse
 import sys
 import time
+import os
 import requests
 import urllib3
+from create_content_pr import CONTENT_PR_NUMBER_FILE, SDK_PR_NUMBER_FILE
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-PRS_LIST_TEMPLATE = 'https://api.github.com/repos/demisto/{}/pulls?head=demisto:{}'
-
 PR_BY_ID_TEMPLATE = 'https://api.github.com/repos/demisto/{}/pulls/{}'
 
 TIMEOUT = 60 * 60 * 6  # 6 hours
-
-
-def get_pr_from_branch(repository, branch, access_token):
-    url = PRS_LIST_TEMPLATE.format(repository, branch)
-    res = requests.get(url, headers={'Authorization': f'Bearer {access_token}'}, verify=False)
-    if res.status_code != 200:
-        logging.error(f'Failed to retrieve pull request from branch {branch}')
-        logging.error(res.text)
-        sys.exit(1)
-
-    prs_list = res.json()
-    if prs_list:
-        return prs_list[0]
-    return None
 
 
 def get_pr_by_id(repository, pr_id, access_token):
@@ -46,6 +32,7 @@ def options_handler():
 
     parser.add_argument('-t', '--access_token', help='Github access token', required=True)
     parser.add_argument('-b', '--release_branch_name', help='The name of the release branch', required=True)
+    parser.add_argument('--artifacts-folder', help='Artifacts folder to get the content and sdk pr id files', required=True)
 
     options = parser.parse_args()
     return options
@@ -56,16 +43,30 @@ def main():
 
     options = options_handler()
     access_token = options.access_token
-    release_branch_name = options.release_branch_name
+    artifacts_folder = options.artifacts_folder
 
-    # get the sdk and content pull requests
-    content_pr = get_pr_from_branch('content', release_branch_name, access_token)
-    sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
-    logging.info(f'demisto-sdk pull request created: {sdk_pr.get("html_url")}')
-    logging.info(f'content pull request created: {content_pr.get("html_url")}')
+    # get the content pr id from the file
+    try:
+        content_pr_file = os.path.join(artifacts_folder, CONTENT_PR_NUMBER_FILE)
+        file = open(content_pr_file, "r")
+        content_pr_id = file.read()
+    except Exception as e:
+        logging.error(f'Failed to read the file {CONTENT_PR_NUMBER_FILE}, error: {str(e)}')
+        sys.exit(1)
+    finally:
+        file.close()
 
-    content_pr_id = content_pr.get('number')
-    sdk_pr_id = sdk_pr.get('number')
+    # get the sdk pr id from the file
+    try:
+        sdk_pr_file = os.path.join(artifacts_folder, SDK_PR_NUMBER_FILE)
+        file = open(sdk_pr_file, "r")
+        sdk_pr_id = file.read()
+    except Exception as e:
+        logging.error(f'Failed to read the file {SDK_PR_NUMBER_FILE}, error: {str(e)}')
+        sys.exit(1)
+    finally:
+        file.close()
+
     content_pr_state = 'open'
     sdk_pr_state = 'open'
 
