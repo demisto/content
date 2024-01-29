@@ -126,7 +126,7 @@ script:
       required: true
     description: Manually retrieve CVEs from NVD using the history parameter for number of days back to fetch.
     name: nvd-get-indicators
-  dockerimage: demisto/python3:3.10.13.85667
+  dockerimage: demisto/python3:3.10.13.86272
   feed: true
   runonce: false
   script: ''
