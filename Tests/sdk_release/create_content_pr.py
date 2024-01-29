@@ -111,7 +111,7 @@ def main():
     content_pr: dict = {}
     # wait to content pr to create
     while not content_pr and elapsed < TIMEOUT:
-        content_pr = get_pr_from_branch('content', release_branch_name, access_token)
+        content_pr = get_pr_from_branch('content', '1.25.3', access_token)
 
         if not content_pr:
             logging.info('content pull request not created yet')
