@@ -794,7 +794,7 @@ script:
     - contextPath: ReversingLabs.network_reputation_overrides_list
       description: Network reputation overrides list.
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.85058
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.86428
   runonce: false
   script: '-'
   subtype: python3
