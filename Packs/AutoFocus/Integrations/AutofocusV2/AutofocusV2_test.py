@@ -601,101 +601,46 @@ def test_search_samples(requests_mock, range_num, res_count):
         assert r.get('AFCookie') == 'auto-focus-cookie'
 
 
-# def test_metrics(mocker):
-#     from AutofocusV2 import main
-
-#     class MockResponse:
-#         @staticmethod
-#         def json():
-#             return {'bucket_info': {
-#                 "minute_points": 200,
-#                 "daily_points": 30000,
-#                 "minute_points_remaining": 0,
-#                 "daily_points_remaining": 4578,
-#                 "minute_bucket_start": "2015-09-02 10:55:33",
-#                 "daily_bucket_start": "2015-09-01 17:08:40",
-#             }}
-#         status_code = 503
-
-#     mocker.patch.object(demisto, 'command', return_value='autofocus-top-tags-search')
-#     mocker.patch.object(demisto, 'args', return_value={'unit42': 'True', 'class': 'Actor', 'retry_on_rate_limit': 'true'})
-#     mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.9.0', 'buildNumber': '12345'})
-#     mock_request: MagicMock = mocker.patch.object(requests, 'request', return_value=MockResponse)
-#     return_results_mock: MagicMock = mocker.patch('AutofocusV2.return_results')
-
-#     main()
-
-#     mock_request.assert_called_with(
-#         method='POST',
-#         url='https://autofocus.paloaltonetworks.com/api/v1.0/top-tags/search/',
-#         headers={'Content-Type': 'application/json'},
-#         data=json.dumps({
-#             "query": {"operator": "all", "children": [{"field": "sample.tag_class", "operator": "is", "value": "actor"}]},
-#             "scope": None, "tagScopes": ["unit42"], "apiKey": "1234"
-#         }),
-#         verify=True
-#     )
-#     assert return_results_mock.call_args_list[0][0][0].readable_output == 'API Rate limit exceeded, rerunning command.'
-#     assert return_results_mock.call_args_list[0][0][0].scheduled_command._args == {
-#         'unit42': 'True', 'class': 'Actor', 'retry_on_rate_limit': 'false',
-#     }
-#     assert return_results_mock.call_args_list[1][0][0].execution_metrics == [{'APICallsCount': 1, 'Type': 'QuotaError'}]
-#     assert return_results_mock.call_args_list[2][0][0].readable_output == '''### Autofocus API Points
-# |Daily allotment started|Daily points used|Minute allotment started|Minute points used|
-# |---|---|---|---|
-# | 2015-09-01 17:08:40 | 4578/30000 | 2015-09-02 10:55:33 | 0/200 |
-# '''
-
-
 def test_metrics(mocker):
-    import AutofocusV2
+    from AutofocusV2 import main
 
-    class ReturnResultsMock:
-        call_args_list: list = []
-        
-        def __call__(self, *args: Any, **kwds: Any) -> Any:
-            self.call_args_list.append((args, kwds))
-
-    class MockResponse:
-        @staticmethod
-        def json():
-            return {'bucket_info': {
-                "minute_points": 200,
-                "daily_points": 30000,
-                "minute_points_remaining": 0,
-                "daily_points_remaining": 4578,
-                "minute_bucket_start": "2015-09-02 10:55:33",
-                "daily_bucket_start": "2015-09-01 17:08:40",
-            }}
-        status_code = 503
-
-    def mock_request(**args):
-        assert args == {
-            'method': 'POST',
-            'url': 'https://autofocus.paloaltonetworks.com/api/v1.0/top-tags/search/',
-            'headers': {'Content-Type': 'application/json'},
-            'data': json.dumps({
-                "query": {"operator": "all", "children": [{"field": "sample.tag_class", "operator": "is", "value": "actor"}]},
-                "scope": None, "tagScopes": ["unit42"], "apiKey": "1234"
-            }),
-            'verify': True
+    bucket_info = {
+        'bucket_info': {
+            "minute_points": 200,
+            "daily_points": 30000,
+            "minute_points_remaining": 0,
+            "daily_points_remaining": 4578,
+            "minute_bucket_start": "2015-09-02 10:55:33",
+            "daily_bucket_start": "2015-09-01 17:08:40",
         }
-        return MockResponse
+    }
 
-    AutofocusV2.demisto.command = lambda: 'autofocus-top-tags-search'
-    AutofocusV2.demisto.args = lambda: {'unit42': 'True', 'class': 'Actor', 'retry_on_rate_limit': 'true'}
-    AutofocusV2.demisto.demistoVersion = lambda: {'version': '6.9.0', 'buildNumber': '12345'}
-    AutofocusV2.requests.request = mock_request
-    AutofocusV2.return_results = ReturnResultsMock()
+    mocker.patch.object(demisto, 'command', return_value='autofocus-top-tags-search')
+    mocker.patch.object(demisto, 'args', return_value={'unit42': 'True', 'class': 'Actor', 'retry_on_rate_limit': 'true'})
+    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.9.0', 'buildNumber': '12345'})
+    mock_request: MagicMock = mocker.patch.object(requests, 'request', return_value=type(
+        'MockResponse', (), {'json': bucket_info, 'status_code': 503}
+    ))
+    return_results_mock: MagicMock = mocker.patch('AutofocusV2.return_results')
 
-    AutofocusV2.main()
+    main()
 
-    assert AutofocusV2.return_results.call_args_list[0][0][0].readable_output == 'API Rate limit exceeded, rerunning command.'
-    assert AutofocusV2.return_results.call_args_list[0][0][0].scheduled_command._args == {
+    mock_request.assert_called_with(
+        method='POST',
+        url='https://autofocus.paloaltonetworks.com/api/v1.0/top-tags/search/',
+        headers={'Content-Type': 'application/json'},
+        data=json.dumps({
+            "query": {"operator": "all", "children": [{"field": "sample.tag_class", "operator": "is", "value": "actor"}]},
+            "scope": None, "tagScopes": ["unit42"], "apiKey": "1234"
+        }),
+        verify=True
+    )
+    assert return_results_mock.call_args_list[0][0][0].readable_output == 'API Rate limit exceeded, rerunning command.'
+    assert return_results_mock.call_args_list[0][0][0].scheduled_command._args == {
         'unit42': 'True', 'class': 'Actor', 'retry_on_rate_limit': 'false',
     }
-    assert AutofocusV2.return_results.call_args_list[1][0][0].execution_metrics == [{'APICallsCount': 1, 'Type': 'QuotaError'}]
-    assert AutofocusV2.return_results.call_args_list[2][0][0].readable_output == '''### Autofocus API Points
+    assert return_results_mock.call_args_list[1][0][0].execution_metrics == [{'APICallsCount': 1, 'Type': 'QuotaError'}]
+    assert return_results_mock.call_args_list[2][0][0].readable_output == '''### Autofocus API Points
 |Daily allotment started|Daily points used|Minute allotment started|Minute points used|
 |---|---|---|---|
 | 2015-09-01 17:08:40 | 4578/30000 | 2015-09-02 10:55:33 | 0/200 |
