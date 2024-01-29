@@ -1,6 +1,6 @@
 Gets all tasks for a specific incident by the given state, name or tag.
 If multiple values are given, only tasks matching all of them are returned. 
-For example, if name and states is given, only tasks with the given name in a given state are returned
+For example, if name and state is given, only tasks with the given name in a given state are returned
 
 ## Script Data
 ---
@@ -16,10 +16,10 @@ For example, if name and states is given, only tasks with the given name in a gi
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| inc_id | The Incident ID to get tasks from. |
+| inc_id | The incident ID to get tasks from. |
 | states | The comma-separated list of states. Can be, "New", "InProgress", "Completed", "Waiting", "Error", "Skipped", "Blocked". You can also leave this field empty to get all tasks. |
-| name | The name of the Task to search. |
-| tag | The tag of the Task to search
+| name | The name of the task to search. |
+| tag | The tag of the task to search.
 
 ## Outputs
 ---
@@ -36,5 +36,5 @@ For example, if name and states is given, only tasks with the given name in a gi
 | Tasks.startDate | The task start date. | unknown |
 | Tasks.completedDate | The task completed date. | unknown |
 | Tasks.dueDate | The task due date (SLA). | unknown |
-| Tasks.parentPlaybookID | The task parent playbook ID (in case the task is part of sub-playbook). | unknown |
+| Tasks.parentPlaybookID | The task parent playbook ID (in case the task is part of a sub-playbook). | unknown |
 | Tasks.completedBy | The task completed by (username). | string |
