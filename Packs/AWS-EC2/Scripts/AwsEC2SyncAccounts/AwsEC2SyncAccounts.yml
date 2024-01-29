@@ -1,0 +1,22 @@
+args:
+- description: The name of the AWS - EC2 instance integration to update.
+  name: ec2_instance_name
+  required: true
+- description: The name of the AWS - Organizations instance to collect account from. If not provided, the primary instance will be used.
+  name: org_instance_name
+comment: Update an AWS - EC2 instance with a list of accounts in an AWS organization, which will allow EC2 commands to run in all of them.
+commonfields:
+  id: AwsEC2SyncAccounts
+  version: -1
+enabled: true
+name: AwsEC2SyncAccounts
+outputs: []
+script: '-'
+tags:
+- Amazon Web Services
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.13.83255
+runas: DBotWeakRole
+fromversion: 6.10.0

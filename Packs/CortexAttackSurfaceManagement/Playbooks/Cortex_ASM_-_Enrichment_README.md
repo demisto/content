@@ -24,10 +24,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* GridFieldSetup
-* GetTime
-* InferWhetherServiceIsDev
 * Sleep
+* GetTime
+* GridFieldSetup
+* InferWhetherServiceIsDev
 
 ### Commands
 
@@ -41,6 +41,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | RemoteIP | IP address of service | alert.remoteip | Optional |
+| AWSAssumeRoleName | If assuming roles for AWS, this is the name of the role to assume \(should be the same for all organizations\). |  | Optional |
 
 ## Playbook Outputs
 

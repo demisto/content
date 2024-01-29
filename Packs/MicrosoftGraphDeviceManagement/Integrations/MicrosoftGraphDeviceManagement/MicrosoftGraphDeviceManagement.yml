@@ -349,6 +349,22 @@ script:
       description: Indicates the threat state of a device when a Mobile Threat Defense partner is in use by the account and device. Read Only. Possible values are unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity, unresponsive, compromised, misconfigured.
       type: String
   - arguments:
+    - description: The ID of the managed device to be fetched. Can be retrieved using the msgraph-list-managed-devices command.
+      name: device_id
+      required: true
+    description: Get the managed device physical memory bytes.
+    name: msgraph-get-managed-device-physical-memory-by-id
+    outputs:
+    - contextPath: MSGraphDeviceManagement.Device.id
+      description: The ID of the managed device.
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.physicalMemoryInBytes
+      description: The correct value of ID of the managed device.
+      type: String
+    - contextPath: MSGraphDeviceManagement.Device.deviceName
+      description: Name of the device.
+      type: String
+  - arguments:
     - description: The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command).
       name: device_id
       required: true
@@ -960,7 +976,7 @@ script:
     execution: false
     name: msgraph-device-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.82686
+  dockerimage: demisto/crypto:1.0.0.85869
   script: ''
   subtype: python3
   type: python

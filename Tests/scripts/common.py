@@ -1,9 +1,14 @@
 import json
 from datetime import datetime, timedelta
+import json
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import requests
+from dateutil import parser
+from gitlab import Gitlab
 import requests
 from dateutil import parser
 from gitlab import Gitlab
@@ -14,6 +19,9 @@ from gitlab.v4.objects.pipelines import ProjectPipeline
 from gitlab.v4.objects.commits import ProjectCommit
 from datetime import datetime, timedelta
 from dateutil import parser
+
+from gitlab.v4.objects.pipelines import ProjectPipeline
+from gitlab.v4.objects.commits import ProjectCommit
 
 
 CONTENT_NIGHTLY = 'Content Nightly'
@@ -64,8 +72,9 @@ FAILED_TO_MSG = {
     False: "succeeded",
 }
 
-# This is the github username of the bot that pushes contributions and docker updates to the content repo.
+# This is the github username of the bot (and its reviewer) that pushes contributions and docker updates to the content repo.
 CONTENT_BOT = 'content-bot'
+CONTENT_BOT_REVIEWER = 'github-actions[bot]'
 
 
 def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
@@ -233,16 +242,22 @@ def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
 
 def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
                               look_back_hours: int) -> tuple[list[ProjectPipeline], list[ProjectCommit]]:
+def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
+                              look_back_hours: int):
     """
+    Get all pipelines and commits on the master branch in the last X hours.
+    The commits and pipelines are in order of creation time.
     Get all pipelines and commits on the master branch in the last X hours.
     The commits and pipelines are in order of creation time.
     Args:
         gitlab_client - the gitlab instance
+        gitlab_client - the gitlab instance
         project_id - the id of the project to query
         look_back_hours - the number of hours to look back for commits and pipeline
     Return:
-        a list of gitlab pipelines and a list of gitlab commits in ascending order
+        a list of gitlab pipelines and a list of gitlab commits in ascending order (as the way it is in the UI)
     """
+    project = gitlab_client.projects.get(project_id)
     project = gitlab_client.projects.get(project_id)
 
     # Calculate the timestamp for look_back_hours ago
@@ -251,6 +266,7 @@ def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
 
     commits = project.commits.list(all=True, since=time_threshold, order_by='updated_at', sort='asc')
     pipelines = project.pipelines.list(all=True, updated_after=time_threshold, ref='master',
+                                       source='push', order_by='id', sort='asc')
                                        source='push', order_by='id', sort='asc')
 
     return pipelines, commits
@@ -268,14 +284,18 @@ def get_person_in_charge(commit):
         pr: The GitHub PR link for the Gitlab commit.
     """
     name = commit.author_name
-    pr_number = commit.title.split()[-1][2:-1]
-    pr = f"https://github.com/demisto/content/pull/{pr_number}"
-    return name, pr
+    # pr number is always the last id in the commit title, starts with a number sign, may or may not be in parenthesis.
+    pr_number = commit.title.split("#")[-1].strip("()")
+    if pr_number.isnumeric():
+        pr = f"https://github.com/demisto/content/pull/{pr_number}"
+        return name, pr
+    else:
+        return None, None
 
 
-def are_pipelines_in_order(current_pipeline:ProjectPipeline, previous_pipeline: ProjectPipeline)-> bool:
+def are_pipelines_in_order(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool:
     """
-    This function checks if the current pipeline was created after the previous pipeline, to avoid rare conditions 
+    This function checks if the current pipeline was created after the previous pipeline, to avoid rare conditions
     that pipelines are not in the same order as the commits.
     Args:
         current_pipeline: The current pipeline object.
@@ -283,18 +303,18 @@ def are_pipelines_in_order(current_pipeline:ProjectPipeline, previous_pipeline: 
     Returns:
         bool
     """
-    
+
     previous_pipeline_timestamp = parser.parse(previous_pipeline.created_at)
     current_pipeline_timestamp = parser.parse(current_pipeline.created_at)
     return current_pipeline_timestamp > previous_pipeline_timestamp
 
 
-def is_pivot(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline)-> bool | None:
+def is_pivot(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool | None:
     """
     Is the current pipeline status a pivot from the previous pipeline status.
     Args:
         current_pipeline: The current pipeline object.
-        previous_pipeline: The previous pipeline object.   
+        previous_pipeline: The previous pipeline object.
     Returns:
         True status changed from success to failed
         False if the status changed from failed to success
@@ -314,11 +334,11 @@ def get_reviewer(pr_url: str) -> str | None:
     approved_reviewer = None
     try:
         # Extract the owner, repo, and pull request number from the URL
-        _1, _2,_3, repo_owner, repo_name,_4, pr_number = pr_url.split("/")  
+        _, _, _, repo_owner, repo_name, _, pr_number = pr_url.split("/")
 
         # Get reviewers
         reviews_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/reviews"
-        reviews_response = requests.get(reviews_url, verify=False)
+        reviews_response = requests.get(reviews_url)
         reviews_data = reviews_response.json()
 
         # Find the reviewer who provided approval
@@ -331,54 +351,41 @@ def get_reviewer(pr_url: str) -> str | None:
     return approved_reviewer
 
 
-def get_slack_user_name(name: str, name_mapping_path: str) -> str:
+def get_slack_user_name(name: str | None, name_mapping_path: str) -> str:
     with open(name_mapping_path) as map:
         mapping = json.load(map)
-    # If the name is 'github-actions[bot]' (docker image update bot reviewer)  return the owner of that bot.
-        if name == 'github-actions[bot]':
+    # If the name is the name of the 'docker image update bot' reviewer - return the owner of that bot.
+        if name == CONTENT_BOT_REVIEWER:
             return mapping["docker_images"]["owner"]
         else:
             return mapping["names"].get(name, name)
 
 
-def get_commit_by_sha(commit_sha: str, list_of_commits: list) -> ProjectCommit | None:
+def get_commit_by_sha(commit_sha: str, list_of_commits: list[ProjectCommit]) -> ProjectCommit | None:
     return next((commit for commit in list_of_commits if commit.id == commit_sha), None)
 
 
-def get_pipeline_by_commit(commit, list_of_pipelines):
+def get_pipeline_by_commit(commit: ProjectCommit, list_of_pipelines: list[ProjectPipeline]) -> ProjectPipeline | None:
     return next((pipeline for pipeline in list_of_pipelines if pipeline.sha == commit.id), None)
 
-def create_shame_message(current_commit: ProjectCommit, pipeline_changed_status: bool, name_mapping_path: str)-> tuple[str, str, str]:
+
+def create_shame_message(current_commit: ProjectCommit,
+                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str, str] | None:
     """
     Create a shame message for the person in charge of the commit.
     """
     name, pr = get_person_in_charge(current_commit)
-    if name == CONTENT_BOT:
-        name = get_reviewer(pr)
-    name = get_slack_user_name(name, name_mapping_path)
-    msg = "broke" if pipeline_changed_status else "fixed"
-    color = "danger" if pipeline_changed_status else "good"
-    emoji = ":cry:" if pipeline_changed_status else ":muscle:"
-    shame_message = (f"Hi @{name},  You {msg} the build! {emoji} ",
-                        f" That was done in this {slack_link(pr,'PR.')}", color)
-    return shame_message
+    if name and pr:
+        if name == CONTENT_BOT:
+            name = get_reviewer(pr)
+        name = get_slack_user_name(name, name_mapping_path)
+        msg = "broke" if pipeline_changed_status else "fixed"
+        color = "danger" if pipeline_changed_status else "good"
+        emoji = ":cry:" if pipeline_changed_status else ":muscle:"
+        return (f"Hi @{name},  You {msg} the build! {emoji} ",
+                f" That was done in this {slack_link(pr,'PR.')}", color)
+    return None
 
 
 def slack_link(url: str, text: str) -> str:
     return f"<{url}|{text}>"
-
-
-def was_message_already_sent(commit_index: int, list_of_commits: list, list_of_pipelines: list) -> bool:
-    """
-    Check if a message was already sent for newer commits, this is possible if pipelines of later commits, finished before the pipeline of the current commit.
-    """
-    for index in reversed(range(1, commit_index)):
-        # the list of commits in in ascending order, newer commits are first
-        current_commit = list_of_commits[index-1]
-        previous_commit = list_of_commits[index]
-        current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
-        previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
-        # in rare cases some commits have no pipeline
-        if current_pipeline and previous_pipeline and (is_pivot(current_pipeline, previous_pipeline)is not None):
-            return True
-    return False
