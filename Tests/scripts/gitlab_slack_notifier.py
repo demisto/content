@@ -561,6 +561,7 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
+    computed_slack_channel = "dmst-build-test"
     if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
         # We check if the previous build failed and this one passed, or wise versa.
         list_of_pipelines, list_of_commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
@@ -574,6 +575,12 @@ def main():
                 previous_commit = list_of_commits[current_commit_index + 1]
                 current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
                 previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
+                special_list = [current_commit]
+                while not previous_pipeline:
+                    previous_to_previus_commit = list_of_commits[current_commit_index + 2]
+                    previous_pipeline = get_pipeline_by_commit(previous_to_previus_commit, list_of_pipelines)
+                    special_list.append(previous_to_previus_commit)
+                    current_commit_index += 1
                # If we already sent a shame message for newer commits, we don't want to send another one for older commits.
                 if not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines):
                     pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
@@ -590,9 +597,8 @@ def main():
                             pipeline_changed_status = is_pivot(current_pipeline=next_pipeline, previous_pipeline=current_pipeline)
                     if pipeline_changed_status:
                         shame_message=create_shame_message(current_commit, pipeline_changed_status, options.name_mapping_path)
-                computed_slack_channel = "test_slack_notifier_when_master_is_broken"
-        else:
-            computed_slack_channel = "dmst-build-test"
+                        computed_slack_channel = "test_slack_notifier_when_master_is_broken"
+            
     slack_msg_data, threaded_messages = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request,
                                                             shame_message)
 
