@@ -250,7 +250,7 @@ def enrich_events_with_triage_item(
     return alert_ids_to_triage_ids, incident_ids_to_triage_ids
 
 
-def get_mitre_attack_ids(_dict: dict, mitre_ids: Optional[set] = None) -> list[str]:
+def get_mitre_attack_ids(_dict: dict, mitre_ids: Optional[set] = None) -> set[str]:
     if not mitre_ids:
         mitre_ids = set()
 
@@ -260,9 +260,9 @@ def get_mitre_attack_ids(_dict: dict, mitre_ids: Optional[set] = None) -> list[s
         elif isinstance(value, list):
             for item in value:
                 if isinstance(item, dict):
-                    get_mitre_attack_ids(item, mitre_ids=mitre_ids)
+                    return get_mitre_attack_ids(item, mitre_ids=mitre_ids)
 
-    return list(mitre_ids)
+    return mitre_ids
 
 
 def enrich_events_with_mitre_attack_mapping(alert_incident: dict) -> tuple[list[str], list[str], list[str]]:
@@ -275,7 +275,7 @@ def enrich_events_with_mitre_attack_mapping(alert_incident: dict) -> tuple[list[
     return (
         list(mitre_tactic_names),
         list(mitre_technique_names),
-        get_mitre_attack_ids(alert_incident.get("mitre-attack-mapping") or {})
+        list(get_mitre_attack_ids(alert_incident.get("mitre-attack-mapping") or {}))
     )
 
 
