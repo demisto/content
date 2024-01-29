@@ -27,7 +27,7 @@ def main():
 
     options = options_handler()
     release_branch_name = options.release_branch_name
-
+    release_branch_name = '1.25.3'  # TODO: remove
     # initialize timer
     start = time.time()
     elapsed: float = 0

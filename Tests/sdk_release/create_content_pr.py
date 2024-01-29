@@ -76,13 +76,13 @@ def main():
     # prepare the inputs for trigger update-demisto-sdk-version workflow
     inputs = {
         'reviewer': reviewer,
-        'release_version': release_branch_name,
+        'release_version': '1.25.3',
         'is_draft': is_draft,
         'release_changes': get_changelog_text(release_branch_name)
     }
 
     data = {
-        'ref': 'master',
+        # 'ref': 'master',
         'ref': 'sdk-release',
         'inputs': inputs
     }
