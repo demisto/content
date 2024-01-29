@@ -1,5 +1,5 @@
 fromversion: 6.10.0
-id: Forcepoint_NGFW_5 ModelingRule
+id: Forcepoint_NGFW_5_ModelingRule
 name: Forcepoint NGFW 5 Modeling Rule
 rules: ''
 schema: ''
