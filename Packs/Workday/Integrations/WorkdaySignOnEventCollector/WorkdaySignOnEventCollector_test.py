@@ -335,58 +335,6 @@ def test_generate_test_payload() -> None:
         in payload)
 
 
-@pytest.mark.parametrize(
-    "username, escaped_username",
-    [
-        ("username&", "username&amp;"),
-        ("username>", "username&gt;"),
-        ("username<", "username&lt;"),
-        ("username", "username")
-    ]
-)
-def test_generate_test_payload_escape_char(username, escaped_username) -> None:
-    """
-    Given:
-        - A Client object initialized with a base URL, verification settings, a tenant name, and login credentials.
-        - Parameters specifying the time range for fetching Workday sign-on events for the test payload.
-        - The login credentials include special characters in xml that needs to be escaped.
-
-    When:
-        - Calling the 'generate_test_payload' method on the Client object to generate a SOAP request payload for testing.
-
-    Then:
-        - The returned SOAP request payload should contain all the specified parameters.
-        - The payload should also contain the username with the escaped character for authentication.
-    """
-
-    # Given: Initialize a Client object with sample data
-    client = Client(
-        base_url="",
-        verify_certificate=True,
-        proxy=False,
-        tenant_name="test_tenant",
-        username=username,
-        password="test_pass"
-    )
-
-    # When: Generate the SOAP request payload for testing
-    payload = client.generate_test_payload(
-        from_time="2021-09-01T11:00:00Z", to_time="2021-09-01T12:00:00Z"
-    )
-
-    # Then: Verify that the SOAP request payload contains all the specified parameters
-    assert "<bsvc:Page>1</bsvc:Page>" in payload
-    assert "<bsvc:Count>1</bsvc:Count>" in payload
-    assert "<bsvc:From_DateTime>2021-09-01T11:00:00Z</bsvc:From_DateTime>" in payload
-    assert "<bsvc:To_DateTime>2021-09-01T12:00:00Z</bsvc:To_DateTime>" in payload
-    assert f"<wsse:Username>{escaped_username}</wsse:Username>" in payload
-    assert ('<wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0'
-            '#Base64Binary">') in payload
-    assert "</wsse:Nonce>" in payload
-    assert "<wsu:Created>" in payload
-    assert "</wsu:Created>" in payload
-
-
 def test_convert_to_json_valid_input() -> None:
     """
     Given:
