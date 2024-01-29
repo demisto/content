@@ -170,7 +170,7 @@ def test_no_iocs_returned_from_search_indicators(mocker):
         Ensure no iocs were returned.
     """
 
-    mocker.patch.object(demisto, "args", return_value=["Test.com"])
+    mocker.patch.object(demisto, "args", return_value={'value': ["Test.com"]})
     mocker.patch.object(demisto, "searchIndicators", return_value={'iocs': None})
     mocker.patch.object(GetIndicatorDBotScoreFromCache, "return_results")
 
@@ -179,4 +179,3 @@ def test_no_iocs_returned_from_search_indicators(mocker):
 
     indicators_results = return_results_calls[0][0][0]["Contents"]
     assert {i["Indicator"] for i in indicators_results} == {}
-
