@@ -926,7 +926,8 @@ def detonate_sample_command():
         response = da.detonate_sample(sample_sha1=sha1, platform=platform)
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, message: {e.response_object.text}")
+            return_error(f"status code: {e.response_object.status_code}, "
+                         f"message: {e.response_object.text}")  # type: ignore[attr-defined]
 
         return_error(str(e))
 
@@ -967,7 +968,8 @@ def sample_dynamic_analysis_results_command():
         )
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, message: {e.response_object.text}")
+            return_error(f"status code: {e.response_object.status_code}, "
+                         f"message: {e.response_object.text}")  # type: ignore[attr-defined]
 
         return_error(str(e))
 
@@ -1034,7 +1036,8 @@ def detonate_url_command():
         response = da.detonate_url(url_string=url, platform=platform)
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, message: {e.response_object.text}")
+            return_error(f"status code: {e.response_object.status_code}, "
+                         f"message: {e.response_object.text}")  # type: ignore[attr-defined]
 
         return_error(str(e))
 
@@ -1048,7 +1051,7 @@ def detonate_url_output(response_json, url):
     report_base = response_json.get("rl", {})
 
     markdown = f"""## ReversingLabs submit URL {url} for Dynamic Analysis\n **Status**: {report_base.get("status")}
-    **Requested UR**: {report_base.get("url")}
+    **Requested URL**: {report_base.get("url")}
     **URL SHA1**: {report_base.get("sha1")}
     **URL BASE64**: {report_base.get("url_base64")}
     **Analysis ID**: {report_base.get("analysis_id")}
@@ -1081,28 +1084,37 @@ def url_dynamic_analysis_results_command():
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, message: {e.response_object.text}")
+            return_error(f"status code: {e.response_object.status_code}, "
+                         f"message: {e.response_object.text}")  # type: ignore[attr-defined]
 
         return_error(str(e))
 
     response_json = response.json()
-    results, file_results = url_dynamic_analysis_results_output(response_json=response_json, passed_url=url)
+    results, file_results = url_dynamic_analysis_results_output(
+        response_json=response_json,
+        passed_url=url,
+        passed_sha1=sha1
+    )
 
     return_results([results, file_results])
 
 
-def url_dynamic_analysis_results_output(response_json, passed_url=None):
+def url_dynamic_analysis_results_output(response_json, passed_url=None, passed_sha1=None):
     url = response_json.get("rl", {}).get("report", {}).get("url", passed_url)
+    sha1 = response_json.get("rl", {}).get("report", {}).get("sha1", passed_sha1)
     classification = response_json.get("rl", {}).get("report", {}).get("classification")
-    url_base64 = response_json.get("rl", {}).get("report", {}).get("url_base54")
-    sha1 = response_json.get("rl", {}).get("report", {}).get("sha1")
     last_analysis = response_json.get("rl", {}).get("report", {}).get("last_analysis")
 
-    markdown = f"""## ReversingLabs URL Dynamic Analysis output for URL {url}\n **Classification**: {classification}
-    **URL SHA1**: {sha1}
-    **URL BASE64**: {url_base64}
-    **Last analysis**: {last_analysis}\n ### Full report is returned as JSON in a downloadable file
-    """
+    markdown = f"## ReversingLabs URL Dynamic Analysis output for URL\n **Classification**: {classification}\n"
+
+    if last_analysis:
+        markdown = markdown + f"**Last analysis**: {last_analysis}\n"
+
+    if url:
+        markdown = markdown + f"**Requested URL**: {url}\n"
+
+    if sha1:
+        markdown = markdown + f"**URL SHA1**: {sha1}"
 
     d_bot_score = classification_to_score(classification.upper())
 
