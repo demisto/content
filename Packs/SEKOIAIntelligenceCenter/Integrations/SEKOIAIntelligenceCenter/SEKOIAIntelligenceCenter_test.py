@@ -422,6 +422,7 @@ def test_reputation_command_unknown_indicator(
     # The first (command_results[0]) is the one containing the reputation output
     assert command_results[0].indicator.dbot_score.score == Common.DBotScore.NONE
     assert command_results[0].indicator.dbot_score.indicator_type == expected_dbot_type
+    assert command_results[0].readable_output == "No results found."
 
     # The second (command_results[1]) is the one containing the command output
     assert command_results[1].outputs_prefix == "SEKOIAIntelligenceCenter.IndicatorContext"

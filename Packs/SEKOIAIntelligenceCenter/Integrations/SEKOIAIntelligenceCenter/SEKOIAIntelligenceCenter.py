@@ -471,7 +471,12 @@ def extract_indicators(indicator: dict, indicator_context: dict) -> list:
             "name": indicator["value"],
             "x_ic_observable_types": [indicator["type"]],
         }
+
         object_reputation = get_stix_object_reputation(stix_bundle={}, stix_object=stix_object)
+
+        if object_reputation:
+            object_reputation.readable_output = "No results found."
+
         return [object_reputation]
 
     # Indicator context for known indicator
