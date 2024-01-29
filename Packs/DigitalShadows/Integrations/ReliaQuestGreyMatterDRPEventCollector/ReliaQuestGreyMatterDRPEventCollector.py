@@ -262,8 +262,15 @@ def enrich_events_with_incident_or_alert_metadata(
     """
     for alert_incident in alerts_incidents:
         _id = alert_incident.get("id")
+        mitre_tactic_names = list(
+            {
+                tactic.get("name") for tactic in (alert_incident.get("mitre-attack-mapping") or {}).get("tactics") or []
+            }
+        )
         for event in triage_item_ids_to_events[event_ids_to_triage_ids[_id]]:  # type: ignore[index]
             event[event_type] = alert_incident
+            if mitre_tactic_names:
+                event["mitre_tactics"] = mitre_tactic_names
         for asset in alert_incident.get("assets") or []:
             if asset_id := asset.get("id"):
                 if asset_id not in event_ids_to_triage_ids:
