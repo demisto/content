@@ -118,7 +118,7 @@ def main():  # pragma: no cover
         logger.info(f"Dumping the diff to an artifact file: {diff_file}")
         diff_file.write_text(json.dumps(diff, indent=4))
     except Exception as e:
-        logger.warning(f"Skipping - {e}")
+        logger.warning(f"Skipping pack dependencies calculation: \n{e}")
 
 
 if __name__ == '__main__':

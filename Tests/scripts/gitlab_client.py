@@ -96,7 +96,7 @@ class GitlabClient:
             errors = []
             for pipeline in pipelines:
                 pid = pipeline["id"]
-                if job_id := self.get_job_id_by_name(pipeline["id"], job_name):
+                if job_id := self.get_job_id_by_name(pid, job_name):
                     try:
                         bundle_path = self.download_and_extract_artifacts_bundle(job_id)
                         return (bundle_path / artifact_filepath).read_text()
