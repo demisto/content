@@ -3612,6 +3612,15 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "CreateIncidents",
+            "playbookID": "DBotFindSimilarIncidentsByIndicators - Test",
+            "instance_names": [
+                "Create Test Incidents - Phishing Mock"
+            ],
+            "timeout": 300,
+            "is_mockable": false
+        },
+        {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout": 60000,
             "fromversion": "6.1.0",
