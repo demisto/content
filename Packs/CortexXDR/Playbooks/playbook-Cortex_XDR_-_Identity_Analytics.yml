@@ -1,0 +1,1763 @@
+description: |
+  The `Cortex XDR - Identity Analytics` playbook is designed to handle Cortex XDR Identity Analytics alerts and executes the following:
+
+  Analysis:
+  - Enriches the IP and the account, providing additional context and information about these indicators.
+
+  Verdict:
+  - Determines the appropriate verdict based on the data collected from the enrichment phase.
+
+  Investigation:
+  - Checks for related XDR alerts to the user by Mitre tactics to identify malicious activity.
+  - Checks for specific arguments for malicious usage from Okta using the 'Okta User Investigation' sub-playbook.
+  - Checks for specific arguments for malicious usage from Azure using the 'Azure User Investigation' sub-playbook.
+
+  Verdict Handling:
+  - Handles malicious alerts by initiating appropriate response actions, including blocking malicious IP and revoking or clearing user's sessions.
+  - Handles non-malicious alerts identified during the investigation.
+
+  The playbook is used as a sub-playbook in ‘Cortex XDR Alerts Handling v2’.
+id: Cortex XDR - Identity Analytics
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - IPAddress
+  - Username
+  - RelatedAlertsThreshold
+  - FailedLogonThreshold
+  - OktaSuspiciousEventsThreshold
+  - AutoRemediation
+  - IAMRemediationType
+  - alert_id
+  - AlertName
+  name: General (Inputs group)
+inputs:
+- description: IP Address from the XDR Alert.
+  key: IPAddress
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: User name.
+  key: Username
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |
+    This is the minimum threshold for XDR related alerts, based on MITRE tactics used to identify malicious activity by the user in the last 1 day.
+  key: RelatedAlertsThreshold
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "5"
+- description: |-
+    This is the minimum threshold for user login failures within the last 1 day.
+    example: If this input is set to '30', and the 'Okta - User Investigation' or the 'Azure - User Investigation' sub-playbooks have found 31 failed login attempts - It will classify this behavior as malicious activity.
+    The default value is '30'.
+  key: FailedLogonThreshold
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "30"
+- description: |-
+    This is the minimum threshold for suspicious Okta activity events by the user in the last 1 day.
+    example: If this input is set to '5', and the 'Okta - User Investigation' sub-playbooks have found 6 events of suspicious activity by the user - It will classify this behavior as malicious activity.
+    The default value is '5'.
+  key: OktaSuspiciousEventsThreshold
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "5"
+- description: |-
+    Whether to execute the remediation flow automatically.
+    Possible values are: "True" and "False".
+  key: AutoRemediation
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
+- description: |
+    The response on 'Cloud Credentials Rotation - Azure' sub-playbook provides the following remediation actions using MSGraph Users:
+  key: IAMRemediationType
+  playbookInputQuery:
+  required: false
+  value:
+    simple: Revoke
+- description: Alert ID.
+  key: alert_id
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Alert Name.
+  key: AlertName
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Cortex XDR - Identity Analytics
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ef865a2c-4ee4-42dd-8efe-be6e3b5cc202
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: ef865a2c-4ee4-42dd-8efe-be6e3b5cc202
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -430
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: addb2b17-14c9-46e4-8677-8989f55ad66a
+      iscommand: false
+      name: Analysis
+      type: title
+      version: -1
+      description: ''
+    taskid: addb2b17-14c9-46e4-8677-8989f55ad66a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -280
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: tags
+                root: PaloAltoNetworksXDR.Incident.alerts
+          operator: containsString
+          right:
+            value:
+              simple: Azure
+      label: "yes"
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if the resource log is Azure.
+      id: e51ee96a-1c2c-4cb8-8697-a406c1b38dda
+      iscommand: false
+      name: Is the resource log is Azure?
+      type: condition
+      version: -1
+    taskid: e51ee96a-1c2c-4cb8-8697-a406c1b38dda
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -140
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Source IP
+      output:
+        simple: ${IP.Address}
+    - incidentfield: ASN
+      output:
+        simple: ${IP.ASN}
+    - incidentfield: Country Code
+      output:
+        simple: ${IP.Geo.Country}
+    - incidentfield: IP Reputation
+      output:
+        complex:
+          accessor: Score
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: IP
+          root: DBotScore
+    - incidentfield: Detected IPs
+      output:
+        complex:
+          accessor: Address
+          root: IP
+          transformers:
+          - operator: uniq
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IPAddress
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Checks the reputation of an IP address.
+      id: 03e701e9-8e46-4e06-86b6-636e6201061b
+      iscommand: true
+      name: IP Enrichment
+      script: '|||ip'
+      type: regular
+      version: -1
+    taskid: 03e701e9-8e46-4e06-86b6-636e6201061b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": -140
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "2"
+            operator: Cut
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: inputs.Username
+            operator: append
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+        - Microsoft Graph User
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+        - Cortex XDR (account enrichment and reputation)
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+      id: ce0268ab-fcbf-4352-81bf-e30101dee854
+      iscommand: false
+      name: Account Enrichment - Generic v2.1
+      playbookId: Account Enrichment - Generic v2.1
+      type: playbook
+      version: -1
+    taskid: ce0268ab-fcbf-4352-81bf-e30101dee854
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": -140
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 135b1582-a41f-45bd-8197-2424a96f309b
+      iscommand: false
+      name: Verdict
+      type: title
+      version: -1
+      description: ''
+    taskid: 135b1582-a41f-45bd-8197-2424a96f309b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cloudProvider:
+        complex:
+          accessor: auth_server
+          root: JsonObject.raw_abioc.event
+          transformers:
+          - operator: uniq
+      username:
+        complex:
+          accessor: auth_identity
+          root: JsonObject.raw_abioc.event
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: This playbook is responsible for collecting and enriching data on Identity Access Management (IAM) in cloud environments (AWS, Azure, and GCP).
+      id: a4b86401-f970-4fd5-88b0-6cdac93953c4
+      iscommand: false
+      name: Cloud IAM Enrichment - Generic
+      playbookId: Cloud IAM Enrichment - Generic
+      type: playbook
+      version: -1
+    taskid: a4b86401-f970-4fd5-88b0-6cdac93953c4
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: IP
+                root: DBotScore
+          operator: isEqualString
+          right:
+            value:
+              simple: "3"
+        - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: PaloAltoNetworksXDR.RiskyUser.risk_level
+          operator: isEqualString
+          right:
+            value:
+              simple: HIGH
+      label: "yes"
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if malicious evidence is found based on enrichment data.
+      id: 90e257aa-4ab7-44bd-8633-5cb9b57e0164
+      iscommand: false
+      name: Found malicious evidence based on enrichment data?
+      type: condition
+      version: -1
+    taskid: 90e257aa-4ab7-44bd-8633-5cb9b57e0164
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+      - "33"
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c1d72706-a600-4e93-86aa-6c1272e4ff0d
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+      description: ''
+    taskid: c1d72706-a600-4e93-86aa-6c1272e4ff0d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 870
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AzureSearchTime:
+        simple: ago(7d)
+      MfaAttemptThreshold:
+        simple: "10"
+      Username:
+        complex:
+          accessor: auth_identity
+          root: JsonObject.raw_abioc.event
+          transformers:
+          - operator: uniq
+      failedLogonThreshold:
+        simple: "20"
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        This playbook performs an investigation on a specific user in Azure environments, using queries and logs from Azure Log Analytics to locate the following activities performed by the user:
+        - Script-based user agent usage
+        - Administrative user activities
+        - Security rules and policies changes
+        - Failed login attempt
+        - MFA failed login attempt
+        - Login attempt from an uncommon country
+        - Anomalies activities
+        - Risky users
+        - Uncommon high volume of actions
+        - Action uncommonly performed by the user
+      id: a192dde2-2de2-42d6-8584-2bb4069088ea
+      iscommand: false
+      name: Azure - User Investigation
+      playbookId: Azure - User Investigation
+      type: playbook
+      version: -1
+    taskid: a192dde2-2de2-42d6-8584-2bb4069088ea
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1010
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: AzureScriptBasedUserAgentEvents
+          operator: isNotEmpty
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: AzureFailLoginCount
+          operator: greaterThan
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.FailedLogonThreshold
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: SuspiciousUserAgent
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: NumOfOktaSuspiciousActivities
+          operator: greaterThan
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.OktaSuspiciousEventsThreshold
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: NumOfFailedLogon
+          operator: greaterThan
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.FailedLogonThreshold
+        - left:
+            iscontext: true
+            value:
+              simple: NumOfRelatedAlerts
+          operator: greaterThan
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.RelatedAlertsThreshold
+      label: "yes"
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determine if the activity is malicious based on the investigation findings.
+      id: e889fef1-f79e-4d52-8059-6447eb6ed7e1
+      iscommand: false
+      name: Found any malicious user activity?
+      type: condition
+      version: -1
+    taskid: e889fef1-f79e-4d52-8059-6447eb6ed7e1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 1340
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: An analyst's decision is required to determine whether it is a malicious or non-malicious activity.
+      cc:
+      format: ""
+      methods: []
+      replyOptions:
+      - Malicious
+      - Non-Malicious
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      Malicious:
+      - "16"
+      Non-Malicious:
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: baa28992-f72e-4c5f-8e90-5462e473106d
+      iscommand: false
+      name: Analyst Decision
+      description: An analyst’s decision is required to determine whether it is a malicious or non-malicious activity.
+      type: condition
+      version: -1
+    taskid: baa28992-f72e-4c5f-8e90-5462e473106d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 1560
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 90ea8626-7183-4c9c-84c5-d490649668e6
+      iscommand: false
+      name: No Malicious activity identified
+      type: title
+      version: -1
+      description: ''
+    taskid: 90ea8626-7183-4c9c-84c5-d490649668e6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 1740
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      verdict:
+        simple: Non-Malicious
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 31e31e62-739d-412e-8993-7ff2d9ba736c
+      iscommand: true
+      name: Set incident Verdict
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 31e31e62-739d-412e-8993-7ff2d9ba736c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 2320
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d2604f19-0e0d-4c0b-8f4e-46629aa84e28
+      iscommand: false
+      name: Malicious Activity identified
+      type: title
+      version: -1
+      description: ''
+    taskid: d2604f19-0e0d-4c0b-8f4e-46629aa84e28
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1740
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: User Risk Level
+      output:
+        simple: ${PaloAltoNetworksXDR.RiskyUser.risk_level}
+    - incidentfield: Failed Logon Events
+      output:
+        complex:
+          root: AzureFailLoginCount
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: NumOfOktaFailedLogon
+            operator: append
+    - incidentfield: Email
+      output:
+        simple: ${ActiveDirectory.Users.mail}
+    - incidentfield: Account Member Of
+      output:
+        simple: ${ActiveDirectory.Users.memberOf}
+    - incidentfield: Account Status
+      output:
+        simple: ${Account.Status}
+    - incidentfield: Cloud Account ID
+      output:
+        simple: ${MSGraphUser.ID}
+    - incidentfield: Account ID
+      output:
+        complex:
+          accessor: ID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Account.ID
+              operator: notContainsGeneral
+              right:
+                value:
+                  simple: "="
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: Account.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Okta
+          root: Account
+    - incidentfield: Manager Email Address
+      output:
+        simple: ${UserManagerEmail}
+    - incidentfield: Alert Name
+      output:
+        simple: ${inputs.AlertName}
+    - incidentfield: Detected User
+      output:
+        simple: ${inputs.Username}
+    - incidentfield: Username
+      output:
+        simple: ${inputs.Username}
+    - incidentfield: XDR Alert Search Results
+      output:
+        simple: ${PaloAltoNetworksXDR.Alert}
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      verdict:
+        simple: Malicious
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: c3879797-d655-4256-8203-fb4fc80d5841
+      iscommand: true
+      name: Set incident Verdict
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: c3879797-d655-4256-8203-fb4fc80d5841
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1890
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6bd47335-240d-4bba-88e9-0eefce8b8aea
+      iscommand: false
+      name: Remediation
+      type: title
+      version: -1
+      description: ''
+    taskid: 6bd47335-240d-4bba-88e9-0eefce8b8aea
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2050
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.AutoRemediation
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Whether to perform automatic remediation actions based on the input’s value. (AutoRemediation)
+      id: 54cf6461-81ef-4d7f-805e-41f5082e6726
+      iscommand: false
+      name: Should perform remediation actions automatically?
+      type: condition
+      version: -1
+    taskid: 54cf6461-81ef-4d7f-805e-41f5082e6726
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2180
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "34"
+      - "27"
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b39cf718-fb84-4dff-8c5e-fa0cb3e2ed05
+      iscommand: false
+      name: Auto Remediation
+      type: title
+      version: -1
+      description: ''
+    taskid: b39cf718-fb84-4dff-8c5e-fa0cb3e2ed05
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2370
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      userId:
+        complex:
+          accessor: ID
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: Account.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Okta
+          root: Account
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+        For more information and examples:
+        https://developer.okta.com/docs/reference/api/users/#user-sessions
+      id: f4cea7e3-11aa-4d81-89fd-919f33f6f1a9
+      iscommand: true
+      name: Okta - Clear user sessions
+      script: '|||okta-clear-user-sessions'
+      type: regular
+      version: -1
+    taskid: f4cea7e3-11aa-4d81-89fd-919f33f6f1a9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 2730
+        }
+      }
+  "22":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: tags
+                root: PaloAltoNetworksXDR.Incident.alerts
+          operator: containsString
+          right:
+            value:
+              simple: Azure
+      - - left:
+            iscontext: true
+            value:
+              simple: MSGraphUser.ID
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Whether to perform cloud remediation actions.
+      id: 48e20d8a-2273-473e-8152-71ac1048deec
+      iscommand: false
+      name: Should Perform Cloud Remediation?
+      type: condition
+      version: -1
+    taskid: 48e20d8a-2273-473e-8152-71ac1048deec
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 2530
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      IAMRemediationType:
+        simple: ${inputs.IAMRemediationType}
+      identityType:
+        simple: IAM
+      userID:
+        simple: ${MSGraphUser.ID}
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        ## **Azure Credentials Rotation Playbook**
+
+        ### **IAM Remediation**
+        Protect your identity and access management:
+        - **Reset Password**: Resets the user password to halt any unauthorized access.
+
+        - **Revoke Session**: Terminates current active sessions to ensure the malicious actor is locked out.
+
+        - **Combo Action**: Resets the password and terminates all active sessions.
+
+        ### **Service Principal Remediation**
+        Guard your applications:
+        - **Password Regeneration**: Generate a new password for the service principal, making sure the old one becomes obsolete.
+      id: a21fdd8c-9e57-4a59-8bc3-5bfdce5d7a4b
+      iscommand: false
+      name: Cloud Credentials Rotation - Azure
+      playbookId: Cloud Credentials Rotation - Azure
+      type: playbook
+      version: -1
+    taskid: a21fdd8c-9e57-4a59-8bc3-5bfdce5d7a4b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 2730
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: fd48c7e6-3043-4d7f-8536-ca6b610eb4c2
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: fd48c7e6-3043-4d7f-8536-ca6b610eb4c2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2930
+        }
+      }
+  "25":
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cbca2254-0769-443c-85e8-8b6b35eeb770
+      iscommand: false
+      name: Manual Remediation
+      type: title
+      version: -1
+      description: ''
+    taskid: cbca2254-0769-443c-85e8-8b6b35eeb770
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 2545
+        }
+      }
+  "27":
+    continueonerrortype: ""
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      Folder:
+        simple: Shared
+      IP:
+        complex:
+          accessor: Indicator
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: IP
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: isEqualString
+              right:
+                value:
+                  simple: "3"
+          root: DBotScore
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "True"
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      id: bf0ca540-08c2-4b81-8cc8-68e83d308a0b
+      iscommand: false
+      name: Block IP - Generic v3
+      playbookId: Block IP - Generic v3
+      type: playbook
+      version: -1
+    taskid: bf0ca540-08c2-4b81-8cc8-68e83d308a0b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2530
+        }
+      }
+  "29":
+    continueonerrortype: ""
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: inputs.alert_id
+      extend-context:
+        simple: alertData=
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns information about each alert ID.
+      id: 63352686-7a00-4344-8fda-800c7c8e0dd2
+      iscommand: true
+      name: Fetch cloud alert extra data
+      script: '|||xdr-get-cloud-original-alerts'
+      type: regular
+      version: -1
+    taskid: 63352686-7a00-4344-8fda-800c7c8e0dd2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+  "31":
+    continueonerrortype: ""
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: alertJson=
+      input:
+        simple: ${alertData.alerts.original_alert_json}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Loads a json from string input, and returns a json object result.
+      id: c2d77809-ddf2-4749-8708-aa5a484d8276
+      iscommand: false
+      name: Load alert JSON
+      script: LoadJSON
+      type: regular
+      version: -1
+    taskid: c2d77809-ddf2-4749-8708-aa5a484d8276
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+  "32":
+    continueonerrortype: ""
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ASN:
+        complex:
+          accessor: ASN
+          root: IP
+          transformers:
+          - operator: uniq
+      LoginCountry:
+        complex:
+          accessor: Country
+          root: IP.Geo
+          transformers:
+          - operator: uniq
+      UserEmail:
+        complex:
+          accessor: Address
+          root: Account.Email
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: This playbook performs an investigation on a specific user, using queries and logs from Okta.
+      id: bc7831e1-a784-4dec-8fd1-0e1eeab5c146
+      iscommand: false
+      name: Okta - User Investigation
+      playbookId: Okta - User Investigation
+      type: playbook
+      version: -1
+    taskid: bc7831e1-a784-4dec-8fd1-0e1eeab5c146
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 1010
+        }
+      }
+  "33":
+    continueonerrortype: ""
+    id: "33"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      EntityType:
+        simple: actor_effective_username
+      HuntCnCTechniques:
+        simple: "False"
+      HuntCollectionTechniques:
+        simple: "False"
+      HuntCredentialAccessTechniques:
+        simple: "False"
+      HuntDefenseEvasionTechniques:
+        simple: "False"
+      HuntDiscoveryTechniques:
+        simple: "False"
+      HuntExecutionTechniques:
+        simple: "False"
+      HuntImpactTechniques:
+        simple: "False"
+      HuntInitialAccessTechniques:
+        simple: "False"
+      HuntLateralMovementTechniques:
+        simple: "False"
+      HuntPersistenceTechniques:
+        simple: "False"
+      HuntPrivilegeEscalationTechniques:
+        simple: "False"
+      HuntReconnaissanceTechniques:
+        simple: "False"
+      RunAll:
+        simple: "True"
+      entityID:
+        complex:
+          root: inputs.Username
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "2"
+            operator: Cut
+      timeRange:
+        simple: 1 day
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        This playbook is part of the Cortex XDR by Palo Alto Networks’ pack. This playbook searches alerts related to specific entities from Cortex XDR, on a given timeframe, based on MITRE tactics.
+        Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
+      id: 8ecccbd5-8eeb-4ca7-8c26-5dbc8b10ad8a
+      iscommand: false
+      name: Cortex XDR - Get entity alerts by MITRE tactics
+      playbookId: Cortex XDR - Get entity alerts by MITRE tactics
+      type: playbook
+      version: -1
+    taskid: 8ecccbd5-8eeb-4ca7-8c26-5dbc8b10ad8a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 1010
+        }
+      }
+  "34":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: state
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Okta v2
+                root: modules
+          operator: isEqualString
+          right:
+            value:
+              simple: active
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: ID
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: Account.Type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Okta
+                root: Account
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      id: 01943894-59fd-4c5b-8480-a37cbc91a7f5
+      iscommand: false
+      name: Is Okta integration availale?
+      type: condition
+      version: -1
+    taskid: 01943894-59fd-4c5b-8480-a37cbc91a7f5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 2530
+        }
+      }
+  "35":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: User Risk Level
+      output:
+        simple: ${PaloAltoNetworksXDR.RiskyUser.risk_level}
+    - incidentfield: Failed Logon Events
+      output:
+        complex:
+          root: AzureFailLoginCount
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: NumOfOktaFailedLogon
+            operator: append
+    - incidentfield: Email
+      output:
+        simple: ${ActiveDirectory.Users.mail}
+    - incidentfield: Account Member Of
+      output:
+        simple: ${ActiveDirectory.Users.memberOf}
+    - incidentfield: Account Status
+      output:
+        simple: ${Account.Status}
+    - incidentfield: Cloud Account ID
+      output:
+        simple: ${MSGraphUser.ID}
+    - incidentfield: Account ID
+      output:
+        complex:
+          accessor: ID
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: Account.Type
+              operator: isEqualString
+              right:
+                value:
+                  simple: Okta
+          - - left:
+                iscontext: true
+                value:
+                  simple: Account.ID
+              operator: notContainsGeneral
+              right:
+                value:
+                  simple: "="
+          root: Account
+    - incidentfield: Manager Email Address
+      output:
+        simple: ${UserManagerEmail}
+    - incidentfield: XDR Alert Search Results
+      output:
+        simple: ${PaloAltoNetworksXDR.Alert}
+    - incidentfield: Alert Name
+      output:
+        simple: ${inputs.AlertName}
+    - incidentfield: Detected User
+      output:
+        simple: ${inputs.Username}
+    - incidentfield: Username
+      output:
+        simple: ${inputs.Username}
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: NumOfRelatedAlerts
+      value:
+        complex:
+          root: ArraySize
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "0"
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 0e6e73ea-df11-40d6-8c09-b0022879ba72
+      iscommand: false
+      name: Set the Number of related alerts
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 0e6e73ea-df11-40d6-8c09-b0022879ba72
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 1180
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_13_#default#": 0.51,
+      "12_16_yes": 0.33,
+      "13_14_Non-Malicious": 0.61,
+      "13_16_Malicious": 0.35,
+      "22_23_yes": 0.44,
+      "22_24_#default#": 0.33,
+      "2_29_yes": 0.44,
+      "34_24_#default#": 0.31,
+      "7_16_yes": 0.2
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3425,
+        "width": 2320,
+        "x": -410,
+        "y": -430
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
