@@ -1,6 +1,6 @@
 {
     "name": "AWS - Security Lake",
-    "description": "test",
+    "description": "Amazon Security Lake is a fully managed security data lake service.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

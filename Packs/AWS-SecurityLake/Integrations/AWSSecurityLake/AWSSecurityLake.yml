@@ -7,14 +7,18 @@ configuration:
   display: Role Arn
   required: false
   type: 0
+  section: Connect
 - name: roleSessionName
   display: Role Session Name
   required: false
   type: 0
+  section: Connect
 - name: sessionDuration
   display: Role Session Duration
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - name: defaultRegion
   display: AWS Default Region
   required: false
@@ -38,34 +42,42 @@ configuration:
   - eu-west-3
   - us-gov-east-1
   - us-gov-west-1
+  section: Connect
 - name: credentials
   display: Access Key
   required: false
   type: 9
   displaypassword: Secret Key
   hiddenusername: false
+  section: Connect
 - name: timeout
   display: Timeout
   required: false
   defaultvalue: 60,10
   type: 0
+  section: Connect
+  advanced: true
   additionalinfo: The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
 - name: retries
   display: Retries
   required: false
   defaultvalue: 5
   type: 0
+  section: Connect
+  advanced: true
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
   defaultvalue: 'false'
   type: 8
+  advanced: true
 - name: proxy
   display: Use system proxy settings
   required: false
   defaultvalue: 'false'
   type: 8
+  advanced: true
 description: "Amazon Security Lake is a fully managed security data lake service."
 display: AWS-SecurityLake
 name: AWS Security Lake
@@ -866,14 +878,14 @@ script:
       defaultValue: ""
       auto: PREDEFINED
       predefined:
-      - 0-Unknown
-      - 1-Informational
-      - 2-Low
-      - 3-Medium
-      - 4-High
-      - 5-Critical
-      - 6-Fatal
-      - 99-Other
+      - Unknown
+      - Informational
+      - Low
+      - Medium
+      - High
+      - Critical
+      - Fatal
+      - Other
     - name: output_location
       description: The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/.
       required: true
@@ -1025,7 +1037,7 @@ script:
       description: List of query results.
       type: List
   - name: aws-security-lake-data-sources-list
-    description: Retrieves a snapshot of the current Region, including whether Amazon Security Lake is enabled for those accounts and which sources Security Lake is collecting data from.
+    description: Retrieves a snapshot of the current Region, including whether Amazon Security Lake is enabled for those accounts and which sources Security Lake is collecting data from. In order to run this command the user must have 'securitylake' permissions.
     deprecated: false
     arguments:
     - name: accounts
@@ -1036,7 +1048,7 @@ script:
       predefined:
       - ""
     - name: limit
-      description: Specifies the maximum number of results to return.
+      description: The maximum limit of accounts for which the static snapshot of the current Region, including enabled accounts and log sources, is retrieved.
       required: false
       isArray: false
       defaultValue: ""
@@ -1102,7 +1114,7 @@ script:
       description: Lists if there are more results available. The value of nextToken is a unique pagination token for each page. Repeat the call using the returned token to retrieve the next page. Keep all other arguments unchanged.
       type: String
   - name: aws-security-lake-data-lakes-list
-    description: Retrieves the Amazon Security Lake configuration object for the specified Amazon Web Services Regions.
+    description: Retrieves the Amazon Security Lake configuration object for the specified Amazon Web Services Regions. In order to run this command the user must have 'securitylake' permissions.
     deprecated: false
     arguments:
     - name: regions

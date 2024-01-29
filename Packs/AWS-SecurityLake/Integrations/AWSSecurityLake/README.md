@@ -404,6 +404,7 @@ This command is used to search for Guard Duty logs for any criticality level act
 
 ***
 Retrieves a snapshot of the current Region, including whether Amazon Security Lake is enabled for those accounts and which sources Security Lake is collecting data from.
+In order to run this command the user must have 'securitylake' permissions.
 
 #### Base Command
 
@@ -441,6 +442,7 @@ Retrieves a snapshot of the current Region, including whether Amazon Security La
 
 ***
 Retrieves the Amazon Security Lake configuration object for the specified Amazon Web Services Regions.
+In order to run this command the user must have 'securitylake' permissions.
 
 #### Base Command
 
