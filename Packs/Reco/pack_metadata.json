@@ -1,6 +1,6 @@
 {
     "name": "Reco",
-    "description": "Reco - detects and protects against sensitive data leakage",
+    "description": "Reco is an identity-first SaaS security solution that empowers organizations with full visibility into every app, identity, and their actions to seamlessly prioritize and control risks in the SaaS ecosystem",
     "support": "partner",
     "currentVersion": "1.2.0",
     "author": "Reco",
@@ -17,15 +17,14 @@
     ],
     "keywords": [
         "data leakage",
-        "data loss prevention",
-        "DLP",
-        "SaaS DLP",
+        "misconfiguration",
+        "SSPM",
+        "SaaS Security Posture Management",
+        "SaaS Security",
         "CASB",
         "sensitive data",
         "leaving employee",
-        "insider risk",
-        "sensitive data exposure",
-        "sensitive data protection"
+        "insider risk"
     ],
     "marketplaces": [
         "xsoar",

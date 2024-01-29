@@ -21,15 +21,15 @@ description: |-
   - DOTM
   - XLSB
   - DOT
-  - PPSM
+  - PPSM.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bcdc9d1b-25b8-4f8e-8718-043218ed8977
+    taskid: c33ca9eb-1ff3-450a-8c2d-b9aa72f7f771
     type: start
     task:
-      id: bcdc9d1b-25b8-4f8e-8718-043218ed8977
+      id: c33ca9eb-1ff3-450a-8c2d-b9aa72f7f771
       version: -1
       name: ""
       iscommand: false
@@ -43,7 +43,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 915,
           "y": -10
         }
       }
@@ -56,10 +56,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 9c37cfa4-5bd3-4994-80df-33bd4b58728f
+    taskid: ea98aae7-5a6e-4eab-8348-4cb62716a5f7
     type: condition
     task:
-      id: 9c37cfa4-5bd3-4994-80df-33bd4b58728f
+      id: ea98aae7-5a6e-4eab-8348-4cb62716a5f7
       version: -1
       name: Is there a file?
       description: |
@@ -71,7 +71,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "2"
+      - "4"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -87,49 +87,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: b287e371-7f7f-43cf-8f07-ea42b1ab70b6
-    type: regular
-    task:
-      id: b287e371-7f7f-43cf-8f07-ea42b1ab70b6
-      version: -1
-      name: Set file to local context
-      description: Sets the input file into local context.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      key:
-        simple: File
-      value:
-        complex:
-          root: inputs.File
-          transformers:
-          - operator: uniq
-    reputationcalc: 1
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 350
+          "x": 915,
+          "y": 120
         }
       }
     note: false
@@ -141,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 9f01ab9b-8991-4705-83a8-2bc3f0e902b2
+    taskid: 7cbad10d-b188-4999-8c0f-aad2a33000b3
     type: title
     task:
-      id: 9f01ab9b-8991-4705-83a8-2bc3f0e902b2
+      id: 7cbad10d-b188-4999-8c0f-aad2a33000b3
       version: -1
       name: Done
       type: title
@@ -156,8 +115,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 2340
+          "x": 915,
+          "y": 1410
         }
       }
     note: false
@@ -169,10 +128,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: ccedd221-520c-4c64-8ec8-fc07d1b107fc
+    taskid: 7697255d-fcab-4619-8a3d-bfa51bc758d9
     type: title
     task:
-      id: ccedd221-520c-4c64-8ec8-fc07d1b107fc
+      id: 7697255d-fcab-4619-8a3d-bfa51bc758d9
       version: -1
       name: Extract Indicators From Files
       type: title
@@ -187,13 +146,14 @@ tasks:
       - "15"
       - "20"
       - "21"
+      - "23"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 535
+          "x": 915,
+          "y": 295
         }
       }
     note: false
@@ -205,10 +165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 6b1ca925-a7ee-46d9-8f41-bc1ca5ee1f28
+    taskid: b3bc875f-d706-4180-802b-238c7d29381e
     type: condition
     task:
-      id: 6b1ca925-a7ee-46d9-8f41-bc1ca5ee1f28
+      id: b3bc875f-d706-4180-802b-238c7d29381e
       version: -1
       name: Is there a text-based file?
       description: Checks if there is a text-based file in context. Skips MSG and EML files.
@@ -228,12 +188,12 @@ tasks:
           left:
             value:
               complex:
-                root: File
+                root: inputs.File
                 filters:
                 - - operator: containsString
                     left:
                       value:
-                        simple: File.Type
+                        simple: inputs.File.Type
                       iscontext: true
                     right:
                       value:
@@ -242,7 +202,7 @@ tasks:
                   - operator: containsString
                     left:
                       value:
-                        simple: File.Type
+                        simple: inputs.File.Type
                       iscontext: true
                     right:
                       value:
@@ -250,7 +210,7 @@ tasks:
                   - operator: containsString
                     left:
                       value:
-                        simple: File.Type
+                        simple: inputs.File.Type
                       iscontext: true
                     right:
                       value:
@@ -258,7 +218,7 @@ tasks:
                 - - operator: notContainsString
                     left:
                       value:
-                        simple: File.Type
+                        simple: inputs.File.Type
                       iscontext: true
                     right:
                       value:
@@ -266,7 +226,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -274,7 +234,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -282,7 +242,7 @@ tasks:
                 - - operator: notContainsString
                     left:
                       value:
-                        simple: File.Type
+                        simple: inputs.File.Type
                       iscontext: true
                     right:
                       value:
@@ -290,7 +250,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -299,7 +259,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -308,7 +268,7 @@ tasks:
                 - - operator: notContainsGeneral
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -317,7 +277,7 @@ tasks:
                 - - operator: notContainsGeneral
                     left:
                       value:
-                        simple: File.Type
+                        simple: inputs.File.Type
                       iscontext: true
                     right:
                       value:
@@ -326,7 +286,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -334,7 +294,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -347,8 +307,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 92.5,
-          "y": 700
+          "x": 112.5,
+          "y": 460
         }
       }
     note: false
@@ -360,10 +320,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 25e595b9-5c08-4247-8888-ad17fecd9703
+    taskid: 4ba573d4-5094-4e80-883b-a3b84ed21791
     type: regular
     task:
-      id: 25e595b9-5c08-4247-8888-ad17fecd9703
+      id: 4ba573d4-5094-4e80-883b-a3b84ed21791
       version: -1
       name: Extract indicators from text-based file
       description: Extracts indicators from text-based files.
@@ -377,12 +337,12 @@ tasks:
     scriptarguments:
       entryID:
         complex:
-          root: File
+          root: inputs.File
           filters:
           - - operator: containsString
               left:
                 value:
-                  simple: File.Type
+                  simple: inputs.File.Type
                 iscontext: true
               right:
                 value:
@@ -391,7 +351,7 @@ tasks:
             - operator: containsString
               left:
                 value:
-                  simple: File.Type
+                  simple: inputs.File.Type
                 iscontext: true
               right:
                 value:
@@ -399,7 +359,7 @@ tasks:
             - operator: containsString
               left:
                 value:
-                  simple: File.Type
+                  simple: inputs.File.Type
                 iscontext: true
               right:
                 value:
@@ -407,7 +367,7 @@ tasks:
           - - operator: notContainsString
               left:
                 value:
-                  simple: File.Type
+                  simple: inputs.File.Type
                 iscontext: true
               right:
                 value:
@@ -415,7 +375,7 @@ tasks:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -423,7 +383,7 @@ tasks:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -431,7 +391,7 @@ tasks:
           - - operator: notContainsString
               left:
                 value:
-                  simple: File.Type
+                  simple: inputs.File.Type
                 iscontext: true
               right:
                 value:
@@ -439,7 +399,7 @@ tasks:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -448,7 +408,7 @@ tasks:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -457,7 +417,7 @@ tasks:
           - - operator: notContainsGeneral
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -466,7 +426,7 @@ tasks:
           - - operator: notContainsGeneral
               left:
                 value:
-                  simple: File.Type
+                  simple: inputs.File.Type
                 iscontext: true
               right:
                 value:
@@ -475,7 +435,7 @@ tasks:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -489,8 +449,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 92.5,
-          "y": 960
+          "x": 112.5,
+          "y": 720
         }
       }
     note: false
@@ -502,10 +462,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 6456e51c-3165-435e-8fd4-9b3143f4b011
+    taskid: 0e5716b4-d88b-45dc-8aa4-c68a6dbf2df6
     type: condition
     task:
-      id: 6456e51c-3165-435e-8fd4-9b3143f4b011
+      id: 0e5716b4-d88b-45dc-8aa4-c68a6dbf2df6
       version: -1
       name: Is there a PDF file?
       description: Checks if there is a PDF file in context.
@@ -525,12 +485,12 @@ tasks:
           left:
             value:
               complex:
-                root: File
+                root: inputs.File
                 filters:
                 - - operator: containsString
                     left:
                       value:
-                        simple: File.Type
+                        simple: inputs.File.Type
                       iscontext: true
                     right:
                       value:
@@ -539,7 +499,7 @@ tasks:
                 - - operator: containsString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -556,8 +516,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 700
+          "x": 1320,
+          "y": 460
         }
       }
     note: false
@@ -569,10 +529,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 413768ed-dc27-441e-8395-9878777549e5
+    taskid: da76292f-3f94-4097-857d-1ddc6d3828d4
     type: regular
     task:
-      id: 413768ed-dc27-441e-8395-9878777549e5
+      id: da76292f-3f94-4097-857d-1ddc6d3828d4
       version: -1
       name: Extract indicators from PDF file
       description: Load a PDF file's content and metadata into context.
@@ -586,12 +546,12 @@ tasks:
     scriptarguments:
       entryID:
         complex:
-          root: File
+          root: inputs.File
           filters:
           - - operator: containsString
               left:
                 value:
-                  simple: File.Type
+                  simple: inputs.File.Type
                 iscontext: true
               right:
                 value:
@@ -600,7 +560,7 @@ tasks:
             - operator: containsString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -608,15 +568,24 @@ tasks:
               ignorecase: true
           accessor: EntryID
           transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: ${File(val.Info=="application/pdf").EntryID}
+              raw: {}
           - operator: uniq
+      maxImages:
+        complex:
+          root: inputs.MaxImagesFromPDF
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 960
+          "x": 1320,
+          "y": 720
         }
       }
     note: false
@@ -628,10 +597,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 56597c25-22cd-42b4-8c2f-f08c31fd1dd4
+    taskid: 884b6c9a-7e2f-467c-8b05-5f711bf59686
     type: condition
     task:
-      id: 56597c25-22cd-42b4-8c2f-f08c31fd1dd4
+      id: 884b6c9a-7e2f-467c-8b05-5f711bf59686
       version: -1
       name: Is there a Word file?
       description: Checks if there is a Word file (DOC, DOCX) in context.
@@ -651,12 +620,12 @@ tasks:
           left:
             value:
               complex:
-                root: File
+                root: inputs.File
                 filters:
                 - - operator: containsString
                     left:
                       value:
-                        simple: File.Type
+                        simple: inputs.File.Type
                       iscontext: true
                     right:
                       value:
@@ -664,7 +633,7 @@ tasks:
                   - operator: containsString
                     left:
                       value:
-                        simple: File.Type
+                        simple: inputs.File.Type
                       iscontext: true
                     right:
                       value:
@@ -672,7 +641,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -681,7 +650,7 @@ tasks:
                   - operator: containsString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -689,7 +658,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -698,7 +667,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -707,12 +676,12 @@ tasks:
                 - - operator: isNotExists
                     left:
                       value:
-                        simple: File.Extension
+                        simple: inputs.File.Extension
                       iscontext: true
                   - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Extension
+                        simple: inputs.File.Extension
                       iscontext: true
                     right:
                       value:
@@ -721,12 +690,12 @@ tasks:
                 - - operator: isNotExists
                     left:
                       value:
-                        simple: File.Extension
+                        simple: inputs.File.Extension
                       iscontext: true
                   - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Extension
+                        simple: inputs.File.Extension
                       iscontext: true
                     right:
                       value:
@@ -735,12 +704,12 @@ tasks:
                 - - operator: isNotExists
                     left:
                       value:
-                        simple: File.Type
+                        simple: inputs.File.Type
                       iscontext: true
                   - operator: notContainsString
                     left:
                       value:
-                        simple: File.Type
+                        simple: inputs.File.Type
                       iscontext: true
                     right:
                       value:
@@ -749,7 +718,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -758,7 +727,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -767,7 +736,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Extension
+                        simple: inputs.File.Extension
                       iscontext: true
                     right:
                       value:
@@ -775,7 +744,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -783,12 +752,12 @@ tasks:
                 - - operator: isNotExists
                     left:
                       value:
-                        simple: File.Extension
+                        simple: inputs.File.Extension
                       iscontext: true
                   - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Extension
+                        simple: inputs.File.Extension
                       iscontext: true
                     right:
                       value:
@@ -796,7 +765,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Extension
+                        simple: inputs.File.Extension
                       iscontext: true
                     right:
                       value:
@@ -804,7 +773,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Extension
+                        simple: inputs.File.Extension
                       iscontext: true
                     right:
                       value:
@@ -813,7 +782,7 @@ tasks:
                   - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -830,7 +799,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 700
+          "y": 460
         }
       }
     note: false
@@ -842,10 +811,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 68b22c92-c5b7-4e98-8b45-cadb678c6da8
+    taskid: bd5234cd-bca5-49c3-844e-478ec0e69f2a
     type: title
     task:
-      id: 68b22c92-c5b7-4e98-8b45-cadb678c6da8
+      id: bd5234cd-bca5-49c3-844e-478ec0e69f2a
       version: -1
       name: No File To Parse
       type: title
@@ -860,8 +829,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -455,
-          "y": 975
+          "x": -555,
+          "y": 735
         }
       }
     note: false
@@ -873,10 +842,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 94620d34-671a-4869-81f1-dcf67071a9ee
+    taskid: b2cbcfd1-04a0-43cb-88ed-712c131d53e5
     type: regular
     task:
-      id: 94620d34-671a-4869-81f1-dcf67071a9ee
+      id: b2cbcfd1-04a0-43cb-88ed-712c131d53e5
       version: -1
       name: Extract indicators from Word file
       description: Extracts indicators from word files (DOC, DOCX).
@@ -890,12 +859,12 @@ tasks:
     scriptarguments:
       entryID:
         complex:
-          root: File
+          root: inputs.File
           filters:
           - - operator: containsString
               left:
                 value:
-                  simple: File.Type
+                  simple: inputs.File.Type
                 iscontext: true
               right:
                 value:
@@ -903,7 +872,7 @@ tasks:
             - operator: containsString
               left:
                 value:
-                  simple: File.Type
+                  simple: inputs.File.Type
                 iscontext: true
               right:
                 value:
@@ -911,7 +880,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -920,7 +889,7 @@ tasks:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -929,7 +898,7 @@ tasks:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -938,12 +907,12 @@ tasks:
           - - operator: isNotExists
               left:
                 value:
-                  simple: File.Extension
+                  simple: inputs.File.Extension
                 iscontext: true
             - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Extension
+                  simple: inputs.File.Extension
                 iscontext: true
               right:
                 value:
@@ -952,12 +921,12 @@ tasks:
           - - operator: isNotExists
               left:
                 value:
-                  simple: File.Extension
+                  simple: inputs.File.Extension
                 iscontext: true
             - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Extension
+                  simple: inputs.File.Extension
                 iscontext: true
               right:
                 value:
@@ -966,12 +935,12 @@ tasks:
           - - operator: isNotExists
               left:
                 value:
-                  simple: File.Type
+                  simple: inputs.File.Type
                 iscontext: true
             - operator: notContainsString
               left:
                 value:
-                  simple: File.Type
+                  simple: inputs.File.Type
                 iscontext: true
               right:
                 value:
@@ -980,7 +949,7 @@ tasks:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -989,7 +958,7 @@ tasks:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -997,12 +966,12 @@ tasks:
           - - operator: isNotExists
               left:
                 value:
-                  simple: File.Extension
+                  simple: inputs.File.Extension
                 iscontext: true
             - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Extension
+                  simple: inputs.File.Extension
                 iscontext: true
               right:
                 value:
@@ -1010,7 +979,7 @@ tasks:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Extension
+                  simple: inputs.File.Extension
                 iscontext: true
               right:
                 value:
@@ -1019,7 +988,7 @@ tasks:
             - operator: isNotEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1035,7 +1004,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 960
+          "y": 720
         }
       }
     note: false
@@ -1047,10 +1016,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 016dfd29-eb0c-4638-8f9c-b47a21dbf83e
+    taskid: fc037219-4b91-402f-8ad8-dc099bc2e67b
     type: condition
     task:
-      id: 016dfd29-eb0c-4638-8f9c-b47a21dbf83e
+      id: fc037219-4b91-402f-8ad8-dc099bc2e67b
       version: -1
       name: Is Image OCR enabled?
       description: Checks whether there is an active instance of the Image OCR integration. enabled.
@@ -1085,8 +1054,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1980,
-          "y": 960
+          "x": 2150,
+          "y": 720
         }
       }
     note: false
@@ -1098,10 +1067,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 9e63e4dc-c072-46b9-876d-6862cf429573
+    taskid: 67aa8abc-03b8-4df4-8d81-75ba4b4f0521
     type: regular
     task:
-      id: 9e63e4dc-c072-46b9-876d-6862cf429573
+      id: 67aa8abc-03b8-4df4-8d81-75ba4b4f0521
       version: -1
       name: Extract text from images
       description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract to get reputation for indicators.
@@ -1115,12 +1084,12 @@ tasks:
     scriptarguments:
       entryid:
         complex:
-          root: File
+          root: inputs.File
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1129,7 +1098,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1138,7 +1107,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1147,7 +1116,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1162,8 +1131,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2040,
-          "y": 1280
+          "x": 2150,
+          "y": 1040
         }
       }
     note: false
@@ -1175,10 +1144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: ffb93222-0298-4fc1-8087-6e2e66eecda4
+    taskid: fe69f8c7-5257-4b62-8ddd-a82a514bdc44
     type: condition
     task:
-      id: ffb93222-0298-4fc1-8087-6e2e66eecda4
+      id: fe69f8c7-5257-4b62-8ddd-a82a514bdc44
       version: -1
       name: Is there another supported document type?
       description: |-
@@ -1205,12 +1174,12 @@ tasks:
           left:
             value:
               complex:
-                root: File
+                root: inputs.File
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -1219,7 +1188,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -1228,7 +1197,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -1237,7 +1206,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -1246,7 +1215,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -1255,7 +1224,7 @@ tasks:
                   - operator: containsGeneral
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -1264,7 +1233,7 @@ tasks:
                   - operator: containsGeneral
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -1273,7 +1242,7 @@ tasks:
                   - operator: containsGeneral
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -1282,7 +1251,7 @@ tasks:
                   - operator: containsGeneral
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -1291,7 +1260,7 @@ tasks:
                 - - operator: isNotEqualString
                     left:
                       value:
-                        simple: File.Extension
+                        simple: inputs.File.Extension
                       iscontext: true
                     right:
                       value:
@@ -1299,7 +1268,7 @@ tasks:
                   - operator: notContainsGeneral
                     left:
                       value:
-                        simple: File
+                        simple: inputs.File
                       iscontext: true
                     right:
                       value:
@@ -1313,8 +1282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 700
+          "x": 1740,
+          "y": 460
         }
       }
     note: false
@@ -1326,10 +1295,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 9a754389-5cc2-4638-84b4-2877b55a649a
+    taskid: 7f3736b6-092c-4c5d-878d-1d1fb71ae749
     type: regular
     task:
-      id: 9a754389-5cc2-4638-84b4-2877b55a649a
+      id: 7f3736b6-092c-4c5d-878d-1d1fb71ae749
       version: -1
       name: Convert a document to PDF
       description: |-
@@ -1352,12 +1321,12 @@ tasks:
         simple: "yes"
       entry_id:
         complex:
-          root: File
+          root: inputs.File
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1366,7 +1335,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1375,7 +1344,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1384,7 +1353,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1393,7 +1362,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1402,7 +1371,7 @@ tasks:
             - operator: containsGeneral
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1411,7 +1380,7 @@ tasks:
             - operator: containsGeneral
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1420,7 +1389,7 @@ tasks:
             - operator: containsGeneral
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1429,7 +1398,7 @@ tasks:
             - operator: containsGeneral
               left:
                 value:
-                  simple: File.Info
+                  simple: inputs.File.Info
                 iscontext: true
               right:
                 value:
@@ -1438,7 +1407,7 @@ tasks:
           - - operator: notContainsGeneral
               left:
                 value:
-                  simple: File.Extension
+                  simple: inputs.File.Extension
                 iscontext: true
               right:
                 value:
@@ -1452,8 +1421,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 960
+          "x": 1740,
+          "y": 720
         }
       }
     note: false
@@ -1465,10 +1434,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: dff24f87-3133-4c5b-85f0-3e8cfb5910f6
+    taskid: 44ff2241-eeb3-4b0b-831f-79543662820f
     type: regular
     task:
-      id: dff24f87-3133-4c5b-85f0-3e8cfb5910f6
+      id: 44ff2241-eeb3-4b0b-831f-79543662820f
       version: -1
       name: Set ExtractedURLsFromFiles
       description: |-
@@ -1493,8 +1462,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 2120
+          "x": 915,
+          "y": 1230
         }
       }
     note: false
@@ -1506,10 +1475,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 0ca91cf6-8403-4e3e-84fd-a5076cb1e172
+    taskid: 31a1d53b-2b50-490f-8bb7-1d6f112ac92f
     type: playbook
     task:
-      id: 0ca91cf6-8403-4e3e-84fd-a5076cb1e172
+      id: 31a1d53b-2b50-490f-8bb7-1d6f112ac92f
       version: -1
       name: Microsoft Office File Enrichment - Oletools
       description: |-
@@ -1548,8 +1517,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -330,
-          "y": 700
+          "x": -290,
+          "y": 460
         }
       }
     note: false
@@ -1561,10 +1530,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 7d2bdab4-aee1-4922-87a4-19eb4d35e264
+    taskid: f561dd7e-9772-489e-8be2-af2e0d87844f
     type: condition
     task:
-      id: 7d2bdab4-aee1-4922-87a4-19eb4d35e264
+      id: f561dd7e-9772-489e-8be2-af2e0d87844f
       version: -1
       name: Is there an image file?
       description: |-
@@ -1585,12 +1554,12 @@ tasks:
           left:
             value:
               complex:
-                root: File
+                root: inputs.File
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -1599,7 +1568,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -1608,7 +1577,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -1617,7 +1586,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
@@ -1632,8 +1601,133 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1980,
-          "y": 690
+          "x": 2150,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: a9713787-fe05-4ba6-8b99-b8980598b0dd
+    type: regular
+    task:
+      id: a9713787-fe05-4ba6-8b99-b8980598b0dd
+      version: -1
+      name: Extract indicators from docx file
+      description: Extracts indicators from word files (DOC, DOCX).
+      scriptName: ExtractIndicatorsFromWordFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      entryID:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Zip archive data
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: docx
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 915,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 6a194cfc-0af6-4776-8290-28b7deb60579
+    type: condition
+    task:
+      id: 6a194cfc-0af6-4776-8290-28b7deb60579
+      version: -1
+      name: Is there a Word docx file?
+      description: Checks if there is a Word file (DOC, DOCX) in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.File
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: inputs.File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Zip archive data
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: docx
+                    ignorecase: true
+                accessor: EntryID
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 915,
+          "y": 460
         }
       }
     note: false
@@ -1646,11 +1740,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "13_19_#default#": 0.3,
-      "15_10_#default#": 0.13,
+      "13_19_#default#": 0.14,
+      "15_10_#default#": 0.11,
       "15_16_yes": 0.38,
-      "1_10_#default#": 0.15,
-      "5_10_#default#": 0.23,
+      "1_10_#default#": 0.17,
+      "21_10_#default#": 0.1,
+      "23_10_#default#": 0.14,
+      "23_22_yes": 0.43,
+      "5_10_#default#": 0.33,
       "5_6_yes": 0.36,
       "7_10_#default#": 0.15,
       "7_8_yes": 0.38,
@@ -1659,9 +1756,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2415,
-        "width": 2875,
-        "x": -455,
+        "height": 1485,
+        "width": 3085,
+        "x": -555,
         "y": -10
       }
     }
@@ -1701,6 +1798,15 @@ inputs:
   description: |-
     Available values: "True" or "False". Default is "False"
     When this is set to "True", in case a macro was found within the file (using oletools), it will output all the obfuscated strings with their decoded content (Hex, Base64, StrReverse, Dridex, VBA).
+  playbookInputQuery:
+- key: MaxImagesFromPDF
+  value:
+    simple: "10"
+  required: false
+  description: |-
+    The maximum number of images that can be extracted from a PDF file.
+    We recommend setting a low number if you don't need all images extracted from PDF files.
+    If no value is specified, a default of 20 will be used.
   playbookInputQuery:
 outputs:
 - contextPath: Domain.Name
@@ -1902,5 +2008,7 @@ tests:
 - Extract Indicators From File - Generic v2 - Test
 fromversion: 5.0.0
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
+contentitemexportablefields:
+  contentitemfields: {}

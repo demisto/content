@@ -111,8 +111,9 @@ class Client(BaseClient):
         The token is valid for 10 minutes.
         """
         data = {'username': username, 'password': password}
+        demisto.debug("Sending request to get the auth token")
 
-        response = self._http_request('POST', 'login', json_data=data)
+        response = self._http_request('POST', 'login', json_data=data, retries=2)
         try:
             token = response.get('token')
             if not token:
@@ -120,6 +121,7 @@ class Client(BaseClient):
         except ValueError as exception:
             raise DemistoException('Could not parse API response.', exception=exception) from exception
 
+        demisto.debug("Successfully got the auth token")
         self._headers[REQUEST_CSPM_AUTH_HEADER] = token
 
     def alert_filter_list_request(self):
@@ -137,7 +139,7 @@ class Client(BaseClient):
                                     })
         demisto.info(f'Executing Prisma Cloud alert search with payload: {data}')
 
-        return self._http_request('POST', 'v2/alert', params=params, json_data=data)
+        return self._http_request('POST', 'v2/alert', params=params, json_data=data, retries=2)
 
     def alert_get_details_request(self, alert_id: str, detailed: Optional[str] = None):
         params = assign_params(detailed=detailed)
@@ -518,7 +520,7 @@ def extract_namespace(response_items: List[Dict[str, Any]]):
     """
     for item in response_items:
         for member in item.get('members', []):  # members is a list of dict or strs
-            if isinstance(member, str):
+            if isinstance(member, str | int):
                 continue
             if item_namespace := member.get('namespaces', []):
                 item['namespaces'] = item_namespace
@@ -589,6 +591,7 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                            limit=limit + len(fetched_ids),
                                            )
     response_items = response.get('items', [])
+    demisto.debug(f"Finished request, got {len(response_items)} items")
     updated_last_run_time_epoch = response_items[-1].get('alertTime') if response_items else now
     incidents = filter_alerts(client, fetched_ids, response_items, limit)
 
@@ -604,6 +607,7 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                                page_token=response.get('nextPageToken'),
                                                )
         response_items = response.get('items', [])
+        demisto.debug(f"Finished request, got {len(response_items)} items.")
         updated_last_run_time_epoch = \
             response_items[-1].get('alertTime') if response_items else updated_last_run_time_epoch
         incidents.extend(filter_alerts(client, fetched_ids, response_items, limit, len(incidents)))
@@ -2236,6 +2240,9 @@ def main() -> None:
         error_msg = str(e)
         if hasattr(e, 'res'):
             error_msg += get_response_status_header(e.res)  # type: ignore[attr-defined]
+            if hasattr(e.res, 'status_code') and e.res.status_code == 401:  # type: ignore[attr-defined]
+                error_msg = 'Authentication failed. ' \
+                            'Check that the Server URL parameter is correct and validate your credentials.\n' + error_msg
         return_error(error_msg, error=e)
 
 

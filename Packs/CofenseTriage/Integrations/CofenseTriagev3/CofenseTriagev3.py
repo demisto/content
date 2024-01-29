@@ -35,7 +35,9 @@ URL_SUFFIX = {
     "COMMENTS": "api/public/v2/comments/",
     "REPORT_ID": "api/public/v2/reports/{}",
     "CLUSTER": "api/public/v2/clusters",
-    "REPORT_ATTACHMENT_PAYLOAD": "/api/public/v2/reports/{}/attachment_payloads"
+    "REPORT_ATTACHMENT_PAYLOAD": "/api/public/v2/reports/{}/attachment_payloads",
+    "REPORT_ATTACHMENT": "/api/public/v2/reports/{}/attachments",
+    "REPORT_ATTACHMENT_DOWNLOAD": "api/public/v2/attachments/{}/download",
 }
 
 OUTPUT_PREFIX = {
@@ -46,6 +48,7 @@ OUTPUT_PREFIX = {
     "RULE": "Cofense.Rule",
     "REPORTER": "Cofense.Reporter",
     "ATTACHMENT_PAYLOAD": "Cofense.AttachmentPayload",
+    "ATTACHMENT": "Cofense.Attachment",
     "INTEGRATION_SUBMISSION": "Cofense.IntegrationSubmission",
     "COMMENT": "Cofense.Comment",
     "CLUSTER": "Cofense.Cluster"
@@ -985,6 +988,35 @@ def prepare_hr_for_attachment_payloads(results: List[Dict[str, Any]]) -> str:
                                     UPDATED_AT], removeNull=True)
 
 
+def prepare_hr_for_report_attachments(results: List[Dict[str, Any]]) -> str:
+    """
+    Parse and convert the report attachment in the response into human-readable markdown string.
+
+    :type results: ``List[Dict[str, Any]]``
+    :param results: Details of urls.
+
+    :return: Human Readable string containing information of report attachment.
+    :rtype: ``str``
+    """
+    attachments_hr = []
+    for res in results:
+        attributes = res.get("attributes")
+        hr = {"Attachment ID": res.get("id", "")}
+
+        if attributes:
+            hr["File Name"] = attributes.get("filename", "")
+            hr["File Size in Bytes"] = attributes.get("size", "")
+            hr["Is Child"] = attributes.get("is_child", "")
+            hr[CREATED_AT] = attributes.get("created_at", "")
+            hr[UPDATED_AT] = attributes.get("updated_at", "")
+        attachments_hr.append(hr)
+
+    return tableToMarkdown("Attachment(s)", attachments_hr,
+                           headers=["Attachment ID", "File Name",
+                                    "File Size in Bytes", "Is Child", CREATED_AT, UPDATED_AT],
+                           removeNull=True)
+
+
 def validate_comment_list_args(args: Dict[str, str]) -> Dict[str, Any]:
     """
     Validate arguments for cofense-comment-list command, raise ValueError on invalid arguments.
@@ -1397,6 +1429,87 @@ def cofense_report_attachment_payload_list_command(client: Client, args: Dict[st
                           readable_output=hr_response,
                           raw_response=response
                           )
+
+
+def cofense_report_attachment_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+    """
+    Retrieves report attachment list based on the filter values provided in the command arguments.
+    For reported emails that contain attachments, Cofense Triage captures the attachment's filename and size.
+
+    :type client: ``Client``
+    :param client: Client object to be used.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    params, _ = validate_list_command_args(args, "attachments")
+    report_id = args.get("id")
+    # Validation for empty report_id
+    if not report_id:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("id"))
+    # Appending the report id to the url_suffix
+    url_suffix = URL_SUFFIX["REPORT_ATTACHMENT"].format(report_id)
+
+    # Sending http request
+    response = client.http_request(url_suffix, params=params)
+
+    result = response.get("data")
+
+    # Returning if data is empty or not present
+    if not result:
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("attachments"))
+
+    if isinstance(result, dict):
+        result = [result]
+
+    # Creating the Human Readable
+    hr_response = prepare_hr_for_report_attachments(result)
+
+    # Creating the Context data
+    context_data = remove_empty_elements(result)
+
+    return CommandResults(outputs_prefix=OUTPUT_PREFIX["ATTACHMENT"],
+                          outputs_key_field="id",
+                          outputs=context_data,
+                          readable_output=hr_response,
+                          raw_response=response
+                          )
+
+
+def cofense_report_attachment_download_command(client: Client, args: Dict[str, str]) -> dict:
+    """
+    Downloads the attachment for a the specified attachment ID.
+
+    :type client: ``Client``
+    :param client: Client object to be used.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: File Result.
+    :rtype: ``dict``
+    """
+    attachment_id = args.get("id")
+    if not attachment_id:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("id"))
+    # Appending the id to the url_suffix
+    url_suffix = URL_SUFFIX["REPORT_ATTACHMENT_DOWNLOAD"].format(attachment_id)
+    headers = {
+        'Accept': "*/*"
+    }
+    # Sending http request
+    response = client.http_request(url_suffix, resp_type="response", headers=headers)
+    content_disposition = response.headers.get('Content-Disposition') or ''
+    content_disposition_split = content_disposition.split(';')
+    if len(content_disposition_split) > 1:
+        file_name = content_disposition_split[1].replace('filename=', '').replace('"', '')
+        file_name = urllib.parse.unquote(file_name).strip()
+    else:
+        file_name = f"Attachment ID - {attachment_id}"
+    return fileResult(file_name, data=response.content)
 
 
 def fetch_incidents(client: Client, last_run: dict, params: Dict) -> Tuple[dict, list]:
@@ -2033,7 +2146,9 @@ def main() -> None:
         'cofense-cluster-list': cofense_cluster_list_command,
         'cofense-threat-indicator-update': cofense_threat_indicator_update_command,
         'cofense-report-image-download': cofense_report_image_download_command,
-        'cofense-report-attachment-payload-list': cofense_report_attachment_payload_list_command
+        'cofense-report-attachment-payload-list': cofense_report_attachment_payload_list_command,
+        'cofense-report-attachment-list': cofense_report_attachment_list_command,
+        'cofense-report-attachment-download': cofense_report_attachment_download_command,
     }
     command = demisto.command()
     demisto.debug(f'[CofenseTriagev3] Command being called is {command}')

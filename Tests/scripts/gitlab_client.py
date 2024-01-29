@@ -9,9 +9,9 @@ from typing import Any
 import requests
 
 
-GITLAB_SERVER_URL = os.getenv("CI_SERVER_URL", "https://code.pan.run")  # disable-secrets-detection
+GITLAB_SERVER_URL = os.getenv("CI_SERVER_URL", "https://gitlab.xdr.pan.local")  # disable-secrets-detection
 API_BASE_URL = f"{GITLAB_SERVER_URL}/api/v4"
-PROJECT_ID = os.getenv("CI_PROJECT_ID", "2596")
+PROJECT_ID = os.getenv("CI_PROJECT_ID", "1061")
 
 
 class GetArtifactErrors(str, enum.Enum):

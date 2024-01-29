@@ -250,7 +250,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": 1250
+          "y": 1260
         }
       }
     note: false
@@ -1566,6 +1566,7 @@ tasks:
     nexttasks:
       '#none#':
       - "38"
+      - "12"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1652,8 +1653,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
-          "y": 1080
+          "x": 1850,
+          "y": 1090
         }
       }
     note: false
@@ -1671,10 +1672,10 @@ tasks:
       id: 3212780f-1634-43cd-8a59-39af8883e672
       version: -1
       name: Found suspicious LOLBIN execution?
+      description: "Found suspicious LOLBIN execution?"
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "9"
@@ -1780,19 +1781,16 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: MatchRegex
-  description: The regex found in the command line
+  description: The regex found in the command line.
   type: unknown
 - contextPath: Indicators
-  description: Indicators extracted from the command line
+  description: Indicators extracted from the command line.
   type: unknown
 - contextPath: commandline.original
-  description: The original command line
+  description: The original command line.
   type: unknown
 - contextPath: commandline.decoded
-  description: The decoded command line
-  type: unknown
-- contextPath: CommandlineVerdict
-  description: The command line verdict
+  description: The decoded command line.
   type: unknown
 - contextPath: IP
   description: The IP object.
@@ -1806,9 +1804,27 @@ outputs:
 - contextPath: Domain
   description: The domain object.
   type: unknown
+- contextPath: CommandlineVerdict.base64
+  description: Command line verdict base64 was found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.suspiciousParameters
+  description: Command line verdict suspicious parameters found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.AMSI
+  description: Command line verdict AMSI found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.foundIndicators
+  description: Command line verdict foundIndicators found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.maliciousTools
+  description: Command line verdict maliciousTools found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.networkActivity
+  description: Command line verdict networkActivity found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.SuspiciousLolbinExecution
+  description: Command line verdict SuspiciousLolbinExecution found. True/False
+  type: unknown
 tests:
-- No tests
+  - no tests
 fromversion: 6.0.0
-marketplaces:
-  - xsoar
-  - marketplacev2

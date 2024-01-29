@@ -53,7 +53,7 @@ Returns all agents that match the specified criteria.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_name | The computer name by which to filter the results. | Optional | 
+| computer_name | The computer name by which to filter the results. It can match a partial computer name value (substring). | Optional | 
 | scan_status | A comma-separated list of scan statuses by which to filter the results, for example: "started,aborted". Possible values are: started, none, finished, aborted. | Optional | 
 | os_type | Included operating system types, for example: "windows". Possible values are: windows, windows_legacy, macos, linux. | Optional | 
 | created_at | Endpoint creation timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
@@ -197,6 +197,7 @@ Returns threats according to the specified filters.
 | rank | Risk level threshold to retrieve (1-10). Relevant for API version 2.0 only. | Optional | 
 | site_ids | A comma-separated list of site IDs to search for threats, for example: "225494730938493804,225494730938493915". | Optional |
 | incident_statuses | Incident status. Example: "IN_PROGRESS, UNRESOLVED". | Optional |
+| include_resolved_param | Whether to include the resolved parameter in the query. Possible values are: false, true. Default is false. | Optional | 
 
 #### Context Output
 

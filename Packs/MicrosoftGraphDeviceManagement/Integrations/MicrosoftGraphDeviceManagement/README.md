@@ -1056,3 +1056,48 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+### msgraph-get-managed-device-physical-memory-by-id
+
+***
+Get the managed device physical memory bytes.
+
+#### Base Command
+
+`msgraph-get-managed-device-physical-memory-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | The ID of the managed device to be fetched. Can be retrieved using the msgraph-list-managed-devices command. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphDeviceManagement.Device.id | String | The ID of the managed device. | 
+| MSGraphDeviceManagement.Device.physicalMemoryInBytes | String | The correct value of ID of the managed device. | 
+| MSGraphDeviceManagement.Device.deviceName | String | Name of the device. | 
+
+#### Command example
+```!msgraph-get-managed-device-physical-memory-by-id device_id=111111-1111-1111-1111-1111111```
+#### Context Example
+```json
+{
+    "MSGraphDeviceManagement": {
+        "DeviceMemory": {
+            "ID": "111111-1111-1111-1111-1111111",
+            "Name": "Test",
+            "physicalMemoryInBytes": 4294967296
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Managed device 
+>|physicalMemoryInBytes|id|
+>|---|---|
+>| 4294967296 | 111111-1111-1111-1111-1111111 |
+

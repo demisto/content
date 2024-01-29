@@ -130,7 +130,7 @@ name: SentinelOne V2
 script:
   commands:
   - arguments:
-    - description: The computer name by which to filter the results.
+    - description: The computer name by which to filter the results. It can match a partial computer name value (substring).
       name: computer_name
     - auto: PREDEFINED
       description: 'A comma-separated list of scan statuses by which to filter the results, for example: "started,aborted".'
@@ -395,6 +395,13 @@ script:
       name: site_ids
     - description: 'Incident status. Example: "IN_PROGRESS, UNRESOLVED".'
       name: incident_statuses
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to include the resolved parameter in the query.
+      name: include_resolved_param
+      predefined:
+      - "false"
+      - "true"
     description: Returns threats according to the specified filters.
     name: sentinelone-get-threats
     outputs:
@@ -2378,7 +2385,7 @@ script:
     - contextPath: SentinelOne.Notes.UpdatedAt
       description: The note updated time.
       type: string
-  dockerimage: demisto/python3:3.10.13.82467
+  dockerimage: demisto/python3:3.10.13.85415
   isfetch: true
   ismappable: true
   isremotesyncin: true
