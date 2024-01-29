@@ -3801,47 +3801,44 @@ inputs:
     This input is used in the "Spear Phishing Investigation" sub-playbook.
   playbookInputQuery:
 inputSections:
-- name: Role and Assignment
-  description:  Parameters defining user responsibilities and task allocations.
-  inputs:
+- inputs:
   - Role
   - OnCall
-- name: Search and Delete Functionality
-  description: Input criteria to locate specific entries and actions to remove them.
-  inputs:
+  - EmailHuntingCreateNewIncidents
+  - ListenerMailbox
+  - SendMailInstance
+  - UserEngagement
+  - TakeManualActions
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, and user engagements.
+- inputs:
+  - DetonateURL
+  - InternalRange
+  - InternalDomains
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
+  - AuthenticateEmail
+  - CheckMicrosoftHeaders
+  - GetOriginalEmail
+  - OriginalAuthenticationHeader
+  - PhishingModelName
+  - DBotPredictURLPhishingURLsNumber
+  - EmailFileToExtract
+  - HuntEmailIndicators
+  - KeyWordsToSearch
+  name: Investigation
+  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - BlockIndicators
   - SearchAndDelete
   - SearchAndDeleteIntegration
   - O365DeleteType
   - O365ExchangeLocation
   - O365AllowNotFoundSearchLocations
   - O365ExchangeLocationExclusion
-- name: Email Verification and Classification
-  description: Criteria and actions for authenticating email sources and categorizing by content.
-  inputs:
-  - AuthenticateEmail
-  - CheckMicrosoftHeaders
-  - InternalDomains
-  - GetOriginalEmail
-  - OriginalAuthenticationHeader
-- name: Analysis and Threat Detection
-  description: Parameters for examining data, identifying, and assessing security threats.
-  inputs:
-  - BlockIndicators
-  - DetonateURL
-  - InternalRange
-  - PhishingModelName
-  - DBotPredictURLPhishingURLsNumber
-  - EmailFileToExtract
-  - HuntEmailIndicators
-- name: Incident Management and User Engagement
-  description: Input settings for handling security events and involving end-users in the resolution process.
-  inputs:
-  - EmailHuntingCreateNewIncidents
-  - ListenerMailbox
-  - SendMailInstance
-  - UserEngagement
-  - TakeManualActions
-  - KeyWordsToSearch
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
 outputs: []
 tests:
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
