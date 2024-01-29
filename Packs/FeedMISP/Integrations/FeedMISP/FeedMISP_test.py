@@ -4,7 +4,7 @@ import demistomock as demisto
 
 from CommonServerPython import DemistoException, ThreatIntel, FeedIndicatorType
 from FeedMISP import clean_user_query, build_indicators_iterator, \
-    handle_file_type_fields, get_galaxy_indicator_type, build_indicators_from_galaxies, update_indicators_iterator, \
+    handle_file_type_fields, get_galaxy_indicator_type, build_indicators_from_galaxies, \
     update_indicator_fields, get_ip_type, Client, fetch_attributes_command
 
 
@@ -206,173 +206,6 @@ def test_build_indicators_from_galaxies():
     assert galaxy_indicators[0]['type'] == ThreatIntel.ObjectsNames.ATTACK_PATTERN
 
 
-def test_update_indicators_iterator_first_fetch(mocker):
-    """
-    Given
-        - Indicators received
-    When
-        - First fetch, no last run parameters
-    Then
-        - return all indicators
-    """
-    indicators_iterator = [
-        {
-            'value': {'timestamp': '5'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '1'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '3'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-    ]
-    query = {'key': 'val'}
-    mocker.patch.object(demisto, 'getLastRun', return_value=None)
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
-    assert added_indicators_iterator == indicators_iterator
-
-
-def test_update_indicators_iterator_timestamp_exists_all_new_indicators_same_query(mocker):
-    """
-     Given
-         - Indicators received, lastrun has timestamp and query
-     When
-         - indicators updated after timestamp and same query as before
-     Then
-         - return all indicators
-     """
-    indicators_iterator = [
-        {
-            'value': {'timestamp': '5'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '1'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '3'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-    ]
-    query = {'key': 'val'}
-    mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '0', 'params': query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
-    assert added_indicators_iterator == indicators_iterator
-
-
-def test_update_indicators_iterator_timestamp_exists_no_new_indicators_same_query(mocker):
-    """
-     Given
-         - Indicators received, lastrun has the timestamp and query
-     When
-         - last run timestamp is bigger then the indicators timestamp and query is the same
-     Then
-         - return no indicators
-     """
-    indicators_iterator = [
-        {
-            'value': {'timestamp': '1'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '3'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-    ]
-    query = {'key': 'val'}
-    mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '4', 'params': query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
-    assert not added_indicators_iterator
-
-
-def test_update_indicators_iterator_timestamp_exists_some_new_indicators_same_query(mocker):
-    """
-     Given
-         - Indicators received, lastrun has the timestamp and query
-     When
-         - some indicators has timestamp bigger then the lastrun timestamp
-     Then
-         - return indicators which have timestamp bigger then lastrun timestamp
-     """
-    indicators_iterator = [
-        {
-            'value': {'timestamp': '5'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '1'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '3'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-    ]
-    query = {'key': 'val'}
-    mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '4', 'params': query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
-    assert added_indicators_iterator[0]['value']['timestamp'] == '5'
-
-
-def test_update_indicators_iterator_timestamp_exists_no_indicators_same_query(mocker):
-    """
-     Given
-         - No indicators received
-     When
-         - lastrun has timestamp and query
-     Then
-         - return no indicators
-     """
-    indicators_iterator = []
-    query = {'key': 'val'}
-    mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '4', 'params': query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
-    assert not added_indicators_iterator
-
-
-def test_update_indicators_iterator_indicators_before_timestamp_different_query(mocker):
-    """
-     Given
-         - Indicators received, lastrun has the timestamp and query
-     When
-         - all indicators have smaller timestamp then lastrun but query has changed
-     Then
-         - reset lastrun and return all indicators
-     """
-    indicators_iterator = [
-        {
-            'value': {'timestamp': '1'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '3'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-    ]
-    query = {'key': 'val'}
-    old_query = {'key': 'old'}
-    mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '4', 'params': old_query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
-    assert added_indicators_iterator == indicators_iterator
-
-
 @pytest.mark.parametrize(
     "indicator, feed_tags, expected_calls",
     [
@@ -487,9 +320,7 @@ def test_search_query_indicators_pagination(mocker):
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'createIndicators')
     fetch_attributes_command(client, params_dict)
-    last_run_call_args = demisto.setLastRun.call_args[0][0]
     indicators = demisto.createIndicators.call_args[0][0]
-    assert 'params' in last_run_call_args
     assert len(indicators) == 2
 
 
