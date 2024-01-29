@@ -60,7 +60,7 @@ def determine_client_service_name(command: str):
 def next_token_output_dict(outputs_prefix: str, next_token: str | None, page_outputs: Any, page_outputs_key: str):
     """Creates a dict for CommandResults.output with the next token."""
     outputs = {
-        f"AWS.SecurityLake.{outputs_prefix}(val.{page_outputs_key} && val.{page_outputs_key} == obj.{page_outputs_key})": page_outputs,
+        f"AWS.SecurityLake.{outputs_prefix}(val.{page_outputs_key} && val.{page_outputs_key} == obj.{page_outputs_key})": page_outputs,  # noqa: E501
         "AWS.SecurityLake(true)": {f"{outputs_prefix}NextToken": next_token},
     }
 
