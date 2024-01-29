@@ -476,7 +476,9 @@ class Taxii2FeedClient:
         return ioc_type
 
     def update_last_modified_indicator_date(self, indicator_modified_str: str):
+        demisto.debug("in update_last_modified_indicator_date now")
         if not indicator_modified_str:
+            demisto.debug("no update")
             return
         if self.last_fetched_indicator__modified is None:
             self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
@@ -489,6 +491,8 @@ class Taxii2FeedClient:
             )
             if indicator_created_datetime > last_datetime:
                 self.last_fetched_indicator__modified = indicator_modified_str
+
+        demisto.debug(f"updated last_fetched_indicator__modified: {self.last_fetched_indicator__modified}")
 
     """ PARSING FUNCTIONS"""
 

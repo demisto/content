@@ -74,19 +74,21 @@ def fetch_indicators_command(
         if client.collection_to_fetch
         else None
     )
+    demisto.debug(f"initial interval is: {initial_interval}")
     demisto.debug(f"last fetch time is: {last_fetch_time}")
     if not client.collection_to_fetch:
         # fetch all collections
         if client.collections is None:
             raise DemistoException(ERR_NO_COLL)
         indicators: list = []
+        demisto.debug("fetching from group of collections")
         for collection in client.collections:
-            demisto.debug("fetching from group of collections")
             client.collection_to_fetch = collection
             added_after = get_added_after(
                 fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
             )
             fetched_iocs = client.build_iterator(limit, added_after=added_after)
+            demisto.debug(f"fetched {len(fetched_iocs)} iocs: {fetched_iocs}")
             indicators.extend(fetched_iocs)
             last_run_ctx[collection.id] = client.last_fetched_indicator__modified \
                 if client.last_fetched_indicator__modified \
@@ -101,12 +103,15 @@ def fetch_indicators_command(
         added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
         demisto.debug(f"running build iterator with added after: {added_after}")
         indicators = client.build_iterator(limit, added_after=added_after)
+        demisto.debug(f"fetched {len(indicators)} iocs: {indicators}")
+        demisto.debug(f"client.last_fetched_indicator__modified is: {client.last_fetched_indicator__modified}")
         last_run_ctx[client.collection_to_fetch.id] = (
             client.last_fetched_indicator__modified
             if client.last_fetched_indicator__modified
             else added_after
         )
     demisto.debug(f'{indicators=}')
+    demisto.debug(f"returning last run as: {last_run_ctx}")
     return indicators, last_run_ctx
 
 
@@ -288,6 +293,7 @@ def main():  # pragma: no cover
                 fetch_full_feed,
             )
             demisto.debug(f'After fetch command last run: {last_run_indicators}')
+            demisto.debug(f"returning {len(indicators)} indicators")
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
