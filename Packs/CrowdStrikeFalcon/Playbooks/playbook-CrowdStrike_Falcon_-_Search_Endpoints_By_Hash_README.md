@@ -44,6 +44,11 @@ This playbook does not use any sub-playbooks.
 | Endpoint.Hostname | The endpoint's hostname. | unknown |
 | CrowdStrike.IOC.Type | The type of the IOC. | unknown |
 | Endpoint.IPAddress | The endpoint's IP address. | unknown |
+| CrowdStrike.IOC.Value | The string representation of the indicator. | unknown |
+| Endpoint.OS | The endpoint operation system. | unknown |
+| Endpoint.Status | The endpoint status. | unknown |
+| Endpoint.IsIsolated | The endpoint isolation status. | unknown |
+| CrowdStrike.DeviceID | Device IDs an indicator ran on. | unknown |
 
 ## Playbook Image
 

@@ -171,7 +171,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "1"
     continueonerrortype: ""
     view: |-
       {
@@ -476,6 +476,8 @@ tasks:
                 transformers:
                 - operator: uniq
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -687,7 +689,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "1"
     continueonerrortype: ""
     view: |-
       {
@@ -731,7 +733,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "1"
     continueonerrortype: ""
     view: |-
       {
@@ -751,13 +753,14 @@ view: |-
   {
     "linkLabelsPosition": {
       "13_12_yes": 0.54,
-      "13_3_#default#": 0.16,
+      "13_3_#default#": 0.2,
       "14_11_yes": 0.54,
-      "14_3_#default#": 0.17,
+      "14_3_#default#": 0.14,
       "15_2_yes": 0.5,
-      "15_3_#default#": 0.13,
-      "4_1_yes": 0.56,
-      "4_3_#default#": 0.37,
+      "15_3_#default#": 0.11,
+      "18_3_#default#": 0.14,
+      "19_3_#default#": 0.2,
+      "4_3_#default#": 0.32,
       "6_10_yes": 0.48,
       "6_3_#default#": 0.14,
       "6_8_yes": 0.78,
@@ -765,7 +768,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1405,
+        "height": 1445,
         "width": 1450,
         "x": 170,
         "y": -90
@@ -806,6 +809,16 @@ outputs:
   description: The type of the IOC.
 - contextPath: Endpoint.IPAddress
   description: The endpoint's IP address.
+- contextPath: CrowdStrike.IOC.Value
+  description: The string representation of the indicator.
+- contextPath: Endpoint.OS
+  description: The endpoint operation system.
+- contextPath: Endpoint.Status
+  description: The endpoint status.
+- contextPath: Endpoint.IsIsolated
+  description: The endpoint isolation status.
+- contextPath: CrowdStrike.DeviceID
+  description: Device IDs an indicator ran on.
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
