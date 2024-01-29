@@ -416,11 +416,11 @@
     - .default-job-settings
 
 
-.run-unittests-and-lint:
+.run-infra-tests:
   extends:
     - .unittests-and-lint-settings
   script:
-    - section_start "Test Infrastructure"
+    - 
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/tests -v --disable-warnings
@@ -430,8 +430,11 @@
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
         ./Tests/scripts/sdk_pylint_check.sh
       fi
-    - section_end "Test Infrastructure"
-    - section_start "Run Unit Testing and Lint"
+
+.run-unittests-and-lint:
+  extends:
+    - .unittests-and-lint-settings
+  script:
     - |
       if [[ -n $BUCKET_UPLOAD && $TEST_UPLOAD == "true" ]]; then
         echo "Skipping validations when uploading to a test bucket."
@@ -479,7 +482,6 @@
           fi
         fi
       fi
-    - section_end "Run Unit Testing and Lint"
     - job-done
   parallel:
     matrix:
