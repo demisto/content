@@ -360,6 +360,7 @@ def test_rasterize_html_no_internet_access(mocker):
     assert mocker_output.call_args.args[0]['File'] == 'email.png'
     assert not mock.called
 
+
 def test_log_warning():
     """
     Given   pypdf's logger instance
