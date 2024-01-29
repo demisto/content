@@ -1,0 +1,6 @@
+name: Tenable_io_vulnerabilities Modeling Rule
+id: Tenable_io_vulnerabilities_ModelingRule
+fromversion: 8.4.0
+tags: tenable
+rules: ''
+schema: ''
