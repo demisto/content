@@ -76,7 +76,7 @@ def main():
     # content_pr = get_pr_from_branch('content', release_branch_name, access_token)
     # sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
     # logging.info(f'demisto-sdk pull request created: {sdk_pr.get("html_url")}')
-    logging.info(f'content pull request created: {content_pr.get("html_url")}')
+    # logging.info(f'content pull request created: {content_pr.get("html_url")}')
 
     # content_pr_id = content_pr.get('number')
     # sdk_pr_id = sdk_pr.get('number')
