@@ -19,9 +19,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 * Command-Line Analysis
 * Threat Hunting - Generic
-* Block Indicators - Generic v3
+* Entity Enrichment - Generic v4
 * Cortex XDR - Endpoint Investigation
-* Entity Enrichment - Generic v3
+* Block Indicators - Generic v3
 
 ### Integrations
 

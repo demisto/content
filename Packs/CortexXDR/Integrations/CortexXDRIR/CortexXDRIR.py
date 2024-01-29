@@ -189,6 +189,132 @@ class Client(CoreClient):
 
         return filtered_incidents
 
+    def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
+                      lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
+                      starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
+                      page_number=0, limit=100, gte_creation_time_milliseconds=0):
+        """
+        Filters and returns incidents
+
+        :param incident_id_list: List of incident ids - must be list
+        :param lte_modification_time: string of time format "2019-12-31T23:59:00"
+        :param gte_modification_time: string of time format "2019-12-31T23:59:00"
+        :param lte_creation_time: string of time format "2019-12-31T23:59:00"
+        :param gte_creation_time: string of time format "2019-12-31T23:59:00"
+        :param starred_incidents_fetch_window: string of time format "2019-12-31T23:59:00"
+        :param starred: True if the incident is starred, else False
+        :param status: string of status
+        :param sort_by_modification_time: optional - enum (asc,desc)
+        :param sort_by_creation_time: optional - enum (asc,desc)
+        :param page_number: page number
+        :param limit: maximum number of incidents to return per page
+        :param gte_creation_time_milliseconds: greater than time in milliseconds
+        :return:
+        """
+        search_from = page_number * limit
+        search_to = search_from + limit
+
+        request_data = {
+            'search_from': search_from,
+            'search_to': search_to,
+        }
+
+        if sort_by_creation_time and sort_by_modification_time:
+            raise ValueError('Should be provide either sort_by_creation_time or '
+                             'sort_by_modification_time. Can\'t provide both')
+        if sort_by_creation_time:
+            request_data['sort'] = {
+                'field': 'creation_time',
+                'keyword': sort_by_creation_time
+            }
+        elif sort_by_modification_time:
+            request_data['sort'] = {
+                'field': 'modification_time',
+                'keyword': sort_by_modification_time
+            }
+
+        filters = []
+        if incident_id_list is not None and len(incident_id_list) > 0:
+            filters.append({
+                'field': 'incident_id_list',
+                'operator': 'in',
+                'value': incident_id_list
+            })
+
+        if status:
+            filters.append({
+                'field': 'status',
+                'operator': 'eq',
+                'value': status
+            })
+
+        if starred and starred_incidents_fetch_window:
+            filters.append({
+                'field': 'starred',
+                'operator': 'eq',
+                'value': True
+            })
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': starred_incidents_fetch_window
+            })
+            if demisto.command() == 'fetch-incidents':
+                if len(filters) > 0:
+                    request_data['filters'] = filters
+                incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
+                return incidents
+
+        else:
+            if lte_creation_time:
+                filters.append({
+                    'field': 'creation_time',
+                    'operator': 'lte',
+                    'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
+                })
+
+            if gte_creation_time:
+                filters.append({
+                    'field': 'creation_time',
+                    'operator': 'gte',
+                    'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
+                })
+
+            if lte_modification_time:
+                filters.append({
+                    'field': 'modification_time',
+                    'operator': 'lte',
+                    'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
+                })
+
+            if gte_modification_time:
+                filters.append({
+                    'field': 'modification_time',
+                    'operator': 'gte',
+                    'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
+                })
+
+            if gte_creation_time_milliseconds > 0:
+                filters.append({
+                    'field': 'creation_time',
+                    'operator': 'gte',
+                    'value': gte_creation_time_milliseconds
+                })
+
+        if len(filters) > 0:
+            request_data['filters'] = filters
+
+        res = self._http_request(
+            method='POST',
+            url_suffix='/incidents/get_incidents/',
+            json_data={'request_data': request_data},
+            headers=self.headers,
+            timeout=self.timeout
+        )
+        incidents = res.get('reply', {}).get('incidents', [])
+
+        return incidents
+
     def update_incident(self, incident_id, status=None, assigned_user_mail=None, assigned_user_pretty_name=None, severity=None,
                         resolve_comment=None, unassign_user=None, add_comment=None):
         update_data: dict[str, Any] = {}
@@ -248,6 +374,32 @@ class Client(CoreClient):
             json_data={'request_data': request_data},
             headers=self.headers,
             timeout=self.timeout
+        )
+
+        incident = reply.get('reply')
+
+        return incident
+
+    def get_multiple_incidents_extra_data(self, incident_id):
+        """
+        Returns incident by id
+
+        :param incident_id: The id of incident
+        :return:
+        Maximum number alerts to get in Maximum number alerts to get in "get_multiple_incidents_extra_data" is 50, not sorted
+        """
+        request_data = {
+            'incident_id': incident_id,
+            "request_data": {"fields_to_exclude": ["network_artifacts"]}
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/public_api/v1/incidents/get_multiple_incidents_extra_data/',
+            json_data={'request_data': request_data},
+            headers=self.headers,
+            timeout=self.timeout,
+
         )
 
         incident = reply.get('reply')
@@ -344,6 +496,104 @@ def get_tenant_info_command(client: Client):
     )
 
 
+def get_incidents_command(client, args):
+    """
+    Retrieve a list of incidents from XDR, filtered by some filters.
+    """
+
+    # sometimes incident id can be passed as integer from the playbook
+    incident_id_list = args.get('incident_id_list')
+    if isinstance(incident_id_list, int):
+        incident_id_list = str(incident_id_list)
+
+    incident_id_list = argToList(incident_id_list)
+    # make sure all the ids passed are strings and not integers
+    for index, id_ in enumerate(incident_id_list):
+        if isinstance(id_, int | float):
+            incident_id_list[index] = str(id_)
+
+    lte_modification_time = args.get('lte_modification_time')
+    gte_modification_time = args.get('gte_modification_time')
+    since_modification_time = args.get('since_modification_time')
+
+    if since_modification_time and gte_modification_time:
+        raise ValueError('Can\'t set both since_modification_time and lte_modification_time')
+    if since_modification_time:
+        gte_modification_time, _ = parse_date_range(since_modification_time, TIME_FORMAT)
+
+    lte_creation_time = args.get('lte_creation_time')
+    gte_creation_time = args.get('gte_creation_time')
+    since_creation_time = args.get('since_creation_time')
+
+    if since_creation_time and gte_creation_time:
+        raise ValueError('Can\'t set both since_creation_time and lte_creation_time')
+    if since_creation_time:
+        gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
+
+    statuses = argToList(args.get('status', ''))
+
+    starred = args.get('starred')
+    starred_incidents_fetch_window = args.get('starred_incidents_fetch_window', '3 days')
+    starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
+
+    sort_by_modification_time = args.get('sort_by_modification_time')
+    sort_by_creation_time = args.get('sort_by_creation_time')
+
+    page = int(args.get('page', 0))
+    limit = int(args.get('limit', 100))
+
+    # If no filters were given, return a meaningful error message
+    if not incident_id_list and (not lte_modification_time and not gte_modification_time and not since_modification_time
+                                 and not lte_creation_time and not gte_creation_time and not since_creation_time
+                                 and not statuses and not starred):
+        raise ValueError("Specify a query for the incidents.\nFor example:"
+                         " !xdr-get-incidents since_creation_time=\"1 year\" sort_by_creation_time=\"desc\" limit=10")
+
+    if statuses:
+        raw_incidents = []
+
+        for status in statuses:
+            raw_incidents += client.get_incidents(
+                incident_id_list=incident_id_list,
+                lte_modification_time=lte_modification_time,
+                gte_modification_time=gte_modification_time,
+                lte_creation_time=lte_creation_time,
+                gte_creation_time=gte_creation_time,
+                sort_by_creation_time=sort_by_creation_time,
+                sort_by_modification_time=sort_by_modification_time,
+                page_number=page,
+                limit=limit,
+                status=status,
+                starred=starred,
+                starred_incidents_fetch_window=starred_incidents_fetch_window,
+            )
+
+        if len(raw_incidents) > limit:
+            raw_incidents = raw_incidents[:limit]
+    else:
+        raw_incidents = client.get_incidents(
+            incident_id_list=incident_id_list,
+            lte_modification_time=lte_modification_time,
+            gte_modification_time=gte_modification_time,
+            lte_creation_time=lte_creation_time,
+            gte_creation_time=gte_creation_time,
+            sort_by_creation_time=sort_by_creation_time,
+            sort_by_modification_time=sort_by_modification_time,
+            page_number=page,
+            limit=limit,
+            starred=starred,
+            starred_incidents_fetch_window=starred_incidents_fetch_window,
+        )
+
+    return (
+        tableToMarkdown('Incidents', raw_incidents),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': raw_incidents
+        },
+        raw_incidents
+    )
+
+
 def update_incident_command(client, args):
     incident_id = args.get('incident_id')
     assigned_user_mail = args.get('assigned_user_mail')
@@ -400,6 +650,18 @@ def get_last_mirrored_in_time(args):
     return last_mirrored_in_timestamp
 
 
+def get_multiple_incidents_extra_data_response(client, args) -> bool:
+    try:
+        raw_incident: dict = client.get_multiple_incidents_extra_data(args.get('incident_id')) or {}
+        use_get_incident_extra_data = int(raw_incident.get('incident', {}).get('replay', {}).get('alert_count')) > \
+            int(raw_incident.get('incident', {}).get('replay', {}).get('number_in_config'))
+        return use_get_incident_extra_data
+    except Exception as err:
+        if err.res.status_code == 500:  # type: ignore
+            return False
+    return True
+
+
 def get_incident_extra_data_command(client, args):
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
@@ -414,18 +676,17 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-
-    demisto.debug(f"Performing extra-data request on incident: {incident_id}")
-    raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
-
-    incident = raw_incident.get('incident')
-    incident_id = incident.get('incident_id')
-    raw_alerts = raw_incident.get('alerts').get('data')
+    use_get_incident_extra_data = get_multiple_incidents_extra_data_response(client, args)  # 500: {},True
+    raw_incident = client.get_multiple_incidents_extra_data(incident_id) if use_get_incident_extra_data else \
+        client.get_incident_extra_data(incident_id, alerts_limit)
+    incident = raw_incident.get('incident', {})
+    incident_id = incident.get('incident_id', {})
+    raw_alerts = raw_incident.get('alerts', {}).get('data')
     context_alerts = clear_trailing_whitespace(raw_alerts)
     for alert in context_alerts:
         alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
-    file_artifacts = raw_incident.get('file_artifacts').get('data')
-    network_artifacts = raw_incident.get('network_artifacts').get('data')
+    file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
+    network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
 
     readable_output = [tableToMarkdown(f'Incident {incident_id}', incident)]
 
@@ -829,12 +1090,13 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     try:
         # The count of incidents, so as not to pass the limit
         count_incidents = 0
+        use_get_incident_extra_data = get_multiple_incidents_extra_data_response(client, raw_incidents[0].get('incident_id'))
 
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
-
-            incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
-                                                                     "alerts_limit": 1000})[2].get('incident')
+            incident_data = client.get_multiple_incidents_extra_data(incident_id) if use_get_incident_extra_data else \
+                client.get_incident_extra_data(incident_id, {"incident_id": incident_id,
+                                                             "alerts_limit": 1000})[2].get('incident')
 
             sort_all_list_incident_fields(incident_data)
 
@@ -988,7 +1250,7 @@ def main():  # pragma: no cover
     """
     Executes an integration command
     """
-    command = demisto.command()
+    command = 'xdr-get-incident-extra-data'  # demisto.command()
     params = demisto.params()
     LOG(f'Command being called is {command}')
 
@@ -1023,7 +1285,6 @@ def main():  # pragma: no cover
     args = demisto.args()
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
-
     try:
         if command == 'test-module':
             client.test_module(first_fetch_time)
