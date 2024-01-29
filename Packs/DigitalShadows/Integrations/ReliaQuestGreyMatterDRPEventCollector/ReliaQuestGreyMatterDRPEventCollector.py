@@ -250,6 +250,31 @@ def enrich_events_with_triage_item(
     return alert_ids_to_triage_ids, incident_ids_to_triage_ids
 
 
+def get_mitre_attack_ids(_dict: dict, mitre_ids: Optional[set] = None) -> list[str]:
+    if not mitre_ids:
+        mitre_ids = set()
+
+    for key, value in _dict.items():
+        if key == "id":
+            mitre_ids.add(value)
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    get_mitre_attack_ids(item, mitre_ids=mitre_ids)
+
+    return list(mitre_ids)
+
+
+def enrich_events_with_mitre_attack_mapping(alert_incident: dict) -> tuple[list[str], list[str], list[str]]:
+    mitre_tactic_names, mitre_technique_names = set(), set()
+    for tactic in (alert_incident.get("mitre-attack-mapping") or {}).get("tactics") or []:
+        mitre_tactic_names.add(tactic.get("name"))
+        for technique in tactic.get("techniques") or []:
+            mitre_technique_names.add(technique.get("name"))
+
+    return list(mitre_tactic_names), list(mitre_technique_names), get_mitre_attack_ids(alert_incident)
+
+
 def enrich_events_with_incident_or_alert_metadata(
     alerts_incidents: List[dict],
     triage_item_ids_to_events: dict[str, List[dict]],
@@ -262,15 +287,12 @@ def enrich_events_with_incident_or_alert_metadata(
     """
     for alert_incident in alerts_incidents:
         _id = alert_incident.get("id")
-        mitre_tactic_names = list(
-            {
-                tactic.get("name") for tactic in (alert_incident.get("mitre-attack-mapping") or {}).get("tactics") or []
-            }
-        )
+        mitre_tactic_names, mitre_technique_names, mitre_ids = enrich_events_with_mitre_attack_mapping(alert_incident)
         for event in triage_item_ids_to_events[event_ids_to_triage_ids[_id]]:  # type: ignore[index]
             event[event_type] = alert_incident
-            if mitre_tactic_names:
-                event["mitre_tactics"] = mitre_tactic_names
+            event["mitre_tactics"] = mitre_tactic_names
+            event["mitre_techniques"] = mitre_technique_names
+            event["mitre_ids"] = mitre_ids
         for asset in alert_incident.get("assets") or []:
             if asset_id := asset.get("id"):
                 if asset_id not in event_ids_to_triage_ids:
