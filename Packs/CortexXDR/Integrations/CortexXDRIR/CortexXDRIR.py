@@ -677,7 +677,6 @@ def get_incident_extra_data_command(client, args):
     raw_incident, use_get_incident_extra_data = get_multiple_incidents_extra_data_response(client, args)  # 500: {},True
     if (not raw_incident) or (not use_get_incident_extra_data):
         raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
-    raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
     incident = raw_incident.get('incident', {})
     incident_id = incident.get('incident_id', {})
     raw_alerts = raw_incident.get('alerts', {}).get('data')
