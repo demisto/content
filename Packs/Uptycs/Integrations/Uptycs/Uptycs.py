@@ -543,7 +543,7 @@ def uptycs_get_detection_details():
 
 def uptycs_get_detection_details_command():
     query_results = uptycs_get_detection_details()
-    context = query_results.get('detection')
+    context = query_results.get('detection').copy()
     final_alerts = []
     detection_url = 'https://' + DOMAIN + '/ui/detections/' + context.get('id', '')
 
