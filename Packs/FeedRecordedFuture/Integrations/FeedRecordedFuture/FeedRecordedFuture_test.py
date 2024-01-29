@@ -187,7 +187,7 @@ GET_INDICATOR_INPUTS = [
 
 @pytest.mark.parametrize('indicator_type, build_iterator_answer, value, type', GET_INDICATOR_INPUTS)
 def test_get_indicators_command(mocker, indicator_type, build_iterator_answer, value, type):
-    client = Client(indicator_type=indicator_type, api_token='123', services='fusion')  # type: ignore
+    client = Client(indicator_type=indicator_type, api_token='123', services='fusion')  
     args = {
         'indicator_type': indicator_type,
         'limit': 1
@@ -264,6 +264,26 @@ CALCULATE_DBOT_SCORE_INPUTS = [
 
 @pytest.mark.parametrize('risk_from_feed, malicious_threshold, suspicious_threshold, expected_score', CALCULATE_DBOT_SCORE_INPUTS)
 def test_calculate_dbot_score(risk_from_feed, malicious_threshold, suspicious_threshold, expected_score):
+    """
+    Given:
+     - Values for calculating an indicator's verdict including:
+        1. The Recorded Future Risk Score of the indicator (0 - 100)
+        2. The minimum score to be malicious (0 - 100)
+        3. The minimum score to be suspicious (-1 - 100, must be less than the malicious_threshold)
+        4. What the expected D-Bot Score (verdict) is (0 - 3)
+     - Individually adjust values 1, 2 & 3 to capture the cases 
+        - Score is greater than the malicious threshold
+        - Score is between the malicious threshold and suspicious threshold
+        - Score is less than the suspicious threshold
+        - Score is 0
+        - Score equals a threshold
+
+    When:
+     - Running the 'calculate_indicator_score'
+
+    Then:
+     - Verify the indicator's dbot score is set correctly given the suspicious and malicious risk score range.
+    """
     client = Client(indicator_type='ip', api_token='123', services=[
                     'fusion'], malicious_threshold=malicious_threshold, suspicious_threshold=suspicious_threshold)
     score = client.calculate_indicator_score(risk_from_feed)
