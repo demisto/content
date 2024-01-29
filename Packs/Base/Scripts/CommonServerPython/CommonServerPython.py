@@ -28,7 +28,7 @@ from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
 from inspect import currentframe
-
+from urllib.error import HTTPError
 import demistomock as demisto
 import warnings
 
@@ -9005,6 +9005,9 @@ if 'requests' in sys.modules:
                 except Exception:  # noqa: disable=broad-except
                     reason = ''
                 err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
+                raise DemistoException(err_msg, exception)
+            except HTTPError as exception:
+                err_msg = 'Error in API call [500] - Internal Server Error\nInternal Server Error\r\n\r\nThe server encountered an unexpected internal server error'
                 raise DemistoException(err_msg, exception)
 
         def _is_status_code_valid(self, response, ok_codes=None):
