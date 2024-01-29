@@ -1,6 +1,6 @@
 {
     "name": "Huawei Network Devices",
-    "description": "Mapping for Huawei Network Devices such as routers and switches of S and AR series",
+    "description": "Modeling rule for Huawei Network Devices such as S series switches and AR series Routers.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

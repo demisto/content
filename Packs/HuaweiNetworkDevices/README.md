@@ -9,31 +9,24 @@ This section describes the configuration that needs to be done on a Huawei S Ser
 2. Type the following command to access the system view:
     ```<bash>
     system-view
-   ```<bash>
 3. Type the following command to enable the information center:
    ```<bash>
    info-center enable
-    ```<bash>
 4. Type the following command to send informational level log messages to the default channel:
     ```<bash>
     info-center source default channel loghost log level informational debug state off trap state off
-    ```<bash>
 5. **Optional:** To verify your Huawei S Series Switch/AR Series Router source configuration, type the command:
     ```<bash>
     display channel loghost
-    ```<bash>
 6. Type the following command to configure the IP address for ***Broker-VM*** as the log host:
     ```<bash>
     info-center loghost <IP address> facility <local>
-    ```<bash>
-<IP address> is the IP address of the Broker-VM.
-<local> is the syslog facility, for example, local0.
+**<IP address>** is the IP address of the Broker-VM.
+**<local>** is the syslog facility, for example, local0.
 
 1. Type the following command to exit the configuration:
     ```<bash>
     quit
-    ```<bash>
-
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
@@ -52,8 +45,5 @@ You can configure the specific vendor and product for this instance.
    | :---          | :---        
    | `Vendor`      | Enter **Huawei**.
    | `Product`     | Enter **Network Devices**.
-
-### Supported Products
-This pack is supported for Huawei S Series Switches and Huawei AR Series Router.
 
 </~XSIAM>
