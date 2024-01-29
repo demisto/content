@@ -22,7 +22,7 @@ from EWSO365 import (
     handle_html,
     handle_transient_files,
     parse_incident_from_item,
-    parse_item_as_dict
+    parse_item_as_dict,
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
 from exchangelib.attachments import AttachmentId, ItemAttachment
@@ -843,8 +843,22 @@ class TestEmailModule(unittest.TestCase):
 @pytest.mark.parametrize("headers, expected_formatted_headers", [
     ([("Message-ID", '<valid_header>')], [("Message-ID", '<valid_header>')]),
     ([("Message-ID", '<[valid_header]>')], [("Message-ID", '<valid_header>')]),
+    ([("Message-ID", 'Other type of header format')], [("Message-ID", 'Other type of header format')]),
 ])
-def test_handle_attached_email_with_incorrect_id(headers, expected_formatted_headers):
+def test_handle_attached_email_with_incorrect_id(mocker, headers, expected_formatted_headers):
+    """
+    Given:
+        - case 1: valid Message-ID header value in attached email object
+        - case 1: invalid Message-ID header value in attached email object
+        - case 3: a Message-ID header value format which is not tested in the context of handle_attached_email_with_incorrect_id
+    When:
+        - fetching email which have an attached email with Message-ID header
+    Then:
+        - case 1: verify the header in the correct format and return the attached email object
+        - case 2: check if the Message-ID header value is in the correct format, if not, fix it if possible.
+        - case 3: return the header value without without further handling
+
+    """
     mime_content = b'\xc400'
     email_policy = SMTP
     attached_email = email.message_from_bytes(mime_content, policy=email_policy)

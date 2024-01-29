@@ -2042,12 +2042,12 @@ def handle_attached_email_with_incorrect_id(attached_email):
     This issue happens due to a current bug in "email" library and further explained in XSUP-32074.
     Public issue link: https://github.com/python/cpython/issues/105802
 
-    The function will run on every attached email if exists, check its Message-ID header value and correct it if necessary.
+    The function will run on every attached email if exists, check its Message-ID header value and fix it if possible.
     Args:
-        attached_email (_type_): attached email object.
+        attached_email (Message): attached email object.
 
     Returns:
-        _type_: attached email object.
+        Message: attached email object.
     """
     message_id_value = ""
     for i in range(len(attached_email._headers)):
