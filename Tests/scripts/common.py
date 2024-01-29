@@ -6,14 +6,10 @@ from typing import Any
 import pandas as pd
 import requests
 from dateutil import parser
-import requests
 from gitlab import Gitlab
 from jira import Issue
 from junitparser import TestSuite, JUnitXml
 from Tests.scripts.utils import logging_wrapper as logging
-from gitlab.v4.objects.pipelines import ProjectPipeline
-from gitlab.v4.objects.commits import ProjectCommit
-
 from gitlab.v4.objects.pipelines import ProjectPipeline
 from gitlab.v4.objects.commits import ProjectCommit
 
@@ -235,23 +231,17 @@ def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
 
 
 def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
-                              look_back_hours: int) -> tuple[list[ProjectPipeline], list[ProjectCommit]]:
-def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
                               look_back_hours: int):
     """
     Get all pipelines and commits on the master branch in the last X hours.
     The commits and pipelines are in order of creation time.
-    Get all pipelines and commits on the master branch in the last X hours.
-    The commits and pipelines are in order of creation time.
     Args:
-        gitlab_client - the gitlab instance
         gitlab_client - the gitlab instance
         project_id - the id of the project to query
         look_back_hours - the number of hours to look back for commits and pipeline
     Return:
         a list of gitlab pipelines and a list of gitlab commits in ascending order (as the way it is in the UI)
     """
-    project = gitlab_client.projects.get(project_id)
     project = gitlab_client.projects.get(project_id)
 
     # Calculate the timestamp for look_back_hours ago
@@ -260,7 +250,6 @@ def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
 
     commits = project.commits.list(all=True, since=time_threshold, order_by='updated_at', sort='asc')
     pipelines = project.pipelines.list(all=True, updated_after=time_threshold, ref='master',
-                                       source='push', order_by='id', sort='asc')
                                        source='push', order_by='id', sort='asc')
 
     return pipelines, commits
