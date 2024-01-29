@@ -8986,12 +8986,14 @@ if 'requests' in sys.modules:
                     raise DemistoException('Failed to parse {} object from response: {}'  # type: ignore[str-bytes-safe]
                                            .format(resp_type, res.content), exception, res)
             except requests.exceptions.ConnectTimeout as exception:
-                self.execution_metrics.timeout_error += 1
+                if update_metrics:
+                    self.execution_metrics.timeout_error += 1
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.SSLError as exception:
-                self.execution_metrics.ssl_error += 1
+                if update_metrics:
+                    self.execution_metrics.ssl_error += 1
                 # in case the "Trust any certificate" is already checked
                 if not self._verify:
                     raise
@@ -8999,12 +9001,14 @@ if 'requests' in sys.modules:
                           ' the integration configuration.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.ProxyError as exception:
-                self.execution_metrics.proxy_error += 1
+                if update_metrics:
+                    self.execution_metrics.proxy_error += 1
                 err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
                           ' selected, try clearing the checkbox.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.ConnectionError as exception:
-                self.execution_metrics.connection_error += 1
+                if update_metrics:
+                    self.execution_metrics.connection_error += 1
                 # Get originating Exception in Exception chain
                 error_class = str(exception.__class__)
                 err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
