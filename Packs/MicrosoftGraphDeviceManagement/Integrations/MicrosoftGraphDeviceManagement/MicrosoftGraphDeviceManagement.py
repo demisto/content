@@ -27,6 +27,7 @@ HEADERS: dict = {
                    'manufacturer', 'model', 'imei', 'meid'],
 }
 
+API_VERSION: str = 'v1.0'
 
 ''' CLIENT '''
 
@@ -36,7 +37,7 @@ class MsGraphClient:
                  ok_codes, certificate_thumbprint, private_key,
                  managed_identities_client_id: Optional[str] = None):
         self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
-        self.base_url = urljoin(self.azure_cloud.endpoints.microsoft_graph_resource_id, '/v1.0')
+        self.base_url = urljoin(self.azure_cloud.endpoints.microsoft_graph_resource_id, f'/{API_VERSION}/')
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=self.base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint,
@@ -48,10 +49,19 @@ class MsGraphClient:
                                          )
 
     def list_managed_devices(self, limit: int) -> tuple[list, Any]:
+        #url_suffix: str = '/deviceManagement/managedDevices?$top=1&'
         url_suffix: str = '/deviceManagement/managedDevices'
         raw_response = self.ms_client.http_request('GET', url_suffix)
-        return raw_response.get('value', [])[:limit], raw_response
-
+        results: list = raw_response.get('value')
+        next_page = raw_response.get('@odata.nextLink')
+        while next_page:
+            concat_next_page_url = next_page.split(API_VERSION)[1]
+            raw_response = self.ms_client.http_request('GET', concat_next_page_url)
+            if raw_response.get('value') != []:
+                results += (raw_response.get('value'))
+            next_page = raw_response.get('@odata.nextLink')
+        return results[:limit], raw_response
+        # TODO is it ok to return a list of raw response? is this a BC?
     def find_managed_devices(self, device_name: str) -> tuple[Any, str]:
         url_suffix: str = f"/deviceManagement/managedDevices?$filter=deviceName eq '{device_name}'"
         raw_response = self.ms_client.http_request('GET', url_suffix)
