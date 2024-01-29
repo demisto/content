@@ -414,6 +414,8 @@
     DOCKER_TLS_CERTDIR: ""
   extends:
     - .default-job-settings
+  script:
+    - docker-credential-gcr configure-docker --registries=${DOCKER_IO_DOMAIN}
 
 
 .run-unittests-and-lint:
