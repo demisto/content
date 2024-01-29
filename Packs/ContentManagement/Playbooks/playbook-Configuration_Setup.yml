@@ -1,8 +1,8 @@
-id: Configuration Setup
+id: Configuration Setup_copy
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Configuration Setup
+name: Configuration Setup_copy
 description: Playbook for the configuration incident type.
 starttaskid: '0'
 tasks:
@@ -70,8 +70,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 545
+          "x": 325,
+          "y": 555
         }
       }
     note: false
@@ -158,9 +158,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
-    nexttasks:
-      '#none#':
-      - '11'
     scriptarguments:
       marketplacepacksinstalled:
         simple: ${ConfigurationSetup.MarketplacePacks}
@@ -252,10 +249,10 @@ tasks:
     continueonerrortype: ""
   '10':
     id: '10'
-    taskid: c3f55b02-a309-4152-827a-e8d91f584832
+    taskid: 6b39989e-4382-4fe5-8af7-26e52562ae68
     type: regular
     task:
-      id: c3f55b02-a309-4152-827a-e8d91f584832
+      id: 6b39989e-4382-4fe5-8af7-26e52562ae68
       version: -1
       name: Download Custom Packs from Google Cloud Storage
       description: Retrieves object data into a file.
@@ -609,10 +606,10 @@ tasks:
     continueonerrortype: ""
   '23':
     id: '23'
-    taskid: 208ef632-68f8-403f-8a43-5279e820ceb0
+    taskid: 87c6367b-71f1-49c9-876d-b7869f35d22b
     type: condition
     task:
-      id: 208ef632-68f8-403f-8a43-5279e820ceb0
+      id: 87c6367b-71f1-49c9-876d-b7869f35d22b
       version: -1
       name: What is the Source of the Configuration File?
       description: Determines from where to get the configuration file.
@@ -628,6 +625,8 @@ tasks:
       - '35'
       AzureDevOps:
       - "37"
+      GOOGLE CLOUD STORAGE:
+      - "39"
     separatecontext: false
     conditions:
     - label: Attachment
@@ -670,6 +669,16 @@ tasks:
           right:
             value:
               simple: AzureDevOps
+    - label: GOOGLE CLOUD STORAGE
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.configurationfilesource
+            iscontext: true
+          right:
+            value:
+              simple: GoogleCloudStorage
     view: |-
       {
         "position": {
@@ -1051,10 +1060,10 @@ tasks:
     continueonerrortype: ""
   '35':
     id: '35'
-    taskid: f471af2f-d303-4f77-86ae-91c1abe94cd3
+    taskid: b7880336-3737-4d2f-89fc-f3d749f21647
     type: regular
     task:
-      id: f471af2f-d303-4f77-86ae-91c1abe94cd3
+      id: b7880336-3737-4d2f-89fc-f3d749f21647
       version: -1
       name: Get Configuration File From Gitlab
       description: Get raw file
@@ -1206,6 +1215,43 @@ tasks:
         "position": {
           "x": 2230,
           "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: b11e1f24-9592-4802-8235-eb9a9bb6dd8f
+    type: regular
+    task:
+      id: b11e1f24-9592-4802-8235-eb9a9bb6dd8f
+      version: -1
+      name: Get Configuration File from Google cloud storage
+      description: Retrieves object data into a file.
+      script: Google Cloud Storage|||gcs-download-file
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      bucket_name:
+        simple: ${incident.cicds3bucketname}
+      object_name:
+        simple: ${incident.configfilepath}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 67.5,
+          "y": 370
         }
       }
     note: false
