@@ -152,44 +152,44 @@
 #    - SDK_PIPELINE_ID=$(head -n 1 "${ARTIFACTS_FOLDER}"/SDK_PIPELINE_ID.txt)
 #    - python3 ./Tests/sdk_release/wait_for_pipeline.py -g "${GITLAB_API_TOKEN}" -p "${SDK_PIPELINE_ID}" -pid "${CI_PROJECT_ID}"
 #    - section_end "Wait for SDK nightly build"
-
-slack-notify:
-  stage: wait-for-build-to-finish
-  extends:
-    - .release-sdk
-    - .default-job-settings
-  allow_failure: true
+#
+#slack-notify:
+#  stage: wait-for-build-to-finish
+#  extends:
+#    - .release-sdk
+#    - .default-job-settings
+#  allow_failure: true
 #  needs:
 #    - wait-for-demisto-sdk-nightly
 #    - wait-for-content-private-nightly
 #    - wait-for-content-internal-dist-nightly
-  variables:
-    REVIEWER: $REVIEWER
-    SLACK_CHANNEL: $SLACK_CHANNEL
-  script:
-    - section_start "Slack notify" --collapsed
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "All nightlies builds has been finished, please check their status and continue with the release" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt "${GITLAB_API_TOKEN}" -gu "${REVIEWER}" -ch "${SLACK_CHANNEL}"
-    - section_end "Slack notify"
-
-create-release-pull-request:
-  stage: release-flow
-  extends:
-    - .release-sdk
-    - .default-job-settings
-  needs:
-    - slack-notify
-  when: manual
-  variables:
-    RELEASE_VERSION: $RELEASE_VERSION
-    GITHUB_TOKEN: $GITHUB_TOKEN
-    IS_DRAFT: $IS_DRAFT
-    REVIEWER: $REVIEWER
-    SLACK_CHANNEL: $SLACK_CHANNEL
-  script:
-    - section_start "Create sdk release pr" --collapsed
-    - python3 ./Tests/sdk_release/create_sdk_pr.py -t "${GITHUB_TOKEN}" -b "${RELEASE_VERSION}" -d "${IS_DRAFT}" -ro "${REVIEWER}"
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The demisto-sdk release PR is ready and waiting for review, please approve it but don't merge it yet" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt "${GITLAB_API_TOKEN}" -gu "${REVIEWER}" -ch "${SLACK_CHANNEL}"
-    - section_end "Create sdk release pr"
+#  variables:
+#    REVIEWER: $REVIEWER
+#    SLACK_CHANNEL: $SLACK_CHANNEL
+#  script:
+#    - section_start "Slack notify" --collapsed
+#    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "All nightlies builds has been finished, please check their status and continue with the release" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt "${GITLAB_API_TOKEN}" -gu "${REVIEWER}" -ch "${SLACK_CHANNEL}"
+#    - section_end "Slack notify"
+#
+#create-release-pull-request:
+#  stage: release-flow
+#  extends:
+#    - .release-sdk
+#    - .default-job-settings
+#  needs:
+#    - slack-notify
+#  when: manual
+#  variables:
+#    RELEASE_VERSION: $RELEASE_VERSION
+#    GITHUB_TOKEN: $GITHUB_TOKEN
+#    IS_DRAFT: $IS_DRAFT
+#    REVIEWER: $REVIEWER
+#    SLACK_CHANNEL: $SLACK_CHANNEL
+#  script:
+#    - section_start "Create sdk release pr" --collapsed
+#    - python3 ./Tests/sdk_release/create_sdk_pr.py -t "${GITHUB_TOKEN}" -b "${RELEASE_VERSION}" -d "${IS_DRAFT}" -ro "${REVIEWER}"
+#    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The demisto-sdk release PR is ready and waiting for review, please approve it but don't merge it yet" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt "${GITLAB_API_TOKEN}" -gu "${REVIEWER}" -ch "${SLACK_CHANNEL}"
+#    - section_end "Create sdk release pr"
 
 deploy-sdk-to-pypi:
   stage: release-flow
