@@ -50,11 +50,11 @@ class MsGraphClient:
 
     def list_managed_devices(self, limit: int) -> tuple[list, Any]:
         #url_suffix: str = '/deviceManagement/managedDevices?$top=1&'
-        url_suffix: str = '/deviceManagement/managedDevices'
+        url_suffix: str = f'/deviceManagement/managedDevices?$top={limit}&'
         raw_response = self.ms_client.http_request('GET', url_suffix)
         results: list = raw_response.get('value')
         next_page = raw_response.get('@odata.nextLink')
-        while next_page:
+        while next_page and limit > 1000:
             concat_next_page_url = next_page.split(API_VERSION)[1]
             raw_response = self.ms_client.http_request('GET', concat_next_page_url)
             if raw_response.get('value') != []:
@@ -62,6 +62,7 @@ class MsGraphClient:
             next_page = raw_response.get('@odata.nextLink')
         return results[:limit], raw_response
         # TODO is it ok to return a list of raw response? is this a BC?
+
     def find_managed_devices(self, device_name: str) -> tuple[Any, str]:
         url_suffix: str = f"/deviceManagement/managedDevices?$filter=deviceName eq '{device_name}'"
         raw_response = self.ms_client.http_request('GET', url_suffix)
