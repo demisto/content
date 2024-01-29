@@ -391,7 +391,7 @@ def test_create_relationships_list():
                                               tags=RAW_TAGS, reliability='B - Usually reliable')
     relation_entry = [relation.to_entry() for relation in relationships]
 
-    for relation, i in zip(relation_entry, range(len(relation_entry))):
+    for i, relation in enumerate(relation_entry):
         assert relation.get('name') == expected_name
         assert relation.get('entityA') == 'Test'
         assert relation.get('entityB') == expected_name_entity_b[i]
@@ -637,7 +637,6 @@ def test_metrics(mocker):
     assert return_results_mock.call_args_list[0][0][0].readable_output == 'API Rate limit exceeded, rerunning command.'
     assert return_results_mock.call_args_list[0][0][0].scheduled_command._args == {
         'unit42': 'True', 'class': 'Actor', 'rate_limit_auto_retry': 'false',
-        'create_relationships': True, 'reliability': 'B - Usually reliable'
     }
     assert return_results_mock.call_args_list[1][0][0].execution_metrics == [{'APICallsCount': 1, 'Type': 'QuotaError'}]
     assert return_results_mock.call_args_list[2][0][0].readable_output == '''### Autofocus API Points

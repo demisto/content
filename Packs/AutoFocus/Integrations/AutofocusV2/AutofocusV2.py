@@ -291,7 +291,7 @@ def return_metrics():
         return_results(API_POINTS_TABLE)
 
 
-def rerun_command_if_required(api_res: dict, rate_limit_auto_retry: bool, command: str, args: dict):
+def rerun_command_if_required(api_res: dict, rate_limit_auto_retry: bool):
     daily_points_remaining = dict_safe_get(api_res, ('bucket_info', 'daily_points_remaining'), 0)
     if not (rate_limit_auto_retry and daily_points_remaining):
         results = CommandResults(
@@ -300,13 +300,12 @@ def rerun_command_if_required(api_res: dict, rate_limit_auto_retry: bool, comman
             entry_type=EntryType.ERROR
         )
     else:
-        args['rate_limit_auto_retry'] = 'false'
         next_run_in_seconds = int(dict_safe_get(api_res, ('bucket_info', 'wait_in_seconds'), 70)) + 1  # type: ignore
         results = CommandResults(
             readable_output='API Rate limit exceeded, rerunning command.',
             scheduled_command=ScheduledCommand(
-                command=command,
-                args=args,
+                command=demisto.command(),
+                args=(demisto.args() | {'rate_limit_auto_retry': 'false'}),
                 next_run_in_seconds=next_run_in_seconds,
             )
         )
@@ -1977,7 +1976,7 @@ def main():
                 raise NotImplementedError(f'Command {command!r} is not implemented.')
 
     except RateLimitExceededError as e:
-        rerun_command_if_required(e.api_res, argToBoolean(args.get('rate_limit_auto_retry', False)), command=command, args=args)
+        rerun_command_if_required(e.api_res, argToBoolean(args.get('rate_limit_auto_retry', False)))
 
     except Exception as e:
         return_error(f'Unexpected error: {e}.\ntraceback: {traceback.format_exc()}')
