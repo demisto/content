@@ -414,10 +414,6 @@
     DOCKER_TLS_CERTDIR: ""
   extends:
     - .default-job-settings
-  script:
-    - section_start "Authenticate to Artifact Registry"
-    - docker-credential-gcr configure-docker --registries=${DOCKER_IO_DOMAIN}
-    - section_end "Authenticate to Artifact Registry"
 
 
 .run-unittests-and-lint:
