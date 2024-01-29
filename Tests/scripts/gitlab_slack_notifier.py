@@ -579,6 +579,10 @@ def main():
                     pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
                     # If the current pipeline is not a pivot, we want to check if the next pipeline is a pivot comparing to the current one.
                     # This is useful when current pipeline is running for a long time, and the next one already ended.
+                    logging.info(
+                        f"Checking pipeline {current_pipeline.id}, the commit is {current_commit.title} "
+                        f"and the pipeline change status is: {pipeline_changed_status}"
+                    )
                     if pipeline_changed_status is None:
                         next_commit = list_of_commits[current_commit_index - 1]
                         next_pipeline = get_pipeline_by_commit(next_commit, list_of_pipelines)
