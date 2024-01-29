@@ -7,7 +7,7 @@ from ReversingLabsTitaniumCloudv2 import file_reputation_output, av_scanners_out
     url_latest_analyses_feed_output, url_analyses_feed_from_date_output, yara_ruleset_output, yara_retro_actions_output, \
     format_proxy, domain_report_output, domain_downloaded_files_output, domain_urls_output, domain_to_ip_output, \
     domain_related_domains_output, ip_report_output, ip_downloaded_files_output, ip_urls_output, ip_to_domain_output, \
-    network_reputation_output, detonate_url_output, create_da_object, url_dynamic_analysis_results_output
+    network_reputation_output, detonate_url_output
 import demistomock as demisto
 import pytest
 
@@ -327,13 +327,6 @@ def test_network_reputation_output():
                                        )
 
     assert result.to_context() == test_context
-
-
-
-
-
-
-
 
 
 def test_detonate_sample_output():
