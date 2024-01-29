@@ -1,11 +1,18 @@
+import json
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import requests
+from dateutil import parser
+from gitlab import Gitlab
 from jira import Issue
 from junitparser import TestSuite, JUnitXml
-
 from Tests.scripts.utils import logging_wrapper as logging
+from gitlab.v4.objects.pipelines import ProjectPipeline
+from gitlab.v4.objects.commits import ProjectCommit
+
 
 CONTENT_NIGHTLY = 'Content Nightly'
 CONTENT_PR = 'Content PR'
@@ -40,6 +47,24 @@ RED_COLOR = "\033[91m"
 GREEN_COLOR = "\033[92m"
 TEST_PLAYBOOKS_REPORT_FILE_NAME = "test_playbooks_report.xml"
 TEST_MODELING_RULES_REPORT_FILE_NAME = "test_modeling_rules_report.xml"
+E2E_RESULT_FILE_NAME = "e2e_tests_result.xml"
+
+FAILED_TO_COLOR_ANSI = {
+    True: RED_COLOR,
+    False: GREEN_COLOR,
+}
+FAILED_TO_COLOR_NAME = {
+    True: "red",
+    False: "green",
+}
+FAILED_TO_MSG = {
+    True: "failed",
+    False: "succeeded",
+}
+
+# This is the github username of the bot (and its reviewer) that pushes contributions and docker updates to the content repo.
+CONTENT_BOT = 'content-bot'
+CONTENT_BOT_REVIEWER = 'github-actions[bot]'
 
 
 def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
@@ -58,11 +83,6 @@ def get_test_results_files(artifacts_path: Path, file_name: str) -> dict[str, Pa
         if (file_path := Path(artifacts_path) / directory / file_name).exists():
             logging.info(f"Found result file: {file_path} for instance role: {instance_role}")
             results_files[instance_role] = file_path
-        else:
-            # Write an empty report file to avoid failing the build artifacts collection.
-            JUnitXml().write(file_path.as_posix(), pretty=True)
-            logging.warning(f"Could not find any test playbook result files in {artifacts_path}, "
-                            "Creating an empty file.")
     return results_files
 
 
@@ -70,12 +90,8 @@ def get_properties_for_test_suite(test_suite: TestSuite) -> dict[str, str]:
     return {prop.name: prop.value for prop in test_suite.properties()}
 
 
-def green_text(text: str) -> str:
-    return f"{GREEN_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
-
-
-def red_text(text: str) -> str:
-    return f"{RED_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
+def failed_to_ansi_text(text: str, failed: bool) -> str:
+    return f"{FAILED_TO_COLOR_ANSI[failed]}{text}{NO_COLOR_ESCAPE_CHAR}"
 
 
 class TestSuiteStatistics:
@@ -95,10 +111,10 @@ class TestSuiteStatistics:
         res_str = str(res)
         if self.no_color or show_as_error is None:
             return res_str
-        return red_text(res_str) if show_as_error else green_text(res_str)
+        return failed_to_ansi_text(res_str, show_as_error)
 
     def __str__(self):
-        return (f"{self.show_with_color(self.skipped)}/"
+        return (f"{self.show_with_color(self.skipped)}/"  # no color for skipped.
                 f"{self.show_with_color(self.failures, self.failures > 0)}/"
                 f"{self.show_with_color(self.errors, self.errors > 0)}/"
                 f"{self.show_with_color(self.tests, self.errors + self.failures > 0)}")
@@ -176,7 +192,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
             if no_color:
                 row_result_color = row_result
             else:
-                row_result_color = red_text(row_result) if errors_count else green_text(row_result)
+                row_result_color = failed_to_ansi_text(row_result, errors_count > 0)
             row.insert(0, row_result_color)
             tabulate_data.append(row)
 
@@ -187,8 +203,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
         else:
             logging.debug(f"Skipping {result} since all the test suites were skipped")
     if add_total_row:
-        total_row[0] = (green_text(TOTAL_HEADER) if total_errors == 0 else red_text(TOTAL_HEADER)) \
-            if not no_color else TOTAL_HEADER
+        total_row[0] = TOTAL_HEADER if no_color else failed_to_ansi_text(TOTAL_HEADER, total_errors > 0)
         tabulate_data.append(total_row)
 
     if transpose:
@@ -213,3 +228,147 @@ def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
     for escape_char in escape_chars:
         sentence = sentence.replace(escape_char, replace_with)
     return sentence
+
+
+def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
+                              look_back_hours: int):
+    """
+    Get all pipelines and commits on the master branch in the last X hours.
+    The commits and pipelines are in order of creation time.
+    Args:
+        gitlab_client - the gitlab instance
+        project_id - the id of the project to query
+        look_back_hours - the number of hours to look back for commits and pipeline
+    Return:
+        a list of gitlab pipelines and a list of gitlab commits in ascending order (as the way it is in the UI)
+    """
+    project = gitlab_client.projects.get(project_id)
+
+    # Calculate the timestamp for look_back_hours ago
+    time_threshold = (
+        datetime.utcnow() - timedelta(hours=look_back_hours)).isoformat()
+
+    commits = project.commits.list(all=True, since=time_threshold, order_by='updated_at', sort='asc')
+    pipelines = project.pipelines.list(all=True, updated_after=time_threshold, ref='master',
+                                       source='push', order_by='id', sort='asc')
+
+    return pipelines, commits
+
+
+def get_person_in_charge(commit):
+    """
+    Returns the name, email, and PR link for the author of the provided commit.
+
+    Args:
+        commit: The Gitlab commit object containing author info.
+
+    Returns:
+        name: The name of the commit author.
+        pr: The GitHub PR link for the Gitlab commit.
+    """
+    name = commit.author_name
+    # pr number is always the last id in the commit title, starts with a number sign, may or may not be in parenthesis.
+    pr_number = commit.title.split("#")[-1].strip("()")
+    if pr_number.isnumeric():
+        pr = f"https://github.com/demisto/content/pull/{pr_number}"
+        return name, pr
+    else:
+        return None, None
+
+
+def are_pipelines_in_order(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool:
+    """
+    This function checks if the current pipeline was created after the previous pipeline, to avoid rare conditions
+    that pipelines are not in the same order as the commits.
+    Args:
+        current_pipeline: The current pipeline object.
+        previous_pipeline: The previous pipeline object.
+    Returns:
+        bool
+    """
+
+    previous_pipeline_timestamp = parser.parse(previous_pipeline.created_at)
+    current_pipeline_timestamp = parser.parse(current_pipeline.created_at)
+    return current_pipeline_timestamp > previous_pipeline_timestamp
+
+
+def is_pivot(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool | None:
+    """
+    Is the current pipeline status a pivot from the previous pipeline status.
+    Args:
+        current_pipeline: The current pipeline object.
+        previous_pipeline: The previous pipeline object.
+    Returns:
+        True status changed from success to failed
+        False if the status changed from failed to success
+        None if the status didn't change or the pipelines are not in order of commits
+    """
+
+    in_order = are_pipelines_in_order(current_pipeline, previous_pipeline)
+    if in_order:
+        if previous_pipeline.status == 'success' and current_pipeline.status == 'failed':
+            return True
+        if previous_pipeline.status == 'failed' and current_pipeline.status == 'success':
+            return False
+    return None
+
+
+def get_reviewer(pr_url: str) -> str | None:
+    approved_reviewer = None
+    try:
+        # Extract the owner, repo, and pull request number from the URL
+        _, _, _, repo_owner, repo_name, _, pr_number = pr_url.split("/")
+
+        # Get reviewers
+        reviews_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/reviews"
+        reviews_response = requests.get(reviews_url)
+        reviews_data = reviews_response.json()
+
+        # Find the reviewer who provided approval
+        for review in reviews_data:
+            if review["state"] == "APPROVED":
+                approved_reviewer = review["user"]["login"]
+                break
+    except Exception as e:
+        logging.error(f"Failed to get reviewer for PR {pr_url}: {e}")
+    return approved_reviewer
+
+
+def get_slack_user_name(name: str | None, name_mapping_path: str) -> str:
+    with open(name_mapping_path) as map:
+        mapping = json.load(map)
+    # If the name is the name of the 'docker image update bot' reviewer - return the owner of that bot.
+        if name == CONTENT_BOT_REVIEWER:
+            return mapping["docker_images"]["owner"]
+        else:
+            return mapping["names"].get(name, name)
+
+
+def get_commit_by_sha(commit_sha: str, list_of_commits: list[ProjectCommit]) -> ProjectCommit | None:
+    return next((commit for commit in list_of_commits if commit.id == commit_sha), None)
+
+
+def get_pipeline_by_commit(commit: ProjectCommit, list_of_pipelines: list[ProjectPipeline]) -> ProjectPipeline | None:
+    return next((pipeline for pipeline in list_of_pipelines if pipeline.sha == commit.id), None)
+
+
+def create_shame_message(current_commit: ProjectCommit,
+                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str, str] | None:
+    """
+    Create a shame message for the person in charge of the commit.
+    """
+    name, pr = get_person_in_charge(current_commit)
+    if name and pr:
+        if name == CONTENT_BOT:
+            name = get_reviewer(pr)
+        name = get_slack_user_name(name, name_mapping_path)
+        msg = "broke" if pipeline_changed_status else "fixed"
+        color = "danger" if pipeline_changed_status else "good"
+        emoji = ":cry:" if pipeline_changed_status else ":muscle:"
+        return (f"Hi @{name},  You {msg} the build! {emoji} ",
+                f" That was done in this {slack_link(pr,'PR.')}", color)
+    return None
+
+
+def slack_link(url: str, text: str) -> str:
+    return f"<{url}|{text}>"

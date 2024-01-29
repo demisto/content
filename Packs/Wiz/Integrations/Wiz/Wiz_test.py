@@ -157,7 +157,7 @@ def test_reject_issue(checkAPIerrors, capfd):
     assert res == test_reject_issue_response
 
 
-test_issue_id_not_valid = 'Error details: The Issue ID is not correct'
+test_issue_id_not_valid = 'Error details: Resource not found'
 
 
 @patch('Wiz.checkAPIerrors', return_value=test_issue_id_not_valid)
@@ -166,7 +166,7 @@ def test_reject_issue_failed(checkAPIerrors, capfd):
         from Wiz import reject_issue
 
         res = reject_issue('12345678-2222-3333-1111-ff5fa2ff7f78', 'WONT_FIX', 'blah_note')
-        assert res == 'Error details: The Issue ID is not correct'
+        assert res == 'Error details: Resource not found'
 
 
 @patch('Wiz.checkAPIerrors', side_effect=DemistoException('no command'))
@@ -384,7 +384,7 @@ def test_set_issue_reopen_failed(checkAPIerrors, capfd):
         from Wiz import reopen_issue
 
         res = reopen_issue('12345678-2222-3333-1111-ff5fa2ff7f78', 'blah_note')
-        assert res == 'Error details: The Issue ID is not correct'
+        assert res == 'Error details: Resource not found'
 
 
 test_issue_in_progress_response = {
@@ -499,7 +499,7 @@ def test_set_issue_in_progress_failed(checkAPIerrors, capfd):
         from Wiz import issue_in_progress
 
         res = issue_in_progress('12345678-2222-3333-1111-ff5fa2ff7f78')
-        assert res == "Error details: The Issue ID is not correct"
+        assert res == "Error details: Resource not found"
 
 
 test_set_issue_note_response = {
@@ -558,7 +558,7 @@ def test_set_issue_note_failed(checkAPIerrors, capfd):
         from Wiz import set_issue_comment
 
         res = set_issue_comment('12345678-2222-3333-1111-ff5fa2ff7f78', "blah")
-        assert res == "Error details: The Issue ID is not correct"
+        assert res == "Error details: Resource not found"
 
 
 test_clear_issue_note_response = {

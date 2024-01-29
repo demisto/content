@@ -3,9 +3,7 @@ version: -1
 name: Detonate URL - WildFire v2.1
 fromversion: 5.0.0
 description: |-
-  Detonate a webpage or remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
-  The detonation supports the following file types:
-  APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z, JS.
+  Deprecated. Use Detonate URL - WildFire v2.2 instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -619,61 +617,58 @@ inputs:
       root: URL
       accessor: Data
   required: false
-  description: URL of the webpage or file url to detonate. The URL is taken from the
-    context.
-  playbookInputQuery: null
+  description: URL of the webpage or file URL to detonate. The URL is taken from the context.
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Duration for executing the polling (in minutes).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "60"
   required: false
-  description: The duration after which to stop polling and to resume the playbook
-    (in minutes).
-  playbookInputQuery: null
+  description: The duration after which to stop polling and to resume the playbook (in minutes).
+  playbookInputQuery:
 - key: ReportFileType
   value: {}
   required: false
   description: The resource type to download. Default is PDF. XML is also possible.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore
-  description: The DBotScore object
+  description: The DBotScore object.
   type: unknown
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score.
   type: number
 - contextPath: File.Size
-  description: File size
+  description: File size.
   type: number
 - contextPath: File.MD5
-  description: MD5 hash
+  description: MD5 hash.
   type: string
 - contextPath: File.SHA1
-  description: SHA1 hash
+  description: SHA1 hash.
   type: string
 - contextPath: File.Type
-  description: File type e.g. "PE"
+  description: File type e.g. "PE".
   type: string
 - contextPath: File.SHA256
-  description: SHA256 hash
+  description: SHA256 hash.
   type: string
 - contextPath: File.EntryID
-  description: The Entry ID of the sample
+  description: The Entry ID of the sample.
   type: string
 - contextPath: File.Malicious.Vendor
   description: For malicious files, the vendor that determined that the file is malicious.
   type: string
 - contextPath: File.Name
-  description: Filename
+  description: Filename.
   type: string
 - contextPath: File.Malicious.Description
-  description: For malicious files, the reason the vendor determined that the file
-    is malicious.
+  description: For malicious files, the reason the vendor determined that the file is malicious.
   type: string
 - contextPath: DBotScore.Indicator
   description: The indicator we tested.
@@ -757,4 +752,5 @@ outputs:
   description: Associated IOCs.
   type: string
 tests:
-  - Detonate URL - WildFire v2.1 - Test
+- No tests (deprecated)
+deprecated: true

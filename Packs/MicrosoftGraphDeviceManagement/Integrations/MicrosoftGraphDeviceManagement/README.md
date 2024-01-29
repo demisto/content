@@ -51,6 +51,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### msgraph-get-managed-device-by-id
 ***
 Get managed devices
+Note: physicalMemoryInBytes will return 0 by default since Microsoft hasn't updated the v1.0 schema with that information yet
+
 
 ##### Required Permissions
 DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Read.All
@@ -1054,3 +1056,48 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+### msgraph-get-managed-device-physical-memory-by-id
+
+***
+Get the managed device physical memory bytes.
+
+#### Base Command
+
+`msgraph-get-managed-device-physical-memory-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | The ID of the managed device to be fetched. Can be retrieved using the msgraph-list-managed-devices command. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphDeviceManagement.Device.id | String | The ID of the managed device. | 
+| MSGraphDeviceManagement.Device.physicalMemoryInBytes | String | The correct value of ID of the managed device. | 
+| MSGraphDeviceManagement.Device.deviceName | String | Name of the device. | 
+
+#### Command example
+```!msgraph-get-managed-device-physical-memory-by-id device_id=111111-1111-1111-1111-1111111```
+#### Context Example
+```json
+{
+    "MSGraphDeviceManagement": {
+        "DeviceMemory": {
+            "ID": "111111-1111-1111-1111-1111111",
+            "Name": "Test",
+            "physicalMemoryInBytes": 4294967296
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Managed device 
+>|physicalMemoryInBytes|id|
+>|---|---|
+>| 4294967296 | 111111-1111-1111-1111-1111111 |
+

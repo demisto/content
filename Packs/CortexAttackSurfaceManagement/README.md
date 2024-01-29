@@ -25,7 +25,7 @@ Aditionally, [a list of integrations used for the Active Response playbook can b
 
 ### Demo Video
 
-[![Active Response in Cortex Xpanse](https://i.ytimg.com/vi/aIP1CCn9ST8/hq720.jpg)](https://www.youtube.com/watch?v=rryAQ23uuqw "Active Response in Cortex Xpanse")
+[![Active Response in Cortex Xpanse](https://raw.githubusercontent.com/demisto/content/98ead849e9e32921f64f7ac07fda2bff1b5f7c0b/Packs/CortexAttackSurfaceManagement/doc_files/Active_Response_in_Cortex_Xpanse.jpg)](https://www.youtube.com/watch?v=rryAQ23uuqw "Active Response in Cortex Xpanse")
 
 ### Automated Remediation Requirements
 
@@ -50,6 +50,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - GCP Compute Engine (VM)
   - On-prem asset protected with a Palo Alto Networks Firewall
 - Service owner information found through one of the following:
+  - Active Directory
   - AWS IAM
   - Azure IAM
   - GCP IAM
@@ -72,6 +73,7 @@ Automated remediation is only possible when the right conditions are met.  These
 The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This playbook contains a set of sub-playbooks and automation scripts, which support many different remediation paths that can be taken depending on the types of configured integrations, the type of alert, and input provided by the analyst. After the final stage, the alert is resolved.
 
 - Playbooks
+  - [Cortex ASM - Active Directory Enrichment](#cortex-asm---active-directory-enrichment)
   - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
   - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
   - [Cortex ASM - Azure Enrichment](#cortex-asm---azure-enrichment)
@@ -102,8 +104,16 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [GetProjectOwners](#getprojectowners)
   - [RankServiceOwners](#rankserviceowners)
   - [RemediationPathRuleEvaluation](#remediationpathruleevaluation)
+- Layouts
+  - [ASM Alert Layout](#asmalertlayout)
 
 ### Playbooks
+
+#### Cortex ASM - Active Directory Enrichment
+
+A playbook that given the email address enriches Service owner in Azure directory.
+
+![Cortex ASM - Active Directory Enrichment](https://raw.githubusercontent.com/demisto/content/394aad3c8e680a444018c82322c449205ccd31a1/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Active_Directory_Enrichment.png)
 
 #### Cortex ASM - ASM Alert
 
@@ -282,3 +292,9 @@ This automation parses a GCP service account email for the project ID, then look
 An automation that is used to find a matching remediation path rule based on criteria.  If multiple rules match, it will return the most recently created rule.  This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule (Xpanse only).
 
 ![RemediationPathRuleEvaluation](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/RemediationPathRuleEvaluation.png)
+
+### Layouts
+
+#### ASM Alert Layout
+
+This layout is provides enrichment information such as system IDs, tags, and service owners for a given Attack Surface Management alert.

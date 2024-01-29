@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from collections import defaultdict
 from datetime import datetime, timedelta
 from distutils.util import strtobool
@@ -53,6 +54,14 @@ def jira_file_link(file_name: str) -> str:
     return f"[^{file_name}]"
 
 
+def jira_sanitize_file_name(file_name: str) -> str:
+    return re.sub(r'[^\w-]', '-', file_name).lower()
+
+
+def jira_color_text(text: str, color: str) -> str:
+    return f"{{color:{color}}}{text}{{color}}"
+
+
 def find_existing_jira_ticket(jira_server: JIRA,
                               now: datetime,
                               max_days_to_reopen: int,
@@ -101,11 +110,12 @@ def generate_build_markdown_link(ci_pipeline_id: str) -> str:
     return ci_pipeline_markdown_link
 
 
-def jira_server_information(jira_server: JIRA):
+def jira_server_information(jira_server: JIRA) -> dict[str, Any]:
     jira_server_info = jira_server.server_info()
     logging.info("Jira server information:")
     for key, value in jira_server_info.items():
         logging.info(f"\t{key}: {value}")
+    return jira_server_info
 
 
 def jira_search_all_by_query(jira_server: JIRA,
@@ -131,8 +141,19 @@ def jira_search_all_by_query(jira_server: JIRA,
     return issues
 
 
-def jira_ticket_to_json_data(jira_ticket: Issue) -> dict[str, Any]:
+def jira_ticket_to_json_data(server_url: str, jira_ticket: Issue) -> dict[str, Any]:
     return {
-        "url": jira_ticket.permalink(),
+        "url": jira_issue_permalink(server_url, jira_ticket),
         "key": jira_ticket.key,
     }
+
+
+def jira_issue_permalink(server_url: str, jira_ticket: Issue):
+    """
+    Get the browsable URL of the issue.
+    We're not using the issue.permalink() method because it returns URL from the proxy, and we need the server Base URL.
+
+    Returns:
+        str: browsable URL of the issue
+    """
+    return f"{server_url}/browse/{jira_ticket.key}"

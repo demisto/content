@@ -45,6 +45,11 @@ _MODULES_LINE_MAPPING = {
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
+ASSETS = "assets"
+EVENTS = "events"
+DATA_TYPES = [EVENTS, ASSETS]
+
+SECRET_REPLACEMENT_STRING = '<XX_REPLACED>'
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -194,7 +199,7 @@ try:
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set
-    
+
     from urllib3 import disable_warnings
     disable_warnings()
 
@@ -456,7 +461,7 @@ class DBotScoreReliability(object):
         )
 
     @staticmethod
-    def get_dbot_score_reliability_from_str(reliability_str):
+    def get_dbot_score_reliability_from_str(reliability_str):   # pragma: no cover
         if reliability_str == DBotScoreReliability.A_PLUS:
             return DBotScoreReliability.A_PLUS
         elif reliability_str == DBotScoreReliability.A:
@@ -706,6 +711,30 @@ def get_schedule_metadata(context):
     return schedule_metadata
 
 
+def detect_file_indicator_type(indicator_value):
+    """
+      Detect the type of the file indicator.
+
+      :type indicator_value: ``str``
+      :param indicator_value: The indicator whose type we want to check. (required)
+
+      :return: The type of the indicator.
+      :rtype: ``str``
+    """
+    if ":" in indicator_value:
+        return 'ssdeep'
+    if re.match(sha256Regex, indicator_value):
+        return 'sha256'
+    if re.match(md5Regex, indicator_value):
+        return 'md5'
+    if re.match(sha1Regex, indicator_value):
+        return 'sha1'
+    if re.match(sha512Regex, indicator_value):
+        return 'sha512'
+
+    return None
+
+
 def auto_detect_indicator_type(indicator_value):
     """
       Infer the type of the indicator.
@@ -932,7 +961,7 @@ def positiveUrl(entry):
     return False
 
 
-def positiveFile(entry):
+def positiveFile(entry):    # pragma: no cover
     """
        Checks if the given entry from a file reputation query is positive (known bad) (deprecated)
 
@@ -981,7 +1010,7 @@ def vtCountPositives(entry):
     return positives
 
 
-def positiveIp(entry):
+def positiveIp(entry):  # pragma: no cover
     """
        Checks if the given entry from a file reputation query is positive (known bad) (deprecated)
 
@@ -1017,7 +1046,7 @@ def formatEpochDate(t):
     return ''
 
 
-def shortCrowdStrike(entry):
+def shortCrowdStrike(entry):    # pragma: no cover
     """
        Display CrowdStrike Intel results in Markdown (deprecated)
 
@@ -1056,7 +1085,7 @@ def shortCrowdStrike(entry):
     return entry
 
 
-def shortUrl(entry):
+def shortUrl(entry):    # pragma: no cover
     """
        Formats a URL reputation entry into a short table (deprecated)
 
@@ -1084,7 +1113,7 @@ def shortUrl(entry):
     return {'ContentsFormat': 'text', 'Type': 4, 'Contents': 'Unknown provider for result: ' + entry['Brand']}
 
 
-def shortFile(entry):
+def shortFile(entry):   # pragma: no cover
     """
        Formats a file reputation entry into a short table (deprecated)
 
@@ -1342,7 +1371,7 @@ def encode_string_results(text):
         return text.encode("utf8", "replace")
 
 
-def safe_load_json(json_object):
+def safe_load_json(json_object):    # pragma: no cover
     """
     Safely loads a JSON object from an argument. Allows the argument to accept either a JSON in string form,
     or an entry ID corresponding to a JSON file.
@@ -1564,7 +1593,7 @@ class IntegrationLogger(object):
             else:
                 res = "Failed encoding message with error: {}".format(exception)
         for s in self.replace_strs:
-            res = res.replace(s, '<XX_REPLACED>')
+            res = res.replace(s, SECRET_REPLACEMENT_STRING)
         return res
 
     def __call__(self, message):
@@ -1643,6 +1672,7 @@ class IntegrationLogger(object):
             url = ''
             headers = []
             headers_to_skip = ['Content-Length', 'User-Agent', 'Accept-Encoding', 'Connection']
+            headers_to_sanitize = ['Authorization', 'Cookie']
             request_parts = repr(data).split('\\\\r\\\\n')  # splitting lines on repr since data is a bytes-string
             for line, part in enumerate(request_parts):
                 if line == 0:
@@ -1653,6 +1683,9 @@ class IntegrationLogger(object):
                         url = 'https://{}{}'.format(host, url)
                     else:
                         if any(header_to_skip in part for header_to_skip in headers_to_skip):
+                            continue
+                        if any(header_to_sanitize in part for header_to_sanitize in headers_to_sanitize):
+                            headers.append(part.split(' ')[0] + " " + SECRET_REPLACEMENT_STRING)
                             continue
                         headers.append(part)
             curl_headers = ''
@@ -1805,7 +1838,7 @@ def flattenCell(data, is_pretty=True):
 
         return ',\n'.join(string_list)
     else:
-        return json.dumps(data, indent=indent, ensure_ascii=False)
+        return json.dumps(data, indent=indent, ensure_ascii=False, default=str)
 
 
 def FormatIso8601(t):
@@ -2260,7 +2293,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 tblToMd = tableToMarkdown
 
 
-def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
+def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):     # pragma: no cover
     """Receives a dict with flattened key values, and converts them into nested dicts
 
     :type obj: ``dict`` or ``list``
@@ -2369,6 +2402,19 @@ def fileResult(filename, data, file_type=None):
     # pylint: enable=undefined-variable
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
         f.write(data)
+
+    # when there is ../ in the filename, xsoar thinks that path of the file is in the previous folder(s) and because of that
+    # xsoar returns empty files to war-rooms
+    if isinstance(filename, str):
+        replaced_filename = filename.replace("../", "")
+        if filename != replaced_filename:
+            filename = replaced_filename
+            demisto.debug(
+                "replaced {filename} with new file name {replaced_file_name}".format(
+                    filename=filename, replaced_file_name=replaced_filename
+                )
+            )
+
     return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
 
@@ -2766,6 +2812,15 @@ def get_integration_name():
     :rtype: ``str``
     """
     return demisto.callingContext.get('context', {}).get('IntegrationBrand', '')
+
+
+def get_integration_instance_name():
+    """
+    Getting calling integration instance name
+    :return: Calling integration instance name
+    :rtype: ``str``
+    """
+    return demisto.callingContext.get('context', {}).get('IntegrationInstance', '')
 
 
 def get_script_name():
@@ -3621,7 +3676,6 @@ class Common(object):
                 'data': self.dns_record_data
             }
 
-
     class CPE:
         """
         Represents one Common Platform Enumeration (CPE) object, see https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf
@@ -3633,6 +3687,7 @@ class Common(object):
         :rtype: ``None``
 
         """
+
         def __init__(self, cpe=None):
             self.cpe = cpe
 
@@ -3640,7 +3695,6 @@ class Common(object):
             return {
                 'CPE': self.cpe,
             }
-
 
     class File(Indicator):
         """
@@ -5984,7 +6038,7 @@ class Common(object):
                         })
                     elif isinstance(san, dict):
                         san_list.append(san)
-                    elif(isinstance(san, Common.CertificateExtension.SubjectAlternativeName)):
+                    elif (isinstance(san, Common.CertificateExtension.SubjectAlternativeName)):
                         san_list.append(san.to_context())
 
             elif self.extensions:  # autogenerate it from extensions
@@ -6807,6 +6861,17 @@ class CommandResults:
     :type execution_metrics: ``ExecutionMetrics``
     :param execution_metrics: contains metric data about a command's execution
 
+    :type replace_existing: ``bool``
+    :param replace_existing: Replace the context value at outputs_prefix if it exists.
+            Works only if outputs_prefix is a path to a nested value i.e., contains a period.
+            For example, the "next token" result should always be overwritten. This response can be returned as follows:
+            >>> CommandResults(
+            >>>     readable_output=f'Next Token: {next_token}',
+            >>>     outputs=next_token,
+            >>>     outputs_prefix='Path.To.NextToken',
+            >>>     replace_existing=True,
+            >>> )
+
     :return: None
     :rtype: ``None``
     """
@@ -6826,8 +6891,9 @@ class CommandResults:
                  relationships=None,
                  entry_type=None,
                  content_format=None,
-                 execution_metrics=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any]) -> None  # noqa: E501
+                 execution_metrics=None,
+                 replace_existing=False):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any], bool) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
@@ -6869,6 +6935,7 @@ class CommandResults:
         self.scheduled_command = scheduled_command
         self.relationships = relationships
         self.execution_metrics = execution_metrics
+        self.replace_existing = replace_existing
 
         if content_format is not None and not EntryFormat.is_valid_type(content_format):
             raise TypeError('content_format {} is invalid, see CommonServerPython.EntryFormat'.format(content_format))
@@ -6915,19 +6982,23 @@ class CommandResults:
         if self.outputs is not None and self.outputs != []:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
-                if isinstance(self.outputs, dict) or isinstance(self.outputs, list):
+                if isinstance(self.outputs, (dict, list)):
                     human_readable = tableToMarkdown('Results', self.outputs)
                 else:
                     human_readable = self.outputs   # type: ignore[assignment]
-            if self.outputs_prefix and self._outputs_key_field:
+            if self.outputs_prefix and self.replace_existing:
+                next_token_path, _, next_token_key = self.outputs_prefix.rpartition('.')
+                if not next_token_path:
+                    raise DemistoException('outputs_prefix must be a nested path to replace an existing key.')
+                outputs[next_token_path + '(true)'] = {next_token_key: self.outputs}
+            elif self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
                 formatted_outputs_key = ' && '.join(['val.{0} && val.{0} == obj.{0}'.format(key_field)
                                                      for key_field in self._outputs_key_field])
                 outputs_key = '{0}({1})'.format(self.outputs_prefix, formatted_outputs_key)
                 outputs[outputs_key] = self.outputs
             elif self.outputs_prefix:
-                outputs_key = '{}'.format(self.outputs_prefix)
-                outputs[outputs_key] = self.outputs
+                outputs[str(self.outputs_prefix)] = self.outputs
             else:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
 
@@ -6991,7 +7062,7 @@ def return_results(results):
     """
     This function wraps the demisto.results(), supports.
 
-    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget`` or ``list``
+    :type results: ``CommandResults`` or ``PollResult`` or ``str`` or ``dict`` or ``BaseWidget`` or ``list`` or ``GetMappingFieldsResponse`` or ``GetModifiedRemoteDataResponse`` or ``GetRemoteDataResponse``
     :param results: A result object to return as a War-Room entry.
 
     :return: None
@@ -7004,7 +7075,7 @@ def return_results(results):
         return
 
     elif results and isinstance(results, list):
-        result_list = [] # type: list
+        result_list = []  # type: list
         for result in results:
             # Results of type dict or str are of the old results format and work with demisto.results()
             if isinstance(result, dict):
@@ -7731,12 +7802,12 @@ regexFlags = re.M  # Multi line matching
 # for the global(/g) flag use re.findall({regex_format},str)
 # else, use re.match({regex_format},str)
 
-ipv4Regex = r'^(?P<ipv4>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))$'  # noqa: E501
+ipv4Regex = r'^(?P<ipv4>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))[:]?(?P<port>\d+)?$'  # noqa: E501
 ipv4cidrRegex = r'^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))$'
 ipv6Regex = r'^(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$'  # noqa: E501
 ipv6cidrRegex = r'^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))$'  # noqa: E501
 emailRegex = r'''(?i)(?:[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'''  # noqa: E501
-urlRegex = r'(?i)(?:(?P<url_with_path>(?P<scheme>(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?P<userinfo>[\w]+@)?(?P<host>(?P<simple_domain>(?:(?:[^\W_]|-)+\[?\.\]?)+[^\W\d_-]{2,})|(?P<ipv4>(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?P<HEXIPv4>0\[?x]?[\da-f]{8})|(?P<ipv6>\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?/(?P<path>(?:[\w\/%]+)(?P<extension>\[?[.]]?[^\W\d_-]+)?)?(?P<query>\?[^\s#]*)?(?P<fragment>#[\w\d]*)?)|(?P<no_path_url>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:[\w]+@)?(?:(?:(?:[^\W_]+\[?\.\]?)+[^\W\d_-]{2,})[\/.]?)|(?:(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:(?:(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?:0\[?x]?[\da-f]{8})|(?:\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))))$|(?P<ip_port>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?:(?:(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?:0\[?x]?[\da-f]{8})|(?:\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?::(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3})))$)'  # noqa: E501
+urlRegex = r'(?i)(?:(?P<url_with_path>(?P<scheme>(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?P<userinfo>[\w]+@)?(?P<host>(?P<simple_domain>(?:(?:[^\W_]|-)+\[?\.\]?)+[^\W\d_-]{2,})|(?P<ipv4>(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?P<HEXIPv4>0\[?x]?[\da-f]{8})|(?P<ipv6>\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?/(?P<path>(?:[\w\/%-]+)(?P<extension>\[?[.]]?[^\W\d_-]+)?)?(?P<query>\?[^\s#]*)?(?P<fragment>#[\w\d]*)?)|(?P<no_path_url>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:[\w]+@)?(?:(?:(?:[^\W_]+\[?\.\]?)+[^\W\d_-]{2,})[\/.]?)|(?:(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:(?:(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?:0\[?x]?[\da-f]{8})|(?:\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))))$|(?P<ip_port>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?:(?:(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?:0\[?x]?[\da-f]{8})|(?:\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?::(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3})))$)'  # noqa: E501
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 domainRegex = r'(?i)(?P<scheme>(?:http|hxxp|s?ftp)s?(?::|%3A)(?:%2F%2F|//))?(?P<fqdn>(?:(?P<domain>(?:[^\W_]|-)+)\[?\.\]?)+(?P<tld>[^\W\d_-]{2,}))'
 hashRegex = r'\b[0-9a-fA-F]+\b'
@@ -8710,7 +8781,8 @@ if 'requests' in sys.modules:
                 been exhausted.
             """
             try:
-                method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT, "allowed_methods") else "method_whitelist"  # type: ignore[attr-defined]
+                method_whitelist = "allowed_methods" if hasattr(
+                    Retry.DEFAULT, "allowed_methods") else "method_whitelist"  # type: ignore[attr-defined]
                 whitelist_kawargs = {
                     method_whitelist: frozenset(['GET', 'POST', 'PUT'])
                 }
@@ -9803,12 +9875,19 @@ class IndicatorsSearcher:
             searchAfter=self._search_after_param,
             populateFields=self._filter_fields,
         )
-        demisto.debug('IndicatorsSearcher: page {}, search_args: {}'.format(self._page, search_args))
         if is_demisto_version_ge('6.6.0'):
             search_args['sort'] = self._sort
+        demisto.debug('IndicatorsSearcher: page {}, search_args: {}'.format(self._page, search_args))
         res = demisto.searchIndicators(**search_args)
         self._total = res.get('total')
         demisto.debug('IndicatorsSearcher: page {}, result size: {}'.format(self._page, self._total))
+        # when total is None, there is a problem with the server for returning indicators, hence need to restart the container,
+        # see XSUP-26699
+        if self._total is None:
+            raise SystemExit(
+                "Encountered issue when trying to fetch indicators for integration in instance {integration}. "
+                "Restarting container and trying again.".format(integration=get_integration_instance_name())
+            )
         if isinstance(self._page, int):
             self._page += 1  # advance pages
         self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
@@ -9879,7 +9958,8 @@ def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
             # see XSUP-24343
             if not isinstance(last_mirror_run, dict):
                 raise TypeError("non-dictionary passed to set_last_mirror_run")
-            demisto.debug("encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
+            demisto.debug(
+                "encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
             demisto.debug(e)
     else:
         raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
@@ -9898,7 +9978,7 @@ def get_last_mirror_run():  # type: () -> Optional[Dict[Any, Any]]
     raise DemistoException("You cannot use getLastMirrorRun as your version is below 6.6.0")
 
 
-def support_multithreading():
+def support_multithreading():   # pragma: no cover
     """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
 
     :return: No data returned
@@ -10249,7 +10329,7 @@ def signal_handler_profiling_dump(_sig, _frame):
     LOG.print_log()
 
 
-def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
+def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):  # pragma: no cover
     """
     Function that registers the threads and memory dump signal listener
 
@@ -10348,7 +10428,7 @@ class PollResult:
 
 
 def polling_function(name, interval=30, timeout=600, poll_message='Fetching Results:', polling_arg_name="polling",
-                     requires_polling_arg=True):
+                     requires_polling_arg=True):    # pragma: no cover
     """
     To use on a function that should rerun itself
     Commands that use this decorator must have a Polling argument, polling: true in yaml,
@@ -10383,7 +10463,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                 *arguments: any additional arguments to the command function.
                 **kwargs: additional keyword arguments to the command function.
             """
-            if not requires_polling_arg or argToBoolean(args.get(polling_arg_name)):
+            if not requires_polling_arg or argToBoolean(args.get(polling_arg_name, False)):
                 ScheduledCommand.raise_error_if_not_supported()
                 poll_result = func(args, *arguments, **kwargs)
 
@@ -10636,7 +10716,8 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
 
-    demisto.debug("lb: fetch start time: {}, fetch end time: {}".format(last_run_time.strftime(date_format), now.strftime(date_format)))
+    demisto.debug("lb: fetch start time: {}, fetch end time: {}".format(
+        last_run_time.strftime(date_format), now.strftime(date_format)))
     return last_run_time.strftime(date_format), now.strftime(date_format)
 
 
@@ -10658,18 +10739,19 @@ def get_current_time(time_zone=0):
         demisto.debug('pytz is missing, will not return timeaware object.')
         return now
 
+
 def calculate_new_offset(old_offset, num_incidents, total_incidents):
     """ This calculates the new offset based on the response
-    
+
     :type old_offset: ``int``
     :param old_offset: The offset from the previous run
 
     :type num_incidents: ``int``
     :param num_incidents: The number of incidents returned by the API.
-    
+
     :type total_incidents: ``int``
     :param total_incidents: The total number of incidents returned by the API.
-    
+
     :return: The new offset for the next run.
     :rtype: ``int``
     """
@@ -10678,6 +10760,7 @@ def calculate_new_offset(old_offset, num_incidents, total_incidents):
     if total_incidents and num_incidents + old_offset >= total_incidents:
         return 0
     return old_offset + num_incidents
+
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
     """
@@ -10777,10 +10860,13 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
 
         if current_time - addition_time <= deletion_threshold_in_seconds:
             new_found_incidents_ids[inc_id] = addition_time
-            demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
+            demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(
+                inc_id, addition_time, deletion_threshold_in_seconds))
         else:
-            demisto.debug('lb: Removing incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
-    demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(len(new_found_incidents_ids), new_found_incidents_ids.keys()))
+            demisto.debug('lb: Removing incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(
+                inc_id, addition_time, deletion_threshold_in_seconds))
+    demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(
+        len(new_found_incidents_ids), new_found_incidents_ids.keys()))
     return new_found_incidents_ids
 
 
@@ -10848,14 +10934,14 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
-    
+
     :type new_offset: ``int | None``
     :param new_offset: The new offset to set in the last run
 
     :return: The new LastRun object
     :rtype: ``Dict``
     """
-    demisto.debug("lb: Create updated last run object, len(incidents) is {}," \
+    demisto.debug("lb: Create updated last run object, len(incidents) is {},"
                   "look_back is {}, fetch_limit is {}, new_offset is {}".format(len(incidents), look_back, fetch_limit, new_offset))
     remove_incident_ids = True
     new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
@@ -10863,13 +10949,13 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         # if we need to update the offset, we need to keep the old time and just update the offset
         new_last_run = {
             'time': last_run.get("time"),
-        } 
+        }
     elif len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
             'limit': fetch_limit,
         }
-    else:        
+    else:
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
                                                                         increase_last_run_time)
         new_last_run = {
@@ -10879,7 +10965,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         if latest_incident_fetched_time == start_fetch_time:
             # we are still on the same time, no need to remove old incident ids
             remove_incident_ids = False
-    
+
     if new_offset is not None:
         new_last_run['offset'] = new_offset
         new_last_run['limit'] = fetch_limit
@@ -10923,7 +11009,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
-    
+
     :type new_offset: ``int | None``
     :param new_offset: The new offset to set in the last run
 
@@ -11094,10 +11180,11 @@ def xsiam_api_call_with_retries(
     num_of_attempts,
     events_error_handler=None,
     error_msg='',
-    is_json_response=False
-):
+    is_json_response=False,
+    data_type=EVENTS
+):    # pragma: no cover
     """
-    Send the fetched events into the XDR data-collector private api.
+    Send the fetched events or assests into the XDR data-collector private api.
 
     :type client: ``BaseClient``
     :param client: base client containing the XSIAM url.
@@ -11120,6 +11207,9 @@ def xsiam_api_call_with_retries(
     :type events_error_handler: ``callable``
     :param events_error_handler: error handler function
 
+    :type data_type: ``str``
+    :param data_type: events or assets
+
     :return: Response object or DemistoException
     :rtype: ``requests.Response`` or ``DemistoException``
     """
@@ -11129,7 +11219,8 @@ def xsiam_api_call_with_retries(
     response = None
 
     while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug('Sending events into xsiam, attempt number {attempt_num}'.format(attempt_num=attempt_num))
+        demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(
+            data_type=data_type, attempt_num=attempt_num))
         # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
         response = client._http_request(
@@ -11166,7 +11257,7 @@ def split_data_to_chunks(data, target_chunk_size):
     :return: An iterable of lists where each list contains events with approx size of chunk size.
     :rtype: ``collections.Iterable[list]``
     """
-    target_chunk_size = min(target_chunk_size,  XSIAM_EVENT_CHUNK_SIZE_LIMIT)
+    target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
     chunk = []  # type: ignore[var-annotated]
     chunk_size = 0
     if isinstance(data, str):
@@ -11214,89 +11305,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :return: None
     :rtype: ``None``
     """
-    data = events
-    amount_of_events = 0
-    params = demisto.params()
-    url = params.get(url_key)
-    calling_context = demisto.callingContext.get('context', {})
-    instance_name = calling_context.get('IntegrationInstance', '')
-    collector_name = calling_context.get('IntegrationBrand', '')
-
-    if not events:
-        demisto.debug('send_events_to_xsiam function received no events, skipping the API call to send events to XSIAM')
-        demisto.updateModuleHealth({'eventsPulled': amount_of_events})
-        return
-
-    # only in case we have events data to send to XSIAM we continue with this flow.
-    # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
-    if isinstance(events, list):
-        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
-        if isinstance(events[0], dict):
-            events = [json.dumps(event) for event in events]
-            data_format = 'json'
-        # Separating each event with a new line
-        data = '\n'.join(events)
-    elif not isinstance(events, str):
-        raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
-                                'list.').format(type_events=type(events)))
-    if not data_format:
-        data_format = 'text'
-
-    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
-    xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
-    xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
-    headers = {
-        'authorization': xsiam_api_token,
-        'format': data_format,
-        'product': product,
-        'vendor': vendor,
-        'content-encoding': 'gzip',
-        'collector-name': collector_name,
-        'instance-name': instance_name,
-        'final-reporting-device': url
-    }
-
-    header_msg = 'Error sending new events into XSIAM.\n'
-
-    def events_error_handler(res):
-        """
-        Internal function to parse the XSIAM API errors
-        """
-        try:
-            response = res.json()
-            error = res.reason
-            if response.get('error').lower() == 'false':
-                xsiam_server_err_msg = response.get('error')
-                error += ": " + xsiam_server_err_msg
-
-        except ValueError:
-            if res.text:
-                error = '\n{}'.format(res.text)
-            else:
-                error = "Received empty response from the server"
-
-        api_call_info = (
-            'Parameters used:\n'
-            '\tURL: {xsiam_url}\n'
-            '\tHeaders: {headers}\n\n'
-            'Response status code: {status_code}\n'
-            'Error received:\n\t{error}'
-        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
-
-        demisto.error(header_msg + api_call_info)
-        raise DemistoException(header_msg + error, DemistoException)
-
-    client = BaseClient(base_url=xsiam_url)
-    data_chunks = split_data_to_chunks(data, chunk_size)
-    for data_chunk in data_chunks:
-        amount_of_events += len(data_chunk)
-        data_chunk = '\n'.join(data_chunk)
-        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
-        xsiam_api_call_with_retries(client=client, events_error_handler=events_error_handler,
-                                    error_msg=header_msg, headers=headers,
-                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, is_json_response=True)
-    demisto.updateModuleHealth({'eventsPulled': amount_of_events})
+    send_data_to_xsiam(events, vendor, product, data_format, url_key, num_of_attempts, chunk_size, data_type="events")
 
 
 def is_scheduled_command_retry():
@@ -11335,6 +11344,158 @@ def replace_spaces_in_credential(credential):
         return re.sub("(?<={0})(.*?)(?={1})".format(match_begin.group(0), match_end.group(0)),
                       lambda match: match.group(0).replace(' ', '\n'), credential)
     return credential
+
+
+def has_passed_time_threshold(timestamp_str, seconds_threshold):
+    """
+    Checks if the time difference between the current time and the timestamp is greater than the threshold.
+
+    :type timestamp_str: ``str``
+    :param timestamp_str: The timestamp to compare the current time to.
+    :type seconds_threshold: ``int``
+    :param seconds_threshold: The threshold in seconds.
+
+    :return: True if the time difference is greater than the threshold, otherwise False.
+    :rtype: ``bool``
+    """
+    import pytz
+    to_utc_timestamp = dateparser.parse(timestamp_str, settings={'TIMEZONE': 'UTC'})
+    # using astimezone since utcnow() returns a naive datetime object when unitesting
+    current_time = datetime.now().astimezone(pytz.utc)
+    if to_utc_timestamp:
+        time_difference = current_time - to_utc_timestamp
+        return time_difference.total_seconds() > seconds_threshold
+    else:
+        raise ValueError("Failed to parse timestamp: {timestamp_str}".format(timestamp_str=timestamp_str))
+
+
+def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
+                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS):
+    """
+    Send the supported fetched data types into the XDR data-collector private api.
+
+    :type data: ``Union[str, list]``
+    :param data: The data to send to XSIAM server. Should be of the following:
+        1. List of strings or dicts where each string or dict represents an event or asset.
+        2. String containing raw events separated by a new line.
+
+    :type vendor: ``str``
+    :param vendor: The vendor corresponding to the integration that originated the data.
+
+    :type product: ``str``
+    :param product: The product corresponding to the integration that originated the data.
+
+    :type data_format: ``str``
+    :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
+        events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+
+    :type url_key: ``str``
+    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
+
+    :type num_of_attempts: ``int``
+    :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type chunk_size: ``int``
+    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
+
+    :type data_type: ``str``
+    :param data_type: Type of data to send to Xsiam, events or assets.
+
+    :return: None
+    :rtype: ``None``
+    """
+    data_size = 0
+    params = demisto.params()
+    url = params.get(url_key)
+    calling_context = demisto.callingContext.get('context', {})
+    instance_name = calling_context.get('IntegrationInstance', '')
+    collector_name = calling_context.get('IntegrationBrand', '')
+    items_count = len(data) if isinstance(data, list) else 1
+    if data_type not in DATA_TYPES:
+        demisto.debug("data type must be one of these values: {types}".format(types=DATA_TYPES))
+        return
+
+    if not data:
+        demisto.debug('send_data_to_xsiam function received no {data_type}, '
+                      'skipping the API call to send {data} to XSIAM'.format(data_type=data_type, data=data_type))
+        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+        return
+
+    # only in case we have data to send to XSIAM we continue with this flow.
+    # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
+    if isinstance(data, list):
+        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
+        if isinstance(data[0], dict):
+            data = [json.dumps(item) for item in data]
+            data_format = 'json'
+        # Separating each event with a new line
+        data = '\n'.join(data)
+    elif not isinstance(data, str):
+        raise DemistoException('Unsupported type: {data} for the {data_type} parameter.'
+                               ' Should be a string or list.'.format(data=type(data), data_type=data_type))
+    if not data_format:
+        data_format = 'text'
+
+    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
+    xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
+    xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
+    headers = {
+        'authorization': xsiam_api_token,
+        'format': data_format,
+        'product': product,
+        'vendor': vendor,
+        'content-encoding': 'gzip',
+        'collector-name': collector_name,
+        'instance-name': instance_name,
+        'final-reporting-device': url,
+        'collector-type': ASSETS if data_type == ASSETS else EVENTS
+    }
+    if data_type == ASSETS:
+        headers['snapshot-id'] = str(round(time.time() * 1000))
+        headers['total-items-count'] = str(items_count)
+
+    header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
+
+    def data_error_handler(res):
+        """
+        Internal function to parse the XSIAM API errors
+        """
+        try:
+            response = res.json()
+            error = res.reason
+            if response.get('error').lower() == 'false':
+                xsiam_server_err_msg = response.get('error')
+                error += ": " + xsiam_server_err_msg
+
+        except ValueError:
+            if res.text:
+                error = '\n{}'.format(res.text)
+            else:
+                error = "Received empty response from the server"
+
+        api_call_info = (
+            'Parameters used:\n'
+            '\tURL: {xsiam_url}\n'
+            '\tHeaders: {headers}\n\n'
+            'Response status code: {status_code}\n'
+            'Error received:\n\t{error}'
+        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
+
+        demisto.error(header_msg + api_call_info)
+        raise DemistoException(header_msg + error, DemistoException)
+
+    client = BaseClient(base_url=xsiam_url)
+    data_chunks = split_data_to_chunks(data, chunk_size)
+    for data_chunk in data_chunks:
+        data_size += len(data_chunk)
+        data_chunk = '\n'.join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
+        xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
+                                    error_msg=header_msg, headers=headers,
+                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
+                                    zipped_data=zipped_data, is_json_response=True)
+
+    demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
 
 ###########################################

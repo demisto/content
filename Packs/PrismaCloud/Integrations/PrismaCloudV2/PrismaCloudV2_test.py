@@ -61,7 +61,8 @@ def test_alert_search_command_no_next_token(mocker, prisma_cloud_v2_client):
                                                            {'name': 'policy.remediable', 'operator': '=', 'value': 'true'},
                                                            {'name': 'cloud.type', 'operator': '=', 'value': 'gcp'},
                                                            {'name': 'policy.type', 'operator': '=', 'value': 'config'}],
-                                               'timeRange': {'type': 'relative', 'value': {'amount': 3, 'unit': 'week'}}})
+                                               'timeRange': {'type': 'relative', 'value': {'amount': 3, 'unit': 'week'}}},
+                                    retries=2)
 
 
 def test_alert_search_command_with_next_token(mocker, prisma_cloud_v2_client):
@@ -83,7 +84,7 @@ def test_alert_search_command_with_next_token(mocker, prisma_cloud_v2_client):
     http_request.assert_called_with('POST', 'v2/alert', params={'detailed': 'true'},
                                     json_data={'limit': 10,
                                                'timeRange': {'type': 'relative', 'value': {'amount': 3, 'unit': 'week'}},
-                                               'pageToken': 'TOKEN'})
+                                               'pageToken': 'TOKEN'}, retries=2)
 
 
 def test_alert_get_details_command(mocker, prisma_cloud_v2_client):
@@ -864,6 +865,47 @@ def test_calculate_offset(page_size, page_number, offset):
     """
     from PrismaCloudV2 import calculate_offset
     assert calculate_offset(page_size, page_number) == (page_size, offset)
+
+
+def test_extract_namespace():
+    """
+    Given:
+        - A response to extract namespace from.
+    When:
+        - Extracting namespaces from resource list items.
+    Then:
+        - The response is updated with the right namespaces.
+    """
+    from PrismaCloudV2 import extract_namespace
+
+    res = [{'id': '1', 'name': 'No namespaces', 'resourceListType': 'TAG',
+            'description': 'some values',
+            'lastModifiedBy': 'name@company.com', 'lastModifiedTs': 1611682405313,
+            'members': [{'env': 'env'}, {'projec': 'project'}, {'securit': 'security'}]},
+           {'id': '2', 'name': 'Members is strings', 'resourceListType': 'RESOURCE_GROUP',
+            'description': '', 'lastModifiedBy': 'name@company.com', 'lastModifiedTs': 1648181381197,
+            'members': ['common']},
+           {'id': '3', 'name': 'Have namespaces',
+            'resourceListType': 'GROUP', 'description': 'Have namespaces',
+            'lastModifiedBy': 'name@company.com', 'lastModifiedTs': 1648507192479,
+            'members': [{'hosts': ['*'], 'appIDs': ['*'], 'images': ['*'], 'labels': ['*'], 'clusters': ['*'],
+                         'codeRepos': ['*'], 'functions': ['*'], 'containers': ['*'], 'namespaces': ['*']}]}]
+    expected_res = [{'id': '1', 'name': 'No namespaces', 'resourceListType': 'TAG',
+                     'description': 'some values',
+                     'lastModifiedBy': 'name@company.com', 'lastModifiedTs': 1611682405313,
+                     'members': [{'env': 'env'}, {'projec': 'project'}, {'securit': 'security'}]},
+                    {'id': '2', 'name': 'Members is strings', 'resourceListType': 'RESOURCE_GROUP',
+                     'description': '', 'lastModifiedBy': 'name@company.com', 'lastModifiedTs': 1648181381197,
+                     'members': ['common']},
+                    {'id': '3', 'name': 'Have namespaces',
+                     'resourceListType': 'GROUP', 'description': 'Have namespaces',
+                     'lastModifiedBy': 'name@company.com', 'lastModifiedTs': 1648507192479,
+                     'members': [{'hosts': ['*'], 'appIDs': ['*'], 'images': ['*'], 'labels': ['*'],
+                                  'clusters': ['*'], 'codeRepos': ['*'], 'functions': ['*'],
+                                  'containers': ['*'], 'namespaces': ['*']}],
+                     'namespaces': ['*']}]
+    extract_namespace(res)
+    assert res == expected_res
 
 
 ''' FETCH HELPER FUNCTIONS TESTS '''

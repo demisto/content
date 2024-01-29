@@ -87,7 +87,7 @@
 .stop_contrib_external_build: &stop_contrib_external_build
   - - section_start "Stop contrib external build"
   - |
-    if [[ $CI_COMMIT_BRANCH =~ ^contrib/* && $CI_PIPELINE_SOURCE = "push" && $(curl --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/demisto/content/pulls?state=open&base=master&head=demisto:${CI_COMMIT_BRANCH}" | jq) = '[]' ]]; then
+    if [[ $CI_COMMIT_BRANCH =~ ^contrib/* && $CI_PIPELINE_SOURCE = "push" && $(curl --get --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/demisto/content/pulls?state=open&base=master" --data-urlencode "head=demisto:${CI_COMMIT_BRANCH}" | jq) = '[]' ]]; then
       echo "not running on contrib/ branches when there is no open internal PR or the pipeline was manually triggered"
       set -e
       exit 1
@@ -117,6 +117,7 @@
 
 .clone_and_export_variables: &clone_and_export_variables
   - section_start "Git - Job Start Actions" --collapsed
+  - git fetch origin master:refs/remotes/origin/master
   - git checkout -B $CI_COMMIT_BRANCH $CI_COMMIT_SHA
   - git config diff.renameLimit 6000
   - section_end "Git - Job Start Actions"
@@ -205,7 +206,7 @@
 .build_parameters: &build_parameters
   - section_start "Build Parameters" --collapsed
   - echo "Environment Variables:"
-  - set | grep -E "^ARTIFACTS_FOLDER.*=|^JIRA_.*=|^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^GCS_MARKET_XPANSE_BUCKET=|^SLACK_.*=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ARTIFACTS_FOLDER_INSTANCE=|^ARTIFACTS_FOLDER_SERVER_TYPE=|^ENV_RESULTS_PATH=|^LAST_UPLOAD_COMMIT=|^DEMISTO_SDK_LOG_FILE_SIZE=|^DEMISTO_SDK_LOG_FILE_COUNT=|^DEMISTO_SDK_LOG_FILE_PATH=|^DEMISTO_SDK_LOG_NO_COLORS=|^DEMISTO_SDK_LOG_NOTIFY_PATH=|^POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=" | sort
+  - set | grep -E "^ARTIFACTS_FOLDER.*=|^JIRA_.*=|^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^GCS_MARKET_XPANSE_BUCKET=|^SLACK_.*=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ARTIFACTS_FOLDER_INSTANCE=|^ARTIFACTS_FOLDER_SERVER_TYPE=|^ENV_RESULTS_PATH=|^LAST_UPLOAD_COMMIT=|^DEMISTO_SDK_LOG_FILE_SIZE=|^DEMISTO_SDK_LOG_FILE_COUNT=|^DEMISTO_SDK_LOG_FILE_PATH=|^DEMISTO_SDK_LOG_NO_COLORS=|^DEMISTO_SDK_LOG_NOTIFY_PATH=|^POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=|^DEMISTO_SDK_NIGHTLY=|^OVERRIDE_SDK_REF=|^SDK_REF=" | sort
   - echo "Versions Installed:"
   - python --version
   - python3 --version
@@ -223,29 +224,43 @@
   - section_end "Gitlab CI Build Parameters"
 
 .checkout-upload-commit-content-nightly: &checkout-upload-commit-content-nightly
-  - section_start "Checkout upload commit content nightly"
+  - section_start "Checkout upload commit content nightly" --collapsed
   - | 
     if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
-      echo "content nightly: checking out to the last successful upload commit $LAST_UPLOAD_COMMIT for the Packs folder"
-      git status
-      git reset $LAST_UPLOAD_COMMIT -- ./Packs  # resets the state of the "Packs" folder to the last successful upload commit, it discards any changes made to the folder since that commit
-      git checkout -- ./Packs  # checks out the "Packs" folder to the state of the last successful upload commit. it ensures that the folder matches the commit's content.
-      git clean -fd ./Packs  # cleans any untracked files and directories in the "Packs" folder. it ensures that only tracked files remain.
-      deleted_files=$(git diff --name-only --diff-filter=D $LAST_UPLOAD_COMMIT..HEAD -- Packs)  # get all the files deleted between the last successful upload commit to the master
-      if [[ -n "${deleted_files}" ]]; then
-        echo "deleted files between last upload commit $LAST_UPLOAD_COMMIT to branch $(git branch --show-current) are $deleted_files"
+      if [[ ! -d "${CI_PROJECT_DIR}/artifacts/production_packs" ]]; then
+        echo "content production packs do not exist in ${CI_PROJECT_DIR}/artifacts"
+        exit 1
       fi
-      for file in $deleted_files; do
-        git checkout HEAD -- "$file"  # restore any deleted files between the master branch and the last successful upload commit.
-      done
-      git status
-      echo "content nightly: successfully reverted the Packs folder to upload commit $LAST_UPLOAD_COMMIT"
+      rm -rf ./Packs
+      echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/production_packs to ./Packs"
+      cp -r ${CI_PROJECT_DIR}/artifacts/production_packs ./Packs
+      git config core.fileMode false  # used to tell git not to identify permission changes on files as changes
+      chmod -R 777 ./Packs  # required for the lint, we use the permissions of the file when running pytest within the containers
+      echo "the Packs changes between upload commit ${LAST_UPLOAD_COMMIT} to master commit ${CI_COMMIT_SHA} is:"
+      git status -- Packs  # show the differences between the upload commit to the master branch for the Packs folder
+      echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
     else
       echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly"
     fi
   - |
   - section_end "Checkout upload commit content nightly"
 
+.export_cloud_machine_constants: &export_cloud_machine_constants
+  # exporting the machine credentials
+  - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
+  - cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+  - cat "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
+
+  - IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
+  - |
+    for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
+      export XSIAM_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_SERVERS_PATH")
+      export DEMISTO_BASE_URL=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
+      export XSIAM_AUTH_ID=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"x-xdr-auth-id\"]")
+      export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_keys.json")
+      export XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_tokens.json")
+      break
+    done
 
 .default-before-script:
   before_script:
@@ -273,11 +288,28 @@
   - *install_node_modules
   - *install_venv
 
+.add-content-production-to-artifacts:
+  - section_start "Clone production content and add it to artifacts" --collapsed
+  - mkdir content_production
+  - cd content_production
+  - git init > /dev/null 2>&1
+  - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git
+  - git fetch --depth 1 origin $LAST_UPLOAD_COMMIT
+  - git checkout FETCH_HEAD >${ARTIFACTS_FOLDER}/logs/add-content-production-to-artifacts.log 2>&1
+  - cp -r ./Packs ${ARTIFACTS_FOLDER}/production_packs
+  - echo "checked out ${LAST_UPLOAD_COMMIT} which is the last successful upload commit"
+  - section_end "Clone production content and add it to artifacts"
+  - job-done
+
+
 .default-job-settings:
   interruptible: true
   extends:
     - .default-cache
     - .default-before-script
+  needs:
+    - job: cloning-content-repo-last-upload-commit
+      optional: true
 
 .trigger-slack-notification:
   stage: .post
@@ -287,6 +319,16 @@
       - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
   inherit: # see https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27775
     variables: false
+
+.destroy_xsoar_instances:
+  - section_start "Destroy Instances"
+  - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ENV_RESULTS_PATH}" --instance-role "${INSTANCE_ROLE}"
+  - destroy_instances_exit_code=$?
+  - |
+    if [ "${destroy_instances_exit_code}" -ne 0 ]; then
+      echo "Failed to destroy instances of role ${INSTANCE_ROLE}, exit code: ${destroy_instances_exit_code}"
+    fi
+  - section_end "Destroy Instances"
 
 .lock-machine:
   - section_start "Lock Machine" --collapsed
@@ -308,7 +350,7 @@
         if [[ -e "${ARTIFACTS_FOLDER}/logs/lock_file.txt" ]]; then
           echo "Job finished, removing lock file for machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
           gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-          gsutil rm "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
+          gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
           echo "Finished removing lock file(s)"
         else
           echo "No lock file found, skipping unlocking"
@@ -351,7 +393,6 @@
 .unittests-and-lint-settings:
   tags:
     - gce
-  needs: [ ]
   stage: unittests-and-validations
   artifacts:
     reports:
@@ -392,7 +433,7 @@
     - section_end "Test Infrastructure"
     - section_start "Run Unit Testing and Lint"
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "${TEST_XDR_PREFIX}marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
+      if [[ -n $BUCKET_UPLOAD && $TEST_UPLOAD == "true" ]]; then
         echo "Skipping validations when uploading to a test bucket."
       else
         echo "demisto-sdk version: $(demisto-sdk --version)"
@@ -434,7 +475,7 @@
               python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name "${ARTIFACTS_FOLDER}/coverage_report/coverage.json" --minimal_file_name "${ARTIFACTS_FOLDER}/coverage_report/coverage-min.json"
             fi
           else
-            demisto-sdk coverage-analyze -i "${ARTIFACTS_FOLDER}/coverage_report/.coverage" --report-dir "${ARTIFACTS_FOLDER}/coverage_report" --report-type html,xml --previous-coverage-report-url https://storage.googleapis.com/${TEST_XDR_PREFIX}marketplace-dist-dev/code-coverage-reports/coverage-min.json
+            demisto-sdk coverage-analyze -i "${ARTIFACTS_FOLDER}/coverage_report/.coverage" --report-dir "${ARTIFACTS_FOLDER}/coverage_report" --report-type html,xml --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
           fi
         fi
       fi
@@ -448,7 +489,6 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
-  needs: []
   variables:
     KUBERNETES_CPU_REQUEST: 1000m
   artifacts:
@@ -466,12 +506,8 @@
     - section_end "Copy conf.json To Server Type Artifacts Folder"
     - section_start "Validate Files and Yaml"
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD ]]; then
-        echo "Skipping the -Validate Files and Yaml- step when force uploading to a bucket."
-      else
-        ./Tests/scripts/linters_runner.sh
-        ./Tests/scripts/validate.sh
-      fi
+      ./Tests/scripts/linters_runner.sh
+      ./Tests/scripts/validate.sh
     - section_end "Validate Files and Yaml"
     - section_start "Check Spelling"
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
@@ -482,7 +518,7 @@
     - |
       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
       echo "successfully activated google cloud service account"
-      gsutil cp "gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip" $INDEX_PATH
+      gsutil cp "gs://marketplace-dist/content/packs/index.zip" $INDEX_PATH
       echo "successfully downloaded index.zip"
     - echo "successfully downloaded index.zip into $INDEX_PATH"
 
@@ -503,3 +539,23 @@
     - .default-job-settings
   script:
     - python3 Tests/scripts/check_jobs_done.py --triggering-workflow "${WORKFLOW}" --job-done-files "${PIPELINE_JOBS_FOLDER}"
+
+cloning-content-repo-last-upload-commit:
+  stage: .pre
+  rules:
+    - if: '$NIGHTLY'
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+    when: always
+  before_script:
+    - source .gitlab/helper_functions.sh
+    - *setup-network-certs
+    - *create_artifacts_and_server_type_instance_folders
+    - *get_last_upload_commit
+  variables:
+    ARTIFACTS_FOLDER: ${CI_PROJECT_DIR}/artifacts
+  script:
+    - !reference [.add-content-production-to-artifacts]

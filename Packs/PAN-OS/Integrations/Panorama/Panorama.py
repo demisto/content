@@ -416,7 +416,13 @@ def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
             dictionary[key] = dictionary[key]['#text']
         elif isinstance(dictionary[key], list) and isinstance(dictionary[key][0], dict) \
                 and dictionary[key][0].get('#text'):
-            dictionary[key] = [text.get('#text') for text in dictionary[key]]
+            temp_list = []
+            for text in dictionary[key]:
+                if isinstance(text, dict):
+                    temp_list.append(text.get('#text'))
+                elif isinstance(text, str):
+                    temp_list.append(text)
+            dictionary[key] = temp_list
 
     for value in dictionary.values():
         if isinstance(value, dict):
@@ -9766,8 +9772,8 @@ class TemplateStackInformation(ResultData):
     """
     serial: str
     connected: str
-    hostname: str
     last_commit_all_state_tpl: str
+    hostname: str = ""
     name: str = ""
 
     _output_prefix = OUTPUT_PREFIX + "TemplateStackOp"

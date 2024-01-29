@@ -7,7 +7,7 @@ comment: |-
 commonfields:
   id: GIBIncidentUpdateIncludingClosed
   version: -1
-dockerimage: demisto/python3:3.10.13.78960
+dockerimage: demisto/python3:3.10.13.80593
 enabled: true
 name: GIBIncidentUpdateIncludingClosed
 script: ''

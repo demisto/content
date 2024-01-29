@@ -1,25 +1,28 @@
-Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
-Inputs for this playbook are:
-- A comma-separated list of endpoint IDs.
-- A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.
+Deprecated. Use Cortex XDR - Retrieve File Playbook v2 instead.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 GenericPolling
 
 ### Integrations
+
 CortexXDRIR
 
 ### Scripts
+
 PrintErrorEntry
 
 ### Commands
-* xdr-retrieve-files
+
 * xdr-retrieve-file-details
+* xdr-file-retrieve
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -31,6 +34,7 @@ PrintErrorEntry
 | mac_file_paths | A comma-separated list of Mac paths.<br/>Enter at least one path for either Windows, Linux, or Mac. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -47,5 +51,7 @@ PrintErrorEntry
 | File.Type | The file type, as determined by libmagic \(same as displayed in the file entries\). | String |
 
 ## Playbook Image
+
 ---
-![Cortex XDR - Retrieve File Playbook](https://raw.githubusercontent.com/demisto/content/0b71472b92a1bfa604215334b27c49a40c0260dd/Packs/CortexXDR/doc_files/Cortex%20XDR%20-%20Retrieve%20File%20Playbook.png)
+
+![Cortex XDR - Retrieve File Playbook](../doc_files/Cortex_XDR_-_Retrieve_File_Playbook.png)

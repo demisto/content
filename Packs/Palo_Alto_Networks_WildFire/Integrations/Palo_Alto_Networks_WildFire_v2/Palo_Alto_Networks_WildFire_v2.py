@@ -1,3 +1,5 @@
+import contextlib
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import shutil
@@ -16,23 +18,6 @@ INTEGRATION_NAME = 'Wildfire'
 
 PARAMS = demisto.params()
 URL = PARAMS.get('server')
-TOKEN = PARAMS.get('token') or (PARAMS.get('credentials') or {}).get('password')
-# get the source of the credentials to ensure the correct agent is set for all API calls
-# other = ngfw or wf api based keys that are 32char long and require no agent
-# pcc and prismaaccessapi are 64 char long and require the correct agent= value in the api call
-current_platform = demisto.demistoVersion().get('platform')
-if not TOKEN and current_platform == 'x2':
-    """
-    Note: We don't want to get the token from the license if we're on the standard XSOAR platform.
-    The main reason is it has a strict API limit.
-    Therefore, we only get the token from in X2 (from the config), even though it is
-    available in the license from version 6.5 of XSOAR
-    """
-    try:
-        TOKEN = demisto.getLicenseCustomField('WildFire-Reports.token')
-    except Exception:
-        TOKEN = None
-
 USE_SSL = not PARAMS.get('insecure', False)
 FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
 RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
@@ -44,20 +29,10 @@ WILDFIRE_REPORT_DT_FILE = "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA25
 
 # update the default headers with the correct agent version based on the selection in the instance config
 API_KEY_SOURCE = PARAMS.get('credentials_source')
-
-AGENT_VALUE = ''
-ADDITIONAL_FORM_BOUNDARY = ''
-BODY_DICT = {'apikey': TOKEN}
-PARAMS_DICT = {'apikey': TOKEN}
-
-if API_KEY_SOURCE in ['pcc', 'prismaaccessapi', 'xsoartim']:
-    BODY_DICT['agent'] = API_KEY_SOURCE
-    PARAMS_DICT['agent'] = API_KEY_SOURCE
-
-    ADDITIONAL_FORM_BOUNDARY = 'add'
-else:
-    # we have an 'other' api key that requires no additional api key headers for agent
-    AGENT_VALUE = ''
+AGENT_VALUE = None
+BODY_DICT: dict = {}
+PARAMS_DICT: dict = {}
+TOKEN = None
 
 if URL and not URL.endswith('/publicapi'):
     if URL[-1] != '/':
@@ -495,13 +470,13 @@ Content-Disposition: form-data; name="url"
 --upload_boundry
 Content-Disposition: form-data; name="agent"
 
-{API_KEY_SOURCE}
+{AGENT_VALUE}
 --upload_boundry--'''
 
     # check upload value
     # body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
 
-    if ADDITIONAL_FORM_BOUNDARY != '':
+    if AGENT_VALUE != '':
         # we need to attach another form element of agent for this APIKEY
         body = body2
 
@@ -561,12 +536,13 @@ Content-Disposition: form-data; name="link"
 --upload_boundry
 Content-Disposition: form-data; name="agent"
 
-{API_KEY_SOURCE}
+{AGENT_VALUE}
 --upload_boundry--'''
 
+    # koby test
     # body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
 
-    if ADDITIONAL_FORM_BOUNDARY != '':
+    if AGENT_VALUE != '':
         body = body2
 
     result = http_request(
@@ -1546,24 +1522,83 @@ def assert_upload_argument(args: dict):
         raise ValueError('Please specify the item you wish to upload using the \'upload\' argument.')
 
 
+def get_agent(api_key_source: str, platform: str, token: str) -> str:
+    # Auto API expect the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
+    # within XSOAR (both on-prem and cloud).
+    if len(token) == 32:
+        return ''
+    if api_key_source in ['pcc', 'prismaaccessapi', 'xsoartim', 'xdr']:
+        return api_key_source
+    if (platform == 'x2' or is_demisto_version_ge('8')) and not api_key_source:
+        return 'xdr'
+    # we have an 'other' api key that requires no additional api key headers for agent
+    return ''
+
+
+def set_http_params(token, agent_value):
+    global AGENT_VALUE
+    global BODY_DICT
+    global PARAMS_DICT
+    global TOKEN
+
+    AGENT_VALUE = agent_value
+    BODY_DICT = {'apikey': token}
+    PARAMS_DICT = {'apikey': token}
+    if agent_value:
+        BODY_DICT['agent'] = agent_value
+        PARAMS_DICT['agent'] = agent_value
+    TOKEN = token
+
+
 def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
-    LOG(f'command is {command}')
+    params = demisto.params()
+    platform = get_demisto_version().get('platform')  # Platform = xsoar_hosted / xsoar / x2 depends on the machine
+    demisto.info(f'command is {command}')
 
     try:
-        if not TOKEN:
-            raise DemistoException('API Key must be provided.')
-        # Remove proxy if not set to true in params
-        handle_proxy()
 
-        # if the apikey is longer than 32 characters agent is not set,
-        # send exception othewise API calls will fail
-        if len(TOKEN) > 32 and API_KEY_SOURCE not in ['pcc', 'prismaaccessapi', 'xsoartim']:
-            # the token is longer than 32 so either PPC or Prismaaccessapi needs to be set
+        token = params.get('token') or (params.get('credentials') or {}).get('password')
+        # get the source of the credentials to ensure the correct agent is set for all API calls
+        # other = ngfw or wf api based keys that are 32 chars long and require no agent
+        # pcc and prismaaccessapi are 64 char long and require the correct agent= value in the api call
+        if not token and platform == 'x2':
+            # Note: We don't want to get the token from the license if we're on the standard XSOAR platform.
+            # The main reason is it has a strict API limit.
+            # Therefore, we only get the token from in X2 (from the config), even though it is
+            # available in the license from version 6.5 of XSOAR
+            with contextlib.suppress(Exception):
+                token = demisto.getLicenseCustomField("WildFire-Reports.token")
+
+        if not token:
+            # If token is empty when test-module is running, return a more readable output to the user.
+            if command == 'test-module':
+                raise DemistoException("Authorization Error: It's seems that the token is empty and you have not a TIM license "
+                                       "that is up-to-date, Please fill the token or update your TIM license and try again.")
+            else:
+                return_results({
+                    'status': 'error',
+                    'error': {
+                        'title': "Couldn't execute Wildfire command.",
+                        'description': "The token can't be empty.",
+                        'techInfo': "The token can't be empty, Please fill the token in the instance configuration "
+                                    "or update your TIM license."
+                    }
+                })
+                sys.exit()
+
+        # update the default headers with the correct agent version based on the selection in the instance config.
+        agent_value = get_agent(params.get('credentials_source'), platform, token)
+
+        # if the apikey is longer than 32 characters agent is not set, and we're not in XSIAM or XSOAR SaaS, send exception
+        # otherwise API calls will fail.
+        if len(token) > 32 and not agent_value:
+            # the token is longer than 32 so one of pcc, prismaaccessapi, xsoartim, xdr needs to be set or a
+            # license from XSIAM/XSOAR NG.
             raise DemistoException(
-                'API Key is longer than 32 characters.\
-Select an "API Key Type" in the integration\'s instance configuration.')
+                "API Key is longer than 32 characters. Select an 'API Key Type' in the integration's instance configuration.")
+        set_http_params(token, agent_value)
 
         if command == 'test-module':
             test_module()

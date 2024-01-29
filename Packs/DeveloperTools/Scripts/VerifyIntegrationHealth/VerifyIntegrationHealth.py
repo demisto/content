@@ -2,22 +2,22 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, Any, Tuple
+from typing import Any
 
 
-def health_check(health_dict, integration_name: str) -> Tuple[bool, bool]:
+def health_check(health_dict, integration_name: str) -> tuple[bool, bool]:
     for _, integration in health_dict.items():
         if integration.get('brand') == integration_name:
             return (False, True) if integration.get('lastError') else (True, True)
     return True, False
 
 
-def health_check_command(args: Dict[str, Any]) -> CommandResults:
+def health_check_command(args: dict[str, Any]) -> CommandResults:
 
     integration_name = args.get('integration_name', '')
 
     raw_result = demisto.executeCommand(
-        "demisto-api-post",
+        "core-api-post",
         {
             "uri": "/settings/integration/search",
             "body": {

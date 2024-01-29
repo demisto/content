@@ -38,14 +38,15 @@ In a web browser, go to **`http://<cortex-xsoar-server-address>:<listen_port>`**
 
 To access the File Management UI by instance name, make sure ***Instance execute external*** is enabled. 
 
-1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. (For Cortex XSOAR 6.x) In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
-3. In a web browser, 
-   (For Cortex XSOAR 6.x) go to `https://<cortex-xsoar-address>/instance/execute/<instance_name>/`.
+1. In Cortex XSOAR 6.x:
+   1. Navigate to **Settings > About > Troubleshooting**.
+   2. In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+2. In a web browser:
 
-   In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc_<account name>/instance/execute/<instance_name>/`
-
-   (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+   - (For Cortex XSOAR 6.x) go to `https://<cortex-xsoar-address>/instance/execute/<instance_name>/`
+   - (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+   -  (In Multi Tenant environments) `https://<cortex-xsoar-address>/acc_<account name>/instance/execute/<instance_name>/`
+  
    
 ## Commands
 
@@ -101,6 +102,33 @@ Remove all the files from the repository
 #### Context Output
 
 There is no context output for this command.
+
+
+### wfr-upload-as-file
+
+***
+Upload a file from data to the repository.
+
+
+#### Base Command
+
+`wfr-upload-as-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_name | The name of the file. | Required |
+| data | Input data to create the file. | Optional |
+| encoding | Encoding type of the input data. Default is utf-8. | Optional |
+| extract_archive | Set to true to extract files to archive files, otherwise false. Possible values are: true, false. Default is false. | Optional | 
+| upload_directory | The directory path where to upload. Default is /. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
 
 ### wfr-upload-file
 

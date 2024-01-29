@@ -26,8 +26,6 @@ demistomock.ps1
 Tests/filter_file.txt
 Tests/filter_file_old.txt
 Tests/id_set.json
-Tests/tests_end_to_end_xsiam/test_cloud_api_keys.json
-Tests/tests_end_to_end_xsiam/test_cloud_server_path.json
 .mypy_cache
 Scripts/*/*_unified.yml
 Integrations/*/*_unified.yml
@@ -35,6 +33,7 @@ Beta_Integrations/*/*_unified.yml
 Packs/*/*/*/*_unified.yml
 conftest.py
 !Tests/scripts/dev_envs/pytest/conftest.py
+!Tests/tests_e2e/conftest.py
 venv
 failed_unittests.txt
 .python-version
@@ -43,6 +42,7 @@ Integrations/**/__init__.py
 Packs/**/__init__.py
 requirements.txt
 **/collect_tests.log
+.args_command.json
 temp/*
 artifacts/*
 
@@ -80,6 +80,7 @@ neo4j-data
 Packs/Whois/Integrations/Whois/test_data/microsocks
 
 # Precommit configs
+.pre-commit
 .pre-commit-config-content.yaml
 .report.json
 .report_pytest.xml
@@ -90,6 +91,7 @@ Packs/**/Scripts/**/.pytest.ini
 pytest_report.json
 test_runner.sh
 .sourcery_tmp.yaml
+testResults.xml
 
 # log files
 demisto_sdk_debug.log

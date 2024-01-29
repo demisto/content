@@ -24,9 +24,9 @@ AWS - CloudTrail
 
 ### Scripts
 
+* Set
 * LoadJSON
 * GetTime
-* Set
 
 ### Commands
 
@@ -47,15 +47,15 @@ aws-cloudtrail-lookup-events
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| AwsMFAConfigCount | The number of MFA configurations performed by the user in the AWS environment. | unknown |
-| AwsUserRoleChangesCount | The number of user roles that were changed by the user in the AWS environment. | unknown |
-| AwsSuspiciousActivitiesCount | The number of suspicious activities performed by the user in the AWS environment. | unknown |
-| AwsScriptBasedUserAgentCount | The number of script-based user agent usages by the user in the AWS environment. | unknown |
-| AwsAccessKeyActivitiesCount | The number of access key activities performed by the user in the AWS environment. | unknown |
-| AwsSecurityChangesCount | The number of security rules that were changed by the user in the AWS environment. | unknown |
-| AwsAdminActivitiesCount | The number of administrative activities performed by the user in the AWS environment. | unknown |
-| AwsApiAccessDeniedCount | The number of API accesses denied by the user in the AWS environment. | unknown |
-| AwsFailedLogonCount | The number of failed logins by the user in the AWS environment. | unknown |
+| AwsMFAConfigCount | The number of MFA configurations performed by the user in the AWS environment. | number |
+| AwsUserRoleChangesCount | The number of user roles that were changed by the user in the AWS environment. | number |
+| AwsSuspiciousActivitiesCount | The number of suspicious activities performed by the user in the AWS environment. | number |
+| AwsScriptBasedUserAgentCount | The number of script-based user agent usages by the user in the AWS environment. | number |
+| AwsAccessKeyActivitiesCount | The number of access key activities performed by the user in the AWS environment. | number |
+| AwsSecurityChangesCount | The number of security rules that were changed by the user in the AWS environment. | number |
+| AwsAdminActivitiesCount | The number of administrative activities performed by the user in the AWS environment. | number |
+| AwsApiAccessDeniedCount | The number of API accesses denied by the user in the AWS environment. | number |
+| AwsFailedLogonCount | The number of failed logins by the user in the AWS environment. | number |
 
 ## Playbook Image
 

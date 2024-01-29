@@ -5,6 +5,7 @@ description: |-
   Enrich a file using one or more integrations.
 
   - Provide threat information
+  - File Reputation using !file command
 starttaskid: "0"
 tasks:
   "0":
@@ -26,7 +27,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": -180
+          "y": -150
         }
       }
     note: false
@@ -54,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 970
+          "y": 900
         }
       }
     note: false
@@ -67,13 +68,13 @@ tasks:
     continueonerrortype: ""
   "25":
     id: "25"
-    taskid: e607bf1e-fe9b-41bf-8b96-bb9d6d88dd07
+    taskid: 049989d4-fe3f-4a96-8f17-ad155ed74362
     type: condition
     task:
-      id: e607bf1e-fe9b-41bf-8b96-bb9d6d88dd07
+      id: 049989d4-fe3f-4a96-8f17-ad155ed74362
       version: -1
       name: Is there a SHA256 hash?
-      description: Check if there is a SHA256 hash in context.
+      description: Verify whether there is a SHA256 hash to enrich.
       type: condition
       iscommand: false
       brand: ""
@@ -95,11 +96,13 @@ tasks:
               complex:
                 root: inputs.SHA256
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 320
+          "x": 720,
+          "y": 300
         }
       }
     note: false
@@ -160,8 +163,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 520
+          "x": 720,
+          "y": 510
         }
       }
     note: false
@@ -174,17 +177,17 @@ tasks:
     continueonerrortype: ""
   "28":
     id: "28"
-    taskid: a06a7e73-028d-4c7f-85b1-7f0344db5906
+    taskid: 6721f439-f2ce-4dec-8bff-5eedf90921c9
     type: regular
     task:
-      id: a06a7e73-028d-4c7f-85b1-7f0344db5906
+      id: 6721f439-f2ce-4dec-8bff-5eedf90921c9
       version: -1
       name: Get threat information from Cylance Protect v2
-      description: Gets threat information from the Cylance Protect v2 integration.
-      script: Cylance Protect v2|||cylance-protect-get-threat
+      description: Requests threat details for a specific threat.
+      script: '|||cylance-protect-get-threat'
       type: regular
       iscommand: true
-      brand: Cylance Protect v2
+      brand: ""
     nexttasks:
       "#none#":
       - "7"
@@ -195,13 +198,12 @@ tasks:
           transformers:
           - operator: uniq
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 730
+          "x": 720,
+          "y": 720
         }
       }
     note: false
@@ -224,7 +226,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      playbookId: File Enrichment - Virus Total (API v3)
+      playbookName: File Enrichment - Virus Total (API v3)
     nexttasks:
       "#none#":
       - "7"
@@ -254,8 +256,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1010,
-          "y": 320
+          "x": -200,
+          "y": 300
         }
       }
     note: false
@@ -268,13 +270,13 @@ tasks:
     continueonerrortype: ""
   "31":
     id: "31"
-    taskid: 7cf6f2ba-710b-4d71-8860-852707418e81
+    taskid: de42fb75-e635-43b3-8696-a867fe55e70b
     type: condition
     task:
-      id: 7cf6f2ba-710b-4d71-8860-852707418e81
+      id: de42fb75-e635-43b3-8696-a867fe55e70b
       version: -1
       name: Is there a file hash?
-      description: Check if there is a SHA256 hash in context.
+      description: Ensure that there are file hashes to enrich.
       type: condition
       iscommand: false
       brand: ""
@@ -303,18 +305,20 @@ tasks:
         - operator: isExists
           left:
             value:
-              simple: inputs.SHA1
+              complex:
+                root: inputs.SHA1
             iscontext: true
         - operator: isExists
           left:
             value:
-              simple: inputs.MD5
+              complex:
+                root: inputs.MD5
             iscontext: true
     view: |-
       {
         "position": {
           "x": 470,
-          "y": -50
+          "y": -20
         }
       }
     note: false
@@ -353,8 +357,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -150,
-          "y": 160
+          "x": 220,
+          "y": 150
         }
       }
   "33":
@@ -387,20 +391,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e41f1d02-f6ea-45a6-8c43-d858ec8aa875
+      id: 331e3147-e6bc-4db8-8fe9-5a1d56cd4e3a
       iscommand: false
       name: Should use !file command?
-      description: Check if should run file reputation command
+      description: Check whether the file reputation command should be run.
       type: condition
       version: -1
-    taskid: e41f1d02-f6ea-45a6-8c43-d858ec8aa875
+    taskid: 331e3147-e6bc-4db8-8fe9-5a1d56cd4e3a
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": -150,
-          "y": 320
+          "x": 220,
+          "y": 300
         }
       }
   "34":
@@ -437,20 +441,20 @@ tasks:
     task:
       brand: ""
       description: Checks the file reputation of the specified hash.
-      id: 260f6a83-ba18-4aca-8eb1-294f470b1c81
+      id: 0e956788-b597-4a77-8ffd-01b39d718d17
       iscommand: true
       name: Check Reputation
       script: '|||file'
       type: regular
       version: -1
-    taskid: 260f6a83-ba18-4aca-8eb1-294f470b1c81
+    taskid: 0e956788-b597-4a77-8ffd-01b39d718d17
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -150,
-          "y": 480
+          "x": 220,
+          "y": 510
         }
       }
   "35":
@@ -480,8 +484,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1010,
-          "y": 160
+          "x": -200,
+          "y": 150
         }
       }
   "36":
@@ -511,25 +515,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 160
+          "x": 720,
+          "y": 150
         }
       }
 view: |-
   {
     "linkLabelsPosition": {
       "25_27_yes": 0.59,
-      "25_7_#default#": 0.16,
+      "25_7_#default#": 0.25,
       "27_28_yes": 0.57,
-      "27_7_#default#": 0.21,
-      "31_7_#default#": 0.13
+      "27_7_#default#": 0.36,
+      "31_7_#default#": 0.13,
+      "33_7_#default#": 0.25
     },
     "paper": {
       "dimensions": {
-        "height": 1215,
-        "width": 1540,
-        "x": -150,
-        "y": -180
+        "height": 1115,
+        "width": 1300,
+        "x": -200,
+        "y": -150
       }
     }
   }
@@ -604,15 +609,261 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score.
   type: number
-- contextPath: File.VirusTotal.Scans
-  description: The scan object.
-  type: unknown
-- contextPath: File.VirusTotal.Scans.Source
-  description: Vendor that scanned this hash.
-- contextPath: File.VirusTotal.Scans.Detected
-  description: Whether a scan was detected for this hash (True/False).
-- contextPath: File.VirusTotal.Scans.Result
-  description: Scan result for this hash - signature, etc.
+- contextPath: File.Malicious.Description
+  description: The reason the vendor decided the file was malicious.
+  type: string
+- contextPath: File.Name
+  description: The name of the threat.
+  type: string
+- contextPath: File.MalwareFamily
+  description: The file family classification.
+  type: string
+- contextPath: File.AutoRun
+  description: Indicates if the file is set to automatically run on system startup.
+  type: string
+- contextPath: File.AvIndustry
+  description: The score provided by the Anti-Virus industry.
+  type: string
+- contextPath: File.CertIssuer
+  description: The ID for the certificate issuer.
+  type: string
+- contextPath: File.CertPublisher
+  description: The ID for the certificate publisher.
+  type: string
+- contextPath: File.CertTimestamp
+  description: The date and time (in UTC) when the file was signed using the certificate.
+  type: string
+- contextPath: File.Classification
+  description: The threat classification for the threat.
+  type: string
+- contextPath: File.CylanceScore
+  description: The Cylance Score assigned to the threat.
+  type: string
+- contextPath: File.DetectedBy
+  description: The name of the Cylance module that detected the threat.
+  type: string
+- contextPath: File.FileSize
+  description: The size of the file.
+  type: string
+- contextPath: File.GlobalQuarantine
+  description: Identifies if the threat is on the Global Quarantine list.
+  type: string
+- contextPath: File.Running
+  description: Identifies if the threat is executing, or another executable loaded or called it.
+  type: string
+- contextPath: File.Safelisted
+  description: Identifies if the threat is on the Safe List.
+  type: string
+- contextPath: File.Signed
+  description: Identifies the file as signed or not signed.
+  type: string
+- contextPath: File.SubClassification
+  description: The threat sub-classification for the threat.
+  type: string
+- contextPath: File.UniqueToCylance
+  description: Whether the threat was identified by Cylance, and not by other anti-virus sources.
+  type: string
+- contextPath: File.Relationships.EntityA
+  description: The source of the relationship.
+  type: String
+- contextPath: File.Relationships.EntityB
+  description: The destination of the relationship.
+  type: String
+- contextPath: File.Relationships.Relationship
+  description: The name of the relationship.
+  type: String
+- contextPath: File.Relationships.EntityAtype
+  description: The type of the source of the relationship.
+  type: String
+- contextPath: File.Relationships.EntityBtype
+  description: The type of the destination of the relationship.
+  type: String
+- contextPath: File.Malicious.TotalEngines
+  description: For malicious files, the total number of engines that checked the file hash.
+  type: Unknown
+- contextPath: DBotScore.Reliability
+  description: Reliability of the source providing the intelligence data.
+  type: String
+- contextPath: VirusTotal.File.attributes.type_description
+  description: description of the type of the file.
+  type: String
+- contextPath: VirusTotal.File.attributes.tlsh
+  description: The locality-sensitive hashing.
+  type: String
+- contextPath: VirusTotal.File.attributes.names
+  description: Names of the file.
+  type: String
+- contextPath: VirusTotal.File.attributes.last_modification_date
+  description: The last modification date in epoch format.
+  type: Number
+- contextPath: VirusTotal.File.attributes.type_tag
+  description: Tag of the type.
+  type: String
+- contextPath: VirusTotal.File.attributes.size
+  description: Size of the file.
+  type: Number
+- contextPath: VirusTotal.File.attributes.times_submitted
+  description: Number of times the file was submitted.
+  type: Number
+- contextPath: VirusTotal.File.attributes.last_submission_date
+  description: Last submission date in epoch format.
+  type: Number
+- contextPath: VirusTotal.File.attributes.downloadable
+  description: Whether the file is downloadable.
+  type: Boolean
+- contextPath: VirusTotal.File.attributes.sha256
+  description: SHA-256 hash of the file.
+  type: String
+- contextPath: VirusTotal.File.attributes.type_extension
+  description: Extension of the type.
+  type: String
+- contextPath: VirusTotal.File.attributes.tags
+  description: File tags.
+  type: String
+- contextPath: VirusTotal.File.attributes.last_analysis_date
+  description: Last analysis date in epoch format.
+  type: Number
+- contextPath: VirusTotal.File.attributes.unique_sources
+  description: Unique sources.
+  type: Number
+- contextPath: VirusTotal.File.attributes.first_submission_date
+  description: First submission date in epoch format.
+  type: Number
+- contextPath: VirusTotal.File.attributes.ssdeep
+  description: SSDeep hash of the file.
+  type: String
+- contextPath: VirusTotal.File.attributes.md5
+  description: MD5 hash of the file.
+  type: String
+- contextPath: VirusTotal.File.attributes.sha1
+  description: SHA-1 hash of the file.
+  type: String
+- contextPath: VirusTotal.File.attributes.magic
+  description: Identification of file by the magic number.
+  type: String
+- contextPath: VirusTotal.File.attributes.meaningful_name
+  description: Meaningful name of the file.
+  type: String
+- contextPath: VirusTotal.File.attributes.reputation
+  description: The reputation of the file.
+  type: Number
+- contextPath: VirusTotal.File.attributes.exiftool.MIMEtype
+  description: MIME type of the file.
+  type: String
+- contextPath: VirusTotal.File.attributes.exiftool.Filetype
+  description: The file type.
+  type: String
+- contextPath: VirusTotal.File.attributes.exiftool.WordCount
+  description: Total number of words in the file.
+  type: String
+- contextPath: VirusTotal.File.attributes.exiftool.LineCount
+  description: Total number of lines in file.
+  type: String
+- contextPath: VirusTotal.File.attributes.exiftool.MIMEEncoding
+  description: The MIME encoding.
+  type: String
+- contextPath: VirusTotal.File.attributes.exiftool.FiletypeExtension
+  description: The file type extension.
+  type: String
+- contextPath: VirusTotal.File.attributes.exiftool.Newlines
+  description: Number of newlines signs.
+  type: String
+- contextPath: VirusTotal.File.attributes.javascript_info.tags
+  description: Tags of the JavaScript.
+  type: String
+- contextPath: VirusTotal.File.attributes.crowdsourced_ids_stats.info
+  description: Number of IDS that marked the file as "info".
+  type: Number
+- contextPath: VirusTotal.File.attributes.crowdsourced_ids_stats.high
+  description: Number of IDS that marked the file as "high".
+  type: Number
+- contextPath: VirusTotal.File.attributes.crowdsourced_ids_stats.medium
+  description: Number of IDS that marked the file as "medium".
+  type: Number
+- contextPath: VirusTotal.File.attributes.crowdsourced_ids_stats.low
+  description: Number of IDS that marked the file as "low".
+  type: Number
+- contextPath: VirusTotal.File.attributes.sigma_analysis_stats.critical
+  description: Number of Sigma analysis that marked the file as "critical".
+  type: Number
+- contextPath: VirusTotal.File.attributes.sigma_analysis_stats.high
+  description: Number of Sigma analysis that marked the file as "high".
+  type: Number
+- contextPath: VirusTotal.File.attributes.sigma_analysis_stats.medium
+  description: Number of Sigma analysis that marked the file as "medium".
+  type: Number
+- contextPath: VirusTotal.File.attributes.sigma_analysis_stats.low
+  description: Number of Sigma analysis that marked the file as "low".
+  type: Number
+- contextPath: VirusTotal.File.attributes.trid.file_type
+  description: The TrID file type.
+  type: String
+- contextPath: VirusTotal.File.attributes.trid.probability
+  description: The TrID probability.
+  type: Number
+- contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.description
+  description: description of the YARA rule.
+  type: String
+- contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.source
+  description: Source of the YARA rule.
+  type: String
+- contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.author
+  description: Author of the YARA rule.
+  type: String
+- contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_name
+  description: Rule set name of the YARA rule.
+  type: String
+- contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.rule_name
+  description: Name of the YARA rule.
+  type: String
+- contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_id
+  description: ID of the YARA rule.
+  type: String
+- contextPath: VirusTotal.File.attributes.total_votes.harmless
+  description: Total number of harmless votes.
+  type: Number
+- contextPath: VirusTotal.File.attributes.total_votes.malicious
+  description: Total number of malicious votes.
+  type: Number
+- contextPath: VirusTotal.File.attributes.popular_threat_classification.suggested_threat_label
+  description: Suggested thread label.
+  type: String
+- contextPath: VirusTotal.File.attributes.popular_threat_classification.popular_threat_name
+  description: The popular thread name.
+  type: Number
+- contextPath: VirusTotal.File.attributes.last_analysis_stats.harmless
+  description: The number of engines that found the indicator to be harmless.
+  type: Number
+- contextPath: VirusTotal.File.attributes.last_analysis_stats.type-unsupported
+  description: The number of engines that found the indicator to be of type unsupported.
+  type: Number
+- contextPath: VirusTotal.File.attributes.last_analysis_stats.suspicious
+  description: The number of engines that found the indicator to be suspicious.
+  type: Number
+- contextPath: VirusTotal.File.attributes.last_analysis_stats.confirmed-timeout
+  description: The number of engines that confirmed the timeout of the indicator.
+  type: Number
+- contextPath: VirusTotal.File.attributes.last_analysis_stats.timeout
+  description: The number of engines that timed out for the indicator.
+  type: Number
+- contextPath: VirusTotal.File.attributes.last_analysis_stats.failure
+  description: The number of failed analysis engines.
+  type: Number
+- contextPath: VirusTotal.File.attributes.last_analysis_stats.malicious
+  description: The number of engines that found the indicator to be malicious.
+  type: Number
+- contextPath: VirusTotal.File.attributes.last_analysis_stats.undetected
+  description: The number of engines that could not detect the indicator.
+  type: Number
+- contextPath: VirusTotal.File.type
+  description: type of the indicator (file).
+  type: String
+- contextPath: VirusTotal.File.id
+  description: type ID of the indicator.
+  type: String
+- contextPath: VirusTotal.File.links.self
+  description: Link to the response.
+  type: Unknown
 fromversion: 5.0.0
 tests:
 - File Enrichment - Generic v2 - Test

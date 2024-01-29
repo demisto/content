@@ -25,7 +25,7 @@ args:
   description: The display name of the employee.
 - auto: PREDEFINED
   name: temporary_password
-  description: When true, you'll need to change the password in the next login.
+  description: When set to true, password change will be mandatory on the next login.
   defaultValue: 'false'
   predefined:
   - 'true'
@@ -64,6 +64,8 @@ args:
   defaultValue: ""
 - name: email_body
   description: The body of the email that will be sent to the user.
+- name: zip_file_name
+  description: Name of the generated zip file (used internally for polling).
 outputs:
 - contextPath: IAM.InitOktaUser.success
   description: True if the Okta user was successfully activated, false otherwise.
@@ -72,15 +74,16 @@ outputs:
   description: True if the mail containing the information about the user activation and its auto-generated password was successfully sent to IT, false otherwise.
   type: Boolean
 - contextPath: IAM.InitOktaUser.errorDetails
-  description: The error details, if exists.
+  description: Error information, if exists.
   type: String
 - contextPath: IAM.InitOktaUser.sendMailError
-  description: The error received from send-mail command, if exists.
+  description: Error information received from send-mail command, if exists.
   type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/py3-tools:1.0.0.50499
+dockerimage: demisto/py3-tools:1.0.0.81101
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
 - IAMInitOktaUser - Test
+polling: true
