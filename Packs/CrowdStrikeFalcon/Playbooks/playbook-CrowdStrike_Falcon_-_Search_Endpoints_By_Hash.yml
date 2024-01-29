@@ -20,6 +20,7 @@ tasks:
       '#none#':
       - "6"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -34,7 +35,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 9ce410b8-ddde-4690-8625-2cfab080cd83
@@ -53,15 +53,19 @@ tasks:
       - "5"
     scriptarguments:
       type:
-        simple: sha256
+        simple: sha1
       value:
-        simple: ${inputs.FileSha256}
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 830,
-          "y": 940
+          "y": 950
         }
       }
     note: false
@@ -71,7 +75,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 04610f87-fee9-4de1-8980-1649f61b38d0
@@ -87,7 +90,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "18"
     scriptarguments:
       type:
         simple: sha256
@@ -97,6 +100,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -111,7 +115,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "3":
     id: "3"
     taskid: 0204bfc2-fc2d-483c-869b-8f85d0580b31
@@ -125,11 +128,12 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 170,
-          "y": 1250
+          "y": 1290
         }
       }
     note: false
@@ -139,7 +143,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "4":
     id: "4"
     taskid: 9b555544-59aa-45db-81b2-a12eb98fc56e
@@ -148,15 +151,15 @@ tasks:
       id: 9b555544-59aa-45db-81b2-a12eb98fc56e
       version: -1
       name: Was the hash detected on additional hosts?
+      description: Was the hash detected on additional hosts?
       type: condition
       iscommand: false
       brand: ""
-      description: 'Was the hash detected on additional hosts?'
     nexttasks:
       '#default#':
       - "3"
       "yes":
-      - "1"
+      - "16"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -169,11 +172,12 @@ tasks:
           right:
             value:
               simple: "2"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 750
+          "x": 420,
+          "y": 760
         }
       }
     note: false
@@ -183,7 +187,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "5":
     id: "5"
     taskid: f7a79437-c0fa-4613-84fa-22581196d8ef
@@ -217,11 +220,12 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 830,
-          "y": 1100
+          "y": 1120
         }
       }
     note: false
@@ -231,7 +235,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "6":
     id: "6"
     taskid: 13169d17-92b3-4cbf-8930-86e9b5d6f265
@@ -379,7 +382,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "19"
     scriptarguments:
       type:
         simple: sha1
@@ -478,7 +481,7 @@ tasks:
       {
         "position": {
           "x": 420,
-          "y": 380
+          "y": 390
         }
       }
     note: false
@@ -522,7 +525,7 @@ tasks:
       {
         "position": {
           "x": 830,
-          "y": 380
+          "y": 390
         }
       }
     note: false
@@ -566,7 +569,175 @@ tasks:
       {
         "position": {
           "x": 1240,
-          "y": 380
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 88326013-5240-41bd-8987-6452a1d73e3c
+    type: regular
+    task:
+      id: 88326013-5240-41bd-8987-6452a1d73e3c
+      version: -1
+      name: Search for hash in environment
+      description: Returns a list of device IDs an indicator ran on.
+      script: '|||cs-falcon-device-ran-on'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      type:
+        simple: md5
+      value:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 89e8a9f8-2b7c-4d41-89e6-06dd3a90561d
+    type: regular
+    task:
+      id: 89e8a9f8-2b7c-4d41-89e6-06dd3a90561d
+      version: -1
+      name: Search for hash in environment
+      description: Returns a list of device IDs an indicator ran on.
+      script: '|||cs-falcon-device-ran-on'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      type:
+        simple: sha256
+      value:
+        complex:
+          root: inputs.FileSha256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: a69c0320-8da4-4f7d-8c06-e1b3733e544f
+    type: condition
+    task:
+      id: a69c0320-8da4-4f7d-8c06-e1b3733e544f
+      version: -1
+      name: Was the hash detected on additional hosts?
+      description: Was the hash detected on additional hosts?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CrowdStrike.IOC.DeviceCount
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: d61e2bb3-62ba-4eaa-850f-e4c4e0ab3342
+    type: condition
+    task:
+      id: d61e2bb3-62ba-4eaa-850f-e4c4e0ab3342
+      version: -1
+      name: Was the hash detected on additional hosts?
+      description: Was the hash detected on additional hosts?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CrowdStrike.IOC.DeviceCount
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 760
         }
       }
     note: false
@@ -629,6 +800,12 @@ outputs:
 - contextPath: CrowdStrike.IOC.DeviceCount
   description: The number of devices the IOC ran on.
   type: number
+- contextPath: Endpoint.Hostname
+  description: The endpoint's hostname.
+- contextPath: CrowdStrike.IOC.Type
+  description: The type of the IOC.
+- contextPath: Endpoint.IPAddress
+  description: The endpoint's IP address.
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
