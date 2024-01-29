@@ -272,7 +272,11 @@ def enrich_events_with_mitre_attack_mapping(alert_incident: dict) -> tuple[list[
         for technique in tactic.get("techniques") or []:
             mitre_technique_names.add(technique.get("name"))
 
-    return list(mitre_tactic_names), list(mitre_technique_names), get_mitre_attack_ids(alert_incident)
+    return (
+        list(mitre_tactic_names),
+        list(mitre_technique_names),
+        get_mitre_attack_ids(alert_incident.get("mitre-attack-mapping") or {})
+    )
 
 
 def enrich_events_with_incident_or_alert_metadata(
