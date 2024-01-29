@@ -3,17 +3,25 @@ import pytest
 from Infoblox import (
     INTEGRATION_CONTEXT_NAME,
     INTEGRATION_HOST_RECORDS_CONTEXT_NAME,
-    NETWORK_NOT_FOUND,
+    INTEGRATION_IPV4_CONTEXT_NAME,
     RESULTS_LIMIT_DEFAULT,
+    IPv4AddressStatus,
     InfoBloxNIOSClient,
+    InvalidIPAddress,
+    InvalidIPRange,
+    InvalidNetmask,
     get_host_records_command,
     get_ip_command,
-    transform_ext_attrs
+    transform_ext_attrs,
+    transform_ipv4_range,
+    valid_ip,
+    valid_ip_range,
+    valid_netmask
 )
 import demistomock as demisto
 import json
 
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, assign_params
 
 BASE_URL = 'https://example.com/v1/'
 
@@ -212,6 +220,66 @@ class TestHelperFunctions:
         actual = transform_ext_attrs(input)
         assert not actual
 
+    def test_valid_ip_address(self):
+        """
+        Test valid IP address
+        """
+
+        valid_ip("192.168.1.1")
+
+    def test_valid_ip_invalid_address(self):
+        """
+        Test invalid IP address
+        """
+
+        ip = "192.168.1.256"
+        with pytest.raises(InvalidIPAddress, match=f"'{ip}' is not a valid IP address"):
+            valid_ip(ip)
+
+    def test_valid_netmask(self):
+        """
+        Test a valid netmask.
+        """
+
+        valid_netmask("1.1.1.1/24")
+
+    def test_valid_netmask_invalid(self):
+
+        address = "192.168.1.0/33"
+        with pytest.raises(InvalidNetmask, match=f"'{address}' is not a valid netmask"):
+            valid_netmask(address)
+
+    def test_valid_ip_range(self):
+        valid_ip_range("192.168.1.0", "192.168.1.255")
+
+    def test_valid_ip_range_to_greater_than_from(self):
+
+        from_address = "192.168.1.100"
+        to_address = "192.168.1.50"
+
+        with pytest.raises(InvalidIPRange, match=f"'{from_address}' to '{to_address}' is not a valid IP range: last IP address must be greater than first"):
+            valid_ip_range(from_address, to_address)
+
+    def test_valid_ip_range_invalid_ip(self):
+
+        from_address = "192.168.1.254"
+        to_address = "192.168.2.256"
+
+        with pytest.raises(InvalidIPRange, match=f"'{from_address}' to '{to_address}' is not a valid IP range: '{to_address}' does not appear to be an IPv4 or IPv6 address"):
+            valid_ip_range(from_address, to_address)
+
+    def test_transform_ipv4_range(self):
+
+        from_address = "192.168.1.0"
+        to_address = "192.168.1.254"
+
+        actual = transform_ipv4_range(from_address, to_address)
+        expected = [{'ip_address>': '192.168.1.0'}, {'ip_address<': '192.168.1.254'}]
+
+        assert actual == expected
+
+        assign_params(actual)
+
 
 class TestZonesOperations:
 
@@ -254,37 +322,220 @@ class TestZonesOperations:
     # def test_delete_response_policy_zone_command(self, mocker, requests_mock):
 
 
-def test_get_ip_command_no_indicator_found(mocker):
-    """
-    Given:
-        - IP address to get
-    When:
-        - Get IP command is called
-    Then:
-        - Ensure that no raises an error when the IP address is not found
-    """
-    mocker.patch.object(
-        client, "get_ip", side_effect=DemistoException(NETWORK_NOT_FOUND)
-    )
+class TestIPOperations:
 
-    readable_output, _, _ = get_ip_command(client, {"ip": "1.1.1.1"})
-    assert readable_output == "No indicators found"
+    CONTEXT_PATH = f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}(val.ReferenceID && val.ReferenceID === obj.ReferenceID)'
+    VALID_IP_ADDRESS = "192.168.1.1"
+    VALID_NETMASK = "192.168.1.0/24"
 
+    def test_get_ip_command_too_many_arguments(self):
+        """
+        Test the command argument input when too many arguments are specified.
 
-@pytest.mark.parametrize("mock_exception", [DemistoException, Exception])
-def test_get_ip_command_raise_error(mocker, mock_exception):
-    """
-    Given:
-        - IP address to get
-    When:
-        - Get IP command is called
-    Then:
-        - Ensure that an error is raised
-    """
-    mocker.patch.object(client, "get_ip", side_effect=mock_exception("test"))
+        Given:
+            - The execution of the `get_ip_command`
+        When:
+            - The `ip`, `network`, `from_ip` and `to_ip` arguments are all provided.
+        Then:
+            - Ensure that a validation error is raised.
+        """
 
-    with pytest.raises(mock_exception, match="test"):
-        get_ip_command(client, {"ip": "1.1.1.1"})
+        with pytest.raises(ValueError, match="Please specify only one of the `ip`, `network` or `from_ip`/`to_ip` arguments"):
+            get_ip_command(
+                client,
+                {
+                    "ip": self.VALID_IP_ADDRESS,
+                    "network": self.VALID_NETMASK,
+                    "from_ip": self.VALID_IP_ADDRESS,
+                    "to_ip": self.VALID_IP_ADDRESS
+                }
+            )
+
+    def test_get_ip_command_no_valid_argument_specified(self):
+        """
+        Test the command argument input when no valid argument is specified.
+
+        Given:
+            - The execution of the `get_ip_command`
+        When:
+            - The `ip` argument is not provided.
+            - The `network` argument is not provided.
+            - The `from_ip` argument is not provided.
+            - The `to_ip` argument is not provided.
+        Then:
+            - Ensure that a validation error is raised.
+        """
+
+        with pytest.raises(ValueError, match=("Please specify either the `ip`, `network` or `from_ip`/`to_ip` argument")):
+            get_ip_command(client, {"status": IPv4AddressStatus.ACTIVE.value, "extended_attrs": "attr1=val1,attr2=val2"})
+
+    def test_get_ip_command_from_ip_not_to_ip(self):
+        """
+        Test the command argument input when `from_ip` is specified but not `to_ip`.
+
+        Given:
+            - The execution of the `get_ip_command`
+        When:
+            - The `from_ip` argument is provided but `to_ip` is not.
+        Then:
+            - Ensure that a validation error is raised.
+        """
+
+        with pytest.raises(ValueError, match="Please specify either the `ip`, `network` or `from_ip`/`to_ip` argument"):
+            get_ip_command(client, {"from_ip": "1.1.1.1"})
+
+    def test_get_ip_command_from_ip_address_no_status_no_extattr(self, requests_mock):
+        """
+        Test retrieval of an IP address in case it's provided.
+
+        Given:
+        - A mock response.
+
+        When:
+        - The IP address is provided.
+        - No status is specified.
+        - No extended attributes are specified.
+
+        Then:
+        - The human readable includes the input IP address.
+        - The context includes the IP address object with the input IP address.
+        """
+
+        mock_response = (Path(__file__).parent.resolve() / "test_files" / self.__class__.__name__
+                         / "get_ipv4_address_from_ip_address.json").read_text()
+
+        requests_mock.get(
+            f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?_return_as_object=1&ip_address={self.VALID_IP_ADDRESS}",
+            json=json.loads(mock_response)
+        )
+
+        actual_hr, actual_context, _ = get_ip_command(client, {"ip": self.VALID_IP_ADDRESS})
+
+        actual_hr_lines = actual_hr.splitlines()
+        assert f"Infoblox Integration - IP: {self.VALID_IP_ADDRESS} info" in actual_hr_lines[0]
+        assert self.VALID_IP_ADDRESS in actual_hr_lines[3]
+        assert actual_context.get(self.CONTEXT_PATH).get("IpAddress") == self.VALID_IP_ADDRESS
+
+    def test_get_ip_command_from_ip_address_status_defined_no_extattr(self, requests_mock):
+        """
+        Test retrieval of an IP address in case it's provided
+        alongside the status.
+
+        Given:
+        - A mock response.
+
+        When:
+        - The IP address is provided.
+        - The status is specified.
+        - No extended attributes are specified.
+
+        Then:
+        - The human readable includes the input IP address.
+        - The context includes the IP address object with the input IP address.
+        """
+
+        mock_response = (Path(__file__).parent.resolve() / "test_files" / self.__class__.__name__
+                         / "get_ipv4_address_from_ip_address.json").read_text()
+
+        requests_mock.get(
+            f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?_return_as_object=1&ip_address={self.VALID_IP_ADDRESS}&status={IPv4AddressStatus.USED.value}",
+            json=json.loads(mock_response)
+        )
+
+        actual_hr, actual_context, _ = get_ip_command(
+            client, {"ip": self.VALID_IP_ADDRESS, "status": IPv4AddressStatus.USED.value})
+
+        actual_hr_lines = actual_hr.splitlines()
+        assert f"Infoblox Integration - IP: {self.VALID_IP_ADDRESS} info" in actual_hr_lines[0]
+        assert self.VALID_IP_ADDRESS in actual_hr_lines[3]
+        assert actual_context.get(self.CONTEXT_PATH).get("Status") == IPv4AddressStatus.USED.value
+
+    # TODO
+    def test_get_ip_command_from_ip_status_defined_extattr_defined(self):
+        """
+        Test retrieval of an IP address in case it's provided
+        alongside the status and extended attributes.
+
+        Given:
+        - A mock response.
+
+        When:
+        - The IP address is provided.
+        - The status is specified.
+        - Extended attributes are specified.
+
+        Then:
+        - The human readable includes the input IP address.
+        - The context includes the IP address object with the input IP address and specified status and extended attributes.
+        """
+
+    # TODO
+    def test_get_ip_command_from_ip_invalid_extattr(self, requests_mock):
+        """
+        Test retrieval of an IP address with invalid extended attributes.
+
+        Given:
+        - A mock response.
+
+        When:
+        - The IP address is provided.
+        - The status is not specified.
+        - Invalid extended attributes are specified.
+
+        Then:
+        - Ensure a validation error is raised.
+        """
+
+    # TODO
+    def test_get_ip_command_from_netmask(self, requests_mock):
+        """
+        Test retrieval of an IP address in case netmask is provided.
+
+        Given:
+        - A mock response.
+
+        When:
+        - The netmask is provided.
+        - No status is specified.
+        - No extended attributes are specified.
+
+        Then:
+        - The human readable includes the input netmask.
+        - The context includes the IP address object with the input netmask.
+        """
+
+        mock_response = (Path(__file__).parent.resolve() / "test_files" / self.__class__.__name__
+                         / "get_ipv4_addresses_from_network.json").read_text()
+
+        requests_mock.get(
+            f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?_return_as_object=1&network={self.VALID_NETMASK}&status={IPv4AddressStatus.USED.value}",
+            json=json.loads(mock_response)
+        )
+
+        actual_hr, actual_context, _ = get_ip_command(client, {"network": self.VALID_NETMASK})
+
+        actual_hr_lines = actual_hr.splitlines()
+        assert f"Infoblox Integration - Netmask: {self.VALID_NETMASK} info" in actual_hr_lines[0]
+
+    # TODO
+    def test_get_ip_command_no_response(self):
+        pass
+
+    # TODO
+    def test_get_ip_command_invalid_ip(self):
+        pass
+
+    # TODO
+    def test_get_ip_command_invalid_netmask(self):
+        pass
+
+    # TODO
+    def test_get_ip_command_invalid_from_ip(self):
+        pass
+
+    # TODO
+    def test_get_ip_command_invalid_range(self):
+        pass
 
 
 class TestHostRecordsOperations:
@@ -309,7 +560,7 @@ class TestHostRecordsOperations:
                          / self.__class__.__name__ / "get_records.json").read_text()
 
         requests_mock.get(
-            client._base_url + InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT + "?_return_as_object=1",
+            f"{client._base_url}{InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT}?_return_as_object=1",
             json=json.loads(mock_response)
         )
 

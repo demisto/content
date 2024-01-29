@@ -1,3 +1,4 @@
+from enum import Enum
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
@@ -7,6 +8,7 @@ from typing import Any
 from collections.abc import Callable
 
 import urllib3
+import ipaddress
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -15,6 +17,7 @@ INTEGRATION_NAME = 'Infoblox Integration'
 INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
 INTEGRATION_HOST_RECORDS_CONTEXT_NAME = "Host"
+INTEGRATION_IPV4_CONTEXT_NAME = "IP"
 RESULTS_LIMIT_DEFAULT = 50
 REQUEST_PARAMS_RETURN_AS_OBJECT = {'_return_as_object': '1'}
 REQUEST_PARAM_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
@@ -80,9 +83,29 @@ RPZ_RULES_DICT = {
 NETWORK_NOT_FOUND = "A network was not found for this address"
 
 
+class InvalidIPAddress(ValueError):
+    pass
+
+
+class InvalidNetmask(ValueError):
+    pass
+
+
+class InvalidIPRange(ValueError):
+    pass
+
+
+class IPv4AddressStatus(Enum):
+    """Possible statuses for an IPv4 address."""
+    ACTIVE = "ACTIVE"
+    UNUSED = "UNUSED"
+    USED = "USED"
+
+
 class InfoBloxNIOSClient(BaseClient):
 
     GET_HOST_RECORDS_ENDPOINT = "record:host"
+    IPV4ADDRESS_ENDPOINT = "ipv4address"
 
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, params=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
@@ -120,21 +143,77 @@ class InfoBloxNIOSClient(BaseClient):
         request_params.update(REQUEST_PARAM_ZONE)
         return self._http_request('GET', suffix, params=request_params)
 
-    def get_ip(self, ip: str | None) -> dict:
-        """Get ip information.
+    def get_ipv4_address_from_ip(self, ip: str, status: str, ext_attrs: list[dict] | None) -> dict:
+        """
+        Get IPv4 information based on an IP address.
         Args:
-            ip: ip to retrieve.
+        - `ip` (``str``): ip to retrieve.
+        - `status` (``str``): status of the IP address.
+        - `ext_attrs` (``list[dict]``): list of extended attribute dictionaries to include in request.
 
         Returns:
             Response JSON
         """
-        # The server endpoint to request from
-        suffix = 'ipv4address'
 
         # Dictionary of params for the request
-        request_params = assign_params(ip_address=ip)
-        request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
-        return self._http_request('GET', suffix, params=request_params)
+        request_params = assign_params(ip_address=ip, status=status)
+
+        if ext_attrs:
+            request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
+
+            for e in ext_attrs:
+                request_params.update(e)
+
+        return self._get_ipv4_addresses(params=request_params)
+
+    def get_ipv4_address_from_netmask(self, network: str, status: str, ext_attrs: list[dict] | None) -> dict:
+        """
+        Get IPv4 network information based on a netmask.
+
+        Args:
+        - `network` (``str``): Netmask to retrieve the IPv4 for.
+        - `status` (``str``): Status of the network.
+        - `ext_attrs` (``list[dict]``): List of extended attribute dictionaries to include in request.
+
+        Returns:
+        - `dict` with response.
+        """
+
+        request_params = assign_params(network=network, status=status)
+
+        if ext_attrs:
+            request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
+
+            for e in ext_attrs:
+                request_params.update(e)
+
+        return self._get_ipv4_addresses(params=request_params)
+
+    def get_ipv4_address_range(self, start_ip: str, end_ip: str, ext_attrs: list[dict] | None) -> dict:
+        """
+        Get IPv4 address range information based on a start and end IP.
+
+        Args:
+        - `start_ip` (``str``): Start IP of the range.
+        - `end_ip` (``str``): End IP of the range.
+        - `ext_attrs` (``list[dict]``): List of extended attribute dictionaries to include in request.
+
+        Returns:
+        - `dict` with response.
+        """
+
+        request_params = assign_params(transform_ipv4_range(start_ip, end_ip))
+
+        if ext_attrs:
+            request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
+
+            for e in ext_attrs:
+                request_params.update(e)
+
+        return self._get_ipv4_addresses(params=request_params)
+
+    def _get_ipv4_addresses(self, params: dict[str, Any]) -> dict:
+        return self._http_request('GET', self.IPV4ADDRESS_ENDPOINT, params=params)
 
     def search_related_objects_by_ip(self, ip: str | None, max_results: str | None) -> dict:
         """Search ip related objects.
@@ -405,16 +484,57 @@ def transform_ext_attrs(ext_attrs: str) -> list[dict] | None:
     return l_ext_attrs
 
 
-''' COMMANDS '''
+def valid_ip(ip: str):
+    """Validate IP address format"""
 
-# TODO change return type to CommandResults
+    try:
+        ipaddress.IPv4Address(ip)
+    except ValueError:
+        raise InvalidIPAddress(f"'{ip}' is not a valid IPv4 address")
+
+
+def valid_netmask(address: str):
+    """Validate netmask format"""
+
+    try:
+        ipaddress.ip_network(address, strict=False)
+    except ValueError:
+        raise InvalidNetmask(f"'{address}' is not a valid netmask")
+
+
+def valid_ip_range(from_ip: str, to_ip: str):
+    """Validate IP range format"""
+    try:
+        from_address = ipaddress.IPv4Address(from_ip)
+        to_address = ipaddress.IPv4Address(to_ip)
+        list(ipaddress.summarize_address_range(from_address, to_address))
+    except ValueError as err:
+        raise InvalidIPRange(f"'{from_ip}' to '{to_ip}' is not a valid IPv4 range: {err}")
+
+
+def transform_ipv4_range(from_ip: str, to_ip: str) -> list[dict[str, str]]:
+    """Transform IPv4 range to list of IPs.
+
+    Args:
+        from_ip: Start of IPv4 range.
+        to_ip: End of IPv4 range.
+
+    Returns:
+        List of IPv4 addresses in range.
+    """
+
+    return [
+        {"ip_address>": from_ip},
+        {"ip_address<": to_ip},
+    ]
+
+
+''' COMMANDS '''
 
 
 def test_module_command(client: InfoBloxNIOSClient, *_) -> tuple[str, dict, dict]:
     client.test_module()
     return 'ok', {}, {}
-
-# TODO change return type to CommandResults
 
 
 def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[str, dict, dict]:
@@ -426,14 +546,35 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
     Returns:
         Outputs
     """
-    ip = args.get('ip')
-    try:
-        raw_response = client.get_ip(ip)
-    except DemistoException as e:
-        if e.message and NETWORK_NOT_FOUND in e.message:
-            return "No indicators found", {}, {}
-        else:
-            raise
+    ip = args.get('ip', None)
+    network = args.get('network', None)
+    from_ip = args.get('from_ip', None)
+    to_ip = args.get('to_ip', None)
+
+    # Input validation
+
+    # If too many arguments are supplied, return an error
+    if sum(arg is not None for arg in [ip, network, from_ip, to_ip]) > 1:
+        raise ValueError("Please specify only one of the `ip`, `network` or `from_ip`/`to_ip` arguments")
+
+    # If neither ip, network nor from/to_ip were specified, return an error.
+    if not ip and not network and not (from_ip and to_ip):
+        raise ValueError("Please specify either the `ip`, `network` or `from_ip`/`to_ip` argument")
+
+    extended_attributes = transform_ext_attrs(args.get("extended_attrs")) if args.get("extended_attrs") else None
+    # Check if the network/IPs supplied are valid.
+    if ip:
+        valid_ip(ip)
+        status = args.get('status', IPv4AddressStatus.USED.value)
+        raw_response = client.get_ipv4_address_from_ip(ip, status=status, ext_attrs=extended_attributes)
+    elif network:
+        valid_netmask(network)
+        status = args.get('status', IPv4AddressStatus.USED.value)
+        raw_response = client.get_ipv4_address_from_netmask(network, status=status, ext_attrs=extended_attributes)
+    elif from_ip and to_ip:
+        valid_ip_range(from_ip, to_ip)
+        raw_response = client.get_ipv4_address_range(from_ip, to_ip, ext_attrs=extended_attributes)
+
     ip_list = raw_response.get('result')
 
     # If no IP object was returned
@@ -443,11 +584,9 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
                       ip_list[0].items()}
     title = f'{INTEGRATION_NAME} - IP: {ip} info.'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.IP(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': fixed_keys_obj}
+        f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': fixed_keys_obj}
     human_readable = tableToMarkdown(title, fixed_keys_obj, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
-
-# TODO change return type to CommandResults
 
 
 def search_related_objects_by_ip_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
@@ -477,8 +616,6 @@ def search_related_objects_by_ip_command(client: InfoBloxNIOSClient, args: dict)
             fixed_keys_obj_list}
     human_readable = tableToMarkdown(title, fixed_keys_obj_list, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
-
-# TODO change return type to CommandResults
 
 
 def list_response_policy_zone_rules_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
@@ -523,8 +660,6 @@ def list_response_policy_zone_rules_command(client: InfoBloxNIOSClient, args: di
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, context, raw_response
 
-# TODO change return type to CommandResults
-
 
 def list_response_policy_zones_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
@@ -551,8 +686,6 @@ def list_response_policy_zones_command(client: InfoBloxNIOSClient, args: dict) -
         f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)': fixed_keys_zone_list}
     human_readable = tableToMarkdown(title, fixed_keys_zone_list, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
-
-# TODO change return type to CommandResults
 
 
 def create_response_policy_zone_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
@@ -581,8 +714,6 @@ def create_response_policy_zone_command(client: InfoBloxNIOSClient, args: dict) 
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
-# TODO change return type to CommandResults
-
 
 def delete_response_policy_zone_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
@@ -599,8 +730,6 @@ def delete_response_policy_zone_command(client: InfoBloxNIOSClient, args: dict) 
     human_readable = f'{INTEGRATION_NAME} - Response Policy Zone with the following id was deleted: \n ' \
         f'{deleted_rule_ref_id}'
     return human_readable, {}, raw_response
-
-# TODO change return type to CommandResults
 
 
 def create_rpz_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
@@ -636,8 +765,6 @@ def create_rpz_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace, removeNull=True)
     return human_readable, context, raw_response
 
-# TODO change return type to CommandResults
-
 
 def create_a_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
@@ -665,8 +792,6 @@ def create_a_substitute_record_rule_command(client: InfoBloxNIOSClient, args: di
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
-# TODO change return type to CommandResults
-
 
 def create_aaaa_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
@@ -693,8 +818,6 @@ def create_aaaa_substitute_record_rule_command(client: InfoBloxNIOSClient, args:
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
-
-# TODO change return type to CommandResults
 
 
 def create_mx_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
@@ -724,8 +847,6 @@ def create_mx_substitute_record_rule_command(client: InfoBloxNIOSClient, args: d
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
-
-# TODO change return type to CommandResults
 
 
 def create_naptr_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
@@ -758,8 +879,6 @@ def create_naptr_substitute_record_rule_command(client: InfoBloxNIOSClient, args
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
-# TODO change return type to CommandResults
-
 
 def create_ptr_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
@@ -790,8 +909,6 @@ def create_ptr_substitute_record_rule_command(client: InfoBloxNIOSClient, args: 
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
-
-# TODO change return type to CommandResults
 
 
 def create_srv_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
@@ -824,8 +941,6 @@ def create_srv_substitute_record_rule_command(client: InfoBloxNIOSClient, args: 
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
-# TODO change return type to CommandResults
-
 
 def create_txt_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
@@ -852,8 +967,6 @@ def create_txt_substitute_record_rule_command(client: InfoBloxNIOSClient, args: 
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
-
-# TODO change return type to CommandResults
 
 
 def create_ipv4_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
@@ -882,8 +995,6 @@ def create_ipv4_substitute_record_rule_command(client: InfoBloxNIOSClient, args:
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
-# TODO change return type to CommandResults
-
 
 def create_ipv6_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
@@ -911,8 +1022,6 @@ def create_ipv6_substitute_record_rule_command(client: InfoBloxNIOSClient, args:
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
-# TODO change return type to CommandResults
-
 
 def enable_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
@@ -935,8 +1044,6 @@ def enable_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, di
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
-# TODO change return type to CommandResults
-
 
 def disable_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
@@ -958,8 +1065,6 @@ def disable_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, d
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
-
-# TODO change return type to CommandResults
 
 
 def get_object_fields_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
@@ -986,8 +1091,6 @@ def get_object_fields_command(client: InfoBloxNIOSClient, args: dict) -> tuple[s
     }
     human_readable = tableToMarkdown(title, name_list, headers=['Field Names'], headerTransform=pascalToSpace)
     return human_readable, context, raw_response
-
-# TODO change return type to CommandResults
 
 
 def search_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
