@@ -151,9 +151,15 @@ configuration:
   type: 0
   additionalinfo: Supports CSV values.
 - display: Traffic Light Protocol Color
-  type: 15
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   name: tlp_color
+  type: 15
+  required: false
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
