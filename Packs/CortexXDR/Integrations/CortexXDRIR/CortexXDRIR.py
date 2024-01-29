@@ -4,7 +4,6 @@ import hashlib
 import secrets
 import string
 from itertools import zip_longest
-from urllib.error import HTTPError
 
 from CoreIRApiModule import *
 
@@ -42,50 +41,6 @@ MIRROR_DIRECTION = {
     'Outgoing': 'Out',
     'Both': 'Both'
 }
-
-
-def error_handler(response: requests.Response) -> None:
-    """
-    Error Handler for DomainTools Iris Detect
-    Args:
-        response (response): DomainTools Iris Detect response
-    Raise:
-        DemistoException
-    """
-
-    specific_error_messages = {
-        400: "Bad Request: The request was invalid or cannot be otherwise served.",
-        401: "Unauthorized: Authentication is required and has failed or has not been provided.",
-        403: "Forbidden: The request is understood, but it has been refused or access is not allowed.",
-        404: "Not Found: The requested resource could not be found.",
-        500: "Internal Server Error: An error occurred on the server side.",
-        206: "Partial Content: The requested resource has been partially returned."
-    }
-
-    if response.status_code in {206} | set(range(400, 600)):
-        try:
-            error_json = response.json().get("error", {})
-            error_message = (error_json.get("message") or " ".join(
-                error_json.get("messages", [])) or specific_error_messages.get(response.status_code,
-                                                                               "An unknown error occurred."))
-        except ValueError:
-            error_message = specific_error_messages.get(response.status_code, "An unknown error occurred.")
-
-        raise DemistoException(error_message, res=response)
-
-
-def get_api_error(res):
-
-    message = 'API - HTTP Response Error'
-    error = ''
-    outputs = None
-
-    if res is not None:
-        message = 'HTTP Status Code - {}, HTTP Reason - {}, Message Body - {}' \
-            .format(res.status_code, res.reason, res.text)
-        outputs = {'error': True, 'details': res.text}
-
-    return_error(message=message, error=error, outputs=outputs)
 
 
 def convert_epoch_to_milli(timestamp):
@@ -443,15 +398,12 @@ class Client(CoreClient):
             url_suffix='/public_api/v1/incidents/get_multiple_incidents_extra_data/',
             json_data={'request_data': request_data},
             headers=self.headers,
-            timeout=self.timeout,
-            error_handler=error_handler
+            timeout=self.timeout
         )
 
         incident = reply.get('reply')
 
         return incident
-
-    #
 
     def save_modified_incidents_to_integration_context(self):
         last_modified_incidents = self.get_incidents(limit=100, sort_by_modification_time='desc')
@@ -697,27 +649,15 @@ def get_last_mirrored_in_time(args):
     return last_mirrored_in_timestamp
 
 
-def api_call_try(client, args):
-    demisto.debug('MAI BELLE before try')
+def get_multiple_incidents_extra_data_response(client, args):
     try:
-        raw_incident = client.get_multiple_incidents_extra_data(args.get('incident_id'))
-        demisto.info(f'MAI BELLE MAI after new api call{raw_incident} ')
+        raw_incident: dict = client.get_multiple_incidents_extra_data(args.get('incident_id')) or {}
         use_get_incident_extra_data = int(raw_incident.get('incident', {}).get('replay', {}).get('alert_count')) > \
             int(raw_incident.get('incident', {}).get('replay', {}).get('number_in_config'))
-        demisto.debug(f'MAI BELLE Mai raw {raw_incident} ***** bool {use_get_incident_extra_data}  ')
         return raw_incident, use_get_incident_extra_data
-    except DemistoException as e:
-        if e.res.status_code == 500:  # type: ignore
-            return None, "Request to API failed, Please check your credentials"
-        else:
-            raise
-    except HTTPError as e:
-        demisto.debug(f'The api call using get_multiple_incidents_extra_data got internal error, bla switching to\
-            the old call {e}')
-        demisto.debug('!!! what')
-    finally:
-        demisto.debug('finally what')
-    return None, False
+    except Exception as err:
+        if err.res.status_code == 500:
+            return {}, False
 
 
 def get_incident_extra_data_command(client, args):
@@ -734,16 +674,10 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-    demisto.debug(f"Performing extra-data request on incident: {incident_id}")
-    raw_incident, use_get_incident_extra_data = api_call_try(client, args)  # 500: {},True
-    demisto.debug(f'&&!MAI BELLE Mai raw {raw_incident} | type {type(raw_incident)}')
-    demisto.debug('MAI BELLE get_incident_extra_data_command Mai after try- except ')
-    if (not raw_incident) or (raw_incident == {}) or (not use_get_incident_extra_data):
-        demisto.debug('MAI OLD call')
+    raw_incident, use_get_incident_extra_data = get_multiple_incidents_extra_data_response(client, args)  # 500: {},True
+    if (not raw_incident) or (not use_get_incident_extra_data):
         raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
-        demisto.debug(f'MAI after OLD api call{raw_incident}')
     raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
-    demisto.debug("!!!!!!!!!!!!!!!!!!!!!!!!")
     incident = raw_incident.get('incident', {})
     incident_id = incident.get('incident_id', {})
     raw_alerts = raw_incident.get('alerts', {}).get('data')
