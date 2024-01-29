@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Cortex XDR - IR-MAIII
+  id: Cortex XDR - IR
   version: -1
 configuration:
 - display: Fetch incidents
@@ -146,7 +146,7 @@ configuration:
   required: false
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
-name: Cortex XDR - IR-MAIII
+name: Cortex XDR - IR
 script:
   commands:
   - arguments:
@@ -3472,7 +3472,7 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.86272
   isfetch: true
   isfetch:xpanse: false
   script: ''

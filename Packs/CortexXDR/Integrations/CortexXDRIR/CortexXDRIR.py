@@ -398,7 +398,8 @@ class Client(CoreClient):
             url_suffix='/public_api/v1/incidents/get_multiple_incidents_extra_data/',
             json_data={'request_data': request_data},
             headers=self.headers,
-            timeout=self.timeout
+            timeout=self.timeout,
+
         )
 
         incident = reply.get('reply')
@@ -649,15 +650,16 @@ def get_last_mirrored_in_time(args):
     return last_mirrored_in_timestamp
 
 
-def get_multiple_incidents_extra_data_response(client, args):
+def get_multiple_incidents_extra_data_response(client, args) -> bool:
     try:
         raw_incident: dict = client.get_multiple_incidents_extra_data(args.get('incident_id')) or {}
         use_get_incident_extra_data = int(raw_incident.get('incident', {}).get('replay', {}).get('alert_count')) > \
             int(raw_incident.get('incident', {}).get('replay', {}).get('number_in_config'))
-        return raw_incident, use_get_incident_extra_data
+        return use_get_incident_extra_data
     except Exception as err:
-        if err.res.status_code == 500:
-            return {}, False
+        if err.res.status_code == 500:  # type: ignore
+            return False
+    return True
 
 
 def get_incident_extra_data_command(client, args):
@@ -674,9 +676,9 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-    raw_incident, use_get_incident_extra_data = get_multiple_incidents_extra_data_response(client, args)  # 500: {},True
-    if (not raw_incident) or (not use_get_incident_extra_data):
-        raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
+    use_get_incident_extra_data = get_multiple_incidents_extra_data_response(client, args)  # 500: {},True
+    raw_incident = client.get_multiple_incidents_extra_data(incident_id) if use_get_incident_extra_data else \
+        client.get_incident_extra_data(incident_id, alerts_limit)
     incident = raw_incident.get('incident', {})
     incident_id = incident.get('incident_id', {})
     raw_alerts = raw_incident.get('alerts', {}).get('data')
@@ -1088,12 +1090,13 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     try:
         # The count of incidents, so as not to pass the limit
         count_incidents = 0
+        use_get_incident_extra_data = get_multiple_incidents_extra_data_response(client, raw_incidents[0].get('incident_id'))
 
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
-
-            incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
-                                                                     "alerts_limit": 1000})[2].get('incident')
+            incident_data = client.get_multiple_incidents_extra_data(incident_id) if use_get_incident_extra_data else \
+                client.get_incident_extra_data(incident_id, {"incident_id": incident_id,
+                                                             "alerts_limit": 1000})[2].get('incident')
 
             sort_all_list_incident_fields(incident_data)
 
