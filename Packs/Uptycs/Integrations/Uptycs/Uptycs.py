@@ -9,6 +9,7 @@ import os
 import ast
 import json
 import jwt
+import time
 from datetime import datetime, timedelta
 import requests
 from urllib.parse import unquote
@@ -261,31 +262,24 @@ def uptycs_get_upt_day(start_time):
 """COMMAND FUNCTIONS"""
 
 
-@polling_function(
-    name="QueryJobStatus",
-    interval=10,
-    timeout=120,
-    poll_message="Uptycs query execution in progress",
-    requires_polling_arg=False,
-)
-def uptycs_poll_queryjob_status(args: dict, job_id) -> PollResult:
+def uptycs_poll_queryjob_status(job_id, query):
     api_call = ("/queryjobs/%s" % job_id)
-    status = restcall('get', api_call).get('status')
-
-    if status in ['FINISHED']:
-        return PollResult(
-               response=None,
-               continue_to_poll=False)
-    elif status in ['QUEUED', 'RUNNING']:
-        return PollResult(
-               response=None,
-               continue_to_poll=True,
-               partial_result=CommandResults(readable_output=f"Query is still running. Current status: '{status}'."),
-               )
-    return PollResult(
-               response=None,
-               continue_to_poll=False,
-               )
+    elapsed = 0
+    while elapsed < 120:
+        status = restcall('get', api_call).get('status')
+        if status in ['FINISHED']:
+            break
+        elif status in ['ERROR']:
+            return_error("Invalid query: %s , status %s" % (query, status))
+        elif status in ['QUEUED', 'RUNNING']:
+            time.sleep(10)
+            elapsed += 10
+        else:
+            # unknown status
+            return_error("Invalid query job status: {0}".format(status))
+        if elapsed >= 120:
+            return_error("Query timeout elapsed")
+    return
 
 
 def uptycs_get_queryjob_results(job_id):
@@ -322,8 +316,7 @@ def uptycs_run_query():
         if response.get('id'):
             # poll query job status
             job_id = response.get('id')
-            args = { 'job_id': job_id, 'query': query }
-            uptycs_poll_queryjob_status(args, job_id)
+            uptycs_poll_queryjob_status(job_id, query)
             return uptycs_get_queryjob_results(job_id)
         return_error('unable to create uptycs query job')
     else:
@@ -393,8 +386,7 @@ def uptycs_get_query_results(query_type, query):
     if response.get('id'):
         # poll query job status
         job_id = response.get('id')
-        args = { 'job_id': job_id, 'query': query }
-        uptycs_poll_queryjob_status(args, job_id)
+        uptycs_poll_queryjob_status(job_id, query)
         return uptycs_get_queryjob_results(job_id)
     return_error('unable to create uptycs query job')
 

@@ -1684,7 +1684,7 @@ script:
       description: Details of events assocated for the detection.
       type: string
     description: Get details of a detection from Uptycs.
-  dockerimage: demisto/auth-utils:1.0.0.84760
+  dockerimage: demisto/auth-utils:1.0.0.85988
   isfetch: true
   runonce: true
   script: '-'
