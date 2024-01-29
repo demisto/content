@@ -1,24 +1,18 @@
 import json
 from datetime import datetime, timedelta
-import json
-from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 import requests
 from dateutil import parser
-from gitlab import Gitlab
 import requests
-from dateutil import parser
 from gitlab import Gitlab
 from jira import Issue
 from junitparser import TestSuite, JUnitXml
 from Tests.scripts.utils import logging_wrapper as logging
 from gitlab.v4.objects.pipelines import ProjectPipeline
 from gitlab.v4.objects.commits import ProjectCommit
-from datetime import datetime, timedelta
-from dateutil import parser
 
 from gitlab.v4.objects.pipelines import ProjectPipeline
 from gitlab.v4.objects.commits import ProjectCommit
@@ -389,3 +383,19 @@ def create_shame_message(current_commit: ProjectCommit,
 
 def slack_link(url: str, text: str) -> str:
     return f"<{url}|{text}>"
+
+
+def was_message_already_sent(commit_index: int, list_of_commits: list, list_of_pipelines: list) -> bool:
+    """
+    Check if a message was already sent for newer commits, this is possible if pipelines of later commits, finished before the pipeline of the current commit.
+    """
+    for index in reversed(range(1, commit_index)):
+        # the list of commits in in ascending order, newer commits are first
+        current_commit = list_of_commits[index-1]
+        previous_commit = list_of_commits[index]
+        current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
+        previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
+        # in rare cases some commits have no pipeline
+        if current_pipeline and previous_pipeline and (is_pivot(current_pipeline, previous_pipeline)is not None):
+            return True
+    return False
