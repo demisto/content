@@ -1,5 +1,3 @@
-from typing import Dict, Tuple
-from dateparser import parse
 import urllib3
 from CommonServerPython import *
 import demistomock as demisto
@@ -38,7 +36,7 @@ class Client(BaseClient):
         access_token = response.get('accessToken')
         return access_token
 
-    def users_search(self, size: int, page: int, team_id: Optional[str] = None, user_id: Optional[str] = None):
+    def users_search(self, size: Optional[int], page: Optional[int], team_id: Optional[str] = None, user_id: Optional[str] = None):
         """Search users by sending a GET request.
 
         Args:
@@ -60,7 +58,7 @@ class Client(BaseClient):
                                   headers=self._headers,
                                   params=params)
 
-    def device_search(self, size: int, page: int, after: Optional[str] = None, before: Optional[str] = None,
+    def device_search(self, size: Optional[int], page: Optional[int], after: Optional[str] = None, before: Optional[str] = None,
                       team_name: Optional[str] = None, model: Optional[str] = None, bundle_id: Optional[str] = None):
         """Search devices by sending a GET request.
 
@@ -86,10 +84,10 @@ class Client(BaseClient):
             'zappInstance.bundleId': bundle_id,
         })
 
-        return self._http_request(method='GET', url_suffix=f'/devices/public/v2/devices/start-scroll',
+        return self._http_request(method='GET', url_suffix='/devices/public/v2/devices/start-scroll',
                                   headers=self._headers, params=params)
 
-    def device_by_id(self, device_id: str):
+    def device_by_id(self, device_id: Optional[str]):
         """Get device by ID by sending a GET request.
 
         Args:
@@ -102,7 +100,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=f'/devices/public/v2/devices/{device_id}',
                                   headers=self._headers)
 
-    def report_get(self, app_version_id: str):
+    def report_get(self, app_version_id: Optional[str]):
         """ Generates JSON report using GET request.
 
         Args:
@@ -116,10 +114,10 @@ class Client(BaseClient):
                                                            f'{app_version_id}/json',
                                   headers=self._headers)
 
-    def threat_search(self, after: str, size: Optional[int] = None,
+    def threat_search(self, after: Optional[str], size: Optional[int] = None,
                       page: Optional[int] = 0,
                       before: Optional[str] = None,
-                      search_params: Optional[Dict] = None,
+                      search_params: Optional[dict] = None,
                       team_id: Optional[str] = None,
                       operating_system: Optional[str] = None,
                       severity: Optional[List] = None,
@@ -158,7 +156,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix='/threats/public/v1/threats', headers=self._headers,
                                   params=params)
 
-    def app_version_list(self, size: int, page: int, bundle_id: Optional[str] = None):
+    def app_version_list(self, size: Optional[int], page: Optional[int], bundle_id: Optional[str] = None):
         """List App Versions by sending a GET request.
 
         Args:
@@ -177,7 +175,8 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix='/devices/public/v1/appVersions',
                                   headers=self._headers, params=params)
 
-    def device_cve_get(self, cve_id: str, size: int, page: int, after: Optional[str] = None, before: Optional[str] = None,
+    def device_cve_get(self, cve_id: Optional[str], size: Optional[int], page: Optional[int],
+                       after: Optional[str] = None, before: Optional[str] = None,
                        team_id: Optional[str] = None):
         """Get Devices that has CVE with cve_id  a GET request.
 
@@ -216,8 +215,8 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix='/mtd-policy/public/v1/groups/page',
                                   headers=self._headers, params=params)
 
-    def devices_os_version(self, os_version: str, size: int, page: int, deleted: Optional[bool] = None,
-                           os_patch_date: Optional[str] = None,
+    def devices_os_version(self, os_version: Optional[str], size: Optional[int], page: Optional[int],
+                           deleted: Optional[bool] = None, os_patch_date: Optional[str] = None,
                            after: Optional[str] = None, before: Optional[str] = None, team_id: Optional[str] = None):
         """Search devices by os version by sending a GET request.
 
@@ -249,7 +248,7 @@ class Client(BaseClient):
                                   headers=self._headers,
                                   params=params)
 
-    def cve_devices_get(self, size: int, page: int, device_id: str):
+    def cve_devices_get(self, size: Optional[int], page: Optional[int], device_id: Optional[str]):
         """Get the CVEs associated with a specific device
 
         Args:
@@ -270,7 +269,7 @@ class Client(BaseClient):
                                   headers=self._headers,
                                   params=params)
 
-    def policy_privacy(self, policy_id: str):
+    def policy_privacy(self, policy_id: Optional[str]):
         """Get a privacy policy by id.
 
         Args:
@@ -283,7 +282,7 @@ class Client(BaseClient):
                                   url_suffix=f'/mtd-policy/public/v1/privacy/policies/{policy_id}',
                                   headers=self._headers)
 
-    def policy_threat(self, policy_id: str):
+    def policy_threat(self, policy_id: Optional[str]):
         """Get a threat policy by id.
 
         Args:
@@ -297,7 +296,7 @@ class Client(BaseClient):
                                   url_suffix=f'/mtd-policy/public/v1/trm/policies/{policy_id}',
                                   headers=self._headers)
 
-    def policy_phishing(self, policy_id: str):
+    def policy_phishing(self, policy_id: Optional[str]):
         """Get the phishing policy by id.
 
         Args:
@@ -311,7 +310,7 @@ class Client(BaseClient):
                                   url_suffix=f'/mtd-policy/public/v1/phishing/policies/{policy_id}',
                                   headers=self._headers)
 
-    def policy_app_settings(self, app_settings_policy_id: str):
+    def policy_app_settings(self, app_settings_policy_id: Optional[str]):
         """Get the policy app settings by id.
 
         Args:
@@ -324,7 +323,7 @@ class Client(BaseClient):
                                   url_suffix=f'/mtd-policy/public/v1/app-settings/policies/{app_settings_policy_id}',
                                   headers=self._headers)
 
-    def policy_device_inactivity_list(self, size: int, page: int, team_id: Optional[str] = None):
+    def policy_device_inactivity_list(self, size: Optional[int], page: Optional[int], team_id: Optional[str] = None):
         """List the device inactivity policies.
 
         Args:
@@ -343,7 +342,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix='/devices/public/v1/dormancy/policies',
                                   headers=self._headers, params=params)
 
-    def policy_device_inactivity_get(self, policy_id: str):
+    def policy_device_inactivity_get(self, policy_id: Optional[str]):
         """Get the device inactivity policy by id.
 
         Args:
@@ -367,7 +366,7 @@ def test_module(client: Client, first_fetch_time) -> str:
     return 'ok'
 
 
-def users_search_command(client: Client, args: Dict) -> CommandResults:
+def users_search_command(client: Client, args: dict) -> CommandResults:
     """Search users.
 
     Args:
@@ -402,7 +401,7 @@ def users_search_command(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def devices_search_command(client: Client, args: Dict) -> CommandResults:
+def devices_search_command(client: Client, args: dict) -> CommandResults:
     """Search devices.
 
     Args:
@@ -453,7 +452,7 @@ def devices_search_command(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def device_by_id_command(client: Client, args: Dict) -> CommandResults:
+def device_by_id_command(client: Client, args: dict) -> CommandResults:
     """Get device by ID.
 
     Args:
@@ -485,7 +484,7 @@ def device_by_id_command(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def report_get_command(client: Client, args: Dict) -> CommandResults:
+def report_get_command(client: Client, args: dict) -> CommandResults:
     """Get report by ID.
 
     Args:
@@ -513,7 +512,7 @@ def report_get_command(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def threat_search_command(client: Client, args: Dict) -> CommandResults:
+def threat_search_command(client: Client, args: dict) -> CommandResults:
     """Search threats.
 
     Args:
@@ -559,7 +558,7 @@ def threat_search_command(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def app_version_list_command(client: Client, args: Dict) -> CommandResults:
+def app_version_list_command(client: Client, args: dict) -> CommandResults:
     """List app versions.
 
     Args:
@@ -594,7 +593,7 @@ def app_version_list_command(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def device_cve_get_command(client: Client, args: Dict) -> CommandResults:
+def device_cve_get_command(client: Client, args: dict) -> CommandResults:
     """Retrieve the devices associated with a specific CVE
 
     Args:
@@ -634,7 +633,7 @@ def device_cve_get_command(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def devices_os_version_command(client: Client, args: Dict) -> CommandResults:
+def devices_os_version_command(client: Client, args: dict) -> CommandResults:
     """Search devices by os version.
 
     Args:
@@ -677,7 +676,7 @@ def devices_os_version_command(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def cve_devices_get_command(client: Client, args: Dict) -> CommandResults:
+def cve_devices_get_command(client: Client, args: dict) -> CommandResults:
     """Search CVE for specific device.
 
     Args:
@@ -709,7 +708,7 @@ def cve_devices_get_command(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def policy_group_list_command(client: Client, args: Dict) -> CommandResults:
+def policy_group_list_command(client: Client, args: dict) -> CommandResults:
     """List policies groups.
 
     Args:
@@ -737,7 +736,7 @@ def policy_group_list_command(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def policy_privacy_get_command(client: Client, args: Dict) -> CommandResults:
+def policy_privacy_get_command(client: Client, args: dict) -> CommandResults:
     """Get privacy policy by id.
 
     Args:
@@ -767,7 +766,7 @@ def policy_privacy_get_command(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def policy_threat_get_command(client: Client, args: Dict) -> CommandResults:
+def policy_threat_get_command(client: Client, args: dict) -> CommandResults:
     """Get threat policy by id.
 
     Args:
@@ -797,7 +796,7 @@ def policy_threat_get_command(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def policy_phishing_get_command(client: Client, args: Dict) -> CommandResults:
+def policy_phishing_get_command(client: Client, args: dict) -> CommandResults:
     """Get phishing policy by id.
 
     Args:
@@ -828,7 +827,7 @@ def policy_phishing_get_command(client: Client, args: Dict) -> CommandResults:
     return command_results
 
 
-def policy_app_settings_get_command(client: Client, args: Dict) -> CommandResults:
+def policy_app_settings_get_command(client: Client, args: dict) -> CommandResults:
     """Get policy app settings by id.
 
     Args:
@@ -858,7 +857,7 @@ def policy_app_settings_get_command(client: Client, args: Dict) -> CommandResult
     return command_results
 
 
-def policy_device_inactivity_list_command(client: Client, args: Dict) -> CommandResults:
+def policy_device_inactivity_list_command(client: Client, args: dict) -> CommandResults:
     """List device inactivity policies
 
     Args:
@@ -891,7 +890,7 @@ def policy_device_inactivity_list_command(client: Client, args: Dict) -> Command
     return command_results
 
 
-def policy_device_inactivity_get_command(client: Client, args: Dict) -> CommandResults:
+def policy_device_inactivity_get_command(client: Client, args: dict) -> CommandResults:
     """Get device inactivity policy by id.
 
     Args:
@@ -925,7 +924,7 @@ def policy_device_inactivity_get_command(client: Client, args: Dict) -> CommandR
 
 
 def fetch_incidents(client: Client, last_run: dict, fetch_query: str,
-                    first_fetch_time: str, max_fetch: int, look_back: int) -> Tuple[list, dict]:
+                    first_fetch_time: Optional[str], max_fetch: int, look_back: int) -> tuple[list, dict]:
     """
     This function will execute each interval (default is 1 minute).
 

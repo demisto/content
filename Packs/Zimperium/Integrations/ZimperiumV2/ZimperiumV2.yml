@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Zimperium V2
+  id: Zimperium v2
   version: -1
 configuration:
 - defaultvalue: https://mtduat.zimperium.com
@@ -19,7 +19,7 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- display: Fetch Query. e.g, severity=CRITICAL,teamId=my_id
+- display: Fetch Query (e.g, severity=CRITICAL,teamId=myId)
   name: fetch_query
   type: 0
   required: false
@@ -31,10 +31,10 @@ configuration:
   required: false
   section: Collect
 - defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
-  name: fetch_time
-  type: 0
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
   required: false
+  type: 0
   section: Collect
 - display: 'Advanced: Minutes to look back when fetching'
   name: look_back
@@ -53,10 +53,13 @@ configuration:
   type: 8
   required: false
   section: Connect
+- display: Incident type
+  name: incidentType
+  type: 13
 description: Fetch and investigate mobile security alerts, generated based on anomalous or unauthorized activities detected on a user's mobile device.
-name: Zimperium V2
-fromversion: 6.0.0
-display: Zimperium V2
+name: Zimperium v2
+fromversion: 6.10.0
+display: Zimperium v2
 script:
   commands:
   - arguments:
@@ -129,7 +132,7 @@ script:
   - arguments:
     - description: The search criteria for the list of devices reported after this date.
       name: after
-    - description: The search criteria for the list of devices reported before this date
+    - description: The search criteria for the list of devices reported before this date.
       name: before
     - description: The device model.
       name: model
@@ -272,7 +275,7 @@ script:
       description: The ID of the zappInstance.
       type: String
     - contextPath: Zimperium.Device.zappInstance.zbuildNumber
-      description: The Zimperium device's Zapp Instance
+      description: The Zimperium device's Zapp Instance.
       type: String
     - contextPath: Zimperium.Device.zappInstance.zversion
       description: The device's Zapp Instance version.
@@ -386,7 +389,7 @@ script:
       description: Whether the operating system policy compliant in the device.
       type: Boolean
     - contextPath: Zimperium.Device.os.type
-      description:  The operating system type of the device.
+      description: The operating system type of the device.
       type: String
     - contextPath: Zimperium.Device.os.version
       description: The operating system version of the device.
@@ -404,7 +407,7 @@ script:
       description: The risk posture of the device.
       type: Number
     - contextPath: Zimperium.Device.riskPostureName
-      description:  The risk posture name of the device.
+      description: The risk posture name of the device.
       type: String
     - contextPath: Zimperium.Device.teamId
       description: The Team ID of the device.
@@ -446,7 +449,7 @@ script:
       description: The ID of the zappInstance.
       type: String
     - contextPath: Zimperium.Device.zappInstance.zbuildNumber
-      description: The Zimperium device's Zapp Instance
+      description: The Zimperium device's Zapp Instance.
       type: String
     - contextPath: Zimperium.Device.zappInstance.zversion
       description: The device's Zapp Instance version.
@@ -531,7 +534,7 @@ script:
       - NORMAL
       - ELEVATED
       - CRITICAL
-      description:
+      description: The severity of the threat.
       name: severity
     - description: Maximum number of results to retrieve in each page. Default is 10.
       name: page_size
@@ -656,7 +659,7 @@ script:
       description: The Threat policy type.
       type: String
     - contextPath: Zimperium.Threat.processList.parentProcessId
-      description: The parent process ID for a Threat's process
+      description: The parent process ID for a Threat's process.
       type: String
     - contextPath: Zimperium.Threat.processList.processId
       description: The Process ID for the Threat process.
@@ -908,8 +911,8 @@ script:
       name: os_patch_date
     - auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - "true"
+      - "false"
       description: This is used to request the devices that have been deleted.
       name: deleted
     - description: The after date in the criteria that the threat occurred.
@@ -926,7 +929,7 @@ script:
     - defaultValue: '50'
       description: Maximum number of results to retrieve in each page. Default is 10.
       name: limit
-    description: Gets a devices associated with a specific OS version
+    description: Gets a devices associated with a specific OS version.
     name: zimperium-devices-os-version
     outputs:
     - contextPath: Zimperium.DeviceOsVersion.id
@@ -948,7 +951,7 @@ script:
       description: The operating system version identifier of the Device.
       type: Number
     - contextPath: Zimperium.DeviceOsVersion.os.patchDate
-      description: The patch date of the device's operating system
+      description: The patch date of the device's operating system.
       type: Date
     - contextPath: Zimperium.DeviceOsVersion.os.policyCompliant
       description: Whether the Endpoint's operating system is compliant with the policy.
@@ -1015,7 +1018,7 @@ script:
       description: The ID of the Policy Group.
       type: String
     - contextPath: Zimperium.PolicyGroup.accountId
-      description: The account identifier for the Policy Group's content
+      description: The account identifier for the Policy Group's content.
       type: String
     - contextPath: Zimperium.PolicyGroup.appPolicyId
       description: The AppPolicyId of the Policy Group.
@@ -1094,7 +1097,7 @@ script:
       description: The Policy Privacy identifier.
       type: String
     - contextPath: Zimperium.PolicyPrivacy.accountId
-      description: The account identifier of the Policy
+      description: The account identifier of the Policy.
       type: String
     - contextPath: Zimperium.PolicyPrivacy.assigned
       description: Whether The Policy Privacy is assigned.
@@ -1201,7 +1204,7 @@ script:
       description: The identifier of the policy.
       type: String
     - contextPath: Zimperium.PolicyPhising.accessControlList
-      description: The access control list for the policy resource/
+      description: The access control list for the policy resource/.
       type: Unknown
     - contextPath: Zimperium.PolicyPhising.accountId
       description: The account identifier of the Policy.
@@ -1219,7 +1222,7 @@ script:
       description: Whether to enable the DNS phishing tutorial.
       type: Boolean
     - contextPath: Zimperium.PolicyPhising.enableMessageFilterTutorial
-      description: Whether the user has enabled the message filter tutorial
+      description: Whether the user has enabled the message filter tutorial.
       type: Boolean
     - contextPath: Zimperium.PolicyPhising.enableSafariBrowserExtensionTutorial
       description: The enable Safari Browser Extension tutorial.
@@ -1432,7 +1435,7 @@ script:
     - contextPath: Zimperium.PolicyDeviceInactivity.teamId
       description: The Team ID for the Policy Device Inactivity.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.86272
   isfetch: true
   runonce: false
   script: '-'

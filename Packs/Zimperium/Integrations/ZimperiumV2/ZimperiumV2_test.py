@@ -1,12 +1,15 @@
 import pytest
-import io
 from CommonServerPython import *
-from ZimperiumV2 import Client, users_search_command, devices_search_command, device_by_id_command, report_get_command, threat_search_command, app_version_list_command, device_cve_get_command, devices_os_version_command, cve_devices_get_command, policy_group_list_command, policy_privacy_get_command, policy_threat_get_command, policy_phishing_get_command, policy_app_settings_get_command, policy_device_inactivity_list_command, policy_device_inactivity_get_command
+from ZimperiumV2 import Client, users_search_command, devices_search_command, \
+    device_by_id_command, report_get_command, threat_search_command, app_version_list_command, device_cve_get_command, \
+    devices_os_version_command, cve_devices_get_command, policy_group_list_command, policy_privacy_get_command, \
+    policy_threat_get_command, policy_phishing_get_command, policy_app_settings_get_command, \
+    policy_device_inactivity_list_command, policy_device_inactivity_get_command
 SERVER_URL = 'https://test_url.com/api'
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -189,7 +192,7 @@ def test_cve_devices_get_command(client, requests_mock):
     assert results.outputs_prefix == 'Zimperium.CVEDevice'
     assert results.outputs[0].get('id') == mock_response_cve_devices_get.get('content', [''])[0].get('id')
     assert results.outputs_key_field == 'id'
-    assert 'Device CVE' in results.readable_output
+    assert 'CVE on Device' in results.readable_output
     assert results.raw_response == mock_response_cve_devices_get
 
 
