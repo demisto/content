@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The GetSlackBlockBuilderResponse script now will return the most recent response to a SlackBlockBuilder task."
+}
