@@ -24,7 +24,16 @@ ioc2 = {
     },
 }
 
-search_indicators_side_effect = [{'iocs': [ioc1, ioc2]}, StopIteration]
+
+def search_indicators_side_effect(**kwargs):
+    def parse_ioc(ioc: dict[str, Any]) -> dict:
+        if not (fields_to_populate := argToList(kwargs.get('populateFields'))):
+            return ioc
+        custom_fields = {k: v for k, v in ioc['CustomFields'].items() if k in fields_to_populate}
+        ioc = {k: v for k, v in ioc.items() if k in fields_to_populate}
+        return ioc | {"CustomFields": custom_fields}
+
+    return {'iocs': [parse_ioc(ioc1.copy()), parse_ioc(ioc2.copy())], 'total': 2}
 
 
 def get_args():
@@ -58,9 +67,18 @@ def get_args_with_unpopulate():
     return args
 
 
+def get_args_with_populate_and_unpopulate():
+    args = {}
+    args['limit'] = 500
+    args['offset'] = 0
+    args['populateFields'] = 'testField'
+    args['dontPopulateFields'] = 'indicator_type'
+    return args
+
+
 def test_main(mocker):
     mocker.patch.object(demisto, 'args', side_effect=get_args)
-    mocker.patch('CommonServerPython.IndicatorsSearcher.__next__', side_effect=search_indicators_side_effect)
+    mocker.patch.object(demisto, 'searchIndicators', side_effect=search_indicators_side_effect)
 
     entry = main()
     indicators = entry['Contents']
@@ -71,7 +89,7 @@ def test_main(mocker):
 
 def test_main_with_hashing(mocker):
     mocker.patch.object(demisto, 'args', side_effect=get_args_with_hashing)
-    mocker.patch('CommonServerPython.IndicatorsSearcher.__next__', side_effect=search_indicators_side_effect)
+    mocker.patch.object(demisto, 'searchIndicators', side_effect=search_indicators_side_effect)
 
     entry = main()
     indicators = entry['Contents']
@@ -81,20 +99,61 @@ def test_main_with_hashing(mocker):
 
 
 def test_main_populate(mocker):
+    """
+    Given:
+    - Command arguments: populateFields="testField,indicator_type", dontPopulateFields is not provided
+    When:
+    - Running GetIndicatorsByQuery
+    Then:
+    - Ensure the expected fields are returned
+    - Ensure `populateFields` kwarg was passed to `searchIndicators` call
+    """
     mocker.patch.object(demisto, 'args', side_effect=get_args_with_populate)
-    mocker.patch('CommonServerPython.IndicatorsSearcher.__next__', side_effect=search_indicators_side_effect)
+    search_indicators = mocker.patch.object(demisto, 'searchIndicators', side_effect=search_indicators_side_effect)
 
     entry = main()
     indicators = entry['Contents']
     assert len(indicators) == 2
-    assert set(indicators[0].keys()) == set(['indicator_type', 'testField'])
+    assert set(indicators[0].keys()) == {'indicator_type', 'testField'}
+    assert "populateFields" in search_indicators.call_args.kwargs
 
 
 def test_main_unpopulate(mocker):
+    """
+    Given:
+    - Command arguments: dontPopulateFields="testField,indicator_type", populateFields is not provided
+    When:
+    - Running GetIndicatorsByQuery
+    Then:
+    - Ensure the expected fields are not returned
+    - Ensure `populateFields` kwarg wasn't passed to `searchIndicators` call
+    """
     mocker.patch.object(demisto, 'args', side_effect=get_args_with_unpopulate)
-    mocker.patch('CommonServerPython.IndicatorsSearcher.__next__', side_effect=search_indicators_side_effect)
+    search_indicators = mocker.patch.object(demisto, 'searchIndicators', side_effect=search_indicators_side_effect)
     entry = main()
     indicators = entry['Contents']
     assert len(indicators) == 2
     assert 'testField' not in indicators[0].keys()
     assert 'indicator_type' not in indicators[0].keys()
+    assert "populateFields" not in search_indicators.call_args.kwargs
+
+
+def test_main_populate_and_unpopulate(mocker):
+    """
+    Given:
+    - Command arguments: populateFields=testField, dontPopulateFields=indicator_type
+    When:
+    - Running GetIndicatorsByQuery
+    Then:
+    - Ensure testField is returned
+    - Ensure indicator_type is not returned
+    - Ensure `populateFields` kwarg wasn't passed to `searchIndicators` call
+    """
+    mocker.patch.object(demisto, 'args', side_effect=get_args_with_populate_and_unpopulate)
+    search_indicators = mocker.patch.object(demisto, 'searchIndicators', side_effect=search_indicators_side_effect)
+    entry = main()
+    indicators = entry['Contents']
+    assert len(indicators) == 2
+    assert 'testField' in indicators[0]
+    assert 'indicator_type' not in indicators[0]
+    assert "populateFields" not in search_indicators.call_args.kwargs
