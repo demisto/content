@@ -80,7 +80,7 @@ def main():
     elif not text:
         # read the text from the file
         try:
-            file = open(text_file, "r")
+            file = open(text_file)
             text = file.read()
         except Exception as e:
             logging.error(f'Failed to read from file {text_file}, error: {str(e)}')
