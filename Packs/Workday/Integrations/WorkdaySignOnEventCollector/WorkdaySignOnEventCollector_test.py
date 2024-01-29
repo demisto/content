@@ -289,6 +289,10 @@ def test_generate_workday_account_signons_body() -> None:
     assert "<bsvc:From_DateTime>2021-09-01T11:00:00Z</bsvc:From_DateTime>" in body
     assert "<bsvc:To_DateTime>2021-09-01T12:00:00Z</bsvc:To_DateTime>" in body
     assert "<wsse:Username>test_user</wsse:Username>" in body
+    assert (
+        '<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">test_pass</wsse:Password>'  # noqa:E501
+        in body
+    )
 
 
 def test_generate_test_payload() -> None:
@@ -326,6 +330,9 @@ def test_generate_test_payload() -> None:
     assert "<bsvc:From_DateTime>2021-09-01T11:00:00Z</bsvc:From_DateTime>" in payload
     assert "<bsvc:To_DateTime>2021-09-01T12:00:00Z</bsvc:To_DateTime>" in payload
     assert "<wsse:Username>test_user</wsse:Username>" in payload
+    assert (
+        '<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">test_pass</wsse:Password>'  # noqa:E501
+        in payload)
 
 
 @pytest.mark.parametrize(
@@ -675,47 +682,33 @@ def test_main_fetch_events() -> None:
         mock_set_last_run.assert_called_with(mock_new_last_run)
 
 
-def test_create_password_digest():
-    # Given: Initialize a Client object with sample data
-    client = Client(
-        base_url="",
-        verify_certificate=True,
-        proxy=False,
-        tenant_name="test_tenant",
-        username="test_user",
-        password="test_pass",
-    )
-    create_time = "2021-09-01T11:00:00Z"
-    nonce = b'e{\xbc\xe3#\xde\x9d\x0cc\x84\x87\xf1t\xfb2b'
-    password = "test_pass"  # nosec
-    expected_password_digest = '36DHoLb1sU2A9AWBMo3PQSndab0mKXtZrwEX9k91+pg='
-    result = client.create_password_digest(nonce, password, create_time)
-    assert result == expected_password_digest
-
-
-def test_create_password_digest_special_char():
+@pytest.mark.parametrize(
+    "username, escaped_username, password, escaped_password",
+    [
+        ("username&", "username&amp;", "pass&", "pass&amp;"),
+        ("username>", "username&gt;", "pass>", "pass&gt;"),
+        ("username<", "username&lt;", "pass<", "pass&lt;"),
+        ("username", "username", "pass", "pass")
+    ]
+)
+def test_escaping_user_name(username, escaped_username, password, escaped_password):
     """
     Given:
-        - A Client object initialized with a base URL, verification settings, a tenant name, and login credentials.
-        - The password includes a specual character - &.
-
+        A Client object initialized with a base URL, verification settings, a tenant name, and login credentials.
+        In the first 3 cases the credentials contains a special character that needs to be escaped, and the last case checks
+        that in a case of a credentials without special characters, they don't change.
     When:
-        - Initializing a new client.
-
+        Creating a new Workday Sign Ons client.
     Then:
-        - A password digest is returned.
+        Check that the credentials are escaped correctly.
     """
     client = Client(
-        base_url="",
-        verify_certificate=True,
-        proxy=False,
-        tenant_name="test_tenant",
-        username="test_user",
-        password="pass&",
+        "mock_url",
+        False,
+        False,
+        "mock_tenant",
+        username,
+        password,
     )
-    create_time = "2021-09-01T11:00:00Z"
-    nonce = b'e{\xbc\xe3#\xde\x9d\x0cc\x84\x87\xf1t\xfb2b'
-    password = "pass&"  # nosec
-    expected_password_digest = 'd1bSnwBwN3/+KtQiocuBLkyc7HmBVanqv/3x+TOnD64='
-    result = client.create_password_digest(nonce, password, create_time)
-    assert result == expected_password_digest
+    assert client.username == escaped_username
+    assert client.password == escaped_password
