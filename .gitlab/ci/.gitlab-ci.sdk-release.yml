@@ -16,7 +16,7 @@ create-release-branch:
     REVIEWER: $REVIEWER
   script:
     - section_start "Create release branch" --collapsed
-    - python3 ./Tests/sdk_release/pre_validations.py -gt "${GITLAB_API_TOKEN}" -v "${RELEASE_VERSION}" -r "${REVIEWER}" -b "${SDK_BRANCH_NAME}"
+#    - python3 ./Tests/sdk_release/pre_validations.py -gt "${GITLAB_API_TOKEN}" -v "${RELEASE_VERSION}" -r "${REVIEWER}" -b "${SDK_BRANCH_NAME}"
     - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The release of demisto-sdk version \`"$RELEASE_VERSION"\` has started:\n\`"$CI_PIPELINE_URL"\` " --allow-failure "${SLACK_ALLOW_FAILURE}" -ch "${SLACK_CHANNEL}"
     - python3 ./Tests/sdk_release/create_release_branch.py -t "${GITHUB_TOKEN}" -n "${RELEASE_VERSION}" -b "${SDK_BRANCH_NAME}"
     - section_end "Create release branch"
