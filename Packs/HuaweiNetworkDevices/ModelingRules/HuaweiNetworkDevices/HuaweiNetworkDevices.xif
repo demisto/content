@@ -51,14 +51,12 @@ alter
     mac_user = regextract(_raw_log,"\;MAC\:(\S+?)\;"),
     ipv4 = arrayindex(regextract(_raw_log,"IPADDRESS\:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0), 
     ipv6 = arrayindex(regextract(_raw_log,"IPADDRESS\:([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
-    //error_code = arrayindex(regextract(_raw_log,"ERRCODE\:(\d+)"),0),
     result = arrayindex(regextract(_raw_log,"RESULT\:(.+?)\;"),0),
     interface = arrayindex(regextract(_raw_log,"INTERFACE\:(\S+)\;"),0),
     access_type = arrayindex(regextract(_raw_log,"ACCESS\sTYPE\:(\S+)\;"),0),
     id = arrayindex(regextract(_raw_log,"CIB\sID\:(\d+)"),0),
     vpn = arrayindex(regextract(_raw_log,"VPNNAME\:(.+?)\;"),0),
     auth_protocol = arrayindex(regextract(_raw_log,"AUTHPROTOCOL\:(.+?)\;"),0)
-//!!!!!!!!!!!!! what to do with the error_code
 | alter //xdm mapping
     xdm.intermediate.host.mac_addresses = device_mac,
     xdm.source.user.username = user,
