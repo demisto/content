@@ -21,6 +21,9 @@ from PIL import Image, ImageDraw
 from pdf2image import convert_from_path
 from PyPDF2 import PdfReader
 
+pypdf_logger = logging.getLogger("PyPDF2")
+pypdf_logger.setLevel(logging.ERROR)  # Supress warnings, which would come out as XSOAR errors while not being errors
+
 # region constants and configurations
 
 # Chrome respects proxy env params
@@ -59,12 +62,29 @@ DEFAULT_RETRIES_COUNT = 3
 DEFAULT_RETRY_WAIT_IN_SECONDS = 2
 PAGES_LIMITATION = 20
 
-MAX_RASTERIZATIONS_COUNT = int(demisto.args().get('max_rasterizations_count', '500'))
+try:
+    env_max_rasterizations_count = os.getenv('MAX_RASTERIZATIONS_COUNT', '500')
+    MAX_RASTERIZATIONS_COUNT = int(env_max_rasterizations_count)
+except Exception as e:
+    demisto.info(f'Exception trying to parse MAX_RASTERIZATIONS_COUNT, {e}')
+    MAX_RASTERIZATIONS_COUNT = 500
 
 FIRST_CHROME_PORT = 9301
-MAX_CHROMES_COUNT = int(demisto.params().get('max_chromes_count', "64"))
-# Max number of tabs each Chrome will open before not responding for more requests
-MAX_CHROME_TABS_COUNT = int(demisto.params().get('max_chrome_tabs_count', "10"))
+
+try:
+    env_max_chromes_count = os.getenv('MAX_CHROMES_COUNT', '64')
+    MAX_CHROMES_COUNT = int(env_max_chromes_count)
+except Exception as e:
+    demisto.info(f'Exception trying to parse MAX_CHROMES_COUNT, {e}')
+    MAX_CHROMES_COUNT = 64
+
+try:
+    # Max number of tabs each Chrome will open before not responding for more requests
+    env_max_chrome_tabs_count = os.getenv('MAX_CHROME_TABS_COUNT', '10')
+    MAX_CHROME_TABS_COUNT = int(env_max_chrome_tabs_count)
+except Exception as e:
+    demisto.info(f'Exception trying to parse MAX_CHROME_TABS_COUNT, {e}')
+    MAX_CHROME_TABS_COUNT = 10
 
 # Polling for rasterization commands to complete
 DEFAULT_POLLING_INTERVAL = 0.1
@@ -888,6 +908,8 @@ def get_width_height(args: dict):
 
 def main():  # pragma: no cover
     demisto.debug(f"main, {demisto.command()=}")
+    demisto.debug(f'Using performance params: {MAX_CHROMES_COUNT=}, {MAX_CHROME_TABS_COUNT=}, {MAX_RASTERIZATIONS_COUNT=}')
+
     threading.excepthook = excepthook_recv_loop
     try:
         if demisto.command() == 'test-module':
