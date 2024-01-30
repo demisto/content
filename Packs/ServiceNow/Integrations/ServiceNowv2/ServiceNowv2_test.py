@@ -2,7 +2,6 @@ import re
 
 from pytest_mock import MockerFixture
 from requests_mock import MockerCore, ANY
-# import requests_mock
 import pytest
 import json
 from datetime import datetime, timedelta
