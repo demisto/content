@@ -38,7 +38,7 @@ alter
 	xdm.event.outcome = if(get_approval_state = "pending", XDM_CONST.OUTCOME_UNKNOWN, get_approval_state = "accepted", XDM_CONST.OUTCOME_SUCCESS, get_approval_state = "rejected", XDM_CONST.OUTCOME_FAILED, null),
 	xdm.event.outcome_reason = get_approval_state,
 	xdm.source.host.hostname = get_display_value,
-	xdm.alert.subcategory = to_string(get_labels),
+	xdm.alert.subcategory = if(get_labels = null, null, to_string(get_labels)),
 	xdm.event.operation_sub_type = event_action,
 	xdm.observer.unique_identifier = to_string(ids_object),
 	xdm.alert.risks = coalesce(get_alert_risk_factors, get_incident_risk_factors),
