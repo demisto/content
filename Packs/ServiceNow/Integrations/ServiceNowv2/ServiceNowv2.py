@@ -2975,6 +2975,7 @@ def main():
     LOG(f'Executing command {command}')
 
     params = demisto.params()
+    args = demisto.args()
     verify = not params.get('insecure', False)
     use_oauth = params.get('use_oauth', False)
     oauth_params = {}
@@ -3005,7 +3006,10 @@ def main():
         password = params.get('credentials', {}).get('password')
 
     version = params.get('api_version')
-    if version:
+    # This is given as part of the arguments of the command, if True, then the request will not the configured api version
+    force_default_url = argToBoolean(args.get('force_default_url', 'false'))
+    demisto.debug(f'{force_default_url=}, if true, will ignore api version configured in parameters')
+    if version and not force_default_url:
         api = f'/api/now/{version}/'
         sc_api = f'/api/sn_sc/{version}/'
         cr_api = f'/api/sn_chg_rest/{version}/'
@@ -3098,7 +3102,6 @@ def main():
             'servicenow-create-item-order': create_order_item_command,
             'servicenow-document-route-to-queue': document_route_to_table,
         }
-        args = demisto.args()
         if command == 'fetch-incidents':
             raise_exception = True
             incidents = fetch_incidents(client)

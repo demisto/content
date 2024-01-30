@@ -1504,6 +1504,10 @@ script:
     - description: Template for creating a standard change request.
       name: template
       required: true
+    - description: When true, the command will use the default api version, and not the one configured in the instance configuration.
+      name: force_default_url
+      required: false
+      defaultValue: 'false'
     description: Create a change request from a template.
     name: servicenow-create-co-from-template
     outputs:
