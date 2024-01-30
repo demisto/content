@@ -57,8 +57,8 @@ class MicrosoftStorageClient(BaseClient):
             # The updated url_suffix after performing this logic will be:
             # url_suffix = 'container?sv=2020-08-04&ss=ay&spr=https&sig=s5&restype=directory&comp=list'
             params_query = self.params_dict_to_query_string(params, prefix='')
-            uri_token_part = self._account_sas_token if self._account_sas_token else '?'
-            url_suffix = f'{url_suffix}{uri_token_part}{params_query}'
+            uri_token_part = self._account_sas_token if self._account_sas_token else ''
+            url_suffix = f'{url_suffix}?{uri_token_part}{params_query}'
             params = None
 
         default_headers = {'x-ms-version': self._api_version}

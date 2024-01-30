@@ -1011,7 +1011,7 @@ def main() -> None:  # pragma: no cover
     proxy = params.get('proxy', False)
     global account_sas_token
     global storage_account_name
-    account_sas_token = params.get('credentials', {}).get('password')
+    account_sas_token = params.get('credentials', {}).get('password').removeprefix("?")
     storage_account_name = params['credentials']['identifier']
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     api_version = "2020-10-02"
