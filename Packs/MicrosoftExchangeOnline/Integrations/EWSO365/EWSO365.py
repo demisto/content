@@ -2197,7 +2197,6 @@ def parse_incident_from_item(item):     # pragma: no cover
                             attached_email_headers.append((h.lower(), v))
                         demisto.debug(f'{attached_email_headers=}')
                         for header in attachment.item.headers:
-                            demisto.debug(f'{header.name.lower()}, {header.value}')
                             if (
                                     (header.name.lower(), header.value)
                                     not in attached_email_headers
