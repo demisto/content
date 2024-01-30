@@ -6,6 +6,7 @@ import demistomock as demisto
 urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+FETCH_FIELD = 'timestamp'
 
 
 class Client(BaseClient):
@@ -953,7 +954,7 @@ def fetch_incidents(client: Client, last_run: dict, fetch_query: str,
     search_params = {key: value for param in fetch_query for key, value in [param.split('=', 1)]}
     demisto.debug(f'The query for fetch: {search_params}')
 
-    res = client.threat_search(after=start_time, search_params=search_params, size=limit)
+    res = client.threat_search(after=start_time, search_params=search_params, size=limit, sort=FETCH_FIELD)
     incidents_res = res.get('content', [])
     demisto.debug(f'Got {len(incidents_res)} incidents from the API, before filtering')
 
@@ -967,9 +968,9 @@ def fetch_incidents(client: Client, last_run: dict, fetch_query: str,
 
     incidents: list[dict] = []
     for incident in incidents_filtered:
-        occurred = timestamp_to_datestring(incident.get('timestamp'))
+        occurred = timestamp_to_datestring(incident.get(FETCH_FIELD))
         demisto.debug(f'Looking on: {incident.get("id")}, {occurred=}')
-        incident['timestamp'] = occurred
+        incident[FETCH_FIELD] = occurred
         incidents.append({
             'name': f"Threat {incident.get('id')} on Device ID {incident.get('deviceId')}",
             'occurred': occurred,
@@ -985,7 +986,7 @@ def fetch_incidents(client: Client, last_run: dict, fetch_query: str,
         start_fetch_time=start_time,
         end_fetch_time=end_time,
         look_back=look_back,
-        created_time_field='timestamp',
+        created_time_field=FETCH_FIELD,
         id_field='id',
         date_format=DATE_FORMAT,
         increase_last_run_time=True
