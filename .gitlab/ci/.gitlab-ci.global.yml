@@ -420,6 +420,10 @@
   extends:
     - .unittests-and-lint-settings
   script:
+    - section_start "Test Docker"
+    - gcloud auth configure-docker ${DOCKER_IO_DOMAIN}
+    - docker pull ${DOCKER_IO}/demisto/crypto:1.0.0.83343
+    - section_end "Test Docker"
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v --disable-warnings
@@ -456,9 +460,6 @@
           fi
         fi
         echo -e  "----------\nAuthenticate to Artifact Registry\n----------"
-        gcloud auth configure-docker ${DOCKER_IO_DOMAIN}
-        docker login --username ${DOCKERHUB_USER} --password ${DOCKERHUB_PASSWORD}
-        docker pull ${DOCKER_IO}/demisto/crypto:1.0.0.83343
       
         if [[ -f "${ARTIFACTS_FOLDER}/coverage_report/.coverage" ]]; then
           if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||   -n "$SHOULD_LINT_ALL"  ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
