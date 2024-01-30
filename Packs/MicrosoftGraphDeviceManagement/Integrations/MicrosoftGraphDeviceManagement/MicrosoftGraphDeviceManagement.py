@@ -54,7 +54,7 @@ class MsGraphClient:
         results: list = raw_response.get('value')
         next_page = raw_response.get('@odata.nextLink')
         demisto.debug(f'in list_managed_devices - {next_page=} , {limit=}, sum of results fot first call = {len(results)}')
-        
+
         # If there are more results to bring than the limit, we need to paginate
         while next_page and limit and len(results) < limit:
             concat_next_page_url = next_page.split(API_VERSION)[1]
@@ -63,7 +63,7 @@ class MsGraphClient:
                 results += (raw_response.get('value'))
                 demisto.debug(f'in list_managed_devices - sum of results in pagination loop = {len(results)}')
             next_page = raw_response.get('@odata.nextLink')
-        
+
         return results, raw_response
         # TODO is it ok to return a list of raw response? is this a BC?
 
