@@ -303,7 +303,7 @@ def get_managed_device_physical_memory_command(client: MsGraphClient, args: dict
     human_readable: str = f'Managed device {device_id} not found.'
     if device:
         human_readable = tableToMarkdown(name=f'Managed device {device_name}', t=device, removeNull=True,
-                                         headers=['physicalMemoryInBytes'])
+                                         headers=['PhysicalMemoryInBytes'])
     return_outputs(human_readable, entry_context, device)
 
 
