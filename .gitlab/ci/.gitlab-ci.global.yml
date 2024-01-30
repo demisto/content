@@ -3,6 +3,7 @@
     key:
       files:
         - "poetry.lock"
+        - "package-lock.json"
       prefix: dev-content
     paths:
       - $PIP_CACHE_DIR
