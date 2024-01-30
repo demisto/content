@@ -11,6 +11,7 @@ configuration:
   defaultvalue: https://127.0.0.1
   type: 0
   required: true
+  additionalinfo: For Cortex XSOAR 8 or Cortex XSIAM, use the Copy API URL button on the API Keys page. For Cortex XSOAR 6, use the server URL.
 - display: API Key ID
   displaypassword: API Key
   name: creds_apikey
@@ -274,9 +275,9 @@ script:
     - name: entry_id
       description: "The War Room entry ID of the file."
       required: true
-    description: Check if the file exists in Cortex XSOAR by entry_id.
+    description: Check if the file exists in Cortex XSOAR (Context) by entry_id.
     outputs:
-    - description: Dictionary with EntryID as the key and boolean if the file exists as a value.
+    - description: Dictionary with EntryID as the key and boolean if the file exists as a value in Context.
       contextPath: IsFileExists
 tests:
 - No tests
