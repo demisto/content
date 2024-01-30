@@ -1,7 +1,10 @@
-from typing import Dict, List, Tuple, Any, Optional
-from greynoise import GreyNoise, exceptions, util  # type: ignore
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 
 import urllib3
+from greynoise import GreyNoise, exceptions, util  # type: ignore
+
+from CommonServerPython import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -91,7 +94,7 @@ def format_timestamp(date: str) -> str:
     return formatted_timestamp
 
 
-def format_indicator(indicator: object, tlp_color: str) -> object:
+def format_indicator(indicator, tlp_color: str):
     tags = ",".join(indicator.get("tags", []))
     if tags == "":
         tags = "INTERNET SCANNER"
@@ -230,7 +233,7 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     pack_version = "1.1.0"
-    packs = []
+    packs: List = []
     if isinstance(packs, list):
         for pack in packs:
             if pack["name"] == "FeedGreyNoise":
