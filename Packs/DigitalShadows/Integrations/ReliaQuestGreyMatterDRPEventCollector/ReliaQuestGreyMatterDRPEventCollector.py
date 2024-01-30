@@ -239,6 +239,8 @@ def enrich_events_with_triage_item(
         if item_id in triage_item_ids_to_events:
             for event in triage_item_ids_to_events[item_id]:
                 event["triage-item"] = triaged_item
+                if event.get("event-action") == "update" and (updated := event.get("updated")):
+                    event["_time"] = updated
 
         source = triaged_item.get("source") or {}
         if alert_id := source.get("alert-id"):
@@ -297,6 +299,8 @@ def enrich_events_with_incident_or_alert_metadata(
             event["mitre_tactics"] = mitre_tactic_names
             event["mitre_techniques"] = mitre_technique_names
             event["mitre_ids"] = mitre_ids
+            if event.get("event-action") == "create" and (event_created := event.get("event-created")):
+                event["_time"] = event_created
         for asset in alert_incident.get("assets") or []:
             if asset_id := asset.get("id"):
                 if asset_id not in event_ids_to_triage_ids:
