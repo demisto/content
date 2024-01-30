@@ -1473,7 +1473,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "adapt-docker"
-resolved_reference = "1ca279eb3e10dd6c5480c921d5dc18e49ef18526"
+resolved_reference = "328256120a519d9d6234e24dc298bda9b812f490"
 
 [[package]]
 name = "deprecated"
@@ -1948,13 +1948,13 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0.dev0)"]
 
 [[package]]
 name = "google-api-python-client"
-version = "2.115.0"
+version = "2.116.0"
 description = "Google API Client Library for Python"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-api-python-client-2.115.0.tar.gz", hash = "sha256:96af11376535236ba600ebbe23588cfe003ec9b74e66dd6ddb53aa3ec87e1b52"},
-    {file = "google_api_python_client-2.115.0-py2.py3-none-any.whl", hash = "sha256:26178e33684763099142e2cad201057bd27d4efefd859a495aac21ab3e6129c2"},
+    {file = "google-api-python-client-2.116.0.tar.gz", hash = "sha256:f9f32361e16114d62929638fe07f77be30216b079ad316dc2ced859d9f72e5ad"},
+    {file = "google_api_python_client-2.116.0-py2.py3-none-any.whl", hash = "sha256:846e44417c6b7385fa5f5a46cb6b9d23327754c560830245ee53a577c5e44cec"},
 ]
 
 [package.dependencies]
@@ -2527,13 +2527,13 @@ colors = ["colorama (>=0.4.6)"]
 
 [[package]]
 name = "jbxapi"
-version = "3.21.0"
+version = "3.22.0"
 description = "API for Joe Sandbox"
 optional = false
 python-versions = ">=2.7, !=3.0, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
-    {file = "jbxapi-3.21.0-py2.py3-none-any.whl", hash = "sha256:1660bbd98eed7befca4cc9d324aedb40fa426dad81be6e6a141b11af8ae82351"},
-    {file = "jbxapi-3.21.0.tar.gz", hash = "sha256:66fa7f0c0ac0ed5f7027c73f6036c75637c6d6fe320487f29c8174c2c4fa5871"},
+    {file = "jbxapi-3.22.0-py2.py3-none-any.whl", hash = "sha256:3dc4eed81a3ce4d1d6fb1bab311932f7114056ad7d736f7ee75ca25a02582b7d"},
+    {file = "jbxapi-3.22.0.tar.gz", hash = "sha256:c4a21a8f837ec0273e846a032216e81c88697f46e1725ed2983c63b442cffb8a"},
 ]
 
 [package.dependencies]
