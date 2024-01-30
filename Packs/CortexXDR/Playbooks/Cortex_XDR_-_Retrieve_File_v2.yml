@@ -23,14 +23,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+      - "9"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": -130
         }
       }
     note: false
@@ -92,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 395
+          "y": 425
         }
       }
     note: false
@@ -120,7 +120,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1095
+          "y": 1120
         }
       }
     note: false
@@ -162,7 +162,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 750
+          "y": 770
         }
       }
     note: false
@@ -196,8 +196,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
-          "y": 920
+          "x": -10,
+          "y": 940
         }
       }
     note: false
@@ -234,7 +234,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 565
+          "y": 595
         }
       }
     note: false
@@ -270,6 +270,8 @@ tasks:
             value:
               simple: inputs.file_path
             iscontext: true
+          right:
+            value: {}
         - operator: isNotEmpty
           left:
             value:
@@ -300,17 +302,56 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ceaa2410-c99b-408a-85a4-2c5b7734eb95
+    type: condition
+    task:
+      id: ceaa2410-c99b-408a-85a4-2c5b7734eb95
+      version: -1
+      name: Is Cortex XDR is enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "8"
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "5_6_#default#": 0.68
+      "5_6_#default#": 0.68,
+      "8_4_#default#": 0.14,
+      "9_4_no": 0.15
     },
     "paper": {
       "dimensions": {
-        "height": 1110,
-        "width": 635,
-        "x": 10,
-        "y": 50
+        "height": 1315,
+        "width": 655,
+        "x": -10,
+        "y": -130
       }
     }
   }
