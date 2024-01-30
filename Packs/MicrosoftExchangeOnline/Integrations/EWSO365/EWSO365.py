@@ -2037,7 +2037,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):      # pra
     return None
 
 
-def handle_attached_email_with_incorrect_id(attached_email):
+def handle_attached_email_with_incorrect_id(attached_email: Message):
     """This function handles a malformed Message-ID value which can be returned in the header of certain email objects.
     This issue happens due to a current bug in "email" library and further explained in XSUP-32074.
     Public issue link: https://github.com/python/cpython/issues/105802

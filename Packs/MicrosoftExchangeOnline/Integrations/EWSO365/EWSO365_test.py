@@ -841,9 +841,10 @@ class TestEmailModule(unittest.TestCase):
 
 
 @pytest.mark.parametrize("headers, expected_formatted_headers", [
-    ([("Message-ID", '<valid_header>')], [("Message-ID", '<valid_header>')]),
-    ([("Message-ID", '<[valid_header]>')], [("Message-ID", '<valid_header>')]),
-    ([("Message-ID", 'Other type of header format')], [("Message-ID", 'Other type of header format')]),
+    pytest.param([("Message-ID", '<valid_header>')], [("Message-ID", '<valid_header>')], id="valid header"),
+    pytest.param([("Message-ID", '<[valid_header]>')], [("Message-ID", '<valid_header>')], id="invalid header"),
+    pytest.param([("Message-ID", 'Other type of header format')], [("Message-ID", 'Other type of header format')],
+                 id="untouched header format"),
 ])
 def test_handle_attached_email_with_incorrect_id(mocker, headers, expected_formatted_headers):
     """
@@ -854,8 +855,8 @@ def test_handle_attached_email_with_incorrect_id(mocker, headers, expected_forma
     When:
         - fetching email which have an attached email with Message-ID header
     Then:
-        - case 1: verify the header in the correct format and return the attached email object
-        - case 2: check if the Message-ID header value is in the correct format, if not, fix it if possible.
+        - case 1: verify the header in the correct format
+        - case 2: correct the invalid Message-ID header value
         - case 3: return the header value without without further handling
 
     """
