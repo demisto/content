@@ -105,7 +105,6 @@ class RequestArguments:
     CTX_URL_TRUNCATE_KEY = 'url_truncate'
     CTX_MAXIMUM_CIDR = 'maximum_cidr_size'
     CTX_NO_TLD = 'no_wildcard_tld'
-    raw = "raw"
 
     FILTER_FIELDS_ON_FORMAT_TEXT = "name,type"
     FILTER_FIELDS_ON_FORMAT_MWG = "name,type,sourceBrands"
@@ -131,6 +130,7 @@ class RequestArguments:
                  url_truncate: bool = False,
                  maximum_cidr_size: int = MAXIMUM_CIDR_SIZE_DEFAULT,
                  no_wildcard_tld: bool = False,
+                 raw: bool = False,
                  ):
 
         self.query = query
@@ -150,7 +150,7 @@ class RequestArguments:
         self.url_truncate = url_truncate
         self.maximum_cidr_size = maximum_cidr_size
         self.no_wildcard_tld = no_wildcard_tld
-
+        self.raw = raw
         if category_attribute is not None:
             category_attribute_list = argToList(category_attribute)
 
@@ -1007,7 +1007,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     maximum_cidr_size = try_parse_integer(request_args.get('mc', params.get(
         'maximum_cidr_size', MAXIMUM_CIDR_SIZE_DEFAULT)), EDL_CIDR_SIZR_MSG)
     no_wildcard_tld = argToBoolean(request_args.get('nt', params.get('no_wildcard_tld')))
-
+    raw = argToBoolean(request_args.get("raw", False))
     # handle flags
     if drop_invalids == '':
         drop_invalids = True
@@ -1070,7 +1070,8 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
                             strip_protocol,
                             url_truncate,
                             maximum_cidr_size,
-                            no_wildcard_tld
+                            no_wildcard_tld,
+                            raw=raw
                             )
 
 
