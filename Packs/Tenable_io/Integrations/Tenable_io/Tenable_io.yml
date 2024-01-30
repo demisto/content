@@ -62,19 +62,6 @@ configuration:
   required: false
   advanced: true
   section: Collect
-- display: Vulnerability severity
-  additionalinfo: The severity of the vulnerabilities to include in the export.
-  name: severity
-  options:
-  - info
-  - low
-  - medium
-  - high
-  - critical
-  type: 16
-  required: false
-  advanced: true
-  section: Collect
 - defaultvalue: '720'
   display: Assets and vulnerabilities fetch interval
   name: assetsFetchInterval
