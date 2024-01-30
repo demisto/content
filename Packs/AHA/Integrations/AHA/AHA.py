@@ -86,8 +86,6 @@ class Client(BaseClient):
         params = {
             'updated_since': from_date,
             'fields': fields,
-            'page': page,
-            'per_page': per_page,
         }
         return self._http_request(method='GET',
                                   url_suffix=f'{self.url}{aha_type.get_url_suffix()}{name}',
