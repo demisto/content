@@ -9,7 +9,6 @@ import urllib3
 from CommonServerUserPython import *  # noqa
 
 from CommonServerPython import *
-from demistomock import context  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
