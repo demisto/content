@@ -360,7 +360,7 @@ def construct_slack_msg(triggering_workflow: str,
                         pipeline_url: str,
                         pipeline_failed_jobs: list[ProjectPipelineJob],
                         pull_request: GithubPullRequest | None,
-                        shame_message: tuple[str, str] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+                        shame_message: tuple[str, str,str, str] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     # report failing jobs
     content_fields = []
 
@@ -441,9 +441,9 @@ def construct_slack_msg(triggering_workflow: str,
     title += title_append
     slack_msg_start = []
     if shame_message:
-        shame_title, shame_color = shame_message
+        hi_person, you_did, in_this_pr, shame_color = shame_message
         slack_msg_start.append({
-            "title": shame_title,
+            "title": f"{hi_person}\n{you_did}\n{in_this_pr}",
             "color": shame_color
         })
     return slack_msg_start + [{
@@ -562,54 +562,60 @@ def main():
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
     computed_slack_channel = "dmst-build-test"
-    if True:
-        # We check if the previous build failed and this one passed, or wise versa.
+    if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
+        # Check if the current commit's pipeline differs from the previous one. If the previous pipeline is still running,
+        # compare the next build. For commits without pipelines, compare the current one to the nearest commit with a
+        # pipeline and all those in between, marking them as suspicious.
         list_of_pipelines, list_of_commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
                                                                        project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
         current_commit = get_commit_by_sha(commit_sha, list_of_commits)
         if current_commit:
             current_commit_index = list_of_commits.index(current_commit)
+        
             # If the current commit is the last commit in the list, there is no previous commit,
             # since commits are in ascending order
-            if current_commit_index != len(list_of_commits) - 1:
+            # or if we already sent a shame message for newer commits, we don't want to send another one for older commits.
+            if (current_commit_index != len(list_of_commits) - 1 and 
+            not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)):
+                
                 current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
                 previous_pipeline = None
-                suspicious_commits = []
-                # If the previous commit has no pipeline, we want to check the commit before it, and so on.
-                while not previous_pipeline:
-                    previous_commit_index = current_commit_index +1
+                suspicious_commits = [current_commit]
+                
+                # looking backwards until we find a commit with a pipeline to compare with
+                previous_commit_index = current_commit_index +1
+                while not previous_pipeline and previous_commit_index < len(list_of_commits):
                     previous_commit = list_of_commits[previous_commit_index]
                     previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
-                    suspicious_commits.append(previous_commit)
+                    suspicious_commits.append(previous_commit) if not previous_pipeline else None 
                     previous_commit_index += 1
                     
-               # If we already sent a shame message for newer commits, we don't want to send another one for older commits.
-                if not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines):
-                    pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
-                    logging.info(
-                        f"Checking pipeline {current_pipeline.id}, the commit is {current_commit.title} "
-                        f"and the pipeline change status is: {pipeline_changed_status}"
-                    )
-                    # If the current pipeline is not a pivot, we want to check if the next pipeline is a pivot
-                    # comparing to the current one. 
-                    # This is useful when current pipeline is running for a long time, and the next one already ended.
-                    if pipeline_changed_status is None:
-                        # If the next commit has no pipeline, we want to check the commit after it, and so on.
-                        suspicious_commits.pop()
-                        next_pipeline = None
-                        while not next_pipeline:
-                            next_commit_index = current_commit_index - 1
-                            next_commit = list_of_commits[next_commit_index]
-                            next_pipeline = get_pipeline_by_commit(next_commit, list_of_pipelines)
-                            suspicious_commits.append(next_commit)
-                            next_commit_index -= 1
+                pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
+                logging.info(
+                    f"Checking pipeline id: {current_pipeline.id}, of commit: {current_commit.title}, "
+                    f"after comparing with pipeline id: {previous_pipeline.id}, the change status is: {pipeline_changed_status}")
 
-                        if next_pipeline:
-                            pipeline_changed_status = is_pivot(current_pipeline=next_pipeline, previous_pipeline=current_pipeline)
-                    if pipeline_changed_status:
-                        shame_message=create_shame_message(suspicious_commits, pipeline_changed_status, options.name_mapping_path)
-                        computed_slack_channel = "test_slack_notifier_when_master_is_broken"
-            
+                # looking_forward until we find a commit with a pipeline to compare with
+                if pipeline_changed_status is None:
+                    # empty out all suspicious commits, except the current one
+                    suspicious_commits= suspicious_commits[:1]
+                    next_pipeline = None
+                    next_commit_index = current_commit_index - 1
+                    while not next_pipeline and next_commit_index >= 0:
+                        next_commit = list_of_commits[next_commit_index]
+                        next_pipeline = get_pipeline_by_commit(next_commit, list_of_pipelines)
+                        suspicious_commits.append(next_commit) if not next_pipeline else None
+                        next_commit_index -= 1
+
+                    if next_pipeline:
+                        pipeline_changed_status = is_pivot(current_pipeline=next_pipeline, previous_pipeline=current_pipeline)
+                        logging.info(
+                            f" after comparing with pipeline id: {next_pipeline.id}, the change status is: {pipeline_changed_status}")
+                
+                if pipeline_changed_status:
+                    shame_message=create_shame_message(suspicious_commits, pipeline_changed_status, options.name_mapping_path)
+                    computed_slack_channel = "test_slack_notifier_when_master_is_broken"
+        
     slack_msg_data, threaded_messages = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request,
                                                             shame_message)
 

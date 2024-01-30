@@ -353,14 +353,13 @@ def get_pipeline_by_commit(commit: ProjectCommit, list_of_pipelines: list[Projec
 
 
 def create_shame_message(suspicious_commits: list[ProjectCommit],
-                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str] | None:
+                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str, str, str] | None:
     """
-    Create a shame message for the person in charge of the commit.
+    Create a shame message for the person in charge of the commit, or for multiple people in case of multiple suspicious commits.
     """
-    message = ""
-    color = ""
-    for commit in suspicious_commits:
-        name, pr = get_person_in_charge(commit)
+    hi_person = you_did = in_this_pr = color =""
+    for suspicious_commit in suspicious_commits:
+        name, pr = get_person_in_charge(suspicious_commit)
         if name and pr:
             if name == CONTENT_BOT:
                 name = get_reviewer(pr)
@@ -368,9 +367,17 @@ def create_shame_message(suspicious_commits: list[ProjectCommit],
             msg = "broke" if pipeline_changed_status else "fixed"
             color = "danger" if pipeline_changed_status else "good"
             emoji = ":cry:" if pipeline_changed_status else ":muscle:"
-            message += f"Hi @{name},  You {msg} the build! {emoji} ,\n That was done in this {slack_link(pr,'PR.')}\n"
+            if suspicious_commits.index(suspicious_commit) == 0:
+                hi_person = f"Hi @{name}, "
+                you_did= f"You {msg} the build! {emoji} "
+                in_this_pr = f" That was done in this {slack_link(pr,'PR.')}"
+                
+            else:
+                hi_person+= f"and @{name}, "
+                you_did = f"One of you {msg} the build! {emoji} "
+                in_this_pr+= f" or this {slack_link(pr,'PR,')}"
             
-    return (message, color) if message else None
+    return (hi_person, you_did, in_this_pr, color) if hi_person and you_did and in_this_pr and color else None
 
 
 def slack_link(url: str, text: str) -> str:
