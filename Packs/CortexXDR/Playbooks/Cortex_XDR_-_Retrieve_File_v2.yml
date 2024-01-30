@@ -363,7 +363,7 @@ view: |-
 inputs:
 - key: endpoint_ids
   value: {}
-  required: true
+  required: false
   description: A comma-separated list of endpoint IDs.
   playbookInputQuery:
 - key: file_path
