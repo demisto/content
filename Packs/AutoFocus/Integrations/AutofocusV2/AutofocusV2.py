@@ -341,7 +341,7 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, results
             }
             command_results.scheduled_command = ScheduledCommand(
                 command=cmd,
-                next_run_in_seconds=interval_in_secs,
+                next_run_in_seconds=interval_in_secs,  # type: ignore
                 args=polling_args,
                 timeout_in_seconds=600
             )

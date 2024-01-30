@@ -1,7 +1,6 @@
 import json
 import pytest
 import requests
-import sys
 import demistomock as demisto
 from unittest.mock import MagicMock
 
@@ -459,7 +458,7 @@ TEST_DATA = [
 
 
 @pytest.mark.parametrize('mock_response, file_hash, expected_results', TEST_DATA)
-def test_search_file_command(mock_response, file_hash, expected_results):
+def test_search_file_command(requests_mock, mock_response, file_hash, expected_results):
     """
      Given:
          - A file hash (md5, sha1, sha256).
@@ -486,7 +485,7 @@ def test_search_file_command(mock_response, file_hash, expected_results):
 
 @pytest.mark.parametrize(argnames='mock_response, domain',
                          argvalues=[('autofocus_domain_response', 'mail16.amadeus.net')])
-def test_search_domain_command(mock_response, domain):
+def test_search_domain_command(requests_mock, mock_response, domain):
     """
      Given:
          - A domain.
