@@ -170,6 +170,10 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
 
 
 def test_module() -> str:
+    client = build_client({})
+    response = client.describe_regions()
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise DemistoException(f'Test Module failed. Response: {response}')
     if ROLE_NAME:
         if not PARAMS.get('accounts_to_access'):
             raise DemistoException("'AWS organization accounts' must not be empty when an access role is provided.")
@@ -188,10 +192,6 @@ def test_module() -> str:
             raise DemistoException(
                 f'AssumeRole with role name {ROLE_NAME!r} failed for the following accounts: {fail_ids}.'
             )
-    client = build_client({})
-    response = client.describe_regions()
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise DemistoException(f'Test Module failed. Response: {response}')
     return 'ok'
 
 
