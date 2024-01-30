@@ -48,6 +48,14 @@ def main():
     release_owner = options.release_owner
     artifacts_folder = options.artifacts_folder
 
+    pr_url='https://github.com/demisto/demisto-sdk/pull/3996'
+    # write the SLACK_PR_READY_FILE
+    slack_message = SLACK_PR_READY_MESSAGE.format(pr_url)
+    slack_message_file = os.path.join(artifacts_folder, SLACK_PR_READY_FILE)
+    with open(slack_message_file, "w") as f:
+        f.write(str(slack_message))
+    sys.exit(0)
+
     if is_draft and is_draft.lower() in ("yes", "true", "y"):
         is_draft = True
         logging.info(f'Preparing to create draft Pull request to release branch {release_branch_name}')
