@@ -934,7 +934,7 @@ def check_valid_permission(valid_permissions: str, input_permissions: str) -> bo
     return True
 
 
-def generate_sas_token_command(client: Client, args: dict) -> CommandResults:  # type: ignore # pragma: no cover
+def generate_sas_token_command(client: Client, args: dict) -> Union[CommandResults, None]:  # type: ignore # pragma: no cover
     """
     Generate sas url for Container.
 
