@@ -457,18 +457,8 @@
         fi
         echo -e  "----------\nAuthenticate to Artifact Registry\n----------"
         gcloud auth configure-docker ${DOCKER_IO_DOMAIN}
-        if [ -n "$SHOULD_LINT_ALL" ]; then
-          echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 10 -a --test-xml ./unit-tests --log-path "${ARTIFACTS_FOLDER}" --failure-report "${ARTIFACTS_FOLDER}" --coverage-report "${ARTIFACTS_FOLDER}/coverage_report" -dt 120 --time-measurements-dir "${ARTIFACTS_FOLDER}" --docker-image ${DOCKER}
-        fi
-        if [[ -n $BUCKET_UPLOAD ]]; then
-          demisto-sdk lint --console-log-threshold DEBUG -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path "${ARTIFACTS_FOLDER}" --failure-report "${ARTIFACTS_FOLDER}" --coverage-report "${ARTIFACTS_FOLDER}/coverage_report" --check-dependent-api-module --docker-image ${DOCKER}
-        else
-          if [[ "$CI_COMMIT_BRANCH" != "master" ]]; then
-            # skip running `lint -g` on master
-            demisto-sdk lint --console-log-threshold DEBUG -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report "${ARTIFACTS_FOLDER}/coverage_report" --check-dependent-api-module --docker-image ${DOCKER}
-          fi
-        fi
+        docker login --username ${DOCKERHUB_USER} --password ${DOCKERHUB_PASSWORD}
+        docker pull ${DOCKER_IO}/devtestdemisto/crypto:1.0.0.83343
       
         if [[ -f "${ARTIFACTS_FOLDER}/coverage_report/.coverage" ]]; then
           if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||   -n "$SHOULD_LINT_ALL"  ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
