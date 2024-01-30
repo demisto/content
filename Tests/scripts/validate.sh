@@ -24,7 +24,13 @@ elif [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
     echo "validate all for test end"
     python3 -m demisto_sdk validate -g --post-commit --graph --skip-pack-dependencies
 elif [[ $CI_COMMIT_BRANCH = demisto/python3 ]]; then
+    echo "validate all for test start"
+    python3 -m demisto_sdk validate -a --graph --skip-pack-dependencies
+    echo "validate all for test end"
     python3 -m demisto_sdk validate -g --post-commit --no-conf-json --allow-skipped --graph --skip-pack-dependencies
 else
+    echo "validate all for test start"
+    python3 -m demisto_sdk validate -a --graph --skip-pack-dependencies
+    echo "validate all for test end"
     python3 -m demisto_sdk validate -g --post-commit --graph --skip-pack-dependencies
 fi
