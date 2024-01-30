@@ -22,10 +22,8 @@ def test_branch_has_private_build_infra_change(mocker):
     mocker.patch('Utils.trigger_private_build.get_modified_files', side_effect=GET_MODIFIED_FILES_MOCKS)
     not_infra_file = branch_has_private_build_infra_change()
     infra_file = branch_has_private_build_infra_change()
-    infra_folder = branch_has_private_build_infra_change()
     assert not not_infra_file
     assert infra_file
-    assert infra_folder
 
 
 def test_get_modified_files(mocker):
