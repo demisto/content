@@ -138,6 +138,7 @@ def main():
         f.write(str(content_pr.get("number")))
 
     # write the SLACK_MERGE_PRS_FILE
+    sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
     slack_message = SLACK_MERGE_PRS_MESSAGE.format(content_pr.get("html_url"), sdk_pr.get("html_url"))
     slack_merge_prs_file = os.path.join(artifacts_folder, SLACK_MERGE_PRS_FILE)
     with open(slack_merge_prs_file, "w") as f:
