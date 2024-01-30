@@ -1687,6 +1687,9 @@ tasks:
     - incidentfield: Username
       output:
         simple: ${inputs.Username}
+    - incidentfield: Number Of Found Related Alerts
+      output:
+        simple: ${NumOfRelatedAlerts}
     id: "35"
     ignoreworker: false
     isautoswitchedtoquietmode: false
