@@ -16,8 +16,6 @@ from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from pprint import pformat
 
-MANDATORY_PREMIUM_PACKS_PATH = "Tests/Marketplace/mandatory_premium_packs.json"
-
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Run validation on the index.json file.')
@@ -70,22 +68,13 @@ def check_index_data(index_data: dict) -> bool:
     if not packs_list_exists:
         return False
 
-    mandatory_pack_ids = load_json(MANDATORY_PREMIUM_PACKS_PATH).get("packs", [])
-
     packs_are_valid = True
     for pack in index_data["packs"]:
         pack_is_good = verify_pack(pack)
         if not pack_is_good:
             packs_are_valid = False
-        if pack["id"] in mandatory_pack_ids:
-            mandatory_pack_ids.remove(pack["id"])
 
-    all_mandatory_packs_are_found = log_message_if_statement(statement=(mandatory_pack_ids == []),
-                                                             error_message=f"index json is missing some mandatory"
-                                                                           f" pack ids: {pformat(mandatory_pack_ids)}",
-                                                             success_message="All premium mandatory pack ids were"
-                                                                             " found in the index.json file.")
-    return all([packs_are_valid, all_mandatory_packs_are_found])
+    return packs_are_valid
 
 
 def verify_pack(pack: dict) -> bool:

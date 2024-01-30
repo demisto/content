@@ -673,12 +673,6 @@ view: |-
     }
   }
 inputs:
-- key: AutoUpdateCloudTrail
-  value:
-    simple: "no"
-  required: false
-  description: Update AWS CloudTrail automatically?
-  playbookInputQuery:
 - key: policyId
   value:
     complex:
@@ -694,6 +688,25 @@ inputs:
   required: false
   description: Get the Prisma Cloud policy ID.
   playbookInputQuery:
+- key: AutoUpdateCloudTrail
+  value:
+    simple: "no"
+  required: false
+  description: Update AWS CloudTrail automatically?
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - policyId
+  name: Incident Data
+  description: Relevant data regarding the incident.
+- inputs:
+  - AutoUpdateCloudTrail
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)
