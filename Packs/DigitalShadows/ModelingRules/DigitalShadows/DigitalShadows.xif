@@ -6,7 +6,7 @@ alter
 | alter
 	get_approval_state = set_asset_json -> ["approval-state"],
 	get_display_value = set_asset_json -> ["display-value"],
-	get_labels = set_asset_json -> labels[],
+	get_labels = to_string(json_extract_scalar_array(set_asset_json, "$.labels")),
 	check_state = if(state = "unread", "FALSE", state = "open", "FALSE", state = "rejected", "TRUE", state = "resolved", "TRUE", state = "closed", "TRUE"),
 	get_alert_id = if(alert = null, null, alert -> id),
     get_assets_id = if(alert = null, null, set_asset_json -> id),
@@ -38,7 +38,7 @@ alter
 	xdm.event.outcome = if(get_approval_state = "pending", XDM_CONST.OUTCOME_UNKNOWN, get_approval_state = "accepted", XDM_CONST.OUTCOME_SUCCESS, get_approval_state = "rejected", XDM_CONST.OUTCOME_FAILED, null),
 	xdm.event.outcome_reason = get_approval_state,
 	xdm.source.host.hostname = get_display_value,
-	xdm.alert.subcategory = if(get_labels = null, null, to_string(get_labels)),
+	xdm.alert.subcategory = if(get_labels = null, null, get_labels ~= "null|\[\]", null, to_string(get_labels)),
 	xdm.event.operation_sub_type = event_action,
 	xdm.observer.unique_identifier = to_string(ids_object),
 	xdm.alert.risks = coalesce(get_alert_risk_factors, get_incident_risk_factors),
