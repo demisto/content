@@ -19,12 +19,14 @@ This section describes the configuration that needs to be done on a Huawei S Ser
 4. Type the following command to send informational level log messages to the default channel:
     ```<bash>
     info-center source default channel loghost log level informational debug state off trap state off
+    
 5. **Optional:** To verify your Huawei S Series Switch/AR Series Router source configuration, type the command:
     ```<bash>
     display channel loghost
 6. Type the following command to configure the IP address for ***Broker-VM*** as the log host:
     ```<bash>
     info-center loghost <IP address> facility <local>
+
     *\<IP address\>* is the IP address of the Broker-VM.
 
     *\<local\>* is the syslog facility, for example, local0.
