@@ -68,13 +68,11 @@ def next_token_output_dict(outputs_prefix: str, next_token: str | None, page_out
 
 
 def parse_table_metadata(table_metadata_list: list):
-    """Parses the table metadata from the response.
+    """Formats dates in the table metadata from the response.
 
     Args:
-        response (dict): Response from client.
-
-    Returns:
-        List[dict]: Table metadata."""
+        table_metadata_list (list): the raw metadata returned from API.
+    """
     for metadata in table_metadata_list:
         if create_time := metadata.get("CreateTime"):
             metadata["CreateTime"] = create_time.strftime("%Y-%m-%d %H:%M:%S")
