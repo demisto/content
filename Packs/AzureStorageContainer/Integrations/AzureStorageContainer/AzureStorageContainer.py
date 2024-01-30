@@ -383,7 +383,7 @@ def create_container_command(client: Client, args: Dict[str, Any]) -> CommandRes
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get("container_name")
+    container_name = args['container_name']
 
     container_name_regex = "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$"
     # Rules for naming containers can be found here:
@@ -428,7 +428,7 @@ def get_container_properties_command(client: Client, args: Dict[str, Any]) -> Co
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get("container_name")
+    container_name = args['container_name']
 
     response = client.get_container_properties_request(container_name)
 
@@ -473,7 +473,7 @@ def delete_container_command(client: Client, args: Dict[str, Any]) -> CommandRes
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get("container_name")
+    container_name = args['container_name']
 
     client.delete_container_request(container_name)
 
@@ -496,7 +496,7 @@ def list_blobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get("container_name")
+    container_name = args['container_name']
     limit = args.get('limit') or '50'
     prefix = args.get('prefix')
     page = arg_to_number(args.get('page') or '1')
@@ -569,7 +569,7 @@ def create_blob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get("container_name")
+    container_name = args['container_name']
     file_entry_id = args['file_entry_id']
     blob_name = args.get('blob_name')
 
@@ -594,7 +594,7 @@ def update_blob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get("container_name")
+    container_name = args['container_name']
     file_entry_id = args['file_entry_id']
     blob_name = args['blob_name']
 
@@ -619,8 +619,8 @@ def get_blob_command(client: Client, args: Dict[str, Any]) -> fileResult:  # typ
         fileResult: XSOAR File Result.
 
     """
-    container_name = args.get('container_name')
-    blob_name = args.get('blob_name')
+    container_name = args['container_name']
+    blob_name = args['blob_name']
 
     response = client.get_blob_request(container_name, blob_name)
 
@@ -639,7 +639,7 @@ def get_blob_tags_command(client: Client, args: Dict[str, Any]) -> CommandResult
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get("container_name")
+    container_name = args['container_name']
     blob_name = args['blob_name']
 
     response = client.get_blob_tags_request(container_name, blob_name)
@@ -711,7 +711,7 @@ def set_blob_tags_command(client: Client, args: Dict[str, Any]) -> CommandResult
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get("container_name")
+    container_name = args['container_name']
     blob_name = args['blob_name']
     tags = args['tags']
 
@@ -743,7 +743,7 @@ def delete_blob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get("container_name")
+    container_name = args['container_name']
     blob_name = args['blob_name']
 
     client.delete_blob_request(container_name, blob_name)
@@ -783,7 +783,7 @@ def get_blob_properties_command(client: Client, args: Dict[str, Any]) -> Command
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get("container_name")
+    container_name = args['container_name']
     blob_name = args['blob_name']
 
     response = client.get_blob_properties_request(container_name, blob_name)
@@ -829,7 +829,7 @@ def set_blob_properties_command(client: Client, args: Dict[str, Any]) -> Command
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    container_name = args.get("container_name")
+    container_name = args['container_name']
     blob_name = args['blob_name']
     content_type = args.get('content_type')
     content_md5 = args.get('content_md5')
