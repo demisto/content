@@ -63,7 +63,7 @@ alter
     xdm.source.host.mac_addresses = mac_user,
     xdm.source.ipv4 = if(ipv4 != "-" and ipv4 != null, ipv4),
     xdm.source.ipv6 = if(ipv6 != "-" and ipv6 != null, ipv6),
-    xdm.event.outcome = if(result~="[Ss]uccess",XDM_CONST.OUTCOME_SUCCESS, result~="[Ff]ail.*", XDM_CONST.OUTCOME_FAILED,result="User request to offline",XDM_CONST.OUTCOME_PARTIAL),
+    xdm.event.outcome = if(result~="[Ss]uccess" or result~="Idle\scut",XDM_CONST.OUTCOME_SUCCESS, result~="[Ff]ail.*", XDM_CONST.OUTCOME_FAILED,result="User request to offline",XDM_CONST.OUTCOME_PARTIAL),
     xdm.event.outcome_reason = result,
     xdm.source.interface = interface,
     xdm.network.application_protocol = access_type,
