@@ -1,6 +1,7 @@
 import json
 import pytest
 import requests
+import requests_mock
 import demistomock as demisto
 from unittest.mock import MagicMock
 
@@ -458,7 +459,7 @@ TEST_DATA = [
 
 
 @pytest.mark.parametrize('mock_response, file_hash, expected_results', TEST_DATA)
-def test_search_file_command(requests_mock, mock_response, file_hash, expected_results):
+def test_search_file_command(mock_response, file_hash, expected_results):
     """
      Given:
          - A file hash (md5, sha1, sha256).
@@ -485,7 +486,7 @@ def test_search_file_command(requests_mock, mock_response, file_hash, expected_r
 
 @pytest.mark.parametrize(argnames='mock_response, domain',
                          argvalues=[('autofocus_domain_response', 'mail16.amadeus.net')])
-def test_search_domain_command(requests_mock, mock_response, domain):
+def test_search_domain_command(mock_response, domain):
     """
      Given:
          - A domain.
@@ -615,7 +616,7 @@ def test_metrics(mocker):
     mocker.patch.object(demisto, 'args', return_value={'unit42': 'True', 'class': 'Actor', 'retry_on_rate_limit': 'true'})
     mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.9.0', 'buildNumber': '12345'})
     mock_request: MagicMock = mocker.patch.object(requests, 'request', return_value=type(
-        'MockResponse', (), {'json': bucket_info, 'status_code': 503}
+        'MockResponse', (), {'json': lambda: bucket_info, 'status_code': 503}
     ))
     return_results_mock: MagicMock = mocker.patch('AutofocusV2.return_results')
 
