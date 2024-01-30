@@ -6,9 +6,11 @@ import sys
 import argparse
 import base64
 import json
+import os
 import urllib3
 from datetime import datetime
 from create_release import get_changelog_text
+from create_content_pr import SDK_PR_NUMBER_FILE
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -29,6 +31,7 @@ def options_handler():
     parser.add_argument('-b', '--release_branch_name', help='The name of the release branch', required=True)
     parser.add_argument('-ro', '--release_owner', help='Github username of the release owner', required=True)
     parser.add_argument('-d', '--is_draft', help='Is draft pull request')
+    parser.add_argument('--artifacts-folder', help='Artifacts folder to create the files', required=True)
 
     options = parser.parse_args()
     return options
@@ -42,6 +45,7 @@ def main():
     release_branch_name = options.release_branch_name
     is_draft = options.is_draft
     release_owner = options.release_owner
+    artifacts_folder = options.artifacts_folder
 
     if is_draft and is_draft.lower() in ("yes", "true", "y"):
         is_draft = True
@@ -110,6 +114,11 @@ def main():
     pr_url = response.json().get('html_url')
     pr_number = response.json().get('number')
     logging.success(f'The SDK Pull request created successfully! {pr_url}')
+
+    # write the sdk pr number to file
+    sdk_pr_file = os.path.join(artifacts_folder, SDK_PR_NUMBER_FILE)
+    with open(sdk_pr_file, "w") as f:
+        f.write(str(pr_number))
 
     # request review from the owner
     data = {'reviewers': [release_owner]}

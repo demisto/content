@@ -132,12 +132,6 @@ def main():
     with open(changelog_file, "w") as f:
         f.write(str(changelog_text))
 
-    # write the sdk pr number to file
-    sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
-    sdk_pr_file = os.path.join(artifacts_folder, SDK_PR_NUMBER_FILE)
-    with open(sdk_pr_file, "w") as f:
-        f.write(str(sdk_pr.get("number")))
-
     # write the content pr number to file
     content_pr_file = os.path.join(artifacts_folder, CONTENT_PR_NUMBER_FILE)
     with open(content_pr_file, "w") as f:
