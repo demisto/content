@@ -17,12 +17,13 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
+* IsIntegrationAvailable
 * PrintErrorEntry
 
 ### Commands
 
-* xdr-retrieve-file-details
 * xdr-file-retrieve
+* xdr-retrieve-file-details
 
 ## Playbook Inputs
 
