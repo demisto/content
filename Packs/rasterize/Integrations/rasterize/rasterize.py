@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+import logging
 import base64
 import os
 import pychrome
@@ -22,6 +22,9 @@ from pdf2image import convert_from_path
 from PyPDF2 import PdfReader
 
 # region constants and configurations
+
+pypdf_logger = logging.getLogger("PyPDF2")
+pypdf_logger.setLevel(logging.ERROR)  # Supress warnings, which would come out as XSOAR errors while not being errors
 
 # Chrome respects proxy env params
 handle_proxy()
