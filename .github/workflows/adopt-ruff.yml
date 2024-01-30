@@ -19,3 +19,6 @@ jobs:
 
       - name: Run the adopt-ruff action
         uses: ScDor/adopt-ruff@master
+        with:
+          include-preview: False
+
