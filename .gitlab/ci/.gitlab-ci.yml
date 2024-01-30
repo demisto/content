@@ -20,8 +20,6 @@ stages:
   - trigger-nightlies
   - wait-for-build-to-finish
   - release-flow
-  - sdk-flow
-  - content-flow
   - are-jobs-really-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 
