@@ -316,3 +316,4 @@ def test_log_warning():
     import logging
     from rasterize import pypdf_logger
     assert pypdf_logger.level == logging.ERROR
+    assert pypdf_logger.level == logging.ERROR
