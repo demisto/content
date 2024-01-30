@@ -13,6 +13,17 @@ configuration:
   name: credentials
   type: 9
   required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  defaultvalue: Suspicious
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -37,6 +48,11 @@ configuration:
   - All
   required: true
   type: 15
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  type: 0
+  required: false
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -86,10 +102,10 @@ display: GreyNoise Indicator Feed
 name: GreyNoise Indicator Feed
 script:
   commands:
-  - arguments:
+  - arguments: []
     description: Gets the feed indicators.
     name: greynoise-get-indicators
-  dockerimage: demisto/greynoise:1.0.0.83367
+  dockerimage: demisto/greynoise:1.0.0.86382
   feed: true
   runonce: false
   script: '-'
