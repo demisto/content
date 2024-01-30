@@ -99,14 +99,6 @@ tasks:
             value:
               simple: Suspicious
           ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: FileVerdict
-            iscontext: true
-          right:
-            value:
-              simple: Malicious
       - - operator: isEqualString
           left:
             value:
@@ -241,31 +233,13 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '0'
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.GraywareAsMalware
-            iscontext: true
-          right:
-            value:
-              simple: 'False'
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.ShouldRescanBenign
-            iscontext: true
-          right:
-            value:
-              simple: 'True'
-          ignorecase: true
+              simple: "0"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 900,
-          "y": 875
+          "y": 825
         }
       }
     note: false
@@ -275,9 +249,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  '33':
-    id: '33'
+  "33":
+    id: "33"
     taskid: 6b6f4826-2aa2-456a-8587-93f122f1c99e
     type: title
     task:
