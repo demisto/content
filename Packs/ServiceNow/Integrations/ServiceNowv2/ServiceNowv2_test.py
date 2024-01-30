@@ -65,6 +65,7 @@ def test_force_default_url_arg(mocker: MockerFixture, requests_mock: MockerCore)
         - Validate that the api version configured as a parameter was not used in the API request
     """
     url = 'https://test.service-now.com'
+    api_endpoint = '/api/sn_chg_rest/change/standard/dummy_template'
     api_version = '2'
     mocker.patch.object(
         demisto,
@@ -76,7 +77,7 @@ def test_force_default_url_arg(mocker: MockerFixture, requests_mock: MockerCore)
                 'identifier': 'identifier',
                 'password': 'password',
             },
-            'api_version': api_version,
+            'api_version': api_version,  # << We test overriding this value
             'incident_name': None,
             'file_tag_from_service_now': 'FromServiceNow',
             'file_tag_to_service_now': 'ToServiceNow',
@@ -95,9 +96,9 @@ def test_force_default_url_arg(mocker: MockerFixture, requests_mock: MockerCore)
         }
     )
     mocker.patch.object(demisto, 'command', return_value='servicenow-create-co-from-template')
-    requests_mock.post(ANY, json=util_load_json('test_data/create_co_from_template_result.json'))
+    requests_mock.post(f'{url}{api_endpoint}', json=util_load_json('test_data/create_co_from_template_result.json'))
     main()
-    assert api_version not in requests_mock.request_history[0].path
+    assert api_endpoint == requests_mock.request_history[0].path
 
 
 def test_get_server_url():

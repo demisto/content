@@ -1504,7 +1504,7 @@ script:
     - description: Template for creating a standard change request.
       name: template
       required: true
-    - description: When true, the command will use the default api version, and not the one configured in the instance configuration.
+    - description: Whether to force-use the default api version (not versioned), ignoring the API version parameter.
       name: force_default_url
       required: false
       defaultValue: 'false'
