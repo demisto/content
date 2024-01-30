@@ -352,22 +352,25 @@ def get_pipeline_by_commit(commit: ProjectCommit, list_of_pipelines: list[Projec
     return next((pipeline for pipeline in list_of_pipelines if pipeline.sha == commit.id), None)
 
 
-def create_shame_message(current_commit: ProjectCommit,
-                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str, str] | None:
+def create_shame_message(suspicious_commits: list[ProjectCommit],
+                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str] | None:
     """
     Create a shame message for the person in charge of the commit.
     """
-    name, pr = get_person_in_charge(current_commit)
-    if name and pr:
-        if name == CONTENT_BOT:
-            name = get_reviewer(pr)
-        name = get_slack_user_name(name, name_mapping_path)
-        msg = "broke" if pipeline_changed_status else "fixed"
-        color = "danger" if pipeline_changed_status else "good"
-        emoji = ":cry:" if pipeline_changed_status else ":muscle:"
-        return (f"Hi @{name},  You {msg} the build! {emoji} ",
-                f" That was done in this {slack_link(pr,'PR.')}", color)
-    return None
+    message = ""
+    color = ""
+    for commit in suspicious_commits:
+        name, pr = get_person_in_charge(commit)
+        if name and pr:
+            if name == CONTENT_BOT:
+                name = get_reviewer(pr)
+            name = get_slack_user_name(name, name_mapping_path)
+            msg = "broke" if pipeline_changed_status else "fixed"
+            color = "danger" if pipeline_changed_status else "good"
+            emoji = ":cry:" if pipeline_changed_status else ":muscle:"
+            message += f"Hi @{name},  You {msg} the build! {emoji} ,\n That was done in this {slack_link(pr,'PR.')}\n"
+            
+    return (message, color) if message else None
 
 
 def slack_link(url: str, text: str) -> str:
