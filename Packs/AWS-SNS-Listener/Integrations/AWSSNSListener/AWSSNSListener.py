@@ -144,7 +144,7 @@ async def handle_post(request: Request):
 
     # Retrieve the certificate.
     try:
-        certificate = X509.load_cert_string(requests.get(payload['SigningCertURL']).text)  # another request i need to get approved from Andrey Etush
+        certificate = X509.load_cert_string(requests.get(payload['SigningCertURL'], verify=True, proxies=PROXIES).text)  # another request i need to get approved from Andrey Etush
     except Exception as e:
         demisto.error(f'DANF X509 error is: {e}')
         return 'X509 error'
