@@ -1354,13 +1354,13 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.26.0"
+version = "1.25.3"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
 files = [
-    {file = "demisto_sdk-1.26.0-py3-none-any.whl", hash = "sha256:a65d453cc4339cf2e8c41eb6f73d37f317878ce82d83e1f19ca5a30c8d74360c"},
-    {file = "demisto_sdk-1.26.0.tar.gz", hash = "sha256:bd8c7a609822550ce882efeffff5f62d44923fc157ec99a6c93232ac84d4bc4d"},
+    {file = "demisto_sdk-1.25.3-py3-none-any.whl", hash = "sha256:9621f904886b4f6b00df76f68735e8a185902dc5001dde0263a6b0adff6124fd"},
+    {file = "demisto_sdk-1.25.3.tar.gz", hash = "sha256:e82053becfaec528ee03e4869c9f6ce1b73c4f2f115c2465b1f516152e8279b9"},
 ]
 
 [package.dependencies]
@@ -7127,4 +7127,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "1ff0d1d56292b46cb020db60116ef90ee5cfde73582540e7bf7c1c26dc5a1fb3"
+content-hash = "7b453eb1d137cc3ed5c7fe9e1ca289af5e44824a0d40f62cfbc56cbdd9c6911d"
