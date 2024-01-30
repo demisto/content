@@ -27,7 +27,7 @@ configuration:
   type: 15
   section: Connect
   advanced: true
-  required: false
+  required: true
 - display: Role Arn
   name: roleArn
   type: 0
