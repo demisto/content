@@ -18,7 +18,7 @@ if [ "$#" -lt "1" ]; then
   [-r, --reviewer]         Github username of the release owner.
   [-ch, --slack-channel] A Slack channel to send notifications to. Default is dmst-sdk-release.
   [-b, --branch]         The content branch name to run the .gitlab-ci.sdk-release.yml workflow. Default is master branch.
-  [-d, --is-draft]         Whether to create draft release form not. Default is FALSE.
+  [-d, --is-draft]         Whether to create draft release and draft pull requests or not. Default is FALSE.
   [-s, --sdk-branch-name]         From which branch in demisto-sdk we want to create the release. Default is master.
   "
   echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection  TODO
