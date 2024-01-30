@@ -3,7 +3,6 @@ from Utils.get_private_build_status import get_workflow_status
 
 
 GET_MODIFIED_FILES_MOCKS = [['Utils/comment_on_pr.py'],
-                            ['Tests/scripts/validate_premium_packs.sh'],
                             ['Tests/private_build/run_content_tests_private.py']]
 
 DIFF_COMMAND_RES = '.circleci/config.yml\nUtils/file1.py\nUtils/tests/file2.py'
