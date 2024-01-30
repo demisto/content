@@ -1739,7 +1739,7 @@ def test_module():
 
     """
 
-    eiq.lookup_observable("8.8.8.8", "ipv4")  # type: ignore[name-defined]
+    eiq.lookup_observable("8.8.8.8", "ipv4")  # type: ignore[name-defined] # pylint: disable=E0602
 
 
 def ip_command():
@@ -1755,7 +1755,7 @@ def ip_command():
         Reputation of given IPv4
     """
     observable_value = demisto.args()["ip"]
-    response_eiq = eiq.lookup_observable(observable_value, "ipv4")  # type: ignore[name-defined]
+    response_eiq = eiq.lookup_observable(observable_value, "ipv4")  # type: ignore[name-defined] # pylint: disable=E0602
     ip_result = parse_reputation_results(
         response_eiq, observable_value, "ip", IP_THRESHOLD, "IP"
     )
@@ -1770,7 +1770,7 @@ def ip_command():
             }
         ]
 
-        eiq.create_entity(  # type: ignore[name-defined]
+        eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
             observable_dict=observable_dict,
             source_group_name=GROUP_NAME,
             entity_title="XSOAR automatic Sighting for " + observable_value,
@@ -1990,7 +1990,7 @@ def url_command():
         Reputation of given URL
     """
     observable_value = demisto.args()["url"]
-    response_eiq = eiq.lookup_observable(observable_value, "uri")  # type: ignore[name-defined]
+    response_eiq = eiq.lookup_observable(observable_value, "uri")  # type: ignore[name-defined] # pylint: disable=E0602
     url_result = parse_reputation_results(
         response_eiq, observable_value, "url", URL_THRESHOLD, "URL"
     )
@@ -2005,7 +2005,7 @@ def url_command():
             }
         ]
 
-        eiq.create_entity(  # type: ignore[name-defined]
+        eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
             observable_dict=observable_dict,
             source_group_name=GROUP_NAME,
             entity_title="XSOAR automatic Sighting for " + observable_value,
@@ -2029,7 +2029,7 @@ def file_command():
     """
 
     observable_value = demisto.args()["file"]
-    response_eiq = eiq.lookup_observable(  # type: ignore[name-defined]
+    response_eiq = eiq.lookup_observable(  # type: ignore[name-defined] # pylint: disable=E0602
         observable_value, ["hash-md5", "hash-sha1", "hash-sha256", "hash-sha512"]
     )
     file_result = parse_reputation_results(
@@ -2046,7 +2046,7 @@ def file_command():
             }
         ]
 
-        eiq.create_entity(
+        eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
             observable_dict=observable_dict,
             source_group_name=GROUP_NAME,
             entity_title="XSOAR automatic Sighting for " + observable_value,
@@ -2070,7 +2070,7 @@ def email_command():
     """
 
     observable_value = demisto.args()["email"]
-    response_eiq = eiq.lookup_observable(observable_value, "email")
+    response_eiq = eiq.lookup_observable(observable_value, "email")  # type: ignore[name-defined] # pylint: disable=E0602
     email_result = parse_reputation_results(
         response_eiq, observable_value, "email", FILE_THRESHOLD, "Email"
     )
@@ -2085,7 +2085,7 @@ def email_command():
             }
         ]
 
-        eiq.create_entity(
+        eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
             observable_dict=observable_dict,
             source_group_name=GROUP_NAME,
             entity_title="XSOAR automatic Sighting for " + observable_value,
@@ -2108,7 +2108,7 @@ def domain_command():
         Reputation of given domain address
     """
     observable_value = demisto.args()["domain"]
-    response_eiq = eiq.lookup_observable(observable_value, "domain")
+    response_eiq = eiq.lookup_observable(observable_value, "domain")  # type: ignore[name-defined] # pylint: disable=E0602
     domain_result = parse_reputation_results(
         response_eiq, observable_value, "domain", DOMAIN_THRESHOLD, "Domain"
     )
@@ -2123,7 +2123,7 @@ def domain_command():
             }
         ]
 
-        eiq.create_entity(
+        eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
             observable_dict=observable_dict,
             source_group_name=GROUP_NAME,
             entity_title="XSOAR automatic Sighting for " + observable_value,
@@ -2141,7 +2141,7 @@ def get_entity():
     if entity_type == "all":
         entity_type = None
 
-    query_result = eiq.search_entity(
+    query_result = eiq.search_entity(  # type: ignore[name-defined] # pylint: disable=E0602
         entity_value=entity_value,
         entity_type=entity_type,
         observable_value=observable_value,
@@ -2181,7 +2181,7 @@ def get_entity():
 
 def get_entity_by_id():
     entity_id = demisto.args().get("entity_id", None)
-    query_result = eiq.get_entity_by_id(entity_id)
+    query_result = eiq.get_entity_by_id(entity_id)  # type: ignore[name-defined] # pylint: disable=E0602
 
     if type(query_result).__name__ == "Exception" and "Status code:404" in str(
         query_result
@@ -2226,7 +2226,7 @@ def create_sighting():
     observable_list = []
     observable_list.append(observable_record)
 
-    sighting_id = eiq.create_entity(
+    sighting_id = eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
         observable_dict=observable_list,
         source_group_name=GROUP_NAME,
         entity_title=sighting_title,
@@ -2399,7 +2399,7 @@ def create_indicator():
         observable_dictionary,
     )
 
-    indicator_id = eiq.create_entity(
+    indicator_id = eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
         observable_dict=observable_list,
         source_group_name=GROUP_NAME,
         entity_title=indicator_title,
@@ -2442,14 +2442,14 @@ def get_indicators():
     feed_ids = demisto.params().get("feedId", "")
 
     if len(feed_ids) > 0:
-        feeds_info = eiq.get_feed_info(feed_ids)
+        feeds_info = eiq.get_feed_info(feed_ids)  # type: ignore[name-defined] # pylint: disable=E0602
         indicators_to_add: list[dict] = []
 
         for item in feeds_info:
             item["id"] = str(item["id"])
 
             demisto.debug("Feed id {} is starting to fetch.".format(item["id"]))
-            blocks = eiq.get_feed_content_blocks(item)
+            blocks = eiq.get_feed_content_blocks(item)  # type: ignore[name-defined] # pylint: disable=E0602
 
             for block in blocks:
                 demisto.debug(
@@ -2457,7 +2457,7 @@ def get_indicators():
                         str(item["id"]), block
                     )
                 )
-                data_from_block = eiq.download_block_list(block)
+                data_from_block = eiq.download_block_list(block)  # type: ignore[name-defined] # pylint: disable=E0602
                 indicators_to_add = indicators_to_add + export_csv_to_indicators_get(
                     item["id"], data_from_block
                 )
@@ -2534,7 +2534,7 @@ def fetch_indicators():
     feed_ids = demisto.params().get("feedId", "")
 
     if len(feed_ids) > 0:
-        feeds_info = eiq.get_feed_info(feed_ids)
+        feeds_info = eiq.get_feed_info(feed_ids)  # type: ignore[name-defined] # pylint: disable=E0602
         context = demisto.getLastRun()
 
         for item in feeds_info:
@@ -2571,10 +2571,10 @@ def fetch_indicators():
                     "last_ingested": None,
                 }
                 demisto.setLastRun(context)
-                blocks = eiq.get_feed_content_blocks(item, state)
+                blocks = eiq.get_feed_content_blocks(item, state)  # type: ignore[name-defined] # pylint: disable=E0602
             else:
                 state = context[item["id"]]
-                blocks = eiq.get_feed_content_blocks(item, state)
+                blocks = eiq.get_feed_content_blocks(item, state)  # type: ignore[name-defined] # pylint: disable=E0602
 
             demisto.info("Starting Ingestion of feed #{}".format(item["id"]))
 
@@ -2586,7 +2586,7 @@ def fetch_indicators():
                         str(item["id"]), block
                     )
                 )
-                data_from_block = eiq.download_block_list(block)
+                data_from_block = eiq.download_block_list(block)  # type: ignore[name-defined] # pylint: disable=E0602
                 indicators_to_add = indicators_to_add + export_csv_to_indicators(
                     item["id"], data_from_block, flag
                 )
@@ -2672,7 +2672,7 @@ def export_csv_to_indicators(feed_id, text, flag=False):
 def request_get():
     uri = demisto.args().get("uri", "")
 
-    raw_response = eiq.send_api_request("get", uri)
+    raw_response = eiq.send_api_request("get", uri)  # type: ignore[name-defined] # pylint: disable=E0602
     entry_context = {}
     entry_context["URI"] = uri
     entry_context["ReplyStatus"] = str(raw_response.status_code)
@@ -2700,7 +2700,7 @@ def request_post():
     uri = demisto.args().get("uri", "")
     body = json.loads(demisto.args().get("body", "{}"))
 
-    raw_response = eiq.send_api_request("post", uri, data=body)
+    raw_response = eiq.send_api_request("post", uri, data=body)  # type: ignore[name-defined] # pylint: disable=E0602
     entry_context = {}
     entry_context["URI"] = uri
     entry_context["ReplyStatus"] = str(raw_response.status_code)
@@ -2722,7 +2722,7 @@ def request_post():
 def request_delete():
     uri = demisto.args().get("uri", "")
 
-    raw_response = eiq.send_api_request("delete", uri)
+    raw_response = eiq.send_api_request("delete", uri)  # type: ignore[name-defined] # pylint: disable=E0602
     entry_context = {}
     entry_context["URI"] = uri
     entry_context["ReplyStatus"] = str(raw_response.status_code)
@@ -2741,6 +2741,7 @@ def request_delete():
 
 
 """ COMMANDS MANAGER / SWITCH PANEL """
+
 
 def main():
     COMMANDS = {
@@ -2762,7 +2763,7 @@ def main():
     }
 
     try:
-        eiq = EclecticIQ_api(
+        eiq = EclecticIQ_api(  # noqa: F841
             baseurl=SERVER,
             eiq_api_version=API_VERSION,
             username="",
