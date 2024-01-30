@@ -1005,7 +1005,7 @@ def main():
     # fetch params
     max_fetch = arg_to_number(params.get('max_fetch', 50)) or 50
     fetch_query = params.get('fetch_query') or ''
-    first_fetch = params.get('fetch_time', '7 days').strip()
+    first_fetch = params.get('first_fetch', '7 days').strip()
     look_back = arg_to_number(params.get('look_back')) or 1
 
     first_fetch_time = arg_to_datetime(first_fetch)
