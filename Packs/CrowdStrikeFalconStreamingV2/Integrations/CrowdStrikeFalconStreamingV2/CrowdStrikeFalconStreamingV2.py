@@ -268,8 +268,6 @@ class EventStream:
                                         streaming_event = json.loads(stripped_line)
                                         event_metadata = streaming_event.get('metadata', {})
                                         event_creation_time = event_metadata.get('eventCreationTime', 0)
-                                        demisto.debug(f'{streaming_event=} for the line {stripped_line}')
-                                        demisto.debug(f'{event_creation_time=}')
 
                                         if not event_creation_time:
                                             demisto.debug('Could not extract "eventCreationTime" field, using 0 instead. '
