@@ -2,6 +2,10 @@
 <~XSIAM>
 This pack includes Cortex XSIAM content.
 
+## Important Notes
+* This pack is supported for Huawei S Series Switches and Huawei AR Series Routers.
+* Timestamp parsing support is under the assumption that a UTC +0000 format is being used.
+
 ## Configuration on Server Side
 This section describes the configuration that needs to be done on a Huawei S Series Switch or AR Series Router, in order to forward its event logs to Cortex XSIAM Broker VM via syslog.
 
@@ -45,8 +49,5 @@ You can configure the specific vendor and product for this instance.
    | :---          | :---        
    | `Vendor`      | Enter **Huawei**.
    | `Product`     | Enter **Network Devices**.
-
-
-* Timestamp parsing support is under the a assumption that a UTC +0000 format is being used.
 
 </~XSIAM>
