@@ -176,8 +176,8 @@ create-release-pull-request:
   extends:
     - .release-sdk
     - .default-job-settings
-  needs:
-    - slack-notify
+#  needs:
+#    - slack-notify
   when: manual
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
