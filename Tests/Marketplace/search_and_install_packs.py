@@ -39,7 +39,7 @@ PACKS_DIR = "Packs"
 PACK_METADATA_FILE = Pack.PACK_METADATA
 GITLAB_PACK_METADATA_URL = f'{{gitlab_url}}/api/v4/projects/{CONTENT_PROJECT_ID}/repository/files/{PACKS_DIR}%2F{{pack_id}}%2F{PACK_METADATA_FILE}'  # noqa: E501
 
-BATCH_SIZE = 10
+BATCH_SIZE = 1
 
 
 @lru_cache
