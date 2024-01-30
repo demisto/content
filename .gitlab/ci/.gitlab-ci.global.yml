@@ -456,6 +456,7 @@
           fi
         fi
         echo -e  "----------\nAuthenticate to Artifact Registry\n----------"
+        unset DOCKER_AUTH_CONFIG
         gcloud auth configure-docker ${DOCKER_IO_DOMAIN}
         docker login --username ${DOCKERHUB_USER} --password ${DOCKERHUB_PASSWORD}
         docker pull ${DOCKER_IO}/demisto/crypto:1.0.0.83343
