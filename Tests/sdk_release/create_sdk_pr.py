@@ -10,7 +10,6 @@ import os
 import urllib3
 from datetime import datetime
 from create_release import get_changelog_text
-from create_content_pr import SDK_PR_NUMBER_FILE
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -18,9 +17,11 @@ from Tests.scripts.utils import logging_wrapper as logging
 urllib3.disable_warnings()
 
 API_SUFFIX = 'https://api.github.com/repos/demisto/demisto-sdk'
-
 SDK_WORKFLOW_SUFFIX = 'https://github.com/demisto/demisto-sdk/actions/runs/'
-
+SLACK_PR_READY_FILE = 'SDK_PR_READY.txt'
+SDK_PR_NUMBER_FILE = 'SDK_PR.txt'
+SLACK_PR_READY_MESSAGE = "The demisto-sdk release PR is ready and waiting for review," \
+                         " please approve it but don't merge it yet\n{}"
 TIMEOUT = 60 * 60  # 1 hour
 
 
@@ -119,6 +120,12 @@ def main():
     sdk_pr_file = os.path.join(artifacts_folder, SDK_PR_NUMBER_FILE)
     with open(sdk_pr_file, "w") as f:
         f.write(str(pr_number))
+
+    # write the SLACK_PR_READY_FILE
+    slack_message = SLACK_PR_READY_MESSAGE.format(pr_url)
+    slack_message_file = os.path.join(artifacts_folder, SLACK_PR_READY_FILE)
+    with open(slack_message_file, "w") as f:
+        f.write(str(slack_message))
 
     # request review from the owner
     data = {'reviewers': [release_owner]}
