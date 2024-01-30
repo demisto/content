@@ -2203,20 +2203,11 @@ def parse_incident_from_item(item):     # pragma: no cover
                                     not in attached_email_headers
                                     and header.name.lower() != "content-type"
                             ):
-                                if header.name.lower() == "message-id":
-                                    # add the message-id to the headers
-                                    demisto.debug('adding message-id to the headers')
-                                    try:
-                                        attached_email.add_header(header.name, header.value)
-                                    except ValueError as err:
-                                        if "There may be at most" not in str(err):
-                                            raise err
-                                else:
-                                    try:
-                                        attached_email.add_header(header.name, header.value)
-                                    except ValueError as err:
-                                        if "There may be at most" not in str(err):
-                                            raise err
+                                try:
+                                    attached_email.add_header(header.name, header.value)
+                                except ValueError as err:
+                                    if "There may be at most" not in str(err):
+                                        raise err
 
                     attached_email_bytes = attached_email.as_bytes()
                     chardet_detection = chardet.detect(attached_email_bytes)
