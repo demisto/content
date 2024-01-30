@@ -332,7 +332,8 @@ def test_generate_test_payload() -> None:
     assert "<wsse:Username>test_user</wsse:Username>" in payload
     assert (
         '<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">test_pass</wsse:Password>'  # noqa:E501
-        in payload)
+        in payload
+    )
 
 
 def test_convert_to_json_valid_input() -> None:
