@@ -1263,6 +1263,7 @@ class Taxii2FeedClient:
                         continue
                     if result := parse_objects_func[obj_type](obj):
                         indicators.extend(result)
+                        demisto.debug(f"obj modified in {obj.get('modified')}")
                         self.update_last_modified_indicator_date(obj.get("modified"))
 
                     if reached_limit(limit, len(indicators)):
@@ -1273,7 +1274,7 @@ class Taxii2FeedClient:
                 demisto.debug("No Indicator were parsed")
                 raise e
             demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
-        demisto.debug("Finished parsing all objects")
+        demisto.debug(f"Finished parsing {len(indicators)} objects")
         return indicators, relationships_lst
 
     def poll_collection(
