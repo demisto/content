@@ -75,14 +75,13 @@ def main():
     # prepare the inputs for trigger update-demisto-sdk-version workflow
     inputs = {
         'reviewer': reviewer,
-        'release_version': '1.25.3',
+        'release_version': release_branch_name,
         'is_draft': is_draft,
         'release_changes': get_changelog_text(release_branch_name)
     }
 
     data = {
-        # 'ref': 'master',
-        'ref': 'sdk-release',
+        'ref': 'master',
         'inputs': inputs
     }
 
@@ -110,7 +109,7 @@ def main():
     content_pr: dict = {}
     # wait to content pr to create
     while not content_pr and elapsed < TIMEOUT:
-        content_pr = get_pr_from_branch('content', '1.25.3', access_token)
+        content_pr = get_pr_from_branch('content', release_branch_name, access_token)
 
         if not content_pr:
             logging.info('content pull request not created yet')

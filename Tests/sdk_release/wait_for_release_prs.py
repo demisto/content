@@ -100,12 +100,12 @@ def main():
     # check that content pr is merged
     if not content_pr.get('merged'):
         logging.error(f'content pull request not merged yet {content_pr.get("html_url")}')
-        # sys.exit(1)
+        sys.exit(1)
 
     # check that sdk pr is merged
     if not sdk_pr.get('merged'):
         logging.error(f'demisto-sdk pull request not merged yet {sdk_pr.get("html_url")}')
-        # sys.exit(1)
+        sys.exit(1)
 
     logging.success('SDK and content pull requests merged successfully!')
 
