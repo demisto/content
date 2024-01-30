@@ -1,8 +1,6 @@
 import json
-from typing import Any
 import pytest
 import requests
-import requests_mock
 import sys
 import demistomock as demisto
 from unittest.mock import MagicMock
@@ -234,21 +232,20 @@ def test_calculate_dbot_score_file():
     assert score == 3
 
 
-# def test_connection_error(mocker):
-#     import AutofocusV2
+def test_connection_error(mocker):
+    import AutofocusV2
 
-#     RETURN_ERROR_TARGET = 'AutofocusV2.return_error'
-#     BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0'
+    def raise_connection_error(url, **_):
+        assert url == 'https://autofocus.paloaltonetworks.com/api/v1.0/tic'
+        raise requests.exceptions.ConnectionError
 
-#     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=sys.exit)
+    mocker.patch.object(requests, 'request', side_effect=raise_connection_error)
 
-#     with requests_mock.Mocker() as m:
-#         m.get(f'{BASE_URL}/tic', exc=requests.exceptions.ConnectionError)
-
-#         with pytest.raises(SystemExit):
-#             AutofocusV2.search_indicator('ip', '8.8.8.8')
-#         assert 'Error connecting to server. Check your URL/Proxy/Certificate settings' \
-#                in return_error_mock.call_args[0][0]
+    with pytest.raises(
+        AutofocusV2.DemistoException,
+        match='Error connecting to server. Check your URL/Proxy/Certificate settings'
+    ):
+        AutofocusV2.search_indicator('ip', '8.8.8.8')
 
 
 def test_tag_details(mocker):
@@ -461,54 +458,54 @@ TEST_DATA = [
 ]
 
 
-# @pytest.mark.parametrize('mock_response, file_hash, expected_results', TEST_DATA)
-# def test_search_file_command(mock_response, file_hash, expected_results):
-#     """
-#      Given:
-#          - A file hash (md5, sha1, sha256).
-#      When:
-#          - When running search_file_command.
-#      Then:
-#          - Ensure the indicator contains the correct hash type.
-#      """
+@pytest.mark.parametrize('mock_response, file_hash, expected_results', TEST_DATA)
+def test_search_file_command(mock_response, file_hash, expected_results):
+    """
+     Given:
+         - A file hash (md5, sha1, sha256).
+     When:
+         - When running search_file_command.
+     Then:
+         - Ensure the indicator contains the correct hash type.
+     """
 
-#     from AutofocusV2 import search_file_command
+    from AutofocusV2 import search_file_command
 
-#     with open(f'test_data/{mock_response}.json') as f:
-#         response = json.load(f)
+    with open(f'test_data/{mock_response}.json') as f:
+        response = json.load(f)
 
-#     with requests_mock.Mocker() as m:
-#         m.get('https://autofocus.paloaltonetworks.com/api/v1.0/tic', json=response)
-#         results = search_file_command(file_hash, None, False)
+    with requests_mock.Mocker() as m:
+        m.get('https://autofocus.paloaltonetworks.com/api/v1.0/tic', json=response)
+        results = search_file_command(file_hash, None, False)
 
-#     assert results[0].indicator.md5 == expected_results[0]
-#     assert results[0].indicator.sha1 == expected_results[1]
-#     assert results[0].indicator.sha256 == expected_results[2]
-#     assert results[0].outputs.get('IndicatorValue') in expected_results
+    assert results[0].indicator.md5 == expected_results[0]
+    assert results[0].indicator.sha1 == expected_results[1]
+    assert results[0].indicator.sha256 == expected_results[2]
+    assert results[0].outputs.get('IndicatorValue') in expected_results
 
 
-# @pytest.mark.parametrize(argnames='mock_response, domain',
-#                          argvalues=[('autofocus_domain_response', 'mail16.amadeus.net')])
-# def test_search_domain_command(mock_response, domain):
-#     """
-#      Given:
-#          - A domain.
-#      When:
-#          - When running search_domain_command.
-#      Then:
-#          - Ensure the indicator contains the correct domain.
-#      """
+@pytest.mark.parametrize(argnames='mock_response, domain',
+                         argvalues=[('autofocus_domain_response', 'mail16.amadeus.net')])
+def test_search_domain_command(mock_response, domain):
+    """
+     Given:
+         - A domain.
+     When:
+         - When running search_domain_command.
+     Then:
+         - Ensure the indicator contains the correct domain.
+     """
 
-#     from AutofocusV2 import search_domain_command
+    from AutofocusV2 import search_domain_command
 
-#     with open(f'test_data/{mock_response}.json') as f:
-#         response = json.load(f)
+    with open(f'test_data/{mock_response}.json') as f:
+        response = json.load(f)
 
-#     with requests_mock.Mocker() as m:
-#         m.get('https://autofocus.paloaltonetworks.com/api/v1.0/tic', json=response)
-#         results = search_domain_command(domain, None, False)
+    with requests_mock.Mocker() as m:
+        m.get('https://autofocus.paloaltonetworks.com/api/v1.0/tic', json=response)
+        results = search_domain_command(domain, None, False)
 
-#     assert results[0].indicator.domain == domain
+    assert results[0].indicator.domain == domain
 
 
 @pytest.mark.parametrize(argnames='ioc_type, ioc_val',

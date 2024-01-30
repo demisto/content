@@ -305,8 +305,7 @@ def rerun_command_if_required(api_res: dict, retry_on_rate_limit: bool):
         )
     else:
         results = CommandResults(
-            readable_output=(
-                f'Error in API call to AutoFocus:\nMessage: {api_res.get("message")}\n'),
+            readable_output=f'Error in API call to AutoFocus.\nMessage: {api_res.get("message")}',
             entry_type=EntryType.ERROR
         )
     return_results(results)
