@@ -158,3 +158,24 @@ def test_query_values(mocker):
         'value:("test2~.com" "test~.com")',
         'value:("test~.com" "test2~.com")',
     ]
+
+
+def test_no_iocs_returned_from_search_indicators(mocker):
+    """
+    Given:
+        A single indicator value (Test.com) with no cache.
+    When:
+        Running GetIndicatorDBotScoreFromCache script.
+    Then:
+        Ensure no iocs were returned.
+    """
+
+    mocker.patch.object(demisto, "args", return_value={'value': ["Test.com"]})
+    mocker.patch.object(demisto, "searchIndicators", return_value={'iocs': None})
+    mocker.patch.object(GetIndicatorDBotScoreFromCache, "return_results")
+
+    GetIndicatorDBotScoreFromCache.main()
+    return_results_calls = GetIndicatorDBotScoreFromCache.return_results.call_args_list
+    expected_result = set()
+    indicators_results = return_results_calls[0][1]
+    assert {i["Indicator"] for i in indicators_results} == expected_result
