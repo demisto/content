@@ -14,13 +14,14 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
+* AWSAccountHierarchy
 * Set
 
 ### Commands
 
-* aws-ec2-get-ipam-discovered-public-addresses
 * aws-ec2-describe-ipam-resource-discoveries
 * aws-ec2-describe-security-groups
+* aws-ec2-get-ipam-discovered-public-addresses
 * aws-ec2-describe-regions
 * aws-ec2-describe-instances
 
@@ -42,6 +43,7 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- |
 | AWS.EC2.Instances | AWS EC2 information. | unknown |
 | AWS.EC2.SecurityGroups | AWS Security group information. | unknown |
+| AWSHierarchy | AWS account hierarchy information. | unknown |
 
 ## Playbook Image
 
