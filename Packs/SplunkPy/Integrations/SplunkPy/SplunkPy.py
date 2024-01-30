@@ -17,18 +17,18 @@ from splunklib.binding import AuthenticationError, HTTPError, namespace
 
 OUTPUT_MODE_JSON = 'json'  # type of response from splunk-sdk query (json/csv/xml)
 # Define utf8 as default encoding
-params = demisto.params()
+PARAMS = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 DEFAULT_ASSET_ENRICH_TABLES = 'asset_lookup_by_str,asset_lookup_by_cidr'
 DEFAULT_IDENTITY_ENRICH_TABLE = 'identity_lookup_expanded'
-VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
-FETCH_LIMIT = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
+VERIFY_CERTIFICATE = not bool(PARAMS.get('unsecure'))
+FETCH_LIMIT = arg_to_number(PARAMS.get('fetch_limit')) or 50
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 MIRROR_LIMIT = 1000
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
 REPLACE_WITH = '_'
-REPLACE_FLAG = params.get('replaceKeys', False)
-FETCH_TIME = params.get('fetch_time')
+REPLACE_FLAG = PARAMS.get('replaceKeys', False)
+FETCH_TIME = PARAMS.get('fetch_time')
 PROXIES = handle_proxy()
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
@@ -51,7 +51,7 @@ MIRROR_DIRECTION = {
 OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'reviewer', 'disposition']
 
 # =========== Enrichment Mechanism Globals ===========
-ENABLED_ENRICHMENTS = params.get('enabled_enrichments', [])
+ENABLED_ENRICHMENTS = PARAMS.get('enabled_enrichments', [])
 
 DRILLDOWN_ENRICHMENT = 'Drilldown'
 ASSET_ENRICHMENT = 'Asset'
@@ -119,9 +119,8 @@ class UserMappingObject:
         if not record:
 
             demisto.error(
-                "Could not find xsoar user matching splunk's {splunk_user}. "
-                "Consider adding it to the {table_name} lookup.".format(
-                    splunk_user=splunk_user, table_name=self.table_name))
+                f"Could not find xsoar user matching splunk's {splunk_user}. "
+                f"Consider adding it to the {self.table_name} lookup.")
             return ''
 
         # assuming username is unique, so only one record is returned.
@@ -129,8 +128,7 @@ class UserMappingObject:
 
         if not xsoar_user:
             demisto.error(
-                "Xsoar user matching splunk's {splunk_user} is empty. Fix the record in {table_name} lookup.".format(
-                    splunk_user=splunk_user, table_name=self.table_name))
+                f"Xsoar user matching splunk's {splunk_user} is empty. Fix the record in {self.table_name} lookup.")
             return ''
 
         return xsoar_user
@@ -207,7 +205,7 @@ def create_incident_custom_id(incident: dict[str, Any]):
     """
     incident_raw_data = json.loads(incident["rawJSON"])
     fields_to_add = ['_cd', 'index', '_time', '_indextime', '_raw']
-    fields_supplied_by_user = demisto.params().get('unique_id_fields', '')
+    fields_supplied_by_user = PARAMS.get('unique_id_fields', '')
     fields_supplied_by_user = fields_supplied_by_user or ""
     fields_to_add.extend(fields_supplied_by_user.split(','))
 
@@ -226,7 +224,7 @@ def create_incident_custom_id(incident: dict[str, Any]):
 
 
 def extensive_log(message):
-    if demisto.params().get('extensive_logs', False):
+    if PARAMS.get('extensive_logs', False):
         demisto.debug(message)
 
 
@@ -278,13 +276,13 @@ def enforce_look_behind_time(last_run_time, now, look_behind_time):
     return last_run_time
 
 
-def get_fetch_start_times(params, service, last_run_earliest_time, occurence_time_look_behind):
+def get_fetch_start_times(PARAMS, service, last_run_earliest_time, occurence_time_look_behind):
     current_time_for_fetch = datetime.utcnow()
-    if timezone_ := params.get('timezone'):
+    if timezone_ := PARAMS.get('timezone'):
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone_))
 
     now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-    if params.get('useSplunkTime'):
+    if PARAMS.get('useSplunkTime'):
         now = get_current_splunk_time(service)
         current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
         current_time_for_fetch = current_time_in_splunk
@@ -300,9 +298,9 @@ def get_fetch_start_times(params, service, last_run_earliest_time, occurence_tim
     return occured_start_time, now
 
 
-def build_fetch_kwargs(params, occured_start_time, latest_time, search_offset):
-    occurred_start_time_fieldname = params.get("earliest_occurrence_time_fieldname", "earliest_time")
-    occurred_end_time_fieldname = params.get("latest_occurrence_time_fieldname", "latest_time")
+def build_fetch_kwargs(PARAMS, occured_start_time, latest_time, search_offset):
+    occurred_start_time_fieldname = PARAMS.get("earliest_occurrence_time_fieldname", "earliest_time")
+    occurred_end_time_fieldname = PARAMS.get("latest_occurrence_time_fieldname", "latest_time")
 
     extensive_log(f'[SplunkPy] occurred_start_time_fieldname: {occurred_start_time_fieldname}')
     extensive_log(f'[SplunkPy] occured_start_time: {occured_start_time}')
@@ -316,10 +314,10 @@ def build_fetch_kwargs(params, occured_start_time, latest_time, search_offset):
     }
 
 
-def build_fetch_query(params):
-    fetch_query = params['fetchQuery']
+def build_fetch_query(PARAMS):
+    fetch_query = PARAMS['fetchQuery']
 
-    if (extract_fields := params.get('extractFields')):
+    if (extract_fields := PARAMS.get('extractFields')):
         for field in extract_fields.split(','):
             field_trimmed = field.strip()
             fetch_query = f'{fetch_query} | eval {field_trimmed}={field_trimmed}'
@@ -330,7 +328,7 @@ def build_fetch_query(params):
 def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str,
                    cache_object: "Cache" = None, enrich_notables=False):
     last_run_data = demisto.getLastRun()
-    params = demisto.params()
+    PARAMS = PARAMS
     if not last_run_data:
         extensive_log('[SplunkPy] SplunkPy first run')
 
@@ -340,15 +338,15 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
 
     search_offset = last_run_data.get('offset', 0)
 
-    occurred_look_behind = int(params.get('occurrence_look_behind', 15) or 15)
+    occurred_look_behind = int(PARAMS.get('occurrence_look_behind', 15) or 15)
     extensive_log(f'[SplunkPy] occurrence look behind is: {occurred_look_behind}')
 
-    occured_start_time, now = get_fetch_start_times(params, service, last_run_earliest_time, occurred_look_behind)
+    occured_start_time, now = get_fetch_start_times(PARAMS, service, last_run_earliest_time, occurred_look_behind)
 
     # if last_run_latest_time is not None it's mean we are in a batch fetch iteration with offset
     latest_time = last_run_latest_time or now
-    kwargs_oneshot = build_fetch_kwargs(params, occured_start_time, latest_time, search_offset)
-    fetch_query = build_fetch_query(params)
+    kwargs_oneshot = build_fetch_kwargs(PARAMS, occured_start_time, latest_time, search_offset)
+    fetch_query = build_fetch_query(PARAMS)
     last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
     if late_indexed_pagination := last_run_data.get('late_indexed_pagination'):
         # This is for handling the case when events get indexed late, and inserted in pages
@@ -577,7 +575,7 @@ class Notable:
     def create_incident(notable_data, occurred, mapper: UserMappingObject, comment_tag_to_splunk: str,
                         comment_tag_from_splunk: str):
         rule_title, rule_name = '', ''
-        params = demisto.params()
+        PARAMS = PARAMS
         if demisto.get(notable_data, 'rule_title'):
             rule_title = notable_data['rule_title']
         if demisto.get(notable_data, 'rule_name'):
@@ -598,12 +596,12 @@ class Notable:
         notable_data = parse_notable(notable_data)
         notable_data.update({
             'mirror_instance': demisto.integrationInstance(),
-            'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
+            'mirror_direction': MIRROR_DIRECTION.get(PARAMS.get('mirror_direction')),
             'mirror_tags': [comment_tag_from_splunk, comment_tag_to_splunk]
         })
         comment_entries = []
         labels = []
-        if params.get('parseNotableEventsRaw'):
+        if PARAMS.get('parseNotableEventsRaw'):
             for key, value in rawToDict(notable_data['_raw']).items():
                 if not isinstance(value, str):
                     value = convert_to_str(value)
@@ -991,7 +989,7 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
         fields=["user", "src_user"],
         add_backslash=True,
     ):
-        tables = argToList(demisto.params().get('identity_enrich_lookup_tables', DEFAULT_IDENTITY_ENRICH_TABLE))
+        tables = argToList(PARAMS.get('identity_enrich_lookup_tables', DEFAULT_IDENTITY_ENRICH_TABLE))
         query = ''
         for table in tables:
             query += f'| inputlookup {table} where {users}'
@@ -1024,7 +1022,7 @@ def asset_enrichment(service: client.Service, notable_data, num_enrichment_event
         prefix="asset",
         fields=["src", "dest", "src_ip", "dst_ip"],
     ):
-        tables = argToList(demisto.params().get('asset_enrich_lookup_tables', DEFAULT_ASSET_ENRICH_TABLES))
+        tables = argToList(PARAMS.get('asset_enrich_lookup_tables', DEFAULT_ASSET_ENRICH_TABLES))
 
         query = ''
         for table in tables:
@@ -1055,7 +1053,7 @@ def handle_submitted_notables(service: client.Service, incidents, cache_object: 
         cache_object (Cache): The enrichment mechanism cache object
     """
     handled_notables = []
-    if not (enrichment_timeout := arg_to_number(str(demisto.params().get('enrichment_timeout', '5')))):
+    if not (enrichment_timeout := arg_to_number(str(PARAMS.get('enrichment_timeout', '5')))):
         enrichment_timeout = 5
     notables = cache_object.submitted_notables
     total = len(notables)
@@ -1137,7 +1135,7 @@ def submit_notables(service: client.Service, incidents: list, cache_object: Cach
         cache_object (Cache): The enrichment mechanism cache object
     """
     failed_notables, submitted_notables = [], []
-    num_enrichment_events = arg_to_number(str(demisto.params().get('num_enrichment_events', '20')))
+    num_enrichment_events = arg_to_number(str(PARAMS.get('num_enrichment_events', '20')))
     notables = cache_object.not_yet_submitted_notables
     total = len(notables)
     if notables:
@@ -1288,10 +1286,10 @@ def get_last_update_in_splunk_time(last_update):
     last_update_utc_datetime = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
     if not last_update_utc_datetime:
         raise Exception(f'Could not parse the last update time: {last_update}')
-    params = demisto.params()
+    PARAMS = PARAMS
 
     try:
-        splunk_timezone = int(params['timezone'])
+        splunk_timezone = int(PARAMS['timezone'])
     except (KeyError, ValueError, TypeError) as e:
         raise Exception(
             'Cannot mirror incidents when timezone is not configured. Please enter the '
@@ -1443,12 +1441,12 @@ def get_modified_remote_data_command(service: client.Service, args):
     return_results(GetModifiedRemoteDataResponse(modified_incident_ids=modified_notable_ids))
 
 
-def update_remote_system_command(args, params, service: client.Service, auth_token, mapper, comment_tag_to_splunk):
+def update_remote_system_command(args, PARAMS, service: client.Service, auth_token, mapper, comment_tag_to_splunk):
     """ Pushes changes in XSOAR incident into the corresponding notable event in Splunk Server.
 
     Args:
         args (dict): Demisto args
-        params (dict): Demisto params
+        PARAMS (dict): Demisto PARAMS
         service (splunklib.client.Service): Splunk service object
         auth_token (str) - The authentication token to use
         comment_tag_to_splunk (str) - tag of comment from xsaor
@@ -1460,7 +1458,7 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
     delta = parsed_args.delta
     notable_id = parsed_args.remote_incident_id
     entries = parsed_args.entries
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = 'https://' + PARAMS['host'] + ':' + PARAMS['port'] + '/'
     demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta}")
     if parsed_args.incident_changed and delta:
         demisto.debug(
@@ -1469,7 +1467,7 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
 
         changed_data: dict[str, Any] = {field: None for field in OUTGOING_MIRRORED_FIELDS}
         for field in delta:
-            if field == 'owner' and params.get('userMapping', False):
+            if field == 'owner' and PARAMS.get('userMapping', False):
                 new_owner = mapper.get_splunk_user_by_xsoar(delta["owner"]) if mapper.should_map else None
                 if new_owner:
                     changed_data['owner'] = new_owner
@@ -1479,7 +1477,7 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
                 changed_data[field] = delta[field]
 
         # Close notable if relevant
-        if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_notable'):
+        if parsed_args.inc_status == IncidentStatus.DONE and PARAMS.get('close_notable'):
             demisto.debug(f'Closing notable {notable_id}')
             changed_data['status'] = '5'
 
@@ -1553,21 +1551,21 @@ def create_mapping_dict(total_parsed_results, type_field):
     return types_map
 
 
-def get_mapping_fields_command(service: client.Service, mapper, params: dict, comment_tag_to_splunk: str,
+def get_mapping_fields_command(service: client.Service, mapper, PARAMS: dict, comment_tag_to_splunk: str,
                                comment_tag_from_splunk: str):
     # Create the query to get unique objects
     # The logic is identical to the 'fetch_incidents' command
-    type_field = params.get('type_field', 'source')
+    type_field = PARAMS.get('type_field', 'source')
     total_parsed_results = []
     search_offset = demisto.getLastRun().get('offset', 0)
 
     current_time_for_fetch = datetime.utcnow()
 
-    if (timezone_ := params.get('timezone')):
+    if (timezone_ := PARAMS.get('timezone')):
         current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone_))
 
     now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-    if params.get('useSplunkTime'):
+    if PARAMS.get('useSplunkTime'):
         now = get_current_splunk_time(service)
         current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
         current_time_for_fetch = current_time_in_splunk
@@ -1584,9 +1582,9 @@ def get_mapping_fields_command(service: client.Service, mapper, params: dict, co
         'output_mode': OUTPUT_MODE_JSON,
     }
 
-    searchquery_oneshot = params['fetchQuery']
+    searchquery_oneshot = PARAMS['fetchQuery']
 
-    if (extractFields := params.get('extractFields')):
+    if (extractFields := PARAMS.get('extractFields')):
         for field in extractFields.split(','):
             field_trimmed = field.strip()
             searchquery_oneshot = (
@@ -2237,10 +2235,8 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
             search_job = service.job(job_sid)
     num_of_results_from_query = search_job["resultCount"] if search_job else None
 
-    results_limit = float(args.get("event_limit", 100))
-    if results_limit == 0.0:
-        # In Splunk, a result limit of 0 means no limit.
-        results_limit = float("inf")
+    # In Splunk, a result limit of 0 means no limit.
+    results_limit = float(args.get("event_limit", 100)) or float("inf")
     batch_size = int(args.get("batch_limit", 25000))
 
     results_offset = 0
@@ -2386,7 +2382,7 @@ def splunk_submit_event_hec(
         except Exception:
             parsed_fields = {'fields': fields}
 
-    args = assign_params(
+    args = assign_PARAMS(
         event=event,
         host=host,
         fields=parsed_fields,
@@ -2409,9 +2405,9 @@ def splunk_submit_event_hec(
     )
 
 
-def splunk_submit_event_hec_command(params: dict, args: dict):
-    hec_token = params.get('cred_hec_token', {}).get('password') or params.get('hec_token')
-    baseurl = params.get('hec_url')
+def splunk_submit_event_hec_command(PARAMS: dict, args: dict):
+    hec_token = PARAMS.get('cred_hec_token', {}).get('password') or PARAMS.get('hec_token')
+    baseurl = PARAMS.get('hec_url')
     if baseurl is None:
         raise Exception('The HEC URL was not provided.')
 
@@ -2494,7 +2490,7 @@ def splunk_parse_raw_command(args: dict):
     ))
 
 
-def test_module(service: client.Service, params: dict) -> None:
+def test_module(service: client.Service, PARAMS: dict) -> None:
     try:
         # validate connection
         service.info()
@@ -2502,13 +2498,13 @@ def test_module(service: client.Service, params: dict) -> None:
         return_error('Authentication error, please validate your credentials.')
 
     # validate fetch
-    if params.get('isFetch'):
+    if PARAMS.get('isFetch'):
         t = datetime.utcnow() - timedelta(hours=1)
         time = t.strftime(SPLUNK_TIME_FORMAT)
         kwargs = {'count': 1, 'earliest_time': time, 'output_mode': OUTPUT_MODE_JSON}
-        query = params['fetchQuery']
+        query = PARAMS['fetchQuery']
         try:
-            if MIRROR_DIRECTION.get(params.get('mirror_direction', '')) and not params.get('timezone'):
+            if MIRROR_DIRECTION.get(PARAMS.get('mirror_direction', '')) and not PARAMS.get('timezone'):
                 return_error('Cannot mirror incidents when timezone is not configured. Please enter the '
                              'timezone of the Splunk server being used in the integration configuration.')
 
@@ -2517,7 +2513,7 @@ def test_module(service: client.Service, params: dict) -> None:
                     continue
 
                 if EVENT_ID not in item:
-                    if MIRROR_DIRECTION.get(params.get('mirror_direction', '')):
+                    if MIRROR_DIRECTION.get(PARAMS.get('mirror_direction', '')):
                         return_error('Cannot mirror incidents if fetch query does not use the `notable` macro.')
                     if ENABLED_ENRICHMENTS:
                         return_error('When using the enrichment mechanism, an event_id field is needed, and thus, '
@@ -2528,12 +2524,12 @@ def test_module(service: client.Service, params: dict) -> None:
 
         except HTTPError as error:
             return_error(str(error))
-    if params.get('hec_url'):
+    if PARAMS.get('hec_url'):
         headers = {
             'Content-Type': 'application/json'
         }
         try:
-            requests.get(params.get('hec_url', '') + '/services/collector/health', headers=headers,
+            requests.get(PARAMS.get('hec_url', '') + '/services/collector/health', headers=headers,
                          verify=VERIFY_CERTIFICATE)
         except Exception as e:
             return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
@@ -2597,13 +2593,13 @@ def kv_store_collection_create_transform(service: client.Service, args: dict) ->
         fields = f"_key,{','.join(default_keys)}"
 
     transforms = service.confs["transforms"]
-    params = {
+    PARAMS = {
         "external_type": "kvstore",
         "collection": collection_name,
         "namespace": service.namespace,
         "fields_list": fields
     }
-    transforms.create(name=collection_name, **params)
+    transforms.create(name=collection_name, **PARAMS)
     return CommandResults(
         readable_output=f"KV store collection transforms {collection_name} created successfully"
     )
@@ -2790,16 +2786,16 @@ def get_store_data(service: client.Service):
         yield kvstore.data.query(**query)
 
 
-def get_connection_args(params: dict) -> dict:
+def get_connection_args(PARAMS: dict) -> dict:
     """
     This function gets the connection arguments: host, port, app, and verify.
 
     Returns: connection args
     """
-    app = params.get('app', '-')
+    app = PARAMS.get('app', '-')
     return {
-        'host': params['host'],
-        'port': params['port'],
+        'host': PARAMS['host'],
+        'port': PARAMS['port'],
         'app': app or "-",
         'verify': VERIFY_CERTIFICATE,
     }
@@ -2826,21 +2822,21 @@ def handle_message(item: results.Message | dict) -> bool:
 
 def main():  # pragma: no cover
     command = demisto.command()
-    params = demisto.params()
+    PARAMS = PARAMS
     args = demisto.args()
 
     if command == 'splunk-parse-raw':
         splunk_parse_raw_command(args)
         sys.exit(0)
     service = None
-    proxy = argToBoolean(params.get('proxy', False))
+    proxy = argToBoolean(PARAMS.get('proxy', False))
 
-    connection_args = get_connection_args(params)
+    connection_args = get_connection_args(PARAMS)
 
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = 'https://' + PARAMS['host'] + ':' + PARAMS['port'] + '/'
     auth_token = None
-    username = params['authentication']['identifier']
-    password = params['authentication']['password']
+    username = PARAMS['authentication']['identifier']
+    password = PARAMS['authentication']['password']
     if username == '_token':
         connection_args['splunkToken'] = password
         auth_token = password
@@ -2855,8 +2851,8 @@ def main():  # pragma: no cover
     if proxy:
         handle_proxy()
 
-    comment_tag_to_splunk = params.get('comment_tag_to_splunk', 'FROM XSOAR')
-    comment_tag_from_splunk = params.get('comment_tag_from_splunk', 'FROM SPLUNK')
+    comment_tag_to_splunk = PARAMS.get('comment_tag_to_splunk', 'FROM XSOAR')
+    comment_tag_from_splunk = PARAMS.get('comment_tag_from_splunk', 'FROM SPLUNK')
     if comment_tag_to_splunk == comment_tag_from_splunk:
         raise DemistoException('Comment Tag to Splunk and Comment Tag '
                                'from Splunk cannot have the same value.')
@@ -2866,12 +2862,12 @@ def main():  # pragma: no cover
     if (service := client.connect(**connection_args)) is None:
         demisto.error("Could not connect to SplunkPy")
 
-    mapper = UserMappingObject(service, params.get('userMapping'), params.get('user_map_lookup_name'),
-                               params.get('xsoar_user_field'), params.get('splunk_user_field'))
+    mapper = UserMappingObject(service, PARAMS.get('userMapping'), PARAMS.get('user_map_lookup_name'),
+                               PARAMS.get('xsoar_user_field'), PARAMS.get('splunk_user_field'))
 
     # The command command holds the command sent from the user.
     if command == 'test-module':
-        test_module(service, params)
+        test_module(service, PARAMS)
         return_results('ok')
     elif command == 'splunk-reset-enriching-fetch-mechanism':
         reset_enriching_fetch_mechanism()
@@ -2892,7 +2888,7 @@ def main():  # pragma: no cover
         token = get_auth_session_key(service)
         splunk_edit_notable_event_command(base_url, token, auth_token, args)
     elif command == 'splunk-submit-event-hec':
-        splunk_submit_event_hec_command(params, args)
+        splunk_submit_event_hec_command(PARAMS, args)
     elif command == 'splunk-job-status':
         return_results(splunk_job_status(service, args))
     elif command.startswith('splunk-kv-') and service is not None:
@@ -2921,23 +2917,23 @@ def main():  # pragma: no cover
             kv_store_collection_delete_entry(service, args)
 
     elif command == 'get-mapping-fields':
-        if argToBoolean(params.get('use_cim', False)):
+        if argToBoolean(PARAMS.get('use_cim', False)):
             return_results(get_cim_mapping_field_command())
         else:
-            return_results(get_mapping_fields_command(service, mapper, params, comment_tag_to_splunk, comment_tag_from_splunk))
+            return_results(get_mapping_fields_command(service, mapper, PARAMS, comment_tag_to_splunk, comment_tag_from_splunk))
     elif command == 'get-remote-data':
         demisto.info('########### MIRROR IN #############')
         get_remote_data_command(service=service, args=args,
-                                close_incident=params.get('close_incident'),
-                                close_end_statuses=params.get('close_end_status_statuses'),
-                                close_extra_labels=argToList(params.get('close_extra_labels', '')),
+                                close_incident=PARAMS.get('close_incident'),
+                                close_end_statuses=PARAMS.get('close_end_status_statuses'),
+                                close_extra_labels=argToList(PARAMS.get('close_extra_labels', '')),
                                 mapper=mapper,
                                 comment_tag_from_splunk=comment_tag_from_splunk)
     elif command == 'get-modified-remote-data':
         get_modified_remote_data_command(service, args)
     elif command == 'update-remote-system':
         demisto.info('########### MIRROR OUT #############')
-        return_results(update_remote_system_command(args, params, service, auth_token, mapper, comment_tag_to_splunk))
+        return_results(update_remote_system_command(args, PARAMS, service, auth_token, mapper, comment_tag_to_splunk))
     elif command == 'splunk-get-username-by-xsoar-user':
         return_results(mapper.get_splunk_user_by_xsoar_command(args))
     else:
