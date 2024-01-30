@@ -2156,9 +2156,14 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
                               asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str],
                               first_fetch: str, mirror_options: str):
     is_reset_triggered()
-    context_data, _ = get_integration_context_with_version()
-    last_highest_id = demisto.getLastRun().get(LAST_FETCH_KEY) or context_data.get(LAST_FETCH_KEY) or 0
-    last_highest_id = int(last_highest_id)
+    context_data, version = get_integration_context_with_version()
+    last_highest_id_last_run = demisto.getLastRun().get(LAST_FETCH_KEY, 0)
+    last_highest_id_context = context_data.get(LAST_FETCH_KEY, 0)
+    if last_highest_id_last_run != last_highest_id_context:
+        # if there is inconsistency between last run and context, we need to update the context
+        safely_update_context_data(context_data | {LAST_FETCH_KEY: last_highest_id_last_run},
+                                   version, should_update_last_fetch=True)
+    last_highest_id = int(last_highest_id_last_run)
     print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
     incidents, new_highest_id = get_incidents_long_running_execution(
         client=client,
