@@ -1473,7 +1473,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "adapt-docker"
-resolved_reference = "aedcf2b5b51711276b0d925b47e234e6a258656e"
+resolved_reference = "1ca279eb3e10dd6c5480c921d5dc18e49ef18526"
 
 [[package]]
 name = "deprecated"
