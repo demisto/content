@@ -1739,8 +1739,7 @@ def test_module():
 
     """
 
-    eiq.lookup_observable("8.8.8.8", "ipv4")
-    demisto.results("ok")
+    eiq.lookup_observable("8.8.8.8", "ipv4")  # type: ignore[name-defined]
 
 
 def ip_command():
@@ -1756,7 +1755,7 @@ def ip_command():
         Reputation of given IPv4
     """
     observable_value = demisto.args()["ip"]
-    response_eiq = eiq.lookup_observable(observable_value, "ipv4")
+    response_eiq = eiq.lookup_observable(observable_value, "ipv4")  # type: ignore[name-defined]
     ip_result = parse_reputation_results(
         response_eiq, observable_value, "ip", IP_THRESHOLD, "IP"
     )
@@ -1771,7 +1770,7 @@ def ip_command():
             }
         ]
 
-        eiq.create_entity(
+        eiq.create_entity(  # type: ignore[name-defined]
             observable_dict=observable_dict,
             source_group_name=GROUP_NAME,
             entity_title="XSOAR automatic Sighting for " + observable_value,
@@ -1991,7 +1990,7 @@ def url_command():
         Reputation of given URL
     """
     observable_value = demisto.args()["url"]
-    response_eiq = eiq.lookup_observable(observable_value, "uri")
+    response_eiq = eiq.lookup_observable(observable_value, "uri")  # type: ignore[name-defined]
     url_result = parse_reputation_results(
         response_eiq, observable_value, "url", URL_THRESHOLD, "URL"
     )
@@ -2006,7 +2005,7 @@ def url_command():
             }
         ]
 
-        eiq.create_entity(
+        eiq.create_entity(  # type: ignore[name-defined]
             observable_dict=observable_dict,
             source_group_name=GROUP_NAME,
             entity_title="XSOAR automatic Sighting for " + observable_value,
@@ -2030,7 +2029,7 @@ def file_command():
     """
 
     observable_value = demisto.args()["file"]
-    response_eiq = eiq.lookup_observable(
+    response_eiq = eiq.lookup_observable(  # type: ignore[name-defined]
         observable_value, ["hash-md5", "hash-sha1", "hash-sha256", "hash-sha512"]
     )
     file_result = parse_reputation_results(
@@ -2743,38 +2742,42 @@ def request_delete():
 
 """ COMMANDS MANAGER / SWITCH PANEL """
 
+def main():
+    COMMANDS = {
+        "test-module": test_module,
+        "url": url_command,
+        "ip": ip_command,
+        "email": email_command,
+        "file": file_command,
+        "domain": domain_command,
+        "fetch-indicators": fetch_indicators,
+        "eclecticiq-get-entity": get_entity,
+        "eclecticiq-get-entity-by-id": get_entity_by_id,
+        "eclecticiq-create-sighting": create_sighting,
+        "eclecticiq-create-indicator": create_indicator,
+        "eclecticiq-get-indicators": get_indicators,
+        "eclecticiq-request-get": request_get,
+        "eclecticiq-request-post": request_post,
+        "eclecticiq-request-delete": request_delete,
+    }
 
-COMMANDS = {
-    "test-module": test_module,
-    "url": url_command,
-    "ip": ip_command,
-    "email": email_command,
-    "file": file_command,
-    "domain": domain_command,
-    "fetch-indicators": fetch_indicators,
-    "eclecticiq-get-entity": get_entity,
-    "eclecticiq-get-entity-by-id": get_entity_by_id,
-    "eclecticiq-create-sighting": create_sighting,
-    "eclecticiq-create-indicator": create_indicator,
-    "eclecticiq-get-indicators": get_indicators,
-    "eclecticiq-request-get": request_get,
-    "eclecticiq-request-post": request_post,
-    "eclecticiq-request-delete": request_delete,
-}
+    try:
+        eiq = EclecticIQ_api(
+            baseurl=SERVER,
+            eiq_api_version=API_VERSION,
+            username="",
+            password=PASSWORD,
+            verify_ssl=USE_SSL,
+        )
 
-try:
-    eiq = EclecticIQ_api(
-        baseurl=SERVER,
-        eiq_api_version=API_VERSION,
-        username="",
-        password=PASSWORD,
-        verify_ssl=USE_SSL,
-    )
+        LOG(f"Command being called is {demisto.command()}")
+        command_func = COMMANDS.get(demisto.command())
+        if command_func is not None:
+            command_func()
 
-    LOG(f"Command being called is {demisto.command()}")
-    command_func = COMMANDS.get(demisto.command())
-    if command_func is not None:
-        command_func()
+    except Exception as e:
+        return_error(f"Error has occurred in EclecticIQ integration: {str(e)}.")
 
-except Exception as e:
-    return_error(f"Error has occurred in EclecticIQ integration: {str(e)}.")
+
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
