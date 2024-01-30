@@ -8,7 +8,8 @@ import pytz
 import urllib3
 from CommonServerUserPython import *  # noqa
 
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerPython import *
+from demistomock import context  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -2156,6 +2157,8 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
                               first_fetch: str, mirror_options: str):
     is_reset_triggered()
     context_data, _ = get_integration_context_with_version()
+    last_highest_id = demisto.getLastRun().get(LAST_FETCH_KEY) or context_data.get(LAST_FETCH_KEY) or 0
+    last_highest_id = int(last_highest_id)
     print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
     incidents, new_highest_id = get_incidents_long_running_execution(
         client=client,
@@ -2166,7 +2169,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
         events_limit=events_limit,
         ip_enrich=ip_enrich,
         asset_enrich=asset_enrich,
-        last_highest_id=int(context_data.get(LAST_FETCH_KEY, '0')),
+        last_highest_id=last_highest_id,
         incident_type=incident_type,
         mirror_direction=mirror_direction,
         first_fetch=first_fetch,
@@ -2182,6 +2185,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
 
         # if incident creation fails, it'll drop the data and try again in the next iteration
         demisto.createIncidents(incidents)
+        demisto.setLastRun({LAST_FETCH_KEY: new_highest_id})
         safely_update_context_data(context_data=context_data,
                                    version=ctx_version,
                                    should_update_last_fetch=True)
@@ -4228,7 +4232,6 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'long-running-execution':
             validate_integration_context()
-            support_multithreading()
             long_running_execution_command(client, params)
 
         elif command in [
