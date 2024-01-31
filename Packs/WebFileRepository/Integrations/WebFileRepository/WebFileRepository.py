@@ -3516,20 +3516,16 @@ class FullRepository(AttrsRepository):
         :param data_type: The encoding mode of the payload.
         :param data: The data to decode
         """
-        match data_type:
-            case None:
-                yield data.encode()
-
-            case 'base85':
-                yield base64.b85decode(data)
-
-            case 'gzip+base85':
-                with gzip.GzipFile(mode='rb', fileobj=io.BytesIO(base64.b85decode(data))) as g:
-                    while chunk := g.read(4096):
-                        yield chunk
-
-            case _:
-                raise DemistoException(f'Unknown data type: {data_type}')
+        if data_type is None:
+            yield data.encode()
+        elif data_type == 'base85':
+            yield base64.b85decode(data)
+        elif data_type == 'gzip+base85':
+            with gzip.GzipFile(mode='rb', fileobj=io.BytesIO(base64.b85decode(data))) as g:
+                while chunk := g.read(4096):
+                    yield chunk
+        else:
+            raise DemistoException(f'Unknown data type: {data_type}')
 
     @staticmethod
     def new_reader(
