@@ -9,14 +9,11 @@ from markdown import Extension, markdown
 from markdown.inlinepatterns import UnderscoreProcessor, EmStrongItem
 
 ERROR_TEMPLATE = 'ERROR: SendEmailReply - {function_name}: {reason}'
-
-
-# +underline+
-UNDERLINE_RE = r'(\+)([^+]+)\1'
+UNDERLINE_RE = r'(\+)([^+]+)\1'  # +underline+ -> <u>underline</u>
 
 
 class LegacyUnderlineProcessor(UnderscoreProcessor):
-    """Emphasis processor for handling underline."""
+    """Processor for handling underline."""
 
     PATTERNS = [
         EmStrongItem(re.compile(UNDERLINE_RE, re.DOTALL | re.UNICODE), 'single', 'u')
@@ -24,7 +21,7 @@ class LegacyUnderlineProcessor(UnderscoreProcessor):
 
 
 class DemistoExtension(Extension):
-    """ Add legacy_em extension to Markdown class."""
+    """ Add Custom Demisto Markdown support."""
 
     def extendMarkdown(self, md):
         """ Modify inline patterns. """
@@ -456,8 +453,6 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
         return_error("Please add a note")
 
     reply_html_body = format_body(reply_body)
-    demisto.log(f"Reply Body: {reply_body}")
-    demisto.log(f"Reply HTML Body: {reply_html_body}")
     return reply_body, reply_html_body
 
 
@@ -992,10 +987,7 @@ def main():
     email_selected_thread = custom_fields.get('emailselectedthread')
     subject_include_incident_id = argToBoolean(args.get('subject_include_incident_id', False))
     body_type = args.get('bodyType') or args.get('body_type') or 'html'
-    demisto.info(f"SendEmailReply, incident_id: {incident_id}, email_subject: {email_subject}, "
-                 f"body_type: {body_type}, email_to: {email_to_str}, email_body: {new_email_body}")
-
-    argToBoolean(args.get('reputation_calc_async', False))
+    reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
 
     if new_email_attachments:
         new_attachment_names = ', '.join([attachment.get('name', '') for attachment in new_email_attachments])
@@ -1006,7 +998,7 @@ def main():
         # This case is run when replying to an email from the 'Email Communication' layout
         single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_type, attachments, files, email_subject,
                             subject_include_incident_id, email_to_str, service_mail, email_latest_message,
-                            mail_sender_instance, reputation_calc_async=False)
+                            mail_sender_instance, reputation_calc_async)
 
     elif new_thread == 'true':
         # This case is run when using the 'Email Threads' layout to send a new first-contact email message
