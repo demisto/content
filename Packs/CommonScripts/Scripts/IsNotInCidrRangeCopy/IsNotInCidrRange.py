@@ -34,9 +34,7 @@ def main():
     cidr_range_list = argToList(demisto.args()['right'])
 
     try:
-
-        not_in_range = True
-
+        not_in_range_list = []
         for ip in ip_addresses:
 
             try:
@@ -46,12 +44,12 @@ def main():
                 demisto.debug(f'Skipping "{ip}": {e}')
                 continue
 
-            not_in_range = all(ip not in ipaddress.ip_network(cidr) for cidr in cidr_range_list if validate_cidr(cidr))
+            not_in_range_list.append(all(ip not in ipaddress.ip_network(cidr) for cidr in cidr_range_list if validate_cidr(cidr)))
 
-        demisto.results(not_in_range)
+        return_results(all(not_in_range_list))
 
     except Exception as e:
-        return_error(f'Failed to execute IsNotInCidrRange_copy. Error: {str(e)}')
+        return_error(f'Failed to execute IsNotInCidrRange. Error: {str(e)}')
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
