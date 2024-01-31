@@ -359,3 +359,14 @@ def test_rasterize_html_no_internet_access(mocker):
     rasterize_html_command()
     assert mocker_output.call_args.args[0]['File'] == 'email.png'
     assert not mock.called
+
+
+def test_log_warning():
+    """
+    Given   pypdf's logger instance
+    When    checking the logger's leve.
+    Then    make sure the level is ERROR
+    """
+    import logging
+    from rasterize import pypdf_logger
+    assert pypdf_logger.level == logging.ERROR
