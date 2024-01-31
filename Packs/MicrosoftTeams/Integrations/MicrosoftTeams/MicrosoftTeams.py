@@ -502,7 +502,7 @@ def process_mirror_or_unknown_message(message: str) -> dict:
     return create_adaptive_card(body)
 
 
-def is_json(msg):
+def is_json(msg: str) -> bool:
     try:
         json.loads(msg)
     except ValueError:
