@@ -4,9 +4,11 @@ from tempfile import NamedTemporaryFile
 from traceback import format_exc
 from collections import deque
 import uvicorn
-from fastapi import FastAPI, Request
-from fastapi.security import HTTPBasic
+from secrets import compare_digest
+from fastapi import Depends, FastAPI, Request, Response, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKeyHeader
+from fastapi.openapi.models import APIKey
 import requests
 import base64
 from M2Crypto import X509
@@ -102,14 +104,40 @@ def valid_sns_message(sns_payload):
 
 
 @app.post('/')
-async def handle_post(request: Request):
+async def handle_post(request: Request,
+                      credentials: HTTPBasicCredentials = Depends(basic_auth),
+                      token: APIKey = Depends(token_auth)):
     data = ''
-    demisto.error('AWS-SNS-Listener got request')
+    header_name = None
+    request_headers = dict(request.headers)
+
+    credentials_param = demisto.params().get('credentials')
+
+    if credentials_param and (username := credentials_param.get('identifier')):
+        password = credentials_param.get('password', '')
+        auth_failed = False
+        if username.startswith('_header'):
+            header_name = username.split(':')[1]
+            token_auth.model.name = header_name
+            if not token or not compare_digest(token, password):
+                auth_failed = True
+        elif (not credentials) or (not (compare_digest(credentials.username, username)
+                                   and compare_digest(credentials.password, password))):
+            auth_failed = True
+        if auth_failed:
+            secret_header = (header_name or 'Authorization').lower()
+            if secret_header in request_headers:
+                request_headers[secret_header] = '***'
+            demisto.debug(f'Authorization failed - request headers {request_headers}')
+            return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
+
+    secret_header = (header_name or 'Authorization').lower()
+    request_headers.pop(secret_header, None)
+
     try:
-        headers = dict(request.headers)
-        type = headers['x-amz-sns-message-type']
+        type = request_headers['x-amz-sns-message-type']
         payload = await request.json()
-        dump = json.dumps(payload)
+        raw_jason = json.dumps(payload)
     except Exception as e:
         demisto.error(f'Error in request parsing: {e}')
         return f'Error in request parsing: {e}'
@@ -132,7 +160,7 @@ async def handle_post(request: Request):
         incident = {
             'name': payload['Subject'],
             'labels': [],
-            'rawJSON': dump,
+            'rawJSON': raw_jason,
             'occurred': payload['Timestamp'],
             'details': f'ExternalID:{payload["MessageId"]} TopicArn:{payload["TopicArn"]} Message:{message}',
             'type': 'AWS-SNS Notification'
