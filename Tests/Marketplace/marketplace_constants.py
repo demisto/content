@@ -473,7 +473,7 @@ CONTENT_ITEM_NAME_MAPPING = {
     PackFolders.WIZARDS.value: "wizard",
     PackFolders.XDRC_TEMPLATES.value: "xdrctemplate",
     PackFolders.LAYOUT_RULES.value: "layoutrule",
-    PackFolders.ASSETS_MODELING_RULES.value: "assetsmodelingrule"
+    PackFolders.ASSETS_MODELING_RULES.value: "nassetsmodelingrule"
 }
 
 ITEMS_NAMES_TO_DISPLAY_MAPPING = {
