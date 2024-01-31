@@ -51,13 +51,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* IP Enrichment - Generic v2
-* Cloud Threat Hunting - Persistence
-* Cortex XDR - XCloud Token Theft - Set Verdict
-* TIM - Indicator Relationships Analysis
-* Entity Enrichment - Generic v3
 * Cloud Enrichment - Generic
+* Cloud Threat Hunting - Persistence
+* Cloud Credentials Rotation - Generic
 * Cloud Response - Generic
+* TIM - Indicator Relationships Analysis
+* Cortex XDR - XCloud Token Theft - Set Verdict
+* IP Enrichment - Generic v2
+* Entity Enrichment - Generic v3
 
 ### Integrations
 
@@ -66,13 +67,12 @@ This playbook does not use any integrations.
 ### Scripts
 
 * ParseHTMLIndicators
-* LoadJSON
 
 ### Commands
 
-* xdr-get-cloud-original-alerts
-* xdr-update-incident
 * setIncident
+* xdr-update-incident
+* xdr-get-cloud-original-alerts
 * closeInvestigation
 
 ## Playbook Inputs
@@ -90,6 +90,11 @@ This playbook does not use any integrations.
 | autoAccessKeyRemediation | Whether to execute the access key remediation automatically. | False | Optional |
 | autoUserRemediation | Whether to execute the user remediation automatically. | False | Optional |
 | autoBlockIndicators | Whether to execute the indicators remediation automatically. | False | Optional |
+| credentialsRemediationType | The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:<br/><br/>Reset: By entering "Reset" in the input, the playbook will execute password reset.<br/>Supports: AWS, MSGraph Users, GCP and GSuite Admin.<br/><br/>Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.<br/>Supports: GCP, GSuite Admin and MSGraph Users.<br/><br/>Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.<br/>Supports: AWS.<br/><br/>ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP. | Reset | Optional |
+| shouldCloneSA | Whether to clone the compromised SA before putting a deny policy to it.<br/>Supports: AWS.<br/>True/False | False | Optional |
+| AWS-newRoleName | The new role name to assign in the clone service account flow. |  | Optional |
+| AWS-newInstanceProfileName | The new instance profile name to assign in the clone service account flow. |  | Optional |
+| AWS-roleNameToRestrict | If provided, the role will be attached with a deny policy without the compute instance analysis flow. |  | Optional |
 
 ## Playbook Outputs
 
