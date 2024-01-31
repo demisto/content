@@ -5,8 +5,30 @@ import json
 import random
 import re
 from datetime import datetime as dt
+from markdown import Extension, markdown
+from markdown.inlinepatterns import UnderscoreProcessor, EmStrongItem
 
 ERROR_TEMPLATE = 'ERROR: SendEmailReply - {function_name}: {reason}'
+
+
+# +underline+
+UNDERLINE_RE = r'(\+)([^+]+)\1'
+
+
+class LegacyUnderlineProcessor(UnderscoreProcessor):
+    """Emphasis processor for handling underline."""
+
+    PATTERNS = [
+        EmStrongItem(re.compile(UNDERLINE_RE, re.DOTALL | re.UNICODE), 'single', 'u')
+    ]
+
+
+class DemistoExtension(Extension):
+    """ Add legacy_em extension to Markdown class."""
+
+    def extendMarkdown(self, md):
+        """ Modify inline patterns. """
+        md.inlinePatterns.register(LegacyUnderlineProcessor(r'\+'), 'underline', 50)
 
 
 def get_utc_now():
@@ -433,12 +455,10 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
     else:
         return_error("Please add a note")
 
-    try:
-        res = demisto.executeCommand("mdToHtml", {"contextKey": "replyhtmlbody", "text": reply_body})
-        reply_html_body = res[0]['EntryContext']['replyhtmlbody']
-        return reply_body, reply_html_body
-    except Exception:
-        return_error(get_error(res))
+    reply_html_body = format_body(reply_body)
+    demisto.log(f"Reply Body: {reply_body}")
+    demisto.log(f"Reply HTML Body: {reply_html_body}")
+    return reply_body, reply_html_body
 
 
 def get_email_recipients(email_to, email_from, service_mail, mailbox):
@@ -616,13 +636,16 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
-    # Replace newlines with <br> element to preserve line breaks
-    new_email_body = new_email_body.replace('\n', '<br>')
-
-    res = demisto.executeCommand("mdToHtml", {"text": new_email_body})
-    html_body = res[0]['Contents']
-
-    return html_body
+    return markdown(new_email_body,
+                    extensions=[
+                        'mdx_gfm',
+                        'tables',
+                        'fenced_code',
+                        'legacy_em',
+                        'sane_lists',
+                        'nl2br',
+                        DemistoExtension(),
+                    ])
 
 
 def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_type, attachments, files, email_subject,
@@ -970,6 +993,8 @@ def main():
     email_selected_thread = custom_fields.get('emailselectedthread')
     subject_include_incident_id = argToBoolean(args.get('subject_include_incident_id', False))
     body_type = args.get('bodyType') or args.get('body_type') or 'html'
+    demisto.info(f"SendEmailReply, incident_id: {incident_id}, email_subject: {email_subject}, "
+                 f"body_type: {body_type}, email_to: {email_to_str}, email_body: {new_email_body}")
 
     argToBoolean(args.get('reputation_calc_async', False))
 
