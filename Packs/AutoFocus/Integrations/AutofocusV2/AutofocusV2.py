@@ -293,14 +293,14 @@ def return_metrics():
 
 def rerun_command_if_required(api_res: dict, retry_on_rate_limit: bool):
     daily_points_remaining = dict_safe_get(api_res, ('bucket_info', 'daily_points_remaining'), 0)
-    if retry_on_rate_limit and daily_points_remaining:
-        next_run_in_seconds = min(int(dict_safe_get(api_res, ('bucket_info', 'wait_in_seconds'), 70)) + 20, 300)  # type: ignore
+    next_run = int(dict_safe_get(api_res, ('bucket_info', 'wait_in_seconds'), 70, (int, float)))  # type: ignore
+    if retry_on_rate_limit and daily_points_remaining and next_run < 300:
         results = CommandResults(
             readable_output='API Rate limit exceeded, rerunning command.',
             scheduled_command=ScheduledCommand(
                 command=demisto.command(),
                 args=(demisto.args() | {'retry_on_rate_limit': 'false'}),
-                next_run_in_seconds=next_run_in_seconds,
+                next_run_in_seconds=(next_run + 20),
             )
         )
     else:
