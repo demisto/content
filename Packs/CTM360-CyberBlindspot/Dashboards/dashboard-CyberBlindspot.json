@@ -342,7 +342,7 @@
 				"prevName": "Running playbooks",
 				"dataType": "incidents",
 				"widgetType": "number",
-				"query": "runStatus:running playbook:\"CyberBlindspot Default\"",
+				"query": "runStatus:running playbook:\"CyberBlindspot Incident Management\"",
 				"isPredefined": false,
 				"dateRange": {
 					"fromDate": "0001-01-01T00:00:00Z",
