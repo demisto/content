@@ -1789,7 +1789,7 @@ def test_command_download_as_text(mocker, path, encoding, content, results_filen
     )
     settings = WebFileRepository.Settings(params)
     res = WebFileRepository.command_download_as_text(args, settings).to_context()
-    
+
     keys = ('Type', 'ContentFormat', 'Contents', 'EntryContext')
     res = {k: v for k, v in res.items() if k in keys}
 

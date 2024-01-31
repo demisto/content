@@ -2927,7 +2927,7 @@ class Settings:
         """
         return {
             ext if ext == '*' or ext.startswith('.') else f'.{ext}'
-                for ext in text.replace(',', ' ').split()
+            for ext in text.replace(',', ' ').split()
         }
 
     @staticmethod
@@ -3054,8 +3054,8 @@ class Settings:
     ) -> bool:
         return (
             ext in self.__attachment_exts
-            or
-            any(fnmatch.fnmatch(ext, pattern) for pattern in self.__attachment_exts)
+
+            or any(fnmatch.fnmatch(ext, pattern) for pattern in self.__attachment_exts)
         )
 
     @property
@@ -3413,8 +3413,8 @@ class Master:
 
         if (
             self.__total_data_usage is None
-            or
-            self.storage_protection != STORAGE_PROTECTION.SANDBOX
+
+            or self.storage_protection != STORAGE_PROTECTION.SANDBOX
         ):
             self.__total_data_usage = data_usage  # type: ignore
             return data_usage, file_usage
@@ -3865,16 +3865,16 @@ class ServiceHandler:
         hhash_name, phash_name = hash_name
         if (
             params.get('algorithm', 'MD5').upper() != phash_name
-            or
-            not (qnonce := params.get('nonce'))
-            or
-            not (quri := params.get('uri'))
-            or
-            not (qresponse := params.get('response'))
-            or
-            not (qcnonce := params.get('cnonce'))
-            or
-            not (qnc := params.get('nc'))
+
+            or not (qnonce := params.get('nonce'))
+
+            or not (quri := params.get('uri'))
+
+            or not (qresponse := params.get('response'))
+
+            or not (qcnonce := params.get('cnonce'))
+
+            or not (qnc := params.get('nc'))
         ):
             return VALIDATION.FAILURE, set()
 
@@ -4562,8 +4562,8 @@ def command_download_file(
     )
     if (
         not (filename := args.get('save_as'))
-        and
-        (content_disposition := resp.headers.get('Content-Disposition'))
+
+        and (content_disposition := resp.headers.get('Content-Disposition'))
     ):
         cdp = email_parser.Parser().parsestr(
             f'Content-Disposition: {content_disposition}',
@@ -4658,8 +4658,8 @@ def command_archive_zip(
     )
     if (
         not (filename := args.get('save_as'))
-        and
-        (content_disposition := resp.headers.get('Content-Disposition'))
+
+        and (content_disposition := resp.headers.get('Content-Disposition'))
     ):
         cdp = email_parser.Parser().parsestr(
             f'Content-Disposition: {content_disposition}',
