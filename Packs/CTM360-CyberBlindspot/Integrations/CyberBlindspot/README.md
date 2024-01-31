@@ -200,7 +200,18 @@ Fetch details of a single incident from the CyberBlindspot platform.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberBlindspot.RemoteIncident | unknown | Fetched incident from remote server. | 
+| CyberBlindspot.RemoteIncident.id | unknown | Unique ID for the incident record. | 
+| CyberBlindspot.RemoteIncident.brand | unknown | The organization the incident is associated with. | 
+| CyberBlindspot.RemoteIncident.coa | unknown | The course of action to take. | 
+| CyberBlindspot.RemoteIncident.class | unknown | The classification of the incident on remote server. | 
+| CyberBlindspot.RemoteIncident.status | unknown | The current status of the incident on remote server. | 
+| CyberBlindspot.RemoteIncident.severity | unknown | The severity of the incident. | 
+| CyberBlindspot.RemoteIncident.subject | unknown | Asset or title of incident. | 
+| CyberBlindspot.RemoteIncident.type | unknown | Incident type. | 
+| CyberBlindspot.RemoteIncident.remarks | unknown | Remarks about the incident. | 
+| CyberBlindspot.RemoteIncident.created_date | unknown | The creation date of the incident. | 
+| CyberBlindspot.RemoteIncident.updated_date | unknown | The date the incident last got updated. | 
+| CyberBlindspot.RemoteIncident.timestamp | unknown | The timestamp of when the record was created. | 
 
 #### Command example
 ```!ctm360-cbs-incident-details ticketId="COMY24510321162"```
