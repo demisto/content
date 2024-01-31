@@ -2917,17 +2917,23 @@ VALIDATION = Enum('VALIDATION', ['SUCCESS', 'FAILURE', 'NONCE_EXPIRED'])
 
 class Settings:
     @staticmethod
-    def parse_attachment_exts(text: str) -> set[str]:
+    def parse_attachment_exts(
+        text: str
+    ) -> set[str]:
         """ Parse a text to build a attachment extentions.
 
         :param text: A attachment extentions configuration
         :return: A set of extentions.
         """
-        return {ext if ext == '*' or ext.startswith('.') else f'.{ext}'
-                for ext in text.replace(',', ' ').split()}
+        return {
+            ext if ext == '*' or ext.startswith('.') else f'.{ext}'
+                for ext in text.replace(',', ' ').split()
+        }
 
     @staticmethod
-    def parse_mime_types(text: str) -> dict[str, str]:
+    def parse_mime_types(
+        text: str
+    ) -> dict[str, str]:
         """ Parse a text to build a mime type mapping to extensions
 
         :param text: A mapping configuration
@@ -2948,7 +2954,9 @@ class Settings:
         return mapping
 
     @staticmethod
-    def parse_human_size(size: str) -> int | None:
+    def parse_human_size(
+        size: str
+    ) -> int | None:
         """ Parse a human readable size string
 
         :return: Size in bytes
@@ -2960,7 +2968,10 @@ class Settings:
         UNITS = {None: 1, 'B': 1, 'KB': 2**10, 'MB': 2**20, 'GB': 2**30, 'TB': 2**40}
         return int(float(num) * UNITS[unit])
 
-    def __init__(self, params: dict[str, Any]):
+    def __init__(
+        self,
+        params: dict[str, Any]
+    ) -> None:
         max_storage_size_str = params.get('maxStorageSize') or '100 MB'
         if (max_storage_size := Settings.parse_human_size(max_storage_size_str)) is None:
             raise DemistoException('Invalid max storage size')
@@ -2981,10 +2992,12 @@ class Settings:
         self.__public_read_access = argToBoolean(params.get('publicReadAccess', 'true'))
 
         storage_protection = params.get('storageProtection') or 'read/write'
-        self.__storage_protection = {'read/write': STORAGE_PROTECTION.READ_WRITE,
-                                     'read-only': STORAGE_PROTECTION.READ_ONLY,
-                                     'sandbox': STORAGE_PROTECTION.SANDBOX,
-                                     }.get(storage_protection)
+        self.__storage_protection = {
+            'read/write': STORAGE_PROTECTION.READ_WRITE,
+            'read-only': STORAGE_PROTECTION.READ_ONLY,
+            'sandbox': STORAGE_PROTECTION.SANDBOX,
+        }.get(storage_protection)
+
         if self.__storage_protection is None:
             raise DemistoException(f'Invalid storage protection mode: {storage_protection}')
 
@@ -3001,7 +3014,10 @@ class Settings:
         self.__ro_username = creds.get('identifier') or ''
         self.__ro_password = creds.get('password') or ''
 
-    def get_user_password(self, username: str | None) -> str | None:
+    def get_user_password(
+        self,
+        username: str | None
+    ) -> str | None:
         if username == self.__rw_username:
             return self.__rw_password
         elif username == self.__ro_username:
@@ -3009,7 +3025,10 @@ class Settings:
         else:
             return None
 
-    def get_user_permissions(self, username: str | None) -> set[PERMISSION]:
+    def get_user_permissions(
+        self,
+        username: str | None
+    ) -> set[PERMISSION]:
         if username == self.__rw_username:
             return set({PERMISSION.READ, PERMISSION.WRITE})
         elif username == self.__ro_username:
@@ -3017,7 +3036,10 @@ class Settings:
         else:
             return set()
 
-    def get_content_type_from_file_extension(self, ext: str) -> str:
+    def get_content_type_from_file_extension(
+        self,
+        ext: str
+    ) -> str:
         if content_type := self.__ext_to_mimetype.get(ext):
             return content_type
         else:
@@ -3026,59 +3048,88 @@ class Settings:
                     return content_type
         return 'application/octet-stream'
 
-    def is_attachment_file_extension(self, ext: str) -> bool:
-        return ext in self.__attachment_exts or \
+    def is_attachment_file_extension(
+        self,
+        ext: str
+    ) -> bool:
+        return (
+            ext in self.__attachment_exts
+            or
             any(fnmatch.fnmatch(ext, pattern) for pattern in self.__attachment_exts)
+        )
 
     @property
-    def host_port(self) -> int:
+    def host_port(
+        self
+    ) -> int:
         return self.__host_port
 
     @property
-    def docker_port(self) -> int:
+    def docker_port(
+        self
+    ) -> int:
         return self.__docker_port
 
     @property
-    def attachment_exts(self) -> set[str]:
+    def attachment_exts(
+        self
+    ) -> set[str]:
         return self.__attachment_exts
 
     @property
-    def ext_to_mimetype(self) -> dict[str, str]:
+    def ext_to_mimetype(
+        self
+    ) -> dict[str, str]:
         return self.__ext_to_mimetype
 
     @property
-    def max_storage_size(self) -> int:
+    def max_storage_size(
+        self
+    ) -> int:
         return self.__max_storage_size
 
     @property
-    def max_sandbox_size(self) -> int:
+    def max_sandbox_size(
+        self
+    ) -> int:
         return self.__max_sandbox_size
 
     @property
-    def public_read_access(self) -> bool:
+    def public_read_access(
+        self
+    ) -> bool:
         return self.__public_read_access
 
     @property
-    def storage_protection(self) -> STORAGE_PROTECTION:
+    def storage_protection(
+        self
+    ) -> STORAGE_PROTECTION:
         return self.__storage_protection  # type: ignore
 
     @property
-    def auth_method(self) -> str | None:
+    def auth_method(
+        self
+    ) -> str | None:
         return self.__auth_method
 
     @property
-    def rw_user_credentials(self) -> tuple[str, str]:
+    def rw_user_credentials(
+        self
+    ) -> tuple[str, str]:
         return self.__rw_username, self.__rw_password
 
     @property
-    def ro_user_credentials(self) -> tuple[str, str]:
+    def ro_user_credentials(
+        self
+    ) -> tuple[str, str]:
         return self.__ro_username, self.__ro_password
 
 
 SETTINGS = Settings(demisto.params())
 
 
-def get_default_gateway() -> str | None:
+def get_default_gateway(
+) -> str | None:
     """ Get a default gateway address.
 
     :return: A default gateway address found.
@@ -3092,7 +3143,8 @@ def get_default_gateway() -> str | None:
     return None
 
 
-def get_local_ip() -> str:
+def get_local_ip(
+) -> str:
     """ Get an external IP address.
     NOTE: https://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
 
@@ -3109,7 +3161,9 @@ def get_local_ip() -> str:
         return ip
 
 
-def detect_service_ip_port(settings: Settings) -> tuple[str, int]:
+def detect_service_ip_port(
+    settings: Settings
+) -> tuple[str, int]:
     """ Detect the IP:port of the local server
 
     :param settings: The instance settings.
@@ -3129,7 +3183,10 @@ def detect_service_ip_port(settings: Settings) -> tuple[str, int]:
     return server_addr, server_port
 
 
-def new_client(host_port: tuple[str, int], settings: Settings) -> BaseClient:
+def new_client(
+    host_port: tuple[str, int],
+    settings: Settings
+) -> BaseClient:
     """ Create a new BasicClient
 
     :param host_port: The IP and port number
@@ -3152,24 +3209,33 @@ def new_client(host_port: tuple[str, int], settings: Settings) -> BaseClient:
     return BaseClient(f'http://{server_addr}:{server_port}', auth=auth)
 
 
-def to_abs_path(path: str) -> str:
+def to_abs_path(
+    path: str
+) -> str:
     return path if path.startswith(os.sep) else os.sep + path
 
 
-def pretty_size(size: int) -> str:
+def pretty_size(
+    size: int
+) -> str:
     units = ['bytes', 'KB', 'MB', 'GB', 'TB']
     i = min(int(math.log(size or 1, 1024)), len(units) - 1)
     return f'{size / 1024 ** i:.{max(min(1, i), 0)}f} {units[i]}'
 
 
 class NonceManager:
-    def __init__(self):
+    def __init__(
+        self
+    ) -> None:
         self.__cache: dict[str, dict[str, Any]] = {}
         self.__expires = 10
         self.__max_replays = 20
         self.__max_nonce = 4096
 
-    def __remove_expired_oldest(self, now: int | None = None) -> bool:
+    def __remove_expired_oldest(
+        self,
+        now: int | None = None
+    ) -> bool:
         """ Remove the expired oldest nonce from the cache
 
         :param now: The current timestamp
@@ -3192,7 +3258,9 @@ class NonceManager:
         else:
             return False
 
-    def __new_nonce(self) -> tuple[int, str]:
+    def __new_nonce(
+        self
+    ) -> tuple[int, str]:
         """ Create a new nonce
 
         :return: The current timestamp and a new nonce.
@@ -3201,7 +3269,10 @@ class NonceManager:
         nonce = str(now) + ':' + os.urandom(16).hex()
         return now, nonce
 
-    def validate_nonce(self, nonce: str) -> VALIDATION:
+    def validate_nonce(
+        self,
+        nonce: str
+    ) -> VALIDATION:
         """ Check if the nonce is valid.
 
         :param nonce: A nonce to validate.
@@ -3223,7 +3294,9 @@ class NonceManager:
         }
         return VALIDATION.SUCCESS
 
-    def gen_nonce(self) -> str:
+    def gen_nonce(
+        self
+    ) -> str:
         """ Generate a new nonce
 
         :return: A new nonce generated.
@@ -3244,7 +3317,10 @@ NONCE_MANAGER = NonceManager()
 
 
 class Master:
-    def __init__(self, storage_protection: STORAGE_PROTECTION):
+    def __init__(
+        self,
+        storage_protection: STORAGE_PROTECTION
+    ) -> None:
         """ Initialize the master DB manager
 
         :param storage_protection: The storage protection mode
@@ -3254,17 +3330,23 @@ class Master:
         self.__total_data_usage = None
 
     @property
-    def storage_protection(self) -> STORAGE_PROTECTION:
+    def storage_protection(
+        self
+    ) -> STORAGE_PROTECTION:
         return self.__storage_protection
 
-    def reset(self) -> None:
+    def reset(
+        self
+    ) -> None:
         """ Wipe the repository on the normal mode, and Restore the repository on the sandbox mode.
         """
         self.__repo = None
         if self.storage_protection == STORAGE_PROTECTION.READ_WRITE:
             set_integration_context({})
 
-    def get_full_repository(self) -> dict[str, str]:
+    def get_full_repository(
+        self
+    ) -> dict[str, str]:
         """ Get the full context data from the integration context
 
         :return: The integration context.
@@ -3280,7 +3362,9 @@ class Master:
 
         return ctx
 
-    def get_attrs_repository(self) -> dict[str, str]:
+    def get_attrs_repository(
+        self
+    ) -> dict[str, str]:
         """ Get the file entries without payloads from the integration context.
 
         :return: The integration context without file payloads.
@@ -3291,7 +3375,10 @@ class Master:
         else:
             return self.get_full_repository()
 
-    def set_full_repository(self, repo: dict[str, str]) -> None:
+    def set_full_repository(
+        self,
+        repo: dict[str, str]
+    ) -> None:
         """ Set the full context data to the integration context.
 
         :param repo: The integration context.
@@ -3302,7 +3389,9 @@ class Master:
             self.__repo = {k: v for k, v in repo.items() if k.startswith(os.sep)}
             set_integration_context(repo)
 
-    def total_data_usage(self) -> tuple[int, int]:
+    def total_data_usage(
+        self
+    ) -> tuple[int, int]:
         """ Get the data usage
 
         :return: The sum of all the saved sizes in the DB / on the file system.
@@ -3322,8 +3411,11 @@ class Master:
                 else:
                     data_usage += int(attrs.get('saved-size') or 0)
 
-        if self.__total_data_usage is None or \
-           self.storage_protection != STORAGE_PROTECTION.SANDBOX:
+        if (
+            self.__total_data_usage is None
+            or
+            self.storage_protection != STORAGE_PROTECTION.SANDBOX
+        ):
             self.__total_data_usage = data_usage  # type: ignore
             return data_usage, file_usage
         else:
@@ -3334,11 +3426,16 @@ MASTER_REPOSITORY = Master(storage_protection=SETTINGS.storage_protection)
 
 
 class AttrsRepository:
-    def __init__(self, repo: dict[str, str]):
+    def __init__(
+        self,
+        repo: dict[str, str]
+    ) -> None:
         self.repo = repo
 
     @staticmethod
-    def __split_path_components(abs_path: str) -> list[str]:
+    def __split_path_components(
+        abs_path: str
+    ) -> list[str]:
         comps = []
         path = os.path.normpath(to_abs_path(abs_path))
         while path:
@@ -3349,12 +3446,17 @@ class AttrsRepository:
             path = parent
         return list(reversed(comps[:-1]))
 
-    def is_file_type(self, data_type: str | None) -> bool:
+    def is_file_type(
+        self,
+        data_type: str | None
+    ) -> bool:
         return data_type == 'gzip-file'
 
-    def list_file_entries(self,
-                          abs_dir: str,
-                          recursive: bool = False) -> dict[str, dict[str, Any]]:
+    def list_file_entries(
+        self,
+        abs_dir: str,
+        recursive: bool = False
+    ) -> dict[str, dict[str, Any]]:
         """ List the file entries on a directory
 
         :param abs_dir: The directory path in absolute path on which to list file entries
@@ -3405,25 +3507,35 @@ class AttrsRepository:
 
 class FullRepository(AttrsRepository):
     @staticmethod
-    def new_decoder(data_type: str | None, data: str) -> Generator[bytes, None, None]:
+    def new_decoder(
+        data_type: str | None,
+        data: str
+    ) -> Generator[bytes, None, None]:
         """ Decode a file content in chunks
 
         :param data_type: The encoding mode of the payload.
         :param data: The data to decode
         """
-        if data_type is None:
-            yield data.encode()
-        elif data_type == 'base85':
-            yield base64.b85decode(data)
-        elif data_type == 'gzip+base85':
-            with gzip.GzipFile(mode='rb', fileobj=io.BytesIO(base64.b85decode(data))) as g:
-                while chunk := g.read(4096):
-                    yield chunk
-        else:
-            raise DemistoException(f'Unknown data type: {data_type}')
+        match data_type:
+            case None:
+                yield data.encode()
+
+            case 'base85':
+                yield base64.b85decode(data)
+
+            case 'gzip+base85':
+                with gzip.GzipFile(mode='rb', fileobj=io.BytesIO(base64.b85decode(data))) as g:
+                    while chunk := g.read(4096):
+                        yield chunk
+
+            case _:
+                raise DemistoException(f'Unknown data type: {data_type}')
 
     @staticmethod
-    def new_reader(data_type: str | None, path: str) -> Generator[bytes, None, None]:
+    def new_reader(
+        data_type: str | None,
+        path: str
+    ) -> Generator[bytes, None, None]:
         """ Read a file content in chunks
 
         :param data_type: The file type.
@@ -3436,7 +3548,12 @@ class FullRepository(AttrsRepository):
         else:
             raise DemistoException(f'Unknown data type: {data_type}')
 
-    def __init__(self, repo: Master, data_usage_limit: int = 0, file_usage_limit: int = 0):
+    def __init__(
+        self,
+        repo: Master,
+        data_usage_limit: int = 0,
+        file_usage_limit: int = 0
+    ) -> None:
         """ Initialize the instance.
 
         :param repo: The repository
@@ -3449,7 +3566,9 @@ class FullRepository(AttrsRepository):
         self.__file_usage_limit = file_usage_limit
         self.__total_data_usage, self.__total_file_usage = repo.total_data_usage()
 
-    def remove_orphan_entries(self) -> None:
+    def remove_orphan_entries(
+        self
+    ) -> None:
         """ Remove unlinked data entries
         """
         repo = self.repo
@@ -3466,7 +3585,10 @@ class FullRepository(AttrsRepository):
         for data_uuid in (data_uuids - keep_uuids):
             repo.pop(data_uuid, None)
 
-    def remove_entry(self, abs_path: str) -> None:
+    def remove_entry(
+        self,
+        abs_path: str
+    ) -> None:
         """ Remove the file/directory entry
 
         :param abs_path: The path in absolute path
@@ -3496,7 +3618,12 @@ class FullRepository(AttrsRepository):
                 os.unlink(path)
             self.__total_file_usage -= attrs.get('saved-size') or 0
 
-    def save_file(self, abs_dir: str, name: str, data: IO[bytes]) -> dict[str, Any]:
+    def save_file(
+        self,
+        abs_dir: str,
+        name: str,
+        data: IO[bytes]
+    ) -> dict[str, Any]:
         """ Save a file
 
         :param abs_dir: The directory path in absolute path
@@ -3576,7 +3703,12 @@ class FullRepository(AttrsRepository):
                 os.unlink(gtmp.name)
             raise
 
-    def save_files(self, abs_dir: str, files: dict[str, IO[bytes]], extract: bool) -> None:
+    def save_files(
+        self,
+        abs_dir: str,
+        files: dict[str, IO[bytes]],
+        extract: bool
+    ) -> None:
         """ Save files
 
         :param abs_dir: The directory path in absolute path
@@ -3602,8 +3734,10 @@ class FullRepository(AttrsRepository):
             else:
                 self.save_file(abs_dir, name, file)
 
-    def read_file(self, abs_path: str) -> tuple[dict[str, Any],
-                                                Generator[bytes, None, None] | None]:
+    def read_file(
+        self,
+        abs_path: str
+    ) -> tuple[dict[str, Any], Generator[bytes, None, None] | None]:
         """ Read a file content with its attributes
 
         :param abs_path: The file path
@@ -3622,7 +3756,9 @@ class FullRepository(AttrsRepository):
                     return attrs, FullRepository.new_decoder(data_type, data)
         return {}, None
 
-    def archive_zip(self) -> Generator[bytes, None, None]:
+    def archive_zip(
+        self
+    ) -> Generator[bytes, None, None]:
         """ Build a zip stream in chunks by archiving all the files
         """
         repo = self.repo
@@ -3653,7 +3789,9 @@ class FullRepository(AttrsRepository):
             while chunk := ztmp.read(4096):
                 yield chunk
 
-    def commit(self):
+    def commit(
+        self
+    ) -> None:
         """ Write the cache modified by transactions to the master
 
             Note: In the copy-on-write mode, the master is not modified.
@@ -3662,7 +3800,9 @@ class FullRepository(AttrsRepository):
 
 
 @bottle.error(404)
-def error404(error):
+def error404(
+    error
+) -> str:
     return '''
 <!DOCTYPE html>
 <html>
@@ -3679,11 +3819,18 @@ def error404(error):
 
 
 class ServiceHandler:
-    def __init__(self, settings: Settings, master: Master):
+    def __init__(
+        self,
+        settings: Settings,
+        master: Master
+    ) -> None:
         self.__settings = settings
         self.__master = master
 
-    def __validate_basic_auth(self, auth_value) -> set[PERMISSION]:
+    def __validate_basic_auth(
+        self,
+        auth_value: str
+    ) -> set[PERMISSION]:
         """ Checks whether the authentication is valid
 
         :param auth_value: Credentials given to the Authentication header
@@ -3694,11 +3841,13 @@ class ServiceHandler:
             return self.__settings.get_user_permissions(username)
         return set()
 
-    def __validate_digest_auth(self,
-                               auth_value: str,
-                               request_method: str,
-                               realm: str,
-                               hash_name: tuple[str, str]) -> tuple[VALIDATION, set[PERMISSION]]:
+    def __validate_digest_auth(
+        self,
+        auth_value: str,
+        request_method: str,
+        realm: str,
+        hash_name: tuple[str, str]
+    ) -> tuple[VALIDATION, set[PERMISSION]]:
         """ Checks whether the authentication is valid
 
         :param auth_value: Credentials given to the Authentication header
@@ -3714,26 +3863,49 @@ class ServiceHandler:
 
         username = username or ''
         hhash_name, phash_name = hash_name
-        if params.get('algorithm', 'MD5').upper() != phash_name or\
-           not (qnonce := params.get('nonce')) or\
-           not (quri := params.get('uri')) or\
-           not (qresponse := params.get('response')) or\
-           not (qcnonce := params.get('cnonce')) or\
-           not (qnc := params.get('nc')):
+        if (
+            params.get('algorithm', 'MD5').upper() != phash_name
+            or
+            not (qnonce := params.get('nonce'))
+            or
+            not (quri := params.get('uri'))
+            or
+            not (qresponse := params.get('response'))
+            or
+            not (qcnonce := params.get('cnonce'))
+            or
+            not (qnc := params.get('nc'))
+        ):
             return VALIDATION.FAILURE, set()
 
         if (result := NONCE_MANAGER.validate_nonce(qnonce)) != VALIDATION.SUCCESS:
             return result, set()
 
-        a1 = hashlib.new(hhash_name, username.encode() + b':' + realm.encode() + b':' + password.encode()).hexdigest()
-        a2 = hashlib.new(hhash_name, f'{request_method}:{quri}'.encode()).hexdigest()
-        oresponse = hashlib.new(hhash_name, f'{a1}:{qnonce}:{qnc}:{qcnonce}:auth:{a2}'.encode()).hexdigest()
+        a1 = hashlib.new(
+            hhash_name,
+            username.encode() + b':' + realm.encode() + b':' + password.encode()
+        ).hexdigest()
+
+        a2 = hashlib.new(
+            hhash_name,
+            f'{request_method}:{quri}'.encode()
+        ).hexdigest()
+
+        oresponse = hashlib.new(
+            hhash_name,
+            f'{a1}:{qnonce}:{qnc}:{qcnonce}:auth:{a2}'.encode()
+        ).hexdigest()
+
         if qresponse == oresponse:
             return VALIDATION.SUCCESS, self.__settings.get_user_permissions(username)
         else:
             return VALIDATION.FAILURE, set()
 
-    def authenticate(self, request: BaseRequest, permission: PERMISSION) -> HTTPResponse | None:
+    def authenticate(
+        self,
+        request: BaseRequest,
+        permission: PERMISSION
+    ) -> HTTPResponse | None:
         """ Authenticate user to the required permission
 
         :param request: The request data
@@ -3758,43 +3930,48 @@ class ServiceHandler:
         response = HTTPResponse()
         response.status = 401
 
-        if required_auth_method == 'Basic':
-            """
-            Basic Auth
-            """
-            if qauth_method == 'Basic' and \
-               permission in self.__validate_basic_auth(qauth_value):
-                return None
-
-            response.set_header('WWW-Authenticate', f'Basic realm="{realm}"')
-        elif required_auth_method in ('Digest-md5', 'Digest-sha256'):
-            """
-            Digest Auth
-            """
-            _, _, hhash_name = required_auth_method.partition('-')
-            rhash_name = {
-                'md5': 'MD5',
-                'sha256': 'SHA-256',
-            }[hhash_name]
-
-            result = VALIDATION.FAILURE
-            if qauth_method == 'Digest':
-                result, permissions = self.__validate_digest_auth(qauth_value,
-                                                                  request.method,
-                                                                  realm,
-                                                                  (hhash_name, rhash_name))
-                if result == VALIDATION.SUCCESS and permission in permissions:
+        match required_auth_method:
+            case 'Basic':
+                """
+                Basic Auth
+                """
+                if qauth_method == 'Basic' and \
+                   permission in self.__validate_basic_auth(qauth_value):
                     return None
 
-            nonce = NONCE_MANAGER.gen_nonce()
-            auth_value = f'Digest realm="{realm}", nonce="{nonce}", algorithm={rhash_name}, qop=auth'
-            if result == VALIDATION.NONCE_EXPIRED:
-                auth_value += ', stale=true'
-            response.set_header('WWW-Authenticate', auth_value)
+                response.set_header('WWW-Authenticate', f'Basic realm="{realm}"')
+
+            case 'Digest-md5' | 'Digest-sha256':
+                """
+                Digest Auth
+                """
+                _, _, hhash_name = required_auth_method.partition('-')
+                rhash_name = {
+                    'md5': 'MD5',
+                    'sha256': 'SHA-256',
+                }[hhash_name]
+
+                result = VALIDATION.FAILURE
+                if qauth_method == 'Digest':
+                    result, permissions = self.__validate_digest_auth(qauth_value,
+                                                                      request.method,
+                                                                      realm,
+                                                                      (hhash_name, rhash_name))
+                    if result == VALIDATION.SUCCESS and permission in permissions:
+                        return None
+
+                nonce = NONCE_MANAGER.gen_nonce()
+                auth_value = f'Digest realm="{realm}", nonce="{nonce}", algorithm={rhash_name}, qop=auth'
+                if result == VALIDATION.NONCE_EXPIRED:
+                    auth_value += ', stale=true'
+                response.set_header('WWW-Authenticate', auth_value)
 
         return response
 
-    def __handle_get_resource(self, request: BaseRequest) -> HTTPResponse:
+    def __handle_get_resource(
+        self,
+        request: BaseRequest
+    ) -> HTTPResponse:
         global RESOURCES_ZIP
         if RESOURCES_ZIP is None:
             RESOURCES_ZIP = zipfile.ZipFile(io.BytesIO(base64.b64decode(RESOURCES_ZIP_B64)), 'r')
@@ -3814,7 +3991,9 @@ class ServiceHandler:
         response.body = RESOURCES_ZIP.read(request.query.name)
         return response
 
-    def __handle_get_status(self) -> HTTPResponse:
+    def __handle_get_status(
+        self
+    ) -> HTTPResponse:
         data_usage, file_usage = self.__master.total_data_usage()
 
         storage_protection = {
@@ -3837,7 +4016,10 @@ class ServiceHandler:
         response.body = resp
         return response
 
-    def __handle_get_ls(self, request: BaseRequest) -> HTTPResponse:
+    def __handle_get_ls(
+        self,
+        request: BaseRequest
+    ) -> HTTPResponse:
         dirpath = to_abs_path(request.query.dir)
         recursive = argToBoolean(request.query.recursive or 'false')
         repo = AttrsRepository(self.__master.get_attrs_repository())
@@ -3849,7 +4031,10 @@ class ServiceHandler:
         }
         return response
 
-    def __handle_get_download(self, request: BaseRequest) -> HTTPResponse:
+    def __handle_get_download(
+        self,
+        request: BaseRequest
+    ) -> HTTPResponse:
         path = to_abs_path(request.query.path)
         attrs, chunks = FullRepository(self.__master).read_file(to_abs_path(path))
         if chunks is None:
@@ -3863,7 +4048,9 @@ class ServiceHandler:
         response.body = chunks
         return response
 
-    def __handle_get_archive_all(self) -> HTTPResponse:
+    def __handle_get_archive_all(
+        self
+    ) -> HTTPResponse:
         filename = datetime.now(timezone.utc).strftime('archive-%Y%m%d%H%M%S.zip')
 
         response = HTTPResponse()
@@ -3872,26 +4059,36 @@ class ServiceHandler:
         response.body = FullRepository(self.__master).archive_zip()
         return response
 
-    def __handle_post_health(self, request: BaseRequest) -> HTTPResponse | None:
+    def __handle_post_health(
+        self,
+        request: BaseRequest
+    ) -> HTTPResponse | None:
         if permission := request.json.get('permission'):
             return self.authenticate(
                 request,
                 PERMISSION.WRITE if permission == 'write' else PERMISSION.READ)
         return None
 
-    def __handle_post_cleanup(self) -> None:
+    def __handle_post_cleanup(
+        self
+    ) -> None:
         if self.__master.storage_protection == STORAGE_PROTECTION.READ_ONLY:
             raise DemistoException('The storage is read-only mode.')
 
         self.__master.set_full_repository({})
 
-    def __handle_post_reset(self) -> None:
+    def __handle_post_reset(
+        self
+    ) -> None:
         if self.__master.storage_protection == STORAGE_PROTECTION.READ_ONLY:
             raise DemistoException('The storage is read-only mode.')
 
         self.__master.reset()
 
-    def __handle_post_delete(self, request: BaseRequest) -> None:
+    def __handle_post_delete(
+        self,
+        request: BaseRequest
+    ) -> None:
         if self.__master.storage_protection == STORAGE_PROTECTION.READ_ONLY:
             raise DemistoException('The storage is read-only mode.')
 
@@ -3902,7 +4099,10 @@ class ServiceHandler:
             repo.remove_orphan_entries()
             repo.commit()
 
-    def __handle_post_upload(self, request: BaseRequest) -> None:
+    def __handle_post_upload(
+        self,
+        request: BaseRequest
+    ) -> None:
         if self.__master.storage_protection == STORAGE_PROTECTION.READ_ONLY:
             raise DemistoException('The storage is read-only mode.')
 
@@ -3918,7 +4118,10 @@ class ServiceHandler:
             repo.remove_orphan_entries()
             repo.commit()
 
-    def get(self, request: BaseRequest) -> HTTPResponse:
+    def get(
+        self,
+        request: BaseRequest
+    ) -> HTTPResponse:
         if response := self.authenticate(request, PERMISSION.READ):
             return response
 
@@ -3942,7 +4145,11 @@ class ServiceHandler:
             response.body = HTML_MAIN
             return response
 
-    def get_file(self, request: BaseRequest, path: str) -> HTTPResponse:
+    def get_file(
+        self,
+        request: BaseRequest,
+        path: str
+    ) -> HTTPResponse:
         if response := self.authenticate(request, PERMISSION.READ):
             return response
 
@@ -3962,29 +4169,37 @@ class ServiceHandler:
         response.body = chunks
         return response
 
-    def post(self, request: BaseRequest) -> HTTPResponse:
+    def post(
+        self,
+        request: BaseRequest
+    ) -> HTTPResponse:
         response = HTTPResponse()
         response.content_type = 'application/json'
         try:
             if request.content_type == 'application/json':
                 q = isinstance(request.json, dict) and request.json.get('q')
-                if q == 'health':
-                    if resp := self.__handle_post_health(request):
-                        return resp
-                elif q == 'cleanup':
-                    if resp := self.authenticate(request, PERMISSION.WRITE):
-                        return resp
-                    self.__handle_post_cleanup()
-                elif q == 'reset':
-                    if resp := self.authenticate(request, PERMISSION.WRITE):
-                        return resp
-                    self.__handle_post_reset()
-                elif q == 'delete':
-                    if resp := self.authenticate(request, PERMISSION.WRITE):
-                        return resp
-                    self.__handle_post_delete(request)
-                else:
-                    raise DemistoException('Unknown request')
+                match q:
+                    case 'health':
+                        if resp := self.__handle_post_health(request):
+                            return resp
+
+                    case 'cleanup':
+                        if resp := self.authenticate(request, PERMISSION.WRITE):
+                            return resp
+                        self.__handle_post_cleanup()
+
+                    case 'reset':
+                        if resp := self.authenticate(request, PERMISSION.WRITE):
+                            return resp
+                        self.__handle_post_reset()
+
+                    case 'delete':
+                        if resp := self.authenticate(request, PERMISSION.WRITE):
+                            return resp
+                        self.__handle_post_delete(request)
+
+                    case _:
+                        raise DemistoException('Unknown request')
             else:
                 if request.forms.q == 'upload':
                     if resp := self.authenticate(request, PERMISSION.WRITE):
@@ -4000,29 +4215,39 @@ class ServiceHandler:
 
 
 @bottle.route('/<path:path>', method='GET')
-def process_download_file(path):
+def process_download_file(
+    path
+):
     handler = ServiceHandler(settings=SETTINGS, master=MASTER_REPOSITORY)
     return handler.get_file(bottle.request, path)
 
 
 @bottle.route('/', method='POST')
-def process_root_post():
+def process_root_post(
+):
     handler = ServiceHandler(settings=SETTINGS, master=MASTER_REPOSITORY)
     return handler.post(bottle.request)
 
 
 @bottle.route('/', method='GET')
-def process_root_get():
+def process_root_get(
+):
     handler = ServiceHandler(settings=SETTINGS, master=MASTER_REPOSITORY)
     return handler.get(bottle.request)
 
 
-def run_long_running(settings: Settings, is_test: bool = False):
+def run_long_running(
+    settings: Settings,
+    is_test: bool = False
+) -> None:
     if not is_test:
         bottle.run(host='0.0.0.0', port=settings.docker_port, debug=True)
 
 
-def test_module(args: dict[str, str], settings: Settings) -> str:
+def test_module(
+    args: dict[str, str],
+    settings: Settings
+) -> str:
     """
     Validates:
     """
@@ -4030,7 +4255,10 @@ def test_module(args: dict[str, str], settings: Settings) -> str:
     return 'ok'
 
 
-def command_status(args: dict[str, str], settings: Settings) -> CommandResults:
+def command_status(
+    args: dict[str, str],
+    settings: Settings
+) -> CommandResults:
     """ Get the service status
 
     :param args: The parameters which were given to the command.
@@ -4068,41 +4296,59 @@ def command_status(args: dict[str, str], settings: Settings) -> CommandResults:
     return CommandResults(
         outputs_prefix='WebFileRepository.Status',
         outputs=outputs,
-        readable_output=tblToMd('Service Status', readable_outputs, headers=readable_outputs.keys()),
-        raw_response=outputs)
+        readable_output=tblToMd(
+            'Service Status',
+            readable_outputs,
+            headers=readable_outputs.keys()
+        ),
+        raw_response=outputs
+    )
 
 
-def command_cleanup(args: dict[str, str], settings: Settings) -> str:
+def command_cleanup(
+    args: dict[str, str],
+    settings: Settings
+) -> str:
     """ Remove all the files from the repository
 
     :param args: The parameters which were given to the command.
     :param settings: The instance settings.
     """
     client = new_client(detect_service_ip_port(settings), settings)
-    resp = client._http_request('POST',
-                                json_data={'q': 'cleanup'},
-                                raise_on_status=True)
+    resp = client._http_request(
+        'POST',
+        json_data={'q': 'cleanup'},
+        raise_on_status=True
+    )
     if not resp.get('success'):
         raise ValueError(f'Failed to clean up entries: {resp.get("message")}')
     return 'Done.'
 
 
-def command_reset(args: dict[str, str], settings: Settings) -> str:
+def command_reset(
+    args: dict[str, str],
+    settings: Settings
+) -> str:
     """ Reset the repostiory data
 
     :param args: The parameters which were given to the command.
     :param settings: The instance settings.
     """
     client = new_client(detect_service_ip_port(settings), settings)
-    resp = client._http_request('POST',
-                                json_data={'q': 'reset'},
-                                raise_on_status=True)
+    resp = client._http_request(
+        'POST',
+        json_data={'q': 'reset'},
+        raise_on_status=True
+    )
     if not resp.get('success'):
         raise ValueError(f'Failed to reset the repository: {resp.get("message")}')
     return 'Done.'
 
 
-def command_upload_as_file(args: dict[str, str], settings: Settings) -> str:
+def command_upload_as_file(
+    args: dict[str, str],
+    settings: Settings
+) -> str:
     """ Upload data as a file
 
     :param args: The parameters which were given to the command.
@@ -4135,7 +4381,10 @@ def command_upload_as_file(args: dict[str, str], settings: Settings) -> str:
     return 'Done.'
 
 
-def command_upload_file(args: dict[str, str], settings: Settings) -> str:
+def command_upload_file(
+    args: dict[str, str],
+    settings: Settings
+) -> str:
     """ Upload a file
 
     :param args: The parameters which were given to the command.
@@ -4157,13 +4406,21 @@ def command_upload_file(args: dict[str, str], settings: Settings) -> str:
         dir=args.get('upload_directory', '/'),
         extract=args.get('extract_archive', 'false'),
     )
-    resp = client._http_request('POST', data=data, files=files, raise_on_status=True)
+    resp = client._http_request(
+        'POST',
+        data=data,
+        files=files,
+        raise_on_status=True
+    )
     if not resp.get('success'):
         raise ValueError(f'Failed to upload a file: {resp.get("message")}')
     return 'Done.'
 
 
-def command_upload_files(args: dict[str, str], settings: Settings) -> str:
+def command_upload_files(
+    args: dict[str, str],
+    settings: Settings
+) -> str:
     """ Upload files
 
     :param args: The parameters which were given to the command.
@@ -4184,22 +4441,32 @@ def command_upload_files(args: dict[str, str], settings: Settings) -> str:
         dir=args.get('upload_directory', '/'),
         extract=args.get('extract_archive', 'false'),
     )
-    resp = client._http_request('POST', data=data, files=files, raise_on_status=True)
+    resp = client._http_request(
+        'POST',
+        data=data,
+        files=files,
+        raise_on_status=True
+    )
     if not resp.get('success'):
         raise ValueError(f'Failed to upload files: {resp.get("message")}')
     return 'Done.'
 
 
-def command_list_files(args: dict[str, str], settings: Settings) -> CommandResults:
+def command_list_files(
+    args: dict[str, str],
+    settings: Settings
+) -> CommandResults:
     """ List file entries in the repository
 
     :param args: The parameters which were given to the command.
     :param settings: The instance settings.
     """
     class __MappingValue:
-        def __init__(self,
-                     readable_value: Callable[[Any], Any],
-                     context_value: Callable[[Any], Any]):
+        def __init__(
+            self,
+            readable_value: Callable[[Any], Any],
+            context_value: Callable[[Any], Any]
+        ) -> None:
             self.readable_value = readable_value
             self.context_value = context_value
 
@@ -4209,7 +4476,11 @@ def command_list_files(args: dict[str, str], settings: Settings) -> CommandResul
         recursive=args.get('recursive', 'false')
     )
     client = new_client(detect_service_ip_port(settings), settings)
-    resp = client._http_request('GET', params=query_params, raise_on_status=True)
+    resp = client._http_request(
+        'GET',
+        params=query_params,
+        raise_on_status=True
+    )
     ents = resp.get('data')
     if not isinstance(ents, list):
         raise ValueError('Failed to list file entries')
@@ -4224,11 +4495,15 @@ def command_list_files(args: dict[str, str], settings: Settings) -> CommandResul
             lambda x: datetime.fromtimestamp(int(x or 0), timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC'),
             lambda x: datetime.fromtimestamp(int(x or 0), timezone.utc).isoformat()),
     }
-
-    outputs = [{camelize_string(k, '-'): v.context_value(ent[k]) for k, v in mapping.items()} for ent in file_ents]
+    outputs = [
+        {
+            camelize_string(k, '-'): v.context_value(ent[k])
+            for k, v in mapping.items()
+        } for ent in file_ents
+    ]
 
     return CommandResults(
-        outputs_prefix='WebFileRepository.Files',
+        outputs_prefix='WebFileRepository.Files(val.Path === obj.Path)',
         outputs=outputs,
         readable_output=tblToMd(
             'File List',
@@ -4236,28 +4511,37 @@ def command_list_files(args: dict[str, str], settings: Settings) -> CommandResul
             headers=mapping.keys(),
             headerTransform=lambda x: x.replace('-', ' ').title()
         ),
-        raw_response=file_ents)
+        raw_response=file_ents
+    )
 
 
-def command_remove_files(args: dict[str, str], settings: Settings) -> str:
+def command_remove_files(
+    args: dict[str, str],
+    settings: Settings
+) -> str:
     """ Remove files from the repository
 
     :param args: The parameters which were given to the command.
     :param settings: The instance settings.
     """
     client = new_client(detect_service_ip_port(settings), settings)
-    resp = client._http_request('POST',
-                                json_data={
-                                    'q': 'delete',
-                                    'path': argToList(args.get('paths', []))
-                                },
-                                raise_on_status=True)
+    resp = client._http_request(
+        'POST',
+        json_data={
+            'q': 'delete',
+            'path': argToList(args.get('paths', []))
+        },
+        raise_on_status=True
+    )
     if not resp.get('success'):
         raise ValueError(f'Failed to remove files: {resp.get("message")}')
     return 'Done.'
 
 
-def command_download_file(args: dict[str, str], settings: Settings) -> dict[str, Any]:
+def command_download_file(
+    args: dict[str, str],
+    settings: Settings
+) -> dict[str, Any]:
     """ Download a file from the repository
 
     :param args: The parameters which were given to the command.
@@ -4267,35 +4551,120 @@ def command_download_file(args: dict[str, str], settings: Settings) -> dict[str,
         raise DemistoException('A file path is required.')
 
     client = new_client(detect_service_ip_port(settings), settings)
-    resp = client._http_request('GET',
-                                params={
-                                    'q': 'download',
-                                    'path': path
-                                },
-                                raise_on_status=True,
-                                resp_type='response')
-
-    if not (filename := args.get('save_as')) and (content_disposition := resp.headers.get('Content-Disposition')):
-        cdp = email_parser.Parser().parsestr(f'Content-Disposition: {content_disposition}', headersonly=True)
+    resp = client._http_request(
+        'GET',
+        params={
+            'q': 'download',
+            'path': path
+        },
+        raise_on_status=True,
+        resp_type='response'
+    )
+    if (
+        not (filename := args.get('save_as'))
+        and
+        (content_disposition := resp.headers.get('Content-Disposition'))
+    ):
+        cdp = email_parser.Parser().parsestr(
+            f'Content-Disposition: {content_disposition}',
+            headersonly=True
+        )
         filename = cdp.get_filename()
 
     return fileResult(filename or str(uuid.uuid4()), resp.content)
 
 
-def command_archive_zip(args: dict[str, str], settings: Settings) -> dict[str, Any]:
+def command_download_as_text(
+    args: dict[str, str],
+    settings: Settings
+) -> CommandResults:
+    """ Download a file from the repository, and set the data to the context
+
+    :param args: The parameters which were given to the command.
+    :param settings: The instance settings.
+    """
+    if not (path := args.get('path')):
+        raise DemistoException('A file path is required.')
+
+    client = new_client(detect_service_ip_port(settings), settings)
+    resp = client._http_request(
+        'GET',
+        params={
+            'q': 'download',
+            'path': path
+        },
+        raise_on_status=True,
+        resp_type='response'
+    )
+    encoding = args.get('encoding', 'utf-8')
+    match encoding:
+        case 'utf-8':
+            text = resp.content.decode(encoding)
+
+        case 'base64':
+            text = base64.b64encode(resp.content).decode('utf-8')
+
+        case _:
+            raise ValueError(f'Invalid encoding name: {encoding}')
+
+    raw_response = {
+        'path': os.path.normpath(path if path.startswith('/') else '/' + path),
+        'name': os.path.basename(path),
+        'data': text,
+        'size': len(resp.content),
+        'encoding': encoding
+    }
+    outputs = {camelize_string(k, '-'): v for k, v in raw_response.items()}
+
+    if encoding not in ('base64'):
+        readable_output = (
+            f'### {os.path.basename(path)}\n'
+            '```\n'
+            f'{text}\n'
+            '```\n'
+        )
+    else:
+        readable_output = tblToMd(
+            os.path.basename(path),
+            {
+                'Path': raw_response['path'],
+                'Size': pretty_size(len(resp.content))
+            }
+        )
+
+    return CommandResults(
+        outputs_prefix='WebFileRepository.Files(val.Path === obj.Path)',
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=raw_response
+    )
+
+
+def command_archive_zip(
+    args: dict[str, str],
+    settings: Settings
+) -> dict[str, Any]:
     """ Archive all the files into a zip file
 
     :param args: The parameters which were given to the command.
     :param settings: The instance settings.
     """
     client = new_client(detect_service_ip_port(settings), settings)
-    resp = client._http_request('GET',
-                                params={'q': 'archive-all'},
-                                raise_on_status=True,
-                                resp_type='response')
-
-    if not (filename := args.get('save_as')) and (content_disposition := resp.headers.get('Content-Disposition')):
-        cdp = email_parser.Parser().parsestr(f'Content-Disposition: {content_disposition}', headersonly=True)
+    resp = client._http_request(
+        'GET',
+        params={'q': 'archive-all'},
+        raise_on_status=True,
+        resp_type='response'
+    )
+    if (
+        not (filename := args.get('save_as'))
+        and
+        (content_disposition := resp.headers.get('Content-Disposition'))
+    ):
+        cdp = email_parser.Parser().parsestr(
+            f'Content-Disposition: {content_disposition}',
+            headersonly=True
+        )
         filename = cdp.get_filename()
 
     return fileResult(filename or str(uuid.uuid4()), resp.content)
@@ -4319,6 +4688,7 @@ def main() -> None:
         'wfr-list-files': command_list_files,
         'wfr-remove-files': command_remove_files,
         'wfr-download-file': command_download_file,
+        'wfr-download-as-text': command_download_as_text,
         'wfr-archive-zip': command_archive_zip,
     }
     try:
