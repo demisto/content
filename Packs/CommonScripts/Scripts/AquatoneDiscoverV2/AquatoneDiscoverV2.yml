@@ -11,10 +11,10 @@ args:
 - name: domain
   required: true
   default: true
-  description: domain to discover
+  description: domain to discover.
 outputs:
 - contextPath: Aquatone.discover
-  description: 'find the targets nameservers and shuffle DNS lookups between them'
+  description: 'find the targets nameservers and shuffle DNS lookups between them.'
 scripttarget: 0
 timeout: 1h0m0s
 runonce: true
