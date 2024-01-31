@@ -45,6 +45,7 @@ CBS_INCIDENT_FIELDS = [
     {'name': 'coa', 'description': 'The possible course of action'},
     {'name': 'remarks', 'description': 'Remarks about the incident'},
     {'name': 'created_date', 'description': 'The creation date of the incident'},
+    {'name': 'updated_date', 'description': 'The date the incident got last updated'},
     {'name': 'brand', 'description': 'The organization the incident belongs to'},
     {'name': 'timestamp', 'description': 'The timestamp of when the record was created'},
 ]

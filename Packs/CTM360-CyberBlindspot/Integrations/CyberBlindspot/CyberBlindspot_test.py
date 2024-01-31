@@ -402,6 +402,7 @@ def test_get_mapping_fields_command(mocker):
             "coa": "The possible course of action",
             "remarks": "Remarks about the incident",
             "created_date": "The creation date of the incident",
+            "updated_date": "The date the incident got last updated",
             "brand": "The organization the incident belongs to",
             "timestamp": "The timestamp of when the record was created",
         }
