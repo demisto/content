@@ -140,18 +140,18 @@ async def handle_post(request: Request,
         raw_jason = json.dumps(payload)
     except Exception as e:
         demisto.error(f'Error in request parsing: {e}')
-        return f'Error in request parsing: {e}'
+        return 'Failed parsing request'
     if not valid_sns_message(payload):
         return 'Validation of SNS message failed.'
 
     if type == 'SubscriptionConfirmation':
-        demisto.info('SubscriptionConfirmation request')
+        demisto.debug('SubscriptionConfirmation request')
         subscribe_url = payload['SubscribeURL']
         try:
             response = requests.get(subscribe_url, verify=USE_SSL, proxies=PROXIES)
         except Exception as e:
-            demisto.error(f'Error in SubscribeURL: {e}')
-            return f'Error in SubscribeURL: {e}'
+            demisto.error(f'Failed handling SubscriptionConfirmation: {e}')
+            return 'Failed handling SubscriptionConfirmation'
         demisto.debug(f'Response from subscribe url: {response}')
         return response
     elif type == 'Notification':
