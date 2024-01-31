@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
-
 ''' IMPORTS '''
 import base64
 import email

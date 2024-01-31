@@ -45,7 +45,6 @@ WEB_REQUEST_COMPONENT_MAP = {"Headers": "Headers",
                              "Body": "Body",
                              "HTTP Method": "Method"}
 
-
 ''' HELPER FUNCTIONS '''
 
 

@@ -9,6 +9,7 @@ from MicrosoftGraphMailApiModule import *  # noqa: E402
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+
 class MsGraphMailClient(MsGraphMailBaseClient):
 
     @logger
