@@ -502,6 +502,14 @@ def process_mirror_or_unknown_message(message: str) -> dict:
     return create_adaptive_card(body)
 
 
+def is_json(msg):
+    try:
+        json.loads(msg)
+    except ValueError:
+        return False
+    return True
+
+
 def process_ask_user(message: str) -> dict:
     """
     Processes ask user message and creates adaptive card
@@ -2062,7 +2070,7 @@ def send_message():
 
     if message:
         entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
-        if entitlement_match:
+        if entitlement_match and is_json(message):
             # In TeamsAsk process
             adaptive_card = process_ask_user(message)
             conversation = {
