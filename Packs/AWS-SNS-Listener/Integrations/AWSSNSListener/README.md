@@ -1,5 +1,5 @@
 Amazon Simple Notification Service (SNS) is a managed service that provides message delivery from publishers to subscribers.
-This integration was integrated and tested with version xx of AWS-SNS-Listener.
+This integration was integrated and tested with version January 2024 of AWS-SNS-Listener.
 
 ## Configure AWS-SNS-Listener on Cortex XSOAR
 
