@@ -596,7 +596,7 @@ def get_packs_with_higher_min_version(packs_names: set[str],
 
         if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
             packs_with_higher_version.add(pack_name)
-            logging.info(f"Found pack '{pack_name}' with min version {server_min_version} that is "
+            logging.info(f"Skipping to install pack '{pack_name}' since the min version {server_min_version}, that is "
                          f"higher than server version {server_numeric_version}")
 
     return packs_with_higher_version
@@ -809,7 +809,6 @@ def filter_packs_by_min_server_version(packs_id: set[str], server_version: str, 
     Returns:
         set[str]: Set of pack IDs that are compatible with the provided server version
     """
-    logging.info("Filtering packs by minimum server version")
     packs_with_higher_server_version = get_packs_with_higher_min_version(
         packs_names=packs_id,
         server_numeric_version=server_version,
