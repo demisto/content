@@ -8,6 +8,7 @@ import os
 import re
 from functools import lru_cache
 from pathlib import Path
+from tempfile import mkdtemp
 from typing import Any
 import networkx as nx
 from networkx import DiGraph
@@ -26,8 +27,7 @@ from Tests.Marketplace.marketplace_constants import (PACKS_FOLDER,
                                                      GCPConfig, Metadata)
 from Tests.Marketplace.marketplace_services import (Pack, init_storage_client,
                                                     load_json)
-from Tests.Marketplace.upload_packs import download_and_extract_index
-from Tests.configure_and_test_integration_instances import get_packs_with_higher_min_version
+from Tests.Marketplace.upload_packs import download_and_extract_index, extract_packs_artifacts
 from Tests.scripts.utils import logging_wrapper as logging
 
 from demisto_sdk.commands.test_content.ParallelLoggingManager import ARTIFACTS_PATH
@@ -40,6 +40,7 @@ WLM_TASK_FAILED_ERROR_CODE = 101704
 
 GITLAB_SESSION = Session()
 CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '1061')
+ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
 PACKS_DIR = "Packs"
 PACK_METADATA_FILE = Pack.PACK_METADATA
 GITLAB_PACK_METADATA_URL = f'{{gitlab_url}}/api/v4/projects/{CONTENT_PROJECT_ID}/repository/files/{PACKS_DIR}%2F{{pack_id}}%2F{PACK_METADATA_FILE}'  # noqa: E501
@@ -567,6 +568,42 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
     return install_packs_private(client, host, pack_ids, test_pack_path)
 
 
+def get_json_file(path):
+    with open(path) as json_file:
+        return json.loads(json_file.read())
+
+
+def get_packs_with_higher_min_version(packs_names: set[str],
+                                      server_numeric_version: str) -> set[str]:
+    """
+    Return a set of packs that have higher min version than the server version.
+
+    Args:
+        packs_names (Set[str]): A set of packs to install.
+        server_numeric_version (str): The server version.
+
+    Returns:
+        (Set[str]): The set of the packs names that supposed to be not installed because
+                    their min version is greater than the server version.
+    """
+    extract_content_packs_path = mkdtemp()
+    packs_artifacts_path = f'{ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip'
+    extract_packs_artifacts(packs_artifacts_path, extract_content_packs_path)
+
+    packs_with_higher_version = set()
+    for pack_name in packs_names:
+        pack_metadata = get_json_file(f"{extract_content_packs_path}/{pack_name}/metadata.json")
+        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION,
+                                               pack_metadata.get('server_min_version', Metadata.SERVER_DEFAULT_MIN_VERSION))
+
+        if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
+            packs_with_higher_version.add(pack_name)
+            logging.info(f"Found pack '{pack_name}' with min version {server_min_version} that is "
+                         f"higher than server version {server_numeric_version}")
+
+    return packs_with_higher_version
+
+
 def create_graph(
     all_packs_dependencies: dict,
 ) -> DiGraph:
@@ -764,6 +801,15 @@ def search_for_deprecated_dependencies(
 
 
 def filter_packs_by_min_server_version(packs_id: set[str], server_version: str):
+    """Filters a set of pack IDs to only those compatible with the given server version
+
+    Args:
+        packs_id (set[str]): Set of pack IDs to filter
+        server_version (str): Server version to check pack compatibility against
+
+    Returns: 
+        set[str]: Set of pack IDs that are compatible with the provided server version
+    """
     packs_with_higher_server_version = get_packs_with_higher_min_version(
         packs_names=packs_id,
         server_numeric_version=server_version

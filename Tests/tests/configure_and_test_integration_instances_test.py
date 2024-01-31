@@ -4,7 +4,7 @@ import demisto_client
 import pytest
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
     options_handler, CloudBuild, get_turned_non_hidden_packs, update_integration_lists, \
-    get_packs_with_higher_min_version, filter_new_to_marketplace_packs, packs_names_to_integrations_names
+    filter_new_to_marketplace_packs, packs_names_to_integrations_names
 
 XSIAM_SERVERS = {
     "qa2-test-111111": {
@@ -195,31 +195,6 @@ def test_pack_names_to_integration_names_no_integrations_folder(tmp_path):
         assert packs_names_to_integrations_names(['PackName']) == []
     finally:
         os.chdir(current_path)
-
-
-@pytest.mark.parametrize(
-    'pack_version, expected_results',
-    [('6.5.0', {'TestPack'}), ('6.8.0', set())])
-def test_get_packs_with_higher_min_version(mocker, pack_version, expected_results):
-    """
-    Given:
-        - Pack names to install.
-        - case 1: pack with a version lower than the machine.
-        - case 2: pack with a version higher than the machine.
-    When:
-        - Running 'get_packs_with_higher_min_version' method.
-    Then:
-        - Assert the returned packs are with higher min version than the server version.
-        - case 1: shouldn't filter any packs.
-        - case 2: should filter the pack.
-    """
-
-    mocker.patch("Tests.configure_and_test_integration_instances.extract_packs_artifacts")
-    mocker.patch("Tests.configure_and_test_integration_instances.get_json_file",
-                 return_value={"serverMinVersion": "6.6.0"})
-
-    packs_with_higher_min_version = get_packs_with_higher_min_version({'TestPack'}, pack_version)
-    assert packs_with_higher_min_version == expected_results
 
 
 CHANGED_MARKETPLACE_PACKS = [
