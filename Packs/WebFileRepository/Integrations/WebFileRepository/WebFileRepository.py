@@ -20,7 +20,7 @@ from email import parser as email_parser
 from enum import Enum
 from tempfile import NamedTemporaryFile
 from typing import (IO, Any)
-from collections.abc import Callable, Generator
+from collections.abc import Callable, Iterator
 
 import bottle
 from bottle import BaseRequest, HTTPResponse
@@ -3510,7 +3510,7 @@ class FullRepository(AttrsRepository):
     def new_decoder(
         data_type: str | None,
         data: str
-    ) -> Generator[bytes, None, None]:
+    ) -> Iterator[bytes]:
         """ Decode a file content in chunks
 
         :param data_type: The encoding mode of the payload.
@@ -3535,7 +3535,7 @@ class FullRepository(AttrsRepository):
     def new_reader(
         data_type: str | None,
         path: str
-    ) -> Generator[bytes, None, None]:
+    ) -> Iterator[bytes]:
         """ Read a file content in chunks
 
         :param data_type: The file type.
@@ -3737,7 +3737,7 @@ class FullRepository(AttrsRepository):
     def read_file(
         self,
         abs_path: str
-    ) -> tuple[dict[str, Any], Generator[bytes, None, None] | None]:
+    ) -> tuple[dict[str, Any], Iterator[bytes] | None]:
         """ Read a file content with its attributes
 
         :param abs_path: The file path
@@ -3758,7 +3758,7 @@ class FullRepository(AttrsRepository):
 
     def archive_zip(
         self
-    ) -> Generator[bytes, None, None]:
+    ) -> Iterator[bytes]:
         """ Build a zip stream in chunks by archiving all the files
         """
         repo = self.repo

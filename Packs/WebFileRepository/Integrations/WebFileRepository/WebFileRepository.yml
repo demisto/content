@@ -220,7 +220,7 @@ script:
   - arguments:
     - name: path
       required: true
-      description: The file path
+      description: The file path.
     - name: encoding
       auto: PREDEFINED
       predefined:
