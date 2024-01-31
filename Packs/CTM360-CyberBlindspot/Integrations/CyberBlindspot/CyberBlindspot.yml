@@ -97,8 +97,30 @@ script:
       name: ticketId
       required: true
     outputs:
-    - contextPath: CyberBlindspot.RemoteIncident
-      description: Fetched incident from remote server.
+    - contextPath: CyberBlindspot.RemoteIncident.id
+      description: Unique ID for the incident record.
+    - contextPath: CyberBlindspot.RemoteIncident.brand
+      description: The organization the incident is associated with.
+    - contextPath: CyberBlindspot.RemoteIncident.coa
+      description: The course of action to take.
+    - contextPath: CyberBlindspot.RemoteIncident.class
+      description: The classification of the incident on remote server. 
+    - contextPath: CyberBlindspot.RemoteIncident.status
+      description: The current status of the incident on remote server.
+    - contextPath: CyberBlindspot.RemoteIncident.severity
+      description: The severity of the incident.
+    - contextPath: CyberBlindspot.RemoteIncident.subject
+      description: Asset or title of incident.
+    - contextPath: CyberBlindspot.RemoteIncident.type
+      description: Incident type on remote server.
+    - contextPath: CyberBlindspot.RemoteIncident.remarks
+      description: Remarks about the incident.
+    - contextPath: CyberBlindspot.RemoteIncident.created_date
+      description: The creation date of the incident.
+    - contextPath: CyberBlindspot.RemoteIncident.updated_date
+      description: The date the incident last got updated.
+    - contextPath: CyberBlindspot.RemoteIncident.timestamp
+      description: The timestamp of when the record was created.
   - name: get-remote-data
     arguments:
     - description: The incident ID.
