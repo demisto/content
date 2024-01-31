@@ -92,6 +92,9 @@ configuration:
   - None
   section: Collect
   advanced: true
+- name: limit_assets
+  defaultValue: '100'
+  description: The maximum number of assets to fetch.
 - defaultvalue: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime
   display: 'Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping).'
   name: events_columns
@@ -381,9 +384,6 @@ script:
       - IPs And Assets
       - None
       description: IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses.
-    - name: limit_assets
-      defaultValue: '100'
-      description: The maximum number of assets to fetch.
 
     - name: protected
       description: Whether the offense should be protected.
