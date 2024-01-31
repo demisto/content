@@ -9,7 +9,7 @@ if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_
         PACKS_TO_UPLOAD_SPACED=${PACKS_TO_UPLOAD//,/ }
         for item in $PACKS_TO_UPLOAD_SPACED; do
             python3 -m demisto_sdk validate -i Packs/"$item" --post-commit --graph --skip-pack-dependencies
-        done
+        done     
     else
         if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
             PREV_VER=$LAST_UPLOAD_COMMIT
