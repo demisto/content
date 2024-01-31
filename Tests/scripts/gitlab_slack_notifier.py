@@ -25,7 +25,7 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.common import get_pipelines_and_commits, is_pivot, get_commit_by_sha, get_pipeline_by_commit,\
-    create_shame_message, slack_link, was_message_already_sent
+    create_shame_message, slack_link, was_message_already_sent, get_nearest_commit_with_pipeline
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -579,33 +579,18 @@ def main():
             not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)):
                 
                 current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
-                previous_pipeline = None
-                suspicious_commits = [current_commit]
                 
                 # looking backwards until we find a commit with a pipeline to compare with
-                previous_commit_index = current_commit_index +1
-                while not previous_pipeline and previous_commit_index < len(list_of_commits):
-                    previous_commit = list_of_commits[previous_commit_index]
-                    previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
-                    suspicious_commits.append(previous_commit) if not previous_pipeline else None 
-                    previous_commit_index += 1
-                    
+                previous_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(list_of_pipelines, list_of_commits, current_commit_index, direction="backwards")
                 pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
+                
                 logging.info(
                     f"Checking pipeline id: {current_pipeline.id}, of commit: {current_commit.title}, "
                     f"after comparing with pipeline id: {previous_pipeline.id}, the change status is: {pipeline_changed_status}")
 
                 # looking_forward until we find a commit with a pipeline to compare with
-                if pipeline_changed_status is None:
-                    # empty out all suspicious commits, except the current one
-                    suspicious_commits= suspicious_commits[:1]
-                    next_pipeline = None
-                    next_commit_index = current_commit_index - 1
-                    while not next_pipeline and next_commit_index >= 0:
-                        next_commit = list_of_commits[next_commit_index]
-                        next_pipeline = get_pipeline_by_commit(next_commit, list_of_pipelines)
-                        suspicious_commits.append(next_commit) if not next_pipeline else None
-                        next_commit_index -= 1
+                if pipeline_changed_status is None and current_commit_index > 0:
+                    next_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(list_of_pipelines, list_of_commits, current_commit_index, direction="forwards")
 
                     if next_pipeline:
                         pipeline_changed_status = is_pivot(current_pipeline=next_pipeline, previous_pipeline=current_pipeline)
