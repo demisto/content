@@ -76,7 +76,7 @@ def main():
     inputs = {
         'reviewer': reviewer,
         'release_version': release_branch_name,
-        'is_draft': is_draft,
+        # 'is_draft': is_draft, # TODO: revert
         'release_changes': get_changelog_text(release_branch_name)
     }
 
