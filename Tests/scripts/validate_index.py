@@ -159,7 +159,6 @@ def main():
 
     if not all([index_is_valid, commit_hash_is_valid]):
         logging.critical("Index content is invalid. Aborting.")
-        exit_code = 1
 
     # Deleting GCS PATH before exit
     if exit_code == 1 and os.path.exists(options.service_account):
