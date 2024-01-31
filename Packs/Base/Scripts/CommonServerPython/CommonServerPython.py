@@ -7278,7 +7278,7 @@ class ExecutionMetrics(object):
     """
 
     def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
-                 proxy_error=0, ssl_error=0, timeout_error=0):
+                 proxy_error=0, ssl_error=0, timeout_error=0, retry_error=0):
         self._metrics = []
         self.metrics = None
         self.success = success
@@ -7290,6 +7290,7 @@ class ExecutionMetrics(object):
         self.proxy_error = proxy_error
         self.ssl_error = ssl_error
         self.timeout_error = timeout_error
+        self.retry_error = retry_error
         """
             Initializes an ExecutionMetrics object. Once initialized, you may increment each metric type according to the
             metric you'd like to report. Afterwards, pass the `metrics` value to CommandResults.
@@ -7320,6 +7321,9 @@ class ExecutionMetrics(object):
 
             :type timeout_error: ``int``
             :param timeout_error: Quantity of Timeout Error metrics
+
+            :type retry_error: ``int``
+            :param retry_error: Quantity of Retry Error metrics
 
             :type metrics: ``CommandResults``
             :param metrics: Append this value to your CommandResults list to report the metrics to your server.
@@ -8821,7 +8825,7 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, empty_valid_codes=None, params_parser=None, update_metrics=False,
+                          error_handler=None, empty_valid_codes=None, params_parser=None, with_metrics=False,
                           **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -8920,6 +8924,9 @@ if 'requests' in sys.modules:
             see here for more info: https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
             Note! supported only in python3.
 
+            :type with_metrics ``bool``
+            :param with_metrics: Whether or not to calculate execution metrics from the response
+
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
@@ -8949,50 +8956,19 @@ if 'requests' in sys.modules:
                     timeout=timeout,
                     **kwargs
                 )
-                # Handle error responses gracefully
                 if not self._is_status_code_valid(res, ok_codes):
-                    try:
-                        if error_handler:
-                            error_handler(res)
-                        else:
-                            self.client_error_handler(res)
-                    except Exception as e:
-                        if update_metrics:
-                            self.update_metrics(res)
-                        raise e
-                if update_metrics:
-                    self.execution_metrics.success += 1
+                    self._handle_error(error_handler, res, resp_type, with_metrics)
 
-                if not empty_valid_codes:
-                    empty_valid_codes = [204]
-                is_response_empty_and_successful = (res.status_code in empty_valid_codes)
-                if is_response_empty_and_successful and return_empty_response:
-                    return res
-
-                resp_type = resp_type.lower()
-                try:
-                    if resp_type == 'json':
-                        return res.json()
-                    if resp_type == 'text':
-                        return res.text
-                    if resp_type == 'content':
-                        return res.content
-                    if resp_type == 'xml':
-                        ET.fromstring(res.text)
-                    if resp_type == 'response':
-                        return res
-                    return res
-                except ValueError as exception:
-                    raise DemistoException('Failed to parse {} object from response: {}'  # type: ignore[str-bytes-safe]
-                                           .format(resp_type, res.content), exception, res)
+                return self._handle_success(res, resp_type, empty_valid_codes, return_empty_response, with_metrics)
+                
             except requests.exceptions.ConnectTimeout as exception:
-                if update_metrics:
+                if with_metrics:
                     self.execution_metrics.timeout_error += 1
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.SSLError as exception:
-                if update_metrics:
+                if with_metrics:
                     self.execution_metrics.ssl_error += 1
                 # in case the "Trust any certificate" is already checked
                 if not self._verify:
@@ -9001,13 +8977,13 @@ if 'requests' in sys.modules:
                           ' the integration configuration.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.ProxyError as exception:
-                if update_metrics:
+                if with_metrics:
                     self.execution_metrics.proxy_error += 1
                 err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
                           ' selected, try clearing the checkbox.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.ConnectionError as exception:
-                if update_metrics:
+                if with_metrics:
                     self.execution_metrics.connection_error += 1
                 # Get originating Exception in Exception chain
                 error_class = str(exception.__class__)
@@ -9018,6 +8994,8 @@ if 'requests' in sys.modules:
                     .format(err_type, exception.errno, exception.strerror)
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.RetryError as exception:
+                if with_metrics:
+                    self.execution_metrics.retry_error += 1
                 try:
                     reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
                 except Exception:  # noqa: disable=broad-except
@@ -9025,43 +9003,69 @@ if 'requests' in sys.modules:
                 err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
                 raise DemistoException(err_msg, exception)
 
-        def update_metrics(self, res):
-            if self._is_quota_error(self, res):
+        def _handle_error(self, error_handler, res, resp_type, should_update_metrics):
+            try:
+                if error_handler:
+                    error_handler(res)
+                else:
+                    self.client_error_handler(res)
+            except Exception:
+                if should_update_metrics:
+                    self._update_metrics(
+                        res=self._cast_response(res, resp_type, raise_on_error=False),
+                        status_code=res.status_code,
+                        success=False,
+                    )
+                raise
+
+        def _handle_success(self, res, resp_type, empty_valid_codes, return_empty_response, should_update_metrics):
+            if not empty_valid_codes:
+                empty_valid_codes = [204]
+            is_response_empty_and_successful = (res.status_code in empty_valid_codes)
+            if is_response_empty_and_successful and return_empty_response:
+                return res
+
+            result = self._cast_response(res, resp_type)
+            if should_update_metrics:
+                self._update_metrics(result, res.status_code, success=True)
+            return result
+
+        def _cast_response(self, res, resp_type, raise_on_error=True):
+            resp_type = resp_type.lower()
+            try:
+                if resp_type == 'json':
+                    return res.json()
+                if resp_type == 'text':
+                    return res.text
+                if resp_type == 'content':
+                    return res.content
+                if resp_type == 'xml':
+                    ET.fromstring(res.text)
+                if resp_type == 'response':
+                    return res
+                return res
+            except ValueError as exception:
+                if raise_on_error:
+                    raise DemistoException('Failed to parse {} object from response: {}'  # type: ignore[str-bytes-safe]
+                                            .format(resp_type, res.content), exception, res)
+
+        def _update_metrics(self, res, status_code, success):
+            error_type = self.determine_error_type(res, status_code)
+            if error_type == ErrorTypes.QUOTA_ERROR:
                 self.execution_metrics.quota_error += 1
-            elif self._is_auth_error(self, res):
+            elif error_type == ErrorTypes.AUTH_ERROR:
                 self.execution_metrics.auth_error += 1
-            elif self._is_service_error(self, res):
+            elif error_type == ErrorTypes.SERVICE_ERROR:
                 self.execution_metrics.service_error += 1
-            elif self._is_connection_error(self, res):
-                self.execution_metrics.connection_error += 1
-            elif self._is_proxy_error(self, res):
-                self.execution_metrics.proxy_error += 1
-            elif self._is_ssl_error(self, res):
-                self.execution_metrics.ssl_error += 1
-            elif self._is_timeout_error(self, res):
-                self.execution_metrics.timeout_error += 1
-            else:
+            elif error_type == ErrorTypes.GENERAL_ERROR:
                 self.execution_metrics.general_error += 1
+            elif success and not self.is_polling_in_progress(res):
+                self.execution_metrics.success += 1
 
-        def _is_quota_error(self, response):
-            return response.status_code == 429
+        def determine_error_type(self, res, status_code):
+            return None
 
-        def _is_auth_error(self, response):
-            return False
-
-        def _is_service_error(self, response):
-            return False
-
-        def _is_connection_error(self, response):
-            return False
-
-        def _is_proxy_error(self, response):
-            return False
-
-        def _is_ssl_error(self, response):
-            return False
-
-        def _is_timeout_error(self, response):
+        def is_polling_in_progress(self, response):
             return False
 
         def _is_status_code_valid(self, response, ok_codes=None):

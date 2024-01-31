@@ -21,16 +21,6 @@ class Client(BaseClient):
         self._headers = {'api_key': api_key, 'Accept': 'application/json'}
         self._proxies = handle_proxy()
 
-    def _is_auth_error(self, response):
-        return response.status_code == 401
-
-    def _is_service_error(self, response):
-        return response.status_code == 503
-
-    def _is_timeout_error(self, response):
-        return response.status_code == 504
-
-
     def users_search_request(self, query: str, size: str, page: str) -> dict:
         """Search users by sending a GET request.
 
@@ -116,7 +106,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix='/devices/public/device_updates', headers=self._headers,
                                   params=params)
 
-    def app_classification_get_request(self, app_hash: str, app_name: str, update_metrics: bool = False) -> dict:
+    def app_classification_get_request(self, app_hash: str, app_name: str) -> dict:
         """Retrieve device details by sending a GET request.
 
         Args:
@@ -133,12 +123,7 @@ class Client(BaseClient):
         else:
             url_suffix = f'/malware/public/classify/name/{app_name}'
 
-        return self._http_request(
-            method='GET',
-            url_suffix=url_suffix,
-            headers=self._headers,
-            update_metrics=update_metrics,
-        )
+        return self._http_request(method='GET', url_suffix=url_suffix, headers=self._headers)
 
     def report_get_request(self, bundle_id: str, itunes_id: str, app_hash: str, platform: str) -> dict:
         """Retrieve device details by sending a GET request.
@@ -481,7 +466,7 @@ def file_reputation(client: Client, args: Dict) -> List[CommandResults]:
 
     for app_hash in hash_list:
         try:
-            application = client.app_classification_get_request(app_hash, '', update_metrics=True)
+            application = client.app_classification_get_request(app_hash, '')
             application_data = application[0]
         except Exception as err:
             if 'Error in API call [404]' in str(err):
@@ -767,8 +752,7 @@ def main():
             return_results('Object was not found in Zimperium, please make sure your arguments are correct.')
         else:
             return_error(str(err), err)
-    finally:
-        return_results(client.execution_metrics_results())
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

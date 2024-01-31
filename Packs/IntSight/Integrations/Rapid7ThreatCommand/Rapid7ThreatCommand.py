@@ -984,6 +984,16 @@ class Client(BaseClient):
             auth=(account_id, api_key),
         )
 
+    def is_polling_in_progress(self, response: Response) -> bool:
+        return response.get("Status") not in ["Done", "Failed", "QuotaExceeded"]
+
+    def determine_error_type(self, response: dict, status_code: int) -> ErrorTypes | None:
+        if response.get("Status") == "QuotaExceeded" or status_code == 429:
+            return ErrorTypes.QUOTA_ERROR
+        elif response.get("Status") == "Failed":
+            return ErrorTypes.GENERAL_ERROR
+        return None
+
     def _http_request(self, *args, **kwargs):
         """
         Warp to _http_request command. I use it because sometimes the API response code is 200
@@ -2303,7 +2313,7 @@ class Client(BaseClient):
             dict[str, Any]: API response from Threat Command API.
         """
         url_suffix = f"{V1_PREFIX}/{UrlPrefix.IOC}/enrich/{ioc_value}"
-        return self._http_request(method="GET", url_suffix=url_suffix)
+        return self._http_request(method="GET", url_suffix=url_suffix, with_metrics=True)
 
     def list_mssp_user(self) -> List[dict[str, Any]]:
         """
@@ -3577,13 +3587,12 @@ def list_account_user_command(client: Client, args: dict[str, Any]) -> CommandRe
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,
 )
-def search_ioc_handler_command(args: dict[str, Any], client: Client, execution_metrics: ExecutionMetrics) -> PollResult:
+def search_ioc_handler_command(args: dict[str, Any], client: Client) -> PollResult:
     """
     List IOCs handler.
     Args:
         client (Client): Threat Command API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
-        execution_metrics (ExecutionMetrics): Execution metrics.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -3591,7 +3600,7 @@ def search_ioc_handler_command(args: dict[str, Any], client: Client, execution_m
     # validate_list_alert(args=args)
     if argToBoolean(args["enrichment"]):
         # Enrich IOC - Blocked.
-        return enrich_ioc_handler(client=client, args=args, execution_metrics=execution_metrics)
+        return enrich_ioc_handler(client=client, args=args)
 
     if ioc_value := args.get("ioc_value"):
         # Get IOC by value
@@ -3608,14 +3617,13 @@ def search_ioc_handler_command(args: dict[str, Any], client: Client, execution_m
     )
 
 
-def enrich_ioc_handler(client: Client, args: dict[str, Any], execution_metrics: ExecutionMetrics) -> PollResult:
+def enrich_ioc_handler(client: Client, args: dict[str, Any]) -> PollResult:
     """
     Enrich IOC with details.
 
     Args:
         client (Client): Threat Command API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
-        execution_metrics (ExecutionMetrics): Execution metrics.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -3625,31 +3633,26 @@ def enrich_ioc_handler(client: Client, args: dict[str, Any], execution_metrics: 
     command_results = []
     status = response["Status"]
     if status == "QuotaExceeded":
-        execution_metrics.quota_error += 1
         command_results.append(
             CommandResults(
                 readable_output=ReadableErrors.ENRICH_FAIL.value.format(status)
             )
         )
-        command_results.append(cast(CommandResults, execution_metrics.metrics))
         return PollResult(
             response=command_results,
             continue_to_poll=False,
         )
     if status == "Failed":
-        execution_metrics.general_error += 1
         command_results.append(
             CommandResults(
                 readable_output=ReadableErrors.ENRICH_FAIL.value.format(status)
             )
         )
-        command_results.append(cast(CommandResults, execution_metrics.metrics))
         return PollResult(
             response=command_results,
             continue_to_poll=False,
         )
     if response["Status"] == "Done":
-        execution_metrics.success += 1
         filtered_response = client.parser.ioc_enrich_parser(response["Data"])
         command_results.append(
             command_result_generate(
@@ -3661,7 +3664,6 @@ def enrich_ioc_handler(client: Client, args: dict[str, Any], execution_metrics: 
                 raw_response=response,
             )
         )
-        command_results.append(cast(CommandResults, execution_metrics.metrics))
         return PollResult(
             response=command_results,
             continue_to_poll=False,
@@ -4058,20 +4060,19 @@ def get_alert_csv_command(
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,
 )
-def file_command(args: dict[str, Any], client: Client, execution_metrics: ExecutionMetrics) -> PollResult:
+def file_command(args: dict[str, Any], client: Client) -> PollResult:
     """
     Enrich file IOC (Generic reputation command).
 
     Args:
         client (Client): Threat Command API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
-        execution_metrics (ExecutionMetrics): Execution metrics.
 
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
     return reputation_handler(
-        args, client, file_reputation_handler, IOCType.FILE.value.lower(), execution_metrics
+        args, client, file_reputation_handler, IOCType.FILE.value.lower(),
     )
 
 
@@ -4081,20 +4082,19 @@ def file_command(args: dict[str, Any], client: Client, execution_metrics: Execut
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,
 )
-def ip_command(args: dict[str, Any], client: Client, execution_metrics: ExecutionMetrics) -> PollResult:
+def ip_command(args: dict[str, Any], client: Client) -> PollResult:
     """
     Enrich ip IOC (Generic reputation command).
 
     Args:
         client (Client): Threat Command API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
-        execution_metrics (ExecutionMetrics): Execution metrics.
 
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
     return reputation_handler(
-        args, client, ip_reputation_handler, IOCType.IP.value.lower(), execution_metrics
+        args, client, ip_reputation_handler, IOCType.IP.value.lower(),
     )
 
 
@@ -4104,21 +4104,20 @@ def ip_command(args: dict[str, Any], client: Client, execution_metrics: Executio
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,
 )
-def url_command(args: dict[str, Any], client: Client, execution_metrics: ExecutionMetrics) -> PollResult:
+def url_command(args: dict[str, Any], client: Client) -> PollResult:
     """
     Enrich URL IOC (Generic reputation command).
 
     Args:
         client (Client): Threat Command API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
-        execution_metrics (ExecutionMetrics): Execution metrics.
 
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
 
     return reputation_handler(
-        args, client, url_reputation_handler, IOCType.URL.value.lower(), execution_metrics
+        args, client, url_reputation_handler, IOCType.URL.value.lower(),
     )
 
 
@@ -4128,25 +4127,24 @@ def url_command(args: dict[str, Any], client: Client, execution_metrics: Executi
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
     requires_polling_arg=False,
 )
-def domain_command(args: dict[str, Any], client: Client, execution_metrics: ExecutionMetrics) -> PollResult:
+def domain_command(args: dict[str, Any], client: Client) -> PollResult:
     """
     Enrich domain IOC (Generic reputation command).
 
     Args:
         client (Client): Threat Command API client.
         args (Dict[str, Any]): Command arguments from XSOAR.
-        execution_metrics (ExecutionMetrics): Execution metrics.
 
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
     return reputation_handler(
-        args, client, domain_reputation_handler, IOCType.DOMAIN.value.lower(), execution_metrics
+        args, client, domain_reputation_handler, IOCType.DOMAIN.value.lower(),
     )
 
 
 def reputation_handler(
-    args: dict[str, Any], client: Client, handler_command: Callable, key: str, execution_metrics: ExecutionMetrics
+    args: dict[str, Any], client: Client, handler_command: Callable, key: str
 ) -> PollResult:
     """
     Handle with all reputation commands.
@@ -4156,7 +4154,6 @@ def reputation_handler(
         args (Dict[str, Any]): Command arguments from XSOAR.
         handler_command (Callable): Handler command for each command.
         key (str): Key for the IOC.
-        execution_metrics (ExecutionMetrics): Execution metrics.
 
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
@@ -4182,16 +4179,11 @@ def reputation_handler(
         ioc_values.remove(response['OriginalValue'])
 
     if not ioc_values:
-        execution_metrics.success += len(done_responses)
-        execution_metrics.general_error += len(failed_responses)
-        execution_metrics.quota_error += len(quota_responses)
         for response in done_responses:
             command_results.append(handler_command(client=client, obj=response, obj_id=response['OriginalValue']))
         for response in failed_responses + quota_responses:
             command_results.append(
                 CommandResults(readable_output=ReadableErrors.ENRICH_FAIL.value.format(response["Status"])))
-
-        command_results.append(cast(CommandResults, execution_metrics.metrics))
 
         return PollResult(
             response=command_results,
@@ -5175,7 +5167,6 @@ def main() -> None:
     reliability = params.get("integrationReliability", DBotScoreReliability.C)
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    execution_metrics = ExecutionMetrics()
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
@@ -5262,7 +5253,7 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module(client, params))
         elif command in polling_commands:
-            return_results(polling_commands[command](args, client, execution_metrics))
+            return_results(polling_commands[command](args, client))
         elif command in commands:
             return_results(commands[command](client, args))
         elif command == "fetch-incidents":
@@ -5309,6 +5300,9 @@ def main() -> None:
 
     except Exception as e:
         return_error(str(e))
+
+    finally:
+        return_results(client.execution_metrics_results())
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
