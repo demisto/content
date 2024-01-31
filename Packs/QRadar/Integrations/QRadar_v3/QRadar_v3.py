@@ -2226,6 +2226,9 @@ def long_running_execution_command(client: Client, params: dict):
     last_highest_id_context = context_data.get(LAST_FETCH_KEY, 0)
     if last_highest_id_last_run != last_highest_id_context and int(last_highest_id_last_run) > 0:
         # if there is inconsistency between last run and context, we need to update the context
+        print_debug_msg(
+            f'Updating context data with last highest ID from last run: {last_highest_id_last_run}.'
+            f'ID from context: {last_highest_id_context}')
         safely_update_context_data(context_data | {LAST_FETCH_KEY: last_highest_id_last_run},
                                    version, should_update_last_fetch=True)
     last_highest_id = int(last_highest_id_last_run)
