@@ -27,9 +27,12 @@ from Tests.Marketplace.marketplace_constants import (PACKS_FOLDER,
 from Tests.Marketplace.marketplace_services import (Pack, init_storage_client,
                                                     load_json)
 from Tests.Marketplace.upload_packs import download_and_extract_index
+from Tests.configure_and_test_integration_instances import get_packs_with_higher_min_version
 from Tests.scripts.utils import logging_wrapper as logging
 
 from demisto_sdk.commands.test_content.ParallelLoggingManager import ARTIFACTS_PATH
+
+from Tests.test_content import get_server_numeric_version
 
 PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'  # noqa: E501
                                      r'+\.zip$')
@@ -760,11 +763,20 @@ def search_for_deprecated_dependencies(
     return True
 
 
+def filter_packs_by_min_server_version(packs_id: set[str], server_version: str):
+    packs_with_higher_server_version = get_packs_with_higher_min_version(
+        packs_names=packs_id,
+        server_numeric_version=server_version
+    )
+    return packs_id - packs_with_higher_server_version
+
+
 def get_packs_and_dependencies_to_install(
     pack_ids: list,
     graph_dependencies: DiGraph,
     production_bucket: bool,
     all_packs_dependencies_data: dict,
+    client: DemistoClient,
 ) -> tuple[bool, set]:
     """
     Fetches all dependencies for the given list of pack IDs and returns the packs and dependencies that should be installed.
@@ -781,6 +793,7 @@ def get_packs_and_dependencies_to_install(
     """
     no_deprecated_dependencies = True
     all_packs_and_dependencies_to_install: set[str] = set()
+    server_numeric_version = get_server_numeric_version(client)
 
     for pack_id in pack_ids:
         dependencies_for_pack_id = nx.ancestors(graph_dependencies, pack_id)
@@ -788,6 +801,9 @@ def get_packs_and_dependencies_to_install(
         if dependencies_for_pack_id:
             logging.debug(
                 f"Found dependencies for '{pack_id}': {dependencies_for_pack_id}"
+            )
+            dependencies_for_pack_id = filter_packs_by_min_server_version(
+                dependencies_for_pack_id, server_numeric_version
             )
             no_deprecated_dependency = search_for_deprecated_dependencies(
                 pack_id,
@@ -978,6 +994,7 @@ def search_and_install_packs_and_their_dependencies(
         graph_dependencies,
         production_bucket,
         all_packs_dependencies_data,
+        client,
     )
     success &= no_deprecated_dependencies
 
