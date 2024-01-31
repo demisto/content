@@ -157,7 +157,7 @@ def get_xsoar_list_name(task, lists):
                 lists.append(script_arguments['value']['complex']['accessor'])
         except KeyError:
             pass
-        r = re.findall(r"['\{]lists\.(.*?)?[.'\}]", str(script_arguments))  # ['\{]lists\.(.*?)(\..*?)?['\}]
+        r = re.findall(r"['\{]lists\.(.*?)?[.'\}]", str(script_arguments))
         if r:
             for list_name in r:
                 if list_name not in lists:
