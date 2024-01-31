@@ -467,6 +467,14 @@ def test_send_message_raising_errors(mocker, args, result):
 @pytest.mark.parametrize('message, result', [('MESSAGE', 'Message was sent successfully.'),
                                              ('891f1e9d-b8c3-4e24-bfbb-c44bcca4d586', 'Message was sent successfully.')])
 def test_send_message_with_user(mocker, requests_mock, message, result):
+    """
+    Given:
+        - a message as a basic string and a  message that contains GUID.
+    When:
+        - running send message function.
+    Then:
+        - The message is sent successfully in both cases.
+    """
     # verify message is sent properly given user to send to
     from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
