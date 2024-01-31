@@ -4766,7 +4766,6 @@
             "timeout": 15000,
             "integrations": [
                 "Core REST API",
-                "Rasterize",
                 "Demisto Lock",
                 "EWS v2"
             ],
