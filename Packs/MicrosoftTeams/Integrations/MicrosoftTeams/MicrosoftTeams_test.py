@@ -464,7 +464,9 @@ def test_send_message_raising_errors(mocker, args, result):
     assert str(e.value) == result
 
 
-def test_send_message_with_user(mocker, requests_mock):
+@pytest.mark.parametrize('message, result', [('MESSAGE', 'Message was sent successfully.'),
+                                             ('891f1e9d-b8c3-4e24-bfbb-c44bcca4d586', 'Message was sent successfully.')])
+def test_send_message_with_user(mocker, requests_mock, message, result):
     # verify message is sent properly given user to send to
     from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
@@ -475,7 +477,7 @@ def test_send_message_with_user(mocker, requests_mock):
         'args',
         return_value={
             'team_member': 'Denzel Washington',
-            'message': 'MESSAGE'
+            'message': message
         }
     )
     requests_mock.post(
@@ -506,7 +508,7 @@ def test_send_message_with_user(mocker, requests_mock):
     assert requests_mock.request_history[0].json() == expected_create_personal_conversation_data
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == 'Message was sent successfully.'
+    assert results[0] == result
 
 
 def test_send_message_with_channel(mocker, requests_mock):
