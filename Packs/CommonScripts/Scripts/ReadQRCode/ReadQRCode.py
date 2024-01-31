@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa
 from CommonServerPython import *  # noqa
-from pyzbar.pyzbar import decode
+from pyzbar import pyzbar
 import cv2
 # pylint: disable=E1101  # disable pylint not recognizing cv2's attributes.
 
@@ -9,21 +9,19 @@ def read_qr_code(filename: str) -> str:
 
     detect = cv2.QRCodeDetector()
     img = cv2.imread(filename)
-    text, *rest = detect.detectAndDecode(img)
-    demisto.debug(f'QR code matrices: {rest}')
+    text, *_ = detect.detectAndDecode(img)
 
     if not text:
         demisto.debug("Couldn't extract text with cv2, retrying with pyzbar.")
-        text = '\n'.join(str(d.data) for d in decode(img))
+        text = [d.data.decode() for d in pyzbar.decode(img)]
 
     return text
 
 
 def extract_indicators_from_text(text: str) -> dict:
     return json.loads(demisto.executeCommand(
-        'extractIndicators',
-        {'text': text}
-    )[0]['Contents'])
+        'extractIndicators', {'text': text}
+    )[0]['Contents'])  # type: ignore
 
 
 def extract_info_from_qr_code(entry_id: str) -> CommandResults:
@@ -50,7 +48,7 @@ def extract_info_from_qr_code(entry_id: str) -> CommandResults:
 
 def main():
     try:
-        return_results(extract_info_from_qr_code(**demisto.args()['entry_id']))
+        return_results(extract_info_from_qr_code(demisto.args()['entry_id']))
     except Exception as e:
         return_error(f'Failed to execute ReadQRCode. Error: {e}')
 

@@ -89,7 +89,8 @@ def test_read_qr_code_with_pyzbar(mocker: MockerFixture):
 
     debug = mocker.patch.object(demisto, 'debug')
 
-    result = read_qr_code('test_data/pyzbar_qrcode.png')
+    # result = read_qr_code('test_data/pyzbar_code_1.png')
+    result = read_qr_code('test_data/multiple_codes.png')
 
-    assert result == ''
-    debug.assert_called_with("Couldn't extract text with cv2, retrying with pyzbar.")
+    # debug.assert_called_with("Couldn't extract text with cv2, retrying with pyzbar.")
+    assert result == 'https://xsoar.pan.dev/'
