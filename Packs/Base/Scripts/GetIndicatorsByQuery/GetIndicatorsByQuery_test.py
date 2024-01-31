@@ -67,15 +67,6 @@ def get_args_with_unpopulate():
     return args
 
 
-def get_args_with_populate_and_unpopulate():
-    args = {}
-    args['limit'] = 500
-    args['offset'] = 0
-    args['populateFields'] = 'testField'
-    args['dontPopulateFields'] = 'indicator_type'
-    return args
-
-
 def test_main(mocker):
     mocker.patch.object(demisto, 'args', side_effect=get_args)
     mocker.patch.object(demisto, 'searchIndicators', side_effect=search_indicators_side_effect)
@@ -135,25 +126,4 @@ def test_main_unpopulate(mocker):
     assert len(indicators) == 2
     assert 'testField' not in indicators[0].keys()
     assert 'indicator_type' not in indicators[0].keys()
-    assert "populateFields" not in search_indicators.call_args.kwargs
-
-
-def test_main_populate_and_unpopulate(mocker):
-    """
-    Given:
-    - Command arguments: populateFields=testField, dontPopulateFields=indicator_type
-    When:
-    - Running GetIndicatorsByQuery
-    Then:
-    - Ensure testField is returned
-    - Ensure indicator_type is not returned
-    - Ensure `populateFields` kwarg wasn't passed to `searchIndicators` call
-    """
-    mocker.patch.object(demisto, 'args', side_effect=get_args_with_populate_and_unpopulate)
-    search_indicators = mocker.patch.object(demisto, 'searchIndicators', side_effect=search_indicators_side_effect)
-    entry = main()
-    indicators = entry['Contents']
-    assert len(indicators) == 2
-    assert 'testField' in indicators[0]
-    assert 'indicator_type' not in indicators[0]
     assert "populateFields" not in search_indicators.call_args.kwargs

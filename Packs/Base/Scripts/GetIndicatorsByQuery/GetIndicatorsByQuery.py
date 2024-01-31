@@ -92,7 +92,7 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int):
         query=indicator_query,
         limit=limit,
         size=PAGE_SIZE,
-        filter_fields=",".join(populate_fields) if populate_fields and not unpopulate_fields else None,
+        filter_fields=",".join(populate_fields) if populate_fields else None,
     )
     for ioc_res in search_indicators:
         fetched_iocs = ioc_res.get('iocs') or []
