@@ -124,9 +124,10 @@ def get_task_command(args: dict[str, Any]) -> CommandResults:
                           outputs_key_field='id',
                           outputs=res,
                           readable_output=tableToMarkdown(
-                              f'Incident #{inc_id} Playbook Tasks',
-                              res,
-                              ['id', 'name', 'state', 'owner', 'scriptId'], removeNull=True))
+                              name=f'Incident #{inc_id} Playbook Tasks',
+                              t=res,
+                              headers=['id', 'name', 'state', 'owner', 'scriptId'],
+                              removeNull=True))
 
 
 ''' MAIN FUNCTION '''
