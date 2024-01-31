@@ -610,6 +610,7 @@ def test_metrics(mocker: MockerFixture):
             "daily_points_remaining": 4578,
             "minute_bucket_start": "2015-09-02 10:55:33",
             "daily_bucket_start": "2015-09-01 17:08:40",
+            "wait_in_seconds": 20.5,
         }
     }
 
@@ -638,6 +639,7 @@ def test_metrics(mocker: MockerFixture):
     assert return_results_mock.call_args_list[0][0][0].scheduled_command._args == {
         'unit42': 'True', 'class': 'Actor', 'retry_on_rate_limit': 'false',
     }
+    assert return_results_mock.call_args_list[0][0][0].scheduled_command._next_run == '40'
     assert return_results_mock.call_args_list[1][0][0].execution_metrics == [{'APICallsCount': 1, 'Type': 'QuotaError'}]
     assert return_results_mock.call_args_list[2][0][0].readable_output == '''### Autofocus API Points
 |Daily allotment started|Daily points used|Minute allotment started|Minute points used|
