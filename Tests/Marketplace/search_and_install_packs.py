@@ -652,6 +652,7 @@ def get_all_content_packs_dependencies(client: DemistoClient) -> dict[str, dict]
     for i in itertools.count():
         response = get_one_page_of_packs_dependencies(client, i)
         packs = response["packs"]
+        logging.debug(f"Fetched dependencies of page {i} with {len(packs)} packs")
         for pack in packs:
             all_packs_dependencies[pack["id"]] = {
                 "currentVersion": pack["currentVersion"],
@@ -659,6 +660,12 @@ def get_all_content_packs_dependencies(client: DemistoClient) -> dict[str, dict]
                 "deprecated": pack["deprecated"],
             }
         if len(packs) < PAGE_SIZE_DEFAULT:
+            all_packs_len = len(all_packs_dependencies)
+            total = response["total"]
+            if total > all_packs_len:
+                logging.critical(
+                    f"Marketplace API returned less than the total packs. Collected: {all_packs_len}, Total: {total}"
+                )
             break
     return all_packs_dependencies
 
