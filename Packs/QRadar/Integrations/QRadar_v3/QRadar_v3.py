@@ -93,6 +93,7 @@ ASCENDING_ID_ORDER = '+id'
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
 DEFAULT_EVENTS_COLUMNS = """QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime"""  # noqa: E501
+DEFAULT_ASSETS_LIMIT = 100
 
 ''' OUTPUT FIELDS REPLACEMENT MAPS '''
 OFFENSE_OLD_NEW_NAMES_MAP = {
@@ -1331,7 +1332,7 @@ def create_single_asset_for_offense_enrichment(asset: dict) -> dict:
     return add_iso_entries_to_asset(dict(offense_without_properties, **properties, **interfaces))
 
 
-def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[dict]:
+def enrich_offense_with_assets(client: Client, offense_ips: List[str], assets_limit: int | None) -> List[dict]:
     """
     Receives list of offense's IPs, and performs API call to QRadar service to retrieve assets correlated to IPs given.
     Args:
@@ -1354,12 +1355,13 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[d
     # Submit addresses in batches to avoid overloading QRadar service
     assets = [asset for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))
               for asset in get_assets_for_ips_batch(b)]
-
+    if assets_limit:
+        assets = assets[:assets_limit]
     return [create_single_asset_for_offense_enrichment(asset) for asset in assets]
 
 
 def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: bool,
-                           enrich_assets: bool) -> List[dict]:
+                           enrich_assets: bool, assets_limit: int | None = None) -> List[dict]:
     """
     Receives list of offenses, and enriches the offenses with the following:
     - Changes offense_type value from the offense type ID to the offense type name.
@@ -1374,6 +1376,7 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
         offenses (Any): List of all of the offenses to enrich.
         enrich_ip_addresses (bool): Whether to enrich the offense source/destination IP addresses.
         enrich_assets (bool): Whether to enrich the offense with assets.
+        assets_limit (int): The limit of assets to enrich the offense with.
 
     Returns:
         (List[Dict]): The enriched offenses.
@@ -1428,7 +1431,7 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
             source_ips: List = source_addresses_enrich.get('source_address_ids', [])
             destination_ips: List = destination_addresses_enrich.get('local_destination_address_ids', [])
             all_ips: List = source_ips + destination_ips
-            asset_enrich = {'assets': enrich_offense_with_assets(client, all_ips)}
+            asset_enrich = {'assets': enrich_offense_with_assets(client, all_ips, assets_limit)}
         else:
             asset_enrich = {}
 
@@ -2004,7 +2007,7 @@ def is_all_events_fetched(client: Client, fetch_mode: FetchMode, offense_id: str
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
                                          events_columns: str, events_limit: int, ip_enrich: bool, asset_enrich: bool,
                                          last_highest_id: int, incident_type: Optional[str], mirror_direction: Optional[str],
-                                         first_fetch: str, mirror_options: str) \
+                                         first_fetch: str, mirror_options: str, assets_limit: int) \
         -> tuple[Optional[List[dict]], Optional[int]]:
     """
     Gets offenses from QRadar service, and transforms them to incidents in a long running execution.
@@ -2074,7 +2077,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
         dict(offense, mirror_direction=mirror_direction, mirror_instance=demisto.integrationInstance())
         for offense in offenses] if mirror_direction else offenses
 
-    enriched_offenses = enrich_offenses_result(client, offenses_with_mirror, ip_enrich, asset_enrich)
+    enriched_offenses = enrich_offenses_result(client, offenses_with_mirror, ip_enrich, asset_enrich, assets_limit)
     final_offenses = sanitize_outputs(enriched_offenses)
     incidents = create_incidents_from_offenses(final_offenses, incident_type)
     return incidents, new_highest_offense_id
@@ -2153,7 +2156,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
 def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mode: str,
                               user_query: str, events_columns: str, events_limit: int, ip_enrich: bool,
                               asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str],
-                              first_fetch: str, mirror_options: str):
+                              first_fetch: str, mirror_options: str, assets_limit: int):
     is_reset_triggered()
     context_data, _ = get_integration_context_with_version()
     print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
@@ -2171,6 +2174,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
         mirror_direction=mirror_direction,
         first_fetch=first_fetch,
         mirror_options=mirror_options,
+        assets_limit=assets_limit,
     )
     print_debug_msg(f'Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}')
     context_data, ctx_version = get_integration_context_with_version()
@@ -2216,6 +2220,7 @@ def long_running_execution_command(client: Client, params: dict):
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
     mirror_options = params.get('mirror_options', '')
+    assets_limit = int(params.get('assets_limit', DEFAULT_ASSETS_LIMIT))
     if not argToBoolean(params.get('retry_events_fetch', True)):
         EVENTS_SEARCH_TRIES = 1
     while True:
@@ -2233,6 +2238,7 @@ def long_running_execution_command(client: Client, params: dict):
                 mirror_direction=mirror_direction,
                 first_fetch=first_fetch,
                 mirror_options=mirror_options,
+                assets_limit=assets_limit,
             )
             demisto.updateModuleHealth('')
 
