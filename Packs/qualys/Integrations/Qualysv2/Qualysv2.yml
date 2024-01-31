@@ -2723,17 +2723,15 @@ script:
     - name: ids
       description: Record IDs to update
     - name: add_ips
-      description: IP's specified will overwrite existing IPs in the record
-    description: Update Vmware records for authenticated scans of hosts running on
-      Vmware
+      description: IP addresses specified will overwrite existing IPs in the record
+    description: Update Vmware records for authenticated scans of hosts running on Vmware
   - name: qualys-update-vcenter-record
     arguments:
     - name: ids
       description: Record IDs to update
     - name: add_ips
-      description: IP's specified will overwrite existing IPs in the record
-    description: Update vCenter records for authenticated scans of hosts running on
-      vCenter
+      description: IP addresses specified will overwrite existing IPs in the record
+    description: Update vCenter records for authenticated scans of hosts running on vCenter
   - name: qualys-vcenter-esxi-mapped-record-list
     arguments:
     - name: network_id
@@ -2751,11 +2749,11 @@ script:
   - name: qualys-vcenter-esxi-mapped-record-import
     arguments:
     - name: csv_data
-    description: Import vCenter ESXi mapping records
+      description: Import vCenter ESXi mapping records
   - name: qualys-vcenter-esxi-mapped-record-purge
     arguments:
     - name: csv_data
-    description: Purge vCenter ESXi mapping records
+      description: Purge vCenter ESXi mapping records
   dockerimage: demisto/python3:3.10.13.80014
   script: ''
   subtype: python3

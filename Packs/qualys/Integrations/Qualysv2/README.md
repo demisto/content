@@ -21911,3 +21911,96 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Asset tag deleted.
+
+### qualys-update-vmware-record
+
+***
+Update Vmware records for authenticated scans of hosts running on Vmware
+
+#### Base Command
+
+`qualys-update-vmware-record`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | Record IDs to update. | Optional | 
+| add_ips | IP addresses specified will overwrite existing IPs in the record. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### qualys-update-vcenter-record
+
+***
+Update vCenter records for authenticated scans of hosts running on vCenter
+
+#### Base Command
+
+`qualys-update-vcenter-record`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | Record IDs to update. | Optional | 
+| add_ips | IP addresses specified will overwrite existing IPs in the record. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### qualys-vcenter-esxi-mapped-record-list
+
+***
+List vCenter ESXi mapping records
+
+#### Base Command
+
+`qualys-vcenter-esxi-mapped-record-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| network_id | Network support must be enabled to specify the network_id. If network support is enabled and you do not provide a network_id, then the Default Global Network is considered. You can specify only one network_id. Default is 0. | Optional | 
+| esxi_ip | Specifies the IP address of the ESXi server. | Optional | 
+| output_format | One output format may be specified. Possible values are: xml, csv. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### qualys-vcenter-esxi-mapped-record-import
+
+***
+
+#### Base Command
+
+`qualys-vcenter-esxi-mapped-record-import`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| csv_data | Import vCenter ESXi mapping records. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### qualys-vcenter-esxi-mapped-record-purge
+
+***
+
+#### Base Command
+
+`qualys-vcenter-esxi-mapped-record-purge`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| csv_data | Purge vCenter ESXi mapping records. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
