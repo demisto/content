@@ -2361,7 +2361,7 @@ class Pack:
                 for name, display in ITEMS_NAMES_TO_DISPLAY_MAPPING.items()
                 if content_items_result.get(name)
             }
-            logging.info(f"==== returning self._content_displays_map: {self._content_displays_map}")
+
             return task_status
 
     def load_user_metadata(self):
