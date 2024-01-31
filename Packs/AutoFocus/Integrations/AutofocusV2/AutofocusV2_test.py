@@ -3,7 +3,8 @@ import pytest
 import requests
 import requests_mock
 import demistomock as demisto
-from unittest.mock import MagicMock
+from pytest_mock import MockerFixture
+from CommonServerPython import *
 
 IP_ADDRESS = '127.0.0.1'
 
@@ -598,8 +599,8 @@ def test_search_samples(requests_mock, range_num, res_count):
         assert r.get('AFCookie') == 'auto-focus-cookie'
 
 
-def test_metrics(mocker):
-    from AutofocusV2 import main
+def test_metrics(mocker: MockerFixture):
+    import AutofocusV2
 
     bucket_info = {
         'bucket_info': {
@@ -615,12 +616,13 @@ def test_metrics(mocker):
     mocker.patch.object(demisto, 'command', return_value='autofocus-top-tags-search')
     mocker.patch.object(demisto, 'args', return_value={'unit42': 'True', 'class': 'Actor', 'retry_on_rate_limit': 'true'})
     mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.9.0', 'buildNumber': '12345'})
-    mock_request: MagicMock = mocker.patch.object(requests, 'request', return_value=type(
+    mock_request = mocker.patch.object(requests, 'request', return_value=type(
         'MockResponse', (), {'json': lambda: bucket_info, 'status_code': 503}
     ))
-    return_results_mock: MagicMock = mocker.patch('AutofocusV2.return_results')
+    return_results_mock = mocker.patch('AutofocusV2.return_results')
+    AutofocusV2.EXECUTION_METRICS = ExecutionMetrics()
 
-    main()
+    AutofocusV2.main()
 
     mock_request.assert_called_with(
         method='POST',
