@@ -873,7 +873,7 @@ def rasterize_command():  # pragma: no cover
                                          full_screen=full_screen)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
     for current_rasterize_output in rasterize_output:
-        demisto.debug(f"rasterize_command response, {current_rasterize_output=}")
+        # demisto.debug(f"rasterize_command response, {current_rasterize_output=}")
 
         if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
             output = {'image_b64': base64.b64encode(current_rasterize_output[0]).decode('utf8'),
