@@ -98,7 +98,7 @@ def test_force_default_url_arg(mocker: MockerFixture, requests_mock: MockerCore)
     mocker.patch.object(demisto, 'command', return_value='servicenow-create-co-from-template')
     requests_mock.post(f'{url}{api_endpoint}', json=util_load_json('test_data/create_co_from_template_result.json'))
     main()
-    assert api_endpoint == requests_mock.request_history[0].path
+    assert requests_mock.request_history[0].path == api_endpoint
 
 
 def test_get_server_url():
