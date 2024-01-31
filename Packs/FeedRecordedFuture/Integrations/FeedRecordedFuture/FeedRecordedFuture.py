@@ -167,7 +167,7 @@ class Client(BaseClient):
                              " requests made to Recorded Future. ")
             else:
                 return_error(
-                    f"{self.SOURCE_NAME} - exception in request: {response.status_code} {response.content}"
+                    f'{self.SOURCE_NAME} - exception in request: {response.status_code} {response.content}'  # type: ignore
                 )
 
         if service == 'connectApi':
