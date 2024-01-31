@@ -24,7 +24,7 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, \
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
-from Tests.scripts.common import get_pipelines_and_commits, is_pivot, get_commit_by_sha, get_pipeline_by_commit,\
+from Tests.scripts.common import get_pipelines_and_commits, is_pivot, get_commit_by_sha, get_pipeline_by_commit, \
     create_shame_message, slack_link, was_message_already_sent, get_nearest_commit_with_pipeline
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
@@ -360,7 +360,7 @@ def construct_slack_msg(triggering_workflow: str,
                         pipeline_url: str,
                         pipeline_failed_jobs: list[ProjectPipelineJob],
                         pull_request: GithubPullRequest | None,
-                        shame_message: tuple[str, str,str, str] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+                        shame_message: tuple[str, str, str, str] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     # report failing jobs
     content_fields = []
 
@@ -571,36 +571,38 @@ def main():
         current_commit = get_commit_by_sha(commit_sha, list_of_commits)
         if current_commit:
             current_commit_index = list_of_commits.index(current_commit)
-        
+
             # If the current commit is the last commit in the list, there is no previous commit,
             # since commits are in ascending order
             # or if we already sent a shame message for newer commits, we don't want to send another one for older commits.
-            if (current_commit_index != len(list_of_commits) - 1 and 
-            not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)):
-                
+            if (current_commit_index != len(list_of_commits) - 1
+                    and not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)):
+
                 current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
-                
+
                 # looking backwards until we find a commit with a pipeline to compare with
-                previous_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(list_of_pipelines, list_of_commits, current_commit_index, direction="backwards")
+                previous_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(
+                    list_of_pipelines, list_of_commits, current_commit_index, direction="backwards")
                 pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
-                
+
                 logging.info(
                     f"Checking pipeline id: {current_pipeline.id}, of commit: {current_commit.title}, "
                     f"after comparing with pipeline id: {previous_pipeline.id}, the change status is: {pipeline_changed_status}")
 
                 # looking_forward until we find a commit with a pipeline to compare with
                 if pipeline_changed_status is None and current_commit_index > 0:
-                    next_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(list_of_pipelines, list_of_commits, current_commit_index, direction="forwards")
+                    next_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(
+                        list_of_pipelines, list_of_commits, current_commit_index, direction="forwards")
 
                     if next_pipeline:
                         pipeline_changed_status = is_pivot(current_pipeline=next_pipeline, previous_pipeline=current_pipeline)
                         logging.info(
                             f" after comparing with pipeline id: {next_pipeline.id}, the change status is: {pipeline_changed_status}")
-                
+
                 if pipeline_changed_status is not None:
-                    shame_message=create_shame_message(suspicious_commits, pipeline_changed_status, options.name_mapping_path)
+                    shame_message = create_shame_message(suspicious_commits, pipeline_changed_status, options.name_mapping_path)
                     computed_slack_channel = "test_slack_notifier_when_master_is_broken"
-        
+
     slack_msg_data, threaded_messages = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request,
                                                             shame_message)
 

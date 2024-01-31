@@ -270,7 +270,7 @@ def get_person_in_charge(commit):
     # pr number is always the last id in the commit title, starts with a number sign, may or may not be in parenthesis.
     pr_number = commit.title.split("#")[-1].strip("()")
     # how to cut a string?
-    
+
     beginning_of_pr_name = commit.title[:20] + "..."
     if pr_number.isnumeric():
         pr = f"https://github.com/demisto/content/pull/{pr_number}"
@@ -360,7 +360,7 @@ def create_shame_message(suspicious_commits: list[ProjectCommit],
     """
     Create a shame message for the person in charge of the commit, or for multiple people in case of multiple suspicious commits.
     """
-    hi_and_status = person_in_charge = in_this_pr = color =""
+    hi_and_status = person_in_charge = in_this_pr = color = ""
     for suspicious_commit in suspicious_commits:
         name, pr, beginning_of_pr = get_person_in_charge(suspicious_commit)
         if name and pr:
@@ -372,13 +372,13 @@ def create_shame_message(suspicious_commits: list[ProjectCommit],
             emoji = ":cry:" if pipeline_changed_status else ":muscle:"
             if suspicious_commits.index(suspicious_commit) == 0:
                 hi_and_status = f"Hi, The build was {msg} {emoji} by:"
-                person_in_charge= f"@{name}"
+                person_in_charge = f"@{name}"
                 in_this_pr = f" That was done in this PR: {slack_link(pr, beginning_of_pr)}"
 
             else:
                 person_in_charge += f" or @{name}"
-                in_this_pr= ""
-            
+                in_this_pr = ""
+
     return (hi_and_status, person_in_charge, in_this_pr, color) if hi_and_status and person_in_charge and color else None
 
 
@@ -392,33 +392,33 @@ def was_message_already_sent(commit_index: int, list_of_commits: list, list_of_p
     """
     for index in reversed(range(1, commit_index)):
         # the list of commits in in ascending order, newer commits are first
-        current_commit = list_of_commits[index-1]
+        current_commit = list_of_commits[index - 1]
         previous_commit = list_of_commits[index]
         current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
         previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
         # in rare cases some commits have no pipeline
-        if current_pipeline and previous_pipeline and (is_pivot(current_pipeline, previous_pipeline)is not None):
+        if current_pipeline and previous_pipeline and (is_pivot(current_pipeline, previous_pipeline) is not None):
             return True
     return False
 
 
 def get_nearest_commit_with_pipeline(list_of_pipelines: list[ProjectPipeline], list_of_commits: list[ProjectCommit],
                                      current_commit_index: int,
-                                     direction: str) -> tuple[ProjectPipeline,list] | tuple[None, None]:
+                                     direction: str) -> tuple[ProjectPipeline, list] | tuple[None, None]:
     """
     Get the nearest commit with a pipeline in the direction specified.
     """
     suspicious_commits = []
     if direction == "forwards":
-        for index in reversed(range(0, current_commit_index -1)):   # the list of commits in in ascending order, newer commits are first
-            next_commit = list_of_commits[index]     
+        for index in reversed(range(0, current_commit_index - 1)):   # the list of commits in in ascending order, newer commits are first
+            next_commit = list_of_commits[index]
             next_pipeline = get_pipeline_by_commit(next_commit, list_of_pipelines)
             if next_pipeline:
-                suspicious_commits.append(list_of_commits[index+1])
+                suspicious_commits.append(list_of_commits[index + 1])
                 return next_pipeline, suspicious_commits
     elif direction == "backwards":
-        for index in range(current_commit_index, len(list_of_commits)-1):
-            previous_commit = list_of_commits[index+1]
+        for index in range(current_commit_index, len(list_of_commits) - 1):
+            previous_commit = list_of_commits[index + 1]
             previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
             if previous_pipeline:
                 suspicious_commits.append(list_of_commits[index])
