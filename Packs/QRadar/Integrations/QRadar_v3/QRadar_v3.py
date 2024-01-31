@@ -2183,7 +2183,6 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
 
         # if incident creation fails, it'll drop the data and try again in the next iteration
         demisto.createIncidents(incidents, {LAST_FETCH_KEY: new_highest_id})
-        sys.exit(1)
         safely_update_context_data(context_data=context_data,
                                    version=ctx_version,
                                    should_update_last_fetch=True)
