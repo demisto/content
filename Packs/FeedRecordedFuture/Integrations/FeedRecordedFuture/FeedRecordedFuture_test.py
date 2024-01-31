@@ -271,7 +271,7 @@ def test_calculate_dbot_score(risk_from_feed, malicious_threshold, suspicious_th
         2. The minimum score to be malicious (0 - 100)
         3. The minimum score to be suspicious (-1 - 100, must be less than the malicious_threshold)
         4. What the expected D-Bot Score (verdict) is (0 - 3)
-     - Individually adjust values 1, 2 & 3 to capture the cases 
+     - Individually adjust values 1, 2 & 3 to capture the cases
         - Score is greater than the malicious threshold
         - Score is between the malicious threshold and suspicious threshold
         - Score is less than the suspicious threshold
