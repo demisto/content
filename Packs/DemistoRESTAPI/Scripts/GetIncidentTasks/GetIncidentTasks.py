@@ -126,7 +126,7 @@ def get_task_command(args: dict[str, Any]) -> CommandResults:
                           readable_output=tableToMarkdown(
                               f'Incident #{inc_id} Playbook Tasks',
                               res,
-                              ['id', 'name', 'state', 'owner', 'scriptId']))
+                              ['id', 'name', 'state', 'owner', 'scriptId'], removeNull=True))
 
 
 ''' MAIN FUNCTION '''
