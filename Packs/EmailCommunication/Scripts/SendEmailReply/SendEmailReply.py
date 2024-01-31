@@ -638,7 +638,6 @@ def format_body(new_email_body):
     """
     return markdown(new_email_body,
                     extensions=[
-                        'mdx_gfm',
                         'tables',
                         'fenced_code',
                         'legacy_em',
