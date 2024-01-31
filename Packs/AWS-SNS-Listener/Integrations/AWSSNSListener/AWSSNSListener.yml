@@ -20,7 +20,8 @@ configuration:
   type: 0
   required: false
   section: Connect
-- display: Username
+- additionalinfo: Uses basic authentication for accessing the list. If empty, no authentication is enforced. (For Cortex XSOAR 8 and Cortex XSIAM) Optional for engines, otherwise mandatory.
+  display: Username
   name: credentials
   type: 9
   section: Connect
