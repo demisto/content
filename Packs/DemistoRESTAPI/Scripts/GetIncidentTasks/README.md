@@ -17,7 +17,7 @@ For example, if name and state is given, only tasks with the given name in a giv
 | **Argument Name** | **Description** |
 | --- | --- |
 | inc_id | The incident ID to get tasks from. |
-| states | The comma-separated list of states. Can be, "New", "InProgress", "Completed", "Waiting", "Error", "Skipped", "Blocked". You can also leave this field empty to get all tasks. |
+| states | The comma-separated list of states. Can be, "New", "InProgress", "Completed", "Waiting", "Error", "LoopError", "Skipped", "Blocked". You can also leave this field empty to get all tasks. |
 | name | The name of the task to search. |
 | tag | The tag of the task to search.
 
@@ -31,7 +31,7 @@ For example, if name and state is given, only tasks with the given name in a giv
 | Tasks.name | The task name. | string |
 | Tasks.type | The type of the task. Can be, "regular", "condition", "title", "playbook", or "start". | string |
 | Tasks.owner | The task owner. | string |
-| Tasks.state | The task state. Can be, "inprogress", "Completed", "WillNotBeExecuted", "Error", "Waiting", "Blocked", and empty string for not started. | string |
+| Tasks.state | The task state. Can be, "inprogress", "Completed", "WillNotBeExecuted", "Error", "LoopError", "Waiting", "Blocked", and empty string for not started. | string |
 | Tasks.scriptId | The task related script (empty if manual). | string |
 | Tasks.startDate | The task start date. | unknown |
 | Tasks.completedDate | The task completed date. | unknown |
