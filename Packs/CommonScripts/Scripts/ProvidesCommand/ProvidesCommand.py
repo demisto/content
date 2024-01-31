@@ -50,7 +50,8 @@ def main():
 
     for integration in integration_commands:
 
-        integration_name = integration['display']
+        integration_name = integration['name']
+        integration_displayname = integration['display']
 
         if 'commands' in integration:
             for command in integration['commands']:
@@ -58,11 +59,11 @@ def main():
                 command_name = command['name']
                 if command_name == COMMAND:
                     if ENABLED is None:
-                        integrations_that_implement.append(integration_name)
+                        integrations_that_implement.append(integration_displayname)
                     elif ENABLED is True and integration_name in integration_instances_enabled:
-                        integrations_that_implement.append(integration_name)
+                        integrations_that_implement.append(integration_displayname)
                     elif ENABLED is False and integration_name not in integration_instances_enabled:
-                        integrations_that_implement.append(integration_name)
+                        integrations_that_implement.append(integration_displayname)
 
     if len(integrations_that_implement) == 0:
         demisto.results('No matching commands found')
