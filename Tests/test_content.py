@@ -543,6 +543,7 @@ def lock_integrations(integrations_details: list,
         # Each file has content in the form of <circleci-build-number>:<timeout in seconds>
         # If it has not expired - it means the integration is currently locked by another test.
         workflow_id, build_number, lock_timeout = lock_file.download_as_string().decode().split(':')
+        logging_manager.info(f'\n\n{lock_expired(lock_file, lock_timeout)=}, {workflow_still_running(workflow_id)=}\n\n')
         if not lock_expired(lock_file, lock_timeout) and workflow_still_running(workflow_id):
             # there is a locked integration for which the lock is not expired - test cannot be executed at the moment
             logging_manager.warning(
