@@ -1646,6 +1646,7 @@ def is_reset_triggered():
     ctx, version = get_integration_context_with_version()
     if ctx and RESET_KEY in ctx:
         print_debug_msg('Reset fetch-incidents.')
+        demisto.setLastRun({})
         context_data: dict[str, Any] = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                                         MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
                                         'samples': []}
@@ -2181,6 +2182,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
 
         # if incident creation fails, it'll drop the data and try again in the next iteration
         demisto.createIncidents(incidents, {LAST_FETCH_KEY: new_highest_id})
+        sys.exit(1)
         safely_update_context_data(context_data=context_data,
                                    version=ctx_version,
                                    should_update_last_fetch=True)
@@ -2219,6 +2221,7 @@ def long_running_execution_command(client: Client, params: dict):
         EVENTS_SEARCH_TRIES = 1
     context_data, version = get_integration_context_with_version()
     last_highest_id_last_run = demisto.getLastRun().get(LAST_FETCH_KEY, 0)
+    demisto.debug(f'Last highest ID from last run: {last_highest_id_last_run}')
     last_highest_id_context = context_data.get(LAST_FETCH_KEY, 0)
     if last_highest_id_last_run != last_highest_id_context:
         # if there is inconsistency between last run and context, we need to update the context
