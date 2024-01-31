@@ -749,20 +749,6 @@ def main() -> None:
             }
 
             log(DEBUG, f'{demisto_params.get("date_from")=}')
-            now = datetime.now()
-            if demisto_params.get('date_from'):
-                params['date_from'] = convert_time_string(
-                    demisto_params.get('date_from'),
-                    CBS_OUTGOING_DATE_FORMAT,
-                    timestamp=True
-                ) if demisto_params.get('date_from', '') else int((now - timedelta(minutes=5)).timestamp() * 1000)
-
-            if demisto_params.get('date_to'):
-                params['date_to'] = convert_time_string(
-                    demisto_params.get('date_to'),
-                    CBS_OUTGOING_DATE_FORMAT,
-                    timestamp=True
-                ) if demisto_params.get('date_to', '') else int(now.timestamp() * 1000)
 
             log(INFO, f'Will be fetching {MAX_FETCH} incidents.')
 

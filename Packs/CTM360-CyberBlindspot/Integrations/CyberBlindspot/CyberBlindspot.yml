@@ -38,20 +38,6 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- display: Date From
-  additionalinfo: |
-    Set the date/time incidents should be fetched from (setting this will always get incidents from this date/time. Normally
-    you should not set it and rely on `First Fetch`). Format should be [%d-%m-%Y %H:%M], i.e.: '22-01-2024 13:15'
-  name: date_from
-  type: 0
-  required: false
-- display: Date To
-  additionalinfo: |
-    Set the date/time incidents should be fetched up to (setting this will always get incidents before this date/time. Normally
-    you should not set it and rely on `First Fetch`). Format should be [%d-%m-%Y %H:%M], i.e.: '22-01-2024 13:15'
-  name: date_to
-  type: 0
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
