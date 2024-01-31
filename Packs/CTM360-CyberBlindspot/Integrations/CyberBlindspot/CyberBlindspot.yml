@@ -47,9 +47,10 @@ configuration:
   type: 8
   required: false
 - display: Incident type
+  defaultvalue: CyberBlindspot Incident
   name: incidentType
   type: 13
-defaultclassifier: 'CTM360-CyberBlindspot Classifier'
+  required: false
 defaultmapperin: 'CTM360-CyberBlindspot - Incoming Mapper'
 description: 'Take action on incidents derived from CTM360 CBS threat intelligence that is directly linked to your organization.'
 display: CTM360 CyberBlindspot
