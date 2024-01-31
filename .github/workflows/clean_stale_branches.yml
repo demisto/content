@@ -6,7 +6,7 @@ on:
 env:
   DAY_BEFORE_STALE: 30
   DAY_BEFORE_CLOSE: 15
-  EXEMPT_LABELS: "Ignore Stale"
+  EXEMPT_LABELS: "Ignore Stale,External PR"
 
 jobs:
   stale:
