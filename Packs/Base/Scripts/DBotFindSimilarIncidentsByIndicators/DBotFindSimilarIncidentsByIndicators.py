@@ -266,7 +266,7 @@ def get_mutual_indicators(
         ind for ind in related_indicators if ind[INDICATOR_ID_FIELD] in indicators_of_actual_incident
     ]
     mutual_indicators_ids = [ind[INDICATOR_ID_FIELD] for ind in mutual_indicators]
-    demisto.debug(f"Found {len(mutual_indicators_ids)} mutual indicators: {mutual_indicators_ids}")
+    demisto.debug(f"Found {len(mutual_indicators_ids)} mutual indicators: {mutual_indicators}")
     return mutual_indicators
 
 
@@ -293,6 +293,8 @@ def get_mutual_indicators_df(
 
 def mutual_indicators_results(mutual_indicators: list[dict], incident_ids: list[str]):
     indicators_df = get_mutual_indicators_df(mutual_indicators, incident_ids)
+    df_as_dict = indicators_df.to_dict(orient='records')
+    demisto.debug(f"{df_as_dict=}")
     outputs = [] if indicators_df.empty else indicators_df[[INDICATOR_ID_FIELD, VALUE_FIELD]].to_dict(orient="records")
     readable_output = tableToMarkdown(
         "Mutual Indicators",
