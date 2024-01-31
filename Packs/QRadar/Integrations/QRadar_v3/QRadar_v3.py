@@ -1353,10 +1353,13 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str], assets_li
 
     offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
-    assets = [asset for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))
-              for asset in get_assets_for_ips_batch(b)]
-    if assets_limit:
-        assets = assets[:assets_limit]
+    assets: List = []
+    for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE)):
+        assets.extend(get_assets_for_ips_batch(b))
+        if assets_limit and len(assets) >= assets_limit:
+            assets = assets[:assets_limit]
+            break
+
     return [create_single_asset_for_offense_enrichment(asset) for asset in assets]
 
 
