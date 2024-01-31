@@ -12,6 +12,7 @@ TASK_STATES = {
     'error': 'Error',
     'looperror': 'LoopError',
     'skipped': 'WillNotBeExecuted',
+    'willnotbeexecuted': 'WillNotBeExecuted',
     'blocked': 'Blocked'
 }
 
