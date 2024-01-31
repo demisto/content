@@ -2734,7 +2734,8 @@
                 "Active Directory Query v2"
             ],
             "instance_names": "active_directory_ninja",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "memory_threshold": 80
         },
         {
             "integrations": "Freshdesk",
@@ -3610,6 +3611,15 @@
             "integrations": "DNSDB_v2",
             "playbookID": "DNSDB-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "CreateIncidents",
+            "playbookID": "DBotFindSimilarIncidentsByIndicators - Test",
+            "instance_names": [
+                "Create Test Incidents - Phishing Mock"
+            ],
+            "timeout": 300,
+            "is_mockable": false
         },
         {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
@@ -5650,6 +5660,7 @@
         }
     ],
     "skipped_tests": {
+        "Retrieve File from Endpoint - Generic V2 Test": "The playbook is deprecated",
         "test-threatConnectv3": "No instance - Instance issues",
         "generic-sql-mssql-encrypted-connection": "Instance issues",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
@@ -5723,6 +5734,7 @@
         "GmailTest": "Issue 27057",
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
+        "Carbon Black Enterprise EDR Process Search Test": "Issue 29775",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
         "FailedInstances - Test": "Issue 33218",
         "PAN-OS DAG Configuration Test": "Issue 19205",

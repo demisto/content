@@ -750,7 +750,7 @@ Scope: `read:jira-work`
 ### jira-edit-issue
 
 ***
-Modifies an issue in Jira.
+Modifies an issue in Jira. If the status or transition fields are given, then the other supplied fields should appear on the transition screen.
 
 Scope: `write:jira-work`
 
