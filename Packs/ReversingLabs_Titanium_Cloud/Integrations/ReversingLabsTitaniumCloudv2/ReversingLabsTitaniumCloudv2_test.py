@@ -7,7 +7,7 @@ from ReversingLabsTitaniumCloudv2 import file_reputation_output, av_scanners_out
     url_latest_analyses_feed_output, url_analyses_feed_from_date_output, yara_ruleset_output, yara_retro_actions_output, \
     format_proxy, domain_report_output, domain_downloaded_files_output, domain_urls_output, domain_to_ip_output, \
     domain_related_domains_output, ip_report_output, ip_downloaded_files_output, ip_urls_output, ip_to_domain_output, \
-    network_reputation_output, detonate_url_output
+    network_reputation_output, detonate_url_output, url_dynamic_analysis_results_output
 import demistomock as demisto
 import pytest
 
@@ -349,8 +349,20 @@ def test_sample_dynamic_analysis_results_output():
 
 def test_detonate_url_output():
     test_report = load_json("test_data/detonate_url.json")
-    text_context = load_json("test_data/detonate_url_context.json")
+    test_context = load_json("test_data/detonate_url_context.json")
 
     result = detonate_url_output(response_json=test_report, url=url2)
 
-    assert result.to_context() == text_context
+    assert result.to_context() == test_context
+
+
+def test_url_dynamic_analysis_results_output():
+    test_report = load_json("test_data/url_dynamic_response.json")
+    test_context = load_json("test_data/url_dynamic_context.json")
+
+    result, _ = url_dynamic_analysis_results_output(
+        response_json=test_report,
+        passed_url="https://www.imdb.com/title/tt7740510/reviews?ref_=tt_urv"
+    )
+
+    assert result.to_context() == test_context
