@@ -12,6 +12,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from enum import IntEnum
 from pprint import pformat
+from tempfile import mkdtemp
 from time import sleep
 from typing import Any
 from urllib.parse import quote_plus
@@ -28,8 +29,10 @@ from demisto_sdk.commands.validate.old_validate_manager import OldValidateManage
 from packaging.version import Version
 from ruamel import yaml
 
-from Tests.Marketplace.search_and_install_packs import get_packs_with_higher_min_version, \
-    search_and_install_packs_and_their_dependencies, upload_zipped_packs, install_all_content_packs_for_nightly
+from Tests.Marketplace.marketplace_constants import Metadata
+from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
+    upload_zipped_packs, install_all_content_packs_for_nightly
+from Tests.private_build.upload_packs_private import extract_packs_artifacts
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from Tests.test_content import get_server_numeric_version
@@ -1892,6 +1895,37 @@ def get_packs_to_install(build: Build) -> tuple[set[str], set[str]]:
                                                        non_hidden_packs, first_added_to_marketplace])
     packs_to_install_in_pre_update = modified_packs_names - packs_not_to_install_in_pre_update
     return packs_to_install_in_pre_update, non_hidden_packs
+
+
+def get_packs_with_higher_min_version(packs_names: set[str],
+                                      server_numeric_version: str) -> set[str]:
+    """
+    Return a set of packs that have higher min version than the server version.
+
+    Args:
+        packs_names (Set[str]): A set of packs to install.
+        server_numeric_version (str): The server version.
+
+    Returns:
+        (Set[str]): The set of the packs names that supposed to be not installed because
+                    their min version is greater than the server version.
+    """
+    extract_content_packs_path = mkdtemp()
+    packs_artifacts_path = f'{ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip'
+    extract_packs_artifacts(packs_artifacts_path, extract_content_packs_path)
+
+    packs_with_higher_version = set()
+    for pack_name in packs_names:
+        pack_metadata = get_json_file(f"{extract_content_packs_path}/{pack_name}/metadata.json")
+        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION,
+                                               pack_metadata.get('server_min_version', Metadata.SERVER_DEFAULT_MIN_VERSION))
+
+        if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
+            packs_with_higher_version.add(pack_name)
+            logging.info(f"Found pack '{pack_name}' with min version {server_min_version} that is "
+                         f"higher than server version {server_numeric_version}")
+
+    return packs_with_higher_version
 
 
 def main():

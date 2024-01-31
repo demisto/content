@@ -574,22 +574,20 @@ def get_json_file(path):
 
 
 def get_packs_with_higher_min_version(packs_names: set[str],
-                                      server_numeric_version: str) -> set[str]:
+                                      server_numeric_version: str,
+                                      extract_content_packs_path: str) -> set[str]:
     """
     Return a set of packs that have higher min version than the server version.
 
     Args:
         packs_names (Set[str]): A set of packs to install.
         server_numeric_version (str): The server version.
+        extract_content_packs_path (str): Path to a temporary folder with extracted content packs metadata.
 
     Returns:
         (Set[str]): The set of the packs names that supposed to be not installed because
                     their min version is greater than the server version.
     """
-    extract_content_packs_path = mkdtemp()
-    packs_artifacts_path = f'{ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip'
-    extract_packs_artifacts(packs_artifacts_path, extract_content_packs_path)
-
     packs_with_higher_version = set()
     for pack_name in packs_names:
         pack_metadata = get_json_file(f"{extract_content_packs_path}/{pack_name}/metadata.json")
@@ -800,21 +798,37 @@ def search_for_deprecated_dependencies(
     return True
 
 
-def filter_packs_by_min_server_version(packs_id: set[str], server_version: str):
+def filter_packs_by_min_server_version(packs_id: set[str], server_version: str, extract_content_packs_path: str):
     """Filters a set of pack IDs to only those compatible with the given server version
 
     Args:
         packs_id (set[str]): Set of pack IDs to filter
         server_version (str): Server version to check pack compatibility against
+        extract_content_packs_path (str): Path to a temporary folder with extracted content packs metadata
 
-    Returns: 
+    Returns:
         set[str]: Set of pack IDs that are compatible with the provided server version
     """
+    logging.info("Filtering packs by minimum server version")
     packs_with_higher_server_version = get_packs_with_higher_min_version(
         packs_names=packs_id,
-        server_numeric_version=server_version
+        server_numeric_version=server_version,
+        extract_content_packs_path=extract_content_packs_path
     )
     return packs_id - packs_with_higher_server_version
+
+
+def create_packs_artifacts():
+    """Creates artifacts for content packs.
+    Extracts the content packs zip file into a temporary directory.
+
+    Returns:
+        str: Path to the extracted content packs directory.
+    """
+    extract_content_packs_path = mkdtemp()
+    packs_artifacts_path = f'{ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip'
+    extract_packs_artifacts(packs_artifacts_path, extract_content_packs_path)
+    return extract_content_packs_path
 
 
 def get_packs_and_dependencies_to_install(
@@ -840,6 +854,7 @@ def get_packs_and_dependencies_to_install(
     no_deprecated_dependencies = True
     all_packs_and_dependencies_to_install: set[str] = set()
     server_numeric_version = get_server_numeric_version(client)
+    extract_content_packs_path = create_packs_artifacts()
 
     for pack_id in pack_ids:
         dependencies_for_pack_id = nx.ancestors(graph_dependencies, pack_id)
@@ -849,7 +864,7 @@ def get_packs_and_dependencies_to_install(
                 f"Found dependencies for '{pack_id}': {dependencies_for_pack_id}"
             )
             dependencies_for_pack_id = filter_packs_by_min_server_version(
-                dependencies_for_pack_id, server_numeric_version
+                dependencies_for_pack_id, server_numeric_version, extract_content_packs_path
             )
             no_deprecated_dependency = search_for_deprecated_dependencies(
                 pack_id,

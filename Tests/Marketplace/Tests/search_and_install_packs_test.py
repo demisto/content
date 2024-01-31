@@ -761,6 +761,7 @@ def test_get_packs_and_dependencies_to_install_no_deprecated(mocker: MockFixture
     mocker.patch.object(script, 'search_for_deprecated_dependencies',
                         return_value=True)
     mocker.patch.object(script, "get_server_numeric_version", return_value="6.9")
+    mocker.patch.object(script, "create_packs_artifacts", return_value="")
 
     pack_id = "PackA"
     dependencies = {"Dep1", "Dep2"}
@@ -789,6 +790,7 @@ def test_get_packs_and_dependencies_to_install_no_dependencies(mocker: MockFixtu
     client = MockClient()
     mocker.patch.object(script, 'search_for_deprecated_dependencies',
                         return_value=True)
+    mocker.patch.object(script, "create_packs_artifacts", return_value="")
 
     pack_id = "PackA"
     dependencies = {}
@@ -823,6 +825,7 @@ def test_get_packs_and_dependencies_to_install_deprecated(mocker: MockFixture):
     mocker.patch.object(script, "search_for_deprecated_dependencies",
                         return_value=False)
     mocker.patch.object(script, "get_server_numeric_version", return_value="6.9")
+    mocker.patch.object(script, "create_packs_artifacts", return_value="")
 
     pack_id = "PackA"
     dependencies = {"Dep1", "Dep2"}
@@ -1022,12 +1025,10 @@ def test_get_packs_with_higher_min_version(mocker: MockFixture, pack_version, ex
         - case 1: shouldn't filter any packs.
         - case 2: should filter the pack.
     """
-
-    mocker.patch.object(script, "extract_packs_artifacts")
     mocker.patch.object(script, "get_json_file",
                         return_value={"serverMinVersion": "6.6.0"})
 
-    packs_with_higher_min_version = script.get_packs_with_higher_min_version({'TestPack'}, pack_version)
+    packs_with_higher_min_version = script.get_packs_with_higher_min_version({'TestPack'}, pack_version, "")
     assert packs_with_higher_min_version == expected_results
 
 
@@ -1044,7 +1045,7 @@ def test_filter_packs_by_min_server_version_packs_filtered(mocker: MockFixture):
     server_version = "6.10.0"
     mocker.patch.object(script, 'get_packs_with_higher_min_version', return_value={"Pack2", "Pack3"})
 
-    filtered_packs = script.filter_packs_by_min_server_version(packs_id, server_version)
+    filtered_packs = script.filter_packs_by_min_server_version(packs_id, server_version, "")
 
     assert filtered_packs == {"Pack1"}
 
@@ -1052,7 +1053,7 @@ def test_filter_packs_by_min_server_version_packs_filtered(mocker: MockFixture):
 def test_filter_packs_by_min_server_version_no_packs_filtered(mocker: MockFixture):
     """
     Given:
-        A set of pack IDs and a server version 
+        A set of pack IDs and a server version
     When:
         No packs have a higher min version than the server version
     Then:
@@ -1062,6 +1063,6 @@ def test_filter_packs_by_min_server_version_no_packs_filtered(mocker: MockFixtur
     server_version = "6.9.0"
     mocker.patch.object(script, 'get_packs_with_higher_min_version', return_value=set())
 
-    filtered_packs = script.filter_packs_by_min_server_version(packs_id, server_version)
+    filtered_packs = script.filter_packs_by_min_server_version(packs_id, server_version, "")
 
     assert filtered_packs == packs_id

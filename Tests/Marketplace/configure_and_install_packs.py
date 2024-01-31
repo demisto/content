@@ -4,9 +4,8 @@ import traceback
 
 from demisto_sdk.commands.common.tools import get_json
 from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGURATION, \
-    XSOARBuild, XSOARServer, CloudBuild, CloudServer, Build
-from Tests.Marketplace.search_and_install_packs import get_packs_with_higher_min_version, \
-    search_and_install_packs_and_their_dependencies
+    XSOARBuild, XSOARServer, CloudBuild, CloudServer, Build, get_packs_with_higher_min_version
+from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.Marketplace.marketplace_constants import GCPConfig, XSIAM_MP, XSOAR_MP
