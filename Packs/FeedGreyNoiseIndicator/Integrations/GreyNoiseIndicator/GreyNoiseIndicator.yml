@@ -97,7 +97,7 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: "Provides a feed of IPv4 Internet Scanners from GreyNoise"
+description: "Provides a feed of IPv4 Internet Scanners from GreyNoise."
 display: GreyNoise Indicator Feed
 name: GreyNoise Indicator Feed
 script:
