@@ -1927,52 +1927,51 @@ def main():
     }
 
     try:
-        match command:
-            case 'test-module':
-                # This is the call made when pressing the integration test button.
-                test_module()
-                demisto.results('ok')
-            case 'autofocus-search-samples':
-                if args.get('polling') == 'true':
-                    cmd_res = search_samples_with_polling_command(args)
-                    if cmd_res is not None:
-                        return_results(cmd_res)
-                else:
-                    return_results(search_samples_command(args))
-            case 'autofocus-search-sessions':
-                if args.get('polling') == 'true':
-                    return_results(search_sessions_with_polling_command(args))
-                else:
-                    return_results(search_sessions_command(args))
-            case 'autofocus-samples-search-results':
-                samples_search_results_command(args)
-            case 'autofocus-sessions-search-results':
-                return_results(sessions_search_results_command(args)[0])  # first result is CommandResults
-            case 'autofocus-get-session-details':
-                get_session_details_command()
-            case 'autofocus-sample-analysis':
-                sample_analysis_command()
-            case 'autofocus-tag-details':
-                tag_details_command()
-            case 'autofocus-top-tags-search':
-                if args.get('polling') == 'true':
-                    return_results(top_tags_with_polling_command(args))
-                else:
-                    return_results(top_tags_search_command(args))
-            case 'autofocus-top-tags-results':
-                return_results(top_tags_results_command(args)[0])
-            case 'autofocus-get-export-list-indicators':
-                get_export_list_command(args)
-            case 'ip':
-                return_results(search_ip_command(**args))
-            case 'domain':
-                return_results(search_domain_command(**args))
-            case 'url':
-                return_results(search_url_command(**args))
-            case 'file':
-                return_results(search_file_command(**args))
-            case _:
-                raise NotImplementedError(f'Command {command!r} is not implemented.')
+        if command == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif command == 'autofocus-search-samples':
+            if args.get('polling') == 'true':
+                cmd_res = search_samples_with_polling_command(args)
+                if cmd_res is not None:
+                    return_results(cmd_res)
+            else:
+                return_results(search_samples_command(args))
+        elif command == 'autofocus-search-sessions':
+            if args.get('polling') == 'true':
+                return_results(search_sessions_with_polling_command(args))
+            else:
+                return_results(search_sessions_command(args))
+        elif command == 'autofocus-samples-search-results':
+            samples_search_results_command(args)
+        elif command == 'autofocus-sessions-search-results':
+            return_results(sessions_search_results_command(args)[0])  # first result is CommandResults
+        elif command == 'autofocus-get-session-details':
+            get_session_details_command()
+        elif command == 'autofocus-sample-analysis':
+            sample_analysis_command()
+        elif command == 'autofocus-tag-details':
+            tag_details_command()
+        elif command == 'autofocus-top-tags-search':
+            if args.get('polling') == 'true':
+                return_results(top_tags_with_polling_command(args))
+            else:
+                return_results(top_tags_search_command(args))
+        elif command == 'autofocus-top-tags-results':
+            return_results(top_tags_results_command(args)[0])
+        elif command == 'autofocus-get-export-list-indicators':
+            get_export_list_command(args)
+        elif command == 'ip':
+            return_results(search_ip_command(**args))
+        elif command == 'domain':
+            return_results(search_domain_command(**args))
+        elif command == 'url':
+            return_results(search_url_command(**args))
+        elif command == 'file':
+            return_results(search_file_command(**args))
+        else:
+            raise NotImplementedError(f'Command {command!r} is not implemented.')
 
     except RateLimitExceededError as e:
         rerun_command_if_required(e.api_res, argToBoolean(args.get('retry_on_rate_limit', False)))
