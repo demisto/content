@@ -694,6 +694,10 @@ def get_one_page_of_packs_dependencies(
     body = {
         "page": page,
         "size": PAGE_SIZE_DEFAULT,
+        "sort": [
+            {"field": "searchRank", "asc": False},
+            {"field": "updated", "acs": False},
+        ]
     }
 
     def success_handler(response):
