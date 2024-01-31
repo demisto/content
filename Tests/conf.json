@@ -3622,6 +3622,9 @@
             "is_mockable": false
         },
         {
+            "playbookID": "GetIndicatorsByQuery - Test"
+        },
+        {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout": 60000,
             "fromversion": "6.1.0",
