@@ -7,7 +7,7 @@
     "name": "CyberBlindspot Incident",
     "prevName": "CyberBlindspot Incident",
     "color": "#9A1C20",
-    "playbookId": "CyberBlindspot Default",
+    "playbookId": "CyberBlindspot Incident Management",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -23,7 +23,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "CyberBlindspot Incident Layout",
+    "layout": "",
     "detached": false,
     "extractSettings": {
         "mode": "All",
