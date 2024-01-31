@@ -381,6 +381,10 @@ script:
       - IPs And Assets
       - None
       description: IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses.
+    - name: limit_assets
+      defaultValue: '100'
+      description: The maximum number of assets to fetch.
+
     - name: protected
       description: Whether the offense should be protected.
       auto: PREDEFINED
