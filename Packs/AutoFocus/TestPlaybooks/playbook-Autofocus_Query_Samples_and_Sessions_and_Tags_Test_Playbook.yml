@@ -10,35 +10,40 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d08b4bf4-7994-47d6-8f94-93df7be5748b
+    taskid: e1102d9c-2996-43dc-848d-c2f15d0f081a
     type: start
     task:
-      id: d08b4bf4-7994-47d6-8f94-93df7be5748b
+      id: e1102d9c-2996-43dc-848d-c2f15d0f081a
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
-      - "9"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": -90
+          "x": 50,
+          "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: cb181534-f342-4c03-8cb4-566dddb9db80
+    taskid: b81cc9f3-905a-41b1-8e28-440bdf6c6f06
     type: playbook
     task:
-      id: cb181534-f342-4c03-8cb4-566dddb9db80
+      id: b81cc9f3-905a-41b1-8e28-440bdf6c6f06
       version: -1
       name: Autofocus Query Samples and Sessions
       description: |-
@@ -55,20 +60,12 @@ tasks:
     scriptarguments:
       Commodity:
         simple: "false"
-      Domain: {}
-      Hash: {}
       IP:
         simple: 54.215.248.188,52.8.161.117
-      Sample first seen: {}
-      Sample last modified: {}
-      SampleQuery: {}
       Scope:
         simple: Global
       Search Type:
         simple: all
-      SessionQuery: {}
-      Sessions time after: {}
-      Sessions time before: {}
       Tags class:
         simple: Exploit
       Tags private:
@@ -77,53 +74,63 @@ tasks:
         simple: "True"
       Tags scope:
         simple: all
-      URL: {}
       Unit 42:
         simple: "false"
-      Wildfire Verdict: {}
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 215
+          "x": 50,
+          "y": 340
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6d2eedd4-cd83-4b14-8fa6-e29a41832e6f
+    taskid: e634bb6b-3997-47e4-8350-bc62150f83cc
     type: title
     task:
-      id: 6d2eedd4-cd83-4b14-8fa6-e29a41832e6f
+      id: e634bb6b-3997-47e4-8350-bc62150f83cc
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 620
+          "x": 50,
+          "y": 1185
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: dcfccbc1-f549-4986-85bc-427c1f67ccfe
+    taskid: 77d155fa-d48d-4364-8078-d8efe0165191
     type: condition
     task:
-      id: dcfccbc1-f549-4986-85bc-427c1f67ccfe
+      id: 77d155fa-d48d-4364-8078-d8efe0165191
       version: -1
       name: Got Results
       type: condition
@@ -131,7 +138,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "2"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -153,24 +160,30 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 380
+          "x": 50,
+          "y": 515
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 4191158f-76ba-4367-8716-7b63bab27089
+    taskid: 49762ed8-e0f2-4b9b-8855-e44dcd612620
     type: title
     task:
-      id: 4191158f-76ba-4367-8716-7b63bab27089
+      id: 49762ed8-e0f2-4b9b-8855-e44dcd612620
       version: -1
       name: Test IP and tags input
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -178,19 +191,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 70
+          "x": 50,
+          "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: e3c76b3f-6fa1-48ad-8fa1-2b33f51ca3a3
+    taskid: 48cc1f35-5eb4-43bb-8fe3-ad02aa6d31f0
     type: playbook
     task:
-      id: e3c76b3f-6fa1-48ad-8fa1-2b33f51ca3a3
+      id: 48cc1f35-5eb4-43bb-8fe3-ad02aa6d31f0
       version: -1
       name: Autofocus Query Samples and Sessions
       description: |-
@@ -205,13 +223,6 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      Commodity: {}
-      Domain: {}
-      Hash: {}
-      IP: {}
-      Sample first seen: {}
-      Sample last modified: {}
-      SampleQuery: {}
       Scope:
         simple: Global
       Search Type:
@@ -219,36 +230,33 @@ tasks:
       SessionQuery:
         complex:
           root: inputs.SessionQuery
-      Sessions time after: {}
-      Sessions time before: {}
-      Tags class: {}
-      Tags private: {}
-      Tags public: {}
-      Tags scope: {}
-      URL: {}
-      Unit 42: {}
-      Wildfire Verdict: {}
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 215
+          "x": 50,
+          "y": 835
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 69e6e7e0-cf65-4fc1-8492-c23cc21ee523
+    taskid: 1fef62e2-a280-417f-8d39-41ba43bbb83c
     type: condition
     task:
-      id: 69e6e7e0-cf65-4fc1-8492-c23cc21ee523
+      id: 1fef62e2-a280-417f-8d39-41ba43bbb83c
       version: -1
       name: Got Results
       type: condition
@@ -278,24 +286,30 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 380
+          "x": 50,
+          "y": 1010
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 3056dcc6-0990-4b00-8bb2-dc097bef11e2
+    taskid: 445c6354-aa15-4d5b-8ded-269537709817
     type: title
     task:
-      id: 3056dcc6-0990-4b00-8bb2-dc097bef11e2
+      id: 445c6354-aa15-4d5b-8ded-269537709817
       version: -1
       name: Test Query input
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -303,24 +317,27 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 70
+          "x": 50,
+          "y": 690
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "3_2_yes": 0.48
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 775,
-        "width": 790,
-        "x": 270,
-        "y": -90
+        "height": 1200,
+        "width": 380,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -329,16 +346,19 @@ inputs:
   value: {}
   required: false
   description: ""
+  playbookInputQuery:
 - key: SampleQuery
   value:
     simple: '{"operator":"any","children":[{"field":"sample.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"sample.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}'
   required: false
   description: '{"operator":"any","children":[{"field":"sample.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"sample.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}'
+  playbookInputQuery:
 - key: SessionQuery
   value:
     simple: '{"operator":"any","children":[{"field":"session.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"session.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}'
   required: false
   description: '{"operator":"any","children":[{"field":"session.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"session.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}'
+  playbookInputQuery:
 outputs:
 - contextPath: AutoFocus.SessionsResults
   type: string
