@@ -441,9 +441,9 @@ def construct_slack_msg(triggering_workflow: str,
     title += title_append
     slack_msg_start = []
     if shame_message:
-        hi_person, you_did, in_this_pr, shame_color = shame_message
+        hi_and_status, person_in_charge, in_this_pr, shame_color = shame_message
         slack_msg_start.append({
-            "title": f"{hi_person}\n{you_did}\n{in_this_pr}",
+            "title": f"{hi_and_status}\n{person_in_charge}\n{in_this_pr}",
             "color": shame_color
         })
     return slack_msg_start + [{
@@ -612,7 +612,7 @@ def main():
                         logging.info(
                             f" after comparing with pipeline id: {next_pipeline.id}, the change status is: {pipeline_changed_status}")
                 
-                if pipeline_changed_status:
+                if pipeline_changed_status is not None:
                     shame_message=create_shame_message(suspicious_commits, pipeline_changed_status, options.name_mapping_path)
                     computed_slack_channel = "test_slack_notifier_when_master_is_broken"
         

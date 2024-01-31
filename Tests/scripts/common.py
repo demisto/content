@@ -269,11 +269,14 @@ def get_person_in_charge(commit):
     name = commit.author_name
     # pr number is always the last id in the commit title, starts with a number sign, may or may not be in parenthesis.
     pr_number = commit.title.split("#")[-1].strip("()")
+    # how to cut a string?
+    
+    beginning_of_pr_name = commit.title[:20] + "..."
     if pr_number.isnumeric():
         pr = f"https://github.com/demisto/content/pull/{pr_number}"
-        return name, pr
+        return name, pr, beginning_of_pr_name
     else:
-        return None, None
+        return None, None, None
 
 
 def are_pipelines_in_order(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool:
@@ -357,27 +360,26 @@ def create_shame_message(suspicious_commits: list[ProjectCommit],
     """
     Create a shame message for the person in charge of the commit, or for multiple people in case of multiple suspicious commits.
     """
-    hi_person = you_did = in_this_pr = color =""
+    hi_and_status = person_in_charge = in_this_pr = color =""
     for suspicious_commit in suspicious_commits:
-        name, pr = get_person_in_charge(suspicious_commit)
+        name, pr, beginning_of_pr = get_person_in_charge(suspicious_commit)
         if name and pr:
             if name == CONTENT_BOT:
                 name = get_reviewer(pr)
             name = get_slack_user_name(name, name_mapping_path)
-            msg = "broke" if pipeline_changed_status else "fixed"
+            msg = "broken" if pipeline_changed_status else "fixed"
             color = "danger" if pipeline_changed_status else "good"
             emoji = ":cry:" if pipeline_changed_status else ":muscle:"
             if suspicious_commits.index(suspicious_commit) == 0:
-                hi_person = f"Hi @{name}, "
-                you_did= f"You {msg} the build! {emoji} "
-                in_this_pr = f" That was done in this {slack_link(pr,'PR.')}"
-                
+                hi_and_status = f"Hi, The build was {msg} {emoji} by:"
+                person_in_charge= f"@{name}"
+                in_this_pr = f" That was done in this PR: {slack_link(pr, beginning_of_pr)}"
+
             else:
-                hi_person+= f"and @{name}, "
-                you_did = f"One of you {msg} the build! {emoji} "
-                in_this_pr+= f" or this {slack_link(pr,'PR,')}"
+                person_in_charge += f" or @{name}"
+                in_this_pr= ""
             
-    return (hi_person, you_did, in_this_pr, color) if hi_person and you_did and in_this_pr and color else None
+    return (hi_and_status, person_in_charge, in_this_pr, color) if hi_and_status and person_in_charge and color else None
 
 
 def slack_link(url: str, text: str) -> str:
