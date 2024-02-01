@@ -1130,7 +1130,6 @@ async def handle_dm(user: dict, text: str, client: AsyncWebClient):
         'channel': channel
     }
 
-    demisto.info(f'inside handle_dm')
     await send_slack_request_async(client, 'chat.postMessage', body=body)
 
 
@@ -1370,7 +1369,6 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
         return
 
     for mirror in mirror_filter:
-        demisto.log(f'{mirror=}')
         if mirror['mirror_direction'] == 'FromDemisto' or mirror['mirror_type'] == 'none':
             return
 
@@ -1478,7 +1476,6 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         return
     try:
         data: dict = req.payload
-        demisto.debug(f'{data=}')
         event: dict = data.get('event', {})
         text = event.get('text', '')
         user_id = data.get('user', {}).get('id', '')
@@ -1774,21 +1771,28 @@ def slack_send():
     """
     Sends a message to slack
     """
-    demisto.log(f'{get_integration_context(SYNC_CONTEXT).get("mirrors")}')
+
     args = demisto.args()
     message = args.get('message', '')
+    demisto.debug(f'message:{message}')
     to = args.get('to')
     original_channel = args.get('channel')
     channel_id = demisto.args().get('channel_id', '')
+    demisto.debug(f'channel_id:{channel_id}')
     group = args.get('group')
     message_type = args.get('messageType', '')  # From server
+    demisto.debug(f'message_type:{message_type}')
     original_message = args.get('originalMessage', '')  # From server
+    demisto.debug(f'original_message:{original_message}')
     entry = args.get('entry')
+    demisto.debug(f'entry:{entry}')
     ignore_add_url = args.get('ignoreAddURL', False) or args.get('IgnoreAddURL', False)
     thread_id = args.get('threadID', '')
+    demisto.debug(f'thread_id:{thread_id}')
     severity = args.get('severity')  # From server
     blocks = args.get('blocks')
     entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
+    demisto.debug(f'entryObject:{entry_object}')
     entitlement = ''
 
     if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES) and message_type != MIRROR_TYPE:
@@ -1808,6 +1812,11 @@ def slack_send():
 
         # return if the entry tags is not containing any of the filtered_tags
         if tags and not any(elem in entry_tags for elem in tags):
+            return
+
+        if entry:
+            demisto.debug(f'file {entry} has been uploaded to a mirrored incident, uploading the file to {original_channel=}')
+            slack_send_file(original_channel, channel_id, entry, message)
             return
 
     if (to and group) or (to and original_channel) or (to and original_channel and group):
@@ -1913,17 +1922,17 @@ def save_entitlement(entitlement, thread, reply, expiry, default_response):
     set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
-def slack_send_file():
+def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_id: str | None = None, _comment: str = ""):
     """
     Sends a file to slack
     """
     to = demisto.args().get('to')
-    channel = demisto.args().get('channel')
-    channel_id = demisto.args().get('channel_id', '')
+    channel = _channel or demisto.args().get('channel')
+    channel_id = _channel_id or demisto.args().get('channel_id', '')
     group = demisto.args().get('group')
-    entry_id = demisto.args().get('file')
+    entry_id = _entry_id or demisto.args().get('file')
     thread_id = demisto.args().get('threadID')
-    comment = demisto.args().get('comment', '')
+    comment = _comment or demisto.args().get('comment', '')
 
     if not (to or channel or group):
         mirror = find_mirror_by_investigation()
@@ -2050,7 +2059,6 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
 
     for destination in destinations:
         body['channel'] = destination
-        demisto.info(f'inside send_message_to_destinations')
         response = send_slack_request_sync(CLIENT, 'chat.postMessage', body=body)
 
     return response
