@@ -1205,7 +1205,7 @@ script:
       description: Runs a custom script on the specified endpoint or agentGuid.
       name: trendmicro-visionone-run-custom-script
     - arguments:
-        - description: 'Filter for retrieving a subset of the custom scripts list. e.g. {"fileName":"test-script.ps1","fileType":"powershell"}. If you want a list of all custom scripts available, run action with fields=`{}`.'
+        - description: 'A dictionary object with categories to filter for retrieving a subset of the custom scripts list. e.g. {"fileName":"test-script.ps1","fileType":"powershell"}. If you want a list of all custom scripts available, run action with fields=`{}`.'
           name: fields
           required: true
         - description: The query operator used to join fields to filter query. e.g. query_op="or".
