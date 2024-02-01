@@ -201,7 +201,6 @@ def main():
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
         if demisto.command() == 'test-module':
-            # TODO what to do in test-module ?
             return_results("ok")
         elif demisto.command() == 'long-running-execution':
             demisto.debug('Started long-running-execution.')
