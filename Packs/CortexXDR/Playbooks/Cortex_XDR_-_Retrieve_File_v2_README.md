@@ -1,7 +1,7 @@
 This playbook retrieves files from selected endpoints. You can retrieve up to 20 files, from 10 endpoints.
 Inputs for this playbook are:
-    - A comma-separated list of endpoint IDs.
-    - A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.
+- A comma-separated list of endpoint IDs.
+- A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.
 
 ## Dependencies
 
@@ -13,16 +13,17 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-CortexXDRIR
+* CortexXDRIR
 
 ### Scripts
 
-PrintErrorEntry
+* IsIntegrationAvailable
+* PrintErrorEntry
 
 ### Commands
 
-* xdr-retrieve-file-details
 * xdr-file-retrieve
+* xdr-retrieve-file-details
 
 ## Playbook Inputs
 
