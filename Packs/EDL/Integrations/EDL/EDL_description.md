@@ -7,7 +7,7 @@ Note: After a successful configuration of an instance, if the 'test button' is c
 <~XSIAM>
 ### Access the Generic Export Indicators Service by Instance Name (HTTPS)
 
-**Note**: If you are running the integration via the tenant and have a default password, you do not have to set username and password in the integration instance. If you are running the integration via an on-prem engine you must set the username and password fields in the integration instance.
+**Note**: If you are running the integration via an on-prem engine you must set the username and password fields in the integration instance. Otherwise, for normal usage, if you have set a default password in your tenant, you do not have to set a username and password in the integration instance
 
 **Note**: The External Dynamic List is not accessible via web browsers and you will receive an unauthorized error if accessing the External Dynamic List via a browser.
 
