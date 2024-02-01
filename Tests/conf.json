@@ -2734,7 +2734,8 @@
                 "Active Directory Query v2"
             ],
             "instance_names": "active_directory_ninja",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "memory_threshold": 80
         },
         {
             "integrations": "Freshdesk",
@@ -3610,6 +3611,18 @@
             "integrations": "DNSDB_v2",
             "playbookID": "DNSDB-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "CreateIncidents",
+            "playbookID": "DBotFindSimilarIncidentsByIndicators - Test",
+            "instance_names": [
+                "Create Test Incidents - Phishing Mock"
+            ],
+            "timeout": 300,
+            "is_mockable": false
+        },
+        {
+            "playbookID": "GetIndicatorsByQuery - Test"
         },
         {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
@@ -5611,7 +5624,7 @@
             "playbookID": "playbook-create_delete_record_Test"
         },
         {
-            "integrations": ["Cylance Protect v2", "CrowdstrikeFalcon"],
+            "integrations": "Cylance Protect v2",
             "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
         },
         {
