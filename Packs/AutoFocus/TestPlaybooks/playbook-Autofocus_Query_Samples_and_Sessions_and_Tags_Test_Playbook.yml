@@ -10,40 +10,39 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e1102d9c-2996-43dc-848d-c2f15d0f081a
+    taskid: 1d79a656-8442-4171-89c4-ae253c769434
     type: start
     task:
-      id: e1102d9c-2996-43dc-848d-c2f15d0f081a
+      id: 1d79a656-8442-4171-89c4-ae253c769434
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "6"
+      - "9"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 50
+          "x": 470,
+          "y": -90
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b81cc9f3-905a-41b1-8e28-440bdf6c6f06
+    taskid: 9a90ebd2-97bc-414d-86bb-da2da08c6d97
     type: playbook
     task:
-      id: b81cc9f3-905a-41b1-8e28-440bdf6c6f06
+      id: 9a90ebd2-97bc-414d-86bb-da2da08c6d97
       version: -1
       name: Autofocus Query Samples and Sessions
       description: |-
@@ -77,6 +76,7 @@ tasks:
       Unit 42:
         simple: "false"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -85,178 +85,50 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 340
+          "x": 270,
+          "y": 215
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: e634bb6b-3997-47e4-8350-bc62150f83cc
+    taskid: 6386c645-907c-4247-81b7-2adc15aec524
     type: title
     task:
-      id: e634bb6b-3997-47e4-8350-bc62150f83cc
+      id: 6386c645-907c-4247-81b7-2adc15aec524
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1185
+          "x": 490,
+          "y": 620
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 77d155fa-d48d-4364-8078-d8efe0165191
+    taskid: 9aafe622-4188-4d1d-8707-c7476fdfa256
     type: condition
     task:
-      id: 77d155fa-d48d-4364-8078-d8efe0165191
-      version: -1
-      name: Got Results
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: AutoFocus
-                accessor: SessionsResults
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: AutoFocus
-                accessor: SamplesResults
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    continueonerrortype: ""
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 49762ed8-e0f2-4b9b-8855-e44dcd612620
-    type: title
-    task:
-      id: 49762ed8-e0f2-4b9b-8855-e44dcd612620
-      version: -1
-      name: Test IP and tags input
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    continueonerrortype: ""
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 48cc1f35-5eb4-43bb-8fe3-ad02aa6d31f0
-    type: playbook
-    task:
-      id: 48cc1f35-5eb4-43bb-8fe3-ad02aa6d31f0
-      version: -1
-      name: Autofocus Query Samples and Sessions
-      description: |-
-        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
-
-        The playbook supports searching both the Samples API and the sessions API.
-      playbookName: Autofocus Query Samples, Sessions and Tags
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      Scope:
-        simple: Global
-      Search Type:
-        simple: session
-      SessionQuery:
-        complex:
-          root: inputs.SessionQuery
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 835
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    continueonerrortype: ""
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 1fef62e2-a280-417f-8d39-41ba43bbb83c
-    type: condition
-    task:
-      id: 1fef62e2-a280-417f-8d39-41ba43bbb83c
+      id: 9aafe622-4188-4d1d-8707-c7476fdfa256
       version: -1
       name: Got Results
       type: condition
@@ -283,61 +155,187 @@ tasks:
                 root: AutoFocus
                 accessor: SamplesResults
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1010
+          "x": 270,
+          "y": 380
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 82b92959-c002-409e-8df3-b3d1609c75f8
+    type: title
+    task:
+      id: 82b92959-c002-409e-8df3-b3d1609c75f8
+      version: -1
+      name: Test IP and tags input
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
     continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f00513b7-c9e3-48ef-83c5-a26c497dad77
+    type: playbook
+    task:
+      id: f00513b7-c9e3-48ef-83c5-a26c497dad77
+      version: -1
+      name: Autofocus Query Samples and Sessions
+      description: |-
+        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
+
+        The playbook supports searching both the Samples API and the sessions API.
+      playbookName: Autofocus Query Samples, Sessions and Tags
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Scope:
+        simple: Global
+      Search Type:
+        simple: session
+      SessionQuery:
+        complex:
+          root: inputs.SessionQuery
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 901a25e1-024d-4827-8c89-f52c743bb979
+    type: condition
+    task:
+      id: 901a25e1-024d-4827-8c89-f52c743bb979
+      version: -1
+      name: Got Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AutoFocus
+                accessor: SessionsResults
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AutoFocus
+                accessor: SamplesResults
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 445c6354-aa15-4d5b-8ded-269537709817
+    taskid: d9cfebde-2cfc-4f04-8f35-b21171299f5b
     type: title
     task:
-      id: 445c6354-aa15-4d5b-8ded-269537709817
+      id: d9cfebde-2cfc-4f04-8f35-b21171299f5b
       version: -1
       name: Test Query input
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 690
+          "x": 680,
+          "y": 70
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "3_2_yes": 0.48
+    },
     "paper": {
       "dimensions": {
-        "height": 1200,
-        "width": 380,
-        "x": 50,
-        "y": 50
+        "height": 775,
+        "width": 790,
+        "x": 270,
+        "y": -90
       }
     }
   }
@@ -346,19 +344,19 @@ inputs:
   value: {}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SampleQuery
   value:
     simple: '{"operator":"any","children":[{"field":"sample.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"sample.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}'
   required: false
   description: '{"operator":"any","children":[{"field":"sample.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"sample.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: SessionQuery
   value:
     simple: '{"operator":"any","children":[{"field":"session.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"session.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}'
   required: false
   description: '{"operator":"any","children":[{"field":"session.sha256","operator":"is","value":"4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0"},{"field":"session.sha256","operator":"is","value":"7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3"}]}'
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: AutoFocus.SessionsResults
   type: string
