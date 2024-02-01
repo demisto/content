@@ -40,8 +40,8 @@ def docker_login(ip: str) -> None:
     Args:
         ip: The ip of the server that should be logged in
     """
-    docker_username = os.environ.get('DOCKER_READ_ONLY_USER')
-    docker_password = os.environ.get('DOCKER_READ_ONLY_PASSWORD') or ''
+    docker_username = os.environ.get('DOCKERHUB_XSOAR_READONLY_USERNAME')
+    docker_password = os.environ.get('DOCKERHUB_XSOAR_READONLY_PASSWORD') or ''
     container_engine_type = 'docker'
     try:
         check_output(
