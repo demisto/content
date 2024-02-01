@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Tuple
 import enum
 import abc
 
@@ -41,9 +40,9 @@ class ComplianceObject(abc.ABC):
 class Host(ComplianceObject):
 
     def __init__(self):
-        super(Host, self).__init__(object_type=ComplianceObj.HOST,
-                                   input_context_path=f'{INTEGRATION_NAME}.ReportHostScan',
-                                   output_context_id='Hostname')
+        super().__init__(object_type=ComplianceObj.HOST,
+                         input_context_path=f'{INTEGRATION_NAME}.ReportHostScan',
+                         output_context_id='Hostname')
 
     def get_input_context_id(self, obj: dict):
         return obj.get('hostname')
@@ -76,9 +75,9 @@ class Host(ComplianceObject):
 class Container(ComplianceObject):
 
     def __init__(self):
-        super(Container, self).__init__(object_type=ComplianceObj.CONTAINER,
-                                        input_context_path=f'{INTEGRATION_NAME}.ContainersScanResults',
-                                        output_context_id='ContainerId')
+        super().__init__(object_type=ComplianceObj.CONTAINER,
+                         input_context_path=f'{INTEGRATION_NAME}.ContainersScanResults',
+                         output_context_id='ContainerId')
 
     def get_input_context_id(self, obj: dict):
         return obj.get('info', {}).get('id')
@@ -116,9 +115,9 @@ class Container(ComplianceObject):
 class Image(ComplianceObject):
 
     def __init__(self):
-        super(Image, self).__init__(object_type=ComplianceObj.IMAGE,
-                                    input_context_path=f'{INTEGRATION_NAME}.ReportsImagesScan',
-                                    output_context_id='ImageId')
+        super().__init__(object_type=ComplianceObj.IMAGE,
+                         input_context_path=f'{INTEGRATION_NAME}.ReportsImagesScan',
+                         output_context_id='ImageId')
 
     def get_input_context_id(self, obj: dict):
         return obj.get('id')
@@ -175,7 +174,7 @@ def get_input_object_list(context_data: dict, compliance_obj: ComplianceObject) 
     return [input_objects]
 
 
-def get_output_object_list(compliance_obj: ComplianceObject) -> Tuple[list, list]:
+def get_output_object_list(compliance_obj: ComplianceObject) -> tuple[list, list]:
     """Get the already present resource list in the table.
 
     Args:
@@ -261,7 +260,7 @@ def update_objects_by_issues(compliance_obj: ComplianceObject, root_context_key:
             demisto.debug(f"Got {input_obj_id} and outputs are {output_objs_ids}")
             if input_obj_id not in output_objs_ids:
                 demisto.debug(f"Got new {compliance_obj.object_type.value} with id {input_obj_id} in issue {issue}")
-                if input_obj_id in output_objs_to_create.keys():
+                if input_obj_id in output_objs_to_create:
                     output_objs_to_create[input_obj_id]['issues'].append(issue)
                 else:
                     output_objs_to_create[input_obj_id] = {
@@ -270,7 +269,7 @@ def update_objects_by_issues(compliance_obj: ComplianceObject, root_context_key:
                     }
             else:
                 demisto.debug(f"Got old {compliance_obj.object_type.value} with id {input_obj_id} in issue {issue}")
-                if input_obj_id in output_objs_to_append.keys():
+                if input_obj_id in output_objs_to_append:
                     output_objs_to_append[input_obj_id].append(issue)
                 else:
                     output_objs_to_append[input_obj_id] = [issue]
@@ -278,7 +277,7 @@ def update_objects_by_issues(compliance_obj: ComplianceObject, root_context_key:
     demisto.debug(f"The new objects to create are {list(output_objs_to_create.keys())}. Creating")
 
     all_object_type_data = []
-    for obj_to_create_id in output_objs_to_create.keys():
+    for obj_to_create_id in output_objs_to_create:
         output_context_data = compliance_obj.get_data(output_objs_to_create[obj_to_create_id]['input_obj'],
                                                       obj_to_create_id,
                                                       output_objs_to_create[obj_to_create_id]['issues'])
