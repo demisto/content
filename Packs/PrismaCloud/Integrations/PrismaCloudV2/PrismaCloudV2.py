@@ -200,6 +200,14 @@ class Client(BaseClient):
     def alert_remediate_request(self, alert_id: str):
         self._http_request('PATCH', f'alert/remediation/{alert_id}', resp_type='response')
 
+    def remove_additional_resource_fields(self, input_dict, keys):
+        if isinstance(input_dict, dict):
+            return {k: self.remove_additional_resource_fields(v, keys) for k, v in input_dict.items() if k not in keys}
+        elif isinstance(input_dict, list):
+            return [self.remove_additional_resource_fields(element, keys) for element in input_dict]
+        else:
+            return input_dict
+
     def config_search_request(self, time_range: Dict[str, Any], query: str, limit: Optional[int] = None,
                               search_id: Optional[str] = None, sort_direction: Optional[str] = None,
                               sort_field: Optional[str] = None, include_resource_json: Optional[str] = 'true',
@@ -215,16 +223,8 @@ class Client(BaseClient):
 
         ret_value = self._http_request('POST', 'search/config', json_data=data)
 
-        def remove_additional_resource_fields(input_dict, keys):
-            if isinstance(input_dict, dict):
-                return {k: remove_additional_resource_fields(v, keys) for k, v in input_dict.items() if k not in keys}
-            elif isinstance(input_dict, list):
-                return [remove_additional_resource_fields(element, keys) for element in input_dict]
-            else:
-                return input_dict
-
         if not include_additional_resource_fields:
-            ret_value = remove_additional_resource_fields(ret_value, ['shieldedInstanceInitialState', "configure-sh"])
+            ret_value = self.remove_additional_resource_fields(ret_value, ['shieldedInstanceInitialState', "configure-sh"])
 
         return ret_value
 

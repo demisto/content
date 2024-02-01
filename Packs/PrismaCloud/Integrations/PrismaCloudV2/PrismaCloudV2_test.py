@@ -1522,3 +1522,22 @@ def test_update_remote_system_command(mocker, prisma_cloud_v2_mirroring_client, 
 
     assert mock_update_remote_alert.call_count == expected_call_count
     assert result == 'P-1111111'
+
+
+def test_remove_additional_resource_fields(prisma_cloud_v2_client):
+    input = {
+        'a': 'a_val',
+        'b': {
+            'c': 'c_val',
+            'd': 'd_val',
+            'e': 'e_val'
+        }
+    }
+    expected = {
+        'a': 'a_val',
+        'b': {
+            'e': 'e_val'
+        }
+    }
+    output = prisma_cloud_v2_client.remove_additional_resource_fields(input_dict=input, keys=['c', 'd'])
+    assert output == expected
