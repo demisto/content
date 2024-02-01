@@ -3619,6 +3619,7 @@
                 "Create Test Incidents - Phishing Mock"
             ],
             "timeout": 300,
+            "fromversion": "6.10.0",
             "is_mockable": false
         },
         {
