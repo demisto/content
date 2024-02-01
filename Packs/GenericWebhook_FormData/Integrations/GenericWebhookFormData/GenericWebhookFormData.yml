@@ -63,7 +63,7 @@ description: The Generic Webhook (Form Data) integration is used to create incid
 display: Generic Webhook (Form Data)
 name: Generic Webhook (Form Data)
 script:
-  dockerimage: demisto/webhookimage
+  dockerimage: demisto/fastapi:1.0.0.76036
   isFetchSamples: true
   longRunning: true
   longRunningPort: true
