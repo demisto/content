@@ -34,7 +34,9 @@ def options_handler():
     return options
 
 
-def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketplace_tag_name, hostname=''):
+def install_packs_from_content_packs_to_install_path(
+    servers, pack_ids, marketplace_tag_name, hostname=""
+):
     """
     Install pack_ids from "$ARTIFACTS_FOLDER_SERVER_TYPE/content_packs_to_install.txt" file, and packs dependencies.
     This method is called during the post-update phase of the build (with branch changed applied).
@@ -47,14 +49,20 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketpl
     installed_packs = {}
 
     for server in servers:
-        logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
-        installed_packs, success = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
-                                                                                   client=server.client,
-                                                                                   hostname=hostname,
-                                                                                   install_packs_in_batches=install_packs_in_batches,
-                                                                                   production_bucket=False)
+        logging.info(
+            f"Starting to install all content packs in {hostname if hostname else server.internal_ip}"
+        )
+        installed_packs, success = search_and_install_packs_and_their_dependencies(
+            pack_ids=pack_ids,
+            client=server.client,
+            hostname=hostname,
+            install_packs_in_batches=install_packs_in_batches,
+            production_bucket=False,
+        )
         if not success:
-            raise Exception('Failed to search and install packs and their dependencies.')
+            raise Exception(
+                "Failed to search and install packs and their dependencies."
+            )
     return installed_packs
 
 
