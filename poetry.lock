@@ -1354,7 +1354,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.26.1"
+version = "1.26.0"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
@@ -1455,7 +1455,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "MW_TEST_CIAC-9584"
-resolved_reference = "48327b901a3acce4e3fb30e84ec9e03f085689da"
+resolved_reference = "0d2f2d8fe66dcf32451a6fcf695f992d0f6ff296"
 
 [[package]]
 name = "deprecated"
