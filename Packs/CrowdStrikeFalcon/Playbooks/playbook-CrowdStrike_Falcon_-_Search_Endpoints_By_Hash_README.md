@@ -19,8 +19,8 @@ This playbook does not use any sub-playbooks.
 ### Commands
 
 * cs-falcon-device-count-ioc
-* endpoint
 * cs-falcon-device-ran-on
+* endpoint
 
 ## Playbook Inputs
 
@@ -39,7 +39,7 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Endpoint | Additional hosts that have the SHA256 present. | string |
+| Endpoint | Additional hosts that have the hash present. | string |
 | CrowdStrike.IOC.DeviceCount | The number of devices the IOC ran on. | number |
 | Endpoint.Hostname | The endpoint's hostname. | unknown |
 | CrowdStrike.IOC.Type | The type of the IOC. | unknown |

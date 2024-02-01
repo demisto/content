@@ -42,8 +42,8 @@ tasks:
     task:
       id: 9ce410b8-ddde-4690-8625-2cfab080cd83
       version: -1
-      name: Search for hash in environment
-      description: Returns a list of device IDs an indicator ran on.
+      name: Search for hash in the environment
+      description: Returns a list of device IDs that the indicator ran on.
       script: '|||cs-falcon-device-ran-on'
       type: regular
       iscommand: true
@@ -90,7 +90,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+      - "19"
     scriptarguments:
       type:
         simple: sha256
@@ -150,21 +150,21 @@ tasks:
     task:
       id: 9b555544-59aa-45db-81b2-a12eb98fc56e
       version: -1
-      name: Was the hash detected on additional hosts?
-      description: Was the hash detected on additional hosts?
+      name: Should enrich the returned results?
+      description: "If the hash was found on additional hosts the playbook will enrich the endpoint details.\nIn case we provided host id and there is no additional endpoints that were found, the playbook will be will stop and finish without the enrich. "
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
       - "16"
+      "no":
+      - "3"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "no"
       condition:
-      - - operator: greaterThanOrEqual
+      - - operator: lessThanOrEqual
           left:
             value:
               simple: CrowdStrike.IOC.DeviceCount
@@ -172,6 +172,42 @@ tasks:
           right:
             value:
               simple: "1"
+        - operator: isNotExists
+          left:
+            value:
+              simple: CrowdStrike.IOC.DeviceCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.HostId
+                transformers:
+                - operator: If-Then-Else
+                  args:
+                    condition:
+                      value:
+                        simple: lhs==rhs
+                    conditionB: {}
+                    conditionInBetween: {}
+                    else:
+                      value:
+                        simple: inputs.HostId
+                      iscontext: true
+                    equals: {}
+                    lhs:
+                      value:
+                        simple: CrowdStrike.IOC.DeviceCount
+                      iscontext: true
+                    lhsB: {}
+                    options: {}
+                    optionsB: {}
+                    rhs: {}
+                    rhsB: {}
+                    then:
+                      value:
+                        simple: '"return empty string"'
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -382,7 +418,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "18"
     scriptarguments:
       type:
         simple: sha1
@@ -455,10 +491,10 @@ tasks:
       id: b930b6ef-bb8c-417e-88a8-d5cecabb228d
       version: -1
       name: Is there any MD5?
+      description: Is there any MD5 provided?
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "3"
@@ -501,10 +537,10 @@ tasks:
       id: 169383f7-4adc-460a-8cf3-125b8422fecc
       version: -1
       name: Is there any SHA1?
+      description: Is there any SHA1 provided?
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "3"
@@ -522,6 +558,8 @@ tasks:
                 transformers:
                 - operator: uniq
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -545,10 +583,10 @@ tasks:
       id: 2334a9cf-94c0-4b2c-81fc-90330616c546
       version: -1
       name: Is there any SHA256?
+      description: 'Is there any SHA256 provided '
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "3"
@@ -566,6 +604,8 @@ tasks:
                 transformers:
                 - operator: uniq
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -588,8 +628,8 @@ tasks:
     task:
       id: 88326013-5240-41bd-8987-6452a1d73e3c
       version: -1
-      name: Search for hash in environment
-      description: Returns a list of device IDs an indicator ran on.
+      name: Search for hash in the environment
+      description: Returns a list of device IDs that the indicator ran on.
       script: '|||cs-falcon-device-ran-on'
       type: regular
       iscommand: true
@@ -628,8 +668,8 @@ tasks:
     task:
       id: 89e8a9f8-2b7c-4d41-89e6-06dd3a90561d
       version: -1
-      name: Search for hash in environment
-      description: Returns a list of device IDs an indicator ran on.
+      name: Search for hash in the environment
+      description: Returns a list of device IDs that the indicator ran on.
       script: '|||cs-falcon-device-ran-on'
       type: regular
       iscommand: true
@@ -668,21 +708,21 @@ tasks:
     task:
       id: a69c0320-8da4-4f7d-8c06-e1b3733e544f
       version: -1
-      name: Was the hash detected on additional hosts?
-      description: Was the hash detected on additional hosts?
+      name: Should enrich the returned results?
+      description: "If the hash was found on additional hosts the playbook will enrich the endpoint details.\nIn case we provided host id and there is no additional endpoints that were found, the playbook will be will stop and finish without the enrich. "
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
+      - "1"
+      "no":
       - "3"
-      "yes":
-      - "17"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "no"
       condition:
-      - - operator: greaterThanOrEqual
+      - - operator: lessThanOrEqual
           left:
             value:
               simple: CrowdStrike.IOC.DeviceCount
@@ -690,11 +730,47 @@ tasks:
           right:
             value:
               simple: "1"
+        - operator: isNotExists
+          left:
+            value:
+              simple: CrowdStrike.IOC.DeviceCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.HostId
+                transformers:
+                - operator: If-Then-Else
+                  args:
+                    condition:
+                      value:
+                        simple: lhs==rhs
+                    conditionB: {}
+                    conditionInBetween: {}
+                    else:
+                      value:
+                        simple: inputs.HostId
+                      iscontext: true
+                    equals: {}
+                    lhs:
+                      value:
+                        simple: CrowdStrike.IOC.DeviceCount
+                      iscontext: true
+                    lhsB: {}
+                    options: {}
+                    optionsB: {}
+                    rhs: {}
+                    rhsB: {}
+                    then:
+                      value:
+                        simple: '"return empty string"'
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1240,
+          "x": 830,
           "y": 760
         }
       }
@@ -712,21 +788,21 @@ tasks:
     task:
       id: d61e2bb3-62ba-4eaa-850f-e4c4e0ab3342
       version: -1
-      name: Was the hash detected on additional hosts?
-      description: Was the hash detected on additional hosts?
+      name: Should enrich the returned results?
+      description: "If the hash was found on additional hosts the playbook will enrich the endpoint details.\nIn case we provided host id and there is no additional endpoints that were found, the playbook will be will stop and finish without the enrich. "
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
+      - "17"
+      "no":
       - "3"
-      "yes":
-      - "1"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "no"
       condition:
-      - - operator: greaterThanOrEqual
+      - - operator: lessThanOrEqual
           left:
             value:
               simple: CrowdStrike.IOC.DeviceCount
@@ -734,11 +810,47 @@ tasks:
           right:
             value:
               simple: "1"
+        - operator: isNotExists
+          left:
+            value:
+              simple: CrowdStrike.IOC.DeviceCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.HostId
+                transformers:
+                - operator: If-Then-Else
+                  args:
+                    condition:
+                      value:
+                        simple: lhs==rhs
+                    conditionB: {}
+                    conditionInBetween: {}
+                    else:
+                      value:
+                        simple: inputs.HostId
+                      iscontext: true
+                    equals: {}
+                    lhs:
+                      value:
+                        simple: CrowdStrike.IOC.DeviceCount
+                      iscontext: true
+                    lhsB: {}
+                    options: {}
+                    optionsB: {}
+                    rhs: {}
+                    rhsB: {}
+                    then:
+                      value:
+                        simple: return empty string
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 830,
+          "x": 1240,
           "y": 760
         }
       }
@@ -758,9 +870,9 @@ view: |-
       "14_3_#default#": 0.14,
       "15_2_yes": 0.5,
       "15_3_#default#": 0.11,
-      "18_3_#default#": 0.14,
-      "19_3_#default#": 0.2,
-      "4_3_#default#": 0.32,
+      "18_3_no": 0.2,
+      "19_3_no": 0.14,
+      "4_3_no": 0.34,
       "6_10_yes": 0.48,
       "6_3_#default#": 0.14,
       "6_8_yes": 0.78,
@@ -798,7 +910,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: Endpoint
-  description: Additional hosts that have the SHA256 present.
+  description: Additional hosts that have the hash present.
   type: string
 - contextPath: CrowdStrike.IOC.DeviceCount
   description: The number of devices the IOC ran on.
