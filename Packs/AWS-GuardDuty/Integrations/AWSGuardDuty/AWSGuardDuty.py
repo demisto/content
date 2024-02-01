@@ -553,8 +553,10 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
     latest_created_time = last_run.get('latest_created_time')
     last_incidents_ids = last_run.get('last_incidents_ids', [])
     last_next_token = last_run.get('last_next_token', "")
-    latest_updated_time = dateparser.parse(last_run.get('latest_updated_time', ""))
+    if latest_updated_time := last_run.get('latest_updated_time', ""):
+        latest_updated_time = dateparser.parse(latest_updated_time)
 
+    demisto.debug(f"Before fetch: {latest_updated_time=}")
     # Handle first time fetch
     if latest_created_time is None:
         latest_created_time = dateparser.parse(dateparser.parse(
@@ -564,6 +566,7 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
 
     response = client.list_detectors()
     detector = response['DetectorIds']
+    demisto.debug(f"{detector=}")
 
     created_time_to_ids = defaultdict(list)
     created_time_to_ids[latest_created_time] = last_incidents_ids
@@ -580,10 +583,11 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
         criterion_conditions['id'] = {'Neq': last_incidents_ids[:]}
 
     demisto.info(f'Fetching Amazon GuardDuty findings for the {detector[0]} since: {str(latest_created_time)}')
-
+    demisto.debug(f"{criterion_conditions=}")
     incidents: list[dict] = []
     while True:
         left_to_fetch = fetch_limit - len(incidents)
+        demisto.debug(f"{left_to_fetch=}")
         max_results = min(MAX_RESULTS_RESPONSE, left_to_fetch)
 
         list_findings_res = client.list_findings(
@@ -599,6 +603,8 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
                                                SortCriteria={'AttributeName': 'createdAt', 'OrderBy': 'ASC'})
 
         for finding in get_findings_res['Findings']:
+            demisto.debug(f"{finding.get('CreatedAt', '')}")
+            demisto.debug(f"{finding.get('UpdatedAt', '')}")
             incident_created_time = dateparser.parse(finding.get('CreatedAt', ""))
             incident_updated_time = dateparser.parse(finding.get('UpdatedAt', ""))
             incident_id = finding.get("Id")
@@ -606,6 +612,7 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
             # Update the latest_updated_time
             if not latest_updated_time or (incident_updated_time and incident_updated_time > latest_updated_time):
                 latest_updated_time = incident_updated_time
+            demisto.debug(f"After fetch: {latest_updated_time=}")
 
             # Update last run (latest_created_time) and add incident if the incident is newer than last fetch
             if (incident_created_time and latest_created_time) and incident_created_time >= latest_created_time:
