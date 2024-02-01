@@ -18,6 +18,7 @@ PLAYGROUND_PATTERN = "[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{1
 # Mutual indicators fields/columns
 INDICATOR_ID_FIELD = "id"
 VALUE_FIELD = "value"
+VALUE_FIELD_FOR_COMPATIBILITY = "name"  # value field can't be used in demisto.searchIndicators on v6.9.0
 SCORE_FIELD = "score"
 INVESTIGATION_IDS_FIELD = "investigationIDs"
 INDICATOR_TYPE_FIELD = "indicator_type"
@@ -27,7 +28,7 @@ REPUTATION_COLUMN = "Reputation"
 INVOLVED_INCIDENTS_COUNT_COLUMN = "involvedIncidentsCount"
 
 INDICATOR_FIELDS_TO_POPULATE_FROM_QUERY = [
-    INDICATOR_ID_FIELD, INDICATOR_TYPE_FIELD, INVESTIGATION_IDS_FIELD, SCORE_FIELD, VALUE_FIELD
+    INDICATOR_ID_FIELD, INDICATOR_TYPE_FIELD, INVESTIGATION_IDS_FIELD, SCORE_FIELD, VALUE_FIELD_FOR_COMPATIBILITY
 ]
 MUTUAL_INDICATORS_HEADERS = [
     INDICATOR_LINK_COLUMN, VALUE_FIELD, TYPE_COLUMN, REPUTATION_COLUMN, INVOLVED_INCIDENTS_COUNT_COLUMN
@@ -288,6 +289,7 @@ def get_mutual_indicators_df(
         )
         indicators_df[REPUTATION_COLUMN] = indicators_df[SCORE_FIELD].apply(scoreToReputation)  # pylint: disable=E1137
         indicators_df = indicators_df.rename({INDICATOR_TYPE_FIELD: TYPE_COLUMN}, axis=1)
+        indicators_df = indicators_df.rename({VALUE_FIELD_FOR_COMPATIBILITY: VALUE_FIELD}, axis=1)
     return indicators_df
 
 
@@ -386,7 +388,7 @@ def replace_indicator_ids_with_values(
     indicators_data: dict[str, dict],
 ) -> str:
     return "\n".join([
-        indicators_data.get(x, {}).get(VALUE_FIELD) or " "
+        indicators_data.get(x, {}).get(VALUE_FIELD_FOR_COMPATIBILITY) or " "
         for x in inc_ids.split(" ")
     ])
 

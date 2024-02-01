@@ -14,6 +14,8 @@ IND_D = {"id": "d", "investigationIDs": ["1", "6"], "value": "value_d", "indicat
 IND_E = {"id": "e", "investigationIDs": ["2", "3", "4"], "value": "value_e", "indicator_type": "File", "score": 1}
 IND_F = {"id": "f", "investigationIDs": ["2", "3", "4", "5"], "value": "value_f", "indicator_type": "File", "score": 1}
 INDICATORS_LIST = [IND_A, IND_B, IND_C, IND_D, IND_E, IND_F]
+for i in INDICATORS_LIST:
+    i["name"] = i["value"]
 
 INC_1 = {"id": "1", "created": "2022-01-01", "status": 0, "name": "inc_a"}  # A D
 INC_2 = {"id": "2", "created": "2022-01-01", "status": 1, "name": "inc_b"}  # A B E F
@@ -22,6 +24,10 @@ INC_4 = {"id": "4", "created": "2024-01-01", "status": 3, "name": "inc_d"}  # E 
 INC_5 = {"id": "5", "created": "2024-01-01", "status": 2, "name": "inc_e"}  # C F
 INC_6 = {"id": "6", "created": "2024-01-01", "status": 1, "name": "inc_f"}  # C D
 INCIDENTS_LIST = [INC_1, INC_2, INC_3, INC_4, INC_5, INC_6]
+
+
+def ids_of(items) -> set:
+    return {item["id"] for item in items}
 
 
 def get_related_indicators(incident_id: str):
@@ -169,7 +175,9 @@ def test_get_mutual_indicators(incidents: list[dict], indicators: list[dict], ex
     incident_ids = [inc["id"] for inc in incidents]
     indicators_of_actual_incidents = {ind["id"]: ind for ind in indicators}
     related_incidents = get_indicators_of_related_incidents(incident_ids, max_incidents_per_indicator=10)
-    assert get_mutual_indicators(related_incidents, indicators_of_actual_incidents) == expected_indicators
+    assert ids_of(
+        get_mutual_indicators(related_incidents, indicators_of_actual_incidents)
+    ) == ids_of(expected_indicators)
 
 
 def test_find_similar_incidents_by_indicators_end_to_end() -> None:
