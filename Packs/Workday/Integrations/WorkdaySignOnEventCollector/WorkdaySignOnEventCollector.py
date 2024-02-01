@@ -1,6 +1,7 @@
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from xml.sax.saxutils import escape
 
 import urllib3
 
@@ -97,9 +98,10 @@ class Client(BaseClient):
         super().__init__(
             base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers
         )
+
         self.tenant_name = tenant_name
-        self.username = username
-        self.password = password
+        self.username = escape(username)
+        self.password = escape(password)
 
     def generate_workday_account_signons_body(
         self,
