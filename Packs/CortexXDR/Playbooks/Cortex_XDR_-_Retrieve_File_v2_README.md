@@ -17,8 +17,8 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* IsIntegrationAvailable
 * PrintErrorEntry
+* IsIntegrationAvailable
 
 ### Commands
 
@@ -31,7 +31,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| endpoint_ids | A comma-separated list of endpoint IDs. |  | Required |
+| endpoint_ids | A comma-separated list of endpoint IDs. |  | Optional |
 | file_path | A comma-separated list of file paths in any platform. It can be used instead of the macOS/Windows/Linux file paths. <br/>The order of the files path list must be parallel to the endpoints list order. Therefore, the first file path in the list is related to the first endpoint ID and so on. |  | Optional |
 | windows_file_paths | A comma-separated list of Windows paths.<br/>Enter at least one path for either Windows, Linux, or Mac. |  | Optional |
 | linux_file_paths | A comma-separated list Linux paths.<br/>Enter at least one path for either Windows, Linux, or Mac. |  | Optional |
