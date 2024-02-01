@@ -18,7 +18,7 @@ tags:
 - JSON
 - Utility
 type: powershell
-dockerimage: demisto/powershell:7.1.3.22028
+dockerimage: demisto/powershell:7.4.0.80528
 fromversion: 5.5.0
 tests:
 - VerifyJSON - Test
