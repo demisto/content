@@ -1421,6 +1421,7 @@ def run_custom_script_mock_response(*args, **kwargs):
     )
 
 
+# Test case to run a custom script
 def test_run_custom_script(mocker):
     client = Mock()
     client.script.run = Mock(return_value=run_custom_script_mock_response())
@@ -1445,8 +1446,6 @@ def test_run_custom_script(mocker):
 
 # Mock function to get custom script list
 def get_custom_script_list_mock_response(*args, **kwargs):
-    # with open("./test_data/get_custom_script_list.json") as f:
-    #     return_value: list[dict[str, str]] = json.load(f)
     return Result(
         result_code=ResultCode.SUCCESS,
         response=ListCustomScriptsResp(
@@ -1468,6 +1467,7 @@ def get_custom_script_list_mock_response(*args, **kwargs):
     )
 
 
+# Test case to fetch custom script list
 def test_get_custom_script_list(mocker):
     client = Mock()
     client.script.list = Mock(return_value=get_custom_script_list_mock_response())
@@ -1488,6 +1488,7 @@ def download_custom_script_mock_response(*args, **kwargs):
     )
 
 
+# Test case to download a custom script
 def test_download_custom_script(mocker):
     client = Mock()
     client.script.download = Mock(return_value=download_custom_script_mock_response())
@@ -1508,6 +1509,7 @@ def delete_custom_script_mock_response(*args, **kwargs):
     )
 
 
+# Test case to delete a custom script
 def test_delete_custom_script(mocker):
     client = Mock()
     client.script.delete = Mock(return_value=delete_custom_script_mock_response())
@@ -1528,6 +1530,7 @@ def add_custom_script_mock_response(*args, **kwargs):
     )
 
 
+# Test case to add a custom script
 def test_add_custom_script(mocker):
     client = Mock()
     client.script.add = Mock(return_value=add_custom_script_mock_response())
@@ -1555,6 +1558,7 @@ def update_custom_script_mock_response(*args, **kwargs):
     )
 
 
+# Test case to update a custom script
 def test_update_custom_script(mocker):
     client = Mock()
     client.script.update = Mock(return_value=update_custom_script_mock_response())
