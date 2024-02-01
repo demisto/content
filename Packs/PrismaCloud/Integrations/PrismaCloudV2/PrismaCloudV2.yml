@@ -645,7 +645,7 @@ script:
       - time
       - crud
       - user
-    - description: 'Whether to include resource json or not. Default is "true". "false" will not return the resource json, "true" will return the resource json. Please note that if the value is "true", some of the keys, which contain large data objects, are still omitted by default and in order to retrieve them, please set the "include_additional_resource_fields" argument to "true". Doing so can increase the context size dramatically.'
+    - description: 'Whether to include the resource JSON or not. Default is "true". "false" will not return the resource JSON, "true" will return the resource JSON. Note that if the value is "true", some of the keys, which contain large data objects, are still omitted by default and in order to retrieve them, set the "include_additional_resource_fields" argument to "true". Doing so can increase the context size dramatically.'
       name: include_resource_json
       defaultValue: 'true'
       auto: PREDEFINED
