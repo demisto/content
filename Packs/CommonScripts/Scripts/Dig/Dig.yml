@@ -16,7 +16,7 @@ comment: 'DNS lookup utility to provide ''A'' and ''PTR'' record '
 commonfields:
   id: Dig
   version: -1
-dockerimage: demisto/netutils:1.0.0.74582
+dockerimage: demisto/netutils:1.0.0.86390
 enabled: true
 name: Dig
 script: ''
