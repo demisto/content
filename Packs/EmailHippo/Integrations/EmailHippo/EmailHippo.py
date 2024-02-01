@@ -47,8 +47,11 @@ class Client(BaseClient):
             dict: dict containing the Email reputation as returned from the API
         """
 
-        return self._http_request(method='GET',
-                                  full_url=f'{self._more_server_url}/v3/more/json/{self._more_api_key}/{email}')
+        return self._http_request(
+            method='GET',
+            full_url=f'{self._more_server_url}/v3/more/json/{self._more_api_key}/{email}',
+            with_metrics=True,
+        )
 
     def get_domain_reputation(self, domain: str) -> dict[str, Any]:
         """
@@ -61,16 +64,23 @@ class Client(BaseClient):
             dict: dict containing the domain reputation as returned from the API.
         """
 
-        return self._http_request(method='GET', full_url=f'{self._whois_server_url}/{domain}')
+        return self._http_request(
+            method='GET',
+            full_url=f'{self._whois_server_url}/{domain}',
+            with_metrics=True,
+        )
 
     def get_email_quota(self) -> dict[str, Any]:
         """
         Get the email quota remaining for the API key
         """
-        return self._http_request(method='GET',
-                                  full_url=f'{self._more_server_url}/customer/reports/v3/quota/{self._more_api_key}')
+        return self._http_request(
+            method='GET',
+            full_url=f'{self._more_server_url}/customer/reports/v3/quota/{self._more_api_key}',
+            with_metrics=True,
+        )
 
-    def determine_error_type(self, res: Response) -> ErrorTypes:
+    def determine_error_type(self, res: Response):
         """ Determines the error type based on response.
 
         Args:

@@ -108,3 +108,41 @@ class TestFailure:
         with pytest.raises(DemistoException):
             client.get_email_reputation('test@example.com')
         assert client.execution_metrics.quota_error == 1
+
+    def test_get_email_reputation_failure_auth_error(self, requests_mock, client: Client):
+        """
+        Given:
+            a Client instance and a mocked failed auth limit API response
+        When:
+            get_email_reputation is called with a valid email address
+        Then:
+            - a DemistoException is raised
+            - matrix auth_error increased
+        """
+        requests_mock.get(
+            'https://test.com/v3/more/json/test/test@example.com',
+            status_code=401,
+        )
+
+        with pytest.raises(DemistoException):
+            client.get_email_reputation('test@example.com')
+        assert client.execution_metrics.auth_error == 1
+
+    def test_get_email_reputation_failure_general_error(self, requests_mock, client: Client):
+        """
+        Given:
+            a Client instance and a mocked 400 API response
+        When:
+            get_email_reputation is called with a valid email address
+        Then:
+            - a DemistoException is raised
+            - matrix general_error increased
+        """
+        requests_mock.get(
+            'https://test.com/v3/more/json/test/test@example.com',
+            status_code=400,
+        )
+
+        with pytest.raises(DemistoException):
+            client.get_email_reputation('test@example.com')
+        assert client.execution_metrics.general_error == 1
