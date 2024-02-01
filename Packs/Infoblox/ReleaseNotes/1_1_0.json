@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The infoblox-get-ip command now outputs a list of IPs in the Infoblox.IP context path."
+}

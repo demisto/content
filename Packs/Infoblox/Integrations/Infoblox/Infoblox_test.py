@@ -6,6 +6,7 @@ from Infoblox import (
     INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY,
     INTEGRATION_COMMON_NAME_CONTEXT_KEY,
     INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY,
+    INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY,
     INTEGRATION_CONTEXT_NAME,
     INTEGRATION_HOST_RECORDS_CONTEXT_NAME,
     INTEGRATION_IPV4_CONTEXT_NAME,
@@ -282,7 +283,7 @@ class TestHelperFunctions:
         to_address = "192.168.1.254"
 
         actual = transform_ipv4_range(from_address, to_address)
-        expected = [{'ip_address>': '192.168.1.0'}, {'ip_address<': '192.168.1.254'}]
+        expected = {'ip_address>': '192.168.1.0', 'ip_address<': '192.168.1.254'}
 
         assert actual == expected
 
@@ -366,9 +367,10 @@ class TestZonesOperations:
 
 class TestIPOperations:
 
-    CONTEXT_PATH = f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}(val.ReferenceID && val.ReferenceID === obj.ReferenceID)'  # noqa: E501
+    CONTEXT_PATH = f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}'  # noqa: E501
     VALID_IP_ADDRESS = "192.168.1.1"
     VALID_NETMASK = "192.168.1.0/24"
+    BASE_URL = f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1"
 
     def test_get_ip_command_too_many_arguments(self):
         """
@@ -470,12 +472,17 @@ class TestIPOperations:
             json=json.loads(mock_response)
         )
 
-        actual_hr, actual_context, _ = get_ip_command(client, {"ip": self.VALID_IP_ADDRESS})
+        actual_hr, actual_context, actual_raw_response = get_ip_command(client, {"ip": self.VALID_IP_ADDRESS})
 
         actual_hr_lines = actual_hr.splitlines()
         assert "Infoblox Integration - IP info" in actual_hr_lines[0]
         assert self.VALID_IP_ADDRESS in actual_hr_lines[3]
-        assert cast(dict, actual_context.get(self.CONTEXT_PATH)).get("IpAddress") == self.VALID_IP_ADDRESS
+
+        actual_output = cast(list, actual_context.get(self.CONTEXT_PATH))
+        assert len(actual_output) == 1
+        assert actual_output[0].get("IpAddress") == self.VALID_IP_ADDRESS
+
+        assert actual_raw_response == json.loads(mock_response)
 
     def test_get_ip_command_from_ip_address_status_defined_no_extattr(self, requests_mock):
         """
@@ -503,13 +510,62 @@ class TestIPOperations:
             json=json.loads(mock_response)
         )
 
-        actual_hr, actual_context, _ = get_ip_command(
+        actual_hr, actual_context, actual_raw_response = get_ip_command(
             client, {"ip": self.VALID_IP_ADDRESS, "status": IPv4AddressStatus.USED.value})
 
         actual_hr_lines = actual_hr.splitlines()
         assert "Infoblox Integration - IP info" in actual_hr_lines[0]
         assert self.VALID_IP_ADDRESS in actual_hr_lines[3]
-        assert cast(dict, actual_context.get(self.CONTEXT_PATH)).get("Status") == IPv4AddressStatus.USED.value
+
+        assert self.CONTEXT_PATH in actual_context
+        actual_output = cast(list, actual_context.get(self.CONTEXT_PATH))
+        assert len(actual_output) == 1
+        assert actual_output[0].get("Status") == IPv4AddressStatus.USED.value
+
+        assert actual_raw_response == json.loads(mock_response)
+
+    def test_get_ip_command_ip_range(self, requests_mock):
+        """
+        Test the output of the `get_ip_command` when supplied a valid IP range.
+
+        Given:
+        - A mock response with a range of IPs.
+
+        When:
+        - The `from_ip` argument is set and valid.
+        - The `to_ip` argument is set and valid.
+
+        Then:
+        - 10 IP addresses are returned.
+        """
+
+        from_ip = self.VALID_IP_ADDRESS
+        to_ip = self.VALID_IP_ADDRESS[:-1] + "9"
+
+        mock_response = (Path(__file__).parent.resolve() / "test_files" / self.__class__.__name__
+                         / "get_ipv4_addresses_from_network.json").read_text()
+
+        requests_mock.get(
+            f"{self.BASE_URL}&ip_address>={from_ip}&ip_address<={to_ip}&_max_results={INTEGRATION_MAX_RESULTS_DEFAULT}",
+            json=json.loads(mock_response)
+        )
+
+        actual_hr, actual_context, actual_raw_response = get_ip_command(
+            client, {"from_ip": from_ip, "to_ip": to_ip})
+
+        assert f"(limit {INTEGRATION_MAX_RESULTS_DEFAULT})" in actual_hr.splitlines()[0]
+
+        assert self.CONTEXT_PATH in actual_context
+        actual_output = cast(list, actual_context.get(self.CONTEXT_PATH))
+
+        assert len(actual_output) == 9
+        assert from_ip == actual_output[0].get("IpAddress")
+        assert to_ip == actual_output[-1].get("IpAddress")
+
+        assert INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY in actual_output[0]
+
+        assert actual_raw_response == json.loads(mock_response)
 
     # TODO
     def test_get_ip_command_from_ip_status_defined_extattr_defined(self):
@@ -572,11 +628,14 @@ class TestIPOperations:
             json=json.loads(mock_response)
         )
 
-        actual_hr, actual_context, _ = get_ip_command(client, {"network": self.VALID_NETMASK})
+        actual_hr, actual_context, actual_raw_response = get_ip_command(client, {"network": self.VALID_NETMASK})
 
         actual_hr_lines = actual_hr.splitlines()
         assert "Infoblox Integration - IP info" in actual_hr_lines[0]
-        assert cast(dict, actual_context.get(self.CONTEXT_PATH)).get("IpAddress") == "192.168.1.0"
+
+        assert self.CONTEXT_PATH in actual_context
+        actual_output = cast(list, actual_context.get(self.CONTEXT_PATH))
+        assert len(actual_output) == 9
 
     # TODO
     def test_get_ip_command_no_response(self):

@@ -23,9 +23,15 @@ INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY = "_ref"
 INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY = "extattrs"
 
 INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY = "Reference"
+INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY = "ReferenceID"
 INTEGRATION_COMMON_NAME_CONTEXT_KEY = "Name"
 INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY = "ExtendedAttributes"
 INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY = "AdditionalFields"
+
+INTEGRATION_IP_RAW_RESULT_FQDN_KEY = "fqdn"
+INTEGRATION_IP_RAW_RESULT_RP_ZONE_KEY = "rp_zone"
+INTEGRATION_IP_RP_ZONE_CONTEXT_KEY = "Zone"
+INTEGRATION_IP_FQDN_CONTEXT_KEY = "FQDN"
 
 INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORK_KEY = "network"
 INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORKVIEW_KEY = "network_view"
@@ -215,9 +221,7 @@ class InfoBloxNIOSClient(BaseClient):
         - `dict` with response.
         """
 
-        request_params = assign_params(transform_ipv4_range(start_ip, end_ip))
-
-        return self._get_ipv4_addresses(params=request_params)
+        return self._get_ipv4_addresses(params=transform_ipv4_range(start_ip, end_ip))
 
     def _get_ipv4_addresses(self, params: dict[str, Any]) -> dict:
         return self._http_request('GET', self.IPV4ADDRESS_ENDPOINT, params=params)
@@ -527,7 +531,7 @@ def valid_ip_range(from_ip: str, to_ip: str):
         raise InvalidIPRange(f"'{from_ip}' to '{to_ip}' is not a valid IPv4 range: {err}")
 
 
-def transform_ipv4_range(from_ip: str, to_ip: str) -> list[dict[str, str]]:
+def transform_ipv4_range(from_ip: str, to_ip: str) -> dict[str, str]:
     """Transform IPv4 range to list of IPs.
 
     Args:
@@ -535,13 +539,10 @@ def transform_ipv4_range(from_ip: str, to_ip: str) -> list[dict[str, str]]:
         to_ip: End of IPv4 range.
 
     Returns:
-        List of IPv4 addresses in range.
+        dictionary of IPv4 addresses in range.
     """
 
-    return [
-        {"ip_address>": from_ip},
-        {"ip_address<": to_ip},
-    ]
+    return {"ip_address>": from_ip, "ip_address<": to_ip}
 
 
 def transform_return_fields(additional_fields: str) -> dict[str, Any]:
@@ -600,6 +601,37 @@ def transform_network_info_context(network_info: list[dict[str, Any]]) -> list[d
     return output
 
 
+def transform_ip_context(ip_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Helper function to transform the IP info
+    raw response to the expected context structure.
+
+    Args:
+    - `network_info` (``list[dict[str, Any]]``): The network info request result.
+
+    Returns:
+    - `list[dict[str, Any]]` context output.
+    """
+
+    output: list[dict[str, Any]] = []
+
+    for ip in ip_list:
+        i: dict[str, Any] = {}
+        for k, v in ip.items():
+            if k == INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY:
+                i[INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY] = v
+            elif k == INTEGRATION_IP_RAW_RESULT_FQDN_KEY:
+                i[INTEGRATION_IP_FQDN_CONTEXT_KEY] = v
+            elif k == INTEGRATION_IP_RAW_RESULT_RP_ZONE_KEY:
+                i[INTEGRATION_IP_RP_ZONE_CONTEXT_KEY] = v
+            else:
+                i[string_to_context_key(k)] = v
+
+        output.append(i)
+
+    return output
+
+
 ''' COMMANDS '''
 
 
@@ -617,10 +649,10 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
     Returns:
         Outputs
     """
-    ip = args.get('ip', None)
-    network = args.get('network', None)
-    from_ip = args.get('from_ip', None)
-    to_ip = args.get('to_ip', None)
+    ip = args.get('ip')
+    network = args.get('network')
+    from_ip = args.get('from_ip')
+    to_ip = args.get('to_ip')
 
     # Input validation
 
@@ -659,21 +691,16 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
 
     ip_list = raw_response.get('result')
 
-    # If no IP object was returned
     if not ip_list:
-        return f'{INTEGRATION_NAME} - Could not find any data', {}, {}
-
-    # TODO check why we're only taking the first IP address when the service
-    # returns a list
-    # usetest_get_ip_command_from_netmask to demonstrate
-    fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                      ip_list[0].items()}
-    title = f'{INTEGRATION_NAME} - IP info.'
-    context = {
-        f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}(val.ReferenceID && val.ReferenceID === obj.ReferenceID)':
-        fixed_keys_obj
-    }
-    human_readable = tableToMarkdown(title, fixed_keys_obj, headerTransform=pascalToSpace)
+        human_readable = f'{INTEGRATION_NAME} - Could not find any data'
+        context = {}
+    else:
+        output = transform_ip_context(ip_list)
+        title = f'{INTEGRATION_NAME} - IP info (limit {max_results})'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}': output
+        }
+        human_readable = tableToMarkdown(title, output)
     return human_readable, context, raw_response
 
 

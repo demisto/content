@@ -1,28 +1,6 @@
 {
     "result": [
         {
-            "_ref": "ipv4address/Li5pcHY0X2FkZHJlc3MkMTkyLjE2OC4xLjAvMA:192.168.1.0",
-            "ip_address": "192.168.1.0",
-            "is_conflict": false,
-            "mac_address": "",
-            "names": [
-                "ciac-3607.test"
-            ],
-            "network": "192.168.1.0/24",
-            "network_view": "default",
-            "objects": [
-                "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LnRlc3QuY2lhYy0zNjA3:ciac-3607.test/default"
-            ],
-            "status": "USED",
-            "types": [
-                "NETWORK",
-                "HOST"
-            ],
-            "usage": [
-                "DNS"
-            ]
-        },
-        {
             "_ref": "ipv4address/Li5pcHY0X2FkZHJlc3MkMTkyLjE2OC4xLjEvMA:192.168.1.1",
             "ip_address": "192.168.1.1",
             "is_conflict": false,
