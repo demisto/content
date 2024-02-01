@@ -202,7 +202,9 @@ class Client(BaseClient):
 
     def config_search_request(self, time_range: Dict[str, Any], query: str, limit: Optional[int] = None,
                               search_id: Optional[str] = None, sort_direction: Optional[str] = None,
-                              sort_field: Optional[str] = None, include_resource_json: Optional[str] = 'true'):
+                              sort_field: Optional[str] = None, include_resource_json: Optional[str] = 'true',
+                              include_additional_resource_fields: Optional[str] = 'true',
+                              ):
         data = remove_empty_values({'id': search_id,
                                     'limit': limit,
                                     'query': query,
@@ -211,7 +213,20 @@ class Client(BaseClient):
                                     'withResourceJson': include_resource_json,
                                     })
 
-        return self._http_request('POST', 'search/config', json_data=data)
+        ret_value = self._http_request('POST', 'search/config', json_data=data)
+
+        def remove_additional_resource_fields(input_dict, keys):
+            if isinstance(input_dict, dict):
+                return {k: remove_additional_resource_fields(v, key) for k, v in input_dict.items() if k not in keys}
+            elif isinstance(input_dict, list):
+                return [remove_additional_resource_fields(element, key) for element in input_dict]
+            else:
+                return input_dict
+
+        if not include_additional_resource_fields:
+            ret_value = remove_additional_resource_fields(ret_value, ['shieldedInstanceInitialState', "configure-sh"])
+
+        return ret_value
 
     def event_search_request(self,
                              time_range: Dict[str, Any],
@@ -1476,11 +1491,13 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     sort_direction = args.get('sort_direction', 'desc')
     sort_field = args.get('sort_field', 'insertTs')
     include_resource_json = args.get('include_resource_json', 'true')
+    include_additional_resource_fields = args.get('include_additional_resource_fields', 'false')
     if any([sort_direction, sort_field]) and not all([sort_direction, sort_field]):
         raise DemistoException('Both sort direction and field must be specified if sorting.')
 
     response = client.config_search_request(time_filter, str(query), limit, search_id, sort_direction, sort_field,
-                                            include_resource_json)
+                                            include_resource_json,
+                                            include_additional_resource_fields=include_additional_resource_fields)
     response_items = response.get('data', {}).get('items', [])
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
