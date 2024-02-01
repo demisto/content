@@ -250,7 +250,9 @@ def test_config_search_command(mocker, prisma_cloud_v2_client):
     http_request.assert_called_with('POST', 'search/config',
                                     json_data={'limit': 1, 'query': "config from cloud.resource where cloud.region = 'AWS Ohio' ",
                                                'sort': [{'direction': 'desc', 'field': 'insertTs'}],
-                                               'timeRange': {'type': 'to_now', 'value': 'epoch'}})
+                                               'timeRange': {'type': 'to_now', 'value': 'epoch'},
+                                               'withResourceJson': {'value': 'true'},
+                                               })
 
 
 def test_event_search_command(mocker, prisma_cloud_v2_client):
