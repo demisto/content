@@ -2009,18 +2009,18 @@ tqdm = ["tqdm (>=4.7.4,<5.0.0dev)"]
 
 [[package]]
 name = "google-cloud-compute"
-version = "1.14.1"
+version = "1.16.0"
 description = "Google Cloud Compute API client library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-cloud-compute-1.14.1.tar.gz", hash = "sha256:acd987647d7c826aa97b4418141c740ead5e8811d3349315f2f89a30c01c7f4b"},
-    {file = "google_cloud_compute-1.14.1-py2.py3-none-any.whl", hash = "sha256:b40d6aeeb2c5ce373675c869f1404a1bc19b9763b746ad8f2d91ed1148893d6f"},
+    {file = "google-cloud-compute-1.16.0.tar.gz", hash = "sha256:c10beb88415b7388b03643896da47b158eab5a7bd89a502aaa5d12de0109f600"},
+    {file = "google_cloud_compute-1.16.0-py2.py3-none-any.whl", hash = "sha256:f1ce0827fe17075e6bfbd549546197c506686065b74bc4051a6e1a86902d3001"},
 ]
 
 [package.dependencies]
 google-api-core = {version = ">=1.34.0,<2.0.dev0 || >=2.11.dev0,<3.0.0dev", extras = ["grpc"]}
-proto-plus = ">=1.22.0,<2.0.0dev"
+proto-plus = ">=1.22.3,<2.0.0dev"
 protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
 
 [[package]]
@@ -7127,4 +7127,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "68794f48ec449516fd10dc003af8c85c2badd45478c20d28c375c482235c8de8"
+content-hash = "34b8efc858af22778606fbc9876291da88a62c9abe2dc484ed501ec07e7e8af8"
