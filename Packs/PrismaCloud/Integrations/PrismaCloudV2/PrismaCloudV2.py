@@ -217,9 +217,9 @@ class Client(BaseClient):
 
         def remove_additional_resource_fields(input_dict, keys):
             if isinstance(input_dict, dict):
-                return {k: remove_additional_resource_fields(v, key) for k, v in input_dict.items() if k not in keys}
+                return {k: remove_additional_resource_fields(v, keys) for k, v in input_dict.items() if k not in keys}
             elif isinstance(input_dict, list):
-                return [remove_additional_resource_fields(element, key) for element in input_dict]
+                return [remove_additional_resource_fields(element, keys) for element in input_dict]
             else:
                 return input_dict
 
