@@ -120,6 +120,14 @@
 <td style="width: 589px;">Final priority of ticket</td>
 </tr>
 <tr>
+<td style="width: 132px;">member-of</td>
+<td style="width: 589px;">Ticket MembersOF links</td>
+</tr>
+<tr>
+<td style="width: 132px;">members</td>
+<td style="width: 589px;">Ticket Members links</td>
+</tr>
+<tr>
 <td style="width: 132px;">attachment</td>
 <td style="width: 589px;">
 <p>Comma separated list of entry IDs of attachment to add to the ticket (for example: entryID1,entryID2).</p>
