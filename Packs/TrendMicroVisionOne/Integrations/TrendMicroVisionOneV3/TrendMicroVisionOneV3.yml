@@ -1212,7 +1212,7 @@ script:
           name: query_op
       outputs:
         - contextPath: VisionOne.Get_Custom_Script_List.id
-          description: The id for custom script.
+          description: The ID for custom script.
           type: string
         - contextPath: VisionOne.Get_Custom_Script_List.description
           description: The script description.
