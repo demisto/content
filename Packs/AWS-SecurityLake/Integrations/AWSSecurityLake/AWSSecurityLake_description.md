@@ -1,7 +1,7 @@
 Before you can use the AWS Security Lake integration in XSOAR, you need to perform several configuration steps in your AWS environment.
 
 ### Prerequisites
-- Attach an instance profile with the required permissions to the XSOAR server or engine that is running 
+- Attach an instance profile with the required permissions to the Cortex XSOAR server or engine that is running 
 on your AWS environment.
 - Instance profile requires minimum permission: sts:AssumeRole.
 - Instance profile requires permission to assume the roles needed by the AWS integrations.
@@ -9,7 +9,7 @@ on your AWS environment.
 ### Configure AWS Settings
 1. Create an IAM Role for the Instance Profile.
 2. Attach a Role to the Instance Profile.
-3. Configure the Necessary IAM Roles that the AWS Integration Can Assume.
+3. Configure the necessary IAM Roles that the AWS integration can assume.
 
 For detailed instructions, see the [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 

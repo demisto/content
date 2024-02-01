@@ -10,7 +10,7 @@ This integration was integrated and tested with version 1.34.20 of AWS Security 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Name | User name | True |
-    | Role Arn | Role Arn | False |
+    | Role Arn | Role ARN | False |
     | Role Session Name | Role Session Name | False |
     | Role Session Duration | Role Session Duration | False |
     | AWS Default Region | AWS Default Region | False |
@@ -52,7 +52,7 @@ Execute a new query, wait for the query to complete (using polling), and return 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | QueryExecutionId | ID of the newly created query. Used internally for polling. | Optional | 
 | hide_polling_output |  | Optional | 
 
@@ -72,7 +72,7 @@ Execute a new query, wait for the query to complete (using polling), and return 
 | AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes | Number | Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60. | 
 | AWS.Athena.Query.QueryExecutionContext.Database | String | The name of the database used in the query execution. | 
 | AWS.Athena.Query.QueryExecutionContext.Catalog | String | The name of the data catalog used in the query execution. | 
-| AWS.Athena.Query.Status.State | String | The state of query execution. | 
+| AWS.Athena.Query.Status.State | String | The state of the query execution. | 
 | AWS.Athena.Query.Status.StateChangeReason | String | Further detail about the status of the query. | 
 | AWS.Athena.Query.Status.SubmissionDateTime | String | The date and time that the query was submitted. | 
 | AWS.Athena.Query.Status.CompletionDateTime | String | The date and time that the query completed. | 
@@ -93,7 +93,7 @@ Execute a new query, wait for the query to complete (using polling), and return 
 | AWS.Athena.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
 | AWS.Athena.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
 | AWS.Athena.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
-| AWS.Athena.Query.SubstatementType | String | The kind of query statement that was run. | 
+| AWS.Athena.Query.SubstatementType | String | The type of query statement that was run. | 
 | AWS.Athena.QueryResults | List | List of query results. | 
 
 ### aws-security-lake-data-catalogs-list
@@ -110,7 +110,7 @@ Lists the data catalogs in the current Amazon Web Services account.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | work_group | The name of the workgroup. Required if making an IAM Identity Center request.  | Optional | 
-| region | The AWS Region, if not specified the default region will be used.  | Optional | 
+| region | The AWS region. If not specified, the default region will be used.  | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
 | roleSessionName | An identifier for the assumed role session.  | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
@@ -140,7 +140,7 @@ Lists the databases in the specified data catalog.
 | --- | --- | --- |
 | catalog_name | The name of the data catalog that contains the databases to return.  | Required | 
 | work_group | The name of the workgroup for which the metadata is being fetched. Required if requesting an IAM Identity Center enabled Glue Data Catalog.  | Optional | 
-| region | The AWS Region, if not specified the default region will be used.  | Optional | 
+| region | The AWS region. If not specified, the default region will be used.  | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
 | roleSessionName | An identifier for the assumed role session.  | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
@@ -215,14 +215,14 @@ Runs query that takes a provided username and queries the AWS Security Lake for 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| database | The Database to run the query against.  | Required | 
-| table | The Table to run the query against.  | Required | 
+| database | The database to run the query against.  | Required | 
+| table | The table to run the query against.  | Required | 
 | user_name | The username to search for MFA login attempts.  | Required | 
 | output_location | The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/.  | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
 | roleSessionName | An identifier for the assumed role session.  | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.  | Optional | 
 
 #### Context Output
@@ -241,7 +241,7 @@ Runs query that takes a provided username and queries the AWS Security Lake for 
 | AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes | Number | Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60. | 
 | AWS.Athena.Query.QueryExecutionContext.Database | String | The name of the database used in the query execution. | 
 | AWS.Athena.Query.QueryExecutionContext.Catalog | String | The name of the data catalog used in the query execution. | 
-| AWS.Athena.Query.Status.State | String | The state of query execution. | 
+| AWS.Athena.Query.Status.State | String | The state of the query execution. | 
 | AWS.Athena.Query.Status.StateChangeReason | String | Further detail about the status of the query. | 
 | AWS.Athena.Query.Status.SubmissionDateTime | String | The date and time that the query was submitted. | 
 | AWS.Athena.Query.Status.CompletionDateTime | String | The date and time that the query completed. | 
@@ -262,7 +262,7 @@ Runs query that takes a provided username and queries the AWS Security Lake for 
 | AWS.Athena.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
 | AWS.Athena.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
 | AWS.Athena.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
-| AWS.Athena.Query.SubstatementType | String | The kind of query statement that was run. | 
+| AWS.Athena.Query.SubstatementType | String | The type of query statement that was run. | 
 | AWS.Athena.MfaLoginQueryResults | List | List of query results. | 
 
 #### Command Example
@@ -271,7 +271,7 @@ Runs query that takes a provided username and queries the AWS Security Lake for 
 ### aws-security-lake-source-ip-query
 
 ***
-Runs query takes a provided Source IP Address and queries the AWS Security Lake for Console login attempts (Success/Failed) associated with the IP Address, using AWS CloudTrail logs.
+Runs a query that takes a provided source IP address and queries the AWS Security Lake for console login attempts (Success/Failed) associated with the IP address, using AWS CloudTrail logs.
 
 #### Base Command
 
@@ -281,14 +281,14 @@ Runs query takes a provided Source IP Address and queries the AWS Security Lake 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| database | The Database to run the query against.  | Required | 
-| table | The Table to run the query against.  | Required | 
-| ip_src | The source IP Address to search for console login attempts.  | Required | 
+| database | The database to run the query against.  | Required | 
+| table | The table to run the query against.  | Required | 
+| ip_src | The source IP address to search for console login attempts.  | Required | 
 | output_location | The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/.  | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
 | roleSessionName | An identifier for the assumed role session.  | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.  | Optional | 
 
 #### Context Output
@@ -307,7 +307,7 @@ Runs query takes a provided Source IP Address and queries the AWS Security Lake 
 | AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes | Number | Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60. | 
 | AWS.Athena.Query.QueryExecutionContext.Database | String | The name of the database used in the query execution. | 
 | AWS.Athena.Query.QueryExecutionContext.Catalog | String | The name of the data catalog used in the query execution. | 
-| AWS.Athena.Query.Status.State | String | The state of query execution. | 
+| AWS.Athena.Query.Status.State | String | The state of the query execution. | 
 | AWS.Athena.Query.Status.StateChangeReason | String | Further detail about the status of the query. | 
 | AWS.Athena.Query.Status.SubmissionDateTime | String | The date and time that the query was submitted. | 
 | AWS.Athena.Query.Status.CompletionDateTime | String | The date and time that the query completed. | 
@@ -328,7 +328,7 @@ Runs query takes a provided Source IP Address and queries the AWS Security Lake 
 | AWS.Athena.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
 | AWS.Athena.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
 | AWS.Athena.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
-| AWS.Athena.Query.SubstatementType | String | The kind of query statement that was run. | 
+| AWS.Athena.Query.SubstatementType | String | The type of query statement that was run. | 
 | AWS.Athena.SourceIPQueryResults | List | List of query results. | 
 
 #### Command Example
@@ -347,14 +347,14 @@ This command is used to search for Guard Duty logs for any criticality level act
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| database | The Database to run the query against.  | Required | 
-| table | The Table to run the query against.  | Required | 
+| database | The database to run the query against.  | Required | 
+| table | The table to run the query against.  | Required | 
 | severity | The severity of searchingto search related events for. Possible values are: 0-Unknown, 1-Informational, 2-Low, 3-Medium, 4-High, 5-Critical, 6-Fatal, 99-Other. | Required | 
 | output_location | The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/.  | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
 | roleSessionName | An identifier for the assumed role session.  | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.  | Optional | 
 
 #### Context Output
@@ -373,7 +373,7 @@ This command is used to search for Guard Duty logs for any criticality level act
 | AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes | Number | Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60. | 
 | AWS.Athena.Query.QueryExecutionContext.Database | String | The name of the database used in the query execution. | 
 | AWS.Athena.Query.QueryExecutionContext.Catalog | String | The name of the data catalog used in the query execution. | 
-| AWS.Athena.Query.Status.State | String | The state of query execution. | 
+| AWS.Athena.Query.Status.State | String | The state of the query execution. | 
 | AWS.Athena.Query.Status.StateChangeReason | String | Further detail about the status of the query. | 
 | AWS.Athena.Query.Status.SubmissionDateTime | String | The date and time that the query was submitted. | 
 | AWS.Athena.Query.Status.CompletionDateTime | String | The date and time that the query completed. | 
@@ -394,7 +394,7 @@ This command is used to search for Guard Duty logs for any criticality level act
 | AWS.Athena.Query.EngineVersion.SelectedEngineVersion | String | The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO. | 
 | AWS.Athena.Query.EngineVersion.EffectiveEngineVersion | String | The engine version on which the query runs. | 
 | AWS.Athena.Query.ExecutionParameters | List | A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response. | 
-| AWS.Athena.Query.SubstatementType | String | The kind of query statement that was run. | 
+| AWS.Athena.Query.SubstatementType | String | The type of query statement that was run. | 
 | AWS.Athena.GuardDutyActivityQueryResults | List | List of query results. | 
 
 #### Command Example
@@ -403,7 +403,7 @@ This command is used to search for Guard Duty logs for any criticality level act
 ### aws-security-lake-data-sources-list
 
 ***
-Retrieves a snapshot of the current Region, including whether Amazon Security Lake is enabled for those accounts and which sources Security Lake is collecting data from.
+Retrieves a snapshot of the current region, including whether Amazon Security Lake is enabled for those accounts and which sources Security Lake is collecting data from.
 In order to run this command the user must have 'securitylake' permissions.
 
 #### Base Command
@@ -420,7 +420,7 @@ In order to run this command the user must have 'securitylake' permissions.
 | roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
 | roleSessionName | An identifier for the assumed role session.  | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.  | Optional | 
 
 #### Context Output
@@ -431,7 +431,7 @@ In order to run this command the user must have 'securitylake' permissions.
 | AWS.SecurityLake.DataLakeSource.DataLakeSources.account | String | The ID of the Security Lake account for which logs are collected. | 
 | AWS.SecurityLake.DataLakeSource.DataLakeSources.eventClasses | List | The Open Cybersecurity Schema Framework \(OCSF\) event classes which describes the type of data that the custom source will send to Security Lake. | 
 | AWS.SecurityLake.DataLakeSource.DataLakeSources.sourceName | String | The supported Amazon Web Services from which logs and events are collected. Amazon Security Lake supports log and event collection for natively supported Amazon Web Services. | 
-| AWS.SecurityLake.DataLakeSource.DataLakeSources.sourceStatuses.resource | String | Defines path the stored logs are available which has information on your systems, applications, and services. | 
+| AWS.SecurityLake.DataLakeSource.DataLakeSources.sourceStatuses.resource | String | Defines the path in which the stored logs are available which has information on your systems, applications, and services. | 
 | AWS.SecurityLake.DataLakeSource.DataLakeSources.sourceStatuses.status | String | The health status of services, including error codes and patterns. | 
 | AWS.SecurityLake.DataLakeSourceNextToken | String | Lists if there are more results available. The value of nextToken is a unique pagination token for each page. Repeat the call using the returned token to retrieve the next page. Keep all other arguments unchanged. | 
 
@@ -456,7 +456,7 @@ In order to run this command the user must have 'securitylake' permissions.
 | roleArn | The Amazon Resource Name (ARN) of the role to assume.  | Optional | 
 | roleSessionName | An identifier for the assumed role session.  | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.  | Optional | 
-| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| region | The AWS region. If not specified, the default region will be used. | Optional | 
 | query_limit | A limit (number) to use for the query. If the keyword 'LIMIT' exists within 'QueryString', this parameter will be ignored.  | Optional | 
 
 #### Context Output
@@ -465,16 +465,16 @@ In order to run this command the user must have 'securitylake' permissions.
 | --- | --- | --- |
 | AWS.SecurityLake.createStatus | String | Retrieves the status of the configuration operation for an account in Amazon Security Lake. | 
 | AWS.SecurityLake.dataLakeArn | String | The Amazon Resource Name \(ARN\) created by you to provide to the subscriber. | 
-| AWS.SecurityLake.encryptionConfiguration.kmsKeyId | String | The id of KMS encryption key used by Amazon Security Lake to encrypt the Security Lake object. | 
+| AWS.SecurityLake.encryptionConfiguration.kmsKeyId | String | The ID of the KMS encryption key used by Amazon Security Lake to encrypt the Security Lake object. | 
 | AWS.SecurityLake.lifecycleConfiguration.expiration.days | Number | Number of days before data expires in the Amazon Security Lake object. | 
 | AWS.SecurityLake.lifecycleConfiguration.transitions.days | Number | Number of days before data transitions to a different S3 Storage Class in the Amazon Security Lake object. | 
 | AWS.SecurityLake.lifecycleConfiguration.transitions.storageClass | String | The range of storage classes that you can choose from based on the data access, resiliency, and cost requirements of your workloads. | 
-| AWS.SecurityLake.region | String | The Amazon Web Services Regions where Security Lake is enabled. | 
+| AWS.SecurityLake.region | String | The Amazon Web Services regions where Security Lake is enabled. | 
 | AWS.SecurityLake.replicationConfiguration.regions | String | Replication enables automatic, asynchronous copying of objects across Amazon S3 buckets. | 
 | AWS.SecurityLake.replicationConfiguration.roleArn | String | Replication settings for the Amazon S3 buckets. This parameter uses the Identity and Access Management \(IAM\) role you created that is managed by Security Lake, to ensure the replication setting is correct. | 
 | AWS.SecurityLake.s3BucketArn | String | The ARN for the Amazon Security Lake Amazon S3 bucket. | 
 | AWS.SecurityLake.updateStatus.exception.code | String | The reason code for the exception of the last UpdateDataLake or DeleteDataLake API request. | 
-| AWS.SecurityLake.updateStatus.exception.reason | String | The reason for the exception of the last UpdateDataLake\`\`or \`\`DeleteDataLake API request. | 
+| AWS.SecurityLake.updateStatus.exception.reason | String | The reason for the exception of the last UpdateDataLake or DeleteDataLake API request. | 
 | AWS.SecurityLake.updateStatus.requestId | String | The unique ID for the last UpdateDataLake or DeleteDataLake API request. | 
 | AWS.SecurityLake.updateStatus.status | String | The status of the last UpdateDataLake or DeleteDataLake API request that was requested. | 
 
