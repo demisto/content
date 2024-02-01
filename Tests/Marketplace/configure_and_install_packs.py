@@ -4,7 +4,7 @@ import traceback
 
 from demisto_sdk.commands.common.tools import get_json
 from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGURATION, \
-    XSOARBuild, XSOARServer, CloudBuild, CloudServer, Build, get_packs_with_higher_min_version
+    XSOARBuild, XSOARServer, CloudBuild, CloudServer, Build
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -44,16 +44,18 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketpl
         servers: XSIAM or XSOAR Servers to install packs on it.
     """
     install_packs_in_batches = marketplace_tag_name == XSIAM_MP
+    installed_packs = {}
 
     for server in servers:
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
-        _, success = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
-                                                                     client=server.client,
-                                                                     hostname=hostname,
-                                                                     install_packs_in_batches=install_packs_in_batches,
-                                                                     production_bucket=False)
+        installed_packs, success = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
+                                                                                   client=server.client,
+                                                                                   hostname=hostname,
+                                                                                   install_packs_in_batches=install_packs_in_batches,
+                                                                                   production_bucket=False)
         if not success:
             raise Exception('Failed to search and install packs and their dependencies.')
+    return installed_packs
 
 
 def xsoar_configure_and_install_flow(options, branch_name: str, build_number: str):
@@ -87,28 +89,13 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
 
     # Create a list of all packs that should be installed
     packs_to_install = set(Build.fetch_pack_ids_to_install(options.pack_ids_to_install))
-    logging.info(f'Packs to install before filtering by minServerVersion: {packs_to_install}')
+    logging.info(f'Packs to install: {packs_to_install}')
 
-    server_version = servers[0].server_numeric_version
-
-    # Get packs with 'minServerVersion' that's higher than server's version
-    packs_with_higher_server_version = get_packs_with_higher_min_version(
-        packs_names=packs_to_install,
-        server_numeric_version=server_version
-    )
-    logging.info(f'Packs with minServerVersion that is higher than server version: {packs_with_higher_server_version}')
-
-    # Remove packs that 'minServerVersion' that's higher than server's version.
-    pack_ids_with_valid_min_server_version = packs_to_install - packs_with_higher_server_version
-    logging.info(f'Installing content packs: {pack_ids_with_valid_min_server_version}')
-
-    for b in batch(list(pack_ids_with_valid_min_server_version), batch_size=20):
-        logging.info(f'installing packs in batch: {b}')
-        install_packs_from_content_packs_to_install_path(servers=servers,
-                                                         pack_ids=b,
-                                                         marketplace_tag_name=XSOAR_MP)
+    installed_packs = install_packs_from_content_packs_to_install_path(servers=servers,
+                                                                       pack_ids=packs_to_install,
+                                                                       marketplace_tag_name=XSOAR_MP)
     logging.success(
-        f'Finished content packs: {pack_ids_with_valid_min_server_version} in {[server.internal_ip for server in servers]}'
+        f'Finished content packs: {installed_packs} in {[server.internal_ip for server in servers]}'
     )
 
 

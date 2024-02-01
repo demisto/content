@@ -835,7 +835,8 @@ def get_packs_and_dependencies_to_install(
     graph_dependencies: DiGraph,
     production_bucket: bool,
     all_packs_dependencies_data: dict,
-    client: DemistoClient,
+    server_numeric_version: str,
+    extract_content_packs_path: str,
 ) -> tuple[bool, set]:
     """
     Fetches all dependencies for the given list of pack IDs and returns the packs and dependencies that should be installed.
@@ -852,8 +853,6 @@ def get_packs_and_dependencies_to_install(
     """
     no_deprecated_dependencies = True
     all_packs_and_dependencies_to_install: set[str] = set()
-    server_numeric_version = get_server_numeric_version(client)
-    extract_content_packs_path = create_packs_artifacts()
 
     for pack_id in pack_ids:
         dependencies_for_pack_id = nx.ancestors(graph_dependencies, pack_id)
@@ -1039,7 +1038,12 @@ def search_and_install_packs_and_their_dependencies(
 
     success = True
 
+    server_version = get_server_numeric_version(client)
+    extract_content_packs_path = create_packs_artifacts()
+
     pack_ids = filter_deprecated_packs(pack_ids, production_bucket, master_commit_hash)
+    pack_ids = list(filter_packs_by_min_server_version(set(pack_ids), server_version, extract_content_packs_path))
+
     if not pack_ids:
         logging.info(f"No packs to install on: {host}")
         return [], success
@@ -1054,7 +1058,8 @@ def search_and_install_packs_and_their_dependencies(
         graph_dependencies,
         production_bucket,
         all_packs_dependencies_data,
-        client,
+        server_version,
+        extract_content_packs_path,
     )
     success &= no_deprecated_dependencies
 
@@ -1091,4 +1096,4 @@ def search_and_install_packs_and_their_dependencies(
         pack_success, _ = install_packs(client, host, packs_to_install_body)
         success &= pack_success
 
-    return sorted_packs_to_install, success
+    return itertools.chain.from_iterable(sorted_packs_to_install), success
