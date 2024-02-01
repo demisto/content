@@ -328,7 +328,7 @@ script:
     - contextPath: PsRemote.FQDN
       description: The Fully Qualified Domain Name of the host on which the command was invoked.
       type: string
-  dockerimage: demisto/powershell-ubuntu:7.2.2.29705
+  dockerimage: demisto/powershell-ubuntu:7.4.1.86201
   script: ''
   type: powershell
 fromversion: 6.0.0
