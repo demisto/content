@@ -3,8 +3,8 @@ version: -1
 name: Recovery Plan
 description: |-
   This playbook handles all the recovery actions available with Cortex XSIAM, including the following tasks:
-  * Unisolate endpoint
-  * Restore quarantined file
+   * Unisolate endpoint
+   * Restore quarantined file
 
   Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 starttaskid: "0"

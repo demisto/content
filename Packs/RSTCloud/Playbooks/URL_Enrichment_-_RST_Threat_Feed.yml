@@ -8,9 +8,9 @@ description: |-
   Enrich URLs using one or more integrations.
 
   URL enrichment includes:
-  * SSL verification for URLs
-  * Threat information
-  * Providing of URL screenshots
+   * SSL verification for URLs
+   * Threat information
+   * Providing of URL screenshots
 starttaskid: "0"
 tasks:
   "0":
