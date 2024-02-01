@@ -5624,7 +5624,10 @@
             "playbookID": "playbook-create_delete_record_Test"
         },
         {
-            "integrations": ["Cylance Protect v2", "CrowdstrikeFalcon"],
+            "integrations": [
+                "Cylance Protect v2",
+                "CrowdstrikeFalcon"
+            ],
             "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
         },
         {
@@ -5660,6 +5663,10 @@
         {
             "integrations": "Fortimail",
             "playbookID": "playbook-Fortimail_Test"
+        },
+        {
+            "integrations": "Zimperium v2",
+            "playbookID": "ZimperiumV2_Test"
         }
     ],
     "skipped_tests": {

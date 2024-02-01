@@ -1,10 +1,13 @@
 import pytest
+from freezegun import freeze_time
+
 from CommonServerPython import *
 from ZimperiumV2 import Client, users_search_command, devices_search_command, \
-    device_by_id_command, report_get_command, threat_search_command, app_version_list_command, device_cve_get_command, \
+    report_get_command, threat_search_command, app_version_list_command, device_cve_get_command, \
     devices_os_version_command, cve_devices_get_command, policy_group_list_command, policy_privacy_get_command, \
     policy_threat_get_command, policy_phishing_get_command, policy_app_settings_get_command, \
-    policy_device_inactivity_list_command, policy_device_inactivity_get_command
+    policy_device_inactivity_list_command, policy_device_inactivity_get_command, fetch_incidents
+
 SERVER_URL = 'https://test_url.com/api'
 
 
@@ -36,25 +39,6 @@ def test_users_search_command(client, requests_mock):
     assert results.outputs_key_field == 'id'
     assert results.raw_response == mock_response_users_search
     assert results.outputs.get('id') == '01'
-
-
-def test_device_by_id_command(client, requests_mock):
-    """
-        When: running zimperium-device-get-by-id
-        Given: team_name
-        Then: validate the command result returned.
-        """
-    args = {'device_id': '1'}
-    mock_response_device_search = util_load_json(
-        './test_data/device_by_id_get.json')
-
-    requests_mock.get(f'{SERVER_URL}/devices/public/v2/devices/1', json=mock_response_device_search)
-    results = device_by_id_command(client=client, args=args)
-
-    assert results.outputs_prefix == 'Zimperium.Device'
-    assert results.outputs.get('id') == '1'
-    assert results.outputs_key_field == 'id'
-    assert 'Device' in results.readable_output
 
 
 def test_devices_search_command(client, requests_mock):
@@ -335,4 +319,35 @@ def test_policy_device_inactivity_get_command(client, requests_mock):
     assert results.raw_response == mock_response_policy_device_inactivity_get
 
 
-# TODO: fetch test
+@freeze_time("2023-12-12 15:00:00 GTM")
+@pytest.mark.parametrize(
+    "last_run, len_results, expected_time",
+    [
+        ({}, 2, '2023-12-12T14:59:26.000000Z'),
+        ({'found_incident_ids': {'d6': 1702393200}, 'time': '2023-12-12T14:59:00.000Z'}, 1, '2023-12-12T14:59:26.000000Z'),
+        ({'found_incident_ids': {'42': 1702393200, 'd6': 1702393200}, 'time': '2023-12-12T14:59:00.000Z'}, 0, '2023-12-12T15:00:00.000000Z')
+    ]
+)
+def test_fetch_incidents_command(client, requests_mock, last_run, len_results, expected_time):
+    """
+        When: running fetch-incidents command
+        Given: fetch command, no last run, with last run.
+        Then: validate the fetched incidents
+    """
+    first_fetch_time = '2023-12-12T14:59:00.000Z'
+    mock_response_threat_search = util_load_json(
+        './test_data/threat_search.json')
+
+    requests_mock.get(f'{SERVER_URL}/threats/public/v1/threats', json=mock_response_threat_search)
+
+    incidents, next_run = fetch_incidents(
+        client=client,
+        last_run=last_run,
+        fetch_query="",
+        first_fetch_time=first_fetch_time,
+        max_fetch=2,
+        look_back=1,
+    )
+
+    assert len(incidents) == len_results
+    assert next_run['time'] == expected_time

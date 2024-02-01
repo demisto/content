@@ -37,7 +37,8 @@ class Client(BaseClient):
         access_token = response.get('accessToken')
         return access_token
 
-    def users_search(self, size: Optional[int], page: Optional[int], team_id: Optional[str] = None, user_id: Optional[str] = None):
+    def users_search(self, size: Optional[int], page: Optional[int], team_id: Optional[str] = None,
+                     user_id: Optional[str] = None):
         """Search users by sending a GET request.
 
         Args:
@@ -59,18 +60,13 @@ class Client(BaseClient):
                                   headers=self._headers,
                                   params=params)
 
-    def device_search(self, size: Optional[int], page: Optional[int], after: Optional[str] = None, before: Optional[str] = None,
-                      team_name: Optional[str] = None, model: Optional[str] = None, bundle_id: Optional[str] = None):
+    def device_search(self, size: Optional[int], page: Optional[int], device_id: Optional[str]):
         """Search devices by sending a GET request.
 
         Args:
             size: response size.
             page: response page.
-            after: the time after which to search devices.
-            before: the time before which to search devices.
-            team_name: the team device related to.
-            model: device model.
-            bundle_id: related bundle id.
+            device_id: the device id to get.
 
         Returns:
             Response from API.
@@ -78,28 +74,11 @@ class Client(BaseClient):
         params = assign_params(**{
             'page': page,
             'size': size,
-            'after': after,
-            'before': before,
-            'teamName': team_name,
-            'model': model,
-            'zappInstance.bundleId': bundle_id,
         })
 
-        return self._http_request(method='GET', url_suffix='/devices/public/v2/devices/start-scroll',
+        return self._http_request(method='GET',
+                                  url_suffix=f'/devices/public/v2/devices/{device_id if device_id else "start-scroll"}',
                                   headers=self._headers, params=params)
-
-    def device_by_id(self, device_id: Optional[str]):
-        """Get device by ID by sending a GET request.
-
-        Args:
-            device_id: the device id to get.
-
-        Returns:
-            Response from API.
-        """
-
-        return self._http_request(method='GET', url_suffix=f'/devices/public/v2/devices/{device_id}',
-                                  headers=self._headers)
 
     def report_get(self, app_version_id: Optional[str]):
         """ Generates JSON report using GET request.
@@ -389,7 +368,7 @@ def users_search_command(client: Client, args: dict) -> CommandResults:
     content = response.get('content') if not user_id else response
 
     hr = tableToMarkdown(name='Users search', t=content,
-                         headers=['id', 'firstName', 'lastName', 'email', 'created', 'modified', 'teams'],
+                         headers=['id', 'firstName', 'lastName', 'email', 'created', 'role', 'teams'],
                          headerTransform=pascalToSpace)
 
     command_results = CommandResults(
@@ -412,25 +391,16 @@ def devices_search_command(client: Client, args: dict) -> CommandResults:
     Returns:
         Outputs.
     """
-    after = arg_to_datetime(args.get('after'))
-    before = arg_to_datetime(args.get('before'))
     page = arg_to_number(args.get('page', '0'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit', '50'))
-    team_name = args.get('team_name')
-    model = args.get('model')
-    bundle_id = args.get('bundle_id')
-
-    after_srt = after.strftime(DATE_FORMAT) if after else None
-    before_str = before.strftime(DATE_FORMAT) if before else None
+    device_id = args.get('device_id')
 
     size = page_size if page_size else limit
 
-    response = client.device_search(size=size, page=page, after=after_srt,
-                                    before=before_str, team_name=team_name,
-                                    model=model, bundle_id=bundle_id)
+    response = client.device_search(size=size, page=page, device_id=device_id)
 
-    content = response.get('content')
+    content = response.get('content') if not device_id else [response]
     hr_output = content.copy()
 
     for item in hr_output:
@@ -438,7 +408,7 @@ def devices_search_command(client: Client, args: dict) -> CommandResults:
         item.update({'bundleId': bundle_id_item})
 
     hr = tableToMarkdown(name='Device search', t=hr_output,
-                         headers=['id', 'model', 'fullType', 'os', 'bundleId', 'created', 'bundleId'],
+                         headers=['riskPostureName', 'id', 'model', 'os', 'bundleId', 'lastSeen'],
                          removeNull=True,
                          date_fields=['lastSeen'],
                          headerTransform=pascalToSpace)
@@ -446,38 +416,6 @@ def devices_search_command(client: Client, args: dict) -> CommandResults:
     command_results = CommandResults(
         outputs_prefix='Zimperium.Device',
         outputs=content,
-        outputs_key_field='id',
-        readable_output=hr,
-        raw_response=response,
-    )
-    return command_results
-
-
-def device_by_id_command(client: Client, args: dict) -> CommandResults:
-    """Get device by ID.
-
-    Args:
-        client: Client object with request.
-        args: Usually demisto.args()
-
-    Returns:
-        Outputs.
-    """
-    device_id = args.get('device_id')
-
-    response = client.device_by_id(device_id=device_id)
-    bundle_id_item = response.get('zappInstance', [{}])[0].get('bundleId')
-    response.update({'bundleId': bundle_id_item})
-
-    hr = tableToMarkdown(name='Device', t=response,
-                         headers=['id', 'model', 'fullType', 'os', 'bundleId', 'created', 'bundleId'],
-                         removeNull=True,
-                         date_fields=['lastSeen'],
-                         headerTransform=pascalToSpace)
-
-    command_results = CommandResults(
-        outputs_prefix='Zimperium.Device',
-        outputs=response,
         outputs_key_field='id',
         readable_output=hr,
         raw_response=response,
@@ -506,7 +444,6 @@ def report_get_command(client: Client, args: dict) -> CommandResults:
     command_results = CommandResults(
         outputs_prefix='Zimperium.Report',
         outputs=response,
-        outputs_key_field='id',
         readable_output=hr,
         raw_response=response,
     )
@@ -545,8 +482,9 @@ def threat_search_command(client: Client, args: dict) -> CommandResults:
 
     hr = tableToMarkdown(name='Threat search', t=response.get('content'),
                          headers=['id', 'severityName', 'state', 'vectorName',
-                                  'threatTypeName', 'os',
-                                  'deviceId', 'teamName'],
+                                  'threatTypeName', 'os', 'deviceOwner', 'deviceId',
+                                  'teamName', 'timestamp'],
+                         date_fields=['timestamp'],
                          headerTransform=pascalToSpace)
 
     command_results = CommandResults(
@@ -580,7 +518,7 @@ def app_version_list_command(client: Client, args: dict) -> CommandResults:
 
     hr = tableToMarkdown(name='App Version List', t=response.get('content'),
                          headers=['id', 'name', 'bundleId', 'version', 'platform',
-                                  'security', 'classification', 'created', 'updatedOn'],
+                                  'security', 'privacy', 'classification', 'developerName', 'created', 'updatedOn'],
                          date_fields=['created', 'updatedOn'],
                          headerTransform=pascalToSpace)
 
@@ -621,7 +559,7 @@ def device_cve_get_command(client: Client, args: dict) -> CommandResults:
                                      before=before_str, team_id=team_id, )
 
     hr = tableToMarkdown(name='Device CVE', t=response.get('content'),
-                         headers=['id', 'teamId', 'os'],
+                         headers=['id', 'zdeviceId', 'teamId', 'os'],
                          headerTransform=pascalToSpace)
 
     command_results = CommandResults(
@@ -723,7 +661,8 @@ def policy_group_list_command(client: Client, args: dict) -> CommandResults:
     response = client.policy_group_list(module)
 
     hr = tableToMarkdown(name='Policy Group List', t=response.get('content'),
-                         headers=['id', 'team', 'name', 'emmConnectionId'],
+                         headers=['id', 'name', 'team', 'emmConnectionId', 'privacyId', 'trmId', 'phishingPolicyId',
+                                  'appSettingsId', 'appPolicyId', 'networkPolicyId', 'osRiskPolicyId'],
                          headerTransform=pascalToSpace,
                          removeNull=True)
 
@@ -752,8 +691,7 @@ def policy_privacy_get_command(client: Client, args: dict) -> CommandResults:
     response = client.policy_privacy(policy_id=policy_id)
 
     hr = tableToMarkdown(name='Privacy Policy', t=response,
-                         headers=['id', 'accountId', 'groups',
-                                  'name', 'rules', 'created', 'modified', 'team', 'teamId'],
+                         headers=['id', 'name', 'created', 'modified', 'team', 'teamId'],
                          headerTransform=pascalToSpace,
                          removeNull=True)
 
@@ -782,8 +720,7 @@ def policy_threat_get_command(client: Client, args: dict) -> CommandResults:
     response = client.policy_threat(policy_id=policy_id)
 
     hr = tableToMarkdown(name='Threat Policy', t=response,
-                         headers=['id', 'accountId', 'groups',
-                                  'name', 'rules', 'created', 'modified', 'team', 'teamId'],
+                         headers=['id', 'isDeployed', 'name', 'created', 'modified'],
                          headerTransform=pascalToSpace,
                          removeNull=True)
 
@@ -812,8 +749,10 @@ def policy_phishing_get_command(client: Client, args: dict) -> CommandResults:
     response = client.policy_phishing(policy_id=policy_id)
 
     hr = tableToMarkdown(name='Phishing Policy', t=response,
-                         headers=['id', 'accountId', 'groups',
-                                  'name', 'created', 'modified', 'team', 'teamId',
+                         headers=['id', 'name', 'created', 'modified', 'team', 'teamId',
+                                  'enableSafariBrowserExtensionTutorial', 'enableDnsPhishingTutorial',
+                                  'useLocalVpn', 'useUrlSharing', 'allowEndUserControl', 'useRemoteContentInspection',
+                                  'enableMessageFilterTutorial',
                                   'phishingDetectionAction', 'phishingPolicyType'],
                          headerTransform=pascalToSpace,
                          removeNull=True)
@@ -843,9 +782,13 @@ def policy_app_settings_get_command(client: Client, args: dict) -> CommandResult
 
     response = client.policy_app_settings(app_settings_policy_id=app_settings_policy_id)
 
-    # TODO: whitch outputs?
     hr = tableToMarkdown(name='Policy App Settings', t=response,
-                         headers=['id', 'name', 'teamId'],
+                         headers=['id', 'name', 'detectionEnabled', 'cogitoEnabled', 'cogitoThreshold', 'phishingEnabled',
+                                  'phishingThreshold', 'phishingDBRefreshMinutes', 'created', 'modified', 'staticFilesWritten',
+                                  'jsonHash', 'protoHash', 'dangerzoneEnabled', 'siteInsightEnabled',
+                                  'phishingLocalClassifierEnabled', 'appRiskLookupEnabled', 'autoBatteryOptimizationEnabled',
+                                  'autoActivateKnox', 'privacySummaryEnabled', 'forensicAnalysisEnabled', 'team', 'assigned',
+                                  'teamId', 'global'],
                          headerTransform=pascalToSpace)
 
     command_results = CommandResults(
@@ -906,8 +849,8 @@ def policy_device_inactivity_get_command(client: Client, args: dict) -> CommandR
     response = client.policy_device_inactivity_get(policy_id=policy_id)
 
     hr = tableToMarkdown(name='Device Inactivity', t=response,
-                         headers=['id', 'name', 'teamId', 'accountId', 'pendingActivationSettings',
-                                  'inactiveAppSettings', 'groups', 'created', 'modified',
+                         headers=['id', 'name', 'teamId', 'pendingActivationSettings',
+                                  'inactiveAppSettings', 'created', 'modified',
                                   ],
                          headerTransform=pascalToSpace,
                          removeNull=True,
@@ -925,7 +868,7 @@ def policy_device_inactivity_get_command(client: Client, args: dict) -> CommandR
 
 
 def fetch_incidents(client: Client, last_run: dict, fetch_query: str,
-                    first_fetch_time: Optional[str], max_fetch: int, look_back: int) -> tuple[list, dict]:
+                    first_fetch_time: Optional[str], max_fetch: int, look_back: int = 1) -> tuple[list, dict]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -989,7 +932,7 @@ def fetch_incidents(client: Client, last_run: dict, fetch_query: str,
         created_time_field=FETCH_FIELD,
         id_field='id',
         date_format=DATE_FORMAT,
-        increase_last_run_time=True
+        increase_last_run_time=False
     )
     demisto.debug(f"Last run after the fetch run: {last_run}")
     return incidents, last_run
@@ -1037,9 +980,6 @@ def main():
 
         elif command == 'zimperium-devices-search':
             return_results(devices_search_command(client, args))
-
-        elif command == 'zimperium-device-get-by-id':
-            return_results(device_by_id_command(client, args))
 
         elif command == 'zimperium-report-get':
             return_results(report_get_command(client, args))

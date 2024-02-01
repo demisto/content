@@ -19,7 +19,7 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- display: Fetch Query (e.g, severity=CRITICAL,teamId=myId)
+- display: Search Params (e.g, severityName=CRITICAL,teamId=myId)
   name: fetch_query
   type: 0
   required: false
@@ -75,7 +75,7 @@ script:
       name: limit
     - description: Used to filter the user data by the Team the user belongs to.
       name: team_id
-    description: Search users.
+    description: Search users. Only a user created as a "Team admin" is authorized to perform this request. Also, it will only get information about the teams that this user is associated with. Users that are not part of any team (such as account admin) won’t appear in the response.
     name: zimperium-users-search
     outputs:
     - contextPath: Zimperium.User.id
@@ -130,16 +130,8 @@ script:
       description: The User's validated status.
       type: Boolean
   - arguments:
-    - description: The search criteria for the list of devices reported after this date.
-      name: after
-    - description: The search criteria for the list of devices reported before this date.
-      name: before
-    - description: The device model.
-      name: model
-    - description: This is used to filter the data to their respective teams.
-      name: team_name
-    - description: The bundle identifier of the app.
-      name: bundle_id
+    - description: The device id to search.
+      name: device_id
     - description: Maximum number of results to retrieve in each page. Default is 10.
       name: page_size
     - defaultValue: '0'
@@ -317,156 +309,12 @@ script:
       description: Whether the Endpoint's device is jailbroken or not.
       type: Boolean
   - arguments:
-    - description: The device id to search.
-      name: device_id
-    description: Search devices.
-    name: zimperium-device-get-by-id
-    outputs:
-    - contextPath: Zimperium.Device.accountId
-      description: The account identifier of the device.
-      type: String
-    - contextPath: Zimperium.Device.activationName
-      description: The activation name of a device.
-      type: String
-    - contextPath: Zimperium.Device.additionalDeviceInfo
-      description: The additional device information.
-      type: Unknown
-    - contextPath: Zimperium.Device.agentType
-      description: The agent type of the device.
-      type: Number
-    - contextPath: Zimperium.Device.appStatus
-      description: The app status.
-      type: String
-    - contextPath: Zimperium.Device.appVersions
-      description: The app version of the device.
-      type: Unknown
-    - contextPath: Zimperium.Device.bundleId
-      description: The bundle identifier of the device.
-      type: Unknown
-    - contextPath: Zimperium.Device.created
-      description: The date and time that the device was created.
-      type: Date
-    - contextPath: Zimperium.Device.deleted
-      description: Whether the device deleted.
-      type: Boolean
-    - contextPath: Zimperium.Device.developerOptionsOn
-      description: Whether the developer options on.
-      type: Boolean
-    - contextPath: Zimperium.Device.deviceOwner.email
-      description: The email address of the device owner.
-      type: String
-    - contextPath: Zimperium.Device.fullType
-      description: The device's full type.
-      type: String
-    - contextPath: Zimperium.Device.groupId
-      description: The device group identifier.
-      type: String
-    - contextPath: Zimperium.Device.id
-      description: The unique identifier of the device.
-      type: String
-    - contextPath: Zimperium.Device.lastSeen
-      description: The time when the device was last seen.
-      type: Date
-    - contextPath: Zimperium.Device.lockScreenUnprotected
-      description: Whether the device's lockscreen is unprotected or not.
-      type: Boolean
-    - contextPath: Zimperium.Device.model
-      description: The model of the device.
-      type: String
-    - contextPath: Zimperium.Device.os.id
-      description: The operating system identifier of the device.
-      type: Number
-    - contextPath: Zimperium.Device.os.maxOsVersion
-      description: The maximum operating system version of the device.
-      type: String
-    - contextPath: Zimperium.Device.os.name
-      description: The operating system name.
-      type: String
-    - contextPath: Zimperium.Device.os.osVersionId
-      description: The operating system version identifier of the device.
-      type: Number
-    - contextPath: Zimperium.Device.os.policyCompliant
-      description: Whether the operating system policy compliant in the device.
-      type: Boolean
-    - contextPath: Zimperium.Device.os.type
-      description: The operating system type of the device.
-      type: String
-    - contextPath: Zimperium.Device.os.version
-      description: The operating system version of the device.
-      type: String
-    - contextPath: Zimperium.Device.os.versionUpgradeable
-      description: Whether the operating system version upgradable.
-      type: Boolean
-    - contextPath: Zimperium.Device.processed
-      description: Whether the device is processed.
-      type: Boolean
-    - contextPath: Zimperium.Device.processedAt
-      description: The date and time that the device was processed.
-      type: Date
-    - contextPath: Zimperium.Device.riskPosture
-      description: The risk posture of the device.
-      type: Number
-    - contextPath: Zimperium.Device.riskPostureName
-      description: The risk posture name of the device.
-      type: String
-    - contextPath: Zimperium.Device.teamId
-      description: The Team ID of the device.
-      type: String
-    - contextPath: Zimperium.Device.teamName
-      description: The Team name of the device.
-      type: String
-    - contextPath: Zimperium.Device.threatState
-      description: The threat state information.
-      type: Unknown
-    - contextPath: Zimperium.Device.zappInstance.agentType
-      description: The agent type of the device.
-      type: Number
-    - contextPath: Zimperium.Device.zappInstance.buildNumber
-      description: The build number of the zappInstance.
-      type: String
-    - contextPath: Zimperium.Device.zappInstance.bundleId
-      description: The bundle identifier of the zappInstance.
-      type: String
-    - contextPath: Zimperium.Device.zappInstance.groupId
-      description: The Zimperium device group identifier for the zappInstance.
-      type: String
-    - contextPath: Zimperium.Device.zappInstance.id
-      description: The ID of the zappInstance.
-      type: String
-    - contextPath: Zimperium.Device.zappInstance.lastSeen
-      description: The last seen timestamp for the zappInstance.
-      type: Date
-    - contextPath: Zimperium.Device.zappInstance.name
-      description: The name of the zappInstance.
-      type: String
-    - contextPath: Zimperium.Device.zappInstance.policiesInfo
-      description: The policies information.
-      type: String
-    - contextPath: Zimperium.Device.zappInstance.version
-      description: The version of the zappInstance.
-      type: String
-    - contextPath: Zimperium.Device.zappInstance.zappId
-      description: The ID of the zappInstance.
-      type: String
-    - contextPath: Zimperium.Device.zappInstance.zbuildNumber
-      description: The Zimperium device's Zapp Instance.
-      type: String
-    - contextPath: Zimperium.Device.zappInstance.zversion
-      description: The device's Zapp Instance version.
-      type: String
-    - contextPath: Zimperium.Device.zdeviceId
-      description: The zdevice ID.
-      type: String
-  - arguments:
     - description: The Id to get the app version JSON report. Can be retrieved using the zimperium-app-version-list command, in the field "Zimperium.AppVersion.id".
       name: app_version_id
       required: true
     description: Gets a report.
     name: zimperium-report-get
     outputs:
-    - contextPath: Zimperium.Report.id
-      description: The report id.
-      type: Unknown
     - contextPath: Zimperium.Report.ContentInformation
       description: The content of the report.
       type: String
@@ -518,7 +366,7 @@ script:
       required: true
     - description: The before date in the criteria that the threat occurred.
       name: before
-    - description: Free text, the table is available on pages 467-468 of the Zimperium API documentation.
+    - description: "In the format 'device.os.version=7.1.1,vectorName=Device'. The params table is available on pages 467-468 of the Zimperium API documentation or on the website at https://mtduat.zimperium.com/ziap-docs/zips-docs/api/api_details_threat.html."
       name: search_params
     - description: Used to filter the user data by the Team the user belongs to.
       name: team_id
@@ -1009,7 +857,7 @@ script:
       predefined:
       - EMM
       - ZIPS
-      description: The module parameter is required to get the groups related to EMM connection.
+      description: The module parameter is required to get the groups related to EMM connection or ZIPS connection.
       name: module
     description: Get policy groups.
     name: zimperium-policy-group-list
@@ -1444,4 +1292,3 @@ script:
 tests:
 - ZimperiumV2_Test
 defaultmapperin: Zimperium-mapper
-defaultclassifier: Zimperium
