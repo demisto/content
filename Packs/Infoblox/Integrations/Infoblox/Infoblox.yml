@@ -47,11 +47,11 @@ script:
       - UNUSED
       - USED
     - name: extended_attrs
-      description: Comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue"
+      description: Comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue".
       required: false
     - name: max_results
       description: The maximum results to return. Default is 50, maximum is 1000.
-      defaultvalue: 50
+      defaultValue: '50'
     description: Get IP info.
     name: infoblox-get-ip
     outputs:
@@ -96,8 +96,8 @@ script:
       name: ip
       required: true
     - description: The maximum results to return. Default is 50, maximum is 1000.
-      defaultvalue: 50
       name: max_results
+      defaultValue: '50'
     description: Searches IP related objects by a given IP.
     name: infoblox-search-related-objects-by-ip
     outputs:
@@ -724,19 +724,13 @@ script:
       description: The hostname to retrieve records for, e.g. localhost.test.
       required: false
     - name: extattrs
-      description: comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue"
+      description: comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue".
       required: false
     - name: max_results
       description: The maximum number of records to return. Default is 50, maximum is 1000.
-      defaultvalue: 50
-    # TODO add argument
-    # - name: additional_return_fields
-    #   description: Comma separated list of additional fields to return for each host, e.g. extattrs,aliases
-    #   defaultvalue: "extattrs"
-    #   required: false
     outputs:
-      - contextPath: Infoblox.Host
-        description: The retrieved InfoBlox host records
+    - contextPath: Infoblox.Host
+      description: The retrieved InfoBlox host records.
   - name: infoblox-list-network-info
     description: List network information.
     arguments:
@@ -744,14 +738,13 @@ script:
       description: Filter networks by pattern, e.g. '.0/24' for netmask, '192.168' for subnet.
       required: false
     - name: extattrs
-      description: comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue"
+      description: comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue".
       required: false
     - name: max_results
       description: The maximum number of records to return. Default is 50, maximum is 1000.
-      defaultvalue: 50
+      defaultValue: '50'
     - name: additional_return_fields
-      description: Comma separated list of additional fields to return for each host, e.g. extattrs,aliases
-      defaultvalue: "extattrs"
+      description: Comma separated list of additional fields to return for each host, e.g. extattrs,aliases.
       required: false
     outputs:
     - contextPath: Infoblox.NetworkInfo.Reference
@@ -764,7 +757,7 @@ script:
       description: The network extended attributes.
     - contextPath: Infoblox.NetworkInfo.AdditionalFields
       description: The additional fields for network.
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.13.86272
   runonce: false
   script: ''
   subtype: python3
