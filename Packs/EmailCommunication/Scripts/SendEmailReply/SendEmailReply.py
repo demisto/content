@@ -1023,5 +1023,5 @@ def main():
                            subject_include_incident_id)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
