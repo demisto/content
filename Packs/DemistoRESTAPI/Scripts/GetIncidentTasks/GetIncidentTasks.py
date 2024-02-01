@@ -61,7 +61,9 @@ def get_states(states: list[str]) -> list[str]:
             ready_states.append(system_state)
 
     if not ready_states:
-        ready_states = list(TASK_STATES.values())
+        for state in TASK_STATES.values():
+            if state not in ready_states:
+                ready_states.append(state)
 
     return ready_states
 
