@@ -1,10 +1,16 @@
 from pathlib import Path
+from typing import cast
 import pytest
 from Infoblox import (
+    INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY,
+    INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY,
+    INTEGRATION_COMMON_NAME_CONTEXT_KEY,
+    INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY,
     INTEGRATION_CONTEXT_NAME,
     INTEGRATION_HOST_RECORDS_CONTEXT_NAME,
     INTEGRATION_IPV4_CONTEXT_NAME,
     INTEGRATION_MAX_RESULTS_DEFAULT,
+    INTEGRATION_NETWORK_INFO_CONTEXT_KEY,
     IPv4AddressStatus,
     InfoBloxNIOSClient,
     InvalidIPAddress,
@@ -12,8 +18,10 @@ from Infoblox import (
     InvalidNetmask,
     get_host_records_command,
     get_ip_command,
+    get_network_info_command,
     transform_ext_attrs,
     transform_ipv4_range,
+    transform_network_info_context,
     valid_ip,
     valid_ip_range,
     valid_netmask
@@ -67,7 +75,7 @@ GET_USER_LIST = {
 }
 
 REQUEST_PARAM_ZONE = f'?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&_return_fields%2B=fqdn%2Crpz_policy%2Crpz_severity%2Crpz_type%2C' \
-                     'substitute_name%2Ccomment%2Cdisable'
+                     'substitute_name%2Ccomment%2Cdisable'  # noqa: E501
 
 client = InfoBloxNIOSClient('https://example.com/v1/')
 
@@ -257,7 +265,7 @@ class TestHelperFunctions:
         from_address = "192.168.1.100"
         to_address = "192.168.1.50"
 
-        with pytest.raises(InvalidIPRange, match=f"'{from_address}' to '{to_address}' is not a valid IPv4 range: last IP address must be greater than first"):
+        with pytest.raises(InvalidIPRange, match=f"'{from_address}' to '{to_address}' is not a valid IPv4 range: last IP address must be greater than first"):  # noqa: E501
             valid_ip_range(from_address, to_address)
 
     def test_valid_ip_range_invalid_ip(self):
@@ -265,7 +273,7 @@ class TestHelperFunctions:
         from_address = "192.168.1.254"
         to_address = "192.168.2.256"
 
-        with pytest.raises(InvalidIPRange, match=f"'{from_address}' to '{to_address}' is not a valid IPv4 range: Octet 256 \(\> 255\) not permitted in '{to_address}'"):
+        with pytest.raises(InvalidIPRange, match=f"'{from_address}' to '{to_address}' is not a valid IPv4 range: Octet 256 \(\> 255\) not permitted in '{to_address}'"):  # noqa: E501
             valid_ip_range(from_address, to_address)
 
     def test_transform_ipv4_range(self):
@@ -279,6 +287,42 @@ class TestHelperFunctions:
         assert actual == expected
 
         assign_params(actual)
+
+    def test_transform_network_info_context(self):
+        """
+        Test the output of the `transform_network_info_context` helper command
+        when provided with only extattr
+        """
+
+        input = json.loads((Path(__file__).parent.resolve() / "test_files"
+                            / "TestNetworkInfoOperations" / "get_network_return_fields_extattrs.json").read_text()).get("result")
+
+        actual = transform_network_info_context(input)
+
+        assert len(actual) == 1
+        assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual[0]
+        assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual[0]
+        assert INTEGRATION_NETWORK_INFO_CONTEXT_KEY in actual[0]
+        assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual[0]
+        assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in actual[0]
+
+    def test_transform_network_info_context_additional_fields(self):
+        """
+        Test the output of the `transform_network_info_context` helper command
+        when provided with additional fields specified
+        """
+
+        input = json.loads((Path(__file__).parent.resolve() / "test_files"
+                            / "TestNetworkInfoOperations" / "get_networks_return_fields_options_extattrs.json").read_text()).get("result")  # noqa: E501
+
+        actual = transform_network_info_context(input)
+
+        assert len(actual) == 2
+        assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual[1]
+        assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual[1]
+        assert INTEGRATION_NETWORK_INFO_CONTEXT_KEY in actual[1]
+        assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual[1]
+        assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY in actual[1]
 
 
 class TestZonesOperations:
@@ -322,7 +366,7 @@ class TestZonesOperations:
 
 class TestIPOperations:
 
-    CONTEXT_PATH = f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}(val.ReferenceID && val.ReferenceID === obj.ReferenceID)'
+    CONTEXT_PATH = f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}(val.ReferenceID && val.ReferenceID === obj.ReferenceID)'  # noqa: E501
     VALID_IP_ADDRESS = "192.168.1.1"
     VALID_NETMASK = "192.168.1.0/24"
 
@@ -431,7 +475,7 @@ class TestIPOperations:
         actual_hr_lines = actual_hr.splitlines()
         assert "Infoblox Integration - IP info" in actual_hr_lines[0]
         assert self.VALID_IP_ADDRESS in actual_hr_lines[3]
-        assert actual_context.get(self.CONTEXT_PATH).get("IpAddress") == self.VALID_IP_ADDRESS
+        assert cast(dict, actual_context.get(self.CONTEXT_PATH)).get("IpAddress") == self.VALID_IP_ADDRESS
 
     def test_get_ip_command_from_ip_address_status_defined_no_extattr(self, requests_mock):
         """
@@ -465,7 +509,7 @@ class TestIPOperations:
         actual_hr_lines = actual_hr.splitlines()
         assert "Infoblox Integration - IP info" in actual_hr_lines[0]
         assert self.VALID_IP_ADDRESS in actual_hr_lines[3]
-        assert actual_context.get(self.CONTEXT_PATH).get("Status") == IPv4AddressStatus.USED.value
+        assert cast(dict, actual_context.get(self.CONTEXT_PATH)).get("Status") == IPv4AddressStatus.USED.value
 
     # TODO
     def test_get_ip_command_from_ip_status_defined_extattr_defined(self):
@@ -532,7 +576,7 @@ class TestIPOperations:
 
         actual_hr_lines = actual_hr.splitlines()
         assert "Infoblox Integration - IP info" in actual_hr_lines[0]
-        assert actual_context.get(self.CONTEXT_PATH).get("IpAddress") == "192.168.1.0"
+        assert cast(dict, actual_context.get(self.CONTEXT_PATH)).get("IpAddress") == "192.168.1.0"
 
     # TODO
     def test_get_ip_command_no_response(self):
@@ -583,7 +627,7 @@ class TestHostRecordsOperations:
 
         hr, records, _ = get_host_records_command(client, {})
 
-        assert len(records.get(self.CONTEXT_KEY)) == 4
+        assert len(cast(list, records.get(self.CONTEXT_KEY))) == 4
         assert f"Host records (first {INTEGRATION_MAX_RESULTS_DEFAULT})" in hr
         assert "extattrs" not in hr
 
@@ -613,7 +657,7 @@ class TestHostRecordsOperations:
 
         hr, records, _ = get_host_records_command(client, {"host_name": host_name})
 
-        assert len(records.get(self.CONTEXT_KEY)) == 1
+        assert len(cast(list, records.get(self.CONTEXT_KEY))) == 1
         assert "Host records for ciac-3607.test" in hr
         assert "extattrs" not in hr
 
@@ -642,6 +686,149 @@ class TestHostRecordsOperations:
 
         hr, records, _ = get_host_records_command(client, {"extattrs": input})
 
-        assert len(records.get(self.CONTEXT_KEY)) == 1
+        assert len(cast(list, records.get(self.CONTEXT_KEY))) == 1
         assert "Host records" in hr
         assert "extattrs" in hr
+
+
+class TestNetworkInfoOperations:
+
+    CONTEXT_KEY = f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_NETWORK_INFO_CONTEXT_KEY}"
+    BASE_URL = f"{client._base_url}{InfoBloxNIOSClient.NETWORK_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1"  # noqa: E501
+
+    def test_get_network_info_command(self, requests_mock):
+        """
+        Test when no arguments are supplied to the `get_network_info_command` method.
+
+        Given:
+        - A mock response of 2 networks.
+
+        When:
+        - No arguments are provided.
+
+        Then:
+        - 50 limit is applied.
+        - output has 2 networks.
+        - raw response is equal to the mock response.
+        - No additional fields context key is set.
+        """
+
+        mock_response = (Path(__file__).parent.resolve() / "test_files"
+                         / self.__class__.__name__ / "get_networks.json").read_text()
+
+        requests_mock.get(
+            self.BASE_URL,
+            json=json.loads(mock_response)
+        )
+
+        actual_hr, actual_context, actual_raw_response = get_network_info_command(client, {})
+
+        assert f"({INTEGRATION_MAX_RESULTS_DEFAULT} limit)" in actual_hr
+
+        assert self.CONTEXT_KEY in actual_context
+        actual_output = cast(list, actual_context.get(self.CONTEXT_KEY))
+        assert len(actual_output) == 2
+        assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_NETWORK_INFO_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in actual_output[0]
+
+        assert actual_raw_response == json.loads(mock_response)
+
+    def test_get_network_pattern_specified_return_fields_extattrs(self, requests_mock):
+        """
+        Test when an argument is supplied to the `get_network_info_command` method.
+
+        Given:
+        - A mock response of 1 network.
+
+        When:
+        - The `pattern` argument is supplied.
+
+        Then:
+        - 50 limit is applied.
+        - output has 1 networks.
+        - raw response is equal to the mock response.
+        - No additional fields context key is set.
+        """
+
+        mock_response = (Path(__file__).parent.resolve() / "test_files"
+                         / self.__class__.__name__ / "get_network_return_fields_extattrs.json").read_text()
+
+        pattern = "192.168."
+
+        requests_mock.get(
+            f"{self.BASE_URL}&_max_results=50&_return_fields%2B=extattrs&network~={pattern}",
+            json=json.loads(mock_response)
+        )
+
+        actual_hr, actual_context, actual_raw_response = get_network_info_command(client, {"pattern": pattern})
+
+        assert f"({INTEGRATION_MAX_RESULTS_DEFAULT} limit)" in actual_hr
+
+        assert self.CONTEXT_KEY in actual_context
+        actual_output = cast(list, actual_context.get(self.CONTEXT_KEY))
+        assert len(actual_output) == 1
+        assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_NETWORK_INFO_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in actual_output[0]
+
+        assert actual_raw_response == json.loads(mock_response)
+
+    def test_get_networks_return_fields_options_extattrs(self, requests_mock):
+        """
+        Test when an arguments is supplied to the `get_network_info_command` method.
+
+        Given:
+        - A mock response of 2 networks.
+
+        When:
+        - `additional_return_fields` argument is set.
+        - `max_results` argument is set.
+
+
+        Then:
+        - 10 limit is applied.
+        - output has 1 networks.
+        - raw response is equal to the mock response.
+        - The additional fields context key is set.
+        """
+
+        limit = 10
+
+        mock_response = (Path(__file__).parent.resolve() / "test_files"
+                         / self.__class__.__name__ / "get_networks_return_fields_options_extattrs.json").read_text()
+
+        requests_mock.get(
+            self.BASE_URL,
+            json=json.loads(mock_response)
+        )
+
+        actual_hr, actual_context, actual_raw_response = get_network_info_command(
+            client,
+            {
+                "additional_return_fields": "extattrs,options",
+                "max_results": limit
+            }
+        )
+
+        assert f"({limit} limit)" in actual_hr
+
+        assert self.CONTEXT_KEY in actual_context
+        actual_output = cast(list, actual_context.get(self.CONTEXT_KEY))
+        assert len(actual_output) == 2
+        assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_output[1]
+        assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual_output[1]
+        assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual_output[1]
+        assert INTEGRATION_NETWORK_INFO_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_NETWORK_INFO_CONTEXT_KEY in actual_output[1]
+        assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY in actual_output[1]
+
+        assert actual_raw_response == json.loads(mock_response)

@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 
 ''' IMPORTS '''
-from typing import Any
+from typing import Any, cast
 from collections.abc import Callable
 
 import urllib3
@@ -17,6 +17,20 @@ INTEGRATION_NAME = 'Infoblox Integration'
 INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
 INTEGRATION_HOST_RECORDS_CONTEXT_NAME = "Host"
+INTEGRATION_NETWORK_INFO_CONTEXT_KEY = "NetworkInfo"
+
+INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY = "_ref"
+INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY = "extattrs"
+
+INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY = "Reference"
+INTEGRATION_COMMON_NAME_CONTEXT_KEY = "Name"
+INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY = "ExtendedAttributes"
+INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY = "AdditionalFields"
+
+INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORK_KEY = "network"
+INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORKVIEW_KEY = "network_view"
+INTEGRATION_NETWORK_INFO_ADDITIONAL_FIELDS_CONTEXT_KEY = "AdditionalFields"
+
 INTEGRATION_IPV4_CONTEXT_NAME = "IP"
 INTEGRATION_MAX_RESULTS_DEFAULT = 50
 
@@ -100,6 +114,7 @@ class InfoBloxNIOSClient(BaseClient):
     GET_HOST_RECORDS_ENDPOINT = "record:host"
     IPV4ADDRESS_ENDPOINT = "ipv4address"
     POLICY_ZONES_ENDPOINT = "zone_rp"
+    NETWORK_ENDPOINT = "network"
 
     REQUEST_PARAMS_RETURN_AS_OBJECT_KEY = '_return_as_object'
     REQUEST_PARAM_RETURN_FIELDS_KEY = '_return_fields+'
@@ -111,19 +126,6 @@ class InfoBloxNIOSClient(BaseClient):
     REQUEST_PARAM_CREATE_RULE = {REQUEST_PARAM_RETURN_FIELDS_KEY: 'name,rp_zone,comment,canonical,disable'}
     REQUEST_PARAM_LIST_RULES = {REQUEST_PARAM_RETURN_FIELDS_KEY: 'name,zone,comment,disable,type'}
     REQUEST_PARAM_SEARCH_RULES = {REQUEST_PARAM_RETURN_FIELDS_KEY: 'name,zone,comment,disable'}
-
-    # Paging
-    # To start a paging request, the initial search request must have `_paging` and `_return_as_object` set to 1,
-    # and _max_results set to the desired page size.
-    # The server will then return a results object that contains the `next_page_id`` field
-    # and the result field set to the first page of results.
-    # Note that the `next_page_id` field only contains URL-safe characters so it can be used as is and no quotation characters
-    # are required for subsequent requests.
-    # To get more results, you should send GET requests to the original object and set
-    # `_page_id`` to the ID string returned in the previous page of results.
-    # The server does not return a `next_page_id` field in the last page of results.
-    # Paging requests are considered independent requests, so the set of results might change between requests
-    # if objects are added or removed from the server at the same time when the requests are occurring.
 
     REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
     REQUEST_PARAM_MAX_RESULTS_KEY = "_max_results"
@@ -409,7 +411,6 @@ class InfoBloxNIOSClient(BaseClient):
 
         Args:
         - `name` (``str``): Name of the host record to search for.
-        - `extattrs` (``list[dict]``): List of extra attribute dicts with "name" and "value" keys.
 
         Returns:
         - Response JSON
@@ -417,6 +418,23 @@ class InfoBloxNIOSClient(BaseClient):
 
         params = assign_params(name=name)
         return self._http_request('GET', self.GET_HOST_RECORDS_ENDPOINT, params=params)
+
+    def get_network_info(self, pattern: str | None) -> dict:
+        """
+        Get the network information.
+
+        Args:
+        - `host_name` (``str | None``): The hostname to retrieve network information for.
+        - `pattern` (``str | None``): Filter networks by pattern, e.g. '.0/24' for netmask, '192.168' for subnet.
+
+        Returns:
+        - Response JSON
+        """
+
+        if pattern:
+            return self._http_request("GET", self.NETWORK_ENDPOINT, params={"network~": pattern})
+        else:
+            return self._http_request("GET", self.NETWORK_ENDPOINT)
 
 
 ''' HELPER FUNCTIONS '''
@@ -526,6 +544,62 @@ def transform_ipv4_range(from_ip: str, to_ip: str) -> list[dict[str, str]]:
     ]
 
 
+def transform_return_fields(additional_fields: str) -> dict[str, Any]:
+    """
+    Helper function to transform the return fields into a
+    dictionary that we can feed into the client as request
+    parameters.
+
+    Arguments:
+    - `additional_fields` (``str``): A comma-separated list of additional fields.
+
+    Returns:
+    - `dict[str, Any]` request parameters
+    """
+
+    result = {}
+
+    if additional_fields:
+        result[InfoBloxNIOSClient.REQUEST_PARAM_RETURN_FIELDS_KEY] = additional_fields
+
+    return result
+
+
+def transform_network_info_context(network_info: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Helper function to transform the network info
+    raw response to the expected context structure.
+
+    Args:
+    - `network_info` (``list[dict[str, Any]]``): The network info request result.
+
+    Returns:
+    - `list[dict[str, Any]]` context output.
+    """
+
+    output: list[dict[str, Any]] = []
+    additional_options: list[dict[str, Any]] = []
+
+    for network in network_info:
+        n: dict[str, Any] = {}
+        for k, v in network.items():
+            if k == INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY:
+                n[INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY] = v
+            elif k == INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORK_KEY:
+                n[INTEGRATION_COMMON_NAME_CONTEXT_KEY] = v
+            elif k == INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORKVIEW_KEY:
+                n[INTEGRATION_NETWORK_INFO_CONTEXT_KEY] = v
+            elif k == INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY:
+                n[INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY] = v
+            else:
+                additional_options.append(v)
+        if additional_options:
+            n[INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY] = additional_options
+        output.append(n)
+
+    return output
+
+
 ''' COMMANDS '''
 
 
@@ -558,7 +632,7 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
     elif sum(arg is not None for arg in [ip, network, from_ip and to_ip]) == 0:
         raise ValueError("Please specify either the `ip`, `network` or `from_ip`/`to_ip` argument")
 
-    extended_attributes = args.get("extended_attrs", None)
+    extended_attributes = args.get("extended_attrs")
     if extended_attributes:
         client.set_param(client.REQUEST_PARAM_EXTRA_ATTRIBUTES)
 
@@ -568,7 +642,7 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
             client.set_param(e)
 
     max_results = arg_to_number(args.get('max_results', INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
-    client.params[InfoBloxNIOSClient.REQUEST_PARAM_MAX_RESULTS_KEY] = max_results
+    client.set_param({InfoBloxNIOSClient.REQUEST_PARAM_MAX_RESULTS_KEY: max_results})
 
     # Check if the network/IPs supplied are valid.
     if ip:
@@ -1161,7 +1235,7 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
     - `args` (``dict``): Usually demisto.args()
 
     Returns:
-    - `Tuple[str, Dict, Dict]`: The human readable output, the records and the raw response.
+    - `tuple[str, Dict, Dict]`: The human readable output, the records and the raw response.
     """
 
     hostname = args.get("host_name", None)
@@ -1208,6 +1282,55 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
     return human_readable, context, raw
 
 
+def get_network_info_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict[str, Any]]:
+    """
+    Get network information command.
+
+    Args:
+    - `client` (``InfoBloxNIOSClient``): Client object
+    - `args` (``dict``): Usually demisto.args()
+
+    Returns:
+    - `tuple[str, Dict, Dict]`: The human readable output, the records and the raw response.
+    """
+
+    pattern = args.get("pattern")
+    max_results = arg_to_number(args.get("max_results", INTEGRATION_MAX_RESULTS_DEFAULT))
+    additional_return_fields = transform_return_fields(
+        args.get("additional_return_fields", INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY))
+
+    extended_attributes = args.get(INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY)
+    if (
+        extended_attributes
+        and additional_return_fields
+        and INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY in cast(str, additional_return_fields.get(client.REQUEST_PARAM_RETURN_FIELDS_KEY))  # noqa: E501
+    ):
+        client.set_param(client.REQUEST_PARAM_EXTRA_ATTRIBUTES)
+
+        extended_attributes_params = transform_ext_attrs(extended_attributes)
+
+        for e in extended_attributes_params:
+            client.set_param(e)
+
+    client.set_param({InfoBloxNIOSClient.REQUEST_PARAM_MAX_RESULTS_KEY: max_results})
+    client.set_param(additional_return_fields)
+
+    raw_response = client.get_network_info(pattern)
+    network_info = raw_response.get("result")
+
+    if not network_info:
+        hr = "No networks found"
+        context = {}
+    else:
+        output = transform_network_info_context(network_info)
+        hr = tableToMarkdown(f"Network information found ({max_results} limit)", network_info)
+        context = {
+            f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_NETWORK_INFO_CONTEXT_KEY}": output
+        }
+
+    return hr, context, raw_response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -1251,7 +1374,8 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-get-object-fields': get_object_fields_command,
         f'{INTEGRATION_COMMAND_NAME}-search-rule': search_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-rpz-rule': delete_rpz_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-host-info': get_host_records_command
+        f'{INTEGRATION_COMMAND_NAME}-list-host-info': get_host_records_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-network-info': get_network_info_command
     }
     try:
         if command in commands:
