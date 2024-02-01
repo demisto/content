@@ -33,6 +33,14 @@ INTEGRATION_IP_RAW_RESULT_RP_ZONE_KEY = "rp_zone"
 INTEGRATION_IP_RP_ZONE_CONTEXT_KEY = "Zone"
 INTEGRATION_IP_FQDN_CONTEXT_KEY = "FQDN"
 
+INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY = "ipv4addrs"
+INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESS_KEY = "ipv4addr"
+INTEGRATION_HOST_RECORDS_IPV4ADDRESSES_CONTEXT_KEY = "IPv4Addresses"
+INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY = "IPv4Address"
+INTEGRATION_HOST_RECORDS_RAW_RESULT_CONFIGURE_FOR_DHCP_KEY = "configure_for_dhcp"
+INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY = "ConfigureForDHCP"
+INTEGRATION_HOST_RECORDS_RAW_RESULT_HOST_KEY = "host"
+
 INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORK_KEY = "network"
 INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORKVIEW_KEY = "network_view"
 INTEGRATION_NETWORK_INFO_ADDITIONAL_FIELDS_CONTEXT_KEY = "AdditionalFields"
@@ -628,6 +636,38 @@ def transform_ip_context(ip_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 i[string_to_context_key(k)] = v
 
         output.append(i)
+
+    return output
+
+
+def transform_host_records_context(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Helper function to transform the host records
+    raw response to the expected context structure.
+
+    Args:
+    - `records` (``list[dict[str, Any]]``): The host records request result.
+
+    Returns:
+    - `list[dict[str, Any]]` context output.
+    """
+
+    output: list[dict[str, Any]] = []
+
+    for record in records:
+        r: dict[str, Any] = {}
+
+        for address in cast(list, record.get(INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY)):
+            for k, v in address.items():
+                if k == INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY:
+                    r[INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY] = v
+                elif k == INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESS_KEY:
+                    r[INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY] = v
+                elif k == INTEGRATION_HOST_RECORDS_RAW_RESULT_CONFIGURE_FOR_DHCP_KEY:
+                    r[INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY] = v
+                elif k == INTEGRATION_HOST_RECORDS_RAW_RESULT_HOST_KEY:
+                    r[INTEGRATION_COMMON_NAME_CONTEXT_KEY] = v
+        output.append(r)
 
     return output
 
@@ -1292,16 +1332,12 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
     else:
         title = f"Host records for {hostname} (first {max_results})"
 
-    human_readable = tableToMarkdown(title, records)
-
-    demisto.debug(f"returning human readable: {str(human_readable)}")
-    demisto.debug(f"returning records: {str(records)}")
-    demisto.debug(f"returning raw: {str(raw)}")
-
     if records:
+        outputs = transform_host_records_context(records)
         context = {
-            f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_HOST_RECORDS_CONTEXT_NAME}(val._ref && val._ref === obj._ref)": records
+            f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_HOST_RECORDS_CONTEXT_NAME}": outputs
         }
+        human_readable = tableToMarkdown(title, outputs)
     else:
         human_readable = "No host records found"
         context = {}

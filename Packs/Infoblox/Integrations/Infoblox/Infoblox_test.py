@@ -8,7 +8,9 @@ from Infoblox import (
     INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY,
     INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY,
     INTEGRATION_CONTEXT_NAME,
+    INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY,
     INTEGRATION_HOST_RECORDS_CONTEXT_NAME,
+    INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY,
     INTEGRATION_IPV4_CONTEXT_NAME,
     INTEGRATION_MAX_RESULTS_DEFAULT,
     INTEGRATION_NETWORK_INFO_CONTEXT_KEY,
@@ -21,6 +23,7 @@ from Infoblox import (
     get_ip_command,
     get_network_info_command,
     transform_ext_attrs,
+    transform_host_records_context,
     transform_ipv4_range,
     transform_network_info_context,
     valid_ip,
@@ -325,6 +328,23 @@ class TestHelperFunctions:
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual[1]
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY in actual[1]
 
+    def test_transform_host_records_context(self):
+        """
+        Test the output of the `transform_network_info_context` helper command
+        when provided with additional fields specified
+        """
+
+        input = json.loads((Path(__file__).parent.resolve() / "test_files"
+                            / "TestHostRecordsOperations" / "get_records.json").read_text()).get("result")  # noqa: E501
+
+        actual = transform_host_records_context(input)
+
+        assert len(actual) == 4
+        assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual[0]
+        assert INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY in actual[0]
+        assert INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY in actual[0]
+        assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual[0]
+
 
 class TestZonesOperations:
 
@@ -370,7 +390,7 @@ class TestIPOperations:
     CONTEXT_PATH = f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}'  # noqa: E501
     VALID_IP_ADDRESS = "192.168.1.1"
     VALID_NETMASK = "192.168.1.0/24"
-    BASE_URL = f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1"
+    BASE_URL = f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1"  # noqa: E501
 
     def test_get_ip_command_too_many_arguments(self):
         """
