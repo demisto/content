@@ -29,9 +29,6 @@ def get_playbook_tasks(tasks: list) -> list:
     Returns:
         list: the tasks fo the playbook including all sub-playbook tasks
     """
-    if not tasks:
-        return []
-
     ready_tasks = []
     for task in tasks:
         if task.get('type') == 'playbook' and task.get('subPlaybook'):
@@ -95,7 +92,7 @@ def get_task_command(args: dict[str, Any]) -> CommandResults:
     name = args.get('name')
     tag = args.get('tag')
     states = get_states(argToList(args.get('states')))
-    inc_id = args['inc_id']  # pylint: disable=W9019
+    inc_id = args['inc_id']
     res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
     if not res or isError(res[0]):
         raise Exception(res)

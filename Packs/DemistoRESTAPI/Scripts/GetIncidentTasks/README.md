@@ -3,6 +3,7 @@ If multiple values are given, only tasks matching all of them are returned.
 For example, if name and state is given, only tasks with the given name in a given state are returned
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,6 +13,7 @@ For example, if name and state is given, only tasks with the given name in a giv
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +24,7 @@ For example, if name and state is given, only tasks with the given name in a giv
 | tag | The tag of the task to search.
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
