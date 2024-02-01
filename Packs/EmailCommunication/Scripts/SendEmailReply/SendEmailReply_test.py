@@ -909,7 +909,8 @@ def test_main(new_thread, mocker):
 
     # Test ID: #3 - Table conversion
     ("| Header1 | Header2 |\n| ------- | ------- |\n| Cell1   | Cell2   |",
-     "<table>\n<thead>\n<tr>\n<th>Header1</th>\n<th>Header2</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Cell1</td>\n<td>Cell2</td>\n</tr>\n</tbody>\n</table>",
+     "<table>\n<thead>\n<tr>\n<th>Header1</th>\n<th>Header2</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Cell1</td>\n"
+     "<td>Cell2</td>\n</tr>\n</tbody>\n</table>",
      "table_conversion"),
 
     # Test ID: #4 - Emphasis conversion using legacy syntax
