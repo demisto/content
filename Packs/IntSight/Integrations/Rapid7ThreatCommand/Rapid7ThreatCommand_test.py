@@ -1,7 +1,7 @@
 import json
 import os
 from http import HTTPStatus
-from collections.abc import Callable
+from typing import Callable
 from urllib.parse import urljoin
 
 import pytest
@@ -28,7 +28,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
     file_path = os.path.join("test_data", file_name)
-    with open(file_path, encoding="utf-8") as mock_file:
+    with open(file_path, mode="r", encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -225,7 +225,7 @@ def test_list_cyber_term_command(
     assert result.outputs_prefix == "ThreatCommand.CyberTerm"
     assert result.outputs_key_field == "id"
     assert isinstance(result.outputs, list)
-    assert {"type", "id"}.issubset(list(result.outputs[0].keys()))
+    assert set(["type", "id"]).issubset(list(result.outputs[0].keys()))
 
 
 @pytest.mark.parametrize(
@@ -2481,6 +2481,7 @@ def test_finish_reputation_handler(
      - Ensure that the command finished.
     """
     from Rapid7ThreatCommand import reputation_handler
+    execution_metrics = ExecutionMetrics()
     json_response = load_mock_response(response_path)
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json=json_response)
@@ -2489,6 +2490,7 @@ def test_finish_reputation_handler(
         client=mock_client,
         handler_command=handler_command,
         key=key,
+        execution_metrics=execution_metrics
     )
     assert not result.continue_to_poll
 
@@ -2518,6 +2520,7 @@ def test_continue_reputation_handler(
      - Ensure that the command called again.
     """
     from Rapid7ThreatCommand import reputation_handler
+    execution_metrics = ExecutionMetrics()
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json={"OriginalValue": "test", "Status": status})
 
@@ -2526,6 +2529,7 @@ def test_continue_reputation_handler(
         client=mock_client,
         handler_command=handler_command,
         key=key,
+        execution_metrics=execution_metrics
     )
     if status == "QuotaExceeded":
         assert not result.continue_to_poll
@@ -2601,10 +2605,11 @@ def test_enrich_ioc_handler(
      - Ensure that the command stop from running.
     """
     from Rapid7ThreatCommand import enrich_ioc_handler
+    execution_metrics = ExecutionMetrics()
     json_response = load_mock_response(response_path)
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json=json_response)
-    result = enrich_ioc_handler(mock_client, {"ioc_value": "test"})
+    result = enrich_ioc_handler(mock_client, {"ioc_value": "test"}, execution_metrics=execution_metrics)
     assert not result.continue_to_poll
 
 
@@ -2630,9 +2635,10 @@ def test_fail_enrich_ioc_handler(
      - Ensure relevant error raised.
     """
     from Rapid7ThreatCommand import enrich_ioc_handler
+    execution_metrics = ExecutionMetrics()
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json={"Status": status})
-    result = enrich_ioc_handler(mock_client, {"ioc_value": "test"})
+    result = enrich_ioc_handler(mock_client, {"ioc_value": "test"}, execution_metrics=execution_metrics)
     assert not result.continue_to_poll
 
 
@@ -2658,9 +2664,10 @@ def test_continue_enrich_ioc_handler(
      - Ensure that polling command called again.
     """
     from Rapid7ThreatCommand import enrich_ioc_handler
+    execution_metrics = ExecutionMetrics()
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json={"Status": status})
-    result = enrich_ioc_handler(mock_client, {"ioc_value": "test"})
+    result = enrich_ioc_handler(mock_client, {"ioc_value": "test"}, execution_metrics=execution_metrics)
     assert result.continue_to_poll
 
 
@@ -2843,10 +2850,10 @@ def test_fetch_incidents_with_empty_alert_list_response(
 @pytest.mark.parametrize(
     ("response", "args", "result"),
     (
-        (list(range(10)), {}, 10),
-        (list(range(70)), {}, 50),
-        (list(range(70)), {"limit": 3}, 3),
-        (list(range(70)), {"all_results": True}, 70),
+        ([x for x in range(10)], {}, 10),
+        ([x for x in range(70)], {}, 50),
+        ([x for x in range(70)], {"limit": 3}, 3),
+        ([x for x in range(70)], {"all_results": True}, 70),
     ),
 )
 def test_manual_pagination(
