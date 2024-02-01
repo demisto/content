@@ -10,13 +10,22 @@ from markdown.inlinepatterns import UnderscoreProcessor, EmStrongItem
 
 ERROR_TEMPLATE = 'ERROR: SendEmailReply - {function_name}: {reason}'
 UNDERLINE_RE = r'(\+)([^+]+)\1'  # +underline+ -> <u>underline</u>
+STRIKETHROUGH_RE = r'(~{2})(.+?)\1'  # ~~Strikethrough~~ -> <s>Strikethrough</s>
 
 
-class LegacyUnderlineProcessor(UnderscoreProcessor):
-    """Processor for handling underline."""
+class DemistoUnderlineProcessor(UnderscoreProcessor):
+    """Processor for handling Underline."""
 
     PATTERNS = [
         EmStrongItem(re.compile(UNDERLINE_RE, re.DOTALL | re.UNICODE), 'single', 'u')
+    ]
+
+
+class DemistoStrikethroughProcessor(UnderscoreProcessor):
+    """Processor for handling Strikethrough."""
+
+    PATTERNS = [
+        EmStrongItem(re.compile(STRIKETHROUGH_RE, re.DOTALL | re.UNICODE), 'single', 's')
     ]
 
 
@@ -25,7 +34,8 @@ class DemistoExtension(Extension):
 
     def extendMarkdown(self, md):
         """ Modify inline patterns. """
-        md.inlinePatterns.register(LegacyUnderlineProcessor(r'\+'), 'underline', 50)
+        md.inlinePatterns.register(DemistoUnderlineProcessor(r'\+'), 'underline', 50)
+        md.inlinePatterns.register(DemistoStrikethroughProcessor(r'~'), 'strikethrough', 50)
 
 
 def get_utc_now():
@@ -428,7 +438,7 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
             note_user = note['Metadata']['user']
             note_userdata = demisto.executeCommand("getUserByUsername", {"username": note_user})
             user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name']) or "DBot"
-            reply_body += f"{user_fullname}: \n{note['Contents']}\n\n"
+            reply_body += f"{user_fullname}: \n\n{note['Contents']}\n\n"
 
         if isinstance(attachments, str):
             attachments = argToList(attachments)
