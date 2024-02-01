@@ -1130,6 +1130,7 @@ async def handle_dm(user: dict, text: str, client: AsyncWebClient):
         'channel': channel
     }
 
+    demisto.info(f'inside handle_dm')
     await send_slack_request_async(client, 'chat.postMessage', body=body)
 
 
@@ -1369,6 +1370,7 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
         return
 
     for mirror in mirror_filter:
+        demisto.log(f'{mirror=}')
         if mirror['mirror_direction'] == 'FromDemisto' or mirror['mirror_type'] == 'none':
             return
 
@@ -1476,6 +1478,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         return
     try:
         data: dict = req.payload
+        demisto.debug(f'{data=}')
         event: dict = data.get('event', {})
         text = event.get('text', '')
         user_id = data.get('user', {}).get('id', '')
@@ -1771,7 +1774,7 @@ def slack_send():
     """
     Sends a message to slack
     """
-
+    demisto.log(f'{get_integration_context(SYNC_CONTEXT).get("mirrors")}')
     args = demisto.args()
     message = args.get('message', '')
     to = args.get('to')
@@ -2047,6 +2050,7 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
 
     for destination in destinations:
         body['channel'] = destination
+        demisto.info(f'inside send_message_to_destinations')
         response = send_slack_request_sync(CLIENT, 'chat.postMessage', body=body)
 
     return response
