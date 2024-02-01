@@ -140,7 +140,7 @@ configuration:
     The minimum score from the feed in order to determine whether the indicator is malicious. Default is "65". For more information about Recorded Future scoring go to integration details.
   defaultvalue: '65'
   display: Malicious Threshold
-  name: threshold
+  name: malicious_threshold
   type: 0
   required: false
 - additionalinfo: The minimum score from the feed in order to determine whether the indicator is Suspicious. Ranges up to the Malicious Threshold. Default is "25". For more information about Recorded Future scoring go to integration details.
