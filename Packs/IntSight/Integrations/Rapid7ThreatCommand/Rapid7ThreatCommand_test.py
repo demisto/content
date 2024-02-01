@@ -2481,7 +2481,6 @@ def test_finish_reputation_handler(
      - Ensure that the command finished.
     """
     from Rapid7ThreatCommand import reputation_handler
-    execution_metrics = ExecutionMetrics()
     json_response = load_mock_response(response_path)
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json=json_response)
@@ -2490,7 +2489,6 @@ def test_finish_reputation_handler(
         client=mock_client,
         handler_command=handler_command,
         key=key,
-        execution_metrics=execution_metrics
     )
     assert not result.continue_to_poll
 
@@ -2520,7 +2518,6 @@ def test_continue_reputation_handler(
      - Ensure that the command called again.
     """
     from Rapid7ThreatCommand import reputation_handler
-    execution_metrics = ExecutionMetrics()
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json={"OriginalValue": "test", "Status": status})
 
@@ -2529,7 +2526,6 @@ def test_continue_reputation_handler(
         client=mock_client,
         handler_command=handler_command,
         key=key,
-        execution_metrics=execution_metrics
     )
     if status == "QuotaExceeded":
         assert not result.continue_to_poll
@@ -2605,11 +2601,10 @@ def test_enrich_ioc_handler(
      - Ensure that the command stop from running.
     """
     from Rapid7ThreatCommand import enrich_ioc_handler
-    execution_metrics = ExecutionMetrics()
     json_response = load_mock_response(response_path)
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json=json_response)
-    result = enrich_ioc_handler(mock_client, {"ioc_value": "test"}, execution_metrics=execution_metrics)
+    result = enrich_ioc_handler(mock_client, {"ioc_value": "test"})
     assert not result.continue_to_poll
 
 
@@ -2635,10 +2630,9 @@ def test_fail_enrich_ioc_handler(
      - Ensure relevant error raised.
     """
     from Rapid7ThreatCommand import enrich_ioc_handler
-    execution_metrics = ExecutionMetrics()
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json={"Status": status})
-    result = enrich_ioc_handler(mock_client, {"ioc_value": "test"}, execution_metrics=execution_metrics)
+    result = enrich_ioc_handler(mock_client, {"ioc_value": "test"})
     assert not result.continue_to_poll
 
 
@@ -2664,10 +2658,9 @@ def test_continue_enrich_ioc_handler(
      - Ensure that polling command called again.
     """
     from Rapid7ThreatCommand import enrich_ioc_handler
-    execution_metrics = ExecutionMetrics()
     url = urljoin(mock_client._base_url, "/v1/iocs/enrich/test")
     requests_mock.get(url=url, json={"Status": status})
-    result = enrich_ioc_handler(mock_client, {"ioc_value": "test"}, execution_metrics=execution_metrics)
+    result = enrich_ioc_handler(mock_client, {"ioc_value": "test"})
     assert result.continue_to_poll
 
 
