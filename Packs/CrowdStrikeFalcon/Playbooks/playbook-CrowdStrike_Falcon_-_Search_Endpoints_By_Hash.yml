@@ -206,7 +206,7 @@ tasks:
                     rhsB: {}
                     then:
                       value:
-                        simple: '"return empty string"'
+                        simple: 'return empty string'
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -764,7 +764,7 @@ tasks:
                     rhsB: {}
                     then:
                       value:
-                        simple: '"return empty string"'
+                        simple: 'return empty string'
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -844,7 +844,7 @@ tasks:
                     rhsB: {}
                     then:
                       value:
-                        simple: return empty string
+                        simple: 'return empty string'
             iscontext: true
     continueonerrortype: ""
     view: |-
