@@ -884,7 +884,7 @@ def test_main(new_thread, mocker):
     if new_thread == 'n/a':
         single_thread_reply_args = single_thread_reply_mocker.call_args
         expected_args = ('87654321', '10', '', 'test_cc@example.com', '', 'html', [], {}, None, False, 'end_user@company.com',
-                         'soc_sender@company.com', '123456', 'mail-sender-instance-1')
+                         'soc_sender@company.com', '123456', 'mail-sender-instance-1', False)
         assert single_thread_reply_args.args == expected_args
     elif new_thread == 'true':
         multi_thread_new_args = multi_thread_new_mocker.call_args
