@@ -652,7 +652,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: 'Whether to retrieve all of the resource json, including keys with large objects such as: "disks.shieldedInstanceInitialState" and "configure-sh" key under metadata. Default is "false".'
+    - description: 'Whether to retrieve all of the resource JSON, including keys with large objects such as: "disks.shieldedInstanceInitialState" and "configure-sh" key under metadata. Default is "false".'
       name: include_additional_resource_fields
       defaultValue: 'false'
       auto: PREDEFINED
