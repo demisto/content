@@ -48,24 +48,15 @@ class MsGraphClient:
                                          azure_cloud=self.azure_cloud
                                          )
 
-    def list_managed_devices(self, limit: int) -> tuple[list, Any]:
-        url_suffix: str = f'/deviceManagement/managedDevices?$top={limit}&'
+    def list_managed_devices(self, limit: int, page_size: int = 50, next_link: str | None = None) -> tuple[list, str| None, Any]:
+        url_suffix: str = f'/deviceManagement/managedDevices?$top={page_size}&'
+        if next_link:
+            url_suffix = next_link.split(API_VERSION)[1]
         raw_response = self.ms_client.http_request('GET', url_suffix)
-        results: list = raw_response.get('value')
-        next_page = raw_response.get('@odata.nextLink')
-        demisto.debug(f'in list_managed_devices - {next_page=} , {limit=}, sum of results fot first call = {len(results)}')
+        next_link = raw_response.get('@odata.nextLink')
 
-        # If there are more results to bring than the limit, we need to paginate
-        while next_page and limit and len(results) < limit:
-            concat_next_page_url = next_page.split(API_VERSION)[1]
-            raw_response = self.ms_client.http_request('GET', concat_next_page_url)
-            if raw_response.get('value') != []:
-                results += (raw_response.get('value'))
-                demisto.debug(f'in list_managed_devices - sum of results in pagination loop = {len(results)}')
-            next_page = raw_response.get('@odata.nextLink')
+        return raw_response.get('value', [])[:limit], next_link, raw_response
 
-        return results, raw_response
-        # TODO is it ok to return a list of raw response? is this a BC?
 
     def find_managed_devices(self, device_name: str) -> tuple[Any, str]:
         url_suffix: str = f"/deviceManagement/managedDevices?$filter=deviceName eq '{device_name}'"
@@ -258,9 +249,13 @@ def build_device_object(raw_device: dict) -> dict:
 
 def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
     limit: int = try_parse_integer(args.get('limit', 10), err_msg='This value for limit must be an integer.')
-    list_raw_devices, raw_response = client.list_managed_devices(limit)
+    page_size: int = try_parse_integer(args.get('page_size', 50), err_msg='This value for page_size must be an integer.')
+    next_link = args.get('next_link', '')
+    list_raw_devices, next_link, raw_response = client.list_managed_devices(limit, page_size, next_link)
     list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
+    if next_link:
+        entry_context['MSGraphDeviceManagement.NextLink(val.NextLink)']= {"NextLink": next_link}
     human_readable: str = 'No managed devices found.'
     if list_devices:
         name: str = 'List managed devices'
@@ -268,8 +263,11 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
             name = f'Managed device {list_devices[0].get("Name", "")}'
         human_readable = tableToMarkdown(name=name, t=list_raw_devices, headers=HEADERS['raw_device'],
                                          headerTransform=lambda h: SPECIAL_HEADERS.get(h, pascalToSpace(h)),
-                                         removeNull=True)
+                                         removeNull=True)+ (f"\nThere are more results than shown. "
+                                f"For more data please enter the next_link argument:\n "
+                                f"next_link={next_link}" if next_link else "")
     return_outputs(human_readable, entry_context, raw_response)
+    
 
 
 def find_managed_devices_command(client: MsGraphClient, args: dict) -> None:
