@@ -489,7 +489,11 @@ tasks:
       - "25"
     scriptarguments:
       hostname:
-        simple: ${PrismaCloudCompute.Hosts.[0]._id}
+        complex:
+          root: PrismaCloudCompute.Hosts.[0]
+          accessor: _id
+          transformers:
+            - operator: FirstArrayElement
       id:
         simple: ${PrismaCloudCompute.ProfileContainer._id}
     separatecontext: false
