@@ -34,7 +34,6 @@ class Client(BaseClient):
         self._whois_api_key = whois_api_key
         self._more_server_url = more_server_url.rstrip("/")
         self._whois_server_url = f'{whois_server_url.rstrip("/")}/v1/{whois_api_key}'
-        self.execution_metrics = ExecutionMetrics()
 
         super().__init__(base_url='', **kwargs)
 
@@ -71,30 +70,20 @@ class Client(BaseClient):
         return self._http_request(method='GET',
                                   full_url=f'{self._more_server_url}/customer/reports/v3/quota/{self._more_api_key}')
 
-    def error_handler(self, res: Response):
-        """
-        Error handling for http responses, to support the API Execution Metrics.
+    def determine_error_type(self, res: Response) -> ErrorTypes:
+        """ Determines the error type based on response.
 
         Args:
             res (Response): The response object from the http request.
+
+        Returns:
+            (ErrorTypes): The error type determined.
         """
         if res.status_code == 429 or 'Insufficient quota' in res.text:
-            self.execution_metrics.quota_error += 1
+            return ErrorTypes.QUOTA_ERROR
         elif res.status_code == 401:
-            self.execution_metrics.auth_error += 1
-        else:
-            self.execution_metrics.general_error += 1
-
-        self.client_error_handler(res)
-
-    def _http_request(self, **kwargs):
-        """
-        Wrapper for BaseClient._http_request for supporting API Execution Metrics.
-        """
-        try:
-            return super()._http_request(error_handler=self.error_handler, **kwargs)
-        finally:
-            self.execution_metrics.success += 1
+            return ErrorTypes.AUTH_ERROR
+        return ErrorTypes.GENERAL_ERROR
 
 
 def parse_domain_date(domain_date: list[str] | str, date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> str | None:
@@ -391,14 +380,14 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
         if res:
-            return_results(append_metrics(client.execution_metrics, res))
+            return_results(res)
 
     # Log exceptions and return errors
     except Exception as e:
-        if client:
-            return_results(client.execution_metrics.metrics)
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
-
+    finally:
+        if client:
+            return_results(client.execution_metrics_results())
 
 ''' ENTRY POINT '''
 

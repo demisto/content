@@ -511,6 +511,7 @@ class ErrorTypes(object):
     PROXY_ERROR = 'ProxyError'
     SSL_ERROR = 'SSLError'
     TIMEOUT_ERROR = 'TimeoutError'
+    RETRY_ERROR = "RetryError"
 
 
 class FeedIndicatorType(object):
@@ -7417,6 +7418,15 @@ class ExecutionMetrics(object):
         self._timeout_error = value
         self.update_metrics(ErrorTypes.TIMEOUT_ERROR, self._timeout_error)
 
+    @property
+    def retry_error(self):
+        return self._retry_error
+
+    @retry_error.setter
+    def retry_error(self, value):
+        self._retry_error = value
+        self.update_metrics(ErrorTypes.RETRY_ERROR, self._retry_error)
+
     def get_metric_list(self):
         return self._metrics
 
@@ -8957,7 +8967,7 @@ if 'requests' in sys.modules:
                     **kwargs
                 )
                 if not self._is_status_code_valid(res, ok_codes):
-                    self._handle_error(error_handler, res, resp_type, with_metrics)
+                    self._handle_error(error_handler, res, with_metrics)
 
                 return self._handle_success(res, resp_type, empty_valid_codes, return_empty_response, with_metrics)
 
@@ -9003,7 +9013,7 @@ if 'requests' in sys.modules:
                 err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
                 raise DemistoException(err_msg, exception)
 
-        def _handle_error(self, error_handler, res, resp_type, should_update_metrics):
+        def _handle_error(self, error_handler, res, should_update_metrics):
             try:
                 if error_handler:
                     error_handler(res)
@@ -9011,26 +9021,42 @@ if 'requests' in sys.modules:
                     self.client_error_handler(res)
             except Exception:
                 if should_update_metrics:
-                    self._update_metrics(
-                        res=self._cast_response(res, resp_type, raise_on_error=False),
-                        status_code=res.status_code,
-                        success=False,
-                    )
+                    self._update_metrics(res, success=False)
                 raise
 
         def _handle_success(self, res, resp_type, empty_valid_codes, return_empty_response, should_update_metrics):
+            """ Handle successful response
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check error type
+
+            :type resp_type: ``str``
+            :param resp_type:
+                Determines which data format to return from the HTTP request. The default
+                is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
+                 to return the full response object.
+
+            :type empty_valid_codes: ``list``
+            :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
+                can vary)
+
+            :type return_empty_response: ``bool``
+            :param response: Whether to return an empty response body if the response code is in empty_valid_codes
+
+            :type with_metrics ``bool``
+            :param with_metrics: Whether or not to calculate execution metrics from the response
+            """
             if not empty_valid_codes:
                 empty_valid_codes = [204]
             is_response_empty_and_successful = (res.status_code in empty_valid_codes)
             if is_response_empty_and_successful and return_empty_response:
                 return res
 
-            result = self._cast_response(res, resp_type)
             if should_update_metrics:
-                self._update_metrics(result, res.status_code, success=True)
-            return result
+                self._update_metrics(res, success=True)
+            return self.cast_response(res, resp_type)
 
-        def _cast_response(self, res, resp_type, raise_on_error=True):
+        def cast_response(self, res, resp_type, raise_on_error=True):
             resp_type = resp_type.lower()
             try:
                 if resp_type == 'json':
@@ -9049,8 +9075,16 @@ if 'requests' in sys.modules:
                     raise DemistoException('Failed to parse {} object from response: {}'  # type: ignore[str-bytes-safe]
                                            .format(resp_type, res.content), exception, res)
 
-        def _update_metrics(self, res, status_code, success):
-            error_type = self.determine_error_type(res, status_code)
+        def _update_metrics(self, res, success):
+            """ Updates execution metrics based on response and success flag.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check error type
+
+            :type success: ``bool``
+            :param success: Wheter the request succeeded or failed
+            """
+            error_type = self.determine_error_type(res)
             if error_type == ErrorTypes.QUOTA_ERROR:
                 self.execution_metrics.quota_error += 1
             elif error_type == ErrorTypes.AUTH_ERROR:
@@ -9062,10 +9096,29 @@ if 'requests' in sys.modules:
             elif success and not self.is_polling_in_progress(res):
                 self.execution_metrics.success += 1
 
-        def determine_error_type(self, res, status_code):
-            return None
+        def determine_error_type(self, response):
+            """ Determines the type of error based on response status code and content.
+            Note: this method should be overriden by subclass when implementing execution metrics.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check error type
+
+            :return: The error type if found, otherwise None
+            :rtype: ``ErrorTypes``
+            """
+            return ErrorTypes.GENERAL_ERROR
 
         def is_polling_in_progress(self, response):
+            """If thie response indicates polling operation in progress, return True.
+            Note: this method should be overriden by subclass when implementing polling reputation commands
+            with execution metrics.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check the polling status
+
+            :return: Whether the response indicates polling in progress
+            :rtype: ``bool``
+            """
             return False
 
         def _is_status_code_valid(self, response, ok_codes=None):

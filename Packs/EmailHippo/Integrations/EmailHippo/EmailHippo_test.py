@@ -90,7 +90,7 @@ class TestHappyPath:
 
 class TestFailure:
 
-    def test_get_email_reputation_failure_quota_limit(self, requests_mock, client):
+    def test_get_email_reputation_failure_quota_limit(self, requests_mock, client: Client):
         """
         Given:
             a Client instance and a mocked failed quota limit API response
