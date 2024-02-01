@@ -8960,7 +8960,7 @@ if 'requests' in sys.modules:
                     self._handle_error(error_handler, res, resp_type, with_metrics)
 
                 return self._handle_success(res, resp_type, empty_valid_codes, return_empty_response, with_metrics)
-                
+
             except requests.exceptions.ConnectTimeout as exception:
                 if with_metrics:
                     self.execution_metrics.timeout_error += 1
@@ -9047,7 +9047,7 @@ if 'requests' in sys.modules:
             except ValueError as exception:
                 if raise_on_error:
                     raise DemistoException('Failed to parse {} object from response: {}'  # type: ignore[str-bytes-safe]
-                                            .format(resp_type, res.content), exception, res)
+                                           .format(resp_type, res.content), exception, res)
 
         def _update_metrics(self, res, status_code, success):
             error_type = self.determine_error_type(res, status_code)
@@ -9109,6 +9109,7 @@ if 'requests' in sys.modules:
             """ Returns execution metrics results.
             """
             return cast(CommandResults, self.execution_metrics.metrics)
+
 
 def batch(iterable, batch_size=1):
     """Gets an iterable and yields slices of it.

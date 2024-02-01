@@ -2,7 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
 from enum import Enum
-from typing import Any, Callable, cast
+from typing import Any
+from collections.abc import Callable
 import copy
 from requests import Response
 import pathlib
@@ -15,7 +16,7 @@ ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 INTEGRATION_ENTRY_CONTEXT = "ThreatCommand"
 BACKOFF_FACTOR = 15  # Consider its double.
 RETRIES = 3  # One retry is completed right away, so it should be viewed as a minor attempt.
-STATUS_LIST_TO_RETRY = [429] + [i for i in range(500, 600)]
+STATUS_LIST_TO_RETRY = [429] + list(range(500, 600))
 
 
 class Headers(list, Enum):
@@ -4726,7 +4727,7 @@ def multi_status_handler(
         for obj in failure:
             reason = obj["failReason"]
             obj_id = obj[object_key]
-            succeeded = list(set(succeeded) - set([obj_id]))
+            succeeded = list(set(succeeded) - {obj_id})
             failed.append(f"{obj_id} ({reason})")
     if not succeeded:
         raise ValueError(fail_readable.format((",").join(failed)))
@@ -4985,7 +4986,7 @@ def dict_to_lowercase(dict_: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: Dictionary with lowercase keys.
     """
-    return dict((k.lower(), v) for k, v in dict_.items())
+    return {k.lower(): v for k, v in dict_.items()}
 
 
 def alert_readable_outputs_handler(response: dict[str, Any]) -> dict[str, Any]:
@@ -5028,10 +5029,10 @@ def response_obj_parser(dict_: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: Parsed dictionary.
     """
-    return dict(
-        (camel_case_to_underscore(k if k != "_id" else "id"), v)
+    return {
+        camel_case_to_underscore(k if k != "_id" else "id"): v
         for k, v in dict_.items()
-    )
+    }
 
 
 def minimum_severity_handler(severity: str | None) -> List[str]:
