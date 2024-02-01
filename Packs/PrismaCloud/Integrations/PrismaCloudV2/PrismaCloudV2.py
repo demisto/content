@@ -202,12 +202,13 @@ class Client(BaseClient):
 
     def config_search_request(self, time_range: Dict[str, Any], query: str, limit: Optional[int] = None,
                               search_id: Optional[str] = None, sort_direction: Optional[str] = None,
-                              sort_field: Optional[str] = None):
+                              sort_field: Optional[str] = None, include_resource_json: Optional[str] = 'true'):
         data = remove_empty_values({'id': search_id,
                                     'limit': limit,
                                     'query': query,
                                     'sort': [{'direction': sort_direction, 'field': sort_field}],
                                     'timeRange': time_range,
+                                    'withResourceJson': include_resource_json,
                                     })
 
         return self._http_request('POST', 'search/config', json_data=data)
@@ -1474,10 +1475,12 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     search_id = args.get('search_id')
     sort_direction = args.get('sort_direction', 'desc')
     sort_field = args.get('sort_field', 'insertTs')
+    include_resource_json = args.get('include_resource_json', 'true')
     if any([sort_direction, sort_field]) and not all([sort_direction, sort_field]):
         raise DemistoException('Both sort direction and field must be specified if sorting.')
 
-    response = client.config_search_request(time_filter, str(query), limit, search_id, sort_direction, sort_field)
+    response = client.config_search_request(time_filter, str(query), limit, search_id, sort_direction, sort_field,
+                                            include_resource_json)
     response_items = response.get('data', {}).get('items', [])
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
