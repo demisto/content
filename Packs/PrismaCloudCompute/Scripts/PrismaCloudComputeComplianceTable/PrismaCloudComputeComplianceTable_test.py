@@ -114,7 +114,7 @@ TWO_IMAGE_OUTPUT[1]['ImageId'] = 'some_image_id2'
 def test_create_new_outputs(mocker, input_context, object_type, expected_context, expected_context_path):
     """
     Given:
-        Enriched Compliance Issues with new compliance objects ids in the input context data.
+        NEW enriched compliance issues with NEW compliance objects ids in the input context data.
         For each compliance object type (Host, Container, Image) check the following:
             1. Single object in a list
             2. Two objects in a list
@@ -139,6 +139,7 @@ def test_create_new_outputs(mocker, input_context, object_type, expected_context
 
 
 def merge_input_and_output_context(input_context, output_context, object_type):
+    """Merge the input of the script and already existing output of the script to one context data dict."""
     merged_context = copy.deepcopy(input_context)
     merged_context.update({'PrismaCloudCompute': {'ComplianceTable': {object_type: copy.deepcopy(output_context)}}})
     return merged_context
@@ -168,6 +169,20 @@ def merge_input_and_output_context(input_context, output_context, object_type):
                          ids=['Host', 'TwoHosts', 'Container', 'TwoContainers', 'Image', 'TwoImages'])
 def test_update_outputs(mocker, input_context, input_context_in_path, object_type, already_present_output, expected_context,
                         expected_context_path):
+    """
+    Given:
+        NEW enriched compliance issues with OLD compliance objects ids in the input context data.
+        For each compliance object type (Host, Container, Image) check the following:
+            1. Single object in a list
+            2. Two objects in a list
+
+    When:
+        Running update_context_paths
+
+    Then:
+        Assert the updated compliance table in the context data is as expected.
+        Assert nothing was created.
+    """
     demisto_args = {'resourceType': object_type}
     merged_input_context = merge_input_and_output_context(input_context, already_present_output, object_type)
     mocker.patch.object(demisto, 'context', return_value=merged_input_context)
@@ -189,6 +204,18 @@ def test_update_outputs(mocker, input_context, input_context_in_path, object_typ
                              (IMAGE_INPUT, IMAGE_INPUT['PrismaCloudCompute']['ReportsImagesScan'], 'Image', [IMAGE_OUTPUT])],
                          ids=['Host', 'Container', 'Image'])
 def test_update_existing_outputs(mocker, input_context, input_context_in_path, object_type, already_present_output):
+    """
+    Given:
+        OLD enriched compliance issues with OLD compliance objects ids in the input context data.
+        Check for each compliance object type (Host, Container, Image).
+
+    When:
+        Running update_context_paths
+
+    Then:
+        Assert nothing was updated.
+        Assert nothing was created.
+    """
     demisto_args = {'resourceType': object_type}
     merged_input_context = merge_input_and_output_context(input_context, already_present_output, object_type)
     mocker.patch.object(demisto, 'context', return_value=merged_input_context)
@@ -221,6 +248,18 @@ def test_update_existing_outputs(mocker, input_context, input_context_in_path, o
                          ], ids=['Hosts', 'Containers', 'Images'])
 def test_create_and_update_outputs(mocker, input_context, input_context_in_path, object_type, already_present_output,
                                    expected_update, expected_update_path, expected_create, expected_create_path):
+    """
+    Given:
+        NEW enriched compliance issues with OLD & NEW compliance objects ids in the input context data.
+        Check for each compliance object type (Host, Container, Image).
+
+    When:
+        Running update_context_paths
+
+    Then:
+        Assert the updated objects in the table are as expected.
+        Assert the expected objects were created.
+    """
     demisto_args = {'resourceType': object_type}
     merged_input_context = merge_input_and_output_context(input_context, already_present_output, object_type)
     mocker.patch.object(demisto, 'context', return_value=merged_input_context)
