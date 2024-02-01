@@ -666,7 +666,7 @@ script:
       predefined:
       - asc
       - desc
-    description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to reduce the returned data, please set the "include_resource_json" argument to "false".
+    description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to reduce the returned data, set the "include_resource_json" argument to "false".
     name: prisma-cloud-event-search
     outputs:
     - contextPath: PrismaCloud.Event.subject
