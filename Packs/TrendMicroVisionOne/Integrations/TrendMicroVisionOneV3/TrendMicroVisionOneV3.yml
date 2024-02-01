@@ -1191,7 +1191,7 @@ script:
       description: Updates the status of a workbench alert.
       name: trendmicro-visionone-update-status
     - arguments:
-        - description: 'List of object(s) made up of `filename`, `endpoint_name` or `agent_guid` and optional `description` and optional `parameter`. e.g. [{"filename":"test.ps1","endpoint_name":"test-endpoint1","description":"Run custom script","parameter":"some-string"}].'
+        - description: 'A Json list of object(s) made up of `filename`, `endpoint_name` or `agent_guid` and optional `description` and optional `parameter`. e.g. [{"filename":"test.ps1","endpoint_name":"test-endpoint1","description":"Run custom script","parameter":"some-string"}].'
           name: block_objects
           required: true
           isArray: true
