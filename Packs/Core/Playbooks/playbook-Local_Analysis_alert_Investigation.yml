@@ -217,9 +217,11 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '39'
+      - "39"
       Benign:
-      - "77"
+      - "85"
+      Greyware:
+      - "86"
     separatecontext: false
     conditions:
     - label: Benign
@@ -234,6 +236,24 @@ tasks:
           right:
             value:
               simple: "0"
+    - label: Greyware
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: WildFire.Verdicts.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.GraywareAsMalware
+            iscontext: true
+          right:
+            value:
+              simple: "False"
     continueonerrortype: ""
     view: |-
       {
@@ -401,7 +421,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2910
+          "y": 2800
         }
       }
     note: false
@@ -445,7 +465,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2670
+          "y": 2560
         }
       }
     note: false
@@ -523,7 +543,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3410
+          "y": 3300
         }
       }
     note: false
@@ -569,7 +589,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3750
+          "y": 3640
         }
       }
     note: false
@@ -600,7 +620,7 @@ tasks:
       {
         "position": {
           "x": 1270,
-          "y": 3920
+          "y": 3810
         }
       }
     note: false
@@ -631,7 +651,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3255
+          "y": 3145
         }
       }
     note: false
@@ -658,8 +678,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 430,
-          "y": 4290
+          "x": 40,
+          "y": 4170
         }
       }
     note: false
@@ -862,8 +882,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1280,
-          "y": 1720
+          "x": 1340,
+          "y": 1590
         }
       }
     note: false
@@ -899,8 +919,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1280,
-          "y": 1880
+          "x": 1340,
+          "y": 1750
         }
       }
     note: false
@@ -1108,7 +1128,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2500
+          "y": 2390
         }
       }
     note: false
@@ -1238,7 +1258,7 @@ tasks:
       {
         "position": {
           "x": 1300,
-          "y": 3050
+          "y": 2940
         }
       }
     note: false
@@ -1371,7 +1391,7 @@ tasks:
       {
         "position": {
           "x": 1370,
-          "y": 3580
+          "y": 3470
         }
       }
     note: false
@@ -1430,8 +1450,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 430,
-          "y": 2500
+          "x": 40,
+          "y": 2390
         }
       }
     note: false
@@ -1466,8 +1486,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1280,
-          "y": 2040
+          "x": 1340,
+          "y": 1910
         }
       }
     note: false
@@ -1550,8 +1570,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1280,
-          "y": 2200
+          "x": 1340,
+          "y": 2070
         }
       }
     note: false
@@ -1597,7 +1617,7 @@ tasks:
       {
         "position": {
           "x": 1760,
-          "y": 3050
+          "y": 2940
         }
       }
     note: false
@@ -1715,7 +1735,7 @@ tasks:
       {
         "position": {
           "x": 1760,
-          "y": 2910
+          "y": 2800
         }
       }
     note: false
@@ -1750,8 +1770,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1280,
-          "y": 1280
+          "x": 1340,
+          "y": 1150
         }
       }
     note: false
@@ -1793,11 +1813,20 @@ tasks:
           right:
             value:
               simple: Success
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ShouldRescanBenign
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
     view: |-
       {
         "position": {
-          "x": 1280,
-          "y": 1480
+          "x": 1340,
+          "y": 1350
         }
       }
     note: false
@@ -1824,7 +1853,6 @@ tasks:
       '#none#':
       - "80"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2059,6 +2087,69 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: d5e7fd85-67c3-44c5-8f35-f08f3727a564
+    type: title
+    task:
+      id: d5e7fd85-67c3-44c5-8f35-f08f3727a564
+      version: -1
+      name: Benign
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "77"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1560,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 4457cf9c-89af-450f-8fe6-c211a98c3eca
+    type: title
+    task:
+      id: 4457cf9c-89af-450f-8fe6-c211a98c3eca
+      version: -1
+      name: Greyware
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "77"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
