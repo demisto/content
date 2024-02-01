@@ -37,7 +37,7 @@ class MsGraphClient:
                  ok_codes, certificate_thumbprint, private_key,
                  managed_identities_client_id: Optional[str] = None):
         self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
-        self.base_url = urljoin(self.azure_cloud.endpoints.microsoft_graph_resource_id, f'/{API_VERSION}/')
+        self.base_url = urljoin(self.azure_cloud.endpoints.microsoft_graph_resource_id, f'/{API_VERSION}')
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=self.base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint,
