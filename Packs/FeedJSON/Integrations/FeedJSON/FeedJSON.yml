@@ -73,7 +73,7 @@ configuration:
   type: 8
   required: false
 - additionalinfo: Remove ports from IPv4 type indicators in the fetch command (e.g. 192.168.1.1:8080 -> 192.168.1.1)
-  display: Remove ports from IPv4 type indicators
+  display: Remove IPv4 Ports
   name: remove_ports
   type: 8
   required: false
