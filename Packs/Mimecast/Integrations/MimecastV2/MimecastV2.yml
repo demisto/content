@@ -1,6 +1,6 @@
 category: Email
 commonfields:
-  id: MimecastV2
+  id: MimecastV2-DEBUG
   version: -1
 configuration:
 - defaultvalue: https://api.mimecast.com
@@ -102,8 +102,8 @@ configuration:
   type: 8
   required: false
 description: Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
-display: Mimecast v2
-name: MimecastV2
+display: Mimecast v2 - DEBUG
+name: MimecastV2-DEBUG
 script:
   commands:
   - arguments:

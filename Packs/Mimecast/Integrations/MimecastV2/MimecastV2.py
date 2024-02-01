@@ -1652,15 +1652,18 @@ def get_impersonation_logs():
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
+    demisto.debug(f"raw {last_run=}")
     last_fetch = last_run.get('time')
 
     # handle first time fetch
     if last_fetch is None:
         last_fetch = datetime.now() - timedelta(hours=FETCH_DELTA)
         last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
+        demisto.debug(f"last_fetch is None, setting {last_fetch_date_time=}")
     else:
         last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
         last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
+        demisto.debug(f"previous {last_fetch=}, setting {last_fetch_date_time=}")
     current_fetch = last_fetch
 
     incidents = []  # type: List[Any]
@@ -1741,7 +1744,8 @@ def fetch_incidents():
             if temp_date > current_fetch:
                 incidents.append(incident)
 
-    demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
+    demisto.setLastRun({'time': (formatted_last_run:= last_fetch.isoformat().split('.')[0] + 'Z')})
+    demisto.debug(f'{len(incidents)=}, set last_run={formatted_last_run}')
     demisto.incidents(incidents)
 
 
