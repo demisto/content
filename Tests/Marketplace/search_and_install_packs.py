@@ -1096,4 +1096,4 @@ def search_and_install_packs_and_their_dependencies(
         pack_success, _ = install_packs(client, host, packs_to_install_body)
         success &= pack_success
 
-    return itertools.chain.from_iterable(sorted_packs_to_install), success
+    return list(itertools.chain.from_iterable(sorted_packs_to_install)), success
