@@ -537,10 +537,10 @@ def fix_2010():  # pragma: no cover
     version = SERVER_BUILD if SERVER_BUILD else get_build(VERSION_STR)
     if version <= EXCHANGE_2010_SP2:
         for m in (
-                Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
-                exchangelib.items.DistributionList,
-                exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
-                exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
+            Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
+            exchangelib.items.DistributionList,
+            exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
+            exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
             for i, f in enumerate(m.FIELDS):
                 if f.name == 'text_body':
                     m.FIELDS.pop(i)
@@ -1074,7 +1074,7 @@ def parse_object_as_dict_with_serialized_items(object):
     return raw_dict
 
 
-def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=False):  # pragma: no cover
+def parse_item_as_dict(item, email_address=None, camel_case=False, compact_fields=False):  # pragma: no cover
     def parse_object_as_dict(object):
         raw_dict = {}
         if object is not None:
@@ -1273,7 +1273,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
 
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
-                                       and header.name != 'Content-Type':
+                                        and header.name != 'Content-Type':
                                         attached_email.add_header(header.name, header.value)
 
                             file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
@@ -1759,50 +1759,55 @@ def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mai
                                 recovered_messages)
 
 
+def parse_physical_address(address):
+    result = {}
+    for attr in ['city', 'country', 'label', 'state', 'street', 'zipcode']:
+        result[attr] = getattr(address, attr, None)
+    return result
+
+
+def parse_phone_number(phone_number):
+    result = {}
+    for attr in ['label', 'phone_number']:
+        result[attr] = getattr(phone_number, attr, None)
+    return result
+
+
+def is_jsonable(x):
+    try:
+        json.dumps(x)
+        return True
+    except Exception:
+        return False
+
+
+def parse_contact(contact):
+    contact_dict = parse_object_as_dict_with_serialized_items(contact)
+    for k in contact_dict:
+        v = contact_dict[k]
+        if isinstance(v, EWSDateTime):
+            contact_dict[k] = v.ewsformat()  # pylint: disable=E4702
+
+    contact_dict['id'] = contact.id
+    if isinstance(contact, Contact) and contact.physical_addresses:
+        contact_dict['physical_addresses'] = list(map(parse_physical_address, contact.physical_addresses))
+    if isinstance(contact, Contact) and contact.phone_numbers:
+        contact_dict['phone_numbers'] = list(map(parse_phone_number, contact.phone_numbers))
+    if isinstance(contact, Contact) and contact.email_addresses and len(contact.email_addresses) > 0:
+        contact_dict['emailAddresses'] = [x.email for x in contact.email_addresses]
+    contact_dict = keys_to_camel_case(contact_dict)
+    contact_dict = {k: v for k, v in contact_dict.items() if (v and is_jsonable(v))}
+    return contact_dict
+
+
 def get_contacts(limit, target_mailbox=None):  # pragma: no cover
-    def parse_physical_address(address):
-        result = {}
-        for attr in ['city', 'country', 'label', 'state', 'street', 'zipcode']:
-            result[attr] = getattr(address, attr, None)
-        return result
-
-    def parse_phone_number(phone_number):
-        result = {}
-        for attr in ['label', 'phone_number']:
-            result[attr] = getattr(phone_number, attr, None)
-        return result
-
-    def is_jsonable(x):
-        try:
-            json.dumps(x)
-            return True
-        except Exception:
-            return False
-
-    def parse_contact(contact):
-        contact_dict = parse_object_as_dict_with_serialized_items(contact)
-        for k in contact_dict:
-            v = contact_dict[k]
-            if isinstance(v, EWSDateTime):
-                contact_dict[k] = v.ewsformat()  # pylint: disable=E4702
-
-        contact_dict['id'] = contact.id
-        if isinstance(contact, Contact) and contact.physical_addresses:
-            contact_dict['physical_addresses'] = list(map(parse_physical_address, contact.physical_addresses))
-        if isinstance(contact, Contact) and contact.phone_numbers:
-            contact_dict['phone_numbers'] = list(map(parse_phone_number, contact.phone_numbers))
-        if isinstance(contact, Contact) and contact.email_addresses and len(contact.email_addresses) > 0:
-            contact_dict['emailAddresses'] = [x.email for x in contact.email_addresses]
-        contact_dict = keys_to_camel_case(contact_dict)
-        contact_dict = {k: v for k, v in contact_dict.items() if (v and is_jsonable(v))}
-        contact_dict['originMailbox'] = target_mailbox
-        return contact_dict
-
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     contacts = []
 
     for contact in account.contacts.all()[:int(limit)]:  # pylint: disable=E1101
-        contacts.append(parse_contact(contact))
+        contact = parse_contact(contact)
+        contact['originMailbox'] = target_mailbox
+        contacts.append(contact)
     return get_entry_for_object(f'Email contacts for {target_mailbox or ACCOUNT_EMAIL}',
                                 'Account.Email(val.Address == obj.originMailbox).EwsContacts',
                                 contacts)
@@ -2127,6 +2132,23 @@ def get_autodiscovery_config():  # pragma: no cover
     }
 
 
+def get_contact_information_command(unresolved_entries_arg, protocol):  # pragma: no cover
+    unresolved_entries = argToList(unresolved_entries_arg)
+    demisto.results(f'{len(unresolved_entries)=}')
+    resolved_names = protocol.resolve_names(unresolved_entries, return_full_contact_data=True)
+    outputs = [{
+        'Mailbox': parse_item_as_dict(mailbox),
+        'Contact': parse_contact(contact)
+    }
+        for mailbox, contact in resolved_names]
+    return CommandResults(
+        outputs_prefix="EWS.ResolvedNames",
+        outputs_key_field='Mailbox.item_id',
+        outputs=outputs,
+        readable_output=f'{len(outputs)=}'
+    )
+
+
 def mark_item_as_read(item_ids, operation='read', target_mailbox=None):  # pragma: no cover
     marked_items = []
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
@@ -2421,6 +2443,8 @@ def sub_main():  # pragma: no cover
             encode_and_submit_results(get_expanded_group(protocol, **args))
         elif demisto.command() == 'ews-mark-items-as-read':
             encode_and_submit_results(mark_item_as_read(**args))
+        elif demisto.command() == 'ews-get-contact-information':
+            return_results(get_contact_information_command(args['identifiers'], protocol))
         elif demisto.command() == 'ews-get-items-as-eml':
             encode_and_submit_results(get_item_as_eml(**args))
         elif demisto.command() == 'send-mail':

@@ -631,6 +631,13 @@ script:
       description: The categories of the email.
       type: unknown
   - arguments:
+      - description: todo
+        isArray: true
+        name: identifiers
+        required: true
+    description: mydescription
+    name: ews-get-contact-information
+  - arguments:
     - description: A CSV list if item IDs.
       isArray: true
       name: item-ids
