@@ -251,7 +251,7 @@ def test_config_search_command(mocker, prisma_cloud_v2_client):
                                     json_data={'limit': 1, 'query': "config from cloud.resource where cloud.region = 'AWS Ohio' ",
                                                'sort': [{'direction': 'desc', 'field': 'insertTs'}],
                                                'timeRange': {'type': 'to_now', 'value': 'epoch'},
-                                               'withResourceJson': {'value': 'true'},
+                                               'withResourceJson': 'true',
                                                })
 
 
