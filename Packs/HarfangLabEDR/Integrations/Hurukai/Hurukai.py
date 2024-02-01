@@ -3347,7 +3347,9 @@ def get_security_events(
 
     args = {
         "ordering": ordering,
-        "level": ",".join(SEVERITIES[SEVERITIES.index(min_severity) :]).lower(),
+        "level": ",".join(
+            SEVERITIES[SEVERITIES.index(min_severity) :]  # noqa: E203
+        ).lower(),
         "limit": limit,
         "offset": 0,
     }  # type: Dict[str,Any]
@@ -3477,7 +3479,9 @@ def get_threats(
         threat_ids = []
         args = {
             "ordering": ordering,
-            "level": ",".join(SEVERITIES[SEVERITIES.index(min_severity) :]).lower(),
+            "level": ",".join(
+                SEVERITIES[SEVERITIES.index(min_severity) :]  # noqa: E203
+            ).lower(),
             "limit": limit,
             "offset": 0,
         }  # type: Dict[str,Any]
