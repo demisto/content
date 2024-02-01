@@ -27,7 +27,7 @@ def test_extract_info_from_qr_code(mocker: MockerFixture):
     result = extract_info_from_qr_code('entry_id')
 
     assert result.outputs_prefix == 'QRCodeReader'
-    assert result.outputs == {'Text': 'https://xsoar.pan.dev/', 'Domain': 'xsoar.pan.dev'}
+    assert result.outputs == {'Text': ['https://xsoar.pan.dev/'], 'Domain': 'xsoar.pan.dev'}
     assert result.readable_output == '### QR Code Read\n|Text|\n|---|\n| https://xsoar.pan.dev/ |\n'
 
 
@@ -74,23 +74,24 @@ def test_with_non_image_file(mocker: MockerFixture):
         extract_info_from_qr_code('entry_id')
 
 
-def test_read_qr_code_with_pyzbar(mocker: MockerFixture):
+def test_read_qr_code_multiple_codes(mocker: MockerFixture):
     """
     Given:
-        A file that cannot be decoded with cv2.
+        An image that has multiple QR codes.
 
     When:
         - Calling the ReadQRCode script.
 
     Then:
-        Decode the image with pyzbar.
+        Return the result of all images.
     """
     from ReadQRCode import read_qr_code
 
-    debug = mocker.patch.object(demisto, 'debug')
-
-    # result = read_qr_code('test_data/pyzbar_code_1.png')
     result = read_qr_code('test_data/multiple_codes.png')
 
-    # debug.assert_called_with("Couldn't extract text with cv2, retrying with pyzbar.")
-    assert result == 'https://xsoar.pan.dev/'
+    assert result == [
+        'http://itunes.apple.com/us/app/encyclopaedia-britannica/id447919187?mt=8',
+        'http://searchmobilecomputing.techtarget.com/definition/2D-barcode',
+        'https://www.linkedin.com/company/1334758?trk=NUS_CMPY_TWIT',
+        'http://en.m.wikipedia.org'
+    ]

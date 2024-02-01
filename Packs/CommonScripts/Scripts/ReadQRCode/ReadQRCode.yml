@@ -3,7 +3,7 @@ args:
   name: entry_id
   required: true
   default: true
-comment: Extracts the text from a QR code. This script uses the open-source library OpenCV and is restricted to it's capabilities. The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
+comment: Extracts the text from a QR code. The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
 commonfields:
   id: ReadQRCode
   version: -1

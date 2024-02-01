@@ -5,20 +5,20 @@ import cv2
 # pylint: disable=E1101  # disable pylint not recognizing cv2's attributes.
 
 
-def read_qr_code(filename: str) -> str:
+def read_qr_code(filename: str) -> str | list[str]:
 
-    detect = cv2.QRCodeDetector()
     img = cv2.imread(filename)
-    text, *_ = detect.detectAndDecode(img)
+    text = [d.data.decode() for d in pyzbar.decode(img)]
 
     if not text:
-        demisto.debug("Couldn't extract text with cv2, retrying with pyzbar.")
-        text = [d.data.decode() for d in pyzbar.decode(img)]
+        demisto.debug("Couldn't extract text with pyzbar, retrying with cv2.")
+        detect = cv2.QRCodeDetector()
+        text, *_ = detect.detectAndDecode(img)
 
     return text
 
 
-def extract_indicators_from_text(text: str) -> dict:
+def extract_indicators_from_text(text: str | list[str]) -> dict:
     return json.loads(demisto.executeCommand(
         'extractIndicators', {'text': text}
     )[0]['Contents'])  # type: ignore
@@ -32,7 +32,7 @@ def extract_info_from_qr_code(entry_id: str) -> CommandResults:
         if not text:
             return CommandResults(readable_output='No QR code was found in the image.')
         indicators = extract_indicators_from_text(text)
-    except cv2.error as e:  # generic error raised by cv2
+    except (cv2.error, TypeError) as e:  # generic error raised by cv2
         raise DemistoException('Error parsing file. Please make sure it is a valid image file.') from e
     except ValueError:  # raised by demisto.getFilePath when the entry_id is not found
         raise DemistoException(f'Invalid entry ID: {entry_id=}')
