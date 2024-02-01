@@ -3,7 +3,7 @@ from datetime import datetime
 import FeedCyberint
 import pytest
 
-date_time = str((datetime.now().strftime("%Y-%m-%d")))
+date_time = str((datetime.now().strftime(FeedCyberint.DATE_FORMAT)))
 
 BASE_URL = "https://feed-example.com/"
 REQUEST_URL = f"{BASE_URL}{date_time}"
@@ -101,6 +101,7 @@ def test_get_indicators_command(
         "confidence_from": "0",
         "feed_name": ["All"],
         "indicator_type": ["All"],
+        "limit": 10,
     }
     args = {"limit": 20}
 

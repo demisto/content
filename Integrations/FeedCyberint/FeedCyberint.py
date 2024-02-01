@@ -7,6 +7,7 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%d"
+DEFAULT_INTERVAL = 240
 
 
 class Client(BaseClient):
@@ -22,6 +23,8 @@ class Client(BaseClient):
         proxy: bool = False,
     ):
         self._cookies = {"access_token": access_token}
+        self.headers = {"x-integration-type": "XSOAR"}
+        self.headers = {"x-integration-instance-name": f"{demisto.integrationInstance()}"}
         super().__init__(base_url, verify=verify, proxy=proxy)
 
     def build_iterator(self, date_time: str = None) -> List:
@@ -133,7 +136,11 @@ def fetch_indicators(
     return indicators
 
 
-def get_indicators_command(client: Client, params: Dict[str, str], args: Dict[str, str]) -> CommandResults:
+def get_indicators_command(
+    client: Client,
+    params: Dict[str, Any],
+    args: Dict[str, Any],
+) -> CommandResults:
     """
     Wrapper for retrieving indicators from the feed to the war-room.
 
@@ -182,7 +189,10 @@ def get_indicators_command(client: Client, params: Dict[str, str], args: Dict[st
     )
 
 
-def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
+def fetch_indicators_command(
+    client: Client,
+    params: Dict[str, Any],
+) -> List[Dict]:
     """
     Wrapper for fetching indicators from the feed to the Indicators tab.
 
@@ -199,10 +209,11 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dic
     confidence_from = arg_to_number(params.get("confidence_from")) or 0
     feed_names = argToList(params.get("feed_name"))
     indicator_types = argToList(params.get("indicator_type"))
-    fetch_interval = arg_to_number(params.get("feedFetchInterval")) or 240
+    fetch_interval = arg_to_number(params.get("feedFetchInterval")) or DEFAULT_INTERVAL
 
     indicators = []
 
+    # if now-interval is yesterday, call feeds for yesterday too
     if is_x_minutes_ago_yesterday(fetch_interval):
         indicators = fetch_indicators(
             client=client,
