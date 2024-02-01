@@ -61,7 +61,8 @@ def test_alert_search_command_no_next_token(mocker, prisma_cloud_v2_client):
                                                            {'name': 'policy.remediable', 'operator': '=', 'value': 'true'},
                                                            {'name': 'cloud.type', 'operator': '=', 'value': 'gcp'},
                                                            {'name': 'policy.type', 'operator': '=', 'value': 'config'}],
-                                               'timeRange': {'type': 'relative', 'value': {'amount': 3, 'unit': 'week'}}})
+                                               'timeRange': {'type': 'relative', 'value': {'amount': 3, 'unit': 'week'}}},
+                                    retries=2)
 
 
 def test_alert_search_command_with_next_token(mocker, prisma_cloud_v2_client):
@@ -83,7 +84,7 @@ def test_alert_search_command_with_next_token(mocker, prisma_cloud_v2_client):
     http_request.assert_called_with('POST', 'v2/alert', params={'detailed': 'true'},
                                     json_data={'limit': 10,
                                                'timeRange': {'type': 'relative', 'value': {'amount': 3, 'unit': 'week'}},
-                                               'pageToken': 'TOKEN'})
+                                               'pageToken': 'TOKEN'}, retries=2)
 
 
 def test_alert_get_details_command(mocker, prisma_cloud_v2_client):
