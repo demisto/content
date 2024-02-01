@@ -647,11 +647,11 @@ script:
       - user
     - description: 'Include resource JSON. Default is true.'
       name: include_resource_json
-      defaultValue: true
+      defaultValue: 'true'
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - description: 'The direction to sort the results by. Sort field must be specified if sorting. Possible values are: asc, desc. Default is asc.'
       name: sort_direction
       defaultValue: asc
