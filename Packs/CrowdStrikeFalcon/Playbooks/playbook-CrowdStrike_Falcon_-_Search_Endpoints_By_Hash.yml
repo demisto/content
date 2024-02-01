@@ -2,7 +2,7 @@ id: CrowdStrike Falcon - Search Endpoints By Hash
 version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - Search Endpoints By Hash
-description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook searches across the organization for other endpoints associated with a specific SHA256 hash."
+description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. \nThis playbook searches across the organization for other endpoints associated with a specific SHA256/MD5/SHA1 hash."
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +42,7 @@ tasks:
     task:
       id: 9ce410b8-ddde-4690-8625-2cfab080cd83
       version: -1
-      name: Search for hash in the environment
+      name: Get device id list by SHA1
       description: Returns a list of device IDs that the indicator ran on.
       script: '|||cs-falcon-device-ran-on'
       type: regular
@@ -82,7 +82,7 @@ tasks:
     task:
       id: 04610f87-fee9-4de1-8980-1649f61b38d0
       version: -1
-      name: Count hash in the environment
+      name: Count devices in the environment by SHA256
       description: The number of hosts that observed the provided IOC.
       script: '|||cs-falcon-device-count-ioc'
       type: regular
@@ -410,7 +410,7 @@ tasks:
     task:
       id: e1e46c37-8e78-40f8-811e-06f7b0cd2294
       version: -1
-      name: Count hash in the environment
+      name: Count devices in the environment by SHA1
       description: The number of hosts that observed the provided IOC.
       script: '|||cs-falcon-device-count-ioc'
       type: regular
@@ -450,7 +450,7 @@ tasks:
     task:
       id: 7a424a6a-334c-412c-843a-863643c14b36
       version: -1
-      name: 'Count hash in the environment '
+      name: Count devices in the environment by MD5
       description: The number of hosts that observed the provided IOC.
       script: '|||cs-falcon-device-count-ioc'
       type: regular
@@ -628,7 +628,7 @@ tasks:
     task:
       id: 88326013-5240-41bd-8987-6452a1d73e3c
       version: -1
-      name: Search for hash in the environment
+      name: Get device id list by MD5
       description: Returns a list of device IDs that the indicator ran on.
       script: '|||cs-falcon-device-ran-on'
       type: regular
@@ -668,7 +668,7 @@ tasks:
     task:
       id: 89e8a9f8-2b7c-4d41-89e6-06dd3a90561d
       version: -1
-      name: Search for hash in the environment
+      name: Get device id list by SHA256
       description: Returns a list of device IDs that the indicator ran on.
       script: '|||cs-falcon-device-ran-on'
       type: regular
