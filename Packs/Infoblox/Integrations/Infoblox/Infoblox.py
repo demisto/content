@@ -1386,7 +1386,7 @@ def get_network_info_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
         context = {}
     else:
         output = transform_network_info_context(network_info)
-        hr = tableToMarkdown(f"Network information found ({max_results} limit)", network_info)
+        hr = tableToMarkdown(f"Network information found ({max_results} limit)", output)
         context = {
             f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_NETWORK_INFO_CONTEXT_KEY}": output
         }
