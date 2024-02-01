@@ -18,6 +18,7 @@ GITHUB_BRANCH_URL = 'https://api.github.com/repos/demisto/demisto-sdk/branches/{
 def options_handler():
     parser = argparse.ArgumentParser(description='Triggers update-demisto-sdk-version workflow')
 
+    parser.add_argument('-t', '--github_token', help='Github access token', required=True)
     parser.add_argument('-gt', '--gitlab_token', help='Gitlab API token', required=True)
     parser.add_argument('-v', '--release_version', help='The release version', required=True)
     parser.add_argument('-r', '--reviewer', help='The reviewer of the pull request', required=True)
@@ -30,6 +31,7 @@ def options_handler():
 def main():
     install_logging('SDKReleaseValidations.log')
     options = options_handler()
+    github_token = options.github_token
     release_version = options.release_version
     gitlab_token = options.gitlab_token
     reviewer = options.reviewer
@@ -42,8 +44,12 @@ def main():
         sys.exit(1)
 
     # validate if github user exists
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {github_token}'
+    }
     url = GITHUB_USER_URL.format(reviewer)
-    response = requests.request("GET", url, verify=False)
+    response = requests.request("GET", url, headers=headers, verify=False)
     if response.status_code != 200:
         logging.error(f'Failed to retrieve the user {reviewer} from github')
         logging.error(response.text)

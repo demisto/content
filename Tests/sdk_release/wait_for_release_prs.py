@@ -4,7 +4,8 @@ import time
 import os
 import requests
 import urllib3
-from create_content_pr import CONTENT_PR_NUMBER_FILE, SDK_PR_NUMBER_FILE
+from create_content_pr import CONTENT_PR_NUMBER_FILE
+from create_sdk_pr import SDK_PR_NUMBER_FILE
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -45,27 +46,40 @@ def main():
     access_token = options.access_token
     artifacts_folder = options.artifacts_folder
 
-    # get the content pr id from the file
-    try:
-        content_pr_file = os.path.join(artifacts_folder, CONTENT_PR_NUMBER_FILE)
-        file = open(content_pr_file, "r")
-        content_pr_id = file.read()
-    except Exception as e:
-        logging.error(f'Failed to read the file {CONTENT_PR_NUMBER_FILE}, error: {str(e)}')
-        sys.exit(1)
-    finally:
-        file.close()
+    release_branch_name = '1.26.1'
+    from create_content_pr import get_changelog_text, SLACK_RELEASE_MESSAGE, SLACK_CHANGELOG_FILE
+    # write the changelog text to SLACK_CHANGELOG_FILE
+    changelog_text = get_changelog_text(release_branch_name, text_format='slack')
+    changelog_text = SLACK_RELEASE_MESSAGE.format(release_branch_name, changelog_text)
+    changelog_file = os.path.join(artifacts_folder, SLACK_CHANGELOG_FILE)
+    with open(changelog_file, "w") as f:
+        f.write(str(changelog_text))
+    content_pr_id = '32562'
+    sdk_pr_id = '4007'
 
-    # get the sdk pr id from the file
-    try:
-        sdk_pr_file = os.path.join(artifacts_folder, SDK_PR_NUMBER_FILE)
-        file = open(sdk_pr_file, "r")
-        sdk_pr_id = file.read()
-    except Exception as e:
-        logging.error(f'Failed to read the file {SDK_PR_NUMBER_FILE}, error: {str(e)}')
-        sys.exit(1)
-    finally:
-        file.close()
+
+    #
+    # # get the content pr id from the file
+    # try:
+    #     content_pr_file = os.path.join(artifacts_folder, CONTENT_PR_NUMBER_FILE)
+    #     file = open(content_pr_file, "r")
+    #     content_pr_id = file.read()
+    # except Exception as e:
+    #     logging.error(f'Failed to read the file {CONTENT_PR_NUMBER_FILE}, error: {str(e)}')
+    #     sys.exit(1)
+    # finally:
+    #     file.close()
+    #
+    # # get the sdk pr id from the file
+    # try:
+    #     sdk_pr_file = os.path.join(artifacts_folder, SDK_PR_NUMBER_FILE)
+    #     file = open(sdk_pr_file, "r")
+    #     sdk_pr_id = file.read()
+    # except Exception as e:
+    #     logging.error(f'Failed to read the file {SDK_PR_NUMBER_FILE}, error: {str(e)}')
+    #     sys.exit(1)
+    # finally:
+    #     file.close()
 
     content_pr = get_pr_by_id('content', content_pr_id, access_token)
     sdk_pr = get_pr_by_id('demisto-sdk', sdk_pr_id, access_token)
