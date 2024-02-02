@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# THIS VALIDATION WILL BE REMOVED IN CIAC-9611
+
 # exit on errors
 set -e
 
