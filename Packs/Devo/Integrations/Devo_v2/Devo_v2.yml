@@ -115,8 +115,8 @@ script:
       defaultValue: "true"
     - name: linqLinkBase
       description: Overrides the global Devo base domain for linq linking.
-    - name: fields_to_view
-      description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result.
+    - name: filtered_columns
+      description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result.Context data is eventually modified by this parameter.
       isArray: true
     outputs:
     - contextPath: Devo.QueryResults
@@ -150,8 +150,8 @@ script:
       defaultValue: "true"
     - name: linqLinkBase
       description: Overrides the global Devo base domain for linq linking.
-    - name: fields_to_view
-      description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result.
+    - name: filtered_columns
+      description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result.Context data is eventually modified by this parameter.
       isArray: true
     outputs:
     - contextPath: Devo.AlertsResults
@@ -185,8 +185,8 @@ script:
     - name: items_per_page
       description: Enter the per page value you want to set.
       defaultValue: "50"
-    - name: fields_to_view
-      description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result.
+    - name: filtered_columns
+      description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result.Context data is eventually modified by this parameter.
       isArray: true
     outputs:
     - contextPath: Devo.MultiResults
@@ -232,7 +232,7 @@ script:
       type: unknown
     description: Writes lookup table entry records to a specified Devo table.
     execution: true
-  dockerimage: demisto/devo:1.0.0.84990
+  dockerimage: demisto/devo:1.0.0.86778
   isfetch: true
   subtype: python3
 tests:

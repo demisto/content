@@ -102,35 +102,35 @@ MOCK_QUERY_ARGS = {
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "fields_to_view": "alertId,extraData,context"
+    "filtered_columns": "alertId,extraData,context"
 }
 MOCK_QUERY_ARGS_INVALIDE_COLUMN_NAME = {
     "query": "from whatever",
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "fields_to_view": "eventdate,abcd"
+    "filtered_columns": "eventdate,abcd"
 }
 MOCK_ALERT_ARGS_REPEATED_FIELDS = {
     "filters": MOCK_FETCH_INCIDENTS_FILTER,
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "fields_to_view": "alertId,extraData,context,alertId,extraData,context",
+    "filtered_columns": "alertId,extraData,context,alertId,extraData,context",
 }
 MOCK_ALERT_ARGS = {
     "filters": MOCK_FETCH_INCIDENTS_FILTER,
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "fields_to_view": "alertId,extraData,context"
+    "filtered_columns": "alertId,extraData,context"
 }
-MOCK_ALERT_ARGS_EMPTY_FIELDS_TO_VIEW_PRAM = {
+MOCK_ALERT_ARGS_EMPTY_filtered_columns_PRAM = {
     "filters": MOCK_FETCH_INCIDENTS_FILTER,
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "fields_to_view": ""
+    "filtered_columns": ""
 }
 MOCK_MULTI_ARGS = {
     "tables": ["app", "charlie", "test"],
@@ -138,7 +138,7 @@ MOCK_MULTI_ARGS = {
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
-    "fields_to_view": "alertId,extraData,context"
+    "filtered_columns": "alertId,extraData,context"
 }
 MOCK_WRITER_ARGS = {
     "tableName": "whatever.table",
@@ -360,8 +360,8 @@ def test_get_alerts_check_result_columns(mock_query_results, mock_args_results):
     assert len(results) == 2
     assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
     # Check if all expected columns are present in the dictionary
-    # Convert fields_to_view from a list to a comma-separated string
-    expected_columns = ','.join(field.strip() for field in MOCK_ALERT_ARGS['fields_to_view'].split(','))
+    # Convert filtered_columns from a list to a comma-separated string
+    expected_columns = ','.join(field.strip() for field in MOCK_ALERT_ARGS['filtered_columns'].split(','))
     result = results[0]["Contents"][0]
     assert all(column in result for column in expected_columns.split(',')), (
         f"Not all columns present in the dictionary. Missing columns: "
@@ -383,7 +383,7 @@ def test_get_alerts_with_repeated_fields(mock_query_results, mock_args_results):
     assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
 
     # Check if all expected columns are present in the dictionary
-    expected_columns = ','.join(field.strip() for field in MOCK_ALERT_ARGS_REPEATED_FIELDS['fields_to_view'].split(','))
+    expected_columns = ','.join(field.strip() for field in MOCK_ALERT_ARGS_REPEATED_FIELDS['filtered_columns'].split(','))
     result = results[0]["Contents"][0]
 
     # Assert that each field appears only once in the result
@@ -396,10 +396,10 @@ def test_get_alerts_with_repeated_fields(mock_query_results, mock_args_results):
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.demisto.args")
 @patch("Devo_v2.ds.Reader.query")
-def test_get_alerts_with_empty_fields_to_view_param(mock_query_results, mock_args_results):
+def test_get_alerts_with_empty_filtered_columns_param(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
-    mock_args_results.return_value = MOCK_ALERT_ARGS_EMPTY_FIELDS_TO_VIEW_PRAM
-    with pytest.raises(ValueError, match="fields_to_view cannot be empty."):
+    mock_args_results.return_value = MOCK_ALERT_ARGS_EMPTY_filtered_columns_PRAM
+    with pytest.raises(ValueError, match="filtered_columns cannot be empty."):
         get_alerts_command(OFFSET, ITEMS_PER_PAGE)
 
 
