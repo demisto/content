@@ -1,6 +1,5 @@
 import pytest
 import json
-import demistomock as demisto
 import GreyNoiseIndicator
 
 TEST_MODULE_DATA = [
@@ -100,20 +99,21 @@ COMMAND_OUTPUT = [
                 'tags': 'INTERNET SCANNER',
                 'trafficlightprotocol': None
             },
-        'rawJSON': {
-            'actor': 'unknown',
-            'bot': False,
-            'classification': 'unknown',
-            'cve': [],
-            'first_seen': '2024-01-28',
-            'ip': '36.236.103.182',
-            'last_seen': '2024-01-30',
-            'seen': True,
-            'spoofable': False,
-            'tags': [],
-            'vpn': False,
-            'vpn_service': 'N/A'
-        },
+        'rawJSON':
+            {
+                'actor': 'unknown',
+                'bot': False,
+                'classification': 'unknown',
+                'cve': [],
+                'first_seen': '2024-01-28',
+                'ip': '36.236.103.182',
+                'last_seen': '2024-01-30',
+                'seen': True,
+                'spoofable': False,
+                'tags': [],
+                'vpn': False,
+                'vpn_service': 'N/A'
+            },
         'score': 2
     }
 ]
