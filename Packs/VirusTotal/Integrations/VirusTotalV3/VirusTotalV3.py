@@ -1246,8 +1246,12 @@ def _get_error_result(client: Client, ioc_id: str, ioc_type: str, message: str) 
                             Common.DBotScore.NONE,
                             desc,
                             client.reliability)
-    return CommandResults(indicator=getattr(Common, common_type)(ioc_id, dbot),
-                          readable_output=desc)
+    options: dict[str, Common.DBotScore | str] = {'dbot_score': dbot}
+    if dbot_type == 'FILE':
+        options[get_hash_type(ioc_id)] = ioc_id
+    else:
+        options[dbot_type.lower()] = ioc_id
+    return CommandResults(indicator=getattr(Common, common_type)(**options), readable_output=desc)
 
 
 def build_unknown_output(client: Client, ioc_id: str, ioc_type: str) -> CommandResults:

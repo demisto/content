@@ -278,6 +278,18 @@ def test_domain_command(mocker, requests_mock):
     assert results[0].execution_metrics is None
     assert results[0].outputs == expected_results
 
+    mock_response = {'error': {'code': 'NotFoundError'}}
+    requests_mock.get(f'https://www.virustotal.com/api/v3/domains/testing.com?relationships={domain_relationships}',
+                      json=mock_response)
+
+    results = domain_command(
+        client=client, score_calculator=mocked_score_calculator,
+        args=demisto.args(), relationships=domain_relationships)
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == 'Domain "testing.com" was not found in VirusTotal'
+    assert results[0].indicator.dbot_score.score == 0
+
 
 def test_ip_command(mocker, requests_mock):
     """
@@ -342,6 +354,19 @@ def test_ip_command(mocker, requests_mock):
     assert results[0].execution_metrics is None
     assert results[0].outputs == expected_results
 
+    mock_response = {'error': {'code': 'NotFoundError'}}
+    requests_mock.get(f'https://www.virustotal.com/api/v3/ip_addresses/192.168.0.1?relationships={ip_relationships}',
+                      json=mock_response)
+
+    results = ip_command(
+        client=client, score_calculator=mocked_score_calculator,
+        args=demisto.args(), relationships=ip_relationships,
+        disable_private_ip_lookup=True)
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == 'IP "192.168.0.1" was not found in VirusTotal'
+    assert results[0].indicator.dbot_score.score == 0
+
 
 def test_url_command_success(mocker, requests_mock):
     """
@@ -383,6 +408,18 @@ def test_url_command_success(mocker, requests_mock):
     assert results[0].execution_metrics is None
     assert results[0].outputs == expected_results
 
+    mock_response = {'error': {'code': 'NotFoundError'}}
+    requests_mock.get(f'https://www.virustotal.com/api/v3/urls/{encode_url_to_base64(testing_url)}'
+                      f'?relationships={url_relationships}', json=mock_response)
+
+    results = url_command(
+        client=client, score_calculator=mocked_score_calculator,
+        args=demisto.args(), relationships=url_relationships)
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == f'URL "{testing_url}" was not found in VirusTotal'
+    assert results[0].indicator.dbot_score.score == 0
+
 
 def test_private_file_command(mocker, requests_mock):
     """
@@ -419,3 +456,13 @@ def test_private_file_command(mocker, requests_mock):
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
     assert results[0].outputs == expected_results
+
+    mock_response = {'error': {'code': 'NotFoundError'}}
+    requests_mock.get(f'https://www.virustotal.com/api/v3/private/files/{sha256}',
+                      json=mock_response)
+
+    results = private_file_command(client=client, args=demisto.args())
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal'
+    assert results[0].indicator.dbot_score.score == 0
