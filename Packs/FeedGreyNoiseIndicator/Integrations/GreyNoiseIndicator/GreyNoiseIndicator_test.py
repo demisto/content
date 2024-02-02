@@ -123,7 +123,8 @@ GET_INDICATORS_COMMAND_DATA = [
 ]
 
 FETCH_INDICATORS_DATA = [
-    ({}, VALID_QUERY, 200, COMMAND_OUTPUT)
+    ('success', VALID_QUERY, 200, COMMAND_OUTPUT),
+    ('failure', {}, 400, '(400, {})')
 ]
 
 FETCH_INDICATORS_COMMAND_DATA = [
@@ -228,13 +229,19 @@ def test_fetch_indicators_command(args, api_response, status_code, expected_outp
     assert response == expected_output
 
 
-@pytest.mark.parametrize("args, api_response, status_code, expected_output", FETCH_INDICATORS_DATA)
-def test_fetch_indicators(args, api_response, status_code, expected_output, mocker):
+@pytest.mark.parametrize("test_case, api_response, status_code, expected_output", FETCH_INDICATORS_DATA)
+def test_fetch_indicators(test_case, api_response, status_code, expected_output, mocker):
     """
     Tests various combinations of valid and invalid responses for query command.
     """
     client = GreyNoiseIndicator.Client("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
     dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(api_response), status_code)
     mocker.patch("requests.Session.get", return_value=dummy_response)
-    response = GreyNoiseIndicator.fetch_indicators(client, args)
-    assert response == expected_output
+    params = {}
+    if test_case == "success":
+        response = GreyNoiseIndicator.fetch_indicators(client, params)
+        assert response == expected_output
+    else:
+        with pytest.raises(Exception) as err:
+            _ = GreyNoiseIndicator.fetch_indicators(client, params)
+        assert str(err.value) == expected_output
