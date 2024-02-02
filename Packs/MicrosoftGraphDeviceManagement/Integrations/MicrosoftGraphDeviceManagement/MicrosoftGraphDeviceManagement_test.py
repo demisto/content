@@ -146,17 +146,17 @@ def test_list_managed_devices__with_page_size(mocker):
     Then:
         - The http request is called with the right arguments in it.
     """
-    client = MsGraphClient(self_deployed=False, tenant_id='tenant_id', auth_and_token_url='auth_and_token_url', 
-                           enc_key='enc_key', app_name='app_name', azure_cloud=None, use_ssl=True, proxy=False, 
-                           ok_codes=(200, 201, 202), certificate_thumbprint=None, private_key=None, 
+    client = MsGraphClient(self_deployed=False, tenant_id='tenant_id', auth_and_token_url='auth_and_token_url',
+                           enc_key='enc_key', app_name='app_name', azure_cloud=None, use_ssl=True, proxy=False,
+                           ok_codes=(200, 201, 202), certificate_thumbprint=None, private_key=None,
                            managed_identities_client_id=None)
-    client.ms_client =  mocker.Mock()
+    client.ms_client = mocker.Mock()
     client.ms_client.http_request.return_value = {}
 
     client.list_managed_devices(2, 1)
-    assert  client.ms_client.http_request.call_args[0][1] == '/deviceManagement/managedDevices?$top=1&'
-    
-    
+    assert client.ms_client.http_request.call_args[0][1] == '/deviceManagement/managedDevices?$top=1&'
+
+
 def test_list_managed_devices__with_next_link(mocker):
     """
     Given:
@@ -166,17 +166,17 @@ def test_list_managed_devices__with_next_link(mocker):
     Then:
         - The http request is called with the sliced next limit link.
     """
-    client = MsGraphClient(self_deployed=False, tenant_id='tenant_id', auth_and_token_url='auth_and_token_url', 
-                           enc_key='enc_key', app_name='app_name', azure_cloud=None, use_ssl=True, proxy=False, 
-                           ok_codes=(200, 201, 202), certificate_thumbprint=None, private_key=None, 
+    client = MsGraphClient(self_deployed=False, tenant_id='tenant_id', auth_and_token_url='auth_and_token_url',
+                           enc_key='enc_key', app_name='app_name', azure_cloud=None, use_ssl=True, proxy=False,
+                           ok_codes=(200, 201, 202), certificate_thumbprint=None, private_key=None,
                            managed_identities_client_id=None)
-    client.ms_client =  mocker.Mock()
+    client.ms_client = mocker.Mock()
     client.ms_client.http_request.return_value = {}
 
     client.list_managed_devices(2, 1, 'https://graph.microsoft.com/v1.0/test_link')
-    assert  client.ms_client.http_request.call_args[0][1] == '/test_link'
-    
-    
+    assert client.ms_client.http_request.call_args[0][1] == '/test_link'
+
+
 def test_list_managed_devices__results_with_limit(mocker):
     """
     Given:
@@ -186,18 +186,17 @@ def test_list_managed_devices__results_with_limit(mocker):
     Then:
         - The results are sliced to the limit size, and the next link and the raw response are returned.
     """
-    client = MsGraphClient(self_deployed=False, tenant_id='tenant_id', auth_and_token_url='auth_and_token_url', 
-                           enc_key='enc_key', app_name='app_name', azure_cloud=None, use_ssl=True, proxy=False, 
-                           ok_codes=(200, 201, 202), certificate_thumbprint=None, private_key=None, 
+    client = MsGraphClient(self_deployed=False, tenant_id='tenant_id', auth_and_token_url='auth_and_token_url',
+                           enc_key='enc_key', app_name='app_name', azure_cloud=None, use_ssl=True, proxy=False,
+                           ok_codes=(200, 201, 202), certificate_thumbprint=None, private_key=None,
                            managed_identities_client_id=None)
-    client.ms_client =  mocker.Mock()
+    client.ms_client = mocker.Mock()
     client.ms_client.http_request.return_value = {
         '@odata.nextLink': 'next_link',
         'value': ['device1', 'device2', 'device3']
     }
 
     devices, next_link, raw_response = client.list_managed_devices(1, 3, 'https://graph.microsoft.com/v1.0/test_link')
-    assert  devices == ['device1']
+    assert devices == ['device1']
     assert next_link == 'next_link'
     assert raw_response == {'@odata.nextLink': 'next_link', 'value': ['device1', 'device2', 'device3']}
-    

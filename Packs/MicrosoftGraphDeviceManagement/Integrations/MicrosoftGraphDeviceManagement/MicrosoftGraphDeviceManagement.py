@@ -48,7 +48,7 @@ class MsGraphClient:
                                          azure_cloud=self.azure_cloud
                                          )
 
-    def list_managed_devices(self, limit: int, page_size: int = 50, next_link: str | None = None) -> tuple[list, str| None, Any]:
+    def list_managed_devices(self, limit: int, page_size: int = 50, next_link: str | None = None) -> tuple[list, str | None, Any]:
         url_suffix: str = f'/deviceManagement/managedDevices?$top={page_size}&'
         if next_link:
             url_suffix = next_link.split(API_VERSION)[1]
@@ -56,7 +56,6 @@ class MsGraphClient:
         next_link = raw_response.get('@odata.nextLink')
 
         return raw_response.get('value', [])[:limit], next_link, raw_response
-
 
     def find_managed_devices(self, device_name: str) -> tuple[Any, str]:
         url_suffix: str = f"/deviceManagement/managedDevices?$filter=deviceName eq '{device_name}'"
@@ -255,7 +254,7 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
     list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
     if next_link:
-        entry_context['MSGraphDeviceManagement.NextLink(val.NextLink)']= {"NextLink": next_link}
+        entry_context['MSGraphDeviceManagement.NextLink(val.NextLink)'] = {"NextLink": next_link}
     human_readable: str = 'No managed devices found.'
     if list_devices:
         name: str = 'List managed devices'
@@ -263,11 +262,10 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
             name = f'Managed device {list_devices[0].get("Name", "")}'
         human_readable = tableToMarkdown(name=name, t=list_raw_devices, headers=HEADERS['raw_device'],
                                          headerTransform=lambda h: SPECIAL_HEADERS.get(h, pascalToSpace(h)),
-                                         removeNull=True)+ (f"\nThere are more results than shown. "
-                                f"For more data please enter the next_link argument:\n "
-                                f"next_link={next_link}" if next_link else "")
+                                         removeNull=True) + (f"\nThere are more results than shown. "
+                                                             f"For more data please enter the next_link argument:\n "
+                                                             f"next_link={next_link}" if next_link else "")
     return_outputs(human_readable, entry_context, raw_response)
-    
 
 
 def find_managed_devices_command(client: MsGraphClient, args: dict) -> None:
