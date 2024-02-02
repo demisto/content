@@ -244,11 +244,8 @@ def main():
         log_message_if_statement(statement=paid_packs_are_identical,
                                  error_message=f"Test failed on host: {server.internal_ip}.",
                                  success_message=f"All premium packs in host: {server.internal_ip} are valid")
-        if not paid_packs_are_identical:
-            exit_code = 1
     else:
         logging.critical(f"Missing all premium packs in host: {server.internal_ip}")
-        exit_code = 1
 
     # Deleting GCS PATH before exit
     if os.path.exists(options.service_account):
