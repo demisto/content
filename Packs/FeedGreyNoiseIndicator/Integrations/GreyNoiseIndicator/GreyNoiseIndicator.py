@@ -236,7 +236,14 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     pack_version = "1.0.0"
-    packs: List = []
+
+    # get pack version
+    if is_demisto_version_ge("6.1.0"):
+        response = demisto.internalHttpRequest("GET", "/contentpacks/metadata/installed")
+        packs = json.loads(response["body"])
+    else:
+        packs = []
+
     if isinstance(packs, list):
         for pack in packs:
             if pack["name"] == "FeedGreyNoiseIndicator":
