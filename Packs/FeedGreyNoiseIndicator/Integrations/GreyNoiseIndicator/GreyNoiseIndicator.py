@@ -100,6 +100,10 @@ def format_indicator(indicator, tlp_color: str):
         tags = "INTERNET SCANNER"
     else:
         tags = "INTERNET SCANNER," + tags
+    if "metadata" in indicator:
+        country_code = indicator['metadata'].get('country_code', '')
+    else:
+        country_code = ""
     formatted_indicator = {
         'Value': indicator["ip"],
         'Type': FeedIndicatorType.IP,
@@ -108,7 +112,7 @@ def format_indicator(indicator, tlp_color: str):
         'fields': {
             'firstseenbysource': format_timestamp(indicator.get("first_seen", "")),
             'lastseenbysource': format_timestamp(indicator.get("last_seen", "")),
-            'geocountry': indicator['metadata'].get('country_code', ''),
+            'geocountry': country_code,
             'tags': tags,
             'trafficlightprotocol': tlp_color
         }
@@ -231,7 +235,7 @@ def main():
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
-    pack_version = "1.1.0"
+    pack_version = "1.0.0"
     packs: List = []
     if isinstance(packs, list):
         for pack in packs:

@@ -51,6 +51,73 @@ BUILD_FEED_QUERY_DATA = [
     ('', '')
 ]
 
+VALID_QUERY = {
+    "complete": True,
+    "count": 1,
+    "data": [
+        {
+            "ip": "36.236.103.182",
+            "bot": False,
+            "vpn": False,
+            "vpn_service": "N/A",
+            "spoofable": False,
+            "raw_data": {},
+            "first_seen": "2024-01-28",
+            "last_seen": "2024-01-30",
+            "seen": True,
+            "tags": [],
+            "actor": "unknown",
+            "classification": "unknown",
+            "cve": []
+        }
+    ],
+    "message": "ok",
+    "query": "last_seen:1d",
+    "scroll": "scroll_token"
+}
+
+COMMAND_OUTPUT = [
+    {
+        'Type': 'IP',
+        'Value': '36.236.103.182',
+        'fields':
+            {
+                'firstseenbysource': '2024-01-28T00:00:00Z',
+                'geocountry': '',
+                'lastseenbysource': '2024-01-30T00:00:00Z',
+                'tags': 'INTERNET SCANNER',
+                'trafficlightprotocol': None
+            },
+        'rawJSON': {
+            'actor': 'unknown',
+            'bot': False,
+            'classification': 'unknown',
+            'cve': [],
+            'first_seen': '2024-01-28',
+            'ip': '36.236.103.182',
+            'last_seen': '2024-01-30',
+            'seen': True,
+            'spoofable': False,
+            'tags': [],
+            'vpn': False,
+            'vpn_service': 'N/A'
+        },
+        'score': 2
+    }
+]
+
+GET_INDICATORS_COMMAND_DATA = [
+    ({}, VALID_QUERY, 200, COMMAND_OUTPUT)
+]
+
+FETCH_INDICATORS_DATA = [
+    ({}, VALID_QUERY, 200, COMMAND_OUTPUT)
+]
+
+FETCH_INDICATORS_COMMAND_DATA = [
+    ({}, VALID_QUERY, 200, COMMAND_OUTPUT)
+]
+
 
 class DummyResponse:
     """
@@ -124,3 +191,38 @@ def test_build_feed_query(input_data, expected_output):
     response = GreyNoiseIndicator.build_feed_query(input_data)
     assert response == expected_output
 
+
+@pytest.mark.parametrize("args, api_response, status_code, expected_output", GET_INDICATORS_COMMAND_DATA)
+def test_get_indicators_command(args, api_response, status_code, expected_output, mocker):
+    """
+    Tests various combinations of valid and invalid responses for query command.
+    """
+    client = GreyNoiseIndicator.Client("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
+    dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(api_response), status_code)
+    mocker.patch("requests.Session.get", return_value=dummy_response)
+    response = GreyNoiseIndicator.get_indicators_command(client, args)
+    assert response.raw_response == expected_output
+
+
+@pytest.mark.parametrize("args, api_response, status_code, expected_output", FETCH_INDICATORS_COMMAND_DATA)
+def test_fetch_indicators_command(args, api_response, status_code, expected_output, mocker):
+    """
+    Tests various combinations of valid and invalid responses for query command.
+    """
+    client = GreyNoiseIndicator.Client("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
+    dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(api_response), status_code)
+    mocker.patch("requests.Session.get", return_value=dummy_response)
+    response = GreyNoiseIndicator.fetch_indicators_command(client, args)
+    assert response == expected_output
+
+
+@pytest.mark.parametrize("args, api_response, status_code, expected_output", FETCH_INDICATORS_DATA)
+def test_fetch_indicators(args, api_response, status_code, expected_output, mocker):
+    """
+    Tests various combinations of valid and invalid responses for query command.
+    """
+    client = GreyNoiseIndicator.Client("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
+    dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(api_response), status_code)
+    mocker.patch("requests.Session.get", return_value=dummy_response)
+    response = GreyNoiseIndicator.fetch_indicators(client, args)
+    assert response == expected_output
