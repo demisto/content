@@ -2,7 +2,7 @@ args:
 - description: The project to look up firewall rules in.  The project ID instead of the project number.  No need to supply `projects/` before the ID (i.e., use `project-name` instead of `projects/project-name` or `projects/111111111111`).
   name: project_id
   required: true
-- description: The url of the network objects to lookup firewall rules in.  This will be the url of the network and not just the name (i.e. https://www.googleapis.com/compute/v1/projects/<project_name>/global/networks/<network_name>
+- description: The url of the network objects to lookup firewall rules in.  This will be the url of the network and not just the name (i.e. https://www.googleapis.com/compute/v1/projects/<project_name>/global/networks/<network_name>).
   name: network_url
   required: true
 - description: Port to match traffic on for firewall rules.
@@ -25,12 +25,10 @@ commonfields:
 dockerimage: demisto/python3:3.10.13.86272
 enabled: true
 engineinfo: {}
-mainengineinfo: {}
 name: GCPOffendingFirewallRule
 outputs:
 - contextPath: GCPOffendingFirewallRule
   description: One or more potential offending firewall rules in GCP based on port, protocol and possibly target tags (network tags).
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -39,3 +37,5 @@ subtype: python3
 tags: []
 type: python
 fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

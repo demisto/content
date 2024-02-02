@@ -33,17 +33,20 @@ def test_match(port: str, protocol: str, rule: Dict, network_tags: list) -> bool
         network_tags (list): list of network tags (can be empty).
 
     Returns:
-        bool: whether there was a match between the supplied port, protocol and possible target tag combination and the GCP firewall rule.
+        bool: whether there was a match between the supplied port, protocol
+        and possible target tag combination and the GCP firewall rule.
     """
     # Match rule needs to be direction ingress, source from internet (0.0.0.0/0), enabled and an allow rule.
-    if rule.get('direction') == 'INGRESS' and '0.0.0.0/0' in rule.get('sourceRanges') and rule.get('disabled') == False and 'allowed' in rule.keys():
+    if rule.get('direction') == 'INGRESS' and '0.0.0.0/0' in rule.get('sourceRanges', []) \
+       and rule.get('disabled') is False and 'allowed' in rule.keys():
         # Test if targetTags are relevant or not (if show up in keys or tag match)
-        target_tags_verdict = ('targetTags' not in rule.keys() or len(set(rule.get('targetTags')) & set(network_tags)) > 0)
-        for entry in rule.get('allowed'):
+        target_tags_verdict = ('targetTags' not in rule.keys() or len(set(rule.get('targetTags', [])) & set(network_tags)) > 0)
+        for entry in rule.get('allowed', []):
             # Match is all protocol AND either no target tags OR target tags match
             if entry.get('IPProtocol') == 'all' and target_tags_verdict:
                 return True
-            # Complicated because just {'IPProtocol': 'udp'} means all udp ports, therefore if protocol match but no ports, this is a match
+            # Complicated because just {'IPProtocol': 'udp'} means all udp ports
+            # therefore if protocol match but no ports, this is a match
             elif entry.get('IPProtocol') == protocol.lower() and 'ports' not in entry.keys():
                 return True
             # Else need to go through all ports to see if range or not
@@ -75,15 +78,15 @@ def gcp_offending_firewall_rule(args: Dict[str, Any]) -> CommandResults:
 
     project_id = args.get("project_id")
     network_url = args.get("network_url")
-    port = args.get("port")
-    protocol = args.get("protocol")
+    port = args.get("port", "NO PORT")
+    protocol = args.get("protocol", "NO PROTOCOL")
     network_tags = args.get("network_tags", [])
 
     # Using `demisto.executeCommand` instead of `execute_command` because for
     # multiple integration instances we can expect one too error out.
     network_url_filter = f"network=\"{network_url}\""
     fw_rules = demisto.executeCommand(
-        "gcp-compute-list-firewall", {"project_id": project_id,"filters": network_url_filter}
+        "gcp-compute-list-firewall", {"project_id": project_id, "filters": network_url_filter}
     )
     fw_rules_returned = [
         instance
@@ -123,4 +126,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
