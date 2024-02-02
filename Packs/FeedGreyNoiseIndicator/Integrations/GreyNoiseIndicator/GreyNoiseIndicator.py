@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List
 
 import urllib3
 from greynoise import GreyNoise, exceptions, util  # type: ignore
@@ -239,10 +239,10 @@ def main():
     packs: List = []
     if isinstance(packs, list):
         for pack in packs:
-            if pack["name"] == "FeedGreyNoise":
+            if pack["name"] == "FeedGreyNoiseIndicator":
                 pack_version = pack["currentVersion"]
     else:  # packs is a dict
-        if packs.get("name") == "FeedGreyNoise":
+        if packs.get("name") == "FeedGreyNoiseIndicator":
             pack_version = packs.get("currentVersion")
 
     api_key = demisto.params().get("credentials", {}).get("password") or demisto.params().get("apikey")

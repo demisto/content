@@ -1,11 +1,11 @@
 import pytest
 import json
 import demistomock as demisto
-from pytest import raises
 import GreyNoiseIndicator
 
 TEST_MODULE_DATA = [
     ("true_key", {"message": "pong", "expiration": "2025-12-31", "offering": "enterprise"}, 200, "ok"),
+    ("false_key", {"message": "pong", "expiration": "2020-12-31", "offering": "community"}, 200, "Invalid API Offering (community)or Expiration Date (2020-12-31 00:00:00)"),
     ("dummy_key", "forbidden", 401, "Unauthenticated. Check the configured API Key."),
     ("dummy_key", "", 429, "API Rate limit hit. Try after sometime."),
     (
@@ -42,12 +42,22 @@ FORMAT_INDICATOR_DATA = [
       'fields': {'firstseenbysource': '1911-12-12T00:00:00Z', 'geocountry': 'US', 'lastseenbysource': '2000-01-01T00:00:00Z',
                  'tags': 'INTERNET SCANNER', 'trafficlightprotocol': 'GREEN'},
       'rawJSON': {'classification': 'benign', 'first_seen': '1911-12-12', 'ip': '1.2.3.4', 'last_seen': '2000-01-01',
-                  'metadata': {'country_code': 'US'}, 'tags': []}, 'score': 1})
+                  'metadata': {'country_code': 'US'}, 'tags': []}, 'score': 1}),
+    ({"ip": "1.2.3.4", "last_seen": "2000-01-01", "first_seen": "1911-12-12", "tags": ['Mirai'], "classification": "benign",
+      "metadata": {"country_code": "US"}},
+     "GREEN",
+     {'Type': 'IP', 'Value': '1.2.3.4',
+      'fields': {'firstseenbysource': '1911-12-12T00:00:00Z', 'geocountry': 'US', 'lastseenbysource': '2000-01-01T00:00:00Z',
+                 'tags': 'INTERNET SCANNER,Mirai', 'trafficlightprotocol': 'GREEN'},
+      'rawJSON': {'classification': 'benign', 'first_seen': '1911-12-12', 'ip': '1.2.3.4', 'last_seen': '2000-01-01',
+                  'metadata': {'country_code': 'US'}, 'tags': ['Mirai']}, 'score': 1})
 ]
 
 BUILD_FEED_QUERY_DATA = [
     ('Malicious', 'last_seen:1d classification:malicious'),
     ('Benign', 'last_seen:1d classification:benign'),
+    ('Benign + Malicious', 'last_seen:1d (classification:benign OR classification:malicious)'),
+    ('All', 'last_seen:1d'),
     ('', '')
 ]
 

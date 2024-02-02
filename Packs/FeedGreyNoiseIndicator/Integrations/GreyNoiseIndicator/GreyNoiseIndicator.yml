@@ -97,7 +97,7 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: "Provides a feed of IPv4 Internet Scanners from GreyNoise."
+description: "GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide scan and attack traffic. With this integration, users can contextualize existing alerts, filter false-positives, identify compromised devices, and track emerging threats. This Integration provides a feed of IPv4 Internet Scanners from GreyNoise."
 display: GreyNoise Indicator Feed
 name: GreyNoise Indicator Feed
 script:
