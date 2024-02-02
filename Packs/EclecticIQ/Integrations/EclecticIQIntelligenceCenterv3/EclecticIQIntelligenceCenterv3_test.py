@@ -1,6 +1,6 @@
 import pytest  # noqa: F401
 import demistomock as demisto  # noqa: F401
-from EclecticIQIntelligenceCenterv3 import EclecticIQ_api, maliciousness_to_dbotscore
+from EclecticIQIntelligenceCenterv3 import EclecticIQ_api, create_sighting
 
 
 SERVER = "https://test.eclecticiq.com"
@@ -18,6 +18,27 @@ def platform_auth_mock_response(*args, **kwargs):
 
 def test_auth(mocker):
     mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+    response = client.get_outh_token()
+    assert isinstance(response, str)
+
+
+def entity_create_response(*args, **kwargs):
+    return_value = str("123-123-123")
+    return return_value
+
+
+# Test cases for sighting
+
+
+def test_entity(mocker):
+    """Test for sighting."""
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.create_entity", entity_create_response)
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
     client = EclecticIQ_api(
             baseurl=SERVER,
             eiq_api_version=API_VERSION,
@@ -25,7 +46,21 @@ def test_auth(mocker):
             password=PASSWORD,
             verify_ssl=USE_SSL,
         )
-    response = client.get_outh_token()
+    response = client.create_entity(
+        observable_dict={
+            "classification": "bad",
+            "confidence": "medium",
+            "observable_type": "ipv4",
+            "observable_value": "1.1.1.1",
+        },
+        source_group_name="test",
+        entity_title="Sighting",
+        entity_description="description",
+        entity_confidence="medium",
+        entity_tags=[],
+        entity_impact_value="medium",
+    )
+
     assert isinstance(response, str)
 
 
@@ -57,39 +92,24 @@ def sighting_mock_response(*args, **kwargs):
     return return_value
 
 
-def entity_create_response(*args, **kwargs):
-    return_value = "123-123-123"
-    return return_value
 
-
-# Test cases for sighting
-
-
-def test_sighting(mocker):
+def test_create_sighting(mocker):
     """Test for sighting."""
-    mocker.patch("EclecticIQIntelligenceCenterv3.create_sighting", sighting_mock_response)
+    #mocker.patch("EclecticIQIntelligenceCenterv3.create_sighting", sighting_mock_response)
     mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.create_entity", entity_create_response)
     mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+    mocker.patch.object(demisto, 'args', return_value={"observable_type": "ipv4", "observable_value": "1.1.1.1", "sighting_title": "EIQ",
+            "sighting_description": "sighting", "observable_maliciousness": "Malicious (Medium confidence)"})
+
     client = EclecticIQ_api(
-            baseurl=SERVER,
-            eiq_api_version=API_VERSION,
-            username="",
-            password=PASSWORD,
-            verify_ssl=USE_SSL,
-        )
-    response = client.create_entity(
-        observable_dict={
-            "classification": "bad",
-            "confidence": "medium",
-            "observable_type": "ipv4",
-            "observable_value": "1.1.1.1",
-        },
-        source_group_name="test",
-        entity_title="Sighting",
-        entity_description="description",
-        entity_confidence="medium",
-        entity_tags=[],
-        entity_impact_value="medium",
+        baseurl=SERVER,
+        eiq_api_version=API_VERSION,
+        username="",
+        password=PASSWORD,
+        verify_ssl=USE_SSL,
     )
 
-    assert isinstance(response, str)
+    response = create_sighting(client)
+
+    assert isinstance(response.raw_response, dict)
+

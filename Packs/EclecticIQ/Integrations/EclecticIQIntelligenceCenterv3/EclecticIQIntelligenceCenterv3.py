@@ -1729,7 +1729,7 @@ def maliciousness_to_dbotscore(maliciousness, threshold):
 """ COMMANDS + REQUESTS FUNCTIONS """
 
 
-def test_module():
+def test_module(eiq_api):
     """
     The function which runs when clicking on Test in integration settings
     Returns
@@ -1739,10 +1739,10 @@ def test_module():
 
     """
 
-    eiq.lookup_observable("8.8.8.8", "ipv4")  # type: ignore[name-defined] # pylint: disable=E0602
+    eiq_api.lookup_observable("8.8.8.8", "ipv4")
 
 
-def ip_command():
+def ip_command(eiq_api):
     """
     Gets reputation of an EclecticIQ IPv4 observable
     Parameters
@@ -1755,7 +1755,7 @@ def ip_command():
         Reputation of given IPv4
     """
     observable_value = demisto.args()["ip"]
-    response_eiq = eiq.lookup_observable(observable_value, "ipv4")  # type: ignore[name-defined] # pylint: disable=E0602
+    response_eiq = eiq_api.lookup_observable(observable_value, "ipv4")
     ip_result = parse_reputation_results(
         response_eiq, observable_value, "ip", IP_THRESHOLD, "IP"
     )
@@ -1770,14 +1770,14 @@ def ip_command():
             }
         ]
 
-        eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
+        eiq_api.create_entity(
             observable_dict=observable_dict,
             source_group_name=GROUP_NAME,
             entity_title="XSOAR automatic Sighting for " + observable_value,
             entity_description="",
         )
 
-    return_results(ip_result)
+    return ip_result
 
 
 def parse_reputation_results(
@@ -1977,7 +1977,7 @@ def parse_reputation_results(
     return command_results
 
 
-def url_command():
+def url_command(eiq_api):
     """
     Gets reputation of an EclecticIQ URI observable
     Parameters
@@ -1990,7 +1990,7 @@ def url_command():
         Reputation of given URL
     """
     observable_value = demisto.args()["url"]
-    response_eiq = eiq.lookup_observable(observable_value, "uri")  # type: ignore[name-defined] # pylint: disable=E0602
+    response_eiq = eiq_api.lookup_observable(observable_value, "uri")
     url_result = parse_reputation_results(
         response_eiq, observable_value, "url", URL_THRESHOLD, "URL"
     )
@@ -2005,17 +2005,17 @@ def url_command():
             }
         ]
 
-        eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
+        eiq_api.create_entity(
             observable_dict=observable_dict,
             source_group_name=GROUP_NAME,
             entity_title="XSOAR automatic Sighting for " + observable_value,
             entity_description="",
         )
 
-    return_results(url_result)
+    return url_result
 
 
-def file_command():
+def file_command(eiq_api):
     """
     Gets reputation of an EclecticIQ hash observable
     Parameters
@@ -2029,7 +2029,7 @@ def file_command():
     """
 
     observable_value = demisto.args()["file"]
-    response_eiq = eiq.lookup_observable(  # type: ignore[name-defined] # pylint: disable=E0602
+    response_eiq = eiq_api.lookup_observable(
         observable_value, ["hash-md5", "hash-sha1", "hash-sha256", "hash-sha512"]
     )
     file_result = parse_reputation_results(
@@ -2046,17 +2046,17 @@ def file_command():
             }
         ]
 
-        eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
+        eiq_api.create_entity(
             observable_dict=observable_dict,
             source_group_name=GROUP_NAME,
             entity_title="XSOAR automatic Sighting for " + observable_value,
             entity_description="",
         )
 
-    return_results(file_result)
+    return file_result
 
 
-def email_command():
+def email_command(eiq_api):
     """
     Gets reputation of an EclecticIQ email address observable
     Parameters
@@ -2070,7 +2070,7 @@ def email_command():
     """
 
     observable_value = demisto.args()["email"]
-    response_eiq = eiq.lookup_observable(observable_value, "email")  # type: ignore[name-defined] # pylint: disable=E0602
+    response_eiq = eiq_api.lookup_observable(observable_value, "email")
     email_result = parse_reputation_results(
         response_eiq, observable_value, "email", FILE_THRESHOLD, "Email"
     )
@@ -2085,17 +2085,17 @@ def email_command():
             }
         ]
 
-        eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
+        eiq_api.create_entity(
             observable_dict=observable_dict,
             source_group_name=GROUP_NAME,
             entity_title="XSOAR automatic Sighting for " + observable_value,
             entity_description="",
         )
 
-    return_results(email_result)
+    return email_result
 
 
-def domain_command():
+def domain_command(eiq_api):
     """
     Gets reputation of an EclecticIQ domain observable
     Parameters
@@ -2108,7 +2108,7 @@ def domain_command():
         Reputation of given domain address
     """
     observable_value = demisto.args()["domain"]
-    response_eiq = eiq.lookup_observable(observable_value, "domain")  # type: ignore[name-defined] # pylint: disable=E0602
+    response_eiq = eiq_api.lookup_observable(observable_value, "domain")
     domain_result = parse_reputation_results(
         response_eiq, observable_value, "domain", DOMAIN_THRESHOLD, "Domain"
     )
@@ -2123,17 +2123,17 @@ def domain_command():
             }
         ]
 
-        eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
+        eiq_api.create_entity(
             observable_dict=observable_dict,
             source_group_name=GROUP_NAME,
             entity_title="XSOAR automatic Sighting for " + observable_value,
             entity_description="",
         )
 
-    return_results(domain_result)
+    return domain_result
 
 
-def get_entity():
+def get_entity(eiq_api):
     observable_value = demisto.args().get("observable_value", None)
     entity_value = demisto.args().get("entity_title", None)
     entity_type = demisto.args()["entity_type"]
@@ -2141,7 +2141,7 @@ def get_entity():
     if entity_type == "all":
         entity_type = None
 
-    query_result = eiq.search_entity(  # type: ignore[name-defined] # pylint: disable=E0602
+    query_result = eiq_api.search_entity(
         entity_value=entity_value,
         entity_type=entity_type,
         observable_value=observable_value,
@@ -2165,45 +2165,39 @@ def get_entity():
 
         human_readable = tableToMarkdown(human_readable_title, output_result)
 
-        return_results(
-            CommandResults(
-                readable_output=human_readable,
-                raw_response=query_result,
-                outputs_prefix="EclecticIQ.Entity",
-                outputs=output_result,
-                outputs_key_field="entity_title",
-            )
-        )
+        return CommandResults(
+            readable_output=human_readable,
+            raw_response=query_result,
+            outputs_prefix="EclecticIQ.Entity",
+            outputs=output_result,
+            outputs_key_field="entity_title")
 
     elif query_result is False:
-        return_results("No entities found in EclecticIQ Intelligence Center.")
+        return "No entities found in EclecticIQ Intelligence Center."
 
 
-def get_entity_by_id():
+def get_entity_by_id(eiq_api):
     entity_id = demisto.args().get("entity_id", None)
-    query_result = eiq.get_entity_by_id(entity_id)  # type: ignore[name-defined] # pylint: disable=E0602
+    query_result = eiq_api.get_entity_by_id(entity_id)
 
     if type(query_result).__name__ == "Exception" and "Status code:404" in str(
         query_result
     ):
-        return_results("No entities found in EclecticIQ Platform.")
+        return "No entities found in EclecticIQ Platform."
 
     elif (type(query_result) is dict) or (type(query_result) is list):
         human_readable_title = "Entities found in EclecticIQ Intelligence Center."
         human_readable = tableToMarkdown(human_readable_title, query_result)
 
-        return_results(
-            CommandResults(
-                readable_output=human_readable,
-                raw_response=query_result,
-                outputs_prefix="EclecticIQ.EntityById",
-                outputs=query_result,
-                outputs_key_field="entity_title",
-            )
-        )
+        return CommandResults(
+            readable_output=human_readable,
+            raw_response=query_result,
+            outputs_prefix="EclecticIQ.EntityById",
+            outputs=query_result,
+            outputs_key_field="entity_title")
 
 
-def create_sighting():
+def create_sighting(eiq_api):
     args = demisto.args()
     observable_value = args.get("observable_value", "")
     observable_type = args.get("observable_type", "")
@@ -2226,7 +2220,7 @@ def create_sighting():
     observable_list = []
     observable_list.append(observable_record)
 
-    sighting_id = eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
+    sighting_id = eiq_api.create_entity(
         observable_dict=observable_list,
         source_group_name=GROUP_NAME,
         entity_title=sighting_title,
@@ -2261,15 +2255,12 @@ def create_sighting():
     )
     human_readable = tableToMarkdown(human_readable_title, raw_result)
 
-    return_results(
-        CommandResults(
-            readable_output=human_readable,
-            raw_response=raw_result,
-            outputs_prefix="EclecticIQ.Sightings",
-            outputs=entry_context,
-            outputs_key_field="SightingId",
-        )
-    )
+    return CommandResults(
+        readable_output=human_readable,
+        raw_response=raw_result,
+        outputs_prefix="EclecticIQ.Sightings",
+        outputs=entry_context,
+        outputs_key_field="SightingId")
 
 
 def convert_maliciousness(observable_dict):
@@ -2373,7 +2364,7 @@ def prepare_entity_observables(
     return result
 
 
-def create_indicator():
+def create_indicator(eiq_api):
     args = demisto.args()
     observable_value = args.get("observable_value", "")
     observable_type = args.get("observable_type", "")
@@ -2399,7 +2390,7 @@ def create_indicator():
         observable_dictionary,
     )
 
-    indicator_id = eiq.create_entity(  # type: ignore[name-defined] # pylint: disable=E0602
+    indicator_id = eiq_api.create_entity(
         observable_dict=observable_list,
         source_group_name=GROUP_NAME,
         entity_title=indicator_title,
@@ -2427,29 +2418,26 @@ def create_indicator():
     )
     human_readable = tableToMarkdown(human_readable_title, raw_result)
 
-    return_results(
-        CommandResults(
-            readable_output=human_readable,
-            raw_response=raw_result,
-            outputs_prefix="EclecticIQ.Indicators",
-            outputs=entry_context,
-            outputs_key_field="IndicatorId",
-        )
-    )
+    return CommandResults(
+        readable_output=human_readable,
+        raw_response=raw_result,
+        outputs_prefix="EclecticIQ.Indicators",
+        outputs=entry_context,
+        outputs_key_field="IndicatorId")
 
 
-def get_indicators():
+def get_indicators(eiq_api):
     feed_ids = demisto.params().get("feedId", "")
 
     if len(feed_ids) > 0:
-        feeds_info = eiq.get_feed_info(feed_ids)  # type: ignore[name-defined] # pylint: disable=E0602
+        feeds_info = eiq_api.get_feed_info(feed_ids)
         indicators_to_add: list[dict] = []
 
         for item in feeds_info:
             item["id"] = str(item["id"])
 
             demisto.debug("Feed id {} is starting to fetch.".format(item["id"]))
-            blocks = eiq.get_feed_content_blocks(item)  # type: ignore[name-defined] # pylint: disable=E0602
+            blocks = eiq_api.get_feed_content_blocks(item)
 
             for block in blocks:
                 demisto.debug(
@@ -2457,7 +2445,7 @@ def get_indicators():
                         str(item["id"]), block
                     )
                 )
-                data_from_block = eiq.download_block_list(block)  # type: ignore[name-defined] # pylint: disable=E0602
+                data_from_block = eiq_api.download_block_list(block)
                 indicators_to_add = indicators_to_add + export_csv_to_indicators_get(
                     item["id"], data_from_block
                 )
@@ -2468,12 +2456,12 @@ def get_indicators():
             indicators_to_add,
         )
 
-        return_results(CommandResults(readable_output=human_readable))
+        return CommandResults(readable_output=human_readable)
     else:
         human_readable = tableToMarkdown(
             "Feed ID to fetch is not configured in the Integreation settings.", {}
         )
-        return_results(CommandResults(readable_output=human_readable))
+        return CommandResults(readable_output=human_readable)
 
 
 def export_csv_to_indicators_get(feed_id, text, flag=False):
@@ -2530,11 +2518,11 @@ def export_csv_to_indicators_get(feed_id, text, flag=False):
     return indicators_to_add
 
 
-def fetch_indicators():
+def fetch_indicators(eiq_api):
     feed_ids = demisto.params().get("feedId", "")
 
     if len(feed_ids) > 0:
-        feeds_info = eiq.get_feed_info(feed_ids)  # type: ignore[name-defined] # pylint: disable=E0602
+        feeds_info = eiq_api.get_feed_info(feed_ids)
         context = demisto.getLastRun()
 
         for item in feeds_info:
@@ -2571,10 +2559,10 @@ def fetch_indicators():
                     "last_ingested": None,
                 }
                 demisto.setLastRun(context)
-                blocks = eiq.get_feed_content_blocks(item, state)  # type: ignore[name-defined] # pylint: disable=E0602
+                blocks = eiq_api.get_feed_content_blocks(item, state)
             else:
                 state = context[item["id"]]
-                blocks = eiq.get_feed_content_blocks(item, state)  # type: ignore[name-defined] # pylint: disable=E0602
+                blocks = eiq_api.get_feed_content_blocks(item, state)
 
             demisto.info("Starting Ingestion of feed #{}".format(item["id"]))
 
@@ -2586,7 +2574,7 @@ def fetch_indicators():
                         str(item["id"]), block
                     )
                 )
-                data_from_block = eiq.download_block_list(block)  # type: ignore[name-defined] # pylint: disable=E0602
+                data_from_block = eiq_api.download_block_list(block)
                 indicators_to_add = indicators_to_add + export_csv_to_indicators(
                     item["id"], data_from_block, flag
                 )
@@ -2669,10 +2657,10 @@ def export_csv_to_indicators(feed_id, text, flag=False):
     return indicators_to_add
 
 
-def request_get():
+def request_get(eiq_api):
     uri = demisto.args().get("uri", "")
 
-    raw_response = eiq.send_api_request("get", uri)  # type: ignore[name-defined] # pylint: disable=E0602
+    raw_response = eiq_api.send_api_request("get", uri)
     entry_context = {}
     entry_context["URI"] = uri
     entry_context["ReplyStatus"] = str(raw_response.status_code)
@@ -2685,22 +2673,19 @@ def request_get():
         + str(raw_response.status_code)
     )
 
-    return_results(
-        CommandResults(
-            readable_output=human_readable_title,
-            raw_response=raw_response.json(),
-            outputs_prefix="EclecticIQ.GET",
-            outputs=entry_context,
-            outputs_key_field="URI",
-        )
-    )
+    return CommandResults(
+        readable_output=human_readable_title,
+        raw_response=raw_response.json(),
+        outputs_prefix="EclecticIQ.GET",
+        outputs=entry_context,
+        outputs_key_field="URI")
 
 
-def request_post():
+def request_post(eiq_api):
     uri = demisto.args().get("uri", "")
     body = json.loads(demisto.args().get("body", "{}"))
 
-    raw_response = eiq.send_api_request("post", uri, data=body)  # type: ignore[name-defined] # pylint: disable=E0602
+    raw_response = eiq_api.send_api_request("post", uri, data=body)
     entry_context = {}
     entry_context["URI"] = uri
     entry_context["ReplyStatus"] = str(raw_response.status_code)
@@ -2708,36 +2693,30 @@ def request_post():
 
     human_readable_title = f"### EclecticIQ POST action to endpoint {uri} exectued. Reply status: {raw_response.status_code}"
 
-    return_results(
-        CommandResults(
-            readable_output=human_readable_title,
-            raw_response=raw_response.json(),
-            outputs_prefix="EclecticIQ.POST",
-            outputs=entry_context,
-            outputs_key_field="URI",
-        )
-    )
+    return CommandResults(
+        readable_output=human_readable_title,
+        raw_response=raw_response.json(),
+        outputs_prefix="EclecticIQ.POST",
+        outputs=entry_context,
+        outputs_key_field="URI")
 
 
-def request_delete():
+def request_delete(eiq_api):
     uri = demisto.args().get("uri", "")
 
-    raw_response = eiq.send_api_request("delete", uri)  # type: ignore[name-defined] # pylint: disable=E0602
+    raw_response = eiq_api.send_api_request("delete", uri)
     entry_context = {}
     entry_context["URI"] = uri
     entry_context["ReplyStatus"] = str(raw_response.status_code)
 
     human_readable_title = f"### EclecticIQ DELETE action to endpoint {uri} exectued. Reply status: {raw_response.status_code}"
 
-    return_results(
-        CommandResults(
-            readable_output=human_readable_title,
-            raw_response=entry_context,
-            outputs_prefix="EclecticIQ.DELETE",
-            outputs=entry_context,
-            outputs_key_field="URI",
-        )
-    )
+    return CommandResults(
+        readable_output=human_readable_title,
+        raw_response=entry_context,
+        outputs_prefix="EclecticIQ.DELETE",
+        outputs=entry_context,
+        outputs_key_field="URI")
 
 
 """ COMMANDS MANAGER / SWITCH PANEL """
@@ -2774,7 +2753,7 @@ def main():
         LOG(f"Command being called is {demisto.command()}")
         command_func = COMMANDS.get(demisto.command())
         if command_func is not None:
-            command_func()
+            command_func(eiq)
 
     except Exception as e:
         return_error(f"Error has occurred in EclecticIQ integration: {str(e)}.")
