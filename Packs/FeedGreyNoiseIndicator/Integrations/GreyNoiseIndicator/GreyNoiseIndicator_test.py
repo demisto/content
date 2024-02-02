@@ -5,7 +5,9 @@ import GreyNoiseIndicator
 
 TEST_MODULE_DATA = [
     ("true_key", {"message": "pong", "expiration": "2025-12-31", "offering": "enterprise"}, 200, "ok"),
-    ("false_key", {"message": "pong", "expiration": "2020-12-31", "offering": "community"}, 200, "Invalid API Offering (community)or Expiration Date (2020-12-31 00:00:00)"),
+    ("false_key", {"message": "pong", "expiration": "2020-12-31", "offering": "community"}, 200, "Invalid API Offering ("
+                                                                                                 "community)or Expiration Date "
+                                                                                                 "(2020-12-31 00:00:00)"),
     ("dummy_key", "forbidden", 401, "Unauthenticated. Check the configured API Key."),
     ("dummy_key", "", 429, "API Rate limit hit. Try after sometime."),
     (
