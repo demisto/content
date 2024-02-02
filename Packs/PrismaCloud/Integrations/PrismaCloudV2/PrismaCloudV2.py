@@ -224,7 +224,9 @@ class Client(BaseClient):
         ret_value = self._http_request('POST', 'search/config', json_data=data)
 
         if not include_additional_resource_fields:
-            ret_value = self.remove_additional_resource_fields(ret_value, ['shieldedInstanceInitialState', "configure-sh"])
+            keys_to_remove = ['shieldedInstanceInitialState', "configure-sh"]
+            demisto.debug(f'{include_additional_resource_fields=}, removing the fields {keys_to_remove}')
+            ret_value = self.remove_additional_resource_fields(ret_value, keys_to_remove)
 
         return ret_value
 
@@ -1488,13 +1490,17 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
                                      time_from=args.get('time_range_date_from'),
                                      time_to=args.get('time_range_date_to'))
     search_id = args.get('search_id')
+
     sort_direction = args.get('sort_direction', 'desc')
     sort_field = args.get('sort_field', 'insertTs')
-    include_resource_json = args.get('include_resource_json', 'true')
-    include_additional_resource_fields = args.get('include_additional_resource_fields', 'false')
     if any([sort_direction, sort_field]) and not all([sort_direction, sort_field]):
         raise DemistoException('Both sort direction and field must be specified if sorting.')
 
+    include_resource_json = args.get('include_resource_json', 'true')
+    include_additional_resource_fields = args.get('include_additional_resource_fields', 'false')
+
+    demisto.debug(f'Searching for config with the following params: {query=}, {limit=}, {time_filter=}, {include_resource_json=}, '
+                  '{include_additional_resource_fields}')
     response = client.config_search_request(time_filter, str(query), limit, search_id, sort_direction, sort_field,
                                             include_resource_json,
                                             include_additional_resource_fields=include_additional_resource_fields)
