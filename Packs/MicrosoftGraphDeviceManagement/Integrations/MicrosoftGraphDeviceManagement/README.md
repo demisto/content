@@ -64,7 +64,7 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the managed device to be fetched (Can be retreived using the msgraph-list-managed-devices command) | Required |
+| device_id | The ID of the managed device to be fetched (Can be retrieved using the msgraph-list-managed-devices command) | Required |
 
 
 #### Context Output
@@ -772,12 +772,15 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The number of managed devices to fetch. | Optional |
+|page_size| Number of results to return per page. Maximum page size is 1000. Note: Page size is only relevant when the next_link parameter is not specified. Default value is 50.| Optional |
+|next_link | A link that specifies a starting point to use for subsequent calls. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| MSGraphDeviceManagement.NextLink | String | A link that specifies a starting point to use for subsequent calls.|
 | MSGraphDeviceManagement.Device.ID | String | The ID of the managed device |
 | MSGraphDeviceManagement.Device.UserID | String | Unique Identifier for the user associated with the device |
 | MSGraphDeviceManagement.Device.Name | String | Name of the device |
