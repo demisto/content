@@ -327,8 +327,8 @@ def test_ip_command(mocker, requests_mock):
 
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
-    assert results[0].readable_output == ('Reputation lookups have been disabled for private IP addresses. '
-                                          'Enrichment skipped for 192.168.0.1')
+    assert results[0].readable_output == ('IP "192.168.0.1" was not enriched. '
+                                          'Reputation lookups have been disabled for private IP addresses.')
 
     # Run command but enabling private IP enrichment after disabling it
     mocker.patch.object(demisto, 'args', return_value={'ip': '192.168.0.1', 'extended_data': 'false',
