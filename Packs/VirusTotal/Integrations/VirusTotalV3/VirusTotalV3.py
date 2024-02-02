@@ -1270,6 +1270,10 @@ def build_quota_exceeded_file_output(client: Client, file: str) -> CommandResult
     return build_quota_exceeded_output(client, file, 'file')
 
 
+def build_error_file_output(client: Client, file: str) -> CommandResults:
+    return build_error_output(client, file, 'file')
+
+
 def build_unknown_domain_output(client: Client, domain: str) -> CommandResults:
     return build_unknown_output(client, domain, 'domain')
 
@@ -1811,6 +1815,7 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
             # If anything happens, just keep going
             demisto.debug(f'Could not process file: "{file}"\n {str(exc)}')
             execution_metrics.general_error += 1
+            results.append(build_error_file_output(client, file))
             continue
     if execution_metrics.is_supported():
         _metric_results = execution_metrics.metrics
@@ -1844,6 +1849,7 @@ def private_file_command(client: Client, args: dict) -> List[CommandResults]:
             # If anything happens, just keep going
             demisto.debug(f'Could not process file: "{file}"\n {str(exc)}')
             execution_metrics.general_error += 1
+            results.append(build_error_file_output(client, file))
             continue
     if execution_metrics.is_supported():
         _metric_results = execution_metrics.metrics
