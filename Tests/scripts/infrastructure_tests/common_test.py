@@ -1,6 +1,6 @@
 from pathlib import Path
-from Tests.scripts.common import get_reviewer, get_person_in_charge, are_pipelines_in_order, is_pivot, get_slack_user_name,\
-    was_message_already_sent, get_nearest_commit_with_pipeline, ProjectPipeline, ProjectCommit
+from Tests.scripts.common import get_reviewer, get_person_in_charge, are_pipelines_in_order, is_pivot, get_slack_user_name, \
+    was_message_already_sent, get_nearest_commit_with_pipeline
 from requests_mock import MockerCore
 
 
@@ -306,6 +306,8 @@ def test_get_slack_user_name__name_is_github_actions_bot():
 
 COMMITS = ['commit1', 'commit2', 'commit3', 'commit4', 'commit5']
 PIPLINES = ['pipeline1', 'pipeline2', 'pipeline3', 'pipeline4', 'pipeline5']
+
+
 def test_was_message_already_sent__was_sent_for_true_pivot(mocker, commits=COMMITS, pipelines=PIPLINES):
     """
     Given:
@@ -317,8 +319,8 @@ def test_was_message_already_sent__was_sent_for_true_pivot(mocker, commits=COMMI
     """
     mocker.patch('Tests.scripts.common.get_pipeline_by_commit', side_effect=lambda commit, pipelines: commit)
     mocker.patch('Tests.scripts.common.is_pivot', return_value=True)
-    
-    assert was_message_already_sent(2, commits, pipelines) == True
+
+    assert was_message_already_sent(2, commits, pipelines) is True
 
 
 def test_was_message_already_sent__was_sent_for_false_pivot(mocker, commits=COMMITS, pipelines=PIPLINES):
@@ -332,8 +334,8 @@ def test_was_message_already_sent__was_sent_for_false_pivot(mocker, commits=COMM
     """
     mocker.patch('Tests.scripts.common.get_pipeline_by_commit', side_effect=lambda commit, pipelines: commit)
     mocker.patch('Tests.scripts.common.is_pivot', return_value=False)
-    assert was_message_already_sent(2, commits, pipelines) == True
-    
+    assert was_message_already_sent(2, commits, pipelines) is True
+
 
 def test_was_message_already_sent__was_not_sent(mocker, commits=COMMITS, pipelines=PIPLINES):
     """
@@ -346,7 +348,7 @@ def test_was_message_already_sent__was_not_sent(mocker, commits=COMMITS, pipelin
     """
     mocker.patch('Tests.scripts.common.get_pipeline_by_commit', side_effect=lambda commit, pipelines: commit)
     mocker.patch('Tests.scripts.common.is_pivot', return_value=None)
-    assert was_message_already_sent(2, commits, pipelines) == False
+    assert was_message_already_sent(2, commits, pipelines) is False
 
 
 def test_was_message_already_sent__was_not_sent_no_pipeline(mocker, commits=COMMITS, pipelines=PIPLINES):
@@ -362,9 +364,8 @@ def test_was_message_already_sent__was_not_sent_no_pipeline(mocker, commits=COMM
     mocker.patch('Tests.scripts.common.is_pivot', return_value=True)
     mocker.patch('Tests.scripts.common.get_pipeline_by_commit', side_effect=lambda commit,
                  pipelines: None if commit == 'commit2' else commit)
-    assert was_message_already_sent(2, commits, pipelines) == False
-    
-    
+    assert was_message_already_sent(2, commits, pipelines) is False
+
 
 def test_get_nearest_commit_with_pipeline__newer(mocker, commits=COMMITS, pipelines=PIPLINES):
     """
@@ -382,7 +383,7 @@ def test_get_nearest_commit_with_pipeline__newer(mocker, commits=COMMITS, pipeli
     pipeline, suspicious_commits = get_nearest_commit_with_pipeline(pipelines, commits, 3, "newer")
     assert pipeline == 'commit1'
     assert suspicious_commits == ['commit3', 'commit2']
-    
+
 
 def test_get_nearest_commit_with_pipeline__older(mocker, commits=COMMITS, pipelines=PIPLINES):
     """
@@ -400,8 +401,8 @@ def test_get_nearest_commit_with_pipeline__older(mocker, commits=COMMITS, pipeli
     pipeline, suspicious_commits = get_nearest_commit_with_pipeline(pipelines, commits, 1, "older")
     assert pipeline == 'commit5'
     assert suspicious_commits == ['commit2', 'commit3', 'commit4']
-    
-    
+
+
 def test_get_nearest_commit_with_pipeline__no_pipelines(mocker, commits=COMMITS, pipelines=PIPLINES):
     """
     Given:
