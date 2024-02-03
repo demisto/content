@@ -278,39 +278,38 @@ def get_person_in_charge(commit: ProjectCommit) -> tuple[str, str, str] | tuple[
         return None, None, None
 
 
-def are_pipelines_in_order(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool:
+def are_pipelines_in_order(pipeline_A: ProjectPipeline, pipeline_B: ProjectPipeline) -> bool:
     """
-    This function checks if the current pipeline was created after the previous pipeline, to avoid rare conditions
-    that pipelines are not in the same order as the commits.
+    Check if the pipelines are in the same order of their commits.
     Args:
-        current_pipeline: The current pipeline object.
-        previous_pipeline: The previous pipeline object.
+        pipeline_A: The first pipeline object.
+        pipeline_B: The second pipeline object.
     Returns:
         bool
     """
 
-    previous_pipeline_timestamp = parser.parse(previous_pipeline.created_at)
-    current_pipeline_timestamp = parser.parse(current_pipeline.created_at)
-    return current_pipeline_timestamp > previous_pipeline_timestamp
+    pipeline_A_timestamp = parser.parse(pipeline_A.created_at)
+    pipeline_B_timestamp = parser.parse(pipeline_B.created_at)
+    return pipeline_A_timestamp < pipeline_B_timestamp
 
 
-def is_pivot(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool | None:
+def is_pivot(current_pipeline: ProjectPipeline, pipeline_to_compare: ProjectPipeline) -> bool | None:
     """
     Is the current pipeline status a pivot from the previous pipeline status.
     Args:
         current_pipeline: The current pipeline object.
-        previous_pipeline: The previous pipeline object.
+        pipeline_to_compare: a pipeline object to compare to.
     Returns:
         True status changed from success to failed
         False if the status changed from failed to success
         None if the status didn't change or the pipelines are not in order of commits
     """
 
-    in_order = are_pipelines_in_order(current_pipeline, previous_pipeline)
+    in_order = are_pipelines_in_order(pipeline_A=current_pipeline, pipeline_B=pipeline_to_compare)
     if in_order:
-        if previous_pipeline.status == 'success' and current_pipeline.status == 'failed':
+        if pipeline_to_compare.status == 'success' and current_pipeline.status == 'failed':
             return True
-        if previous_pipeline.status == 'failed' and current_pipeline.status == 'success':
+        if pipeline_to_compare.status == 'failed' and current_pipeline.status == 'success':
             return False
     return None
 
