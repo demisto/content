@@ -596,7 +596,8 @@ def main():
                     if next_pipeline:
                         pipeline_changed_status = is_pivot(current_pipeline=next_pipeline, pipeline_to_compare=current_pipeline)
                         logging.info(
-                            f" after comparing with pipeline id: {next_pipeline.id}, the change status is: {pipeline_changed_status}")
+                            f" after comparing with pipeline id: {next_pipeline.id},"
+                            f"the change status is: {pipeline_changed_status}")
 
                 if pipeline_changed_status is not None:
                     shame_message = create_shame_message(suspicious_commits, pipeline_changed_status, options.name_mapping_path)

@@ -468,8 +468,7 @@ def get_nearest_commit_with_pipeline(list_of_pipelines: list[ProjectPipeline], l
     suspicious_commits = []
     if direction == "newer":
         # since the list of commits is in ascending order, to get the next commit we need to go backwards
-        for index in reversed(range(0, current_commit_index - 1)):   # the list of commits in in ascending order, newer commits are first
-            next_commit = list_of_commits[index]
+        for index in reversed(range(0, current_commit_index - 1)):
             suspicious_commits.append(list_of_commits[index + 1])
             next_pipeline = get_pipeline_by_commit(next_commit, list_of_pipelines)
             if next_pipeline:
