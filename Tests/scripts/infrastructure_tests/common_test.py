@@ -3,9 +3,6 @@ from Tests.scripts.common import get_reviewer, get_person_in_charge, are_pipelin
 from requests_mock import MockerCore
 
 
-NAME_AND_PR_URL = ('John Doe', 'https://github.com/demisto/content/pull/123')
-
-
 def test_get_person_in_charge(mocker):
     """
     Given:
@@ -13,14 +10,14 @@ def test_get_person_in_charge(mocker):
     When:
         The function get_person_in_charge is called with that commit
     Then:
-        It should return a tuple with the author name and the pull request URL
+        It should return a tuple with the author name and the pull request URL and the title beginning (up to 20 characters)
     """
     commit = mocker.Mock()
     commit.author_name = 'John Doe'
     commit.title = 'Fix a bug (#123)'
 
     result = get_person_in_charge(commit)
-    assert result == NAME_AND_PR_URL
+    assert result == ('John Doe', 'https://github.com/demisto/content/pull/123', 'Fix a bug (#123)...')
 
 
 def test_get_person_in_charge__multiple_IDs(mocker):
@@ -30,14 +27,15 @@ def test_get_person_in_charge__multiple_IDs(mocker):
     When:
         The function get_person_in_charge is called with that commit
     Then:
-        It should return the a tuple with the author name and the pull request URL, with only the last ID in the URL
+        It should return the a tuple with the author name and the pull request URL, with only the last ID in the URL, 
+        and the title beginning (up to 20 characters)
     """
     commit = mocker.Mock()
     commit.author_name = 'John Doe'
     commit.title = 'Fix a bug (#456) (#123)'
 
     result = get_person_in_charge(commit)
-    assert result == NAME_AND_PR_URL
+    assert result == ('John Doe', 'https://github.com/demisto/content/pull/123', 'Fix a bug (#456) (#1...')
 
 
 def test_get_person_in_charge__no_parenthesis(mocker):
@@ -47,14 +45,15 @@ def test_get_person_in_charge__no_parenthesis(mocker):
     When:
         The function get_person_in_charge is called with the commit
     Then:
-        It should return the author name and the pull request URL even if the ID was not in parenthesis
+        It should return the author name and the pull request URL (even if the ID was not in parenthesis) 
+        and the title beginning (up to 20 characters)
     """
     commit = mocker.Mock()
     commit.author_name = 'John Doe'
     commit.title = 'Fix a bug #123'
 
     result = get_person_in_charge(commit)
-    assert result == NAME_AND_PR_URL
+    assert result == ('John Doe', 'https://github.com/demisto/content/pull/123', 'Fix a bug #123...')
 
 
 def test_get_person_in_charge__no_number_sign(mocker):
@@ -71,7 +70,7 @@ def test_get_person_in_charge__no_number_sign(mocker):
     commit.title = 'Fix a bug (123)'
 
     result = get_person_in_charge(commit)
-    assert result == (None, None)
+    assert result == (None, None, None)
 
 
 def test_pipelines_are_in_correct_order__false(mocker):

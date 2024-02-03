@@ -582,7 +582,7 @@ def main():
                 # looking backwards until we find a commit with a pipeline to compare with
                 previous_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(
                     list_of_pipelines, list_of_commits, current_commit_index, direction="older")
-                pipeline_changed_status = is_pivot(current_pipeline= current_pipeline, pipeline_to_compare=previous_pipeline)
+                pipeline_changed_status = is_pivot(current_pipeline=current_pipeline, pipeline_to_compare=previous_pipeline)
 
                 logging.info(
                     f"Checking pipeline id: {current_pipeline.id}, of commit: {current_commit.title}, "

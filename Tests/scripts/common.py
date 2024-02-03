@@ -290,7 +290,7 @@ def are_pipelines_in_order(pipeline_A: ProjectPipeline, pipeline_B: ProjectPipel
 
     pipeline_A_timestamp = parser.parse(pipeline_A.created_at)
     pipeline_B_timestamp = parser.parse(pipeline_B.created_at)
-    return pipeline_A_timestamp < pipeline_B_timestamp
+    return pipeline_A_timestamp > pipeline_B_timestamp
 
 
 def is_pivot(current_pipeline: ProjectPipeline, pipeline_to_compare: ProjectPipeline) -> bool | None:
