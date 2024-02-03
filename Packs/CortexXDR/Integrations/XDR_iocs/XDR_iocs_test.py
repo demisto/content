@@ -939,7 +939,7 @@ def test_parse_demisto_comments__custom_field_empty_value(comments_as_tags: bool
     assert _parse_demisto_comments(
         ioc={'CustomFields': {comment_field: ''}},
         comment_field_name=comment_field,
-        comments_as_tags=comments_as_tags
+        comments_as_tags=comments_as_tags,
     ) is None
 
 
@@ -1036,3 +1036,19 @@ def test_set_new_iocs_to_keep_time(random_int, expected_next_time, mocker):
     set_integration_context_mock = mocker.patch.object(demisto, 'setIntegrationContext')
     set_new_iocs_to_keep_time()
     set_integration_context_mock.assert_called_once_with({'next_iocs_to_keep_time': expected_next_time})
+
+
+def test_parse_demisto_comments_url__default():
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    parsing a comment of the url indicator field
+    Then    check the output values
+    """
+    from XDR_iocs import _parse_demisto_comments
+    comment_value = '111111'
+    assert _parse_demisto_comments(
+        ioc={'id': comment_value},
+        comment_field_name='indicator_link',
+        comments_as_tags=False,
+        XSOARtenant=client._base_url
+    ) == [f'https://{client._base_url}/#/indicator/{comment_value}']

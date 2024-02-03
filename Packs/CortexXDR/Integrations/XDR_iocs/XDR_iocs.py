@@ -242,7 +242,7 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
-def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> list[str] | None:
+def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool, XSOARtenant: str = '') -> list[str] | None:
     if comment_field_name == 'comments':
         if comments_as_tags:
             raise DemistoException("When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)."
@@ -256,6 +256,14 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
             return None
         return [comment]
 
+    elif comment_field_name == 'indicator_link':
+        # parse indicator link into tags
+        raw_id = ioc.get('id')
+        if raw_id:
+            return f'https://{XSOARtenant}/#/indicator/{raw_id}'.split(",")
+        else:
+            return None
+
     else:  # custom comments field
         if not (raw_comment := ioc.get('CustomFields', {}).get(comment_field_name)):
             return None
@@ -266,7 +274,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
             return [raw_comment]
 
 
-def demisto_ioc_to_xdr(ioc: dict) -> dict:
+def demisto_ioc_to_xdr(ioc: dict, XSOARtenant: str | None) -> dict:
     try:
         demisto.debug(f'Raw outgoing IOC: {ioc}')
         xdr_ioc: dict = {
@@ -281,7 +289,7 @@ def demisto_ioc_to_xdr(ioc: dict) -> dict:
         if vendors := demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {})):
             xdr_ioc['vendors'] = vendors
         if (comment := _parse_demisto_comments(ioc=ioc, comment_field_name=Client.xsoar_comments_field,
-                                               comments_as_tags=Client.comments_as_tags)):
+                                               comments_as_tags=Client.comments_as_tags, XSOARtenant=XSOARtenant)):
             xdr_ioc['comment'] = comment
 
         custom_fields = ioc.get('CustomFields', {})
@@ -371,15 +379,16 @@ def get_iocs_to_keep_file():
 
 
 def create_last_iocs_query(from_date, to_date):
-    return f'modified:>={from_date} and modified:<{to_date} and ({Client.query})'
+    return f'from:>={from_date} and modified:<{to_date} and ({Client.query})'
 
 
 def get_last_iocs(batch_size=200) -> list:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
     last_run: dict = get_integration_context()
+    last_run['time'] = '1706613836134'
     query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
     iocs: list = list(get_iocs_generator(query=query, size=batch_size))
-    last_run['time'] = current_run
+    # last_run['time'] = '2023-11-31T12:54:00Z'
     set_integration_context(last_run)
     return iocs
 
@@ -415,7 +424,7 @@ def tim_insert_jsons(client: Client):
         for i, single_batch_iocs in enumerate(batch_iocs(iocs)):
             demisto.debug(f'push batch: {i}')
             requests_kwargs: dict = get_requests_kwargs(_json=list(
-                map(demisto_ioc_to_xdr, single_batch_iocs)), validate=True)
+                map(demisto_ioc_to_xdr, single_batch_iocs, client._base_url)), validate=True)
             response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
             validation_errors.extend(response.get('reply', {}).get('validation_errors'))
     if validation_errors:
@@ -514,7 +523,7 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
 
 def get_changes(client: Client):
     # takes changes from XDR
-    from_time: dict = get_integration_context()
+    from_time: dict = {'ts': "fetch-indicators"}  # get_integration_context()
     if not from_time:
         raise DemistoException('XDR is not synced.')
     path, requests_kwargs = prepare_get_changes(from_time['ts'])
@@ -696,7 +705,7 @@ def main():  # pragma: no cover
         'xdr-iocs-disable': iocs_command,
         'xdr-iocs-push': tim_insert_jsons,
     }
-    command = demisto.command()
+    command = 'fetch-indicators'  # demisto.command()
     demisto.debug(f'Command being called is {command}')
 
     try:
@@ -708,9 +717,9 @@ def main():  # pragma: no cover
             get_sync_file()
         elif command == 'xdr-iocs-to-keep-file':
             get_iocs_to_keep_file()
-        elif command in commands:
+        elif command in commands:  # xdr-iocs-push
             commands[command](client)
-        elif command == 'xdr-iocs-sync':
+        elif command == 'xdr-iocs-sync':  # changes enhancement
             xdr_iocs_sync_command(client, demisto.args().get('firstTime') == 'true')
         else:
             raise NotImplementedError(command)
