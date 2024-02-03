@@ -255,9 +255,9 @@ def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
     return pipelines, commits
 
 
-def get_person_in_charge(commit):
+def get_person_in_charge(commit: ProjectCommit) -> tuple[str, str, str] | tuple[None, None, None]:
     """
-    Returns the name, email, and PR link for the author of the provided commit.
+    Returns the name of the person in charge of the commit, the PR link and the beginning of the PR name.
 
     Args:
         commit: The Gitlab commit object containing author info.
@@ -265,12 +265,11 @@ def get_person_in_charge(commit):
     Returns:
         name: The name of the commit author.
         pr: The GitHub PR link for the Gitlab commit.
+        beginning_of_pr_name: The beginning of the PR name.
     """
     name = commit.author_name
     # pr number is always the last id in the commit title, starts with a number sign, may or may not be in parenthesis.
     pr_number = commit.title.split("#")[-1].strip("()")
-    # how to cut a string?
-
     beginning_of_pr_name = commit.title[:20] + "..."
     if pr_number.isnumeric():
         pr = f"https://github.com/demisto/content/pull/{pr_number}"
@@ -317,6 +316,13 @@ def is_pivot(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeli
 
 
 def get_reviewer(pr_url: str) -> str | None:
+    """
+    Get the first reviewer who approved the PR.
+    Args:
+        pr_url: The URL of the PR.
+    Returns:
+        The name of the first reviewer who approved the PR.
+    """
     approved_reviewer = None
     try:
         # Extract the owner, repo, and pull request number from the URL
@@ -338,6 +344,14 @@ def get_reviewer(pr_url: str) -> str | None:
 
 
 def get_slack_user_name(name: str | None, name_mapping_path: str) -> str:
+    """
+    Get the slack user name for a given Github name.
+    Args:
+        name: The name to convert.
+        name_mapping_path: The path to the name mapping file.
+    Returns:
+        The slack user name.
+    """
     with open(name_mapping_path) as map:
         mapping = json.load(map)
     # If the name is the name of the 'docker image update bot' reviewer - return the owner of that bot.
@@ -348,10 +362,26 @@ def get_slack_user_name(name: str | None, name_mapping_path: str) -> str:
 
 
 def get_commit_by_sha(commit_sha: str, list_of_commits: list[ProjectCommit]) -> ProjectCommit | None:
+    """
+    Get a commit by its SHA.
+    Args:
+        commit_sha: The SHA of the commit.
+        list_of_commits: A list of commits.
+    Returns:
+        The commit object.
+    """
     return next((commit for commit in list_of_commits if commit.id == commit_sha), None)
 
 
 def get_pipeline_by_commit(commit: ProjectCommit, list_of_pipelines: list[ProjectPipeline]) -> ProjectPipeline | None:
+    """
+    Get a pipeline by its commit.
+    Args:
+        commit: The commit object.
+        list_of_pipelines: A list of pipelines.
+    Returns:
+        The pipeline object.
+    """
     return next((pipeline for pipeline in list_of_pipelines if pipeline.sha == commit.id), None)
 
 
@@ -359,6 +389,12 @@ def create_shame_message(suspicious_commits: list[ProjectCommit],
                          pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str, str, str] | None:
     """
     Create a shame message for the person in charge of the commit, or for multiple people in case of multiple suspicious commits.
+    Args:
+        suspicious_commits: A list of suspicious commits.
+        pipeline_changed_status: A boolean indicating if the pipeline status changed.
+        name_mapping_path: The path to the name mapping file.
+    Returns:
+        A tuple of strings containing the message, the person in charge, the PR link and the color of the message.
     """
     hi_and_status = person_in_charge = in_this_pr = color = ""
     for suspicious_commit in suspicious_commits:
@@ -383,12 +419,27 @@ def create_shame_message(suspicious_commits: list[ProjectCommit],
 
 
 def slack_link(url: str, text: str) -> str:
+    """ 
+    Create a slack link.
+    Args:
+        url: The URL to link to.
+        text: The text to display.
+    Returns:
+        The slack link.
+    """
     return f"<{url}|{text}>"
 
 
 def was_message_already_sent(commit_index: int, list_of_commits: list, list_of_pipelines: list) -> bool:
     """
-    Check if a message was already sent for newer commits, this is possible if pipelines of later commits, finished before the pipeline of the current commit.
+    Check if a message was already sent for newer commits, this is possible if pipelines of later commits,
+    finished before the pipeline of the current commit.
+    Args:
+        commit_index: The index of the current commit.
+        list_of_commits: A list of commits.
+        list_of_pipelines: A list of pipelines.
+    Returns:
+
     """
     for index in reversed(range(1, commit_index)):
         # the list of commits in in ascending order, newer commits are first
@@ -407,16 +458,24 @@ def get_nearest_commit_with_pipeline(list_of_pipelines: list[ProjectPipeline], l
                                      direction: str) -> tuple[ProjectPipeline, list] | tuple[None, None]:
     """
     Get the nearest commit with a pipeline in the direction specified.
+    Args:
+        list_of_pipelines: A list of pipelines.
+        list_of_commits: A list of commits.
+        current_commit_index: The index of the current commit.
+        direction: The direction to look for the nearest commit with a pipeline.
+    Returns:
+        A tuple of the nearest pipeline and a list of suspicious commits.
     """
     suspicious_commits = []
-    if direction == "forwards":
+    if direction == "newer":
+        # since the list of commits is in ascending order, to get the next commit we need to go backwards
         for index in reversed(range(0, current_commit_index - 1)):   # the list of commits in in ascending order, newer commits are first
             next_commit = list_of_commits[index]
             next_pipeline = get_pipeline_by_commit(next_commit, list_of_pipelines)
             if next_pipeline:
                 suspicious_commits.append(list_of_commits[index + 1])
                 return next_pipeline, suspicious_commits
-    elif direction == "backwards":
+    elif direction == "older":
         for index in range(current_commit_index, len(list_of_commits) - 1):
             previous_commit = list_of_commits[index + 1]
             previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
