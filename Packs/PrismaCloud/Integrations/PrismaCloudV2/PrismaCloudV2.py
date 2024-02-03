@@ -1500,7 +1500,7 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     include_additional_resource_fields = args.get('include_additional_resource_fields', 'false')
 
     demisto.debug(f'Searching for config with the following params: {query=}, {limit=}, {time_filter=}, {include_resource_json=},'
-                  ' {include_additional_resource_fields}')
+                  ' {include_additional_resource_fields=}')
     response = client.config_search_request(time_filter, str(query), limit, search_id, sort_direction, sort_field,
                                             include_resource_json,
                                             include_additional_resource_fields=include_additional_resource_fields)
