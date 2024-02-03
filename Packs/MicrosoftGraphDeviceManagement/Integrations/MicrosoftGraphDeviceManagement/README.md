@@ -900,8 +900,8 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 >|ID|User ID|Device Name|Operating System|OS Version|Email Address|Manufacturer|Model|
 >|---|---|---|---|---|---|---|---|
 >| DEVICE_ID_VALUE | 2827c1e7-edb6-4529-b50d-25984e968637 | DESKTOP-S2455R8 | Windows | 10.0.18363.778 | dev@demistodev.onmicrosoft.com | VMware, Inc. | VMware7,1 |
->There are more results than shown. For more data please enter the next_link argument:
-> next_link=https:<span>//</span>graph.microsoft.com/v1.0/deviceManagement/managedDevices
+    There are more results than shown. For more data please enter the next_link argument:
+    next_link=https://graph.microsoft.com/v1.0/deviceManagement/managedDevices
 
 
 ### msgraph-find-managed-devices-by-name
