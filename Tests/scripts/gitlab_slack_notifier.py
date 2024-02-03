@@ -577,25 +577,24 @@ def main():
             # or if we already sent a shame message for newer commits, we don't want to send another one for older commits.
             if (current_commit_index != len(list_of_commits) - 1
                     and not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)):
-
                 current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
 
                 # looking backwards until we find a commit with a pipeline to compare with
                 previous_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(
-                    list_of_pipelines, list_of_commits, current_commit_index, direction="backwards")
-                pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
+                    list_of_pipelines, list_of_commits, current_commit_index, direction="older")
+                pipeline_changed_status = is_pivot(current_pipeline= current_pipeline, pipeline_to_compare=previous_pipeline)
 
                 logging.info(
                     f"Checking pipeline id: {current_pipeline.id}, of commit: {current_commit.title}, "
                     f"after comparing with pipeline id: {previous_pipeline.id}, the change status is: {pipeline_changed_status}")
 
-                # looking_forward until we find a commit with a pipeline to compare with
                 if pipeline_changed_status is None and current_commit_index > 0:
+                    # looking_forward until we find a commit with a pipeline to compare with
                     next_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(
-                        list_of_pipelines, list_of_commits, current_commit_index, direction="forwards")
+                        list_of_pipelines, list_of_commits, current_commit_index, direction="newer")
 
                     if next_pipeline:
-                        pipeline_changed_status = is_pivot(current_pipeline=next_pipeline, previous_pipeline=current_pipeline)
+                        pipeline_changed_status = is_pivot(current_pipeline=next_pipeline, pipeline_to_compare=current_pipeline)
                         logging.info(
                             f" after comparing with pipeline id: {next_pipeline.id}, the change status is: {pipeline_changed_status}")
 
