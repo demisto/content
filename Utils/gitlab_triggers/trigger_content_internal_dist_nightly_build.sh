@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-_slack_channel="C04CHML16P8"
+_slack_channel="dmst-build-test"
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in

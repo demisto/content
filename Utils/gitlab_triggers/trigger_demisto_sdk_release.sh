@@ -9,6 +9,9 @@
 
 # Ways to run this script are:
 # trigger_demisto_sdk_release.sh -ct <trigger-token> -rv <release-version> [-b <branch-name> -ch <slack-channel-name>]
+# For more information:
+https://confluence-dc.paloaltonetworks.com/display/DemistoContent/Demisto-sdk+automate+release+flow
+
 if [ "$#" -lt "1" ]; then
   echo "Usage:
   $0 -ct <token>
@@ -21,7 +24,6 @@ if [ "$#" -lt "1" ]; then
   [-d, --is-draft]         Whether to create draft release and draft pull requests or not. Default is FALSE.
   [-s, --sdk-branch-name]         From which branch in demisto-sdk we want to create the release. Default is master.
   "
-  echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection  TODO
   exit 1
 fi
 
