@@ -1291,4 +1291,4 @@ script:
   type: python
 tests:
 - ZimperiumV2_Test
-defaultmapperin: Zimperium-mapper
+defaultmapperin: Zimperium v2 - Incoming Mapper
