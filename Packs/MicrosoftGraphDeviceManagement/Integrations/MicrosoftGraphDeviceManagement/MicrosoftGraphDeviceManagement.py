@@ -48,14 +48,15 @@ class MsGraphClient:
                                          azure_cloud=self.azure_cloud
                                          )
 
-    def list_managed_devices(self, limit: int, page_size: int = 50, next_link: str | None = None) -> tuple[list, str | None, Any]:
-        url_suffix: str = f'/deviceManagement/managedDevices?$top={page_size}&'
+    def list_managed_devices(self, limit: int, page_size: int | None, next_link: str | None = None) -> tuple[list, str | None, Any]:
+        limit = page_size if page_size else limit
+        url_suffix: str = f'/deviceManagement/managedDevices?$top={limit}&'
         if next_link:
             url_suffix = next_link.split(API_VERSION)[1]
         raw_response = self.ms_client.http_request('GET', url_suffix)
         next_link = raw_response.get('@odata.nextLink')
 
-        return raw_response.get('value', [])[:limit], next_link, raw_response
+        return raw_response.get('value', []), next_link, raw_response
 
     def find_managed_devices(self, device_name: str) -> tuple[Any, str]:
         url_suffix: str = f"/deviceManagement/managedDevices?$filter=deviceName eq '{device_name}'"
@@ -254,7 +255,7 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
     list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
     if next_link:
-        entry_context['MSGraphDeviceManagement.NextLink(val.NextLink)'] = {"NextLink": next_link}
+        entry_context['MSGraphDeviceManagement.DeviceNextLink(val.NextLink)'] = {"NextLink": next_link}
     human_readable: str = 'No managed devices found.'
     if list_devices:
         name: str = 'List managed devices'

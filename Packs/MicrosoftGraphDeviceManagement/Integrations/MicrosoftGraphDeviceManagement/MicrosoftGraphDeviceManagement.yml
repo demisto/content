@@ -540,13 +540,12 @@ script:
       name: next_link
     - description: "Number of results to return per page. Maximum page size is 1000.
 
-       Note: Page size is only relevant when the next_link parameter is not specified."
+       Note:  This parameter is intended for pagination purposes and will surpass the specified limit"
       name: page_size
-      defaultValue: 50
     description: List of managed devices.
     name: msgraph-list-managed-devices
     outputs:
-    - contextPath: MSGraphDeviceManagement.NextLink
+    - contextPath: MSGraphDeviceManagement.DeviceNextLink
       description: A link that specifies a starting point to use for subsequent calls.
       type: String
     - contextPath: MSGraphDeviceManagement.Device.ID
