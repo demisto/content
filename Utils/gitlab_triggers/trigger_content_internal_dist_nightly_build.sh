@@ -26,9 +26,10 @@ if [ -z "$_ci_token" ]; then
     exit 1
 fi
 
-
+GOLD_PROJECT_ID=${GOLD_PROJECT_ID:-1738}
 CI_SERVER_URL=${CI_SERVER_URL:-https://gitlab.xdr.pan.local} # disable-secrets-detection
-export BUILD_TRIGGER_URL="${CI_SERVER_URL}/api/v4/projects/1738/trigger/pipeline"
+
+export BUILD_TRIGGER_URL="${CI_SERVER_URL}/api/v4/projects/${GOLD_PROJECT_ID}/trigger/pipeline"
 
 
 curl --request POST \
