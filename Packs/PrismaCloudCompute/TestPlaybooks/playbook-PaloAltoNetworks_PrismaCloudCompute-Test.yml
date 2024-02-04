@@ -490,7 +490,7 @@ tasks:
     scriptarguments:
       hostname:
         complex:
-          root: PrismaCloudCompute.Hosts.[0]
+          root: PrismaCloudCompute.Hosts
           accessor: _id
           transformers:
             - operator: FirstArrayElement
