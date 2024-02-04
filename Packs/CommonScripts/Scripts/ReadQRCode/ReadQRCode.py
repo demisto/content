@@ -5,7 +5,7 @@ import cv2
 # pylint: disable=E1101  # disable pylint not recognizing cv2's attributes.
 
 
-def read_qr_code(filename: str) -> str | list[str]:
+def read_qr_code(filename: str) -> list[str]:
 
     img = cv2.imread(filename)
     text = [d.data.decode() for d in pyzbar.decode(img)]
@@ -15,10 +15,10 @@ def read_qr_code(filename: str) -> str | list[str]:
         detect = cv2.QRCodeDetector()
         text, *_ = detect.detectAndDecode(img)
 
-    return text
+    return text if isinstance(text, list) else [text]
 
 
-def extract_indicators_from_text(text: str | list[str]) -> dict:
+def extract_indicators_from_text(text: list[str]) -> dict:
     return json.loads(demisto.executeCommand(
         'extractIndicators', {'text': text}
     )[0]['Contents'])  # type: ignore
