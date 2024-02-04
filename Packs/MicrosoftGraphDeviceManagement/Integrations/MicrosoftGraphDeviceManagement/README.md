@@ -781,7 +781,7 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphDeviceManagement.NextLink | String | A link that specifies a starting point to use for subsequent calls. | 
+| MSGraphDeviceManagement.DeviceNextLink | String | A link that specifies a starting point to use for subsequent calls. | 
 | MSGraphDeviceManagement.Device.ID | String | The ID of the managed device. | 
 | MSGraphDeviceManagement.Device.UserID | String | Unique Identifier for the user associated with the device. | 
 | MSGraphDeviceManagement.Device.Name | String | Name of the device. | 
