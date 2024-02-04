@@ -4,6 +4,7 @@ import sys
 import argparse
 import re
 import urllib3
+from distutils.util import strtobool
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -57,7 +58,7 @@ def options_handler():
 
     parser.add_argument('-t', '--access_token', help='Github access token', required=True)
     parser.add_argument('-b', '--release_branch_name', help='The name of the release branch', required=True)
-    parser.add_argument('-d', '--is_draft', help='Is draft release')
+    parser.add_argument('-d', '--is_draft', help='Is draft release', default='FALSE')
     options = parser.parse_args()
     return options
 
@@ -70,7 +71,7 @@ def main():
     access_token = options.access_token
     is_draft = options.is_draft
 
-    if is_draft and is_draft.lower() in ("yes", "true", "y"):
+    if is_draft and bool(strtobool(is_draft)):
         is_draft = True
         logging.info(f"Preparing to create draft release for Demisto SDK version {release_branch_name}")
     else:

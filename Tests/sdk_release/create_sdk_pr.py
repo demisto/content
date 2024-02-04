@@ -8,6 +8,7 @@ import base64
 import json
 import os
 import urllib3
+from distutils.util import strtobool
 from datetime import datetime
 from create_release import get_changelog_text
 from Tests.scripts.utils.log_util import install_logging
@@ -31,7 +32,7 @@ def options_handler():
     parser.add_argument('-t', '--access_token', help='Github access token', required=True)
     parser.add_argument('-b', '--release_branch_name', help='The name of the release branch', required=True)
     parser.add_argument('-ro', '--release_owner', help='Github username of the release owner', required=True)
-    parser.add_argument('-d', '--is_draft', help='Is draft pull request')
+    parser.add_argument('-d', '--is_draft', help='Is draft pull request', default='FALSE')
     parser.add_argument('--artifacts-folder', help='Artifacts folder to create the files', required=True)
 
     options = parser.parse_args()
@@ -48,7 +49,7 @@ def main():
     release_owner = options.release_owner
     artifacts_folder = options.artifacts_folder
 
-    if is_draft and is_draft.lower() in ("yes", "true", "y"):
+    if is_draft and bool(strtobool(is_draft)):
         is_draft = True
         logging.info(f'Preparing to create draft Pull request to release branch {release_branch_name}')
     else:

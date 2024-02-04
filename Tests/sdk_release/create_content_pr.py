@@ -5,6 +5,7 @@ import os
 import argparse
 import urllib3
 import time
+from distutils.util import strtobool
 from create_release import get_changelog_text
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -52,7 +53,7 @@ def options_handler():
     parser.add_argument('-b', '--release_branch_name', help='The name of the release branch', required=True)
     parser.add_argument('-r', '--reviewer', help='The reviewer of the pull request', required=True)
     parser.add_argument('--artifacts-folder', help='Artifacts folder to create the files', required=True)
-    parser.add_argument('-d', '--is_draft', help='Is draft pull request')
+    parser.add_argument('-d', '--is_draft', help='Is draft pull request', default='FALSE')
     options = parser.parse_args()
     return options
 
@@ -67,7 +68,7 @@ def main():
     artifacts_folder = options.artifacts_folder
     is_draft = options.is_draft
 
-    if is_draft and is_draft.lower() in ("yes", "true", "y"):
+    if is_draft and bool(strtobool(is_draft)):
         is_draft = True
         logging.info('preparing to trigger update-demisto-sdk-version workflow with draft pull request')
     else:
