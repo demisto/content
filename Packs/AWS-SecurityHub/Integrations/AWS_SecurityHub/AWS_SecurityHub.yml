@@ -42,7 +42,7 @@ configuration:
   type: 15
   section: Connect
   advanced: true
-  required: false
+  required: true
 - display: Role Session Duration
   name: sessionDuration
   type: 0

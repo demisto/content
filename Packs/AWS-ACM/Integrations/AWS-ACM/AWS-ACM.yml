@@ -34,7 +34,7 @@ configuration:
   - eu-north-1
   - eu-west-3
   type: 15
-  required: false
+  required: true
 - display: Role Session Duration
   name: sessionDuration
   type: 0

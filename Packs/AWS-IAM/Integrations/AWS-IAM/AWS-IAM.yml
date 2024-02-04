@@ -40,7 +40,7 @@ configuration:
   type: 15
   section: Collect
   advanced: true
-  required: false
+  required: true
 - display: Role Session Duration
   name: sessionDuration
   type: 0
