@@ -116,7 +116,7 @@ script:
     - name: linqLinkBase
       description: Overrides the global Devo base domain for linq linking.
     - name: filtered_columns
-      description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result.Context data is eventually modified by this parameter.
+      description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter.
       isArray: true
     outputs:
     - contextPath: Devo.QueryResults
@@ -151,7 +151,7 @@ script:
     - name: linqLinkBase
       description: Overrides the global Devo base domain for linq linking.
     - name: filtered_columns
-      description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result.Context data is eventually modified by this parameter.
+      description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter.
       isArray: true
     outputs:
     - contextPath: Devo.AlertsResults
@@ -186,7 +186,7 @@ script:
       description: Enter the per page value you want to set.
       defaultValue: "50"
     - name: filtered_columns
-      description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result.Context data is eventually modified by this parameter.
+      description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter.
       isArray: true
     outputs:
     - contextPath: Devo.MultiResults
