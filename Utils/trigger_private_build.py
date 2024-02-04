@@ -123,7 +123,8 @@ def main():
     arg_parser.add_argument('--github-token', help='Github token')
     arg_parser.add_argument('--nightly', help='Is nightly build', action=argparse.BooleanOptionalAction)
     arg_parser.add_argument('--sdk-ref', help='Whether to override the sdk branch')
-    arg_parser.add_argument('--slack-channel', help='The slack channel in which to send the notification', default='dmst-build-test')
+    arg_parser.add_argument('--slack-channel', help='The slack channel in which to send the notification',
+                            default='dmst-build-test')
     arg_parser.add_argument('--artifacts-folder', help='Whether to override the PRIVATE_REPO_WORKFLOW_ID.txt creation location',
                             required=False)
     arg_parser.add_argument(
