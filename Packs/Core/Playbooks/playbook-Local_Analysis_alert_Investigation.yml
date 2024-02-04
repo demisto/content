@@ -37,15 +37,15 @@ description: |-
 
   External resources:
 
-  [Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
+  [Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow).
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: b83fd3f5-7f61-43c0-88e8-6075d17650dc
+    taskid: ac738cbe-735a-4d36-89a0-9b2c5035d105
     type: start
     task:
-      id: b83fd3f5-7f61-43c0-88e8-6075d17650dc
+      id: ac738cbe-735a-4d36-89a0-9b2c5035d105
       version: -1
       name: ''
       iscommand: false
@@ -72,10 +72,10 @@ tasks:
     continueonerrortype: ""
   "2":
     id: "2"
-    taskid: c91fc254-410b-425e-87b2-c69a28f65349
+    taskid: a65df4c3-9864-491e-80ea-0c3f897eb195
     type: condition
     task:
-      id: c91fc254-410b-425e-87b2-c69a28f65349
+      id: a65df4c3-9864-491e-80ea-0c3f897eb195
       version: -1
       name: Verdict by FileVerdict AND Prevalence
       description: Checks the verdict returned by the 'Enrichment for Verdict' playbook.
@@ -128,10 +128,10 @@ tasks:
     continueonerrortype: ""
   '3':
     id: '3'
-    taskid: b3b9a73a-24d7-4008-8646-07fa816ad9d5
+    taskid: 7b678a2e-b641-4ae1-8b07-2642ab57819e
     type: title
     task:
-      id: b3b9a73a-24d7-4008-8646-07fa816ad9d5
+      id: 7b678a2e-b641-4ae1-8b07-2642ab57819e
       version: -1
       name: Analysis
       type: title
@@ -159,10 +159,10 @@ tasks:
     continueonerrortype: ""
   '6':
     id: '6'
-    taskid: d6e52022-e411-45b0-8b80-a79e9e7afa71
+    taskid: 13bca2ec-8023-4b10-8638-57eccb281205
     type: condition
     task:
-      id: d6e52022-e411-45b0-8b80-a79e9e7afa71
+      id: 13bca2ec-8023-4b10-8638-57eccb281205
       version: -1
       name: 'Was the action prevented? '
       description: Checks if the file execution was prevented.
@@ -206,10 +206,10 @@ tasks:
     continueonerrortype: ""
   '14':
     id: '14'
-    taskid: c2495b22-ee9c-48c6-8f2f-6fc37c1bac1d
+    taskid: 10526d59-d046-4f71-84c1-db47ea1a2cde
     type: condition
     task:
-      id: c2495b22-ee9c-48c6-8f2f-6fc37c1bac1d
+      id: 10526d59-d046-4f71-84c1-db47ea1a2cde
       version: -1
       name: Check WF alert verdict
       description: Checks the WildFire verdict.
@@ -272,10 +272,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 6b6f4826-2aa2-456a-8587-93f122f1c99e
+    taskid: 8562e98f-b613-43f9-8f18-1217c5ad9a92
     type: title
     task:
-      id: 6b6f4826-2aa2-456a-8587-93f122f1c99e
+      id: 8562e98f-b613-43f9-8f18-1217c5ad9a92
       version: -1
       name: Handle FP
       type: title
@@ -303,10 +303,10 @@ tasks:
     continueonerrortype: ""
   '34':
     id: '34'
-    taskid: f74d27e4-3546-40ce-8aee-0c1c2047fc61
+    taskid: 2df0fb69-bd40-4e5e-8870-3ee4e45ab299
     type: condition
     task:
-      id: f74d27e4-3546-40ce-8aee-0c1c2047fc61
+      id: 2df0fb69-bd40-4e5e-8870-3ee4e45ab299
       version: -1
       name: Manual review - was it your security vendor?
       description: |+
@@ -341,10 +341,10 @@ tasks:
     continueonerrortype: ""
   '35':
     id: '35'
-    taskid: 29c59ae5-63a9-494e-86a9-d98e85aeec7c
+    taskid: 8389b41e-5503-4171-8d82-6e3419fcb702
     type: title
     task:
-      id: 29c59ae5-63a9-494e-86a9-d98e85aeec7c
+      id: 8389b41e-5503-4171-8d82-6e3419fcb702
       version: -1
       name: WildFire Verdict
       type: title
@@ -372,10 +372,10 @@ tasks:
     continueonerrortype: ""
   '39':
     id: '39'
-    taskid: 91b3c33e-25e4-42d5-83f9-b9cbe172e16d
+    taskid: 32d9a55d-2ba3-47f3-8fe6-c36a66fb0d4e
     type: title
     task:
-      id: 91b3c33e-25e4-42d5-83f9-b9cbe172e16d
+      id: 32d9a55d-2ba3-47f3-8fe6-c36a66fb0d4e
       version: -1
       name: Investigate
       type: title
@@ -390,7 +390,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2370
+          "y": 2250
         }
       }
     note: false
@@ -403,10 +403,10 @@ tasks:
     continueonerrortype: ""
   '41':
     id: '41'
-    taskid: 076a0a10-7b8f-4584-859c-11b39ea83664
+    taskid: 23366267-1d6e-4775-84b3-ae63febde1ee
     type: title
     task:
-      id: 076a0a10-7b8f-4584-859c-11b39ea83664
+      id: 23366267-1d6e-4775-84b3-ae63febde1ee
       version: -1
       name: Remediation
       type: title
@@ -435,10 +435,10 @@ tasks:
     continueonerrortype: ""
   '44':
     id: '44'
-    taskid: f9946ed1-7266-408f-8bde-147e9d09581d
+    taskid: c4572436-ec12-49fd-894b-b345d7894a44
     type: condition
     task:
-      id: f9946ed1-7266-408f-8bde-147e9d09581d
+      id: c4572436-ec12-49fd-894b-b345d7894a44
       version: -1
       name: Found relevant information?
       description: Checks if other alerts were found on the endpoint.
@@ -479,10 +479,10 @@ tasks:
     continueonerrortype: ""
   '45':
     id: '45'
-    taskid: 767a19fc-c96e-4b33-8053-889e45256edf
+    taskid: 27efa602-3fe1-404b-86e4-98a8055fd207
     type: regular
     task:
-      id: 767a19fc-c96e-4b33-8053-889e45256edf
+      id: 27efa602-3fe1-404b-86e4-98a8055fd207
       version: -1
       name: Close alert
       description: commands.local.cmd.close.inv
@@ -498,7 +498,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 4100
+          "y": 3980
         }
       }
     note: false
@@ -511,10 +511,10 @@ tasks:
     continueonerrortype: ""
   '46':
     id: '46'
-    taskid: d5a05362-eb31-403f-84b9-493f500d455f
+    taskid: 893e14f7-cbe1-47f2-86f2-9b6bed0b72d3
     type: condition
     task:
-      id: d5a05362-eb31-403f-84b9-493f500d455f
+      id: 893e14f7-cbe1-47f2-86f2-9b6bed0b72d3
       version: -1
       name: Restore affected endpoint?
       description: Whether to execute the Recovery Plan playbook.
@@ -557,10 +557,10 @@ tasks:
     continueonerrortype: ""
   '47':
     id: '47'
-    taskid: 858764a5-e107-4b04-894f-245053dd10a6
+    taskid: 69ce3c87-29bf-4aef-84f1-91ee25986459
     type: condition
     task:
-      id: 858764a5-e107-4b04-894f-245053dd10a6
+      id: 69ce3c87-29bf-4aef-84f1-91ee25986459
       version: -1
       name: Close alert automatically?
       description: Whether to close the alert automatically.
@@ -570,6 +570,7 @@ tasks:
     nexttasks:
       '#default#':
       - "51"
+      - "48"
       yes:
       - '45'
     separatecontext: false
@@ -603,10 +604,10 @@ tasks:
     continueonerrortype: ""
   '48':
     id: '48'
-    taskid: da1d7739-25a2-416b-8c41-98d80f898913
+    taskid: 2c5820a1-08cd-4d7f-8ef9-672778d28448
     type: regular
     task:
-      id: da1d7739-25a2-416b-8c41-98d80f898913
+      id: 2c5820a1-08cd-4d7f-8ef9-672778d28448
       version: -1
       name: Continue with the incident investigation
       description: Continue manually with the alert investigation.
@@ -634,10 +635,10 @@ tasks:
     continueonerrortype: ""
   '50':
     id: '50'
-    taskid: 41e96b8f-fa0a-436e-8ca4-a1b526352653
+    taskid: 53a29f66-4d86-430d-85d6-a1906c35da77
     type: title
     task:
-      id: 41e96b8f-fa0a-436e-8ca4-a1b526352653
+      id: 53a29f66-4d86-430d-85d6-a1906c35da77
       version: -1
       name: Recovery
       type: title
@@ -652,7 +653,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3145
+          "y": 3125
         }
       }
     note: false
@@ -665,10 +666,10 @@ tasks:
     continueonerrortype: ""
   '51':
     id: '51'
-    taskid: 909bbeff-e2db-4c81-81ac-90cb08c5a6e1
+    taskid: b530df4e-4acf-4d79-8395-5b0e469704b6
     type: title
     task:
-      id: 909bbeff-e2db-4c81-81ac-90cb08c5a6e1
+      id: b530df4e-4acf-4d79-8395-5b0e469704b6
       version: -1
       name: Done
       type: title
@@ -680,7 +681,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 4170
+          "y": 4150
         }
       }
     note: false
@@ -693,10 +694,10 @@ tasks:
     continueonerrortype: ""
   '54':
     id: '54'
-    taskid: a5190e8c-7ec7-4605-8789-496a8195a02f
+    taskid: 6aea084a-ae6b-4638-8239-7d008724cb83
     type: title
     task:
-      id: a5190e8c-7ec7-4605-8789-496a8195a02f
+      id: 6aea084a-ae6b-4638-8239-7d008724cb83
       version: -1
       name: Pre-Investigation Containment
       type: title
@@ -724,10 +725,10 @@ tasks:
     continueonerrortype: ""
   '55':
     id: '55'
-    taskid: 9e5a149b-b6f9-4aea-8305-61a13d898878
+    taskid: 82453e9b-41b5-487f-8b69-4f7cc96b12f7
     type: condition
     task:
-      id: 9e5a149b-b6f9-4aea-8305-61a13d898878
+      id: 82453e9b-41b5-487f-8b69-4f7cc96b12f7
       version: -1
       name: Check hash execution timestamp
       description: Checks for the hash execution timestamp.
@@ -772,10 +773,10 @@ tasks:
     continueonerrortype: ""
   '57':
     id: '57'
-    taskid: feccfedf-58d9-41c1-8810-f3a9187230de
+    taskid: 0d876040-7dba-4146-818c-a3e7b3f310c9
     type: regular
     task:
-      id: feccfedf-58d9-41c1-8810-f3a9187230de
+      id: 0d876040-7dba-4146-818c-a3e7b3f310c9
       version: -1
       name: Get time for the last day
       description: |
@@ -810,10 +811,10 @@ tasks:
     continueonerrortype: ""
   '58':
     id: '58'
-    taskid: ce2f012d-f8f2-4125-8af7-04c1072ac4de
+    taskid: d39b984c-d62c-4527-8360-d812576dd9e9
     type: condition
     task:
-      id: ce2f012d-f8f2-4125-8af7-04c1072ac4de
+      id: d39b984c-d62c-4527-8360-d812576dd9e9
       version: -1
       name: Is auto-containment set to true?
       description: Checks the AutoContainment input.
@@ -857,10 +858,10 @@ tasks:
     continueonerrortype: ""
   '59':
     id: '59'
-    taskid: cea6fc52-c615-4970-8e75-f7f951dad1ed
+    taskid: 003ef4a5-7a94-4e4d-85f7-774ea1bf5865
     type: regular
     task:
-      id: cea6fc52-c615-4970-8e75-f7f951dad1ed
+      id: 003ef4a5-7a94-4e4d-85f7-774ea1bf5865
       version: -1
       name: Retrieve the suspected file
       description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
@@ -898,10 +899,10 @@ tasks:
     continueonerrortype: ""
   '60':
     id: '60'
-    taskid: 91d762cb-ae2c-42b9-817b-beba202a674c
+    taskid: 423bf925-1698-49ea-8666-9be084cc0650
     type: regular
     task:
-      id: 91d762cb-ae2c-42b9-817b-beba202a674c
+      id: 423bf925-1698-49ea-8666-9be084cc0650
       version: -1
       name: Get retrieved file
       description: View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, you can use the core-action-status-get command to check if this action completed successfully.
@@ -935,10 +936,10 @@ tasks:
     continueonerrortype: ""
   "61":
     id: "61"
-    taskid: 109f06df-2f1f-4c89-8b00-e84b143cf481
+    taskid: 4272a42c-4f7a-4b1f-8513-4a888453d287
     type: playbook
     task:
-      id: 109f06df-2f1f-4c89-8b00-e84b143cf481
+      id: 4272a42c-4f7a-4b1f-8513-4a888453d287
       version: -1
       name: Enrichment for Verdict
       playbookName: Enrichment for Verdict
@@ -999,10 +1000,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 1a0a2f79-bbc0-491c-8033-03ca361661b2
+    taskid: fe446d1f-57e5-4fbf-84ff-9ccdf4cff7f8
     type: playbook
     task:
-      id: 1a0a2f79-bbc0-491c-8033-03ca361661b2
+      id: fe446d1f-57e5-4fbf-84ff-9ccdf4cff7f8
       version: -1
       name: Containment Plan
       description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1079,10 +1080,10 @@ tasks:
     continueonerrortype: ""
   "63":
     id: "63"
-    taskid: ae8b7fd8-a619-440e-8a0f-29f736962b07
+    taskid: ec4bed80-4e42-480c-811f-176e51c67624
     type: playbook
     task:
-      id: ae8b7fd8-a619-440e-8a0f-29f736962b07
+      id: ec4bed80-4e42-480c-811f-176e51c67624
       version: -1
       name: Endpoint Investigation Plan
       description: "This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n* Pre-defined MITRE tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1144,10 +1145,10 @@ tasks:
     continueonerrortype: ""
   "64":
     id: "64"
-    taskid: 387cd1d4-5c07-4139-8ecf-0e91e678eb23
+    taskid: 3ac3998f-0c05-4b67-8a85-a982a9e17158
     type: playbook
     task:
-      id: 387cd1d4-5c07-4139-8ecf-0e91e678eb23
+      id: 3ac3998f-0c05-4b67-8a85-a982a9e17158
       version: -1
       name: Containment Plan
       description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1274,10 +1275,10 @@ tasks:
     continueonerrortype: ""
   "65":
     id: "65"
-    taskid: 00b572f6-e0ae-4ef3-8b2b-3bb91d76984e
+    taskid: bf1ad403-5c0b-4033-82d3-0f786989e686
     type: playbook
     task:
-      id: 00b572f6-e0ae-4ef3-8b2b-3bb91d76984e
+      id: bf1ad403-5c0b-4033-82d3-0f786989e686
       version: -1
       name: Eradication Plan
       description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following tasks:\n* Reset user password\n* Delete file\n* Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1341,7 +1342,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3050
+          "y": 2960
         }
       }
     note: false
@@ -1354,10 +1355,10 @@ tasks:
     continueonerrortype: ""
   "66":
     id: "66"
-    taskid: b016a74c-d983-4cf8-89ac-5cb2c29a282b
+    taskid: a397193c-0582-4cc0-822f-1734252bdbbd
     type: playbook
     task:
-      id: b016a74c-d983-4cf8-89ac-5cb2c29a282b
+      id: a397193c-0582-4cc0-822f-1734252bdbbd
       version: -1
       name: Recovery Plan
       description: |-
@@ -1407,10 +1408,10 @@ tasks:
     continueonerrortype: ""
   "67":
     id: "67"
-    taskid: 58f335fb-7b1f-4de2-83e6-5c80421dbdc5
+    taskid: 28f0986d-5f8f-491c-89eb-752219ab6e22
     type: playbook
     task:
-      id: 58f335fb-7b1f-4de2-83e6-5c80421dbdc5
+      id: 28f0986d-5f8f-491c-89eb-752219ab6e22
       version: -1
       name: Handle False Positive Alerts
       playbookName: Handle False Positive Alerts
@@ -1468,10 +1469,10 @@ tasks:
     continueonerrortype: ""
   '68':
     id: '68'
-    taskid: b36fe43f-fee9-49e5-8258-396a1cfb1c0a
+    taskid: 39aa6951-f29c-4abc-81b6-0791b82fccff
     type: regular
     task:
-      id: b36fe43f-fee9-49e5-8258-396a1cfb1c0a
+      id: 39aa6951-f29c-4abc-81b6-0791b82fccff
       version: -1
       name: |
         Extract retrieved file
@@ -1504,10 +1505,10 @@ tasks:
     continueonerrortype: ""
   '69':
     id: '69'
-    taskid: cfc113e8-2775-4153-8dec-d3f91a312a58
+    taskid: 2c517593-1e5b-4fa6-81ab-990ead58cacd
     type: playbook
     task:
-      id: cfc113e8-2775-4153-8dec-d3f91a312a58
+      id: 2c517593-1e5b-4fa6-81ab-990ead58cacd
       version: -1
       name: Wildfire Detonate and Analyze File
       description: |
@@ -1588,10 +1589,10 @@ tasks:
     continueonerrortype: ""
   '70':
     id: '70'
-    taskid: 39171c50-dc44-42ee-8862-eaf3ae8cf3b4
+    taskid: 7b5bf611-e2ab-49f5-86f2-8fae9a319ca1
     type: condition
     task:
-      id: 39171c50-dc44-42ee-8862-eaf3ae8cf3b4
+      id: 7b5bf611-e2ab-49f5-86f2-8fae9a319ca1
       version: -1
       name: Check WildFire alert verdict
       description: Checks the WildFire verdict received.
@@ -1634,10 +1635,10 @@ tasks:
     continueonerrortype: ""
   '71':
     id: '71'
-    taskid: 252e5f23-9b93-4179-8c69-103b23f11bbc
+    taskid: 84a13b67-d55d-4914-8a6f-b9a9e72d4413
     type: regular
     task:
-      id: 252e5f23-9b93-4179-8c69-103b23f11bbc
+      id: 84a13b67-d55d-4914-8a6f-b9a9e72d4413
       version: -1
       name: Flip verdict request to keep WF updated
       description: Reports to WildFire about incorrect hash verdict through Cortex.
@@ -1662,7 +1663,7 @@ tasks:
       {
         "position": {
           "x": 1760,
-          "y": 3240
+          "y": 3125
         }
       }
     note: false
@@ -1675,10 +1676,10 @@ tasks:
     continueonerrortype: ""
   "75":
     id: "75"
-    taskid: 16d66dde-d441-4612-8e15-f3e4838624c4
+    taskid: 47c79710-4df0-4d52-837e-4fc58b95636f
     type: condition
     task:
-      id: 16d66dde-d441-4612-8e15-f3e4838624c4
+      id: 47c79710-4df0-4d52-837e-4fc58b95636f
       version: -1
       name: Is manual review required?
       description: Checks whether the playbook should wait for manual review.
@@ -1721,10 +1722,10 @@ tasks:
     continueonerrortype: ""
   "76":
     id: "76"
-    taskid: 2f158f72-bc3f-4136-8861-eb07a692ce06
+    taskid: 519e9500-0352-4b16-899f-7822a05b9c4c
     type: title
     task:
-      id: 2f158f72-bc3f-4136-8861-eb07a692ce06
+      id: 519e9500-0352-4b16-899f-7822a05b9c4c
       version: -1
       name: Flip WildFire Verdict
       type: title
@@ -1752,10 +1753,10 @@ tasks:
     continueonerrortype: ""
   "77":
     id: "77"
-    taskid: 825db812-8d09-472e-8829-f2808842eb05
+    taskid: 98931c73-8f35-4fab-8d68-47dc2fba0252
     type: regular
     task:
-      id: 825db812-8d09-472e-8829-f2808842eb05
+      id: 98931c73-8f35-4fab-8d68-47dc2fba0252
       version: -1
       name: Check for existing WF report
       description: Retrieves results for a file hash using WildFire.
@@ -1788,10 +1789,10 @@ tasks:
     continueonerrortype: ""
   "78":
     id: "78"
-    taskid: 922f67bb-ea36-4ade-8dfb-89e824d86b5e
+    taskid: 28c41740-e669-414a-848e-4c35394de191
     type: condition
     task:
-      id: 922f67bb-ea36-4ade-8dfb-89e824d86b5e
+      id: 28c41740-e669-414a-848e-4c35394de191
       version: -1
       name: Should detonate file?
       description: "Do we have a WildFire report or should we detonate the file?"
@@ -1843,10 +1844,10 @@ tasks:
     continueonerrortype: ""
   "79":
     id: "79"
-    taskid: c07b312c-3605-4fc3-84e4-5f0de4dec751
+    taskid: ffff8739-460a-4b5c-80ce-f4d4246be289
     type: title
     task:
-      id: c07b312c-3605-4fc3-84e4-5f0de4dec751
+      id: ffff8739-460a-4b5c-80ce-f4d4246be289
       version: -1
       name: Continue by Verdict
       type: title
@@ -1871,12 +1872,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "80":
     id: "80"
-    taskid: 8ac754b3-8eb9-4480-8804-df4cf57620fa
+    taskid: cf4804c6-9de6-4f8e-8adc-e2ff0ad2e35c
     type: condition
     task:
-      id: 8ac754b3-8eb9-4480-8804-df4cf57620fa
+      id: cf4804c6-9de6-4f8e-8adc-e2ff0ad2e35c
       version: -1
       name: Verdict by DbotScore
       description: "Check if DbotScore equals 3 (Malicious)"
@@ -1920,10 +1922,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 59958d6b-33b1-4e97-82d4-4c46bc7301ad
+    taskid: aee235af-9407-46c4-87da-a25cb4e6e594
     type: regular
     task:
-      id: 59958d6b-33b1-4e97-82d4-4c46bc7301ad
+      id: aee235af-9407-46c4-87da-a25cb4e6e594
       version: -1
       name: Set Incident Severity to High
       description: commands.local.cmd.set.parent.incident.field
@@ -1955,10 +1957,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 827b7119-1b9f-4d4b-89d4-2e6b4c61f6da
+    taskid: 909f73e8-c2df-4a16-837f-7c47788daec7
     type: condition
     task:
-      id: 827b7119-1b9f-4d4b-89d4-2e6b4c61f6da
+      id: 909f73e8-c2df-4a16-837f-7c47788daec7
       version: -1
       name: Should open a ticket automatically in a ticketing system?
       description: Checks whether to open a ticket automatically in a ticketing system.
@@ -2001,10 +2003,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: dc6ec815-5f93-49bb-89af-1ca132ce5acb
+    taskid: 8717188a-895e-4c98-857e-3395dab6492f
     type: playbook
     task:
-      id: dc6ec815-5f93-49bb-89af-1ca132ce5acb
+      id: 8717188a-895e-4c98-857e-3395dab6492f
       version: -1
       name: Ticket Management - Generic
       description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`\n"
@@ -2093,10 +2095,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: d5e7fd85-67c3-44c5-8f35-f08f3727a564
+    taskid: 7b9fb96d-d06a-44ad-8e7e-73edd9e1b818
     type: title
     task:
-      id: d5e7fd85-67c3-44c5-8f35-f08f3727a564
+      id: 7b9fb96d-d06a-44ad-8e7e-73edd9e1b818
       version: -1
       name: Benign
       type: title
@@ -2124,10 +2126,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: 4457cf9c-89af-450f-8fe6-c211a98c3eca
+    taskid: 8f617900-f04c-4655-81f7-c2e756f78117
     type: title
     task:
-      id: 4457cf9c-89af-450f-8fe6-c211a98c3eca
+      id: 8f617900-f04c-4655-81f7-c2e756f78117
       version: -1
       name: Greyware
       type: title
@@ -2153,7 +2155,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -2178,9 +2179,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6155,
-        "width": 1710,
-        "x": 430,
+        "height": 6015,
+        "width": 2100,
+        "x": 40,
         "y": -1800
       }
     }
@@ -2305,10 +2306,8 @@ inputs:
             value:
               simple: ${alert= '(filesha256:"' + val.filesha256 + '" or agentid:"' + val.agentid + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
   required: false
-  description: The query for searching previous alerts based on the file we want to
-    respond to. Decided by the If-Then-Else expression wether it's the initiator or
-    the target file.
-  playbookInputQuery: null
+  description: The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file.
+  playbookInputQuery:
 - key: ShouldOpenTicket
   value:
     simple: "False"
