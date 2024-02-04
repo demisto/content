@@ -188,7 +188,7 @@ class Client:
         headers = []
         if results:
             # if the table isn't empty
-            if self.dialect == "Teradata":
+            if self.dialect == TERADATA:
                 headers = list(result.keys())
             else:
                 headers = list(results[0].keys() or '')
@@ -197,17 +197,15 @@ class Client:
 
 def generate_default_port_by_dialect(dialect: str) -> str | None:
     """
-    In case no port was chosen, a default port will be chosen according to the SQL db type. Returns a port for
-    Microsoft SQL Server and ODBC Driver 18 for SQL Server where it seems to be required.
-    Returns a default port for Teradata too.
-    For the other drivers a None port is supported.
+    In case no port was chosen, a default port will be chosen according to the SQL db type.
+    Returns a port for drivers that seem to require it. For other drivers, a None port is supported.
     :param dialect: sql db type
     :return: default port needed for connection
     """
     return {
         "Microsoft SQL Server": "1433",
         "ODBC Driver 18 for SQL Server": "1433",
-        "Teradata": "1025",
+        TERADATA: "1025",
     }.get(dialect)
 
 
@@ -339,7 +337,7 @@ def pre_process_result_query(client: Client, result: list[dict], headers: list[s
     """
     This function pre-processes the query's result to a list of dictionaries.
     """
-    if client.dialect == "Teradata":
+    if client.dialect == TERADATA:
         # binding the headers with the columns
         converted_table = [dict(zip(headers, row)) for row in result]
     else:

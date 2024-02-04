@@ -240,10 +240,10 @@ def test_sql_queries(command, args, response, expected_result, header, mocker):
 
 
 @pytest.mark.parametrize('is_ldap, expected_url', [
-    (True, "teradatasql://username:password@host:/?logmech=LDAP"),
-    (False, "teradatasql://host:/?user=username&password=password"),
+    pytest.param(True, "teradatasql://username:password@host:/?logmech=LDAP", id="LDAP"),
+    pytest.param(False, "teradatasql://host:/?user=username&password=password", id="Username & Password"),
 ])
-def test_teradata_connection(mocker, is_ldap, expected_url):
+def test_teradata_connection(mocker, is_ldap: bool, expected_url: str):
     """
     Given
     - All required arguments for the client
@@ -276,8 +276,7 @@ def test_generate_default_port_by_dialect(dialect: str, expected_port: str):
     - Ensure the right port is generated or None in case of DB not found
     """
 
-    port = generate_default_port_by_dialect(dialect)
-    assert expected_port == port
+    assert generate_default_port_by_dialect(dialect) == expected_port
 
 
 def test_sql_queries_with_empty_table(mocker):
@@ -313,7 +312,9 @@ def test_mysql_integration():
     if not host:
         pytest.skip('Skipping mysql integration test as MYSQL_HOST is not set')
     dialect = 'MySQL'
-    client = Client(dialect, host, 'root', 'password', generate_default_port_by_dialect(dialect), 'mysql', "", False, True)
+    port = generate_default_port_by_dialect(dialect)
+    assert port is not None
+    client = Client(dialect, host, 'root', 'password', port, 'mysql', "", False, True)
     res = client.sql_query_execute_request('show processlist', {})
     assert len(res) >= 1
 
