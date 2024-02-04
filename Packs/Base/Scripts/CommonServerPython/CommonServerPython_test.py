@@ -9243,3 +9243,49 @@ def test_detect_file_indicator_type(indicator, expected_result):
     """
     from CommonServerPython import detect_file_indicator_type
     assert detect_file_indicator_type(indicator) == expected_result
+
+
+@pytest.mark.parametrize('link, text, expected_url', [
+    ('https://example.com', 'click here', '[click here](https://example.com)'),
+    ('https://example.com', None, '[https://example.com](https://example.com)'),
+    (['https://example1.com', 'https://example2.com'], ['click here1', 'click here2'],
+     ['[click here1](https://example1.com)', '[click here2](https://example2.com)']),
+    (['https://example1.com', 'https://example2.com'], None,
+     ['[https://example1.com](https://example1.com)', '[https://example2.com](https://example2.com)']),
+])
+def test_create_clickable_url(link, text, expected_url):
+    """
+    Given:
+        A URL
+            Case 1: one link and one text.
+            Case 2: one link.
+            Case 3: a list of links and texts (with teh same length).
+            Case 4: a list of links.
+    When:
+        Running create_clickable_url function.
+    Then:
+        Assert the function returns the expected result.
+            Case 1: A URL with different text than the link.
+            Case 2: A URL with the same text as the link.
+            Case 3: A list of URLs with different texts than the links.
+            Case 4: A list URLs with the same texts as the links.
+    """
+    from CommonServerPython import create_clickable_url
+    assert create_clickable_url(link, text) == expected_url
+
+
+def test_create_clickable_test_wrong_text_value():
+    """
+    Given:
+        A list of links and texts (not in teh same length).
+    When:
+        Running create_clickable_url function.
+    Then:
+        Assert the function returns the expected error.
+    """
+    from CommonServerPython import create_clickable_url
+    with pytest.raises(AssertionError) as e:
+        assert create_clickable_url(['https://example1.com', 'https://example2.com'], ['click here1'])
+
+    assert e.type == AssertionError
+    assert 'The URL list and the text list must be the same length.' in e.value.args
