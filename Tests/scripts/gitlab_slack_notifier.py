@@ -586,8 +586,8 @@ def main():
                     pipeline_changed_status = is_pivot(current_pipeline=current_pipeline, pipeline_to_compare=previous_pipeline)
 
                     logging.info(
-                        f"Checking pipeline id: {current_pipeline.id}, of commit: {current_commit.title}, "     # type: ignore[attr-defined]        
-                        f"after comparing with pipeline id: {previous_pipeline.id},"    # type: ignore[attr-defined]
+                        f"Checking pipeline id: {current_pipeline.id}, of commit: {current_commit.title}, "  # type: ignore
+                        f"after comparing with pipeline id: {previous_pipeline.id},"    # type: ignore
                         f"the change status is: {pipeline_changed_status}")
 
                     if pipeline_changed_status is None and current_commit_index > 0:
@@ -603,7 +603,7 @@ def main():
                                 f"the change status is: {pipeline_changed_status}")
 
                     if pipeline_changed_status is not None:
-                        shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,       # type: ignore[attr-defined]
+                        shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,   #type: ignore
                                                              options.name_mapping_path)
                         computed_slack_channel = "test_slack_notifier_when_master_is_broken"
 
