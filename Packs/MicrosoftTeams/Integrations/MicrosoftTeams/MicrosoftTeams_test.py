@@ -464,9 +464,9 @@ def test_send_message_raising_errors(mocker, args, result):
     assert str(e.value) == result
 
 
-@pytest.mark.parametrize('message, result', [('MESSAGE', 'Message was sent successfully.'),
-                                             ('891f1e9d-b8c3-4e24-bfbb-c44bcca4d586', 'Message was sent successfully.')])
-def test_send_message_with_user(mocker, requests_mock, message, result):
+@pytest.mark.parametrize('message', ['MESSAGE', '891f1e9d-b8c3-4e24-bfbb-c44bcca4d586',
+                                     'testing 891f1e9d-b8c3-4e24-bfbb-c44bcca4d586 testing'])
+def test_send_message_with_user(mocker, requests_mock, message):
     """
     Given:
         - a message as a basic string and a  message that contains GUID.
@@ -516,7 +516,7 @@ def test_send_message_with_user(mocker, requests_mock, message, result):
     assert requests_mock.request_history[0].json() == expected_create_personal_conversation_data
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == result
+    assert results[0] == 'Message was sent successfully.'
 
 
 def test_send_message_with_channel(mocker, requests_mock):

@@ -505,7 +505,7 @@ def process_mirror_or_unknown_message(message: str) -> dict:
 def is_json(msg: str) -> bool:
     try:
         json.loads(msg)
-    except ValueError:
+    except json.decoder.JSONDecodeError:
         return False
     return True
 
