@@ -267,7 +267,7 @@ def get_mutual_indicators(
         ind for ind in related_indicators if ind[INDICATOR_ID_FIELD] in indicators_of_actual_incident
     ]
     mutual_indicators_ids = [ind[INDICATOR_ID_FIELD] for ind in mutual_indicators]
-    demisto.debug(f"Found {len(mutual_indicators_ids)} mutual indicators: {mutual_indicators}")
+    demisto.debug(f"Found {len(mutual_indicators_ids)} mutual indicators: {mutual_indicators_ids}")
     return mutual_indicators
 
 
