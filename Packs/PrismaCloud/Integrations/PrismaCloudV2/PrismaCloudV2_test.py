@@ -1525,6 +1525,15 @@ def test_update_remote_system_command(mocker, prisma_cloud_v2_mirroring_client, 
 
 
 def test_remove_additional_resource_fields(prisma_cloud_v2_client):
+    """
+        Given
+            - Results of config_search_command.
+        When
+            - Running the config_search_command.
+        Then
+            - Verify that remove_additional_resource_fields removes only the required fields.
+    """
+    from PrismaCloudV2 import remove_additional_resource_fields
     input = {
         'a': 'a_val',
         'b': {
@@ -1539,5 +1548,5 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
             'e': 'e_val'
         }
     }
-    output = prisma_cloud_v2_client.remove_additional_resource_fields(input_dict=input, keys=['c', 'd'])
+    output = remove_additional_resource_fields(input_dict=input, keys=['c', 'd'])
     assert output == expected
