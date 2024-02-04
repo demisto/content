@@ -250,7 +250,9 @@ def test_config_search_command(mocker, prisma_cloud_v2_client):
     http_request.assert_called_with('POST', 'search/config',
                                     json_data={'limit': 1, 'query': "config from cloud.resource where cloud.region = 'AWS Ohio' ",
                                                'sort': [{'direction': 'desc', 'field': 'insertTs'}],
-                                               'timeRange': {'type': 'to_now', 'value': 'epoch'}})
+                                               'timeRange': {'type': 'to_now', 'value': 'epoch'},
+                                               'withResourceJson': 'true',
+                                               })
 
 
 def test_event_search_command(mocker, prisma_cloud_v2_client):
@@ -1520,3 +1522,35 @@ def test_update_remote_system_command(mocker, prisma_cloud_v2_mirroring_client, 
 
     assert mock_update_remote_alert.call_count == expected_call_count
     assert result == 'P-1111111'
+
+
+def test_remove_additional_resource_fields(prisma_cloud_v2_client):
+    """
+        Given
+            - Results of config_search_command.
+        When
+            - Running the config_search_command.
+        Then
+            - Verify that remove_additional_resource_fields removes only the required fields.
+    """
+    from PrismaCloudV2 import remove_additional_resource_fields
+    input = {
+        'a': 'a_val',
+        'b': {
+            'c': 'c_val',
+            'd': 'd_val',
+            'e': 'e_val'
+        },
+        'items': {'data': {'metadata': {'items': {'configure-sh': 'c_val', 'not-removed': 'n_val'}},
+                           'disks': {'shieldedInstanceInitialState': 's_val'}}}
+    }
+    expected = {
+        'a': 'a_val',
+        'b': {
+            'e': 'e_val'
+        },
+        'items': {'data': {'metadata': {'items': {'not-removed': 'n_val'}},
+                           'disks': {'shieldedInstanceInitialState': 's_val'}}}
+    }
+    output = remove_additional_resource_fields(input_dict=input, keys=['c', 'd', 'configure-sh'])
+    assert output == expected
