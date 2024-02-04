@@ -398,7 +398,7 @@ def create_shame_message(suspicious_commits: list[ProjectCommit],
     hi_and_status = person_in_charge = in_this_pr = color = ""
     for suspicious_commit in suspicious_commits:
         name, pr, beginning_of_pr = get_person_in_charge(suspicious_commit)
-        if name and pr:
+        if name and pr and beginning_of_pr:
             if name == CONTENT_BOT:
                 name = get_reviewer(pr)
             name = get_slack_user_name(name, name_mapping_path)

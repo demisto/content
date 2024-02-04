@@ -582,26 +582,27 @@ def main():
                 # looking backwards until we find a commit with a pipeline to compare with
                 previous_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(
                     list_of_pipelines, list_of_commits, current_commit_index, direction="older")
-                pipeline_changed_status = is_pivot(current_pipeline=current_pipeline, pipeline_to_compare=previous_pipeline)
+                if previous_pipeline and suspicious_commits:
+                    pipeline_changed_status = is_pivot(current_pipeline=current_pipeline, pipeline_to_compare=previous_pipeline)
 
-                logging.info(
-                    f"Checking pipeline id: {current_pipeline.id}, of commit: {current_commit.title}, "
-                    f"after comparing with pipeline id: {previous_pipeline.id}, the change status is: {pipeline_changed_status}")
+                    logging.info(
+                        f"Checking pipeline id: {current_pipeline.id}, of commit: {current_commit.title}, "         # type: ignore[attr-defined]
+                        f"after comparing with pipeline id: {previous_pipeline.id}, the change status is: {pipeline_changed_status}")
 
-                if pipeline_changed_status is None and current_commit_index > 0:
-                    # looking_forward until we find a commit with a pipeline to compare with
-                    next_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(
-                        list_of_pipelines, list_of_commits, current_commit_index, direction="newer")
+                    if pipeline_changed_status is None and current_commit_index > 0:
+                        # looking_forward until we find a commit with a pipeline to compare with
+                        next_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(
+                            list_of_pipelines, list_of_commits, current_commit_index, direction="newer")
 
-                    if next_pipeline:
-                        pipeline_changed_status = is_pivot(current_pipeline=next_pipeline, pipeline_to_compare=current_pipeline)
-                        logging.info(
-                            f" after comparing with pipeline id: {next_pipeline.id},"
-                            f"the change status is: {pipeline_changed_status}")
+                        if next_pipeline and suspicious_commits:
+                            pipeline_changed_status = is_pivot(current_pipeline=next_pipeline, pipeline_to_compare=current_pipeline)
+                            logging.info(
+                                f" after comparing with pipeline id: {next_pipeline.id},"
+                                f"the change status is: {pipeline_changed_status}")
 
-                if pipeline_changed_status is not None:
-                    shame_message = create_shame_message(suspicious_commits, pipeline_changed_status, options.name_mapping_path)
-                    computed_slack_channel = "test_slack_notifier_when_master_is_broken"
+                    if pipeline_changed_status is not None:
+                        shame_message = create_shame_message(suspicious_commits, pipeline_changed_status, options.name_mapping_path)
+                        computed_slack_channel = "test_slack_notifier_when_master_is_broken"
 
     slack_msg_data, threaded_messages = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request,
                                                             shame_message)
