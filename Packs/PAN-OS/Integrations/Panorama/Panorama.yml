@@ -9301,6 +9301,38 @@ script:
       description: The tag's device group location.
       type: String
   - arguments:
+    - description: The rule name to apply.
+      name: rule_name
+      required: true
+    - auto: PREDEFINED
+      description: The rule type..
+      name: rule_type
+      required: true
+      predefined:
+      - Security Rule
+      - NAT Rule
+      - PBF Rule
+    - auto: PREDEFINED
+      description: The pre-rule or post-rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - Pre
+      - Post
+    - description: The device group that the tags are part of.
+      name: device-group
+    description: Returns a list of tags from Panorama.
+    name: pan-os-get-audit-comment
+    outputs:
+    - contextPath: Panorama.AuditComment.comment
+      description: The audit comment ot the rule.
+      type: String
+    - contextPath: Panorama.AuditComment.rule_name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.AuditComment.rule_type
+      description: The rule type.
+      type: String
+  - arguments:
     - description: The name for the new tag to be created.
       name: name
       required: true

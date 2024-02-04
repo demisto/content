@@ -212,6 +212,12 @@ CHARACTERISTICS_LIST = ('virus-ident',
                         'file-forward',
                         'is-saas')
 
+RULE_TYPES_MAP = {
+    "Security Rule": "security",
+    "NAT Rule": "nat",
+    "PBF Rule": "pbf"
+}
+
 
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
@@ -4003,7 +4009,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
 
 
 def build_audit_comment_params(
-    name: str, audit_comment: str, pre_post: str, policy_type='security'
+    name: str, pre_post: str, audit_comment: str = '', policy_type='security', xml_type='set'
 ) -> dict:
     """
     Builds up the params needed to update the audit comment of a policy rule.
@@ -4011,9 +4017,20 @@ def build_audit_comment_params(
     _xpath = f"{XPATH_RULEBASE}{pre_post}/{policy_type}/rules/entry[@name='{name}']"
     return {
         'type': 'op',
-        'cmd': f"<set><audit-comment><xpath>{_xpath}</xpath><comment>{audit_comment}</comment></audit-comment></set>",
+        'cmd': build_audit_comment_cmd(_xpath, audit_comment, xml_type),
         'key': API_KEY
     }
+
+
+def build_audit_comment_cmd(xpath, audit_comment, xml_type='set') -> str:
+    """
+    Builds up the needed `cmd` param to get or update the audit comment of a policy rule.
+    """
+    if xml_type == 'set':
+        return f"<set><audit-comment><xpath>{xpath}</xpath><comment>{audit_comment}</comment></audit-comment></set>"
+    elif xml_type == 'show':
+        return f"<show><config><list><audit-comments><xpath>{xpath}</xpath></audit-comments></list></config></show>"
+    return ""
 
 
 @logger
@@ -4044,7 +4061,7 @@ def panorama_edit_rule_command(args: dict):
             new_audit_comment = args.get('element_value') or ''
             # to update audit-comment of a security rule, it is required to build a 'cmd' parameter
             params = build_audit_comment_params(
-                rulename, new_audit_comment, pre_post='rulebase' if VSYS else pre_post
+                rulename, pre_post='rulebase' if VSYS else pre_post, audit_comment=new_audit_comment
             )
         else:
             params = {
@@ -13648,6 +13665,49 @@ def pan_os_delete_tag_command(args: dict) -> CommandResults:
     )
 
 
+def pan_os_get_audit_comment_command(args: dict) -> CommandResults:
+    """
+    executes the command pan-os-get-audit-comment to get the audit comment for a given policy rule.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The command results with raw response, outputs and readable outputs.
+    """
+    if DEVICE_GROUP and not PRE_POST:
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    rule_name = args.get("rule_name") or ""
+    rule_type = args.get("rule_type") or ""
+    params = build_audit_comment_params(
+        name=rule_name,
+        pre_post='rulebase' if VSYS else f'{PRE_POST.lower()}-rulebase',
+        policy_type=RULE_TYPES_MAP[rule_type],
+        xml_type='show',
+    )
+
+    raw_response = http_request(URL, 'GET', params=params)
+    comment = (raw_response["response"]["result"] or {}).get("entry", {}).get("comment", "") or ""
+    outputs = {
+        "rule_name": rule_name,
+        "rule_type": rule_type,
+        "comment": comment
+    }
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            f'Audit Comment for Rule: {rule_name}',
+            outputs,
+            headerTransform=string_to_table_header,
+        ),
+        outputs_prefix='Panorama.AuditComment',
+        outputs_key_field='rule_name'
+    )
+
+
 """ Fetch Incidents """
 
 
@@ -14793,6 +14853,8 @@ def main():  # pragma: no cover
             return_results(list_device_groups_names())
         elif command == 'pan-os-export-tech-support-file':
             return_results(export_tsf_command(args))
+        elif command == 'pan-os-get-audit-comment':
+            return_results(pan_os_get_audit_comment_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
