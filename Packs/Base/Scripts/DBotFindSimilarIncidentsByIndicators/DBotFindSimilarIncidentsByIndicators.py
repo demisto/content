@@ -9,12 +9,16 @@ from collections import Counter
 import re
 import math
 
+SEARCH_INDICATORS_LIMIT = 10000
+SEARCH_INDICATORS_PAGE_SIZE = 500
+
 ROUND_SCORING = 2
 PLAYGROUND_PATTERN = "[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}"
 
 # Mutual indicators fields/columns
 INDICATOR_ID_FIELD = "id"
 VALUE_FIELD = "value"
+VALUE_FIELD_FOR_COMPATIBILITY = "name"  # value field can't be used in demisto.searchIndicators on v6.9.0
 SCORE_FIELD = "score"
 INVESTIGATION_IDS_FIELD = "investigationIDs"
 INDICATOR_TYPE_FIELD = "indicator_type"
@@ -24,7 +28,7 @@ REPUTATION_COLUMN = "Reputation"
 INVOLVED_INCIDENTS_COUNT_COLUMN = "involvedIncidentsCount"
 
 INDICATOR_FIELDS_TO_POPULATE_FROM_QUERY = [
-    INDICATOR_ID_FIELD, INDICATOR_TYPE_FIELD, INVESTIGATION_IDS_FIELD, SCORE_FIELD, VALUE_FIELD
+    INDICATOR_ID_FIELD, INDICATOR_TYPE_FIELD, INVESTIGATION_IDS_FIELD, SCORE_FIELD, VALUE_FIELD_FOR_COMPATIBILITY
 ]
 MUTUAL_INDICATORS_HEADERS = [
     INDICATOR_LINK_COLUMN, VALUE_FIELD, TYPE_COLUMN, REPUTATION_COLUMN, INVOLVED_INCIDENTS_COUNT_COLUMN
@@ -161,6 +165,22 @@ class Model:
         )
 
 
+def search_indicators(
+    query: str,
+    fields_to_populate: list | None = None,
+    limit: int = SEARCH_INDICATORS_LIMIT,
+    page_size: int = SEARCH_INDICATORS_PAGE_SIZE,
+) -> list:
+    demisto.debug(f"Searching indicators with {query=}")
+    search_indicators = IndicatorsSearcher(
+        query=query,
+        limit=limit,
+        size=page_size,
+        filter_fields=",".join(fields_to_populate) if fields_to_populate else None
+    )
+    return flatten_list([ioc_res.get('iocs') or [] for ioc_res in search_indicators])
+
+
 def get_indicators_of_actual_incident(
     incident_id: str,
     indicator_types: list[str],
@@ -175,9 +195,7 @@ def get_indicators_of_actual_incident(
     :param max_incidents_per_indicator: Max incidents in indicators for white list
     :return: a map from indicator ids of the actual incident to their data
     """
-    args = {"query": f"investigationIDs:{incident_id}"}
-    demisto.debug(f"Executing findIndicators with {args=}")
-    indicators = execute_command("findIndicators", args, fail_on_error=True)
+    indicators = search_indicators(query=f"investigationIDs:({incident_id})")
     if not indicators:
         return {}
     indicators = [i for i in indicators if len(i.get("investigationIDs") or []) <= max_incidents_per_indicator]
@@ -231,13 +249,10 @@ def get_indicators_of_related_incidents(
     if not incident_ids:
         demisto.debug("No mutual indicators were found.")
         return []
-
-    args = {
-        "query": f"investigationIDs:({' '.join(incident_ids)})",
-        "populateFields": ",".join(INDICATOR_FIELDS_TO_POPULATE_FROM_QUERY),
-    }
-    demisto.debug(f"Executing GetIndicatorsByQuery with {args=}")
-    indicators = execute_command("GetIndicatorsByQuery", args, fail_on_error=True)
+    indicators = search_indicators(
+        query=f"investigationIDs:({' '.join(incident_ids)})",
+        fields_to_populate=INDICATOR_FIELDS_TO_POPULATE_FROM_QUERY,
+    )
     indicators = [i for i in indicators if len(i.get("investigationIDs") or []) <= max_incidents_per_indicator]
     indicators_ids = [ind[INDICATOR_ID_FIELD] for ind in indicators]
     demisto.debug(f"Found {len(indicators_ids)} related indicators: {indicators_ids}")
@@ -274,6 +289,7 @@ def get_mutual_indicators_df(
         )
         indicators_df[REPUTATION_COLUMN] = indicators_df[SCORE_FIELD].apply(scoreToReputation)  # pylint: disable=E1137
         indicators_df = indicators_df.rename({INDICATOR_TYPE_FIELD: TYPE_COLUMN}, axis=1)
+        indicators_df = indicators_df.rename({VALUE_FIELD_FOR_COMPATIBILITY: VALUE_FIELD}, axis=1)
     return indicators_df
 
 
@@ -372,7 +388,7 @@ def replace_indicator_ids_with_values(
     indicators_data: dict[str, dict],
 ) -> str:
     return "\n".join([
-        indicators_data.get(x, {}).get(VALUE_FIELD) or " "
+        indicators_data.get(x, {}).get(VALUE_FIELD_FOR_COMPATIBILITY) or " "
         for x in inc_ids.split(" ")
     ])
 
