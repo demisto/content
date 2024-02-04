@@ -26,6 +26,12 @@ configuration:
   type: 9
   section: Connect
   required: false
+- additionalinfo: "Set the endpoint of your listener. example: /snsv2"
+  display: Endpoint
+  name: endpoint
+  type: 0
+  section: Connect
+  required: false
 - display: Certificate (Required for HTTPS)
   additionalinfo: "(For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported."
   name: certificate
