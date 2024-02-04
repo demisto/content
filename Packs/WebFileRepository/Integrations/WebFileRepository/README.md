@@ -247,6 +247,35 @@ Download a file from the repository
 
 There is no context output for this command.
 
+### wfr-download-as-text
+
+***
+Retrieve the file data from the repository into the context.
+
+
+#### Base Command
+
+`wfr-download-as-text`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| path | The file path. | Required | 
+| encoding | Encoding type to convert the file data when setting to the context. Default is utf-8. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WebFileRepository.Files.Name | string | The file name | 
+| WebFileRepository.Files.Path | string | The file path | 
+| WebFileRepository.Files.Size | number | The file size in bytes | 
+| WebFileRepository.Files.Data | string | The file data encoded in the encoding | 
+| WebFileRepository.Files.Encoding | string | The encoding name | 
+
+
 ### wfr-archive-zip
 
 ***
