@@ -89,11 +89,9 @@ class Client(BaseClient):
         Returns:
             (ErrorTypes): The error type determined.
         """
-        if res.status_code == 429 or 'Insufficient quota' in res.text:
+        if 'Insufficient quota' in res.text:
             return ErrorTypes.QUOTA_ERROR
-        elif res.status_code == 401:
-            return ErrorTypes.AUTH_ERROR
-        return ErrorTypes.GENERAL_ERROR
+        return super().determine_error_type(res)
 
 
 def parse_domain_date(domain_date: list[str] | str, date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> str | None:

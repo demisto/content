@@ -9114,7 +9114,7 @@ if 'requests' in sys.modules:
 
         def determine_error_type(self, response):
             """ Determines the type of error based on response status code and content.
-            Note: this method should be overriden by subclass when implementing execution metrics.
+            Note: this method can be overriden by subclass when implementing execution metrics.
 
             :type response: ``requests.Response``
             :param response: Response from API after the request for which to check error type
@@ -9122,6 +9122,10 @@ if 'requests' in sys.modules:
             :return: The error type if found, otherwise None
             :rtype: ``ErrorTypes``
             """
+            if response.status_code == 429:
+                return ErrorTypes.QUOTA_ERROR
+            elif response.status_code == 401:
+                return ErrorTypes.AUTH_ERROR
             return ErrorTypes.GENERAL_ERROR
 
         def is_polling_in_progress(self, response):
