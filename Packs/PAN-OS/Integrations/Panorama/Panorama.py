@@ -1546,6 +1546,8 @@ def prettify_addresses_arr(addresses_arr: list) -> List:
             pretty_address['IP_Netmask'] = address['ip-netmask']
         if 'ip-range' in address:
             pretty_address['IP_Range'] = address['ip-range']
+        if 'ip-wildcard' in address:
+            pretty_address['IP_Wildcard'] = address['ip-wildcard']
         if 'fqdn' in address:
             pretty_address['FQDN'] = address['fqdn']
         if 'tag' in address and address['tag'] is not None and 'member' in address['tag']:
@@ -1592,7 +1594,8 @@ def panorama_list_addresses_command(args: dict):
         'Contents': addresses_arr,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Addresses:', addresses_output,
-                                         ['Name', 'IP_Netmask', 'IP_Range', 'FQDN', 'Tags'], removeNull=True),
+                                         ['Name', 'IP_Netmask', 'IP_Range', 'IP_Wildcard', 'FQDN', 'Tags'],
+                                         removeNull=True),
         'EntryContext': {
             "Panorama.Addresses(val.Name == obj.Name)": addresses_output
         }
@@ -3869,6 +3872,10 @@ def panorama_create_rule_command(args: dict):
                                           log_forwarding=log_forwarding, tags=tags, category=categories,
                                           from_=source_zone, to=destination_zone, profile_setting=profile_setting,
                                           where=where, dst=dst)
+
+    if args.get('audit_comment'):
+        params['audit-comment'] = args.get('audit_comment')
+
     result = http_request(
         URL,
         'POST',
@@ -12332,6 +12339,9 @@ def create_nat_rule(args):
         'key': API_KEY
     }
 
+    if args.get('audit_comment'):
+        params['audit-comment'] = args.get('audit_comment')
+
     return http_request(URL, 'POST', params=params)
 
 
@@ -12375,22 +12385,28 @@ def pan_os_edit_nat_rule(
 ):
     xpath = build_nat_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post, element=element_to_change)
 
-    params = {
-        'xpath': xpath,
-        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-            behavior=behavior,
-            object_name=object_name,
-            element_value=element_value,
-            is_listable=is_listable,
-            xpath=xpath,
-            should_contain_entries=True,
-            is_commit_required=False
+    if element_to_change == 'audit-comment':
+        # to update audit-comment of a nat rule, it is required to build a 'cmd' parameter
+        params = build_audit_comment_params(
+            rule_name, pre_post='rulebase' if VSYS else pre_post, audit_comment=element_value
         )
-        ),
-        'action': 'edit',
-        'type': 'config',
-        'key': API_KEY
-    }
+    else:
+        params = {
+            'xpath': xpath,
+            'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                should_contain_entries=True,
+                is_commit_required=False
+            )
+            ),
+            'action': 'edit',
+            'type': 'config',
+            'key': API_KEY
+        }
 
     return http_request(URL, 'POST', params=params)
 
@@ -13043,6 +13059,9 @@ def pan_os_create_pbf_rule(args):
         'key': API_KEY
     }
 
+    if args.get('audit_comment'):
+        params['audit-comment'] = args.get('audit_comment')
+
     return http_request(URL, 'POST', params=params)
 
 
@@ -13063,23 +13082,29 @@ def pan_os_edit_pbf_rule(
         name=rule_name, pre_post='rulebase' if VSYS else pre_post, element_to_change=element_to_change
     )
 
-    params = {
-        'xpath': xpath,
-        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-            behavior=behavior,
-            object_name=object_name,
-            element_value=element_value,
-            is_listable=is_listable,
-            xpath=xpath,
-            is_entry=True if object_name == 'nexthop-address-list' else False,
-            is_empty_tag=True if object_name == 'action' else False
-        ),
-            contains_xml_chars=True
-        ),
-        'action': 'edit',
-        'type': 'config',
-        'key': API_KEY
-    }
+    if element_to_change == 'audit-comment':
+        # to update audit-comment of a pbf rule, it is required to build a 'cmd' parameter
+        params = build_audit_comment_params(
+            rule_name, pre_post='rulebase' if VSYS else pre_post, audit_comment=element_value
+        )
+    else:
+        params = {
+            'xpath': xpath,
+            'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                is_entry=True if object_name == 'nexthop-address-list' else False,
+                is_empty_tag=True if object_name == 'action' else False
+            ),
+                contains_xml_chars=True
+            ),
+            'action': 'edit',
+            'type': 'config',
+            'key': API_KEY
+        }
 
     return http_request(URL, 'POST', params=params)
 
