@@ -540,7 +540,7 @@ script:
       name: next_link
     - description: "Number of results to return per page. Maximum page size is 1000.
 
-       Note:  This parameter is intended for pagination purposes and will surpass the specified limit"
+       Note:  This parameter is intended for pagination purposes and will surpass the specified limit."
       name: page_size
     description: List of managed devices.
     name: msgraph-list-managed-devices
