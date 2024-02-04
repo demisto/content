@@ -1500,7 +1500,7 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     if not include_additional_resource_fields:
         keys_to_remove = ['shieldedInstanceInitialState', "configure-sh"]
         demisto.debug(f'{include_additional_resource_fields=}, removing the fields {keys_to_remove}')
-        response = remove_additional_resource_fields(ret_value, keys_to_remove)
+        response = remove_additional_resource_fields(response, keys_to_remove)
 
     response_items = response.get('data', {}).get('items', [])
     for response_item in response_items:
