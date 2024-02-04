@@ -420,6 +420,7 @@ def get_incident_extra_data_command(client, args):
 
     incident = raw_incident.get('incident')
     incident_id = incident.get('incident_id')
+    demisto.debug(f"in get_incident_extra_data_command {incident_id=} {incident=}")
     raw_alerts = raw_incident.get('alerts').get('data')
     context_alerts = clear_trailing_whitespace(raw_alerts)
     for alert in context_alerts:
@@ -777,6 +778,7 @@ def update_remote_system_command(client, args):
     if remote_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
                       f'incident {remote_args.remote_incident_id}')
+        demisto.debug(f'{remote_args.delta=}')
     try:
         if remote_args.incident_changed:
             demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
