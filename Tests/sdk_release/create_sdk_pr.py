@@ -6,8 +6,8 @@ import sys
 import argparse
 import base64
 import json
-import os
 import urllib3
+from pathlib import Path
 from distutils.util import strtobool
 from datetime import datetime
 from create_release import get_changelog_text
@@ -118,15 +118,13 @@ def main():
     logging.success(f'The SDK Pull request created successfully! {pr_url}')
 
     # write the sdk pr number to file
-    sdk_pr_file = os.path.join(artifacts_folder, SDK_PR_NUMBER_FILE)
-    with open(sdk_pr_file, "w") as f:
-        f.write(str(pr_number))
+    sdk_pr_file = Path(artifacts_folder, SDK_PR_NUMBER_FILE)
+    sdk_pr_file.write_text(str(pr_number))
 
     # write the SLACK_PR_READY_FILE
     slack_message = SLACK_PR_READY_MESSAGE.format(sdk_pr=pr_url)
-    slack_message_file = os.path.join(artifacts_folder, SLACK_PR_READY_FILE)
-    with open(slack_message_file, "w") as f:
-        f.write(str(slack_message))
+    slack_message_file = Path(artifacts_folder, SLACK_PR_READY_FILE)
+    slack_message_file.write_text(slack_message)
 
     # request review from the owner
     data = {'reviewers': [release_owner]}

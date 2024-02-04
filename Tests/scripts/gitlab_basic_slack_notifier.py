@@ -17,9 +17,9 @@ SLACK_USERNAME = 'Content GitlabCI'
 
 SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
 CI_API_V4_URL = get_env_var('CI_API_V4_URL', 'https://gitlab.xdr.pan.local/api/v4')  # disable-secrets-detection
+INFRA_PROJECT_ID = get_env_var('INFRA_PROJECT_ID', '1701')
 
-
-NAME_MAPPING_URL = f'{CI_API_V4_URL}/projects/1701/repository/files/.gitlab%2Fci%2Fname_mapping.json/raw'
+NAME_MAPPING_URL = f'{CI_API_V4_URL}/projects/{INFRA_PROJECT_ID}/repository/files/.gitlab%2Fci%2Fname_mapping.json/raw'
 
 
 def options_handler() -> argparse.Namespace:

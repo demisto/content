@@ -1,10 +1,10 @@
 import requests
 import json
 import sys
-import os
 import argparse
 import urllib3
 import time
+from pathlib import Path
 from distutils.util import strtobool
 from create_release import get_changelog_text
 from Tests.scripts.utils.log_util import install_logging
@@ -129,23 +129,22 @@ def main():
     # write the changelog text to SLACK_CHANGELOG_FILE
     changelog_text = get_changelog_text(release_branch_name, text_format='slack')
     changelog_text = SLACK_RELEASE_MESSAGE.format(sdk_version=release_branch_name, changelog=changelog_text)
-    changelog_file = os.path.join(artifacts_folder, SLACK_CHANGELOG_FILE)
-    with open(changelog_file, "w") as f:
-        f.write(str(changelog_text))
+    changelog_file = Path(artifacts_folder, SLACK_CHANGELOG_FILE)
+    changelog_file.write_text(changelog_text)
 
     # write the content pr number to file
-    content_pr_file = os.path.join(artifacts_folder, CONTENT_PR_NUMBER_FILE)
-    with open(content_pr_file, "w") as f:
-        f.write(str(content_pr.get("number")))
+    content_pr_file = Path(artifacts_folder, CONTENT_PR_NUMBER_FILE)
+    content_pr_file.write_text(str(content_pr.get("number")))
 
     # write the SLACK_MERGE_PRS_FILE
     sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
     slack_message = SLACK_MERGE_PRS_MESSAGE.format(content_pr=content_pr.get("html_url"),
                                                    sdk_pr=sdk_pr.get("html_url"))
 
-    slack_merge_prs_file = os.path.join(artifacts_folder, SLACK_MERGE_PRS_FILE)
-    with open(slack_merge_prs_file, "w") as f:
-        f.write(str(slack_message))
+    slack_merge_prs_file = Path(artifacts_folder, SLACK_MERGE_PRS_FILE)
+    slack_merge_prs_file.write_text(slack_message)
+
+    logging.success(f'The files {SLACK_CHANGELOG_FILE}, {CONTENT_PR_NUMBER_FILE}, {SLACK_MERGE_PRS_FILE} created successfully')
 
 
 if __name__ == "__main__":
