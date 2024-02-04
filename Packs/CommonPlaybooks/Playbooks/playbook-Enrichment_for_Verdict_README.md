@@ -6,12 +6,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* URL Enrichment - Generic v2
 * Domain Enrichment - Generic v2
 * Get prevalence for IOCs
-* IP Enrichment - Generic v2
-* Account Enrichment - Generic v2.1
-* URL Enrichment - Generic v2
 * File Reputation
+* Account Enrichment - Generic v2.1
+* IP Enrichment - Generic v2
 
 ### Integrations
 
@@ -19,13 +19,12 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SearchIncidentsV2
 * Set
+* SearchIncidentsV2
 
 ### Commands
 
-* wildfire-get-verdict
-* wildfire-report
+This playbook does not use any commands.
 
 ## Playbook Inputs
 
