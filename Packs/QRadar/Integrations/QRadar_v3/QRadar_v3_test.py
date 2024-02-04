@@ -6,6 +6,9 @@ from datetime import datetime
 from collections.abc import Callable
 import copy
 
+import requests
+from requests.exceptions import ReadTimeout
+
 import QRadar_v3  # import module separately for mocker
 import pytest
 import pytz
@@ -111,6 +114,31 @@ def test_get_optional_time_parameter_valid_time_argument(arg, iso_format, epoch_
      - Case e: Ensure that correct FraudWatch format is returned.
     """
     assert (get_time_parameter(arg, iso_format=iso_format, epoch_format=epoch_format)) == expected
+
+
+def test_connection_errors_recovers(mocker):
+    """
+    Given:
+     - Connection Error, ReadTimeout error and a success response
+
+    When:
+     - running the http_request method
+
+    Then:
+     - Ensure that success message is printed and recovery for http request happens.
+    """
+    mocker.patch.object(demisto, "error")
+    mocker.patch("QRadar_v3.time.sleep")
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=[
+            DemistoException(message="error", exception=requests.ConnectionError("error")),
+            requests.ReadTimeout("error"),
+            "success"
+        ]
+    )
+    assert client.http_request(method="GET", url_suffix="url") == "success"
 
 
 @pytest.mark.parametrize('dict_key, inner_keys, expected',
@@ -357,7 +385,7 @@ def test_create_single_asset_for_offense_enrichment():
                            None,
                            ([], QueryStatus.ERROR.value))
                           ])
-def test_poll_offense_events_with_retry(requests_mock, status_exception, status_response, results_response, search_id,
+def test_poll_offense_events_with_retry(mocker, requests_mock, status_exception, status_response, results_response, search_id,
                                         expected):
     """
     Given:
@@ -372,6 +400,7 @@ def test_poll_offense_events_with_retry(requests_mock, status_exception, status_
      - Case a: Ensure that expected events are returned.
      - Case b: Ensure that None is returned.
     """
+    mocker.patch.object(demisto, "error")
     context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
     set_integration_context(context_data)
@@ -1586,3 +1615,33 @@ def test_reference_set_upsert_commands_new_api(mocker, api_version, status, func
     else:
         assert results.readable_output == 'Reference set test_ref is still being updated in task 1234'
         assert results.scheduled_command._args.get('task_id') == 1234
+
+
+def test_qradar_reference_set_value_upsert_command_continue_polling_with_connection_issues(mocker):
+    """
+    Given:
+        - get_reference_data_bulk_task_status that returns ReadTimeout exception, IN_PROGRESS and COMPLETED statuses
+
+    When:
+        - qradar_reference_set_value_upsert_command function
+
+    Then:
+        - Verify the command would keep polling when there are temporary connection issues.
+    """
+    mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
+    mocker.patch.object(client, "reference_set_entries", return_value={"id": 1234})
+    mocker.patch.object(client, "get_reference_data_bulk_task_status", side_effect=[
+                        ReadTimeout, {"status": "IN_PROGRESS"}, {"status": "COMPLETED"}])
+    args = {"ref_name": "test_ref", "value": "value1"}
+    api_version = {"api_version": "17.0"}
+    mocker.patch.object(client, "reference_sets_list", return_value=command_test_data["reference_set_bulk_load"]['response'])
+
+    result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
+    # make sure in ReadTimeout that no outputs are returned
+    assert not result.outputs
+    result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
+    # make sure when status is IN_PROGRESS no outputs are returned
+    assert not result.outputs
+    result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
+    # make sure when status is COMPLETED that outputs are returned
+    assert result.outputs

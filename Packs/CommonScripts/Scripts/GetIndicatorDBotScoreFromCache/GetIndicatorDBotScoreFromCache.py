@@ -7,34 +7,36 @@ def main():
     values: list[str] = argToList(demisto.args().get("value", None))
     unique_values: set[str] = {v.lower() for v in values}  # search query is case insensitive
 
+    query = f"""value:({' '.join([f'"{value}"' for value in unique_values])})"""
+    demisto.debug(f'{query=}')
+
     res = demisto.searchIndicators(
-        query=f'value:({" ".join(unique_values)})',
+        query=query,
         populateFields='name,score,aggregatedReliability,type,expirationStatus',
     )
 
     return_entries = []
+    iocs = res.get('iocs') or []
+    for data in iocs:
+        score = data["score"]
+        vendor = "XSOAR"
+        reliability = data.get("aggregatedReliability")
+        indicatorType = data["indicator_type"]
+        expirationStatus = data.get("expirationStatus") != "active"
+        value: str = data["value"]
 
-    if 'iocs' in res and len(res['iocs']) > 0:
-        for data in res['iocs']:
-            score = data["score"]
-            vendor = "XSOAR"
-            reliability = data.get("aggregatedReliability")
-            indicatorType = data["indicator_type"]
-            expirationStatus = data.get("expirationStatus") != "active"
-            value: str = data["value"]
+        dbotscore = {
+            "Indicator": value,
+            "Type": indicatorType,
+            "Vendor": vendor,
+            "Score": score,
+            "Reliability": reliability,
+            "Expired": expirationStatus
+        }
 
-            dbotscore = {
-                "Indicator": value,
-                "Type": indicatorType,
-                "Vendor": vendor,
-                "Score": score,
-                "Reliability": reliability,
-                "Expired": expirationStatus
-            }
-
-            return_entries.append(dbotscore)
-            with contextlib.suppress(KeyError):  # for multiple IOCs with same value but different casing
-                unique_values.remove(value.lower())
+        return_entries.append(dbotscore)
+        with contextlib.suppress(KeyError):  # for multiple IOCs with same value but different casing
+            unique_values.remove(value.lower())
 
     values_not_found = list({v for v in values if v.lower() in unique_values})  # return the values with the original casing
 
@@ -67,5 +69,5 @@ def main():
         return_results(not_found_values_entry)
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":  # pragma: no cover
+if __name__ in ("__builtin__", "builtins", "__main__"):  # pragma: no cover
     main()

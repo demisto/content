@@ -1,0 +1,31 @@
+{
+    "id": "incident_abnormalsecurityimpersonatedparty",
+    "version": -1,
+    "modified": "2023-11-20T19:22:00.183564608Z",
+    "name": "Abnormal Security Impersonated Party",
+    "ownerOnly": false,
+    "cliName": "abnormalsecurityimpersonatedparty",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "AbnormalSecurity"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

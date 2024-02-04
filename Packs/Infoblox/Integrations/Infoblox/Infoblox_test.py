@@ -1,4 +1,5 @@
-from Infoblox import Client
+import pytest
+from Infoblox import NETWORK_NOT_FOUND, Client, get_ip_command
 import demistomock as demisto
 import json
 
@@ -118,3 +119,36 @@ class TestZonesOperations:
             }}
 
     # def test_delete_response_policy_zone_command(self, mocker, requests_mock):
+
+
+def test_get_ip_command_no_indicator_found(mocker):
+    """
+    Given:
+        - IP address to get
+    When:
+        - Get IP command is called
+    Then:
+        - Ensure that no raises an error when the IP address is not found
+    """
+    mocker.patch.object(
+        client, "get_ip", side_effect=DemistoException(NETWORK_NOT_FOUND)
+    )
+
+    readable_output, _, _ = get_ip_command(client, {"ip": "1.1.1.1"})
+    assert readable_output == "No indicators found"
+
+
+@pytest.mark.parametrize("mock_exception", [DemistoException, Exception])
+def test_get_ip_command_raise_error(mocker, mock_exception):
+    """
+    Given:
+        - IP address to get
+    When:
+        - Get IP command is called
+    Then:
+        - Ensure that an error is raised
+    """
+    mocker.patch.object(client, "get_ip", side_effect=mock_exception("test"))
+
+    with pytest.raises(mock_exception, match="test"):
+        get_ip_command(client, {"ip": "1.1.1.1"})

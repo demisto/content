@@ -26,7 +26,8 @@ Playbook for the Cֹonfiguration Setup incident type.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| InstanceName | Demisto REST API instance name to use. |  | Optional |
+| InstanceName | Core REST API instance name to use. |  | Optional |
+| GitlabInstanceName | Gitlab instance name to use. |  | Optional |
 
 ## Playbook Outputs
 ---

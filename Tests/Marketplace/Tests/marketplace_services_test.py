@@ -17,13 +17,13 @@ from pathlib import Path
 
 # pylint: disable=no-member
 
-
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
     is_the_only_rn_in_block, get_pull_request_numbers_from_file, remove_old_versions_from_changelog
 from Tests.Marketplace.marketplace_constants import Changelog, PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
-    PACKS_FOLDER, PackTags
+    PackTags, XSOAR_START_TAG, XSOAR_END_TAG, XSOAR_SAAS_START_TAG, XSOAR_SAAS_END_TAG, XSOAR_ON_PREM_TAG, \
+    XSOAR_ON_PREM_END_TAG, XSOAR_MP, XSIAM_MP, XSOAR_SAAS_MP
 
 CHANGELOG_DATA_INITIAL_VERSION = {
     "1.0.0": {
@@ -304,12 +304,12 @@ class TestMetadataParsing:
         dummy_pack._server_min_version = Metadata.SERVER_DEFAULT_MIN_VERSION
         dummy_pack._downloads_count = 10
         dummy_pack._displayed_integration_images = []
-        dummy_pack._user_metadata = dummy_pack_metadata
+        dummy_pack._pack_metadata = dummy_pack_metadata
         dummy_pack._is_modified = False
-        dummy_pack._tags = set(dummy_pack._user_metadata.get(Metadata.TAGS))
+        dummy_pack._tags = set(dummy_pack._pack_metadata.get(Metadata.TAGS))
         dummy_pack._certification = Metadata.CERTIFIED
         dummy_pack._create_date = datetime.strftime(datetime.utcnow() - timedelta(days=20), Metadata.DATE_FORMAT)
-        dummy_pack._enhance_pack_attributes(index_folder_path="", statistics_handler=None)
+        dummy_pack.enhance_pack_attributes(index_folder_path="", packs_dependencies_mapping={}, statistics_handler=None)
         parsed_metadata = dummy_pack._parse_pack_metadata()
 
         assert 'created' in parsed_metadata
@@ -324,12 +324,12 @@ class TestMetadataParsing:
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
         """
         dummy_pack._displayed_integration_images = []
-        dummy_pack._user_metadata = dummy_pack_metadata
+        dummy_pack._pack_metadata = dummy_pack_metadata
         dummy_pack._is_modified = False
-        dummy_pack._tags = set(dummy_pack._user_metadata.get(Metadata.TAGS))
+        dummy_pack._tags = set(dummy_pack._pack_metadata.get(Metadata.TAGS))
 
-        dummy_pack._enhance_pack_attributes(
-            index_folder_path="", statistics_handler=None
+        dummy_pack.enhance_pack_attributes(
+            index_folder_path="", packs_dependencies_mapping={}, statistics_handler=None
         )
 
         assert dummy_pack._pack_name == 'Test Pack Name'
@@ -451,7 +451,7 @@ class TestHelperFunctions:
         (['Packs', 'A', PackFolders.SCRIPTS.value, 'A', 'Pipfile'], True),
         (['Packs', 'A', PackFolders.SCRIPTS.value, 'A', 'Pipfile.lock'], True),
         (['Packs', 'A', Pack.README], False),
-        (['Packs', 'A', Pack.USER_METADATA], False),
+        (['Packs', 'A', Pack.PACK_METADATA], False),
         (['Packs', 'A', PackFolders.INTEGRATIONS.value, 'A', 'A.py'], False)
     ])
     def test_is_ignored_pack_file(self, modified_file_path_parts, expected_result, mocker):
@@ -522,66 +522,6 @@ class TestHelperFunctions:
 
         assert result == expected_result
 
-    @pytest.mark.parametrize('yaml_context, yaml_type, marketplaces, single_integration, is_actually_feed,'
-                             ' is_actually_siem, is_actually_data_source',
-                             [
-                                 # Check is_feed by Integration
-                                 ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
-                                   'script': {'commands': [], 'dockerimage': 'bla', 'feed': True}},
-                                  'Integration', ["xsoar"], True, True, False, False),
-                                 ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
-                                   'script': {'commands': [], 'dockerimage': 'bla', 'feed': False}},
-                                  'Integration', ["xsoar"], True, False, False, False),
-                                 # Checks no feed parameter
-                                 ({'category': 'NotTIM', 'configuration': [{'display': 'Services'}],
-                                   'script': {'commands': [], 'dockerimage': 'bla'}},
-                                  'Integration', ["xsoar"], True, False, False, False),
-
-                                 # Check is_feed by playbook
-                                 ({'id': 'TIM - Example', 'version': -1, 'fromversion': '5.5.0',
-                                   'name': 'TIM - Example', 'description': 'This is a playbook TIM example'},
-                                  'Playbook', ["xsoar"], True, True, False, False),
-                                 ({'id': 'NotTIM - Example', 'version': -1, 'fromversion': '5.5.0',
-                                   'name': 'NotTIM - Example', 'description': 'This is a playbook which is not TIM'},
-                                  'Playbook', ["xsoar"], True, False, False, False),
-
-                                 # Check is_siem for integration
-                                 ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration', ["xsoar"], True,
-                                  False, True, False),
-                                 ({'id': 'some-id', 'script': {'isfetchevents': False}}, 'Integration', ["xsoar"], True,
-                                  False, False, False),
-
-                                 # Check is_siem for rules
-                                 ({'id': 'some-id', 'rules': ''}, 'ParsingRule', ["xsoar"], True, False, True, False),
-                                 ({'id': 'some-id', 'rules': ''}, 'ModelingRule', ["xsoar"], True, False, True, False),
-                                 ({'id': 'some-id', 'rules': ''}, 'CorrelationRule', ["xsoar"], True, False, True, False),
-
-                                 # Check is_data_source for integration
-                                 # case 1: one integration, contains isfetchevents, in marketplacev2 -> data source
-                                 ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration',
-                                  ['xsoar', 'marketplacev2'], True, False, True, True),
-                                 # case 2: one integration, contains isfetch, not in marketplacev2 -> not data source
-                                 ({'id': 'some-id', 'script': {'isfetch': True}}, 'Integration',
-                                  ['xsoar'], True, False, False, False),
-                                 # case 3: one integration (deprecated), with is_fetch, in marketplacev2 -> data source
-                                 ({'id': 'some-id', 'deprecated': True, 'script': {'isfetch': True}}, 'Integration',
-                                  ['xsoar', 'marketplacev2'], True, False, False, True),
-                                 # case 4: not one integration, with isfetch, in marketplacev2 -> not data source
-                                 ({'id': 'some-id', 'deprecated': False, 'script': {'isfetch': True}}, 'Integration',
-                                  ['xsoar', 'marketplacev2'], False, False, False, False)
-                             ])
-    def test_add_pack_type_tags(self, yaml_context, yaml_type, marketplaces, single_integration,
-                                is_actually_feed, is_actually_siem, is_actually_data_source):
-        """ Tests is_feed or is_seem is set to True for pack changes for tagging.
-        """
-        dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
-        dummy_pack._marketplaces = marketplaces
-        dummy_pack._single_integration = single_integration
-        dummy_pack.add_pack_type_tags(yaml_context, yaml_type)
-        assert dummy_pack.is_feed == is_actually_feed
-        assert dummy_pack.is_siem == is_actually_siem
-        assert dummy_pack.is_data_source == is_actually_data_source
-
     def test_remove_unwanted_files(self):
         """
            Given:
@@ -602,61 +542,6 @@ class TestHelperFunctions:
         assert not os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
         assert os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
         shutil.rmtree('Tests/Marketplace/Tests/test_data/pack_to_test')
-
-    def test_collect_content_items(self):
-        """
-        Given: pack with modeling rules.
-
-        When: collecting content item to upload.
-
-        Then: collect only modeling rules file start with external prefix.
-
-        """
-        pack_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'TestPack')
-        pack = Pack('test_pack', pack_path)
-        res = pack.collect_content_items()
-        assert res
-        assert len(pack._content_items.get('modelingrule')) == 1
-
-    def test_collect_content_items_with_same_id(self):
-        """
-        Given: pack with IncidentType, Layout with same id
-
-        When: collecting content item to upload.
-
-        Then: collect IncidentType and Layout and the up to date playbook.
-
-        """
-        pack_path = str(Path(__file__).parent / 'test_data' / 'TestPack')
-        expected_id = 'Phishing'
-
-        pack = Pack('test_pack', pack_path)
-        res = pack.collect_content_items()
-        assert res
-        layout_containers = pack._content_items['layoutscontainer']
-        assert len(layout_containers) == 1
-        assert layout_containers[0]['id'] == expected_id
-
-        incident_types = pack._content_items['incidenttype']
-        assert len(incident_types) == 1
-        assert incident_types[0]['id'] == expected_id
-
-    def test_collect_content_items_only_relevant_playbook(self):
-        """
-        Given: 3 Playbook from which 2 are deprecated.
-
-        When: collecting content item to upload.
-
-        Then: collect the relevant playbook.
-
-        """
-        expected_description = "Expected description"
-        pack_path = str(Path(__file__).parent / 'test_data' / 'TestPack')
-        pack = Pack('test_pack', pack_path)
-        res = pack.collect_content_items()
-        assert res
-        assert len(pack._content_items.get('playbook')) == 1
-        assert pack._content_items.get('playbook')[0]['description'] == expected_description
 
 
 class TestVersionSorting:
@@ -1671,6 +1556,129 @@ class TestFilterChangelog:
 
         assert result == expected_result
 
+    RN_ENTRY_XSOAR_TAGS = f"""#### Integrations
+- General entry
+{XSOAR_START_TAG}
+- Entry for all xsoar marketplaces.
+{XSOAR_END_TAG}
+{XSOAR_SAAS_START_TAG}
+- Entry only for xsoar_saas.
+{XSOAR_SAAS_END_TAG}
+{XSOAR_ON_PREM_TAG}
+- Entry only for xsoar on prem.
+{XSOAR_ON_PREM_END_TAG}
+"""
+
+    XSOAR_MP_RES = """#### Integrations
+- General entry\n
+- Entry for all xsoar marketplaces.\n\n
+- Entry only for xsoar on prem.\n
+"""
+
+    XSOAR_SAAS_MP_RES = """#### Integrations
+- General entry\n
+- Entry for all xsoar marketplaces.\n\n
+- Entry only for xsoar_saas.\n
+"""
+
+    XSIAM_MP_RES = """#### Integrations
+- General entry
+"""
+
+    @pytest.mark.parametrize('upload_marketplace, expected_result', [(XSOAR_MP, XSOAR_MP_RES),
+                                                                     (XSOAR_SAAS_MP, XSOAR_SAAS_MP_RES),
+                                                                     (XSIAM_MP, XSIAM_MP_RES)])
+    def test_filter_for_xsoar_tags(self, dummy_pack: Pack, upload_marketplace, expected_result):
+        """
+            Given:
+                - Realease notes entries wrapped by tags for XSOAR marketplaces.
+            When:
+                - Uploading and preparing the RN for upload.
+            Then:
+                - Validate that each mp contains the correct entries.
+        """
+        result = dummy_pack.filter_release_notes_by_tags(self.RN_ENTRY_XSOAR_TAGS, upload_marketplace)
+        assert result == expected_result
+
+    TEST1 = """#### Integrations
+##### ServiceNow v2
+  - Fixed the test button to work with debug mode."""
+
+    res1 = {'Integrations': {'ServiceNow v2': '- Fixed the test button to work with debug mode.\n'}}
+
+    TEST2 = """#### Incident Fields
+- **Claroty Category**"""
+
+    res2 = {'Incident Fields': {'[special_msg]': '- **Claroty Category**\n'}}
+
+    res_original_regex = {}
+
+    TEST3 = """#### Integrations
+##### Ansible Cisco NXOS
+- Documentation and metadata improvements.
+- Fixed contextPath outputs for the ***nxos-facts*** command.
+- Updated the Docker image to: *demisto/ansible-runner:1.0.0.24037*."""
+
+    res3 = {'Integrations': {'Ansible Cisco NXOS': '- Documentation and metadata improvements.\n- Fixed contextPath outputs for the ***nxos-facts*** command.\n- Updated the Docker image to: *demisto/ansible-runner:1.0.0.24037*.\n'}}  # noqa: E501
+
+    TEST4 = """#### Integrations
+##### Akamai WAF
+
+- Added 8 new commmands:
+  - ***akamai-get-production-deployment***
+  - ***akamai-get-change-history***
+  - ***akamai-modify-appsec-config-selected-hosts***
+  - ***akamai-patch-papi-property-rule-siteshield***
+  - ***akamai-update-appsec-config-version-notes***
+  - ***akamai-new-or-renew-match-target***
+  - ***akamai-patch-papi-property-rule-generic***
+  - ***akamai-get-papi-property-rule***
+
+- Added the following arguments to the ***akamai-create-enrollment*** command:
+   - *clone_dns_names*
+   - *exclude_sans*
+   - *change_management*
+   - *network_configuration_geography*
+   - *ra*
+   - *validation_type*
+   - *enable_multi_stacked_certificates*
+   - *network_configuration_quic_enabled*
+   - *network_configuration_secure_network*
+   - *network_configuration_sni_only*
+   - *indicator_type*
+   - *active_only*
+   - *confidence*
+   - *threat_assess_score*
+
+- Added the following arguments to the ***akamai-update-property*** command:
+   - *property_comments*
+   - *dc1_id*
+   - *dc2_id*
+
+- Added the following argument to the ***akamai-activate-papi-property*** command:
+   - *note*
+"""
+
+    res4 = {'Integrations': {'Akamai WAF': '- Added 8 new commmands:\n  - ***akamai-get-production-deployment***\n  - ***akamai-get-change-history***\n  - ***akamai-modify-appsec-config-selected-hosts***\n  - ***akamai-patch-papi-property-rule-siteshield***\n  - ***akamai-update-appsec-config-version-notes***\n  - ***akamai-new-or-renew-match-target***\n  - ***akamai-patch-papi-property-rule-generic***\n  - ***akamai-get-papi-property-rule***\n\n- Added the following arguments to the ***akamai-create-enrollment*** command:\n   - *clone_dns_names*\n   - *exclude_sans*\n   - *change_management*\n   - *network_configuration_geography*\n   - *ra*\n   - *validation_type*\n   - *enable_multi_stacked_certificates*\n   - *network_configuration_quic_enabled*\n   - *network_configuration_secure_network*\n   - *network_configuration_sni_only*\n   - *indicator_type*\n   - *active_only*\n   - *confidence*\n   - *threat_assess_score*\n\n- Added the following arguments to the ***akamai-update-property*** command:\n   - *property_comments*\n   - *dc1_id*\n   - *dc2_id*\n\n- Added the following argument to the ***akamai-activate-papi-property*** command:\n   - *note*\n'}}  # noqa: E501
+
+    Test5 = """#### Incident Fields"""
+
+    res5 = {'Incident Fields': {'[special_msg]': '\n'}}
+
+    @pytest.mark.parametrize('test, res', [(TEST1, res1), (TEST2, res2), (TEST3, res3), (TEST4, res4), (Test5, res5)])
+    def test_get_relese_notes_dict(self, dummy_pack: Pack, test, res):
+        """
+            This test was added after changing the rexgex - ENTITY_TYPE_SECTION_REGEX
+            to check same results before and after change.
+            Given:
+                - Release notes after before and after filter.
+            When:
+                - Preparing the release notes in the upload after the tags were filtered out.
+            Then:
+                - Validate that the release notes dict is build properly.
+        """
+        assert dummy_pack.get_release_notes_dict('3.0.1', test) == res
+
     @pytest.mark.parametrize('id_set, expected_result', [
         ({"integrations": [{'id': {"display_name": "Display Name 2"}}],
           "IncidentFields": [{'id': {"display_name": "Field name 1"}}, {'id': {"display_name": "Field name 3"}}]},
@@ -1700,7 +1708,13 @@ class TestFilterChangelog:
     @pytest.mark.parametrize('changelog_entry, marketplace, id_set, expected_rn', [
         ({Changelog.RELEASE_NOTES: '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.'},
          'xsoar', {"integrations": [{'id': {'display_name': 'Display Name'}}]},
-         '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.')
+         '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.'),
+        ({Changelog.RELEASE_NOTES: """#### Incident Fields
+<~XSOAR_SAAS>
+- New: **HelloWorld SaaS**
+</~XSOAR_SAAS>"""},
+         'xsoar', {"integrations": [{'id': {'display_name': 'Display Name'}}]},
+         'Changes are not relevant for XSOAR marketplace.')
     ])
     def test_changes_not_relevant_message_in_rn(self, dummy_pack: Pack, changelog_entry,
                                                 marketplace, id_set, expected_rn):
@@ -1741,29 +1755,20 @@ class TestImagesUpload:
     def test_upload_integration_images_with_special_character(self, mocker, dummy_pack, integration_name,
                                                               expected_result):
         """
-           Given:
-               - Integration name with special characters.
-           When:
-               - When pack has integration with special character.
-           Then:
-               - return encoded url
-       """
+            Given:
+                - Integration name with special characters.
+            When:
+                - When pack has integration with special character.
+            Then:
+                - return encoded url
+        """
         temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
         search_for_images_return_value = [{'display_name': integration_name,
                                            'image_path': f'/path/{temp_image_name}',
                                            'integration_path_basename': 'fake_unified_integration_path'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
-        mocker.patch("marketplace_services_test.Pack.need_to_upload_integration_image", return_value=True)
-        mocker.patch('builtins.open', mock_open(read_data="image_data"))
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        dummy_storage_bucket = mocker.MagicMock()
-        dummy_file = mocker.MagicMock()
-        dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
-        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.CONTENT_PACKS_PATH, "TestPack",
-                                                                   temp_image_name)
-        task_status = dummy_pack.upload_integration_images(dummy_storage_bucket, GCPConfig.CONTENT_PACKS_PATH,
-                                                           [dummy_file],
-                                                           True)
+        task_status = dummy_pack.enhance_pack_attributes('', {})
 
         assert task_status
         assert len(dummy_pack._displayed_integration_images) == len(expected_result)
@@ -1778,28 +1783,20 @@ class TestImagesUpload:
     def test_upload_integration_images_without_special_character(self, mocker, dummy_pack, integration_name,
                                                                  expected_result):
         """
-           Given:
-               - Integration name without special characters.
-           When:
-               - When pack has integration no special character.
-           Then:
-               - validate that encoded url did not change the original url.
-       """
+            Given:
+                - Integration name without special characters.
+            When:
+                - When pack has integration no special character.
+            Then:
+                - validate that encoded url did not change the original url.
+        """
         temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
         search_for_images_return_value = [{'display_name': integration_name,
                                            'image_path': f'/path/{temp_image_name}',
                                            'integration_path_basename': 'fake_unified_integration_path'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
-        mocker.patch("marketplace_services_test.Pack.need_to_upload_integration_image", return_value=True)
-        mocker.patch("builtins.open", mock_open(read_data="image_data"))
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        dummy_storage_bucket = mocker.MagicMock()
-        dummy_file = mocker.MagicMock()
-        dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
-        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.CONTENT_PACKS_PATH, "TestPack",
-                                                                   temp_image_name)
-        task_status = dummy_pack.upload_integration_images(dummy_storage_bucket, GCPConfig.CONTENT_PACKS_PATH,
-                                                           [dummy_file], True)
+        task_status = dummy_pack.enhance_pack_attributes('', {})
 
         assert task_status
         assert len(dummy_pack._displayed_integration_images) == len(expected_result)
@@ -1948,13 +1945,13 @@ class TestCopyAndUploadToStorage:
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
 
         # case: latest version is not in build bucket
-        dummy_pack.latest_version = "2.0.0"
+        dummy_pack.current_version = "2.0.0"
         dummy_build_bucket.list_blobs.return_value = []
         successful_packs_dict = {
             dummy_pack.name: {
                 BucketUploadFlow.STATUS: "",
                 BucketUploadFlow.AGGREGATED: "False",
-                BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
+                BucketUploadFlow.LATEST_VERSION: dummy_pack.current_version
             }
         }
 
@@ -1997,7 +1994,7 @@ class TestCopyAndUploadToStorage:
         dummy_prod_bucket = mocker.MagicMock()
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
-        dummy_pack.latest_version = "2.0.0"
+        dummy_pack.current_version = "2.0.0"
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
@@ -2005,7 +2002,7 @@ class TestCopyAndUploadToStorage:
                 "TestPack": {
                     BucketUploadFlow.STATUS: "status1",
                     BucketUploadFlow.AGGREGATED: "False",
-                    BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
+                    BucketUploadFlow.LATEST_VERSION: dummy_pack.current_version
                 }
             }, {}, GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
         )
@@ -2025,7 +2022,7 @@ class TestCopyAndUploadToStorage:
         dummy_prod_bucket = mocker.MagicMock()
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
-        dummy_pack.latest_version = "2.0.0"
+        dummy_pack.current_version = "2.0.0"
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
@@ -2033,7 +2030,7 @@ class TestCopyAndUploadToStorage:
                 "TestPack": {
                     BucketUploadFlow.STATUS: "status1",
                     BucketUploadFlow.AGGREGATED: "False",
-                    BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
+                    BucketUploadFlow.LATEST_VERSION: dummy_pack.current_version
                 }
             }, GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
         )
@@ -2041,14 +2038,14 @@ class TestCopyAndUploadToStorage:
         assert not skipped_pack
 
 
-class TestLoadUserMetadata:
+class TestLoadPackMetadata:
     @pytest.fixture(scope="function")
     def dummy_pack(self):
         """ dummy pack fixture
         """
         return Pack(pack_name="TestPack", pack_path="dummy_path")
 
-    def test_load_user_metadata(self, dummy_pack, dummy_pack_metadata, tmp_path):
+    def test_load_pack_metadata(self, dummy_pack, dummy_pack_metadata, tmp_path):
         """
         Given:
             - A pack with metadata containing pack data like eula link
@@ -2061,12 +2058,12 @@ class TestLoadUserMetadata:
         dummy_pack._pack_path = tmp_path
         with open(metadata_path, 'w') as metadata_file:
             metadata_file.write(json.dumps(dummy_pack_metadata))
-        dummy_pack.load_user_metadata()
-        loaded_metadata = dummy_pack.user_metadata
+        dummy_pack.load_pack_metadata()
+        loaded_metadata = dummy_pack.pack_metadata
 
         assert loaded_metadata['eulaLink'] == 'https://my.eula.com'
 
-    def test_load_user_metadata_with_missing_file(self, mocker, dummy_pack):
+    def test_load_pack_metadata_with_missing_file(self, mocker, dummy_pack):
         """
            Given:
                - Pack with missing pack metadata.
@@ -2077,11 +2074,11 @@ class TestLoadUserMetadata:
        """
         mocker.patch("os.path.exists", return_value=False)
         logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.error")
-        task_status = dummy_pack.load_user_metadata()
+        task_status = dummy_pack.load_pack_metadata()
 
         assert logging_mock.call_count == 1
         assert not task_status
-        assert not dummy_pack.user_metadata
+        assert not dummy_pack.pack_metadata
 
 
 class TestSetDependencies:
@@ -2131,7 +2128,7 @@ class TestSetDependencies:
 
         metadata['dependencies'] = {}
         p = Pack('HelloWorld', 'dummy_path')
-        p._user_metadata = metadata
+        p._pack_metadata = metadata
 
         with pytest.raises(Exception) as e:
             p.set_pack_dependencies(generated_dependencies)
@@ -2655,7 +2652,7 @@ class TestStoreInCircleCIArtifacts:
             pack._status = PackStatus.SUCCESS.name
             pack._aggregated = True
             pack._aggregation_str = '[1.0.0, 1.0.1] => 1.0.1'
-            pack.latest_version = '1.0.1'
+            pack.current_version = '1.0.1'
         return successful_packs
 
     @staticmethod
@@ -2681,7 +2678,7 @@ class TestStoreInCircleCIArtifacts:
         ]
         for pack in successful_dependencies:
             pack._status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
-            pack.latest_version = '1.0.1'
+            pack.current_version = '1.0.1'
         return successful_dependencies
 
     def test_store_successful_and_failed_packs_in_ci_artifacts_both(self, tmp_path):

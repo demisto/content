@@ -264,7 +264,7 @@ script:
       description: A list of reference links of the indicator.
       type: string
     - contextPath: Flashpoint.Filename.Event.Filename
-      description: Filename of the indicator
+      description: Filename of the indicator.
       type: string
     - contextPath: Flashpoint.Filename.Event.EventDetails
       description: The event details in which the indicator was observed.
@@ -311,7 +311,7 @@ script:
       description: A list of reference links of the indicator.
       type: string
     - contextPath: Flashpoint.Url.Event.Url
-      description: Url of the indicator
+      description: Url of the indicator.
       type: string
     - contextPath: Flashpoint.Url.Event.EventDetails
       description: The event details in which the indicator was observed.
@@ -341,7 +341,7 @@ script:
       description: Vendor of malicious url.
       type: string
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: string
     - contextPath: URL.Relationships.EntityA
       description: The source of the relationship.
@@ -382,13 +382,13 @@ script:
       description: A list of reference links of the indicator.
       type: string
     - contextPath: Flashpoint.File.Event.MD5
-      description: MD5 file hash of the indicator
+      description: MD5 file hash of the indicator.
       type: string
     - contextPath: Flashpoint.File.Event.SHA1
-      description: SHA1 file hash of the indicator
+      description: SHA1 file hash of the indicator.
       type: string
     - contextPath: Flashpoint.File.Event.SHA256
-      description: SHA256 file hash of the indicator
+      description: SHA256 file hash of the indicator.
       type: string
     - contextPath: Flashpoint.File.Event.EventDetails
       description: The event details in which the indicator was observed.
@@ -499,11 +499,11 @@ script:
     arguments:
     - name: report_search
       required: true
-      description: Search report using keyword or text
+      description: Search report using keyword or text.
     outputs:
     - contextPath: Flashpoint.Report
-      description: List of reports based on specified search query or keyword
-    description: Search for the Intelligence Reports using a keyword
+      description: List of reports based on specified search query or keyword.
+    description: Search for the Intelligence Reports using a keyword.
   - name: flashpoint-get-single-intelligence-report
     arguments:
     - name: report_id
@@ -602,7 +602,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
-    description: Lookup any type of indicator
+    description: Lookup any type of indicator.
   - name: flashpoint-get-forum-details
     arguments:
     - name: forum_id
@@ -705,7 +705,7 @@ script:
     outputs:
     - contextPath: Flashpoint.Forum.Post
       description: A list of forum posts based on the search keyword.
-    description: Search forum posts using a keyword
+    description: Search forum posts using a keyword.
   - arguments:
     - description: |-
         Filters the alerts based on the earliest date when the alerts were created.
@@ -1035,7 +1035,7 @@ script:
     - contextPath: Flashpoint.CompromisedCredential.sort
       description: Sort value of the IoC.
       type: Unknown
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   runonce: false
   subtype: python3

@@ -3,14 +3,14 @@ import json
 
 
 def executeCommand(name, args=None):
-    if name == 'demisto-api-get' and args and 'uri' in args and args['uri'] == "/settings/integration-commands":
+    if name == 'core-api-get' and args and 'uri' in args and args['uri'] == "/settings/integration-commands":
         file_name = 'TestData/integration_commands.json'
-    elif name == 'demisto-api-post' and args and 'uri' in args and args['uri'] == "/settings/integration/search":
+    elif name == 'core-api-post' and args and 'uri' in args and args['uri'] == "/settings/integration/search":
         file_name = 'TestData/integration_search.json'
     else:
-        raise ValueError('Unimplemented command called: {}'.format(name))
+        raise ValueError(f'Unimplemented command called: {name}')
 
-    with open(file_name, 'r') as f:
+    with open(file_name) as f:
         raw_data = f.read()
         data = json.loads(raw_data)
         return data
@@ -28,7 +28,7 @@ def test_main(mocker):
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args
-    assert results[0][0] == 'EWS Mail Sender,Gmail,Mail Sender (Deprecated),Mail Sender (New)'
+    assert results[0][0] == 'EWS Mail Sender,Gmail,mail-sender,Mail Sender (New)'
 
     mocker.patch.object(demisto, 'args', return_value={
         'command': 'send-mail',
@@ -48,4 +48,4 @@ def test_main(mocker):
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args
-    assert results[0][0] == 'EWS Mail Sender,Gmail,Mail Sender (Deprecated)'
+    assert results[0][0] == 'EWS Mail Sender,Gmail,mail-sender'

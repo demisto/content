@@ -1,11 +1,85 @@
 import collections
 import os
-
+from pytest_mock import MockerFixture
 import pytest
 from collections import OrderedDict
-from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command
+from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command, requests
 from csv import DictReader
 from CommonServerPython import argToList
+
+
+class TestStreamCompressedData:
+
+    @pytest.fixture()
+    def mock_response(self) -> requests.Response:
+        """This is a fixture used to mock the response object when streaming compressed data.
+
+        Returns:
+            requests.Response: The response object that will mock the streaming of compressed data.
+        """
+        import io
+        gzip_compressed_data = b''
+        # The file below should be a gzip compressed file. The content of the compressed file was obtained by running:
+        # gzip -k test_data/test_gzip_compressed.txt (The -k flag tells gzip to keep the original file)
+        with open('test_data/test_gzip_compressed.txt.gz', 'rb') as test_compressed_stream:
+            gzip_compressed_data = test_compressed_stream.read()
+        response_mocker = requests.Response()
+        response_mocker.raw = io.BytesIO(gzip_compressed_data)
+        response_mocker.encoding = 'utf-8'
+        return response_mocker
+
+    def test_stream_compressed_data_iterations(self, mocker: MockerFixture, mock_response: requests.Response):
+        """
+        Given:
+        - A response that will stream the compressed data.
+
+        When:
+        - Fetching indicators using the connectApi service
+
+        Then:
+        - Verify that the decoding mechanism is able to handle when we try to decode part of a character.
+        """
+        client = Client(indicator_type='url', api_token='123', services=['connectApi'])
+        decoding_mocker = mocker.patch.object(client, 'decode_bytes', side_effect=client.decode_bytes)
+        client.stream_compressed_data(response=mock_response, chunk_size=3)
+        os.remove("response.txt")
+        # The first 12 bytes in our case are for the gzip compressing method, not relevant
+        call_args_list = decoding_mocker.call_args_list[12:]
+        # The first character uses 4 bytes, and our chunk size is 3, therefore, we will first try to decode the first 3 bytes
+        assert call_args_list[0][0][0] == b'\xf0\x9f\x98'
+        # Since the first 3 bytes don't represent a valid character, we cut off one byte and decode again
+        assert call_args_list[1][0][0] == b'\xf0\x9f'
+        # We keep on cutting and decoding until we reach a valid character
+        assert call_args_list[2][0][0] == b'\xf0'
+        # We reached a valid character, therefore, decoding will pass
+        assert call_args_list[3][0][0] == b''
+        # We save the cut off bytes from the last chunk, and add it to the current chunk so we can decode
+        assert call_args_list[4][0][0][0:3] == b'\xf0\x9f\x98'
+
+    @pytest.mark.parametrize('chunk_size', [(1), (2), (3), (4), (8), (10), (25), (27)])
+    def test_stream_compressed_data_file_content(self, chunk_size: int, mock_response: requests.Response):
+        """
+        Given:
+        - A response that will stream the compressed data.
+        - The chunk size of the streamed data.
+
+        When:
+        - Fetching indicators using the connectApi service
+
+        Then:
+        - Validate that the decoded chunks from the response make up the correct content.
+        """
+        client = Client(indicator_type='url', api_token='123', services=['connectApi'])
+        client.stream_compressed_data(response=mock_response, chunk_size=chunk_size)
+        file_stream = open("response.txt")
+        file_content = file_stream.read()
+        file_stream.close()
+        os.remove("response.txt")
+        # test_data/test_gzip_compressed.txt holds the decompressed data of test_data/test_gzip_compressed.txt.gz
+        # We want to check if the code is able to decode the chunks correctly
+        with open('test_data/test_gzip_compressed.txt') as file:
+            assert file.read() == file_content
+
 
 GET_INDICATOR_TYPE_INPUTS = [
     ('ip', OrderedDict([('Name', '192.168.1.1'), ('Risk', '89'), ('RiskString', '5/12'),
@@ -170,17 +244,48 @@ def test_get_indicators_command_by_risk_rules(mocker, indicator_type, risk_rules
 
 
 CALCULATE_DBOT_SCORE_INPUTS = [
-    ('97', '65', 3),
-    ('90', '91', 3),
-    ('50', '65', 2),
-    ('0', '65', 0),
-    ('0', '0', 3),
+    ('90', '65', '25', 3),
+    ('45', '65', '25', 2),
+    ('15', '65', '25', 0),
+    ('0', '65', '25', 1),
+    ('90', '95', '25', 2),
+    ('45', '30', '25', 3),
+    ('15', '26', '25', 0),
+    ('0', '0', '-1', 3),
+    ('90', '98', '91', 0),
+    ('45', '65', '40', 2),
+    ('15', '10', '5', 3),
+    ('0', '65', '0', 2),
+    ('65', '65', '25', 3),
+    ('25', '65', '25', 2),
+    ('50', '51', '50', 2),
 ]
 
 
-@pytest.mark.parametrize('risk_from_feed, threshold, expected_score', CALCULATE_DBOT_SCORE_INPUTS)
-def test_calculate_dbot_score(risk_from_feed, threshold, expected_score):
-    client = Client(indicator_type='ip', api_token='123', services=['fusion'], threshold=threshold)
+@pytest.mark.parametrize('risk_from_feed, malicious_threshold, suspicious_threshold, expected_score', CALCULATE_DBOT_SCORE_INPUTS)
+def test_calculate_dbot_score(risk_from_feed, malicious_threshold, suspicious_threshold, expected_score):
+    """
+    Given:
+     - Values for calculating an indicator's verdict including:
+        1. The Recorded Future Risk Score of the indicator (0 - 100)
+        2. The minimum score to be malicious (0 - 100)
+        3. The minimum score to be suspicious (-1 - 100, must be less than the malicious_threshold)
+        4. What the expected D-Bot Score (verdict) is (0 - 3)
+     - Individually adjust values 1, 2 & 3 to capture the cases
+        - Score is greater than the malicious threshold
+        - Score is between the malicious threshold and suspicious threshold
+        - Score is less than the suspicious threshold
+        - Score is 0
+        - Score equals a threshold
+
+    When:
+     - Running the 'calculate_indicator_score'
+
+    Then:
+     - Verify the indicator's dbot score is set correctly given the suspicious and malicious risk score range.
+    """
+    client = Client(indicator_type='ip', api_token='123', services=[
+                    'fusion'], malicious_threshold=malicious_threshold, suspicious_threshold=suspicious_threshold)
     score = client.calculate_indicator_score(risk_from_feed)
     assert score == expected_score
 
@@ -281,7 +386,7 @@ class DictReaderGenerator:
 
     def __next__(self):
         if self.has_returned_dict_reader:
-            raise StopIteration()
+            raise StopIteration
         self.has_returned_dict_reader = True
         return self.dict_reader
 

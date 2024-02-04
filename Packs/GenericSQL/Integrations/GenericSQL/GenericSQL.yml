@@ -164,7 +164,7 @@ script:
       name: bind_variables_values
     description: Running a sql query
     name: sql-command
-  dockerimage: devdemisto/genericsql:1.1.0.72808
+  dockerimage: demisto/genericsql:1.1.0.84201
   isfetch: true
   runonce: false
   script: '-'

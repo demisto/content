@@ -23,7 +23,9 @@ More information can be found [here](https://docs.fortinet.com/document/fortigat
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
-* Support for timestamp parsing is available only for the **FTNTFGTeventtime** field in UTC +0000 time zone.
+### Timestamp Ingestion:
+* Support for timestamp parsing is available only for the **FTNTFGTeventtime** and **FTNTFGTduration** fields in Epoch (UTC) format.
+* Timestamp calculation for logs is the presented result of deducting **FTNTFGTduration** from **FTNTFGTeventtime**.
 
 ### Broker VM
 You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).\

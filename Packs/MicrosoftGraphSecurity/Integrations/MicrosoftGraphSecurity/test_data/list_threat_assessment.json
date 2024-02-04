@@ -1,0 +1,74 @@
+{
+    "@odata.nextLink": "testskiptoken=test_token",
+  "value": [
+    {
+      "id": "email_id",
+      "createdDateTime": "2019-11-27T03:30:18.6890937Z",
+      "contentType": "mail",
+      "expectedAssessment": "block",
+      "category": "spam",
+      "status": "pending",
+      "requestSource": "administrator",
+      "recipientEmail": "test_email",
+      "destinationRoutingReason": "notJunk",
+      "messageUri": "https://graph.microsoft.com/v1.0/users/email_id/messages/message_id",
+      "createdBy": {
+        "user": {
+          "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+          "displayName": "Test Admin"
+        }
+      }
+    },
+    {
+      "createdDateTime": "2019-11-20T17:05:06.4088076Z",
+        "id": "email_file_test",
+      "contentType": "mail",
+      "expectedAssessment": "block",
+      "category": "malware",
+      "status": "completed",
+      "requestSource": "administrator",
+      "recipientEmail": "email_test",
+      "destinationRoutingReason": "notJunk",
+      "contentData": "",
+      "createdBy": {
+        "user": {
+          "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+          "displayName": "Test Admin"
+        }
+      }
+    },
+    {
+      "id": "file_id",
+      "createdDateTime": "2019-11-27T05:44:00.4051536Z",
+      "contentType": "file",
+      "expectedAssessment": "block",
+      "category": "malware",
+      "status": "completed",
+      "requestSource": "administrator",
+      "fileName": "file_name.csv",
+      "contentData": "",
+      "createdBy": {
+        "user": {
+          "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+          "displayName": "Test Admin"
+        }
+      }
+    },
+    {
+      "id": "723c35be-8b5a-47ae-29c0-08d76ddb7f5b",
+      "createdDateTime": "2019-11-20T17:02:59.8160832Z",
+      "contentType": "url",
+      "expectedAssessment": "unblock",
+      "category": "phishing",
+      "status": "completed",
+      "requestSource": "administrator",
+      "url": "http://test.com",
+      "createdBy": {
+        "user": {
+          "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+          "displayName": "Test Admin"
+        }
+      }
+    }
+  ]
+}

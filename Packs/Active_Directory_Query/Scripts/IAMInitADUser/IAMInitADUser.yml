@@ -46,12 +46,14 @@ args:
   defaultValue: ""
 - name: email_body
   description: The body of the email that will be sent to the user.
+- name: zip_file_name
+  description: Name of the generated zip file (used internally for polling).
 comment: |-
   Generates password,
   Set an AD user account with this password.
   Enable the account.
   Send mail to the user with the account information.
-  This script is running `send-mail` command, make sure there is a matching Integration configurated.
+  This script is running `send-mail` command, make sure there is a matching Integration configured.
 commonfields:
   id: IAMInitADUser
   version: -1
@@ -78,7 +80,7 @@ tags:
 - active directory
 - Utility
 type: python
-dockerimage: demisto/py3-tools:1.0.0.49929
+dockerimage: demisto/py3-tools:1.0.0.81101
 runas: DBotWeakRole
 tests:
 - Active Directory Test
@@ -87,3 +89,4 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
 scripttarget: 0
+polling: true

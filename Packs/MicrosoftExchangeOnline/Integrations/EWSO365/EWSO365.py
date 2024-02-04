@@ -1,61 +1,60 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import email
+import hashlib
+import json
+import logging
+import os
 import random
 import string
 import subprocess
-from xml.sax import SAXParseException
-
-import dateparser
-import chardet
-
-from CommonServerUserPython import *
-
 import sys
 import traceback
-import json
-import os
-import hashlib
-from io import StringIO
-import logging
 import warnings
-import email
-from requests.exceptions import ConnectionError
+from email.policy import SMTP, SMTPUTF8
+from io import StringIO
 from multiprocessing import Process
+from xml.sax import SAXParseException
+
+import chardet
+import dateparser
 import exchangelib
-from exchangelib.errors import (
-    ErrorItemNotFound,
-    ResponseMessageError,
-    RateLimitError,
-    ErrorInvalidIdMalformed,
-    ErrorFolderNotFound,
-    ErrorMailboxStoreUnavailable,
-    ErrorMailboxMoveInProgress,
-    ErrorNameResolutionNoResults,
-    MalformedResponseError,
-)
-from exchangelib.items import Item, Message, Contact
-from exchangelib.services.common import EWSService, EWSAccountService
-from exchangelib.util import create_element, add_xml_child, MNS, TNS
 from exchangelib import (
     IMPERSONATION,
+    OAUTH2,
     Account,
+    Body,
+    Configuration,
     EWSDateTime,
     EWSTimeZone,
-    Configuration,
+    ExtendedProperty,
     FileAttachment,
-    Version,
     Folder,
     HTMLBody,
-    Body,
-    ItemAttachment,
-    OAUTH2,
-    OAuth2AuthorizationCodeCredentials,
     Identity,
-    ExtendedProperty
+    ItemAttachment,
+    OAuth2AuthorizationCodeCredentials,
+    Version,
 )
-from oauthlib.oauth2 import OAuth2Token
-from exchangelib.version import EXCHANGE_O365
+from exchangelib.errors import (
+    ErrorFolderNotFound,
+    ErrorInvalidIdMalformed,
+    ErrorItemNotFound,
+    ErrorMailboxMoveInProgress,
+    ErrorMailboxStoreUnavailable,
+    ErrorNameResolutionNoResults,
+    MalformedResponseError,
+    RateLimitError,
+    ResponseMessageError,
+)
+from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+from exchangelib.services.common import EWSAccountService, EWSService
+from exchangelib.util import MNS, TNS, add_xml_child, create_element
+from exchangelib.version import EXCHANGE_O365
+from oauthlib.oauth2 import OAuth2Token
+from requests.exceptions import ConnectionError
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from MicrosoftApiModule import *
 
 # Ignore warnings print to stdout
@@ -2006,21 +2005,27 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):      # pra
 
     if item.mime_content:
         mime_content = item.mime_content
+        email_policy = SMTP if mime_content.isascii() else SMTPUTF8
         if isinstance(mime_content, bytes):
-            email_content = email.message_from_bytes(mime_content)
+            email_content = email.message_from_bytes(mime_content, policy=email_policy)
         else:
-            email_content = email.message_from_string(mime_content)
+            email_content = email.message_from_string(mime_content, policy=email_policy)
         if item.headers:
+            # compare header keys case-insensitive
             attached_email_headers = [
-                (h, " ".join(map(str.strip, v.split("\r\n"))))
+                (h.lower(), " ".join(map(str.strip, v.split("\r\n"))))
                 for (h, v) in list(email_content.items())
             ]
             for header in item.headers:
                 if (
-                        header.name,
+                        header.name.lower(),
                         header.value,
-                ) not in attached_email_headers and header.name != "Content-Type":
-                    email_content.add_header(header.name, header.value)
+                ) not in attached_email_headers and header.name.lower() != "content-type":
+                    try:
+                        email_content.add_header(header.name, header.value)
+                    except ValueError as err:
+                        if "There may be at most" not in str(err):
+                            raise err
 
         eml_name = item.subject if item.subject else "demisto_untitled_eml"
         file_result = fileResult(eml_name + ".eml", email_content.as_string())
@@ -2030,6 +2035,44 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):      # pra
 
         return file_result
     return None
+
+
+def handle_attached_email_with_incorrect_id(attached_email: Message):
+    """This function handles a malformed Message-ID value which can be returned in the header of certain email objects.
+    This issue happens due to a current bug in "email" library and further explained in XSUP-32074.
+    Public issue link: https://github.com/python/cpython/issues/105802
+
+    The function will run on every attached email if exists, check its Message-ID header value and fix it if possible.
+    Args:
+        attached_email (Message): attached email object.
+
+    Returns:
+        Message: attached email object.
+    """
+    message_id_value = ""
+    for i in range(len(attached_email._headers)):
+        if attached_email._headers[i][0] == "Message-ID":
+            message_id = attached_email._headers[i][1]
+            try:
+                if message_id.endswith("]>") and message_id.startswith("<["):
+                    demisto.debug(f"Fixing invalid {message_id=} attachment header by removing its square bracket \
+                        wrapper (see XSUP-32074 for further information)")
+                    attached_email._headers.pop(i)
+                    message_id_value = f"<{message_id[2:-2]}>"
+
+            except Exception as e:
+                # The function is designed to handle a specific format error for the Message-ID header
+                # as explained in the docstring.
+                # That being said, we do expect the header to be in a known format.
+                # If this function encounters a header format which is not in the known format and can't be fixed,
+                # the header will be ignored completely to prevent crashing the fetch command.
+                demisto.debug(f"Invalid {message_id=}, Error: {e}")
+                break
+            break
+    if message_id_value:
+        # If the Message-ID header was fixed in the context of this function, it will be inserted again to the _headers list
+        attached_email._headers.append(("Message-ID", message_id_value))
+    return attached_email
 
 
 def parse_incident_from_item(item):     # pragma: no cover
@@ -2048,7 +2091,7 @@ def parse_incident_from_item(item):     # pragma: no cover
         incident["details"] = item.body
     incident["name"] = item.subject
     labels.append({"type": "Email/subject", "value": item.subject})
-    incident["occurred"] = item.datetime_created.ewsformat()
+    incident["occurred"] = item.datetime_received.ewsformat()
 
     # handle recipients
     if item.to_recipients:
@@ -2132,12 +2175,16 @@ def parse_incident_from_item(item):     # pragma: no cover
                 # save the attachment
                 if attachment.item.mime_content:
                     mime_content = attachment.item.mime_content
+                    email_policy = SMTP if mime_content.isascii() else SMTPUTF8
                     if isinstance(mime_content, str) and not mime_content.isascii():
                         mime_content = mime_content.encode()
-                    attached_email = email.message_from_bytes(mime_content) if isinstance(mime_content, bytes) \
-                        else email.message_from_string(mime_content)
+                    attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
+                        if isinstance(mime_content, bytes) \
+                        else email.message_from_string(mime_content, policy=email_policy)
                     if attachment.item.headers:
+                        # compare header keys case-insensitive
                         attached_email_headers = []
+                        attached_email = handle_attached_email_with_incorrect_id(attached_email)
                         for h, v in attached_email.items():
                             if not isinstance(v, str):
                                 try:
@@ -2147,14 +2194,20 @@ def parse_incident_from_item(item):     # pragma: no cover
                                     continue
 
                             v = ' '.join(map(str.strip, v.split('\r\n')))
-                            attached_email_headers.append((h, v))
+                            attached_email_headers.append((h.lower(), v))
+                        demisto.debug(f'{attached_email_headers=}')
                         for header in attachment.item.headers:
                             if (
-                                    (header.name, header.value)
+                                    (header.name.lower(), header.value)
                                     not in attached_email_headers
-                                    and header.name != "Content-Type"
+                                    and header.name.lower() != "content-type"
                             ):
-                                attached_email.add_header(header.name, header.value)
+                                try:
+                                    attached_email.add_header(header.name, header.value)
+                                except ValueError as err:
+                                    if "There may be at most" not in str(err):
+                                        raise err
+
                     attached_email_bytes = attached_email.as_bytes()
                     chardet_detection = chardet.detect(attached_email_bytes)
                     encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'

@@ -1,0 +1,546 @@
+id: Cortex XDR - Search and Compare Process Executions - XDR Alerts
+version: -1
+name: Cortex XDR - Search and Compare Process Executions - XDR Alerts
+description: |-
+  This playbook is a generic playbook that receives a process name and command-line argument. It uses the "Cortex XDR IR" integration to search for the given process executions inside XDR alerts and compares the command-line argument from the results to the command-line argument received from the playbook input.
+
+  Note: Under the "Processes" input, the playbook should receive an array that contains the following keys:
+  - value: *process name*
+  - commands: *command-line arguments*.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0b1278a9-d159-4368-81bd-87b54235e6e4
+    type: start
+    task:
+      id: 0b1278a9-d159-4368-81bd-87b54235e6e4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 2451adba-d137-46b8-8231-87a851c10d5c
+    type: regular
+    task:
+      id: 2451adba-d137-46b8-8231-87a851c10d5c
+      version: -1
+      name: Set process to search
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: ProcessToSearch
+      value:
+        complex:
+          root: inputs.Processes
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b5b4a3bf-3c7d-4687-8e48-d8fb4246ac35
+    type: condition
+    task:
+      id: b5b4a3bf-3c7d-4687-8e48-d8fb4246ac35
+      version: -1
+      name: Relevant alerts found?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Alert
+                accessor: alert_name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 23befe5c-207a-406d-800b-2fa28cec5eea
+    type: title
+    task:
+      id: 23befe5c-207a-406d-800b-2fa28cec5eea
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 649283f9-b276-40ab-8f6f-6aa721139ee6
+    type: regular
+    task:
+      id: 649283f9-b276-40ab-8f6f-6aa721139ee6
+      version: -1
+      name: Compare results with the given command-line patterns
+      description: This automation calculates the similarity ratio between text and a list of strings and outputs a decimal value between 0.0 and 1.0 (1.0 if the sequences are identical, and 0.0 if they don't have anything in common).
+      scriptName: StringSimilarity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      similarity_threshold:
+        complex:
+          root: inputs.StringSimilarityThreshold
+      similiarity_threshold:
+        complex:
+          root: inputs.StringSimilarityThreshold
+      string_A:
+        complex:
+          root: PaloAltoNetworksXDR.Alert
+          accessor: actor_process_command_line
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Alert.action_process_image_command_line
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Alert.causality_actor_process_command_line
+                iscontext: true
+          - operator: uniq
+      string_B:
+        complex:
+          root: ProcessToSearch
+          accessor: commands
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 53d53c6c-d595-49fb-8f1c-18b1be64669b
+    type: regular
+    task:
+      id: 53d53c6c-d595-49fb-8f1c-18b1be64669b
+      version: -1
+      name: delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: PaloAltoNetworksXQL
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 2f2f1d1e-045b-4f4e-8a9a-dff7bf3caff7
+    type: condition
+    task:
+      id: 2f2f1d1e-045b-4f4e-8a9a-dff7bf3caff7
+      version: -1
+      name: Execution is suspicious?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: StringSimilarity
+                accessor: StringA
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: c9e637c7-6530-464d-8585-355124ad2f7c
+    type: regular
+    task:
+      id: c9e637c7-6530-464d-8585-355124ad2f7c
+      version: -1
+      name: Set findings
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Findings
+      value:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Alert
+          transformers:
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Tool Usage Found
+      output:
+        complex:
+          root: PaloAltoNetworksXDR.Alert
+          accessor: action_process_image_name
+    - incidentfield: Affected Hosts
+      output:
+        complex:
+          root: PaloAltoNetworksXDR.Alert
+          accessor: agent_hostname
+    - incidentfield: Affected Users
+      output:
+        complex:
+          root: PaloAltoNetworksXDR.Alert
+          accessor: actor_effective_username
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 4aa1117d-facd-42f5-8534-43753d47464f
+    type: condition
+    task:
+      id: 4aa1117d-facd-42f5-8534-43753d47464f
+      version: -1
+      name: Can processes be searched?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SearchXDRAlerts
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 77700ad1-d978-4c79-8743-0bbccf9fcc75
+    type: regular
+    task:
+      id: 77700ad1-d978-4c79-8743-0bbccf9fcc75
+      version: -1
+      name: Search alerts that contains the given process executions
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                          "OR": [
+                              {
+                                  "SEARCH_FIELD": "actor_process_image_name",
+                                  "SEARCH_TYPE": "EQ",
+                                  "SEARCH_VALUE": "${ProcessToSearch.value}"
+                              },
+                              {
+                                  "SEARCH_FIELD": "action_process_image_name",
+                                  "SEARCH_TYPE": "EQ",
+                                  "SEARCH_VALUE": "${ProcessToSearch.value}"
+                              },
+                              {
+                                  "SEARCH_FIELD": "causality_actor_process_image_name",
+                                  "SEARCH_TYPE": "EQ",
+                                  "SEARCH_VALUE": "${ProcessToSearch.value}"
+                              }
+                          ]
+                      }
+      time_frame:
+        complex:
+          root: inputs.HuntingTimeFrame
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_6_#default#": 0.26,
+      "7_6_#default#": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1555,
+        "width": 1030,
+        "x": 450,
+        "y": -100
+      }
+    }
+  }
+inputs:
+- key: Processes
+  value: {}
+  required: false
+  description: |-
+    Process name to search and command-line argument to compare. This input should receive an array that contains the following keys:
+    - value: *process name*
+    - commands: *command-line arguments*
+  playbookInputQuery:
+- key: HuntingTimeFrame
+  value:
+    simple: 7 Days
+  required: false
+  description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  playbookInputQuery:
+- key: StringSimilarityThreshold
+  value:
+    simple: "0.5"
+  required: false
+  description: StringSimilarity automation threshold. A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.
+  playbookInputQuery:
+- key: SearchXDRAlerts
+  value: {}
+  required: false
+  description: Set to "True" if you want to hunt for processes that are part of XDR alerts
+  playbookInputQuery:
+outputs:
+- contextPath: StringSimilarity
+  description: StringSimilarity automation results.
+  type: unknown
+- contextPath: Findings
+  description: Suspicious process executions found.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

@@ -81,7 +81,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, and 2016)'
+- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013 2016, and 2019)'
   name: defaultServerVersion
   type: 0
   section: Connect
@@ -964,6 +964,13 @@ script:
       description: The contents (body) of the email to send.
     - name: htmlBody
       description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
+    - name: bodyType
+      description: 'Whether message response body type is Text, or HTML.'
+      auto: PREDEFINED
+      defaultValue: Text
+      predefined:
+      - Text
+      - HTML
     - name: attachIDs
       description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
       isArray: true
@@ -973,8 +980,8 @@ script:
     - name: attachCIDs
       description: A CSV list of CIDs to embed attachments within the email itself.
       isArray: true
-    - name: raw_message
-      description: Raw email message from MimeContent type.
+    - description: Raw email message from MimeContent type.
+      name: raw_message
     - description: The email address from which to send mail.
       name: from
     description: Sends an email using EWS.
@@ -1015,7 +1022,7 @@ script:
       name: from
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.1.0.79987
+  dockerimage: demisto/py-ews:5.0.3.84262
   isfetch: true
   runonce: false
   script: '-'

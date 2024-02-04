@@ -9,6 +9,7 @@ from queue import Queue
 from typing import Any
 from collections.abc import Generator
 import demisto_client
+from demisto_client.demisto_api.api.default_api import DefaultApi as DemistoClient
 
 import pytz
 import requests
@@ -33,7 +34,7 @@ FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, p
 
 LOCKS_PATH = 'content-locks'
 BUCKET_NAME = os.environ.get('GCS_ARTIFACTS_BUCKET')
-BUILD_NUM = os.environ.get('CI_BUILD_ID')
+BUILD_NUM = os.environ.get('CI_JOB_ID')
 WORKFLOW_ID = os.environ.get('CI_PIPELINE_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
 ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
@@ -311,11 +312,11 @@ def load_env_results_json():
         return json.load(json_file)
 
 
-def get_server_numeric_version(client: demisto_client, is_local_run=False) -> str:
+def get_server_numeric_version(client: DemistoClient, is_local_run=False) -> str:
     """
     Gets the current server version
     Arguments:
-        client: (demisto_client): the demisto client
+        client: (DemistoClient): the demisto client
         is_local_run: (bool) when running locally, assume latest version.
 
     Returns:

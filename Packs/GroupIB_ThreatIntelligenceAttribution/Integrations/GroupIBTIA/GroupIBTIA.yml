@@ -14,25 +14,27 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: Whether to allow connections without verifying SSL certificates validity.
+- additionalinfo: Whether to allow connections without verifying SSL certificates
+    validity.
   display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - additionalinfo: Whether to use XSOAR system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - additionalinfo: Type(s) of incidents to fetch from the third party API.
   display: Colletions to fetch
+  hidden: false
   name: incident_collections
   options:
-  - compromised/account
+  - compromised/account_group
   - compromised/card
   - compromised/breached
   - bp/phishing
@@ -40,19 +42,21 @@ configuration:
   - osi/git_repository
   - osi/public_leak
   - malware/targeted_malware
-  type: 16
   required: false
-  hidden: false
+  type: 16
 - additionalinfo: Date to start fetching incidents from.
   defaultvalue: 3 days
   display: Incidents first fetch
-  name: first_fetch
-  type: 0
-  required: false
   hidden: false
-- additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 200 incidents). If you face some runtime errors, lower the value.
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: A number of requests per collection that integration sends in one
+    fetch iteration (each request picks up to 200 incidents). If you face some runtime
+    errors, lower the value.
   defaultvalue: '3'
   display: Number of requests per collection
+  hidden: false
   name: max_fetch
   options:
   - '1'
@@ -60,28 +64,49 @@ configuration:
   - '3'
   - '4'
   - '5'
-  type: 15
   required: false
-  hidden: false
+  type: 15
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
-description: "Pack helps to integrate Group-IB Threat Intelligence and get incidents directly into Cortex XSOAR. \nThe list of included collections: \nCompromised Accounts, Compromised Cards, Brand Protection Phishing, Brand Protection Phishing Kit, OSI Git Leak, OSI Public Leak, Targeted Malware."
+  type: 13
+description: "Pack helps to integrate Group-IB Threat Intelligence and get incidents\
+  \ directly into Cortex XSOAR. \nThe list of included collections: \nCompromised\
+  \ Accounts, Compromised Cards, Brand Protection Phishing, Brand Protection Phishing\
+  \ Kit, OSI Git Leak, OSI Public Leak, Targeted Malware."
+detaileddescription: "### Group-IB Threat Intelligence\n  \n  \n- This section explains\
+  \ how to configure the instance of Threat Intelligence in Cortex XSOAR.  \n  \n\
+  1. Open Group-IB TI web interface. (It may be either new interface: [https://tap.group-ib.com](https://tap.group-ib.com))\
+  \  \n2. To generate API key(password):  \n2.1. In the new interface: click on your\
+  \ name in the right upper corner -> choose **Profile** option -> switch to **Security\
+  \ and Access** tab -> click **Personal token** -> follow instructions to generate\
+  \ API token.  \n3. Your server URL is the same as your TI web interface URL.  \n\
+  4. Your username is the email that you use to enter in the web interface.\n5. Set\
+  \ classifier and mapper with Group-IB Threat Intelligence classifier and mapper\
+  \ or with our own if you want so.\n6. Go to Settings->Integrations->Pre-Processing\
+  \ Rules and set up the pre-processing rule:\n* Set up conditions: \"gibid Is not\
+  \ empty (General)\" and \"Type Doesn't equal(String) GIB Data Breach\".\n* Action:\
+  \ \"Run a script\".\n* Script: \"GIBIncidentUpdate\" (will recreate closed incidents\
+  \ if they get an update, in other cases will update the existing one) or \"GIBIncidentUpdateIncludingClosed\"\
+  (will only update incidents). \n7. Don't forget to contact Group-IB to add to allow\
+  \ list your Cortex IP or public IP of a proxy that you are using with Cortex."
 display: Group-IB Threat Intelligence
 name: Group-IB Threat Intelligence & Attribution
 script:
   commands:
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: 253b9a136f0d574149fc43691eaf7ae27aff141a.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in compromised/account collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in compromised/account collection
+      with provided ID.
+    execution: false
     name: gibtia-get-compromised-account-info
     outputs:
     - contextPath: GIBTIA.CompromisedAccount.client.ipv4.asn
@@ -153,18 +178,19 @@ script:
     - contextPath: GIBTIA.CompromisedAccount.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: ecda6f4dc85596f447314ce01e2152db9c9d3cbc.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in compromised/card collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in compromised/card collection
+      with provided ID.
+    execution: false
     name: gibtia-get-compromised-card-info
     outputs:
     - contextPath: GIBTIA.CompromisedCard.cardInfo.cvv
@@ -230,22 +256,24 @@ script:
     - contextPath: GIBTIA.CompromisedCard.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: 50a3b4abbfca5dcbec9c8b3a110598f61ba93r33.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in compromised/mule collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in compromised/mule collection
+      with provided ID.
+    execution: false
     name: gibtia-get-compromised-mule-info
     outputs:
     - contextPath: GIBTIA.CompromisedMule.account
-      description: Account number (card/phone), which was used by threat actor to cash out.
+      description: Account number (card/phone), which was used by threat actor to
+        cash out.
       type: String
     - contextPath: GIBTIA.CompromisedMule.cnc.ipv4.asn
       description: CNC ASN.
@@ -292,18 +320,19 @@ script:
     - contextPath: GIBTIA.CompromisedMule.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: 0c1426048474df19ada9d0089ef8b3efce906556.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in compromised/imei collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in compromised/imei collection
+      with provided ID.
+    execution: false
     name: gibtia-get-compromised-imei-info
     outputs:
     - contextPath: GIBTIA.CompromisedIMEI.client.ipv4.asn
@@ -363,18 +392,19 @@ script:
     - contextPath: GIBTIA.CompromisedIMEI.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: 6fd344f340f4bdc08548cb36ded62bdf.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in compromised/breached collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in compromised/breached collection
+      with provided ID.
+    execution: false
     name: gibtia-get-compromised-breached-info
     outputs:
     - contextPath: GIBTIA.DataBreach.email
@@ -395,18 +425,19 @@ script:
     - contextPath: GIBTIA.DataBreach.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: f201c253ac71f7d78db39fa111a2af9d7ee7a3f7.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in osi/git_leak collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in osi/git_leak collection
+      with provided ID.
+    execution: false
     name: gibtia-get-osi-git-leak-info
     outputs:
     - contextPath: GIBTIA.GitLeak.dateDetected
@@ -442,18 +473,19 @@ script:
     - contextPath: GIBTIA.GitLeak.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: a9a5b5cb9b971a2a037e3a0a30654185ea148095.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in osi/public_leak collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in osi/public_leak collection
+      with provided ID.
+    execution: false
     name: gibtia-get-osi-public-leak-info
     outputs:
     - contextPath: GIBTIA.PublicLeak.created
@@ -492,19 +524,20 @@ script:
     - contextPath: GIBTIA.PublicLeak.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
 
         e.g.: CVE-2021-27152.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in osi/vulnerability collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in osi/vulnerability collection
+      with provided ID.
+    execution: false
     name: gibtia-get-osi-vulnerability-info
     outputs:
     - contextPath: GIBTIA.OSIVulnerability.affectedSoftware.name
@@ -546,18 +579,19 @@ script:
     - contextPath: GIBTIA.OSIVulnerability.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: 044f3f2cb599228c1882884eb77eb073f68a25f2.
-      name: id
-      default: false
       isArray: false
+      name: id
       required: false
       secret: false
-    description: Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_kit collections with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_kit
+      collections with provided ID.
+    execution: false
     name: gibtia-get-phishing-kit-info
     outputs:
     - contextPath: GIBTIA.PhishingKit.dateDetected
@@ -599,18 +633,19 @@ script:
     - contextPath: GIBTIA.PhishingKit.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: fce7f92d0b64946cf890842d083953649b259952.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in bp/phishing and attacks/phishing collections with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in bp/phishing and attacks/phishing
+      collections with provided ID.
+    execution: false
     name: gibtia-get-phishing-info
     outputs:
     - contextPath: GIBTIA.Phishing.dateDetected
@@ -664,18 +699,19 @@ script:
     - contextPath: GIBTIA.Phishing.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: 26a05baa4025edff367b058b13c6b43e820538a5.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in attacks/ddos collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in attacks/ddos collection
+      with provided ID.
+    execution: false
     name: gibtia-get-attacks-ddos-info
     outputs:
     - contextPath: GIBTIA.AttacksDDoS.cnc.url
@@ -729,18 +765,19 @@ script:
     - contextPath: GIBTIA.AttacksDDoS.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: 6009637a1135cd001ef46e21.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in attacks/deface collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in attacks/deface collection
+      with provided ID.
+    execution: false
     name: gibtia-get-attacks-deface-info
     outputs:
     - contextPath: GIBTIA.AttacksDeface.date
@@ -773,29 +810,30 @@ script:
     - contextPath: GIBTIA.AttacksDeface.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: 1b09d389d016121afbffe481a14b30ea995876e4.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Is threat APT.
+      isArray: false
       name: isAPT
       predefined:
       - 'true'
       - 'false'
-      default: false
-      isArray: false
       required: false
       secret: false
-    description: Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT flag is true) collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in hi/threat (or in apt/threat
+      if the APT flag is true) collection with provided ID.
+    execution: false
     name: gibtia-get-threat-info
     outputs:
     - contextPath: GIBTIA.Threat.contacts.account
@@ -903,29 +941,30 @@ script:
     - contextPath: GIBTIA.Threat.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB internal threatActor ID.
         e.g.: 0d4496592ac3a0f5511cd62ef29887f48d9cb545.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Is threat actor APT group.
+      isArray: false
       name: isAPT
       predefined:
       - 'true'
       - 'false'
-      default: false
-      isArray: false
       required: false
       secret: false
-    description: Command performs Group IB event lookup in hi/threat_actor (or in apt/threat_actor if the APT flag is true) collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in hi/threat_actor (or in
+      apt/threat_actor if the APT flag is true) collection with provided ID.
+    execution: false
     name: gibtia-get-threat-actor-info
     outputs:
     - contextPath: GIBTIA.ThreatActor.aliases
@@ -985,18 +1024,19 @@ script:
     - contextPath: GIBTIA.ThreatActor.stat.sectors
       description: Sectors attacked by threat actor.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: 109.70.100.46.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in suspicious_ip/tor_node collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in suspicious_ip/tor_node
+      collection with provided ID.
+    execution: false
     name: gibtia-get-suspicious-ip-tor-node-info
     outputs:
     - contextPath: GIBTIA.SuspiciousIPTorNode.ipv4.asn
@@ -1017,18 +1057,19 @@ script:
     - contextPath: GIBTIA.SuspiciousIPTorNode.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: cc6a2856da2806b03839f81aa214f22dbcfd7369.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in suspicious_ip/open_proxy collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in suspicious_ip/open_proxy
+      collection with provided ID.
+    execution: false
     name: gibtia-get-suspicious-ip-open-proxy-info
     outputs:
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.asn
@@ -1058,18 +1099,19 @@ script:
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: 02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in suspicious_ip/socks_proxy collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in suspicious_ip/socks_proxy
+      collection with provided ID.
+    execution: false
     name: gibtia-get-suspicious-ip-socks-proxy-info
     outputs:
     - contextPath: GIBTIA.SuspiciousIPSocksProxy.ipv4.asn
@@ -1090,18 +1132,19 @@ script:
     - contextPath: GIBTIA.SuspiciousIPSocksProxy.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: 5bbd38acf0b9e4f04123af494d485f6c49221e98.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in malware/targeted_malware collection with provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in malware/targeted_malware
+      collection with provided ID.
+    execution: false
     name: gibtia-get-malware-targeted-malware-info
     outputs:
     - contextPath: GIBTIA.TargetedMalware.date
@@ -1155,26 +1198,27 @@ script:
     - contextPath: GIBTIA.TargetedMalware.evaluation.severity
       description: Event severity.
       type: String
-    deprecated: false
+  - deprecated: false
+    description: Returns list of available collections.
     execution: false
-  - description: Returns list of available collections.
     name: gibtia-get-available-collections
     outputs:
     - contextPath: GIBTIA.OtherInfo.collections
       description: List of availiable collections.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         GIB event id.
         e.g.: aeed277396e27e375d030a91533aa232444d0089.
+      isArray: false
       name: id
       required: true
-      default: false
-      isArray: false
       secret: false
-    description: Command performs Group IB event lookup in malware/cnc collection by provided ID.
+    deprecated: false
+    description: Command performs Group IB event lookup in malware/cnc collection
+      by provided ID.
+    execution: false
     name: gibtia-get-malware-cnc-info
     outputs:
     - contextPath: GIBTIA.MalwareCNC.dateDetected
@@ -1216,18 +1260,18 @@ script:
     - contextPath: GIBTIA.MalwareCNC.id
       description: GIB event ID.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         Query you want to search.
         e.g.: 8.8.8.8.
+      isArray: false
       name: query
       required: true
-      default: false
-      isArray: false
       secret: false
+    deprecated: false
     description: Command performs global Group IB search.
+    execution: false
     name: gibtia-global-search
     outputs:
     - contextPath: apiPath
@@ -1239,11 +1283,11 @@ script:
     - contextPath: GIBLink
       description: Link to GIB TI&A interface.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
     - auto: PREDEFINED
+      default: false
       description: Collection you want to search.
+      isArray: false
       name: collection_name
       predefined:
       - compromised/account
@@ -1269,30 +1313,30 @@ script:
       - malware/cnc
       - malware/targeted_malware
       required: true
-      default: false
-      isArray: false
       secret: false
-    - description: |-
+    - default: false
+      description: |-
         Query you want to search.
         e.g.: 8.8.8.8.
+      isArray: false
       name: query
       required: true
-      default: false
-      isArray: false
       secret: false
-    - description: Start date of search session.
+    - default: false
+      description: Start date of search session.
+      isArray: false
       name: date_from
-      default: false
-      isArray: false
       required: false
       secret: false
-    - description: End date of search session.
+    - default: false
+      description: End date of search session.
+      isArray: false
       name: date_to
-      default: false
-      isArray: false
       required: false
       secret: false
+    deprecated: false
     description: Command performs Group IB search in selected collection.
+    execution: false
     name: gibtia-local-search
     outputs:
     - contextPath: id
@@ -1301,17 +1345,15 @@ script:
     - contextPath: additional_info
       description: Additional info about feed.
       type: String
-    deprecated: false
-    execution: false
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.80593
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  feed: false
-  longRunning: false
-  longRunningPort: false
 tests:
 - Group-IB Threat Intelligence -Test
 fromversion: 6.0.0

@@ -508,7 +508,7 @@ script:
       - wsman_server
     - auto: PREDEFINED
       defaultValue: '='
-      description: The compare method applied when matching the fields against their values. For example, to find devices with names that begin with 'SEA1' (set name=SEA1, operator=startswith)
+      description: The compare method applied when matching the fields against their values. For example, to find devices with names that begin with 'SEA1' (set name=SEA1, operator=startswith).
       name: operator
       predefined:
       - '>'
@@ -1226,7 +1226,7 @@ script:
     - auto: PREDEFINED
       description: |-
         The aggregation period for metrics.
-        Supported values: "auto", "1sec", "30sec", "5min", "1hr", "24hr"
+        Supported values: "auto", "1sec", "30sec", "5min", "1hr", "24hr".
       name: cycle
       predefined:
       - auto
@@ -1238,7 +1238,7 @@ script:
       required: true
     - description: |-
         The beginning timestamp for the request. Return only metrics collected after this time. Time is expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with a unit suffix.
-        For example, to request devices active in the last 30 minutes, specify the following parameter value: "-30m"
+        For example, to request devices active in the last 30 minutes, specify the following parameter value: "-30m".
       name: from_time
       required: true
     - description: The group of metrics that are searchable in the metric catalog.
@@ -1251,7 +1251,7 @@ script:
     - auto: PREDEFINED
       description: |-
         Indicates the object type of unique identifiers specified in the object_ids property.
-        Supported values: "network", "device", "application", "vlan", "device_group", "system"
+        Supported values: "network", "device", "application", "vlan", "device_group", "system".
       name: object_type
       predefined:
       - network
@@ -1263,7 +1263,7 @@ script:
       required: true
     - description: |-
         The ending timestamp for the request. Return only metrics collected before this time. Time is expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with a unit suffix.
-        For example, to request devices active in the last 30 minutes, specify the following parameter value: "-30m"
+        For example, to request devices active in the last 30 minutes, specify the following parameter value: "-30m".
       name: until_time
       required: true
     - description: "An array of metric specification objects. \nRefer to the ExtraHop REST API Guide at https://docs.extrahop.com/current/rest-api-guide/"
@@ -1291,7 +1291,7 @@ script:
       description: The ID of the object.
       type: Number
     - contextPath: ExtraHop.Metrics.stats.time
-      description: The time for which metrics were collected
+      description: The time for which metrics were collected.
       type: Number
     - contextPath: ExtraHop.Metrics.stats.duration
       description: The duration that metrics were collected.
@@ -1315,30 +1315,30 @@ script:
         Returns detections that occurred after the specified date, expressed in milliseconds since the epoch. Detections that started before the specified date are returned if the detection was ongoing at that time.
 
         For eg:
-        from=1673508360001
+        from=1673508360001.
       name: from
     - defaultValue: '200'
       description: |-
         Returns no more than the specified number of detections.
 
         For eg:
-        limit=10
+        limit=10.
       name: limit
     - description: |-
         The number of detections to skip for pagination.
 
         For eg:
-        offset=100
+        offset=100.
       name: offset
-    - description: "Sorts returned detections by the specified fields. \nComma separated \"field\" \"direction\" is the accepted format.\nBy default, detections are sorted by most recent update time and then id in ascending order.\n\nFor eg:\nsort=\"end_time asc,id desc\""
+    - description: "Sorts returned detections by the specified fields. \nComma separated \"field\" \"direction\" is the accepted format.\nBy default, detections are sorted by most recent update time and then id in ascending order.\n\nFor eg:\nsort=\"end_time asc,id desc\"."
       name: sort
     - description: |-
         Return detections that ended before the specified date, expressed in milliseconds since the epoch.
 
         For eg:
-        until=1673509360001
+        until=1673509360001.
       name: until
-    - description: "Return detections that were modified on or after the specified date, expressed in milliseconds since the epoch.\n\nFor eg: 1675416916102 "
+    - description: "Return detections that were modified on or after the specified date, expressed in milliseconds since the epoch.\n\nFor eg: 1675416916102."
       name: mod_time
     description: Get detections from ExtraHop Reveal(x).
     name: extrahop-detections-list
@@ -2297,976 +2297,976 @@ script:
       description: Marked as suspicious by Threat Intelligence.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.accessTime
-      description: Access Time
+      description: Access Time.
       type: Number
     - contextPath: ExtraHop.Record.Source.ackCode
-      description: Ack Code
+      description: Ack Code.
       type: String
     - contextPath: ExtraHop.Record.Source.ackId
-      description: Ack ID
+      description: Ack ID.
       type: String
     - contextPath: ExtraHop.Record.Source.adminQueue
-      description: Admin Queue
+      description: Admin Queue.
       type: String
     - contextPath: ExtraHop.Record.Source.age
-      description: Age
+      description: Age.
       type: Number
     - contextPath: ExtraHop.Record.Source.alertCode
-      description: Alert Code
+      description: Alert Code.
       type: Number
     - contextPath: ExtraHop.Record.Source.alertLevel
-      description: Alert Level
+      description: Alert Level.
       type: String
     - contextPath: ExtraHop.Record.Source.answer
-      description: Answer
+      description: Answer.
       type: Unknown
     - contextPath: ExtraHop.Record.Source.answers
-      description: Answers
+      description: Answers.
       type: Unknown
     - contextPath: ExtraHop.Record.Source.appName
-      description: Application Name
+      description: Application Name.
       type: String
     - contextPath: ExtraHop.Record.Source.application
-      description: Application
+      description: Application.
       type: Unknown
     - contextPath: ExtraHop.Record.Source.args
-      description: Arguments
+      description: Arguments.
       type: String
     - contextPath: ExtraHop.Record.Source.authDomain
-      description: Authentication Domain
+      description: Authentication Domain.
       type: String
     - contextPath: ExtraHop.Record.Source.authMethod
-      description: Authentication Method
+      description: Authentication Method.
       type: String
     - contextPath: ExtraHop.Record.Source.authResult
-      description: Auth Result
+      description: Auth Result.
       type: Number
     - contextPath: ExtraHop.Record.Source.authType
-      description: Auth Type
+      description: Auth Type.
       type: Number
     - contextPath: ExtraHop.Record.Source.authenticator
-      description: Authenticator
+      description: Authenticator.
       type: String
     - contextPath: ExtraHop.Record.Source.bindDN
-      description: Bind Distinguished Name
+      description: Bind Distinguished Name.
       type: String
     - contextPath: ExtraHop.Record.Source.bytes
-      description: Bytes
+      description: Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.cName
-      description: Canonical Endpoint
+      description: Canonical Endpoint.
       type: String
     - contextPath: ExtraHop.Record.Source.cNameType
-      description: Client Name Type
+      description: Client Name Type.
       type: String
     - contextPath: ExtraHop.Record.Source.cNames
-      description: Client Name Components
+      description: Client Name Components.
       type: String
     - contextPath: ExtraHop.Record.Source.cRealm
-      description: Client Realm
+      description: Client Realm.
       type: String
     - contextPath: ExtraHop.Record.Source.callId
-      description: Call ID
+      description: Call ID.
       type: String
     - contextPath: ExtraHop.Record.Source.certificateFingerprint
-      description: Certificate Fingerprint
+      description: Certificate Fingerprint.
       type: String
     - contextPath: ExtraHop.Record.Source.certificateIsSelfSigned
-      description: Certificate Self Signed
+      description: Certificate Self Signed.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.certificateIssuer
-      description: Certificate Issuer
+      description: Certificate Issuer.
       type: String
     - contextPath: ExtraHop.Record.Source.certificateKeySize
-      description: Certificate Key Size
+      description: Certificate Key Size.
       type: Number
     - contextPath: ExtraHop.Record.Source.certificateNotAfter
-      description: Certificate Not After
+      description: Certificate Not After.
       type: Number
     - contextPath: ExtraHop.Record.Source.certificateNotBefore
-      description: Certificate Not Before
+      description: Certificate Not Before.
       type: Number
     - contextPath: ExtraHop.Record.Source.certificateSignatureAlgorithm
-      description: Certificate Signature Algorithm
+      description: Certificate Signature Algorithm.
       type: String
     - contextPath: ExtraHop.Record.Source.certificateSubject
-      description: Certificate Subject
+      description: Certificate Subject.
       type: String
     - contextPath: ExtraHop.Record.Source.certificateSubjectAlternativeNames
-      description: Certificate Subject Alternative Names
+      description: Certificate Subject Alternative Names.
       type: String
     - contextPath: ExtraHop.Record.Source.channel
-      description: Channel
+      description: Channel.
       type: String
     - contextPath: ExtraHop.Record.Source.cipherSuite
-      description: Cipher Suite
+      description: Cipher Suite.
       type: String
     - contextPath: ExtraHop.Record.Source.client.type
-      description: Client Type
+      description: Client Type.
       type: String
     - contextPath: ExtraHop.Record.Source.client.value
-      description: Client Discovery ID
+      description: Client Discovery ID.
       type: String
     - contextPath: ExtraHop.Record.Source.clientAddr.type
-      description: Client IP Address Type
+      description: Client IP Address Type.
       type: String
     - contextPath: ExtraHop.Record.Source.clientAddr.value
-      description: Client IP Address Value
+      description: Client IP Address Value.
       type: String
     - contextPath: ExtraHop.Record.Source.clientBuild
-      description: Client Build
+      description: Client Build.
       type: String
     - contextPath: ExtraHop.Record.Source.clientBytes
-      description: Client Bytes
+      description: Client Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.clientCGPMsgCount
-      description: Client CGP Messages
+      description: Client CGP Messages.
       type: Number
     - contextPath: ExtraHop.Record.Source.clientCertificateRequested
-      description: Client Certificate Requested
+      description: Client Certificate Requested.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.clientCipherAlgorithm
-      description: Client Cipher Algorithm
+      description: Client Cipher Algorithm.
       type: String
     - contextPath: ExtraHop.Record.Source.clientCompressionAlgorithm
-      description: Client Compression Algorithm
+      description: Client Compression Algorithm.
       type: String
     - contextPath: ExtraHop.Record.Source.clientImplementation
-      description: Client Implementation
+      description: Client Implementation.
       type: String
     - contextPath: ExtraHop.Record.Source.clientL2Bytes
-      description: Client L2 Bytes
+      description: Client L2 Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.clientLatency
-      description: Client Latency
+      description: Client Latency.
       type: Number
     - contextPath: ExtraHop.Record.Source.clientMacAlgorithm
-      description: Client MAC Algorithm
+      description: Client MAC Algorithm.
       type: String
     - contextPath: ExtraHop.Record.Source.clientMachine
-      description: Client Machine
+      description: Client Machine.
       type: String
     - contextPath: ExtraHop.Record.Source.clientMsgCount
-      description: Client Messages
+      description: Client Messages.
       type: Number
     - contextPath: ExtraHop.Record.Source.clientName
-      description: Client Name
+      description: Client Name.
       type: String
     - contextPath: ExtraHop.Record.Source.clientPkts
-      description: Client Packets
+      description: Client Packets.
       type: Number
     - contextPath: ExtraHop.Record.Source.clientPort
-      description: Client Port
+      description: Client Port.
       type: Number
     - contextPath: ExtraHop.Record.Source.clientPrincipalName
-      description: Client Principal Name
+      description: Client Principal Name.
       type: String
     - contextPath: ExtraHop.Record.Source.clientRTO
-      description: Client RTO
+      description: Client RTO.
       type: Number
     - contextPath: ExtraHop.Record.Source.clientReqDelay
-      description: Client Request Delay
+      description: Client Request Delay.
       type: Number
     - contextPath: ExtraHop.Record.Source.clientType
-      description: ICA Client Type
+      description: ICA Client Type.
       type: String
     - contextPath: ExtraHop.Record.Source.clientVersion
-      description: Client Version
+      description: Client Version.
       type: String
     - contextPath: ExtraHop.Record.Source.clientZeroWnd
-      description: Client Zero Windows
+      description: Client Zero Windows.
       type: Number
     - contextPath: ExtraHop.Record.Source.collection
-      description: Collection
+      description: Collection.
       type: String
     - contextPath: ExtraHop.Record.Source.command
-      description: Command
+      description: Command.
       type: String
     - contextPath: ExtraHop.Record.Source.contentType
-      description: Content Type
+      description: Content Type.
       type: String
     - contextPath: ExtraHop.Record.Source.conversationId
-      description: Conversation ID
+      description: Conversation ID.
       type: Number
     - contextPath: ExtraHop.Record.Source.cookie
-      description: Cookie
+      description: Cookie.
       type: String
     - contextPath: ExtraHop.Record.Source.correlationId
-      description: Correlation ID
+      description: Correlation ID.
       type: String
     - contextPath: ExtraHop.Record.Source.cwd
-      description: Current Working Directory
+      description: Current Working Directory.
       type: String
     - contextPath: ExtraHop.Record.Source.dataSize
-      description: Data Size
+      description: Data Size.
       type: Number
     - contextPath: ExtraHop.Record.Source.database
-      description: Database
+      description: Database.
       type: String
     - contextPath: ExtraHop.Record.Source.deltaBytes
-      description: Delta Bytes
+      description: Delta Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.deltaPkts
-      description: Delta Packets
+      description: Delta Packets.
       type: Number
     - contextPath: ExtraHop.Record.Source.desktopHeight
-      description: Desktop Height
+      description: Desktop Height.
       type: Number
     - contextPath: ExtraHop.Record.Source.desktopWidth
-      description: Desktop Width
+      description: Desktop Width.
       type: Number
     - contextPath: ExtraHop.Record.Source.destination
-      description: Destination
+      description: Destination.
       type: String
     - contextPath: ExtraHop.Record.Source.dn
-      description: Distinguished Name
+      description: Distinguished Name.
       type: String
     - contextPath: ExtraHop.Record.Source.domain
-      description: Domain
+      description: Domain.
       type: String
     - contextPath: ExtraHop.Record.Source.drops
-      description: Drops
+      description: Drops.
       type: Number
     - contextPath: ExtraHop.Record.Source.dscpName
-      description: DSCP
+      description: DSCP.
       type: String
     - contextPath: ExtraHop.Record.Source.dstQueueMgr
-      description: Destination Queue Manager
+      description: Destination Queue Manager.
       type: String
     - contextPath: ExtraHop.Record.Source.dups
-      description: Dups
+      description: Dups.
       type: Number
     - contextPath: ExtraHop.Record.Source.duration
-      description: Duration
+      description: Duration.
       type: Number
     - contextPath: ExtraHop.Record.Source.egressInterface
-      description: Egress Interface
+      description: Egress Interface.
       type: Unknown
     - contextPath: ExtraHop.Record.Source.error
-      description: Error
+      description: Error.
       type: String
     - contextPath: ExtraHop.Record.Source.errorDetail
-      description: Error Detail
+      description: Error Detail.
       type: String
     - contextPath: ExtraHop.Record.Source.expiration
-      description: Expiration
+      description: Expiration.
       type: Number
     - contextPath: ExtraHop.Record.Source.first
-      description: First
+      description: First.
       type: Number
     - contextPath: ExtraHop.Record.Source.flowId
-      description: Flow
+      description: Flow.
       type: String
     - contextPath: ExtraHop.Record.Source.format
-      description: Format
+      description: Format.
       type: String
     - contextPath: ExtraHop.Record.Source.frameCutDuration
-      description: Frame Cut Duration
+      description: Frame Cut Duration.
       type: Number
     - contextPath: ExtraHop.Record.Source.frameSendDuration
-      description: Frame Send Duration
+      description: Frame Send Duration.
       type: Number
     - contextPath: ExtraHop.Record.Source.from
-      description: From
+      description: From.
       type: String
     - contextPath: ExtraHop.Record.Source.functionId
-      description: Function ID
+      description: Function ID.
       type: Number
     - contextPath: ExtraHop.Record.Source.functionName
-      description: Function Name
+      description: Function Name.
       type: String
     - contextPath: ExtraHop.Record.Source.fwdReqClientAddr.type
-      description: Forwarded Request Client IP Address Type
+      description: Forwarded Request Client IP Address Type.
       type: String
     - contextPath: ExtraHop.Record.Source.fwdReqClientAddr.value
-      description: Forwarded Request Client IP Address Value
+      description: Forwarded Request Client IP Address Value.
       type: String
     - contextPath: ExtraHop.Record.Source.fwdReqHost
-      description: Forwarded Request Host
+      description: Forwarded Request Host.
       type: String
     - contextPath: ExtraHop.Record.Source.fwdReqIsEncrypted
-      description: Forwarded Request Is Encrypted
+      description: Forwarded Request Is Encrypted.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.fwdReqServerName
-      description: Forwarded Request Server Name
+      description: Forwarded Request Server Name.
       type: String
     - contextPath: ExtraHop.Record.Source.fwdReqServerPort
-      description: Forwarded Request Server Port
+      description: Forwarded Request Server Port.
       type: Number
     - contextPath: ExtraHop.Record.Source.gwAddr.type
-      description: Gateway IP Address Type
+      description: Gateway IP Address Type.
       type: String
     - contextPath: ExtraHop.Record.Source.gwAddr.value
-      description: Gateway IP Address Value
+      description: Gateway IP Address Value.
       type: String
     - contextPath: ExtraHop.Record.Source.handshakeTime
-      description: Handshake Time
+      description: Handshake Time.
       type: Number
     - contextPath: ExtraHop.Record.Source.hasSDP
-      description: Has SDP
+      description: Has SDP.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.hassh
-      description: HASSH
+      description: HASSH.
       type: String
     - contextPath: ExtraHop.Record.Source.hasshServer
-      description: HASSH Server
+      description: HASSH Server.
       type: String
     - contextPath: ExtraHop.Record.Source.heartbeatPayloadLength
-      description: Heartbeat Payload Length
+      description: Heartbeat Payload Length.
       type: Number
     - contextPath: ExtraHop.Record.Source.heartbeatType
-      description: Heartbeat Type
+      description: Heartbeat Type.
       type: Number
     - contextPath: ExtraHop.Record.Source.hitCount
-      description: Hit Count
+      description: Hit Count.
       type: Number
     - contextPath: ExtraHop.Record.Source.hopLimit
-      description: Hop Limit
+      description: Hop Limit.
       type: Number
     - contextPath: ExtraHop.Record.Source.host
-      description: Host
+      description: Host.
       type: String
     - contextPath: ExtraHop.Record.Source.htype
-      description: Hardware Address Type
+      description: Hardware Address Type.
       type: Number
     - contextPath: ExtraHop.Record.Source.ingressInterface
-      description: Ingress Interface
+      description: Ingress Interface.
       type: Unknown
     - contextPath: ExtraHop.Record.Source.interface
-      description: Interface
+      description: Interface.
       type: String
     - contextPath: ExtraHop.Record.Source.isAborted
-      description: Aborted
+      description: Aborted.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isAuthoritative
-      description: Authoritative
+      description: Authoritative.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isBinaryProtocol
-      description: Binary Protocol
+      description: Binary Protocol.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isCheckingDisabled
-      description: Checking Disabled
+      description: Checking Disabled.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isCleanShutdown
-      description: Clean Shutdown
+      description: Clean Shutdown.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isClientDiskRead
-      description: Client Disk Read
+      description: Client Disk Read.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isClientDiskWrite
-      description: Client Disk Write
+      description: Client Disk Write.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isCommandCreate
-      description: Create Command
+      description: Create Command.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isCommandDelete
-      description: Delete Command
+      description: Delete Command.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isCommandFileInfo
-      description: FileInfo Command
+      description: FileInfo Command.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isCommandLock
-      description: Lock Command
+      description: Lock Command.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isCommandRead
-      description: Read Command
+      description: Read Command.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isCommandRename
-      description: Rename Command
+      description: Rename Command.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isCommandWrite
-      description: Write Command
+      description: Write Command.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isCompressed
-      description: Compressed
+      description: Compressed.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isEncrypted
-      description: Encrypted
+      description: Encrypted.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isNoReply
-      description: No Reply
+      description: No Reply.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isPipelined
-      description: Pipelined
+      description: Pipelined.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isRecursionAvailable
-      description: Recursion Available
+      description: Recursion Available.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isRecursionDesired
-      description: Recursion Desired
+      description: Recursion Desired.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isRenegotiate
-      description: Renegotiate
+      description: Renegotiate.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isReqAborted
-      description: Request Aborted
+      description: Request Aborted.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isReqTimeout
-      description: Request Timed Out
+      description: Request Timed Out.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isReqTruncated
-      description: Request Truncated
+      description: Request Truncated.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isRspAborted
-      description: Response Aborted
+      description: Response Aborted.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isRspChunked
-      description: Chunked
+      description: Chunked.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isRspCompressed
-      description: Rsp Compressed
+      description: Rsp Compressed.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isRspImplicit
-      description: Response Implicit
+      description: Response Implicit.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isRspTruncated
-      description: Response Truncated
+      description: Response Truncated.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isSQLi
-      description: Contains SQLi
+      description: Contains SQLi.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isSharedSession
-      description: Shared Session
+      description: Shared Session.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isSubOperation
-      description: Is a suboperation
+      description: Is a suboperation.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isWeakCipherSuite
-      description: Weak Cipher Suite
+      description: Weak Cipher Suite.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.isXSS
-      description: Contains XSS
+      description: Contains XSS.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.ja3Hash
-      description: JA3 Hash
+      description: JA3 Hash.
       type: String
     - contextPath: ExtraHop.Record.Source.ja3sHash
-      description: JA3S Hash
+      description: JA3S Hash.
       type: String
     - contextPath: ExtraHop.Record.Source.jitter
-      description: Jitter
+      description: Jitter.
       type: Number
     - contextPath: ExtraHop.Record.Source.kexAlgorithm
-      description: KEX Algorithm
+      description: KEX Algorithm.
       type: String
     - contextPath: ExtraHop.Record.Source.keyboardLayout
-      description: Keyboard Layout
+      description: Keyboard Layout.
       type: String
     - contextPath: ExtraHop.Record.Source.l2Bytes
-      description: L2 Bytes
+      description: L2 Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.l7proto
-      description: L7 Protocol
+      description: L7 Protocol.
       type: String
     - contextPath: ExtraHop.Record.Source.label
-      description: Label
+      description: Label.
       type: String
     - contextPath: ExtraHop.Record.Source.last
-      description: Last
+      description: Last.
       type: Number
     - contextPath: ExtraHop.Record.Source.launchParams
-      description: Parameters
+      description: Parameters.
       type: String
     - contextPath: ExtraHop.Record.Source.loadTime
-      description: Load Time
+      description: Load Time.
       type: Number
     - contextPath: ExtraHop.Record.Source.loginTime
-      description: Login Time
+      description: Login Time.
       type: Number
     - contextPath: ExtraHop.Record.Source.method
-      description: Method
+      description: Method.
       type: String
     - contextPath: ExtraHop.Record.Source.missCount
-      description: Miss Count
+      description: Miss Count.
       type: Number
     - contextPath: ExtraHop.Record.Source.mos
-      description: MOS
+      description: MOS.
       type: Number
     - contextPath: ExtraHop.Record.Source.msgClass
-      description: Message Class
+      description: Message Class.
       type: String
     - contextPath: ExtraHop.Record.Source.msgCode
-      description: Message Code
+      description: Message Code.
       type: Number
     - contextPath: ExtraHop.Record.Source.msgFormat
-      description: Message Format
+      description: Message Format.
       type: String
     - contextPath: ExtraHop.Record.Source.msgId
-      description: Message ID
+      description: Message ID.
       type: Number
     - contextPath: ExtraHop.Record.Source.msgLength
-      description: Message Length
+      description: Message Length.
       type: Number
     - contextPath: ExtraHop.Record.Source.msgSize
-      description: Message Size
+      description: Message Size.
       type: Number
     - contextPath: ExtraHop.Record.Source.msgText
-      description: Message Text
+      description: Message Text.
       type: String
     - contextPath: ExtraHop.Record.Source.msgType
-      description: Message Type
+      description: Message Type.
       type: String
     - contextPath: ExtraHop.Record.Source.network
-      description: Flow Network
+      description: Flow Network.
       type: Unknown
     - contextPath: ExtraHop.Record.Source.networkAddr.type
-      description: Flow Network IP Address Type
+      description: Flow Network IP Address Type.
       type: String
     - contextPath: ExtraHop.Record.Source.networkAddr.value
-      description: Flow Network IP Address Value
+      description: Flow Network IP Address Value.
       type: String
     - contextPath: ExtraHop.Record.Source.networkLatency
-      description: Network Latency
+      description: Network Latency.
       type: Number
     - contextPath: ExtraHop.Record.Source.nextHop.type
-      description: Next Hop IP Address Type
+      description: Next Hop IP Address Type.
       type: String
     - contextPath: ExtraHop.Record.Source.nextHop.value
-      description: Next Hop IP Address Value
+      description: Next Hop IP Address Value.
       type: String
     - contextPath: ExtraHop.Record.Source.nextHopMTU
-      description: Next Hop MTU
+      description: Next Hop MTU.
       type: Number
     - contextPath: ExtraHop.Record.Source.notAfter
-      description: Certificate Not After
+      description: Certificate Not After.
       type: Number
     - contextPath: ExtraHop.Record.Source.offeredAddr.type
-      description: Offered IP Address Type
+      description: Offered IP Address Type.
       type: String
     - contextPath: ExtraHop.Record.Source.offeredAddr.value
-      description: Offered IP Address Value
+      description: Offered IP Address Value.
       type: String
     - contextPath: ExtraHop.Record.Source.offset
-      description: Offset
+      description: Offset.
       type: Number
     - contextPath: ExtraHop.Record.Source.opcode
-      description: Opcode
+      description: Opcode.
       type: String
     - contextPath: ExtraHop.Record.Source.operation
-      description: Operation
+      description: Operation.
       type: String
     - contextPath: ExtraHop.Record.Source.option
-      description: Options
+      description: Options.
       type: String
     - contextPath: ExtraHop.Record.Source.origin
-      description: Origin
+      description: Origin.
       type: String
     - contextPath: ExtraHop.Record.Source.outOfOrder
-      description: Out Of Order
+      description: Out Of Order.
       type: Number
     - contextPath: ExtraHop.Record.Source.path
-      description: Path
+      description: Path.
       type: String
     - contextPath: ExtraHop.Record.Source.payloadType
-      description: Payload Type
+      description: Payload Type.
       type: String
     - contextPath: ExtraHop.Record.Source.payloadTypeId
-      description: Payload Type ID
+      description: Payload Type ID.
       type: Number
     - contextPath: ExtraHop.Record.Source.persistent
-      description: Persistent
+      description: Persistent.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.pkts
-      description: Packets
+      description: Packets.
       type: Number
     - contextPath: ExtraHop.Record.Source.pointer
-      description: Pointer
+      description: Pointer.
       type: Number
     - contextPath: ExtraHop.Record.Source.printerName
-      description: Printer Name
+      description: Printer Name.
       type: String
     - contextPath: ExtraHop.Record.Source.priority
-      description: Priority
+      description: Priority.
       type: Number
     - contextPath: ExtraHop.Record.Source.procedure
-      description: Procedure
+      description: Procedure.
       type: String
     - contextPath: ExtraHop.Record.Source.processingTime
-      description: Processing Time
+      description: Processing Time.
       type: Number
     - contextPath: ExtraHop.Record.Source.program
-      description: Program
+      description: Program.
       type: String
     - contextPath: ExtraHop.Record.Source.proto
-      description: IP Protocol
+      description: IP Protocol.
       type: String
     - contextPath: ExtraHop.Record.Source.protocol
-      description: Protocol
+      description: Protocol.
       type: String
     - contextPath: ExtraHop.Record.Source.putAppName
-      description: Put Application Name
+      description: Put Application Name.
       type: String
     - contextPath: ExtraHop.Record.Source.qname
-      description: Query Name
+      description: Query Name.
       type: String
     - contextPath: ExtraHop.Record.Source.qtype
-      description: Query Type
+      description: Query Type.
       type: String
     - contextPath: ExtraHop.Record.Source.query
-      description: Query
+      description: Query.
       type: String
     - contextPath: ExtraHop.Record.Source.queue
-      description: Queue
+      description: Queue.
       type: String
     - contextPath: ExtraHop.Record.Source.queueMgr
-      description: Queue Manager
+      description: Queue Manager.
       type: String
     - contextPath: ExtraHop.Record.Source.rFactor
-      description: R Factor
+      description: R Factor.
       type: Number
     - contextPath: ExtraHop.Record.Source.realm
-      description: Server Realm
+      description: Server Realm.
       type: String
     - contextPath: ExtraHop.Record.Source.receiver.type
-      description: Receiver Type
+      description: Receiver Type.
       type: String
     - contextPath: ExtraHop.Record.Source.receiver.value
-      description: Receiver Discovery ID
+      description: Receiver Discovery ID.
       type: String
     - contextPath: ExtraHop.Record.Source.receiverAddr.type
-      description: Receiver IP Address Type
+      description: Receiver IP Address Type.
       type: String
     - contextPath: ExtraHop.Record.Source.receiverAddr.value
-      description: Receiver IP Address Value
+      description: Receiver IP Address Value.
       type: String
     - contextPath: ExtraHop.Record.Source.receiverAsn
-      description: Receiver ASN
+      description: Receiver ASN.
       type: Number
     - contextPath: ExtraHop.Record.Source.receiverBytes
-      description: Receiver Bytes
+      description: Receiver Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.receiverIsBroker
-      description: To Broker
+      description: To Broker.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.receiverL2Bytes
-      description: Receiver L2 Bytes
+      description: Receiver L2 Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.receiverPkts
-      description: Receiver Packets
+      description: Receiver Packets.
       type: Number
     - contextPath: ExtraHop.Record.Source.receiverPort
-      description: Receiver Port
+      description: Receiver Port.
       type: Number
     - contextPath: ExtraHop.Record.Source.receiverPrefixLength
-      description: Receiver Prefix Length
+      description: Receiver Prefix Length.
       type: Number
     - contextPath: ExtraHop.Record.Source.receiverRTO
-      description: Receiver RTO
+      description: Receiver RTO.
       type: Number
     - contextPath: ExtraHop.Record.Source.receiverZeroWnd
-      description: Receiver Zero Windows
+      description: Receiver Zero Windows.
       type: Number
     - contextPath: ExtraHop.Record.Source.recipient
-      description: Recipient
+      description: Recipient.
       type: String
     - contextPath: ExtraHop.Record.Source.recipientList
-      description: Recipient List
+      description: Recipient List.
       type: String
     - contextPath: ExtraHop.Record.Source.redeliveryCount
-      description: Redelivery Count
+      description: Redelivery Count.
       type: Number
     - contextPath: ExtraHop.Record.Source.referer
-      description: Referer
+      description: Referer.
       type: String
     - contextPath: ExtraHop.Record.Source.renameDirChanged
-      description: Rename Directory Changed
+      description: Rename Directory Changed.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.replyTo
-      description: Reply To
+      description: Reply To.
       type: String
     - contextPath: ExtraHop.Record.Source.reqBytes
-      description: Request Bytes
+      description: Request Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.reqKey
-      description: Request Key
+      description: Request Key.
       type: String
     - contextPath: ExtraHop.Record.Source.reqL2Bytes
-      description: Request L2 Bytes
+      description: Request L2 Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.reqPdu
-      description: Request PDU Type
+      description: Request PDU Type.
       type: String
     - contextPath: ExtraHop.Record.Source.reqPkts
-      description: Request Packets
+      description: Request Packets.
       type: Number
     - contextPath: ExtraHop.Record.Source.reqRTO
-      description: Request RTO
+      description: Request RTO.
       type: Number
     - contextPath: ExtraHop.Record.Source.reqSize
-      description: Request Size
+      description: Request Size.
       type: Number
     - contextPath: ExtraHop.Record.Source.reqTimeToLastByte
-      description: Req Time To Last Byte
+      description: Req Time To Last Byte.
       type: Number
     - contextPath: ExtraHop.Record.Source.reqTransferTime
-      description: Request Transfer Time
+      description: Request Transfer Time.
       type: Number
     - contextPath: ExtraHop.Record.Source.requestedColorDepth
-      description: Requested Color Depth
+      description: Requested Color Depth.
       type: String
     - contextPath: ExtraHop.Record.Source.requestedProtocols
-      description: Requested Protocols
+      description: Requested Protocols.
       type: String
     - contextPath: ExtraHop.Record.Source.resolvedQueue
-      description: Resolved Queue
+      description: Resolved Queue.
       type: String
     - contextPath: ExtraHop.Record.Source.resolvedQueueMgr
-      description: Resolved Queue Manager
+      description: Resolved Queue Manager.
       type: String
     - contextPath: ExtraHop.Record.Source.resource
-      description: Resource
+      description: Resource.
       type: String
     - contextPath: ExtraHop.Record.Source.responseQueue
-      description: Response Queue
+      description: Response Queue.
       type: String
     - contextPath: ExtraHop.Record.Source.roundTripTime
-      description: Round Trip Time
+      description: Round Trip Time.
       type: Number
     - contextPath: ExtraHop.Record.Source.rspBytes
-      description: Response Bytes
+      description: Response Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.rspL2Bytes
-      description: Response L2 Bytes
+      description: Response L2 Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.rspPdu
-      description: Response PDU Type
+      description: Response PDU Type.
       type: String
     - contextPath: ExtraHop.Record.Source.rspPkts
-      description: Response Packets
+      description: Response Packets.
       type: Number
     - contextPath: ExtraHop.Record.Source.rspRTO
-      description: Response RTO
+      description: Response RTO.
       type: Number
     - contextPath: ExtraHop.Record.Source.rspSize
-      description: Response Size
+      description: Response Size.
       type: Number
     - contextPath: ExtraHop.Record.Source.rspTimeToFirstByte
-      description: Rsp Time To First Byte
+      description: Rsp Time To First Byte.
       type: Number
     - contextPath: ExtraHop.Record.Source.rspTimeToFirstHeader
-      description: Rsp Time To First Header
+      description: Rsp Time To First Header.
       type: Number
     - contextPath: ExtraHop.Record.Source.rspTimeToFirstPayload
-      description: Rsp Time To First Payload
+      description: Rsp Time To First Payload.
       type: Number
     - contextPath: ExtraHop.Record.Source.rspTimeToLastByte
-      description: Rsp Time To Last Byte
+      description: Rsp Time To Last Byte.
       type: Number
     - contextPath: ExtraHop.Record.Source.rspTransferTime
-      description: Response Transfer Time
+      description: Response Transfer Time.
       type: Number
     - contextPath: ExtraHop.Record.Source.rspVersion
-      description: Response Version
+      description: Response Version.
       type: String
     - contextPath: ExtraHop.Record.Source.rto
-      description: RTO
+      description: RTO.
       type: Number
     - contextPath: ExtraHop.Record.Source.sNameType
-      description: Server Name Type
+      description: Server Name Type.
       type: String
     - contextPath: ExtraHop.Record.Source.sNames
-      description: Server Name Components
+      description: Server Name Components.
       type: String
     - contextPath: ExtraHop.Record.Source.saslMechanism
-      description: SASL Mechanism
+      description: SASL Mechanism.
       type: String
     - contextPath: ExtraHop.Record.Source.searchFilter
-      description: Search Filter
+      description: Search Filter.
       type: String
     - contextPath: ExtraHop.Record.Source.searchScope
-      description: Search Scope
+      description: Search Scope.
       type: String
     - contextPath: ExtraHop.Record.Source.selectedProtocol
-      description: Selected Protocol
+      description: Selected Protocol.
       type: String
     - contextPath: ExtraHop.Record.Source.sender.type
-      description: Sender Type
+      description: Sender Type.
       type: String
     - contextPath: ExtraHop.Record.Source.sender.value
-      description: Sender Discovery ID
+      description: Sender Discovery ID.
       type: String
     - contextPath: ExtraHop.Record.Source.senderAddr.type
-      description: Sender IP Address Type
+      description: Sender IP Address Type.
       type: String
     - contextPath: ExtraHop.Record.Source.senderAddr.value
-      description: Sender IP Address Value
+      description: Sender IP Address Value.
       type: String
     - contextPath: ExtraHop.Record.Source.senderAsn
-      description: Sender ASN
+      description: Sender ASN.
       type: Number
     - contextPath: ExtraHop.Record.Source.senderBytes
-      description: Sender Bytes
+      description: Sender Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.senderIsBroker
-      description: From Broker
+      description: From Broker.
       type: Boolean
     - contextPath: ExtraHop.Record.Source.senderL2Bytes
-      description: Sender L2 Bytes
+      description: Sender L2 Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.senderPkts
-      description: Sender Packets
+      description: Sender Packets.
       type: Number
     - contextPath: ExtraHop.Record.Source.senderPort
-      description: Sender Port
+      description: Sender Port.
       type: Number
     - contextPath: ExtraHop.Record.Source.senderPrefixLength
-      description: Sender Prefix Length
+      description: Sender Prefix Length.
       type: Number
     - contextPath: ExtraHop.Record.Source.senderRTO
-      description: Sender RTO
+      description: Sender RTO.
       type: Number
     - contextPath: ExtraHop.Record.Source.senderZeroWnd
-      description: Sender Zero Windows
+      description: Sender Zero Windows.
       type: Number
     - contextPath: ExtraHop.Record.Source.seqNum
-      description: Sequence Number
+      description: Sequence Number.
       type: Number
     - contextPath: ExtraHop.Record.Source.server.type
-      description: Server Type
+      description: Server Type.
       type: String
     - contextPath: ExtraHop.Record.Source.server.value
-      description: Server Discovery ID
+      description: Server Discovery ID.
       type: String
     - contextPath: ExtraHop.Record.Source.serverAddr.type
-      description: Server IPv4 Address Type
+      description: Server IPv4 Address Type.
       type: String
     - contextPath: ExtraHop.Record.Source.serverAddr.value
-      description: Server IPv4 Address Value
+      description: Server IPv4 Address Value.
       type: String
     - contextPath: ExtraHop.Record.Source.serverBytes
-      description: Server Bytes
+      description: Server Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.serverCGPMsgCount
-      description: Server CGP Messages
+      description: Server CGP Messages.
       type: Number
     - contextPath: ExtraHop.Record.Source.serverCipherAlgorithm
-      description: Server Cipher Algorithm
+      description: Server Cipher Algorithm.
       type: String
     - contextPath: ExtraHop.Record.Source.serverCompressionAlgorithm
-      description: Server Compression Algorithm
+      description: Server Compression Algorithm.
       type: String
     - contextPath: ExtraHop.Record.Source.serverImplementation
-      description: Server Implementation
+      description: Server Implementation.
       type: String
     - contextPath: ExtraHop.Record.Source.serverL2Bytes
-      description: Server L2 Bytes
+      description: Server L2 Bytes.
       type: Number
     - contextPath: ExtraHop.Record.Source.serverMacAlgorithm
-      description: Server MAC Algorithm
+      description: Server MAC Algorithm.
       type: String
     - contextPath: ExtraHop.Record.Source.serverMsgCount
-      description: Server Messages
+      description: Server Messages.
       type: Number
     - contextPath: ExtraHop.Record.Source.serverPkts
-      description: Server Packets
+      description: Server Packets.
       type: Number
     - contextPath: ExtraHop.Record.Source.serverPort
-      description: Server Port
+      description: Server Port.
       type: Number
     - contextPath: ExtraHop.Record.Source.serverPrincipalName
-      description: Server Principal Name
+      description: Server Principal Name.
       type: String
     - contextPath: ExtraHop.Record.Source.serverRTO
-      description: Server RTO
+      description: Server RTO.
       type: Number
     - contextPath: ExtraHop.Record.Source.serverVersion
-      description: Server Version
+      description: Server Version.
       type: String
     - contextPath: ExtraHop.Record.Source.serverZeroWnd
-      description: Server Zero Windows
+      description: Server Zero Windows.
       type: Number
     - contextPath: ExtraHop.Record.Source.share
-      description: Share
+      description: Share.
       type: String
     - contextPath: ExtraHop.Record.Source.source
-      description: Source
+      description: Source.
       type: String
     - contextPath: ExtraHop.Record.Source.sqli
-      description: Potential SQLi
+      description: Potential SQLi.
       type: String
     - contextPath: ExtraHop.Record.Source.srcQueueMgr
-      description: Source Queue Manager
+      description: Source Queue Manager.
       type: String
     - contextPath: ExtraHop.Record.Source.ssrc
-      description: Sender SSRC
+      description: Sender SSRC.
       type: Number
     - contextPath: ExtraHop.Record.Source.statement
-      description: Statement
+      description: Statement.
       type: String
     - contextPath: ExtraHop.Record.Source.status
-      description: Status
+      description: Status.
       type: String
     - contextPath: ExtraHop.Record.Source.statusCode
-      description: Status Code
+      description: Status Code.
       type: Number
     - contextPath: ExtraHop.Record.Source.statusText
-      description: Status Text
+      description: Status Text.
       type: String
     - contextPath: ExtraHop.Record.Source.table
-      description: Table
+      description: Table.
       type: String
     - contextPath: ExtraHop.Record.Source.target
-      description: Target
+      description: Target.
       type: String
     - contextPath: ExtraHop.Record.Source.tcpFlags
-      description: TCP Flags
+      description: TCP Flags.
       type: Number
     - contextPath: ExtraHop.Record.Source.thinkTime
-      description: Think Time
+      description: Think Time.
       type: Number
     - contextPath: ExtraHop.Record.Source.tickChannel
-      description: Tick Channel
+      description: Tick Channel.
       type: String
     - contextPath: ExtraHop.Record.Source.ticketHash
-      description: Encrypted Ticket Hash
+      description: Encrypted Ticket Hash.
       type: String
     - contextPath: ExtraHop.Record.Source.till
-      description: Till
+      description: Till.
       type: String
     - contextPath: ExtraHop.Record.Source.title
-      description: Title
+      description: Title.
       type: String
     - contextPath: ExtraHop.Record.Source.to
-      description: To
+      description: To.
       type: String
     - contextPath: ExtraHop.Record.Source.totalMsgLength
-      description: Total Msg Length
+      description: Total Msg Length.
       type: Number
     - contextPath: ExtraHop.Record.Source.transferBytes
-      description: Bytes Transferred
+      description: Bytes Transferred.
       type: Number
     - contextPath: ExtraHop.Record.Source.txId
-      description: Transaction ID
+      description: Transaction ID.
       type: Number
     - contextPath: ExtraHop.Record.Source.unitId
-      description: Unit ID
+      description: Unit ID.
       type: Number
     - contextPath: ExtraHop.Record.Source.uri
-      description: URI
+      description: URI.
       type: String
     - contextPath: ExtraHop.Record.Source.user
-      description: User
+      description: User.
       type: String
     - contextPath: ExtraHop.Record.Source.userAgent
-      description: User Agent
+      description: User Agent.
       type: String
     - contextPath: ExtraHop.Record.Source.vbucket
-      description: vBucket
+      description: vBucket.
       type: Number
     - contextPath: ExtraHop.Record.Source.version
-      description: Version
+      description: Version.
       type: String
     - contextPath: ExtraHop.Record.Source.vlan
-      description: VLAN
+      description: VLAN.
       type: Number
     - contextPath: ExtraHop.Record.Source.vxlanVNI
-      description: VxLAN VNI
+      description: VxLAN VNI.
       type: Number
     - contextPath: ExtraHop.Record.Source.warning
-      description: Warning
+      description: Warning.
       type: String
     - contextPath: ExtraHop.Record.Source.xss
-      description: Potential XSS
+      description: Potential XSS.
       type: String
   - arguments:
     - description: The name of the device. This searches for matches on all ExtraHop name fields (DHCP, DNS, NetBIOS, Cisco Discovery Protocol, etc).
@@ -3452,7 +3452,7 @@ script:
       - wsman_server
     - auto: PREDEFINED
       defaultValue: "="
-      description: The compare method applied when matching the fields against their values. For example, to find devices with names that begin with 'SEA1' (set name=SEA1, operator=startswith)
+      description: The compare method applied when matching the fields against their values. For example, to find devices with names that begin with 'SEA1' (set name=SEA1, operator=startswith).
       name: operator
       predefined:
       - '>'
@@ -3699,7 +3699,7 @@ script:
       - '7200'
       - '14400'
       required: true
-    - description: 'The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3, 4, 5, 6, 7'
+    - description: 'The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3, 4, 5, 6, 7.'
       name: severity
       required: true
     - auto: PREDEFINED
@@ -3724,7 +3724,7 @@ script:
     - description: The statistic name for the alert. Only applicable to threshold alerts.
       name: stat_name
     - auto: PREDEFINED
-      description: "The interval in which to evaluate the alert condition. Only applicable to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\", \"1 min\", \"1 hr\""
+      description: "The interval in which to evaluate the alert condition. Only applicable to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\", \"1 min\", \"1 hr\"."
       name: units
       predefined:
       - none
@@ -3734,7 +3734,7 @@ script:
       - 1 hr
     - auto: PREDEFINED
       defaultValue: '30'
-      description: "The length of the alert interval, expressed in seconds. Only applicable to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200, 1800"
+      description: "The length of the alert interval, expressed in seconds. Only applicable to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200, 1800."
       name: interval_length
       predefined:
       - '30'
@@ -3806,7 +3806,7 @@ script:
       - '7200'
       - '14400'
       required: true
-    - description: 'The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3, 4, 5, 6, 7'
+    - description: 'The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3, 4, 5, 6, 7.'
       name: severity
       required: true
     - auto: PREDEFINED
@@ -3831,7 +3831,7 @@ script:
     - description: The statistic name for the alert. Only applicable to threshold alerts.
       name: stat_name
     - auto: PREDEFINED
-      description: "The interval in which to evaluate the alert condition. Only applicable to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\", \"1 min\", \"1 hr\""
+      description: "The interval in which to evaluate the alert condition. Only applicable to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\", \"1 min\", \"1 hr\"."
       name: units
       predefined:
       - none
@@ -3841,7 +3841,7 @@ script:
       - 1 hr
     - auto: PREDEFINED
       defaultValue: '30'
-      description: "The length of the alert interval, expressed in seconds. Only applicable to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200, 1800"
+      description: "The length of the alert interval, expressed in seconds. Only applicable to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200, 1800."
       name: interval_length
       predefined:
       - '30'
@@ -4123,16 +4123,16 @@ script:
       required: true
     - description: Owner of the incident.
       name: incident_owner
-    - description: Status of the incident
+    - description: Status of the incident.
       name: incident_status
-    - description: Reason the incident was closed
+    - description: Reason the incident was closed.
       name: incident_close_reason
     deprecated: true
     description: Use extrahop-ticket-track instead. Link a Reveal(x) detection to a Demisto Investigation.
     name: extrahop-track-ticket
     outputs:
     - contextPath: ExtraHop.TicketId
-      description: Demisto Incident ID successfully tracked to ExtraHop Detection
+      description: Demisto Incident ID successfully tracked to ExtraHop Detection.
       type: string
   - arguments:
     - description: The IP Address or ExtraHop API ID of the source device to get peer devices.
@@ -4536,7 +4536,7 @@ script:
     deprecated: true
     description: Use extrahop-packets-search instead. Search for specific packets in Reveal(x).
     name: extrahop-search-packets
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.86272
   isfetch: true
   runonce: false
   script: '-'

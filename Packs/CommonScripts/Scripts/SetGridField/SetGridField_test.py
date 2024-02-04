@@ -1,5 +1,6 @@
 import json
 import pytest
+import demistomock as demisto
 
 
 def util_load_json(path):
@@ -72,7 +73,7 @@ def test_validate_entry_context(capfd, entry_context: dict, raise_exception: boo
                          ])
 def test_build_grid(mocker, keys: list, columns: list, dt_response_json: str, expected_json: str,
                     unpack_nested: bool):
-    """Unit test
+    """
     Given
     - script args
     - a file
@@ -104,7 +105,7 @@ very_long_column_name = 11 * "column_name_OF_LEN_264__"
                          ])
 def test_build_grid_command(mocker, keys: list[str], columns: list[str], unpack_nested_elements: bool,
                             dt_response_path: str, expected_results_path: str):
-    """Unit test
+    """
     Given
     - script args
     - a file
@@ -135,7 +136,7 @@ def test_build_grid_command(mocker, keys: list[str], columns: list[str], unpack_
 def test_build_grid_command_with_sort_by(mocker, keys: list[str], columns: list[str],
                                          unpack_nested_elements: bool, dt_response_path: str,
                                          expected_results_path: str):
-    """Unit test
+    """
     Given
     - script args, including sort_by
     - a file
@@ -168,7 +169,7 @@ def test_build_grid_command_with_sort_by(mocker, keys: list[str], columns: list[
 def test_build_grid_command_with_multi_sort_by(mocker, keys: list[str], columns: list[str],
                                                unpack_nested_elements: bool, dt_response_path: str,
                                                expected_results_path: str):
-    """Unit test
+    """
     Given
     - script args, including multi sort_by cols
     - a file
@@ -189,3 +190,76 @@ def test_build_grid_command_with_multi_sort_by(mocker, keys: list[str], columns:
 
     expected_results = util_load_json(expected_results_path)
     assert json.dumps(results) == json.dumps(expected_results)
+
+
+def side_effect_for_execute_command(command: str, arguments: dict):
+    if command == "getIncidents":
+        return [{'Type': 1, 'Contents': {'ErrorsPrivateDoNotUse': None, 'data': [], 'total': 0}}]
+    if command == 'setIncident':
+        return None
+    return {}
+
+
+def test_main_does_not_raises_error_in_xsoar(mocker):
+    """
+     Given
+    - An output from executeCommand in XSOAR.
+     When
+    - Execute SetGridField.
+    Then
+    - Verify that no error message was raised.
+    """
+    import SetGridField
+    mocker.patch.object(demisto, 'args', return_value={"grid_id": "grid_id", "keys": "key1,key2",
+                                                       'columns': "col1,col2", "sort_by": "col1",
+                                                       "overwrite": "True",
+                                                       "unpack_nested_elements": "False"})
+    mocker.patch.object(demisto, 'incident', return_value={"CustomFields": None})
+    mocker.patch.object(SetGridField, 'is_xsiam_or_xsoar_saas', return_value=False)
+    mocker.patch.object(SetGridField, 'get_current_table', return_value=[])
+    mocker.patch.object(SetGridField, 'build_grid_command', return_value=[{"name": "name", "readable_name": "readable_name"}])
+    mocker.patch.object(demisto, 'executeCommand', side_effect=side_effect_for_execute_command)
+    mocked_return_err = mocker.patch.object(SetGridField, "return_error")
+    SetGridField.main()
+    assert not mocked_return_err.called
+
+
+def test_main_raises_error_in_xsiam(mocker):
+    """
+     Given
+    - An output from executeCommand in XSIAM.
+     When
+    - Execute SetGridField.
+    Then
+    - Verify that an error message was raised.
+    """
+    import SetGridField
+    mocker.patch.object(demisto, 'args', return_value={"grid_id": "grid_id", "keys": "key1,key2",
+                                                       'columns': "col1,col2", "sort_by": "col1",
+                                                       "overwrite": "True",
+                                                       "unpack_nested_elements": "False"})
+    mocker.patch.object(SetGridField, 'is_xsiam_or_xsoar_saas', return_value=True)
+    mocker.patch.object(demisto, 'incident', return_value={"CustomFields": None})
+    mocker.patch.object(SetGridField, 'get_current_table', return_value=[])
+    mocker.patch.object(SetGridField, 'build_grid_command', return_value=[{"name": "name", "readable_name": "readable_name"}])
+    mocker.patch.object(demisto, 'executeCommand', side_effect=side_effect_for_execute_command)
+    mocker_return_error = mocker.patch('SetGridField.return_error')
+    SetGridField.main()
+    assert mocker_return_error.called
+
+
+def test_get_current_table_exception(mocker):
+    """
+     Given
+    - An output from demisto.incident in XSOAR.
+     When
+    - Execute get_current_table.
+    Then
+    - Verify that an error message was raised.
+    """
+
+    import SetGridField
+    mocker.patch.object(SetGridField, 'is_xsiam_or_xsoar_saas', return_value=False)
+    mocker.patch.object(demisto, 'incident', return_value={"CustomFields": None, "isPlayground": True})
+    with pytest.raises(Exception):
+        SetGridField.get_current_table("grid_id")

@@ -4,6 +4,7 @@ var taskStates = {
     completed: 'Completed',
     waiting: 'Waiting',
     error: 'Error',
+    looperror: 'LoopError',
     skipped: 'WillNotBeExecuted',
     blocked: 'Blocked'
 };
@@ -37,8 +38,12 @@ function getAllPlaybookTasks(tasks) {
 }
 
 function getStates(states) {
+    var input_states = states.split(",");
+    if (input_states.indexOf('error') > -1) {
+        input_states = input_states.concat('loopError')
+    }
     var readyStates = {};
-    var splittedStates = states.split(",").forEach(function(state) {
+    input_states.forEach(function(state) {
         var systemState = taskStates[state.trim().toLowerCase()];
         if (systemState !== null && systemState !== undefined) {
          readyStates[systemState] = true;
@@ -56,7 +61,7 @@ function getStates(states) {
 
 var states = getStates(args.states || '');
 var inc_id = args.inc_id;
-var res = executeCommand('demisto-api-get', {'uri': '/investigation/' + inc_id + '/workplan'});
+var res = executeCommand('core-api-get', {'uri': '/investigation/' + inc_id + '/workplan'});
 if (isError(res[0])) {
     return res;
 }

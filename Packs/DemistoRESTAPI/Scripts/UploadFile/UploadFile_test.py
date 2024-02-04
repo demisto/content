@@ -3,7 +3,7 @@ from UploadFile import upload_file_command
 
 RAW_RESPONSE = [
     {
-        "Brand": "Demisto REST API",
+        "Brand": "Core REST API",
         "Category": "Utilities",
         "Contents": {
             "response": {
@@ -125,7 +125,7 @@ RAW_RESPONSE = [
         "Metadata": {
             "IndicatorTimeline": None,
             "ShardID": 0,
-            "brand": "Demisto REST API",
+            "brand": "Core REST API",
             "category": "",
             "contents": "",
             "contentsSize": 0,
@@ -141,13 +141,13 @@ RAW_RESPONSE = [
             "format": "json",
             "hasRole": False,
             "id": "",
-            "instance": "Demisto REST API_instance_1",
+            "instance": "Core REST API_instance_1",
             "investigationId": "737",
             "isTodo": False,
             "mirrored": False,
             "modified": "0001-01-01T00:00:00Z",
             "note": False,
-            "parentContent": "!demisto-api-multipart uri=\"entry/upload/899\" entryID=\"722@737\" body=\"test_bark\"",
+            "parentContent": "!core-api-multipart uri=\"entry/upload/899\" entryID=\"722@737\" body=\"test_bark\"",
             "parentEntryTruncated": False,
             "parentId": "726@737",
             "pinned": False,
@@ -171,7 +171,7 @@ RAW_RESPONSE = [
             "user": "",
             "version": 0
         },
-        "ModuleName": "Demisto REST API_instance_1",
+        "ModuleName": "Core REST API_instance_1",
         "Note": False,
         "ReadableContentsFormat": "",
         "System": "",
@@ -194,13 +194,43 @@ def test_upload_file(mocker):
     Validate the content of the HumanReadable.
     """
     mocker.patch('UploadFile.upload_file', return_value=RAW_RESPONSE)
-    readable, _ = upload_file_command({'incidentId': '1', 'entryID': '12@12', 'body': "test_bark"})
-    assert "test_bark" in readable
+    command_results = upload_file_command({'incidentId': '1', 'entryID': '12@12', 'body': "test_bark"})
+    assert "test_bark" in command_results[0].readable_output
+
+
+def test_upload_file_multiple_entry_ids(mocker):
+    """Unit test
+    Given
+    - Command args with multiple entry IDs.
+    When
+    - Running the upload_file_command function.
+    Then
+    - Validate that the API request was called for each entry ID.
+    """
+    execute_command_mocker = mocker.patch('UploadFile.demisto.executeCommand')
+    upload_file_command({'incidentId': '1', 'entryID': '1,2'})
+    assert execute_command_mocker.call_args_list[0][0][1]['entryID'] == '1'
+    assert execute_command_mocker.call_args_list[1][0][1]['entryID'] == '2'
+
+
+def test_upload_file_one_entry_id(mocker):
+    """Unit test
+    Given
+    - Command args with one entry ID.
+    When
+    - Running the upload_file_command function.
+    Then
+    - Validate that the API request was called only one entry ID.
+    """
+    execute_command_mocker = mocker.patch('UploadFile.demisto.executeCommand')
+    upload_file_command({'incidentId': '1', 'entryID': '1'})
+    assert len(execute_command_mocker.call_args_list) == 1
+    assert execute_command_mocker.call_args_list[0][0][1]['entryID'] == '1'
 
 
 RAW_RESPONSE_ERROR = [
     {
-        "Brand": "Demisto REST API",
+        "Brand": "Core REST API",
         "Category": "Utilities",
         "Contents": {
             "response": {
@@ -322,7 +352,7 @@ RAW_RESPONSE_ERROR = [
         "Metadata": {
             "IndicatorTimeline": None,
             "ShardID": 0,
-            "brand": "Demisto REST API",
+            "brand": "Core REST API",
             "category": "",
             "contents": "",
             "contentsSize": 0,
@@ -338,13 +368,13 @@ RAW_RESPONSE_ERROR = [
             "format": "json",
             "hasRole": False,
             "id": "",
-            "instance": "Demisto REST API_instance_1",
+            "instance": "Core REST API_instance_1",
             "investigationId": "737",
             "isTodo": False,
             "mirrored": False,
             "modified": "0001-01-01T00:00:00Z",
             "note": False,
-            "parentContent": "!demisto-api-multipart uri=\"entry/upload/899\" entryID=\"722@737\" body=\"test_bark\"",
+            "parentContent": "!core-api-multipart uri=\"entry/upload/899\" entryID=\"722@737\" body=\"test_bark\"",
             "parentEntryTruncated": False,
             "parentId": "726@737",
             "pinned": False,
@@ -368,7 +398,7 @@ RAW_RESPONSE_ERROR = [
             "user": "",
             "version": 0
         },
-        "ModuleName": "Demisto REST API_instance_1",
+        "ModuleName": "Core REST API_instance_1",
         "Note": False,
         "ReadableContentsFormat": "",
         "System": "",
@@ -411,5 +441,5 @@ def test_demisto_upload_file_as_attachment(mocker, target, service):
     """
     import UploadFile
     mocker.patch('UploadFile.demisto.executeCommand')
-    upload_file_command({'target': target})
+    upload_file_command({'target': target, 'entryID': '1'})
     assert f'{service}/upload/' in UploadFile.demisto.executeCommand.call_args[0][1]['uri']

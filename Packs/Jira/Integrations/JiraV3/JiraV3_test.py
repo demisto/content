@@ -593,7 +593,7 @@ class TestJiraEditIssueCommand:
         When
             - Calling the edit issue command.
         Then
-            - Validate that get_transitions, and transition_issue method was called, which is in charge of changing the status
+            - Validate that get_transitions, and transition_issue method were called, which is in charge of changing the status
             of the issue.
         """
         from JiraV3 import edit_issue_command
@@ -606,6 +606,41 @@ class TestJiraEditIssueCommand:
         edit_issue_command(client=client, args=args)
         get_transitions_mocker.assert_called_once()
         apply_transition_mocker.assert_called_once()
+
+    @pytest.mark.parametrize('args', [
+        ({'issue_key': 'dummy_key', 'status': 'Selected for development'}),
+        ({'issue_key': 'dummy_key', 'transition': 'In Development'})
+    ])
+    def test_apply_issue_status_and_transition_with_arguments(self, mocker, args):
+        """
+        Given:
+            - A Jira client, and the status, or transition argument to change the status of the issue.
+        When
+            - Calling the edit issue command, with additional arguments to edit the issue.
+        Then
+            - Validate that correct issue fields were sent as part of the request.
+        """
+        from JiraV3 import edit_issue_command
+        client = jira_base_client_mock()
+        transitions_raw_response = util_load_json('test_data/get_transitions_test/raw_response.json')
+        mocker.patch.object(client, 'get_transitions', return_value=transitions_raw_response)
+        mocker.patch.object(client, 'transition_issue', return_value=requests.Response())
+        command_args = args | {'issue_key': 'dummy_key', 'description': 'dummy description', 'project_key': 'dummy_project_key',
+                               'project_id': 'dummy_project_id',
+                               'labels': 'label1,label2', 'components': 'comp1,comp2',
+                               'customfield_1': 'dummy custom field'}
+        # The transition ID is 21 since the mocked transition 'In Development' has an ID of 21 and the status
+        # 'Selected for development' correlates to the transition 'In Development', which as stated, has an ID of 21
+        expected_issue_fields = {'transition': {'id': '21'},
+                                 'fields': {'description': 'dummy description', 'project':
+                                            {'key': 'dummy_project_key', 'id':
+                                             'dummy_project_id'}, 'labels': ['label1', 'label2'],
+                                            'components': [{'name': 'comp1'}, {'name': 'comp2'}],
+                                            'customfield_1': 'dummy custom field'}}
+        mocker.patch.object(client, 'get_issue', return_value={})
+        transition_issue_mocker = mocker.patch.object(client, 'transition_issue', return_value=requests.Response())
+        edit_issue_command(client=client, args=command_args)
+        assert expected_issue_fields == transition_issue_mocker.call_args[1].get('json_data')
 
     def test_create_issue_fields_with_action_rewrite(self, mocker):
         """
@@ -699,8 +734,42 @@ class TestJiraCreateIssueCommand:
                         'self': 'dummy_link'}
         expected_outputs = {'Id': '1234', 'Key': 'dummy_key'}
         mocker.patch.object(client, 'create_issue', return_value=raw_response)
-        command_result = create_issue_command(client=client, args={})
+        command_result = create_issue_command(client=client, args={"summary": "test"})
         assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': expected_outputs}
+
+    def test_create_issue_command_with_issue_json(self, mocker):
+        """
+        Given:
+            - A Jira client
+            - Jira summary from issue_json
+        When
+            - Calling the create issue command.
+        Then
+            - Validate that the issue id and key of the newly created issue is returned.
+        """
+        from JiraV3 import create_issue_command
+        client = jira_base_client_mock()
+        raw_response = {'id': "1234", 'key': 'dummy_key', 'self': 'dummy_link'}
+        expected_outputs = {'Id': '1234', 'Key': 'dummy_key'}
+        mocker.patch.object(client, 'create_issue', return_value=raw_response)
+        command_result = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'})
+        assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': expected_outputs}
+
+    def test_create_issue_command_no_summary(self):
+        """
+        Given:
+            - A Jira client
+            - no Jira summary from issue_json / args
+        When
+            - Calling the create issue command.
+        Then
+            - Validate that DemistoException is raised
+        """
+        from JiraV3 import create_issue_command
+        client = jira_base_client_mock()
+        with pytest.raises(DemistoException) as e:
+            create_issue_command(client=client, args={})
+        assert 'The summary argument must be provided' in str(e)
 
 
 class TestJiraDeleteIssueCommand:

@@ -2,7 +2,9 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 
 The EWS v2 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
-**Note:**
+**Note:** Starting from pack version 2.0.0 the EWS v2 integration requires the Exchange server to support TLS v1.2 and up in order to connect.
+
+**Multi-Factor Authentication (MFA)**
 EWS v2 does not support Multi-Factor Authentication (MFA).
 
 If using MFA, use EWS O365 (see https://xsoar.pan.dev/docs/reference/integrations/ewso365) 
@@ -40,27 +42,27 @@ Follow the instructions in the [Fetched Incidents Data](#fetched-incidents-data)
 2. Search for EWS v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Email address | True |
-    | Password | True |
-    | Email address from which to fetch incidents | True |
-    | Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing) | True |
-    | Public Folder | False |
-    | Has impersonation rights | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | Mark fetched emails as read | False |
-    | Incident type | False |
-    | ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                           Manual Mode<br/>Exchange Server Hostname or IP address | False |
-    | DOMAIN\USERNAME (e.g. DEMISTO.INT\admin) | False |
-    | Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, and 2016) | False |
-    | Trust any certificate (not secure) | False |
-    | ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                         Advanced Mode<br/>Override Authentication Type (NTLM, Basic, or Digest). | False |
-    | Timeout (in seconds) for HTTP requests to Exchange Server | False |
-    | Max incidents per fetch | False |
-    | Run as a separate process (protects against memory depletion) | False |
+    | **Parameter**                                                                                                                                 | **Required** |
+    |-----------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+    | Email address                                                                                                                                 | True         |
+    | Password                                                                                                                                      | True         |
+    | Email address from which to fetch incidents                                                                                                   | True         |
+    | Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)                            | True         |
+    | Public Folder                                                                                                                                 | False        |
+    | Has impersonation rights                                                                                                                      | False        |
+    | Use system proxy settings                                                                                                                     | False        |
+    | Fetch incidents                                                                                                                               | False        |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)                                                              | False        |
+    | Mark fetched emails as read                                                                                                                   | False        |
+    | Incident type                                                                                                                                 | False        |
+    | ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                           Manual Mode<br/>Exchange Server Hostname or IP address                 | False        |
+    | DOMAIN\USERNAME (e.g. DEMISTO.INT\admin)                                                                                                      | False        |
+    | Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, 2016, and 2019)                                     | False        |
+    | Trust any certificate (not secure)                                                                                                            | False        |
+    | ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br/>‎                                         Advanced Mode<br/>Override Authentication Type (NTLM, Basic, or Digest). | False        |
+    | Timeout (in seconds) for HTTP requests to Exchange Server                                                                                     | False        |
+    | Max incidents per fetch                                                                                                                       | False        |
+    | Run as a separate process (protects against memory depletion)                                                                                 | False        |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

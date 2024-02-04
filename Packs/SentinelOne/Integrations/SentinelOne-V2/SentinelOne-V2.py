@@ -84,7 +84,7 @@ def get_threats_outputs(threats, rank: int = 0):
             yield entry
 
 
-def get_agents_outputs(agents):
+def get_agents_outputs(agents, column_to_display: list | None = None):
     for agent in agents:
         entry = {
             'ID': agent.get('id'),
@@ -103,6 +103,10 @@ def get_agents_outputs(agents):
             'CreatedAt': agent.get('createdAt'),
             'SiteName': agent.get('siteName'),
         }
+
+        for c in set(column_to_display or []).intersection(agent.keys()):
+            entry[c] = agent[c]
+
         remove_nulls_from_dictionary(entry)
         yield entry
 
@@ -276,7 +280,7 @@ class Client(BaseClient):
             createdAt__lte=created_until_parsed,
             createdAt__gte=created_from_parsed,
             updatedAt__gte=updated_from_parsed,
-            resolved=argToBoolean(resolved) if include_resolved_param else None,
+            resolved=argToBoolean(resolved) if argToBoolean(include_resolved_param) else None,
             displayName__like=display_name,
             displayName=display_name,
             query=query,
@@ -745,6 +749,11 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
+    def get_threat_notes_request(self, threatid):
+        endpoint_url = f'threats/{threatid}/notes'
+        response = self._http_request(method='GET', url_suffix=endpoint_url)
+        return response.get('data', {})
+
     def create_ioc_request(self, name, source, ioc_type, method, validUntil, value, account_ids, externalId, description):
         endpoint_url = 'threat-intelligence/iocs'
         payload = {
@@ -784,6 +793,10 @@ class Client(BaseClient):
         data = response.get('data')
         pagination = response.get('pagination')
         return data, pagination
+
+    def get_accounts_request(self, account_id: str = None):
+        response = self._http_request(method='GET', url_suffix=f'accounts/{account_id}' if account_id else 'accounts')
+        return response.get('data', {})
 
     def create_power_query_request(self, limit, query, from_date, to_date):
         endpoint_url = 'dv/events/pq'
@@ -927,8 +940,22 @@ class Client(BaseClient):
                 "requiresApproval": requires_approval
             }
         }
+        payload["data"] = self.remove_empty_fields(payload.get("data", {}))
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
+
+    def remove_empty_fields(self, json_payload):
+        """
+        Removes empty fields from a JSON payload and returns a new JSON object with non-empty fields.
+
+        Parameters:
+        - json_payload (dict): The input JSON payload.
+
+        Returns:
+        - dict: A new JSON object containing only non-empty fields.
+        """
+        # Returning updated dictionary with non-empty fields
+        return {key: value for key, value in json_payload.items() if str(value)}
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -1588,6 +1615,35 @@ def write_threat_note(client: Client, args: dict) -> CommandResults:
         raw_response=threat_notes)
 
 
+def get_threat_notes(client: Client, args: dict) -> CommandResults:
+    """
+    Get the note of a particular threat.
+    """
+    threat_id = args.get('threat_id')
+
+    context_entries = []
+    notes = client.get_threat_notes_request(threat_id)
+    if notes:
+        for note in notes:
+            context_entries.append({
+                'CreatedAt': note.get('createdAt'),
+                'Creator': note.get('creator'),
+                'CreatorID': note.get('creatorId'),
+                'Edited': note.get('edited'),
+                'ID': note.get('id'),
+                'Text': note.get('text'),
+                'UpdatedAt': note.get('updatedAt')
+            })
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Get Threat Notes', context_entries,
+                                        headerTransform=pascalToSpace, removeNull=True),
+        outputs_prefix='SentinelOne.Notes',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=notes)
+
+
 def create_ioc(client: Client, args: dict) -> CommandResults:
     """
     Add an IoC to the Threat Intelligence database. . Relavent for API version 2.1
@@ -2183,7 +2239,7 @@ def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, 
 
     # Validation check first
     if len(white_list) > limit:
-        raise DemistoException("Recieved More than 3 results when querying by hash. This condition should not occur")
+        raise DemistoException("Received more than 3 results when querying by hash. This condition should not occur")
 
     for entry in white_list:
         # Second validation. E.g. if user passed in a hash value shorter than SHA1 length
@@ -2468,7 +2524,7 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
         query_params.update({f: v})
     query_params.update(assign_params(
         active_threats=args.get('min_active_threats'),
-        computer_name=args.get('computer_name'),
+        computerName__like=args.get('computer_name'),
         scan_status=args.get('scan_status'),
         osTypes=args.get('os_type'),
         created_at=args.get('created_at'),
@@ -2477,9 +2533,10 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
 
     # Make request and get raw response
     agents = client.list_agents_request(query_params)
+    column_to_display = argToList(args.get("columns"))
 
     # Parse response into context & content entries
-    context_entries = list(get_agents_outputs(agents)) if agents else None
+    context_entries = list(get_agents_outputs(agents, column_to_display)) if agents else None
 
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - List of Agents', context_entries, headerTransform=pascalToSpace,
@@ -2727,6 +2784,7 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
     query_id = args.get('query_id')
     limit = int(args.get('limit', 50))
     cursor = args.get('cursor', None)
+    column_to_display = argToList(args.get("columns"))
 
     events, pagination = client.get_events_request(query_id, limit, cursor)
     context = {}
@@ -2760,11 +2818,15 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
             'EventID': event.get('id'),
         })
 
+        for c in set(column_to_display).intersection(event.keys()):
+            contents[-1][c] = event[c]
+
         event_standards.append({
             'Type': event.get('eventType'),
             'Name': event.get('processName'),
             'ID': event.get('pid'),
         })
+
     # using the CommandResults.to_context in order to get the correct outputs key
     context.update(CommandResults(
         outputs_prefix='SentinelOne.Event',
@@ -2872,30 +2934,26 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
         raw_response=result)
 
 
-def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None, get_global: bool = True) -> list[str | None]:
+def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None) -> list[str | None]:
     """
     Return the IDs of the hash from the blocklist. Helper function for remove_hash_from_blocklist
 
     A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
     """
-    if get_global:
+    ret: list = []
+    if client.block_site_ids:
+        PAGE_SIZE = 20
+        site_ids = ','.join(client.block_site_ids)
+        block_list = client.get_blocklist_request(tenant=False, skip=0, limit=PAGE_SIZE, os_type=os_type, site_ids=site_ids,
+                                                  sort_by="updatedAt", sort_order="asc", value_contains=sha1)
+    else:
         PAGE_SIZE = 4
         block_list = client.get_blocklist_request(tenant=True, skip=0, limit=PAGE_SIZE, os_type=os_type,
                                                   sort_by="updatedAt", sort_order="asc", value_contains=sha1)
 
-        ret: list = []
-
         # Validation check first
         if len(block_list) > 3:
-            raise DemistoException("Recieved More than 3 results when querying by hash. This condition should not occur")
-    else:
-        PAGE_SIZE = 20
-        block_list = client.get_blocklist_request(tenant=False, skip=0, limit=PAGE_SIZE, os_type=os_type,
-                                                  sort_by="updatedAt", sort_order="asc", value_contains=sha1)
-
-        ret = []
-
-        # Validation check first
+            raise DemistoException("Received more than 3 results when querying by hash. This condition should not occur")
 
     for block_entry in block_list:
         # Second validation. E.g. if user passed in a hash value shorter than SHA1 length
@@ -2913,9 +2971,7 @@ def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
     if not sha1:
         raise DemistoException("You must specify a valid Sha1 hash")
     os_type = args.get('os_type', None)
-    get_global = args.get('global', True)
-    demisto.debug(f'Global input: {get_global}')
-    hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type, get_global)
+    hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type)
 
     if not hash_ids:
         status = {
@@ -3042,6 +3098,38 @@ def download_fetched_file(client: Client, args: dict) -> list[CommandResults]:
                            outputs_key_field='Path',
                            outputs={'Path': path}),
             fileResult(f"{path.replace('/', '_')}", file_data)]
+
+
+def get_accounts(client: Client, args: dict) -> CommandResults:
+    """
+    Get accounts info (ID, etc).
+    """
+    account_id = args.get('account_id', None)
+
+    context_entries = []
+    # Make request and get raw response
+    accounts = client.get_accounts_request(account_id)
+
+    if accounts:
+        for account in accounts:
+            context_entries.append({
+                'AccountType': account.get('accountType'),
+                'ActiveAgents': account.get('activeAgents'),
+                'NumberOfSites': account.get('numberOfSites'),
+                'State': account.get('state'),
+                'CreatedAt': account.get('createdAt'),
+                'Expiration': account.get('expiration'),
+                'ID': account.get('id'),
+                'Name': account.get('name')
+            })
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Get Accounts Details', context_entries,
+                                        headerTransform=pascalToSpace, removeNull=True),
+        outputs_prefix='SentinelOne.Accounts',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=accounts)
 
 
 def run_remote_script_command(client: Client, args: dict) -> CommandResults:
@@ -3502,6 +3590,7 @@ def main():
             'sentinelone-fetch-file': fetch_file,
             'sentinelone-download-fetched-file': download_fetched_file,
             'sentinelone-write-threat-note': write_threat_note,
+            'sentinelone-get-threat-notes': get_threat_notes,
             'sentinelone-create-ioc': create_ioc,
             'sentinelone-delete-ioc': delete_ioc,
             'sentinelone-get-iocs': get_iocs,
@@ -3512,6 +3601,7 @@ def main():
             'sentinelone-get-alerts': get_alerts,
             'sentinelone-remove-item-from-whitelist': remove_item_from_whitelist,
             'sentinelone-run-remote-script': run_remote_script_command,
+            'sentinelone-get-accounts': get_accounts,
         },
         'commands_with_params': {
             'get-remote-data': get_remote_data_command,

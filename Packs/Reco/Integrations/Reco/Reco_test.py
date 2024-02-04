@@ -18,7 +18,8 @@ from Reco import (
     get_assets_user_has_access,
     get_sensitive_assets_by_name,
     get_sensitive_assets_by_id, get_link_to_user_overview_page, get_sensitive_assets_shared_with_public_link,
-    get_3rd_parties_list, get_files_shared_with_3rd_parties, map_reco_alert_score_to_demisto_score
+    get_3rd_parties_list, get_files_shared_with_3rd_parties, map_reco_alert_score_to_demisto_score,
+    get_user_context_by_email_address
 )
 
 from test_data.structs import (
@@ -29,6 +30,7 @@ from test_data.structs import (
     GetTableResponse,
     GetIncidentTableResponse,
 )
+
 
 DUMMY_RECO_API_DNS_NAME = "https://dummy.reco.ai/api"
 INCIDET_ID_UUID = "87799f2f-c012-43b6-ace2-78ec984427f3"
@@ -316,6 +318,77 @@ def get_random_risky_users_response() -> GetIncidentTableResponse:
                                     .encode(ENCODING)
                                 ).decode(ENCODING),
                             ),
+                        ]
+                    )
+                ]
+            ),
+            total_number_of_results=1,
+            table_definition="",
+            dynamic_table_definition="",
+            token="",
+        ),
+    )
+
+
+def get_random_user_context_response() -> GetIncidentTableResponse:
+    return GetIncidentTableResponse(
+        get_table_response=GetTableResponse(
+            data=TableData(
+                rows=[
+                    RowData(
+                        cells=[
+                            KeyValuePair(
+                                key="email_account",
+                                value=base64.b64encode(
+                                    "charles@corp.com".encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="departments",
+                                value=base64.b64encode(
+                                    '["Pro"]'.encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="job_titles",
+                                value=base64.b64encode(
+                                    '["VP Product"]'.encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="category",
+                                value=base64.b64encode(
+                                    "external".encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="groups",
+                                value=base64.b64encode(
+                                    '["Product"]'.encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="full_name",
+                                value=base64.b64encode(
+                                    'Yossi'.encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="labels",
+                                value=base64.b64encode('["{\\"label\\": {\\"name\\": \\"VIP User\\",'
+                                                       ' \\"type\\": \\"LABEL_TYPE_INFORMATIVE\\",'
+                                                       ' \\"tooltip\\": \\"VIP User\\", \\"created_by\\": 10,'
+                                                       ' \\"risk_level\\": 0, \\"description\\": \\"VIP User\\"}}",'
+                                                       '"{\\"label\\": {\\"name\\": \\"GSuite Admin\\",'
+                                                       ' \\"type\\": \\"LABEL_TYPE_INFORMATIVE\\",'
+                                                       ' \\"tooltip\\": \\"GSuite Admin\\", \\"created_by\\": 10,'
+                                                       ' \\"risk_level\\": 0, \\"description\\": \\"GSuite Admin\\"}}",'
+                                                       '"{\\"label\\": {\\"name\\": \\"Okta Admin\\",'
+                                                       ' \\"type\\": \\"LABEL_TYPE_INFORMATIVE\\",'
+                                                       ' \\"tooltip\\": \\"Okta Admin\\", '
+                                                       '\\"created_by\\": 10, \\"risk_level\\": 0,'
+                                                       '\\"description\\": \\"Okta Admin\\"}}"]'.
+                                                       encode(ENCODING)).decode(ENCODING)),
                         ]
                     )
                 ]
@@ -785,3 +858,14 @@ def test_change_alert_status(requests_mock, reco_client: RecoClient) -> None:
     res = reco_client.change_alert_status(alert_id=str(alert_id),
                                           status=status)
     assert res == {}
+
+
+def test_get_user_context_by_email(requests_mock, reco_client: RecoClient) -> None:
+    raw_result = get_random_user_context_response()
+    requests_mock.post(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    )
+    res = get_user_context_by_email_address(reco_client, "charles@corp.com")
+    assert res.outputs_prefix == "Reco.User"
+    assert res.outputs.get("email_account") != ""
+    assert res.outputs.get("email_account") == "charles@corp.com"

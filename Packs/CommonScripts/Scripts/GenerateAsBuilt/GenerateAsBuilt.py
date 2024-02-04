@@ -376,12 +376,13 @@ class TableData:
                 value = row.get(search_key)
                 if value == search_value:
                     return row
+        return None
 
 
 class SortedTableData(TableData):
     def __init__(self, data, name, sort_key):
         sorted_data = sorted(data, key=lambda i: i[sort_key].lower())
-        super(SortedTableData, self).__init__(sorted_data, name)
+        super().__init__(sorted_data, name)
 
 
 class SingleFieldData:
@@ -555,7 +556,7 @@ def post_api_request(url, body):
         "uri": url,
         "body": body
     }
-    raw_res = demisto.executeCommand("demisto-api-post", api_args)
+    raw_res = demisto.executeCommand("core-api-post", api_args)
     try:
         res = raw_res[0]['Contents']['response']
         return res
@@ -577,7 +578,7 @@ def get_api_request(url):
     api_args = {
         "uri": url
     }
-    raw_res = demisto.executeCommand("demisto-api-get", api_args)
+    raw_res = demisto.executeCommand("core-api-get", api_args)
 
     try:
         res = raw_res[0]['Contents']['response']

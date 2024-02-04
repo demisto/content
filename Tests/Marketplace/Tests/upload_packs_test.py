@@ -6,12 +6,10 @@ import os
 
 import pytest
 from unittest.mock import patch
-from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, is_private_packs_updated
+from Tests.Marketplace.upload_packs import get_packs_ids_to_upload, get_updated_private_packs, is_private_packs_updated
 
 from Tests.Marketplace.marketplace_services import Pack
 from Tests.Marketplace.marketplace_constants import Metadata
-
-TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 
 # disable-secrets-detection-start
 
@@ -22,7 +20,7 @@ class TestModifiedPacks:
         ("pack1, pack2,  pack3", {"pack1", "pack2", "pack3"})
     ])
     def test_get_packs_names_specific(self, packs_names_input, expected_result):
-        modified_packs = get_packs_names(packs_names_input)
+        modified_packs = get_packs_ids_to_upload(packs_names_input)
 
         assert modified_packs == expected_result
 
@@ -440,10 +438,10 @@ class TestCorepacksFiles:
         with open(os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME)) as corepacks_file:
             corepacks_file_contents = json.load(corepacks_file)
             pack_paths = corepacks_file_contents.get('corePacks')
-            assert set(pack_paths) == {f'https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-ci-build/content/packs'
-                                       f'/pack_1/1.4.0/pack_1.zip',
-                                       f'https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-ci-build/content/packs'
-                                       f'/pack_2/2.2.3/pack_2.zip'}
+            assert set(pack_paths) == {'https://storage.googleapis.com/marketplace-ci-build/content/packs'
+                                       '/pack_1/1.4.0/pack_1.zip',
+                                       'https://storage.googleapis.com/marketplace-ci-build/content/packs'
+                                       '/pack_2/2.2.3/pack_2.zip'}
 
         # Assert that the paths in the versioned corepacks file are relative paths:
         with open(os.path.join(artifacts_dir, corepacks_version)) as corepacks_file:

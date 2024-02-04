@@ -1,6 +1,5 @@
 import argparse
 import os
-import re
 import sys
 import traceback
 from datetime import datetime, timezone
@@ -15,12 +14,12 @@ from junitparser import JUnitXml
 from tabulate import tabulate
 
 from Tests.scripts.common import calculate_results_table, get_all_failed_results, \
-    get_test_results_files, TEST_PLAYBOOKS_REPORT_FILE_NAME, TEST_SUITE_CELL_EXPLANATION
+    get_test_results_files, TEST_PLAYBOOKS_REPORT_FILE_NAME, TEST_SUITE_CELL_EXPLANATION, FAILED_TO_COLOR_NAME, FAILED_TO_MSG
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
-    jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type, jira_ticket_to_json_data, \
-    jira_file_link
+    jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type, jira_file_link, \
+    jira_sanitize_file_name, jira_color_text, transition_jira_ticket_to_unresolved
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
     TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks, TEST_PLAYBOOKS_JIRA_BASE_HEADERS, \
     write_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -48,10 +47,14 @@ def options_handler() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def generate_description(playbook_id: str, build_number: str, junit_file_name: str, table_data: Any, failed: bool) -> str:
+def generate_description_for_test_playbook(playbook_id: str,
+                                           build_number: str,
+                                           junit_file_name: str,
+                                           table_data: Any,
+                                           failed: bool) -> str:
     build_markdown_link = generate_build_markdown_link(build_number)
     table = tabulate(table_data, headers="firstrow", tablefmt="jira")
-    msg = "failed" if failed else "succeeded"
+    msg = jira_color_text(FAILED_TO_MSG[failed], FAILED_TO_COLOR_NAME[failed])
     description = f"""
         *{playbook_id}* {msg} in {build_markdown_link}
         Test Results file: {jira_file_link(junit_file_name)}
@@ -73,10 +76,13 @@ def create_jira_issue(jira_server: JIRA,
                       failed: bool,
                       ) -> Issue:
     summary = generate_ticket_summary(playbook_id)
-    description = generate_description(playbook_id, build_number, junit_file_name, table_data, failed)
-    jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, max_days_to_reopen, jira_issue)
+    description = generate_description_for_test_playbook(playbook_id, build_number, junit_file_name, table_data, failed)
+    jira_issue, link_to_issue, use_existing_issue, unresolved_transition_id = find_existing_jira_ticket(jira_server, now,
+                                                                                                        max_days_to_reopen,
+                                                                                                        jira_issue)
 
     if jira_issue is not None:
+        transition_jira_ticket_to_unresolved(jira_server, jira_issue, unresolved_transition_id)
         jira_server.add_comment(issue=jira_issue, body=description)
     else:
         jira_issue = jira_server.create_issue(project=JIRA_PROJECT_ID,
@@ -105,9 +111,8 @@ def create_jira_issue(jira_server: JIRA,
 
 def get_attachment_file_name(playbook_id: str, build_number: str) -> str:
     build_number_dash = f"-{build_number}" if build_number else ""
-    playbook_id_sanitized = re.sub('[^a-zA-Z0-9-]', '_', playbook_id).lower()
-    junit_file_name = f"test-playbook{build_number_dash}-{playbook_id_sanitized}.xml"
-    return junit_file_name
+    junit_file_name = jira_sanitize_file_name(f"test-playbook{build_number_dash}-{playbook_id}")
+    return f"{junit_file_name}.xml"
 
 
 def main():
@@ -130,7 +135,8 @@ def main():
         logging.info(f"\tBuild number: {options.build_number}")
 
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
-        jira_server_information(jira_server)
+        jira_server_info = jira_server_information(jira_server)
+        server_url = jira_server_info["baseUrl"]
 
         if not (test_playbooks_result_files_list := get_test_results_files(Path(options.artifacts_path),
                                                                            TEST_PLAYBOOKS_REPORT_FILE_NAME)):
@@ -142,11 +148,8 @@ def main():
         playbooks_results, server_versions = calculate_test_playbooks_results(test_playbooks_result_files_list)
 
         issues = jira_search_all_by_query(jira_server, generate_query_by_component_and_issue_type())
-        jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(list(playbooks_results.keys()), issues)
+        jira_tickets_for_playbooks: dict[str, Issue] = get_jira_tickets_for_playbooks(list(playbooks_results.keys()), issues)
         logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_results)} playbooks")
-
-        write_test_playbook_to_jira_mapping(artifacts_path, jira_tickets_for_playbooks)
-        open(artifacts_path / TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED, "w")
 
         # Search if we have too many test playbooks that failed beyond the max allowed limit to open, if so we print the
         # list and exit. This is to avoid opening too many Jira issues.
@@ -163,7 +166,6 @@ def main():
                              f"which is more than the max allowed limit of {options.max_failures_to_handle} to handle.")
 
             sys.exit(1)
-        playbook_to_jira_mapping = {}
         for playbook_id, test_suites in playbooks_results.items():
             # We create the table without Jira tickets columns, as we don't want to have them within the Jira issue.
             # We also add the skipped tests, as we want to have them within the Jira issue.
@@ -188,16 +190,18 @@ def main():
             if jira_ticket or total_errors:
                 # if the ticket isn't resolved, or we found new errors, we update it, otherwise we skip it.
                 if jira_ticket and jira_ticket.get_field("resolution") and not total_errors:
-                    playbook_to_jira_mapping[playbook_id] = jira_ticket_to_json_data(jira_ticket)
+                    jira_tickets_for_playbooks[playbook_id] = jira_ticket
                     logging.debug(f"Skipped updating Jira issue for resolved test playbook:{playbook_id}")
                     continue
                 junit_file_name = get_attachment_file_name(playbook_id, options.build_number)
                 jira_ticket = create_jira_issue(jira_server, jira_ticket, xml, playbook_id, options.build_number, tabulate_data,
                                                 options.max_days_to_reopen, now, junit_file_name, total_errors > 0)
-                playbook_to_jira_mapping[playbook_id] = jira_ticket_to_json_data(jira_ticket)
+                jira_tickets_for_playbooks[playbook_id] = jira_ticket
             else:
                 logging.debug(f"Skipped creating Jira issue for successful test playbook:{playbook_id}")
 
+        write_test_playbook_to_jira_mapping(server_url, artifacts_path, jira_tickets_for_playbooks)
+        open(artifacts_path / TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED, "w")
         logging.info("Finished creating/updating Jira issues")
 
     except Exception as e:

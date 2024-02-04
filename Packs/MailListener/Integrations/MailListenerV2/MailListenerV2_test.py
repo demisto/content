@@ -257,6 +257,58 @@ def test_fetch_mail_gets_bytes(mocker, src_data, expected):
     assert mail_mocker.call_args[0][0] == expected
 
 
+def test_fetch_mail__default_uid(mocker,):
+    """
+    Given:
+        - No uid is passed to fetch_mails function
+    When:
+        - Fetching mails
+    Then:
+        - Validate search query is empty
+    """
+    from MailListenerV2 import fetch_mails
+    import demistomock as demisto
+    from imapclient import IMAPClient
+
+    mocker.patch('MailListenerV2.Email')
+    mocker.patch.object(demisto, 'debug')
+    search_mocker = mocker.patch.object(IMAPClient, 'search')
+    mocker.patch.object(IMAPClient, 'fetch')
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
+    fetch_mails(IMAPClient('http://example_url.com'))
+    assert search_mocker.call_args[0][0] == []  # default uid is 0 so no search query is passed
+
+
+def test_invalid_mail_object_handling(mocker):
+    """
+    Given:
+        - Fetch response with 3 mails, the 2nd being invalid mail
+    When:
+        - Fetching mails
+    Then:
+        - Validate only 2 valid mails are returned
+        - Validate skipping invalid mail and printing relevant debug message
+    """
+    src_data = {1: {b'RFC822': br'C:\User1\u'}, 2: {b'RFC822': br'C:\User2\u'}, 3: {b'RFC822': br'C:\User3\u'}}
+
+    from MailListenerV2 import fetch_mails
+    import demistomock as demisto
+    from imapclient import IMAPClient
+
+    mock_email_1 = mock_email()
+    mock_email_3 = mock_email()
+    mock_email_1.id, mock_email_3.id = 10, 11
+
+    mocker.patch('MailListenerV2.Email', side_effect=[mock_email_1, Exception('Invalid Mail'), mock_email_3])
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(IMAPClient, 'search')
+    mocker.patch.object(IMAPClient, 'fetch', return_value=src_data)
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
+    mails_fetched, messages_fetched, _ = fetch_mails(IMAPClient('http://example_url.com'))
+    assert len(mails_fetched) == 2
+    assert messages_fetched == [10, 11]
+
+
 def test_get_eml_attachments():
     from MailListenerV2 import Email
     import email

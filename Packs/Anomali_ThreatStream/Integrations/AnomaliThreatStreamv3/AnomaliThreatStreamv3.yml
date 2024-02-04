@@ -72,6 +72,15 @@ configuration:
   required: true
   type: 15
   section: Collect
+- defaultvalue: Benign
+  display: Default DBOT score for indicators with low confidence
+  name: indicator_default_score
+  options:
+  - Benign
+  - Unknown
+  required: false
+  type: 15
+  section: Collect
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
@@ -2509,9 +2518,9 @@ script:
       predefined:
       - 'yes'
       - 'no'
-    - description: The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room.
+    - description: The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room. It is recommended to use the "ThreatstreamBuildIocImportJson" script to build a valid JSON file if possible.
       name: file_id
-    - description: The “meta” section will be added to this json, and we will send this json to the api endpoint.
+    - description: The “meta” section will be added to this json, and we will send this json to the api endpoint. It is recommended to use the "ThreatstreamBuildIocImportJson" script to build a valid JSON file if possible.
       name: indicators_json
     - auto: PREDEFINED
       description: You can add tags that are private to your organization by setting the tlp attribute for the tag to red. If you do not specify a tlp setting, the tag is visible to any ThreatStream user with access to the observable.
@@ -6422,7 +6431,7 @@ script:
       isArray: true
     description: Remove tags from the indicators.
     name: threatstream-remove-indicator-tag
-  dockerimage: demisto/py3-tools:1.0.0.79870
+  dockerimage: demisto/py3-tools:1.0.0.86612
   runonce: false
   script: '-'
   subtype: python3
