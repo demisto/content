@@ -24,10 +24,13 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 
 ## Troubleshooting
 
-If you are encountering an 504 Gateway error:
+### 504 Gateway error
 
 1. Increase the NGINX Read Timeout in the instance configuration (for 1,000,000 indicators, it is recommended to increase the timeout up to 1 hour).
 2. If the issue persists, try to increase the Load Balancer timeout through the Devops team (for 800,000 indicators, it is recommended to increase the timeout up to 1 hour (depends on the indicator query)).
+
+### Deleted or expired indicators showing in EDL export
+Append `expirationStatus:active` to the end of the query.
 
 ## Use Cases
 
@@ -157,11 +160,13 @@ In order to get the list of all available fields to search by, you can configure
 
 To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled.
 
-1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. (Cortex XSOAR 6.x only) In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
-3. In a web browser, go to:
-   (For Cortex XSOAR 6.x) `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
-  (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+1. For Cortex XSOAR 6.x:
+   1. Navigate to **Settings > About > Troubleshooting**.
+   2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+2. In a web browser, go to:
+ 
+   - (For Cortex XSOAR 6.x) `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
+   - (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
 
 
 ### URL Inline Arguments

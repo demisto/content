@@ -5,6 +5,8 @@
 /Tests/Marketplace/approved_categories.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
 /Tests/Marketplace/core_packs_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
 /Tests/Marketplace/core_packs_mpv2_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Tests/Marketplace/versions-metadata.json @yaakovpraisler
+/Tests/Marketplace/corepacks_override.json @yaakovpraisler
 
 # Docker native image
 /Tests/docker_native_image_config.json @GuyAfik @JudahSchwartz @samuelFain
@@ -35,7 +37,7 @@
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
-/Packs/PAN-OS/Integrations/ @GuyAfik @jlevypaloalto
+/Packs/PAN-OS/Integrations/ @jlevypaloalto
 /Packs/PrismaCloudCompute/Integrations/ @GuyAfik
 /Packs/PrismaSaasSecurity/Integrations/ @GuyAfik
 
@@ -76,11 +78,10 @@
 
 
 # Build related
-.circleci/config.yml @yucohen @michal-dagan
-.gitlab/ci/* @yucohen @michal-dagan
-.gitlab/* @yucohen @michal-dagan
-.gitlab-ci.yml @yucohen @michal-dagan
-/Tests/* @michal-dagan
+.circleci/config.yml @yucohen
+.gitlab/ci/* @yucohen
+.gitlab/* @yucohen
+.gitlab-ci.yml @yucohen
 /Tests/scripts/wait_in_line_for_cloud_env.sh @daryakoval
 .gitlab/ci/.gitlab-ci.staging.yml @ilaner
 /Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh @daryakoval
@@ -113,3 +114,29 @@ poetry.lock @ilaner @dorschw
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @daryakoval
+
+# TIM Related
+/Packs/TAXIIServer/Integrations/* @MLainer1
+/Packs/FeedTAXII/Integrations/* @MLainer1
+/Packs/EDL/Integrations/* @MLainer1
+/Packs/FeedJSON/Integrations/* @MLainer1
+/Packs/FeedMitreAttackv2/* @MLainer1
+/Packs/ApiModules/Scripts/TAXII2ApiModule/* @MLainer1
+/Packs/ApiModules/Scripts/NGINXApiModule/* @MLainer1
+
+# ML scripts
+/Packs/ML/ @jlevypaloalto
+/Packs/PhishingURL/Scripts/DBotPredictURLPhishing/ @jlevypaloalto
+/Packs/CortexXDR/Scripts/DBotGroupXDRIncidents/ @jlevypaloalto
+/Packs/CommonScripts/Scripts/DBotUpdateLogoURLPhishing/ @jlevypaloalto
+/Packs/Base/Scripts/DBotTrainTextClassifierV2/ @jlevypaloalto
+/Packs/Base/Scripts/DBotShowClusteringModelInfo/ @jlevypaloalto
+/Packs/Base/Scripts/DBotPredictPhishingWords/ @jlevypaloalto
+/Packs/Base/Scripts/DBotFindSimilarIncidents/ @jlevypaloalto
+/Packs/Base/Scripts/DBotTrainClustering/ @jlevypaloalto
+/Packs/Base/Scripts/DBotBuildPhishingClassifier/ @jlevypaloalto
+/Packs/Base/Scripts/DBotPreprocessTextData/ @jlevypaloalto
+/Packs/Base/Scripts/DBotFindSimilarIncidentsByIndicators/ @jlevypaloalto
+/Packs/Base/Scripts/DBotSuggestClassifierMapping/ @jlevypaloalto
+/Packs/Base/Scripts/GetMLModelEvaluation/ @jlevypaloalto
+/Packs/Base/Scripts/DBotMLFetchData/ @jlevypaloalto

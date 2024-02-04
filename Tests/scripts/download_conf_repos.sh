@@ -113,7 +113,7 @@ echo ${DEMISTO_LIC_PATH} > demisto_lic_path
 DEMISTO_PACK_SIGNATURE_UTIL_PATH="./signDirectory"
 echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
 
-CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
+CI_SERVER_HOST=${CI_SERVER_HOST:-gitlab.xdr.pan.local} # disable-secrets-detection
 
 clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
 
@@ -136,6 +136,7 @@ clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${C
 
 cp -r ./infra/xsiam_servers.json $XSIAM_SERVERS_PATH
 cp -r ./infra/xsoar_ng_servers.json $XSOAR_NG_SERVERS_PATH
+cp -r ./infra/.gitlab/ci/name_mapping.json "${CI_PROJECT_DIR}/name_mapping.json"
 
 mv ./infra/gcp ./gcp
 rm -rf ./infra
