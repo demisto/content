@@ -9014,6 +9014,19 @@ if 'requests' in sys.modules:
                 raise DemistoException(err_msg, exception)
 
         def _handle_error(self, error_handler, res, should_update_metrics):
+            """ Handles error response by calling error handler or default handler.
+            If an exception is raised, update metrics with failure. Otherwise, proceeds.
+
+            :type res: ``requests.Response``
+            :param res: Response from API after the request for which to check error type
+
+            :type error_handler ``callable``
+            :param error_handler: Given an error entry, the error handler outputs the
+                new formatted error message.
+
+            :type should_update_metrics ``bool``
+            :param should_update_metrics: Whether or not to update execution metrics according to response
+            """
             try:
                 if error_handler:
                     error_handler(res)
@@ -9025,10 +9038,10 @@ if 'requests' in sys.modules:
                 raise
 
         def _handle_success(self, res, resp_type, empty_valid_codes, return_empty_response, should_update_metrics):
-            """ Handle successful response
+            """ Handles successful response
 
-            :type response: ``requests.Response``
-            :param response: Response from API after the request for which to check error type
+            :type res: ``requests.Response``
+            :param res: Response from API after the request for which to check error type
 
             :type resp_type: ``str``
             :param resp_type:
@@ -9043,17 +9056,18 @@ if 'requests' in sys.modules:
             :type return_empty_response: ``bool``
             :param response: Whether to return an empty response body if the response code is in empty_valid_codes
 
-            :type with_metrics ``bool``
-            :param with_metrics: Whether or not to calculate execution metrics from the response
+            :type should_update_metrics ``bool``
+            :param should_update_metrics: Whether or not to update execution metrics according to response
             """
+            if should_update_metrics:
+                self._update_metrics(res, success=True)
+
             if not empty_valid_codes:
                 empty_valid_codes = [204]
             is_response_empty_and_successful = (res.status_code in empty_valid_codes)
             if is_response_empty_and_successful and return_empty_response:
                 return res
 
-            if should_update_metrics:
-                self._update_metrics(res, success=True)
             return self.cast_response(res, resp_type)
 
         def cast_response(self, res, resp_type, raise_on_error=True):
@@ -9084,17 +9098,19 @@ if 'requests' in sys.modules:
             :type success: ``bool``
             :param success: Wheter the request succeeded or failed
             """
-            error_type = self.determine_error_type(res)
-            if error_type == ErrorTypes.QUOTA_ERROR:
-                self.execution_metrics.quota_error += 1
-            elif error_type == ErrorTypes.AUTH_ERROR:
-                self.execution_metrics.auth_error += 1
-            elif error_type == ErrorTypes.SERVICE_ERROR:
-                self.execution_metrics.service_error += 1
-            elif error_type == ErrorTypes.GENERAL_ERROR:
-                self.execution_metrics.general_error += 1
-            elif success and not self.is_polling_in_progress(res):
-                self.execution_metrics.success += 1
+            if success:
+                if not self.is_polling_in_progress(res):
+                    self.execution_metrics.success += 1
+            else:
+                error_type = self.determine_error_type(res)
+                if error_type == ErrorTypes.QUOTA_ERROR:
+                    self.execution_metrics.quota_error += 1
+                elif error_type == ErrorTypes.AUTH_ERROR:
+                    self.execution_metrics.auth_error += 1
+                elif error_type == ErrorTypes.SERVICE_ERROR:
+                    self.execution_metrics.service_error += 1
+                elif error_type == ErrorTypes.GENERAL_ERROR:
+                    self.execution_metrics.general_error += 1
 
         def determine_error_type(self, response):
             """ Determines the type of error based on response status code and content.

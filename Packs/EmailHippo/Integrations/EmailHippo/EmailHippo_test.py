@@ -16,14 +16,15 @@ def load_test_data(path):
 
 
 class TestHappyPath:
-    def test_get_email_reputation_success(self, requests_mock, client):
+    def test_get_email_reputation_success(self, requests_mock, client: Client):
         """
         Given:
             a Client instance and a mocked API response
         When:
             get_email_reputation is called with a valid email address
         Then:
-            result returned as expected
+            - result returned as expected
+            - execution metrics success is raised by 1
         """
         requests_mock.get('https://test.com/v3/more/json/test/test@example.com',
                           json=load_test_data('test_data/get_email_output.json')['api_result'])
@@ -37,8 +38,9 @@ class TestHappyPath:
         actual_entry_context = command_res[0].to_context()['EntryContext']
         assert expected_entry_context == actual_entry_context
         assert all(key in command_res[0].readable_output for key in hr_keys)
+        assert client.execution_metrics.success == 1
 
-    def test_domain_reputation_command_success(self, requests_mock, client):
+    def test_domain_reputation_command_success(self, requests_mock, client: Client):
         """
         Given:
             - a Client instance and a mocked API response
@@ -46,6 +48,7 @@ class TestHappyPath:
             - domain_reputation_command is called with a valid domain
         Then:
             - result returned as expected
+            - execution metrics success is raised by 1
         """
         requests_mock.get('https://test.com/v1/test/example.com',
                           json=load_test_data('test_data/get_domain_output.json')['api_result'])
@@ -64,8 +67,9 @@ class TestHappyPath:
         actual_entry_context = command_res[0].to_context()['EntryContext']
         assert expected_entry_context == actual_entry_context
         assert all(key in command_res[0].readable_output for key in hr_keys)
+        assert client.execution_metrics.success == 1
 
-    def test_quota_command_success(self, requests_mock, client):
+    def test_quota_command_success(self, requests_mock, client: Client):
         """
         Given:
             - a Client instance and a mocked API response
@@ -73,6 +77,7 @@ class TestHappyPath:
             - get_email_quota_command is called with a valid domain
         Then:
             - result returned as expected
+            - execution metrics success is raised by 1
         """
         requests_mock.get('https://test.com/customer/reports/v3/quota/test',
                           json=load_test_data('test_data/get_quota_output.json'))
@@ -86,6 +91,7 @@ class TestHappyPath:
         assert command_res
         assert all(key in command_res.readable_output for key in hr_keys)
         assert 'licenseKey' not in command_res.outputs
+        assert client.execution_metrics.success == 1
 
 
 class TestFailure:
