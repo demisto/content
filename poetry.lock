@@ -1354,7 +1354,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.26.0"
+version = "1.26.1"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
@@ -1454,8 +1454,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "6d4fffb22462666d7713ecd156e8d26af3966e9e"
-resolved_reference = "6d4fffb22462666d7713ecd156e8d26af3966e9e"
+reference = "MW/CIAC-9584/lock_integrations/Check_for_job_canceled"
+resolved_reference = "781847ead57cfff45036d0bf6fd3a9819a138a8c"
 
 [[package]]
 name = "deprecated"
@@ -7120,4 +7120,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "d3286f8e7c2dd9f7b1bbc9b3ba73db4db3c111738f721ee34a2597466a665a3d"
+content-hash = "a383db3e9e4abbbe737994f36f258c45110bc2fa092d98f0c58229c1fc6059bb"
