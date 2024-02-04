@@ -176,7 +176,8 @@ def test_list_managed_devices__results_with_limit(mocker):
         'value': ['device1', 'device2', 'device3']
     }
 
-    devices, next_link, raw_response = client.list_managed_devices(limit=1 ,page_size= 3, next_link='https://graph.microsoft.com/v1.0/test_link')
+    devices, next_link, raw_response = client.list_managed_devices(
+        limit=1, page_size=3, next_link='https://graph.microsoft.com/v1.0/test_link')
     assert devices == ['device1', 'device2', 'device3']
     assert next_link == 'next_link'
     assert raw_response == {'@odata.nextLink': 'next_link', 'value': ['device1', 'device2', 'device3']}
