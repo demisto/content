@@ -1950,7 +1950,7 @@ def update_notable_events(baseurl, comment, status=None, urgency=None, owner=Non
     comment -- A description of the change or some information about the notable events
     status -- A status (only required if you are changing the status of the event)
     urgency -- An urgency (only required if you are changing the urgency of the event)
-    owner -- A nowner (only required if reassigning the event)
+    owner -- An owner (only required if reassigning the event)
     eventIDs -- A list of notable event IDs (must be provided if a search ID is not provided)
     searchID -- An ID of a search. All of the events associated with this search will be modified
      unless a list of eventIDs are provided that limit the scope to a sub-set of the results.
@@ -2820,9 +2820,13 @@ def handle_message(item: results.Message | dict) -> bool:
     return False
 
 
+def notable_event_fetch(args: dict, service: client.Service) -> CommandResults:
+    service.jobs.oneshot('search index=security notable=true | head 1')
+    return CommandResults()
+
+
 def main():  # pragma: no cover
     command = demisto.command()
-    PARAMS = PARAMS
     args = demisto.args()
 
     if command == 'splunk-parse-raw':
@@ -2936,6 +2940,8 @@ def main():  # pragma: no cover
         return_results(update_remote_system_command(args, PARAMS, service, auth_token, mapper, comment_tag_to_splunk))
     elif command == 'splunk-get-username-by-xsoar-user':
         return_results(mapper.get_splunk_user_by_xsoar_command(args))
+    elif command == 'splunk-notable-event-fetch':
+        return_results(notable_event_fetch(args, service))
     else:
         raise NotImplementedError(f'Command not implemented: {command}')
 
