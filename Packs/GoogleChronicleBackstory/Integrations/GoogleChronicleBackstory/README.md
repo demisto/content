@@ -6,6 +6,9 @@ Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as 
 **Note:** The `gcb-list-alerts` command would fetch both Asset as well as User alerts depending upon the argument `alert_type`. In this case, the total number of alerts fetched might not match with the value of the page_size argument and this is a known behaviour with respect to the endpoint from which we are fetching the alerts.
 
 **Note:** The `gcb-list-rules` command would filter rules depending upon the argument `live_rule`.In this case, the total number of rules fetched might not match with the value of the page_size argument and this is a known behaviour with respect to the endpoint from which we are fetching the rules.
+
+**Note:** The commands and fetch incidents mechanism will do up to 3 internal retries with a gap of 15, 30, and 60 seconds (exponentially) between the retries.
+
 #### Troubleshoot
 **Note:** If you are expecting a high volume of alerts from Chronicle, you can reduce the time required to fetch them by increasing the "How many incidents to fetch each time" parameter while decreasing the "Incidents Fetch Interval" parameter in the integration configuration.
 
@@ -26,12 +29,12 @@ Duplication of rule detection incidents when fetched from Chronicle.
 ##### Question #1
 If we have 3 rules added in the configuration (R1, R2, R3) and we are getting 429 or 500 errors in R2. Will my integration stop fetching the detections or will it fetch detections of rule R3?
 
-###### Case #1: When HTTP 429 error resumes before 60 retry attempts:
+###### Case #1: When HTTP 429 or 500 error resumes before 60 retry attempts:
 
 - System will re-attempt to fetch the detection after 1 min for the same R2 rule. The system will re-attempt to get the detections for Rule R2, 60 times.
-If 429 error is recovered before 60 attempts, the system will fetch the detections for Rule R2 and then proceed ahead for Rule R3.
+If 429 or 500 error is recovered before 60 attempts, the system will fetch the detections for Rule R2 and then proceed ahead for Rule R3.
 
-###### Case #2: When HTTP 429 error does not resume for 60 retry attempts:
+###### Case #2: When HTTP 429 or 500 error does not resume for 60 retry attempts:
 
 - System will re-attempt after 1 min for the same R2 rule. The system will re-attempt to get the detections for Rule R2 60 times.
 If 429 error does not recover for 60 attempts, the system will skip Rule R2 and then proceed ahead for rule R3 to fetch its detections by adding a log.

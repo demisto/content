@@ -236,6 +236,8 @@ def demisto_types_to_xdr(_type: str) -> str:
         return 'HASH'
     elif xdr_type == 'DOMAIN':
         return 'DOMAIN_NAME'
+    elif xdr_type == 'URL':
+        return 'PATH'
     else:
         return xdr_type
 

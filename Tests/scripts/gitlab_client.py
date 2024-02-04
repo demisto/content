@@ -1,5 +1,3 @@
-import enum
-import json
 import os
 from tempfile import mkdtemp
 import zipfile
@@ -12,13 +10,6 @@ import requests
 GITLAB_SERVER_URL = os.getenv("CI_SERVER_URL", "https://gitlab.xdr.pan.local")  # disable-secrets-detection
 API_BASE_URL = f"{GITLAB_SERVER_URL}/api/v4"
 PROJECT_ID = os.getenv("CI_PROJECT_ID", "1061")
-
-
-class GetArtifactErrors(str, enum.Enum):
-    NO_PIPELINES = "No pipelines for this SHA"
-    NO_JOB = "No jobs with the specified name"
-    NO_ARTIFACTS = "No artifacts in the specified job"
-    NO_FILE_IN_ARTIFACTS = "The specified file does not exist in the artifacts"
 
 
 class GitlabClient:
@@ -40,8 +31,18 @@ class GitlabClient:
             return response.json()
         return response
 
-    def get_pipelines_by_sha(self, commit_sha: str) -> list:
-        return self._get(f"pipelines?sha={commit_sha}", to_json=True)
+    def get_pipelines(
+            self,
+            commit_sha: str = None,
+            ref: str = None,
+            sort: str = "asc",
+    ) -> list:
+        params = {
+            "sha": commit_sha,
+            "ref": ref,
+            "sort": sort,
+        }
+        return self._get("pipelines", params=params, to_json=True)
 
     def get_job_id_by_name(self, pipeline_id: str, job_name: str) -> str | None:
         response: list = self._get(f"pipelines/{pipeline_id}/jobs", to_json=True)
@@ -71,6 +72,7 @@ class GitlabClient:
         commit_sha: str,
         job_name: str,
         artifact_filepath: Path,
+        ref: str = None,
     ) -> str:
         """Gets an artifact file data as text.
 
@@ -78,38 +80,35 @@ class GitlabClient:
             commit_sha (str): A commit SHA
             job_name (str): A job name
             artifact_filepath (Path): The artifact file path
+            ref (str): The branch name.
 
         Raises:
-            Exception: An exception message specifying the reasons for not returning the file data.
+            Exception: An exception message specifying the reasons for not returning the file data,
+            for each pipeline triggered for the given commit SHA.
 
         Returns:
             str: The artifact text data.
         """
-        pipeline_ids = [p["id"] for p in self.get_pipelines_by_sha(commit_sha)]
-        pid_to_err = {}
-        for pipeline_id in pipeline_ids:
-            if job_id := self.get_job_id_by_name(pipeline_id, job_name):
-                try:
-                    bundle_path = self.download_and_extract_artifacts_bundle(job_id)
-                    return (bundle_path / artifact_filepath).read_text()
-                except requests.HTTPError:
-                    pid_to_err[pipeline_id] = GetArtifactErrors.NO_ARTIFACTS.value
-                except FileNotFoundError:
-                    pid_to_err[pipeline_id] = GetArtifactErrors.NO_FILE_IN_ARTIFACTS.value
-            else:
-                pid_to_err[pipeline_id] = GetArtifactErrors.NO_JOB.value
+        try:
+            pipelines = self.get_pipelines(commit_sha=commit_sha, ref=ref)
+            if not pipelines:
+                raise Exception("No pipelines found for this SHA")
+            errors = []
+            for pipeline in pipelines:
+                pid = pipeline["id"]
+                if job_id := self.get_job_id_by_name(pid, job_name):
+                    try:
+                        bundle_path = self.download_and_extract_artifacts_bundle(job_id)
+                        return (bundle_path / artifact_filepath).read_text()
+                    except requests.HTTPError:
+                        errors.append(f"Pipeline #{pid}: No artifacts in job {job_name}")
+                    except FileNotFoundError:
+                        errors.append(f"Pipeline #{pid}: The file {artifact_filepath} does not exist in the artifacts")
+                else:
+                    errors.append(f"Pipeline #{pid}: No job with the name {job_name}")
+            raise Exception("\n".join(errors))
 
-        raise Exception(
-            f"Could not extract {artifact_filepath.name} from any pipeline of SHA {commit_sha}. "
-            f"Err: {GetArtifactErrors.NO_PIPELINES.value if not pipeline_ids else pid_to_err}"
-        )
-
-    def get_packs_dependencies_json(
-        self,
-        commit_sha: str,
-        job_name: str,
-        packs_dependencies_filepath: Path,
-    ) -> dict:
-        return json.loads(
-            self.get_artifact_file(commit_sha, job_name, packs_dependencies_filepath)
-        )
+        except Exception as e:
+            raise Exception(
+                f"Could not extract {artifact_filepath.name} from any pipeline with SHA {commit_sha}:\n{e}"
+            )

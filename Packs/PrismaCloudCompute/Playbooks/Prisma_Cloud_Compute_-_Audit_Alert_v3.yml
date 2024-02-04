@@ -1,7 +1,5 @@
 id: Prisma Cloud Compute - Audit Alert v3
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Prisma Cloud Compute - Audit Alert v3
 description: |-
   Default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
@@ -19,14 +17,16 @@ description: |-
   - Block Indicators - Generic v3
   - Cloud Response - Generic
   - Manual Remediation.
+  
+  Currently, the playbook supports incidents created by **Runtime** and **WAAS** triggers.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b80861e4-761b-4ba3-8718-1753f3d3f8db
+    taskid: cf0a785f-613d-4365-8b3d-7d6e4a1b904c
     type: start
     task:
-      id: b80861e4-761b-4ba3-8718-1753f3d3f8db
+      id: cf0a785f-613d-4365-8b3d-7d6e4a1b904c
       version: -1
       name: ""
       iscommand: false
@@ -34,14 +34,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "91"
+      - "94"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 132.5,
-          "y": -90
+          "y": -270
         }
       }
     note: false
@@ -53,10 +53,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: efb76bf2-1a60-4ad2-8585-429ef8cd65a3
+    taskid: 30634963-65c8-459d-8c88-bd23405c5bc5
     type: title
     task:
-      id: efb76bf2-1a60-4ad2-8585-429ef8cd65a3
+      id: 30634963-65c8-459d-8c88-bd23405c5bc5
       version: -1
       name: Vulnerability
       type: title
@@ -84,10 +84,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 68c6cc11-6743-4eb5-88ba-0a6e5f6bcb96
+    taskid: 30a5db4e-10be-45ed-899b-85177f7b55ec
     type: title
     task:
-      id: 68c6cc11-6743-4eb5-88ba-0a6e5f6bcb96
+      id: 30a5db4e-10be-45ed-899b-85177f7b55ec
       version: -1
       name: Compliance
       type: title
@@ -115,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: b6c8573b-6031-403a-8f7a-cc0d85ce1b3c
+    taskid: b9608d40-c531-44c7-832f-271bb1e017b0
     type: title
     task:
-      id: b6c8573b-6031-403a-8f7a-cc0d85ce1b3c
+      id: b9608d40-c531-44c7-832f-271bb1e017b0
       version: -1
       name: Remediation
       type: title
@@ -135,7 +135,7 @@ tasks:
       {
         "position": {
           "x": 122.5,
-          "y": 1880
+          "y": 2090
         }
       }
     note: false
@@ -147,10 +147,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 6efd3a5f-89ba-46ac-8395-1717ddf723c2
+    taskid: 7089537e-4d24-43d9-8b70-55ad792faa01
     type: regular
     task:
-      id: 6efd3a5f-89ba-46ac-8395-1717ddf723c2
+      id: 7089537e-4d24-43d9-8b70-55ad792faa01
       version: -1
       name: Close Investigation
       description: commands.local.cmd.close.inv
@@ -167,7 +167,7 @@ tasks:
       {
         "position": {
           "x": 122.5,
-          "y": 2850
+          "y": 3060
         }
       }
     note: false
@@ -179,10 +179,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 9fe1aceb-b30a-440f-8289-744de3353ddb
+    taskid: 719b0edc-d837-4415-8d4b-d3f9dc13d157
     type: title
     task:
-      id: 9fe1aceb-b30a-440f-8289-744de3353ddb
+      id: 719b0edc-d837-4415-8d4b-d3f9dc13d157
       version: -1
       name: Done
       type: title
@@ -195,7 +195,7 @@ tasks:
       {
         "position": {
           "x": 122.5,
-          "y": 3050
+          "y": 3260
         }
       }
     note: false
@@ -207,10 +207,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: ace0fef6-0a4a-49a3-855d-0b2b27ef5f39
+    taskid: 9d8b387d-d0e2-4945-8ad6-f6da20257cf3
     type: title
     task:
-      id: ace0fef6-0a4a-49a3-855d-0b2b27ef5f39
+      id: 9d8b387d-d0e2-4945-8ad6-f6da20257cf3
       version: -1
       name: Forensics
       type: title
@@ -219,14 +219,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "59"
+      - "96"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 122.5,
-          "y": 865
+          "y": 805
         }
       }
     note: false
@@ -238,10 +238,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 9738728b-02ea-456d-8965-fd69bdb9de55
+    taskid: a120fb5c-4ba7-4c21-890f-a637d3a639b2
     type: regular
     task:
-      id: 9738728b-02ea-456d-8965-fd69bdb9de55
+      id: a120fb5c-4ba7-4c21-890f-a637d3a639b2
       version: -1
       name: Get Host Profile
       description: Get information about the hosts and their profile events. This command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring.
@@ -263,7 +263,7 @@ tasks:
       {
         "position": {
           "x": 582.5,
-          "y": 1510
+          "y": 1720
         }
       }
     note: false
@@ -275,10 +275,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: da456a79-8436-4dd1-8ad9-8fa554f48b02
+    taskid: f203322f-2774-4db8-870f-86b8a328abe5
     type: regular
     task:
-      id: da456a79-8436-4dd1-8ad9-8fa554f48b02
+      id: f203322f-2774-4db8-870f-86b8a328abe5
       version: -1
       name: Manually Review
       description: Perform manual remediation to ensure full incident resolution
@@ -294,7 +294,7 @@ tasks:
       {
         "position": {
           "x": 420,
-          "y": 2670
+          "y": 2880
         }
       }
     note: false
@@ -306,10 +306,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 04c093e5-186e-4c4c-86ea-88ca13bb0057
+    taskid: 3ff6b6fc-ef9f-4a02-829f-c2d0861d70d9
     type: regular
     task:
-      id: 04c093e5-186e-4c4c-86ea-88ca13bb0057
+      id: 3ff6b6fc-ef9f-4a02-829f-c2d0861d70d9
       version: -1
       name: 'Get host''s defenders list '
       description: Retrieve a list of defenders and their information.
@@ -331,7 +331,7 @@ tasks:
       {
         "position": {
           "x": 122.5,
-          "y": 1010
+          "y": 1180
         }
       }
     note: false
@@ -343,10 +343,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 0ed9edab-867d-4d8f-8eb2-47abeb6d1491
+    taskid: 6dd6182c-c17a-4238-8339-36c389b3945e
     type: condition
     task:
-      id: 0ed9edab-867d-4d8f-8eb2-47abeb6d1491
+      id: 6dd6182c-c17a-4238-8339-36c389b3945e
       description: ""
       version: -1
       name: Check if there's a defender on the host
@@ -378,7 +378,7 @@ tasks:
       {
         "position": {
           "x": 122.5,
-          "y": 1170
+          "y": 1380
         }
       }
     note: false
@@ -390,10 +390,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 70932739-28c5-4095-87ae-88b3347ed951
+    taskid: ac792c52-b152-46f9-8a2e-11477b39d650
     type: regular
     task:
-      id: 70932739-28c5-4095-87ae-88b3347ed951
+      id: ac792c52-b152-46f9-8a2e-11477b39d650
       version: -1
       name: Get host forensic
       description: Get forensics on a specific host.
@@ -417,7 +417,7 @@ tasks:
       {
         "position": {
           "x": 582.5,
-          "y": 1700
+          "y": 1910
         }
       }
     note: false
@@ -429,10 +429,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: ef4c8f10-efae-4d2c-836c-25cc918eccd9
+    taskid: fff05ff0-dbd6-4597-8f4a-58e36122b981
     type: title
     task:
-      id: ef4c8f10-efae-4d2c-836c-25cc918eccd9
+      id: fff05ff0-dbd6-4597-8f4a-58e36122b981
       version: -1
       name: Get defender logs
       type: title
@@ -448,7 +448,7 @@ tasks:
       {
         "position": {
           "x": 122.5,
-          "y": 1370
+          "y": 1580
         }
       }
     note: false
@@ -460,10 +460,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: cda15aaa-862a-4d83-88a7-2d2224e22fdb
+    taskid: 6656b168-ce74-499b-8e5d-0976d950f857
     type: title
     task:
-      id: cda15aaa-862a-4d83-88a7-2d2224e22fdb
+      id: 6656b168-ce74-499b-8e5d-0976d950f857
       version: -1
       name: Container Forensics
       type: title
@@ -479,7 +479,7 @@ tasks:
       {
         "position": {
           "x": -377.5,
-          "y": 1370
+          "y": 1580
         }
       }
     note: false
@@ -491,10 +491,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 4a90bcc4-5a38-483e-8713-5f741acd5050
+    taskid: 30b21f2f-548a-4035-89fa-8daef7690c3c
     type: title
     task:
-      id: 4a90bcc4-5a38-483e-8713-5f741acd5050
+      id: 30b21f2f-548a-4035-89fa-8daef7690c3c
       version: -1
       name: Host Forensics
       type: title
@@ -510,7 +510,7 @@ tasks:
       {
         "position": {
           "x": 582.5,
-          "y": 1370
+          "y": 1580
         }
       }
     note: false
@@ -522,10 +522,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 5b726f5c-5b94-41ac-8149-30bbda95814f
+    taskid: b1799d2a-a668-45ea-89e1-bfd9cefa0d3e
     type: playbook
     task:
-      id: 5b726f5c-5b94-41ac-8149-30bbda95814f
+      id: b1799d2a-a668-45ea-89e1-bfd9cefa0d3e
       version: -1
       name: Prisma Cloud Compute - Get Defender Logs
       description: |-
@@ -559,7 +559,7 @@ tasks:
       {
         "position": {
           "x": 122.5,
-          "y": 1580
+          "y": 1790
         }
       }
     note: false
@@ -571,10 +571,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 080f6b6e-61e7-44b1-80cd-e95ccb90f8a4
+    taskid: 9f958f9c-d881-4b46-8098-583835b6089b
     type: playbook
     task:
-      id: 080f6b6e-61e7-44b1-80cd-e95ccb90f8a4
+      id: 9f958f9c-d881-4b46-8098-583835b6089b
       version: -1
       name: Prisma Cloud Compute - Container Forensics
       description: |-
@@ -623,7 +623,7 @@ tasks:
       {
         "position": {
           "x": -377.5,
-          "y": 1580
+          "y": 1790
         }
       }
     note: false
@@ -635,10 +635,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: b4938bc7-8118-47c0-8630-079f31fddad5
+    taskid: f53bbd8c-a8a2-464a-860c-20f9461dce84
     type: playbook
     task:
-      id: b4938bc7-8118-47c0-8630-079f31fddad5
+      id: f53bbd8c-a8a2-464a-860c-20f9461dce84
       version: -1
       name: Prisma Cloud Compute - Audit Alert Compliance Enrichment
       description: |-
@@ -693,10 +693,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: b5d7f194-e55d-4f30-8ae8-25da8f2cad3c
+    taskid: 982cf912-0bc2-4661-8638-10c8b8e18e15
     type: playbook
     task:
-      id: b5d7f194-e55d-4f30-8ae8-25da8f2cad3c
+      id: 982cf912-0bc2-4661-8638-10c8b8e18e15
       version: -1
       name: Block Indicators - Generic v3
       description: |-
@@ -963,7 +963,7 @@ tasks:
       {
         "position": {
           "x": 342.5,
-          "y": 2060
+          "y": 2270
         }
       }
     note: false
@@ -975,10 +975,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: bda50bb5-003b-452a-8dca-e9715d791b58
+    taskid: 30c3ac07-637e-435a-8ff4-0468b40d75c9
     type: playbook
     task:
-      id: bda50bb5-003b-452a-8dca-e9715d791b58
+      id: 30c3ac07-637e-435a-8ff4-0468b40d75c9
       version: -1
       name: Cloud Response - Generic
       description: |-
@@ -1164,7 +1164,7 @@ tasks:
       {
         "position": {
           "x": -110,
-          "y": 2260
+          "y": 2470
         }
       }
     note: false
@@ -1176,10 +1176,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: 7fa19377-d50b-4ff5-8348-a694e49423c8
+    taskid: c49230e2-fca1-40c5-8aeb-c93fd6a7b10b
     type: condition
     task:
-      id: 7fa19377-d50b-4ff5-8348-a694e49423c8
+      id: c49230e2-fca1-40c5-8aeb-c93fd6a7b10b
       description: ""
       version: -1
       name: Run "Cloud Response - Generic" playbook?
@@ -1210,7 +1210,7 @@ tasks:
       {
         "position": {
           "x": -110,
-          "y": 2060
+          "y": 2270
         }
       }
     note: false
@@ -1222,10 +1222,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 8e62e41d-5e56-40ab-859d-a2423d3946a5
+    taskid: c2ccda34-5687-4d6e-83dc-c274bced2f0d
     type: playbook
     task:
-      id: 8e62e41d-5e56-40ab-859d-a2423d3946a5
+      id: c2ccda34-5687-4d6e-83dc-c274bced2f0d
       version: -1
       name: Prisma Cloud Compute - Audit Alert Enrichment
       description: |-
@@ -1294,10 +1294,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: a7bbb1bc-1e3f-46c8-8af7-5e9f3f610f39
+    taskid: 4e719c23-808d-41ef-8312-84cda9e2ed2c
     type: title
     task:
-      id: a7bbb1bc-1e3f-46c8-8af7-5e9f3f610f39
+      id: 4e719c23-808d-41ef-8312-84cda9e2ed2c
       version: -1
       name: Enrichment
       type: title
@@ -1313,7 +1313,7 @@ tasks:
       {
         "position": {
           "x": 132.5,
-          "y": 110
+          "y": 100
         }
       }
     note: false
@@ -1325,10 +1325,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "92":
     id: "92"
-    taskid: 68028343-c612-4dc6-86ef-1087b3ab4ca4
+    taskid: 0e22ce71-ea68-4cde-8f27-e188718e72fa
     type: playbook
     task:
-      id: 68028343-c612-4dc6-86ef-1087b3ab4ca4
+      id: 0e22ce71-ea68-4cde-8f27-e188718e72fa
       version: -1
       name: Prisma Cloud Compute - Audit Alert Vulnerabilities Enrichment
       playbookName: Prisma Cloud Compute - Audit Alert Vulnerabilities Enrichment
@@ -1371,10 +1371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "93":
     id: "93"
-    taskid: 2100d92f-ae62-4f12-8c5c-e2551d3def52
+    taskid: fdfc2c0a-3f69-48fc-8293-0907e637aa98
     type: condition
     task:
-      id: 2100d92f-ae62-4f12-8c5c-e2551d3def52
+      id: fdfc2c0a-3f69-48fc-8293-0907e637aa98
       description: ""
       version: -1
       name: Pause for a manual review?
@@ -1405,7 +1405,7 @@ tasks:
       {
         "position": {
           "x": 122.5,
-          "y": 2450
+          "y": 2660
         }
       }
     note: false
@@ -1415,7 +1415,127 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+  "94":
+    id: "94"
+    taskid: 31b70d13-f37a-4b13-8dd3-de6587c05f96
+    type: condition
+    task:
+      id: 31b70d13-f37a-4b13-8dd3-de6587c05f96
+      description: ""
+      version: -1
+      name: Check if host or image resources exist in the incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "95"
+      "yes":
+      - "91"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: prismacloudcomputehost
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: prismacloudcomputeimage
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 132.5,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 17e84d9d-91b4-40fb-8948-6a993b3c92f3
+    type: title
+    task:
+      id: 17e84d9d-91b4-40fb-8948-6a993b3c92f3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -337.5,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 1c29ba4d-506a-4785-8028-c319936b62f5
+    type: condition
+    task:
+      id: 1c29ba4d-506a-4785-8028-c319936b62f5
+      description: ""
+      version: -1
+      name: Is there a host?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: prismacloudcomputehost
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 122.5,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1423,14 +1543,16 @@ view: |-
       "85_83_yes": 0.47,
       "85_93_#default#": 0.22,
       "93_26_#default#": 0.2,
-      "93_42_yes": 0.52
+      "93_42_yes": 0.52,
+      "96_11_#default#": 0.1,
+      "96_59_yes": 0.4
     },
     "paper": {
       "dimensions": {
-        "height": 3205,
+        "height": 3595,
         "width": 1340,
         "x": -377.5,
-        "y": -90
+        "y": -270
       }
     }
   }

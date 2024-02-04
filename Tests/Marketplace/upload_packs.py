@@ -29,7 +29,6 @@ import traceback
 from Tests.Marketplace.pack_readme_handler import download_markdown_images_from_artifacts
 
 METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
-TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 
 
 def get_packs_ids_to_upload(packs_to_upload: str) -> set:
@@ -762,7 +761,7 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
         build_num = os.environ['CI_JOB_ID']
 
         bucket_path = f'https://console.cloud.google.com/storage/browser/' \
-                      f'{TEST_XDR_PREFIX}marketplace-ci-build/content/builds/{branch_name}/{build_num}'
+                      f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
 
         pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
                      f'Uploaded packs:\n{successful_packs_table}\n\n' \
