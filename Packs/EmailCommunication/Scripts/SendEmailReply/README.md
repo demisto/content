@@ -37,6 +37,8 @@ For more information, see the section about permissions here: [https://docs-cort
 | service_mail         | The email address the emails are sent from. |
 | mail_sender_instance | Name of the mail sender instance name for transmitting emails                                            |
 | new_thread           | Specify whether to reply to an existing thread or start a new one.  Default value of 'n/a' is for 'Email Communication' type incidents only                                                                                                         |
+| body_type            | The type of the email body. Can be either HTML or plain text. Default is HTML. |
+| reputation_calc_async| Whether to calculate the reputation asynchronously. Default is false. |
 
 ## Outputs
 ---

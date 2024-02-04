@@ -1,0 +1,68 @@
+[
+    {
+        
+        "ModuleName": "Core REST API_instance_1",
+        "Brand": "Core REST API",
+        "Category": "Utilities",
+        "ID": "",
+        "Version": 0,
+        "Type": 1,
+        "Contents": {
+            "response": {
+                "invPlaybook": {
+                    "tasks": {
+                        "1": {
+                            "id": "1",
+                            "state": "Completed",
+                            "task": {
+                                "id": "66d67e04-f10b-46e6-8453-762558555c4d",
+                                "name": "First Task",
+                                "tags": [
+                                    "testtag"
+                                ]
+                            },
+                            "taskId": "66d67e04-f10b-46e6-8453-762558555c4d",
+                            "type": "regular"
+                        },
+                        "2": {
+                            "id": "1",
+                            "state": "Completed",
+                            "task": {
+                                "id": "66d67e04-f10b-46e6-8453-762558555c4d",
+                                "name": "Second Task",
+                                "tags": []
+                            },
+                            "taskId": "66d67e04-f10b-46e6-8453-762558555c4d",
+                            "type": "regular"
+                        },
+                        "3": {
+                            "id": "3",
+                            "state": "Completed",
+                            "subPlaybook": {
+                                "id": "31",
+                                "state": "completed",
+                                "tasks": {
+                                    "4": {
+                                        "id": "4",
+                                        "state": "Completed",
+                                        "task": {
+                                            "name": "Sub-playbook Tasks",
+                                            "type": "regular"
+                                        },
+                                        "type": "regular"
+                                    }
+                                }
+                            },
+                            "task": {
+                                "name": "Process Sub-playbook",
+                                "type": "playbook",
+                                "version": 8
+                            },
+                            "type": "playbook"
+                        }
+                    }
+                }
+            }
+        }
+    }
+]
