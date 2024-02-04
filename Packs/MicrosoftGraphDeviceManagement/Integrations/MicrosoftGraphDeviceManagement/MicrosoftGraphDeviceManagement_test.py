@@ -137,14 +137,14 @@ def test_get_managed_device_physical_memory_command_error(mocker):
     assert outputs.call_args.args[0] == "Managed device 0 not found."
 
 
-def test_list_managed_devices__with_page_size(mocker):
+def test_list_managed_devices__with_page_size_and_limit(mocker):
     """
     Given:
-        - page_size
+        - page_size and limit
     When:
         - running list_managed_devices
     Then:
-        - The http request is called with the right arguments in it.
+        - The http request is called with the page size value, since it should override the limit value.
     """
     client = MsGraphClient(self_deployed=False, tenant_id='tenant_id', auth_and_token_url='auth_and_token_url',
                            enc_key='enc_key', app_name='app_name', azure_cloud=None, use_ssl=True, proxy=False,
@@ -153,8 +153,33 @@ def test_list_managed_devices__with_page_size(mocker):
     client.ms_client = mocker.Mock()
     client.ms_client.http_request.return_value = {}
 
-    client.list_managed_devices(2, 1)
+    client.list_managed_devices(limit=2, page_size=1)
     assert client.ms_client.http_request.call_args[0][1] == '/deviceManagement/managedDevices?$top=1&'
+
+
+def test_list_managed_devices__results_with_limit(mocker):
+    """
+    Given:
+        - limit
+    When:
+        - running list_managed_devices
+    Then:
+        - The results are not sliced to the limit size,  since the page size overrides the limit value.
+    """
+    client = MsGraphClient(self_deployed=False, tenant_id='tenant_id', auth_and_token_url='auth_and_token_url',
+                           enc_key='enc_key', app_name='app_name', azure_cloud=None, use_ssl=True, proxy=False,
+                           ok_codes=(200, 201, 202), certificate_thumbprint=None, private_key=None,
+                           managed_identities_client_id=None)
+    client.ms_client = mocker.Mock()
+    client.ms_client.http_request.return_value = {
+        '@odata.nextLink': 'next_link',
+        'value': ['device1', 'device2', 'device3']
+    }
+
+    devices, next_link, raw_response = client.list_managed_devices(limit=1 ,page_size= 3, next_link='https://graph.microsoft.com/v1.0/test_link')
+    assert devices == ['device1', 'device2', 'device3']
+    assert next_link == 'next_link'
+    assert raw_response == {'@odata.nextLink': 'next_link', 'value': ['device1', 'device2', 'device3']}
 
 
 def test_list_managed_devices__with_next_link(mocker):
@@ -175,28 +200,3 @@ def test_list_managed_devices__with_next_link(mocker):
 
     client.list_managed_devices(2, 1, 'https://graph.microsoft.com/v1.0/test_link')
     assert client.ms_client.http_request.call_args[0][1] == '/test_link'
-
-
-def test_list_managed_devices__results_with_limit(mocker):
-    """
-    Given:
-        - limit
-    When:
-        - running list_managed_devices
-    Then:
-        - The results are sliced to the limit size, and the next link and the raw response are returned.
-    """
-    client = MsGraphClient(self_deployed=False, tenant_id='tenant_id', auth_and_token_url='auth_and_token_url',
-                           enc_key='enc_key', app_name='app_name', azure_cloud=None, use_ssl=True, proxy=False,
-                           ok_codes=(200, 201, 202), certificate_thumbprint=None, private_key=None,
-                           managed_identities_client_id=None)
-    client.ms_client = mocker.Mock()
-    client.ms_client.http_request.return_value = {
-        '@odata.nextLink': 'next_link',
-        'value': ['device1', 'device2', 'device3']
-    }
-
-    devices, next_link, raw_response = client.list_managed_devices(1, 3, 'https://graph.microsoft.com/v1.0/test_link')
-    assert devices == ['device1']
-    assert next_link == 'next_link'
-    assert raw_response == {'@odata.nextLink': 'next_link', 'value': ['device1', 'device2', 'device3']}

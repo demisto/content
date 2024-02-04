@@ -48,7 +48,8 @@ class MsGraphClient:
                                          azure_cloud=self.azure_cloud
                                          )
 
-    def list_managed_devices(self, limit: int, page_size: int | None, next_link: str | None = None) -> tuple[list, str | None, Any]:
+    def list_managed_devices(self, limit: int, page_size: int | None,
+                             next_link: str | None = None) -> tuple[list, str | None, Any]:
         limit = page_size if page_size else limit
         url_suffix: str = f'/deviceManagement/managedDevices?$top={limit}&'
         if next_link:
