@@ -631,17 +631,17 @@ script:
       description: The categories of the email.
       type: unknown
   - arguments:
-      - description: 'The text value of this element is used to resolve names against the following fields: First name, Last name, Display name, Full name, Office, Alias, SMTP address.'
+      - description: 'The text value of this argument is used to resolve names against the following fields: First name, Last name, Display name, Full name, Office, Alias, SMTP address.'
         isArray: false
         name: identifier
         required: true
       - auto: PREDEFINED
-        description: Describes whether the full contact details for public contacts for a resolved name are returned in the response.
+        description: Describes whether the full contact details for public contacts for a resolved name are returned.
         name: full-contact-data
         predefined:
           - 'True'
           - 'False'
-    description: This operation can be used to verify aliases and resolve display names to the appropriate mailbox user. If ambiguous names exist, the each mailbox will be returned. The ResolveNames response returns a maximum of 100 candidates. The 100 candidates that are returned are the first 100 that are encountered in the lookup operation. Email addresses with prefixed routing types, such as smtp or sip, are saved in a multivalue array. The ResolveNames operation performs a partial match against each value of that array when you add the routing type at the beginning of the unresolved name, such as "sip:User1@Contoso.com". If you don't specify a routing type, ResolveNames will default to the routing type of smtp, match it to a primary smtp address property, and not search the multivalue array.
+    description: This operation can be used to verify aliases and resolve display names to the appropriate mailbox user. If ambiguous names exist then each mailbox will be returned. A maximum of 100 candidates will be returned; the 100 candidates that are returned are the first 100 that are encountered in the lookup operation. Email addresses with prefixed routing types, such as smtp or sip, are saved in a multivalue array. The ResolveNames operation performs a partial match against each value of that array when you add the routing type at the beginning of the unresolved name, such as "sip:User1@Contoso.com". If you don't specify a routing type, this command  will default to the routing type of smtp, match it to a primary smtp address property, and not search the multivalue array.
     name: ews-resolve-name
   - arguments:
     - description: A CSV list if item IDs.

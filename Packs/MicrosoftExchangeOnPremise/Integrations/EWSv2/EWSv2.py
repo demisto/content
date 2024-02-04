@@ -2158,7 +2158,7 @@ def resolve_name_command(args, protocol):  # pragma: no cover
         output.append(mail_context)
     return get_entry_for_object('Resolved Names',
                             'EWS.ResolvedNames(val.email_address && val.email_address == obj.email_address)',
-                            remove_empty_elements(output),  # noqa: F405
+                            output,  # remove_empty_elements(output),  # noqa: F405
                             headers=['email_address', 'name', 'mailbox_type', 'routing_type'])
 
 
