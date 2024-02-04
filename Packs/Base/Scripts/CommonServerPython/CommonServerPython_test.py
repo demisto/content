@@ -3228,19 +3228,28 @@ class TestBaseClient:
         assert client.execution_metrics.general_error == 0
 
     def test_http_request_execution_metrics_results(cls, requests_mock, mocker):
-        from CommonServerPython import CommandResults, DemistoException, EntryType, ErrorTypes
+        from CommonServerPython import DemistoException, EntryType, ErrorTypes
         requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
         demisto_results_mock = mocker.patch.object(demisto, 'results')
-        with cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False) as client:
-            with raises(DemistoException, match="Error in API call"):
-                client._http_request('get', 'event', with_metrics=True)
-
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False):
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event', with_metrics=True)
+        del client
         demisto_results_mock.assert_called_once
         entry = demisto_results_mock.call_args[0][0]
         assert entry["Type"] == EntryType.EXECUTION_METRICS
         assert entry["APIExecutionMetrics"]["Type"] == ErrorTypes.GENERAL_ERROR
         assert entry["APIExecutionMetrics"]["APICallsCount"] == 1
-        
+
+    def test_http_request_no_execution_metrics_results(cls, requests_mock, mocker):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
+        demisto_results_mock = mocker.patch.object(demisto, 'results')
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False):
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event')
+        del client
+        demisto_results_mock.assert_not_called
 
     @pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
     def test_http_request_params_parser_quote(self, requests_mock):
