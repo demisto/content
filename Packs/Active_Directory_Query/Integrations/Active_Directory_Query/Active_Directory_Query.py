@@ -401,7 +401,7 @@ def modify_user_ou(dn, new_ou):
     assert connection is not None
     cn = dn.split(',', 1)[0]
     demisto.debug(f"cn before edit: {cn=}, {dn=}")
-    cn.removesuffix('\\')
+    cn.replace('\\', '')
     demisto.debug(f"cn after edit: {cn=}")
 
     success = connection.modify_dn(dn, cn, new_superior=new_ou)
