@@ -3134,6 +3134,91 @@ class TestBaseClient:
 
         assert mock_request.last_request.query == 'key=value+with+spaces'
 
+    def test_http_request_execution_metrics_success(cls, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text="success")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.success == 1
+
+    def test_http_request_execution_metrics_success_but_polling_in_progress(cls, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text="success")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        tmp = client.is_polling_in_progress
+        client.is_polling_in_progress = lambda _: True
+        client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.success == 0
+        client.is_polling_in_progress = tmp
+
+    def test_http_request_execution_metrics_timeout(cls, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectTimeout('test timeout'))
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(requests.exceptions.ConnectTimeout, match="^test timeout$"):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.timeout_error == 1
+
+    def test_http_request_execution_metrics_ssl_error(cls, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError('test ssl'))
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(requests.exceptions.SSLError, match="^test ssl$"):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.ssl_error == 1
+
+    def test_http_request_execution_metrics_proxy_error(cls, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ProxyError('test proxy'))
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(requests.exceptions.ProxyError, match="^test proxy$"):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.proxy_error == 1
+
+    def test_http_request_execution_metrics_connection_error(cls, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError('test conn'))
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(requests.exceptions.ConnectionError, match="^test conn$"):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.connection_error == 1
+
+    def test_http_request_execution_metrics_retry_error(cls, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.RetryError('test retry'))
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(requests.exceptions.RetryError, match="^test retry$"):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.retry_error == 1
+
+    def test_http_request_execution_metrics_auth_error(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=401, content=str.encode(json.dumps(self.text)))
+        with raises(DemistoException, match="Error in API call"):
+            self.client._http_request('get', 'event', with_metrics=True)
+        assert self.client.execution_metrics.auth_error == 1
+
+    def test_http_request_execution_metrics_quota_error(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=429, content=str.encode(json.dumps(self.text)))
+        with raises(DemistoException, match="Error in API call"):
+            self.client._http_request('get', 'event', with_metrics=True)
+        assert self.client.execution_metrics.quota_error == 1
+
+    def test_http_request_execution_metrics_service_error(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=500, content=str.encode(json.dumps(self.text)))
+        with raises(DemistoException, match="Error in API call"):
+            self.client._http_request('get', 'event', with_metrics=True)
+        assert self.client.execution_metrics.service_error == 1
+
+    def test_http_request_execution_metrics_general_error(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=400, content=str.encode(json.dumps(self.text)))
+        with raises(DemistoException, match="Error in API call"):
+            self.client._http_request('get', 'event', with_metrics=True)
+        assert self.client.execution_metrics.general_error == 1
+
+    def test_http_request_execution_metrics_not_found_error_but_ok(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', status_code=404)
+        res = self.client._http_request('get', 'event', resp_type='response', ok_codes=(404,), with_metrics=True)
+        assert res.status_code == 404
+        assert self.client.execution_metrics.success == 1
+        assert self.client.execution_metrics.general_error == 1
+
     @pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
     def test_http_request_params_parser_quote(self, requests_mock):
         """

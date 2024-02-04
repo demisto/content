@@ -9122,10 +9122,12 @@ if 'requests' in sys.modules:
             :return: The error type if found, otherwise None
             :rtype: ``ErrorTypes``
             """
-            if response.status_code == 429:
-                return ErrorTypes.QUOTA_ERROR
-            elif response.status_code == 401:
+            if response.status_code == 401:
                 return ErrorTypes.AUTH_ERROR
+            elif response.status_code == 429:
+                return ErrorTypes.QUOTA_ERROR
+            elif response.status_code == 500:
+                return ErrorTypes.SERVICE_ERROR
             return ErrorTypes.GENERAL_ERROR
 
         def is_polling_in_progress(self, response):
