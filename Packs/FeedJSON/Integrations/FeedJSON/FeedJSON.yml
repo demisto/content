@@ -72,7 +72,7 @@ configuration:
   name: auto_detect_type
   type: 8
   required: false
-- additionalinfo: Remove ports from IPv4 type indicators in the fetch command (e.g. 192.168.1.1:8080 -> 192.168.1.1)
+- additionalinfo: Remove ports from IPv4 type indicators in the fetch command (e.g. ,192.168.1.1:8080 -> 192.168.1.1)
   display: Remove IPv4 Ports
   name: remove_ports
   type: 8
@@ -111,7 +111,7 @@ configuration:
   name: rawjson_include_indicator_type
   type: 8
   required: false
-  additionalinfo: "When using a custom classifier and mapper with this feed, use this option to include the indicator type in the raw json used for classification and mapping."
+  additionalinfo: "When using a custom classifier and mapper with this feed, use this option to include the indicator type in the raw JSON used for classification and mapping."
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
