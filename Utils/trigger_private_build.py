@@ -5,7 +5,6 @@ import json
 import time
 import argparse
 import requests
-from typing import List
 import demisto_sdk.commands.common.tools as tools
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -36,7 +35,7 @@ GET_WORKFLOWS_MAX_RETRIES = 5
 GET_WORKFLOWS_TIMEOUT_THRESHOLD = int(60 * 60 * 1.5)  # 1h 30m
 
 
-def get_modified_files(branch_name: str = None) -> List[str]:
+def get_modified_files(branch_name: str = None) -> list[str]:
     """ Gets modified files between master branch and the input branch_name, If the branch_name is empty the method
         compare master branch with the commit sha1 from the environment variable CI_COMMIT_SHA.
 
@@ -78,7 +77,7 @@ def branch_has_private_build_infra_change(branch_name: str = None) -> bool:
     return False
 
 
-def get_dispatch_workflows_ids(github_token: str, branch: str, is_nighty: bool) -> List[int]:
+def get_dispatch_workflows_ids(github_token: str, branch: str, is_nighty: bool) -> list[int]:
     """ Gets private repo dispatch workflows on the given branch.
 
     Args:

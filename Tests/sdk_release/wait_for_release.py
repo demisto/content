@@ -36,7 +36,7 @@ def main():
 
     while f'demisto_sdk-{release_branch_name}' not in demisto_sdk_versions and elapsed < TIMEOUT:
         res = requests.get(ARTIFACTS_URL, verify=False)
-        if res.status_code != 200:
+        if res.status_code != requests.codes.ok:
             logging.error(f'Failed to get the artifacts from {ARTIFACTS_URL}')
             sys.exit(1)
 

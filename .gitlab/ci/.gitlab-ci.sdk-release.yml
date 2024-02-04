@@ -63,9 +63,9 @@ trigger-content-internal-dist-nightly:
   script:
     - section_start "Trigger content-internal-dist nightly build" --collapsed
     - export GOLD_PIPELINE_ID=$(./Utils/gitlab_triggers/trigger_content_internal_dist_nightly_build.sh -ct "${CONTENT_INTERNAL_DIST_TRIGGER_NIGHTLY}" -ch "${SLACK_CHANNEL}" -sdk "${RELEASE_VERSION}" | jq .id)
-    - echo $GOLD_PIPELINE_ID > ${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt
+    - echo "${GOLD_PIPELINE_ID}" > "${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt"
     - echo "content-internal-dist nightly build triggered successfully:"
-    - echo $CI_SERVER_URL"/xdr/cortex-content/content-internal-dist/-/pipelines/"$GOLD_PIPELINE_ID
+    - echo "${CI_SERVER_URL}/xdr/cortex-content/content-internal-dist/-/pipelines/${GOLD_PIPELINE_ID}"
     - section_end "Trigger content-internal-dist nightly build"
 
 trigger-demisto-sdk-nightly:

@@ -34,7 +34,7 @@ def get_pr_from_branch(repository, branch, access_token):
     params = {'head': f'demisto:{branch}'}
     res = requests.get(url, headers={'Authorization': f'Bearer {access_token}'},
                        params=params, verify=False)
-    if res.status_code != 200:
+    if res.status_code != requests.codes.ok:
         logging.error(f'Failed to retrieve pull request from branch {branch}')
         logging.error(res.text)
         sys.exit(1)

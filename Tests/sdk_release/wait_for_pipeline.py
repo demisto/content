@@ -18,7 +18,7 @@ TIMEOUT = 60 * 60 * 6  # 6 hours
 def get_pipeline_status(pipeline_id, project_id, token):
     url = f'{GITLAB_SERVER_URL}/api/v4/projects/{project_id}/pipelines/{pipeline_id}/jobs'
     res = requests.get(url, headers={'Authorization': f'Bearer {token}'})
-    if res.status_code != 200:
+    if res.status_code != requests.codes.ok:
         logging.error(f'Failed to get status of pipeline {pipeline_id}')
         logging.error(res.text)
         return ''
@@ -37,7 +37,7 @@ def get_pipeline_status(pipeline_id, project_id, token):
 def get_pipeline_info(pipeline_id, project_id, token):
     url = f'{GITLAB_SERVER_URL}/api/v4/projects/{project_id}/pipelines/{pipeline_id}'
     res = requests.get(url, headers={'Authorization': f'Bearer {token}'})
-    if res.status_code != 200:
+    if res.status_code != requests.codes.ok:
         logging.error(f'Failed to get status of pipeline {pipeline_id}')
         logging.error(res.text)
         sys.exit(1)

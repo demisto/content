@@ -63,7 +63,7 @@ def main():
     # get pyproject.toml file sha
     url = f'{API_SUFFIX}/contents/pyproject.toml'
     response = requests.request('GET', url, params={'ref': release_branch_name}, verify=False)
-    if response.status_code != 200:
+    if response.status_code != requests.codes.ok:
         logging.error(f'Failed to get the pyproject.toml file from branch {release_branch_name}')
         logging.error(response.text)
         sys.exit(1)
@@ -72,7 +72,7 @@ def main():
     # get pyproject.toml file content
     url = f'https://raw.githubusercontent.com/demisto/demisto-sdk/{release_branch_name}/pyproject.toml'
     response = requests.request('GET', url, verify=False)
-    if response.status_code != 200:
+    if response.status_code != requests.codes.ok:
         logging.error(f'Failed to get the pyproject.toml file content from branch {release_branch_name}')
         logging.error(response.text)
         sys.exit(1)
@@ -92,7 +92,7 @@ def main():
 
     url = f'{API_SUFFIX}/contents/pyproject.toml'
     response = requests.request('PUT', url, data=json.dumps(data), headers=headers, verify=False)
-    if response.status_code != 200:
+    if response.status_code != requests.codes.ok:
         logging.error('Failed to commit the pyproject.toml file')
         logging.error(response.text)
         sys.exit(1)
@@ -163,7 +163,7 @@ def main():
     # get all the workflows for sdk-release.yml in the release branch
     url = f'{API_SUFFIX}/actions/workflows/sdk-release.yml/runs'
     response = requests.request('GET', url, params={'branch': release_branch_name}, headers=headers, verify=False)
-    if response.status_code != 200:
+    if response.status_code != requests.codes.ok:
         logging.error('Failed to retrieve SDK changelog workflow')
         logging.error(response.text)
         sys.exit(1)
@@ -187,7 +187,7 @@ def main():
     # wait to the workflow to finished
     while status != 'completed' and elapsed < TIMEOUT:
         response = requests.request('GET', url, headers=headers, verify=False)
-        if response.status_code != 200:
+        if response.status_code != requests.codes.ok:
             logging.error('Failed to retrieve SDK changelog workflow status')
             logging.error(response.text)
             sys.exit(1)
@@ -216,7 +216,7 @@ def main():
     }
     url = f'{API_SUFFIX}/pulls/{pr_number}'
     response = requests.request('PATCH', url, data=json.dumps(data), headers=headers, verify=False)
-    if response.status_code != 200:
+    if response.status_code != requests.codes.ok:
         logging.error(f'Failed to update pull request: {pr_url}')
         logging.error(response.text)
         sys.exit(1)

@@ -50,7 +50,7 @@ def main():
     }
     url = GITHUB_USER_URL.format(username=reviewer)
     response = requests.request("GET", url, headers=headers, verify=False)
-    if response.status_code != 200:
+    if response.status_code != requests.codes.ok:
         logging.error(f'Failed to retrieve the user {reviewer} from github')
         logging.error(response.text)
         sys.exit(1)
@@ -58,7 +58,7 @@ def main():
     # validate if branch exists
     url = GITHUB_BRANCH_URL.format(branch_name=sdk_branch_name)
     response = requests.request("GET", url, verify=False)
-    if response.status_code != 200:
+    if response.status_code != requests.codes.ok:
         logging.error(f'Failed to retrieve the branch {sdk_branch_name} from demisto-sdk repo')
         logging.error(response.text)
         sys.exit(1)

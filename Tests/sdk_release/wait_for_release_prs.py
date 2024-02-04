@@ -1,13 +1,13 @@
 import argparse
 import sys
 import time
-import os
 import requests
 import urllib3
 from create_content_pr import CONTENT_PR_NUMBER_FILE
 from create_sdk_pr import SDK_PR_NUMBER_FILE
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
+from pathlib import Path
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -20,7 +20,7 @@ TIMEOUT = 60 * 60 * 6  # 6 hours
 def get_pr_by_id(repository, pr_id, access_token):
     url = PR_BY_ID_TEMPLATE.format(repo=repository, pr_id=pr_id)
     res = requests.get(url, headers={'Authorization': f'Bearer {access_token}'}, verify=False)
-    if res.status_code != 200:
+    if res.status_code != requests.codes.ok:
         logging.error(f'Failed to retrieve pull request with id {pr_id}')
         logging.error(res.text)
         sys.exit(1)
@@ -48,25 +48,17 @@ def main():
 
     # get the content pr id from the file
     try:
-        content_pr_file = os.path.join(artifacts_folder, CONTENT_PR_NUMBER_FILE)
-        file = open(content_pr_file, "r")
-        content_pr_id = file.read()
+        content_pr_id = Path(artifacts_folder, CONTENT_PR_NUMBER_FILE).read_text()
     except Exception as e:
         logging.error(f'Failed to read the file {CONTENT_PR_NUMBER_FILE}, error: {str(e)}')
         sys.exit(1)
-    finally:
-        file.close()
 
     # get the sdk pr id from the file
     try:
-        sdk_pr_file = os.path.join(artifacts_folder, SDK_PR_NUMBER_FILE)
-        file = open(sdk_pr_file, "r")
-        sdk_pr_id = file.read()
+        sdk_pr_id = Path(artifacts_folder, SDK_PR_NUMBER_FILE).read_text()
     except Exception as e:
         logging.error(f'Failed to read the file {SDK_PR_NUMBER_FILE}, error: {str(e)}')
         sys.exit(1)
-    finally:
-        file.close()
 
     content_pr = get_pr_by_id('content', content_pr_id, access_token)
     sdk_pr = get_pr_by_id('demisto-sdk', sdk_pr_id, access_token)

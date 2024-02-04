@@ -8,6 +8,7 @@ from slack_sdk import WebClient
 from slack_sdk.web import SlackResponse
 from Utils.github_workflow_scripts.utils import get_env_var
 from Tests.scripts.utils.log_util import install_logging
+from pathlib import Path
 
 
 CONTENT_CHANNEL = 'dmst-build-test'
@@ -39,7 +40,7 @@ def options_handler() -> argparse.Namespace:
 def get_slack_user(gitlab_token, github_username):
     headers = {'PRIVATE-TOKEN': gitlab_token}
     response = requests.request('GET', NAME_MAPPING_URL, headers=headers, verify=False)
-    if response.status_code != 200:
+    if response.status_code != requests.codes.ok:
         logging.error('Failed to retrieve the name_mapping.json file')
         logging.error(response.text)
         sys.exit(1)
@@ -80,13 +81,10 @@ def main():
     elif not text:
         # read the text from the file
         try:
-            file = open(text_file, "r")
-            text = file.read()
+            text = Path(text_file).read_text()
         except Exception as e:
             logging.error(f'Failed to read from file {text_file}, error: {str(e)}')
             sys.exit(1)
-        finally:
-            file.close()
 
     slack_client = WebClient(token=slack_token)
 
