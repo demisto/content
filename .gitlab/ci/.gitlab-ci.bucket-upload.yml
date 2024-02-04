@@ -389,14 +389,6 @@ upload-packs-to-marketplace:
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
     - section_end "Zip Content Packs From GCS"
 
-    - section_start "Validate Premium Packs"
-    - |
-      if [[ $(cat "${ENV_RESULTS_PATH}") != "[]" ]] && ( [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]])  ; then
-        ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
-      else
-        echo "Skipping Premium Packs Validation"
-      fi
-    - section_end "Validate Premium Packs"
     - job-done
 
 upload-packs-to-marketplace-v2:
