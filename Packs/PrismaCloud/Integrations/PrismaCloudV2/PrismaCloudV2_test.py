@@ -1541,14 +1541,16 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
             'd': 'd_val',
             'e': 'e_val'
         },
-        'items':{'data':{'metadata':{'items':{'configure-sh':'c_val','not-removed':'n_val'}},'disks':{'shieldedInstanceInitialState':'s_val'}}}
+        'items': {'data': {'metadata': {'items': {'configure-sh': 'c_val', 'not-removed': 'n_val'}},
+                           'disks': {'shieldedInstanceInitialState': 's_val'}}}
     }
     expected = {
         'a': 'a_val',
         'b': {
             'e': 'e_val'
         },
-        'items':{'data':{'metadata':{'items':{'not-removed':'n_val'}}}}
+        'items': {'data': {'metadata': {'items': {'not-removed': 'n_val'}},
+                           'disks': {'shieldedInstanceInitialState': 's_val'}}}
     }
-    output = remove_additional_resource_fields(input_dict=input, keys=['c', 'd'])
+    output = remove_additional_resource_fields(input_dict=input, keys=['c', 'd', 'configure-sh'])
     assert output == expected
