@@ -1,4 +1,4 @@
-from typing import Dict, List
+import http
 
 import demistomock as demisto
 import urllib3
@@ -23,11 +23,13 @@ class Client(BaseClient):
         proxy: bool = False,
     ):
         self._cookies = {"access_token": access_token}
-        self.headers = {"x-integration-type": "XSOAR"}
-        self.headers = {"x-integration-instance-name": f"{demisto.integrationInstance()}"}
+        self._headers = {
+            "x-integration-type": "XSOAR",
+            "x-integration-instance-name": f"{demisto.integrationInstance()}",
+        }
         super().__init__(base_url, verify=verify, proxy=proxy)
 
-    def build_iterator(self, date_time: str = None) -> List:
+    def build_iterator(self, date_time: str = None) -> list[dict[str, Any]]:
         """
         Retrieves all entries from the feed.
 
@@ -71,7 +73,15 @@ def test_module(client: Client) -> str:
     Returns:
         Outputs.
     """
-    client.build_iterator()
+    try:
+        client.build_iterator()
+    except DemistoException as exc:
+        if exc.res is not None:
+            if exc.res.status_code == http.HTTPStatus.UNAUTHORIZED or exc.res.status_code == http.HTTPStatus.FORBIDDEN:
+                return "Authorization Error: invalid `API Token`"
+
+        raise exc
+
     return "ok"
 
 
@@ -85,14 +95,20 @@ def fetch_indicators(
     date_time: str = None,
     feed_tags: List = [],
     limit: int = -1,
-) -> List[Dict]:
+) -> list[dict[str, Any]]:
     """
     Retrieves indicators from the feed.
 
     Args:
-        client (Client): Client object with request
-        feed_tags (list): tags to assign fetched indicators
-        limit (int): limit the results
+        client (Client): API Client.
+        tlp_color (str):  The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+        feed_names (list): The feed names.
+        indicator_types (list): Which indicator types to fetch.
+        confidence_from (int): The value of confidence to fetch indicators from.
+        severity_from (int): The value of severity to fetch indicators from.
+        date_time (str): Date time string to fetch indicators from.
+        feed_tags (list): tags to assign fetched indicators.
+        limit (int): The maximum number of results to return.
 
     Returns:
         Indicators.
@@ -138,8 +154,8 @@ def fetch_indicators(
 
 def get_indicators_command(
     client: Client,
-    params: Dict[str, Any],
-    args: Dict[str, Any],
+    params: dict[str, Any],
+    args: dict[str, Any],
 ) -> CommandResults:
     """
     Wrapper for retrieving indicators from the feed to the war-room.
@@ -153,7 +169,7 @@ def get_indicators_command(
         Outputs.
     """
 
-    limit = arg_to_number(args.get("limit")) or 10
+    limit = arg_to_number(args.get("limit")) or 50
     tlp_color = params.get("tlp_color", "")
     severity_from = arg_to_number(params.get("severity_from")) or 0
     confidence_from = arg_to_number(params.get("confidence_from")) or 0
@@ -191,8 +207,8 @@ def get_indicators_command(
 
 def fetch_indicators_command(
     client: Client,
-    params: Dict[str, Any],
-) -> List[Dict]:
+    params: dict[str, Any],
+) -> list[dict[str, Any]]:
     """
     Wrapper for fetching indicators from the feed to the Indicators tab.
 

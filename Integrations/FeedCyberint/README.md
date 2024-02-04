@@ -81,193 +81,193 @@ Gets indicators from the feed.
                 "description": "Recognized as Malicious.",
                 "detected_activity": "malware_payload",
                 "ioc_type": "file/sha256",
-                "ioc_value": "39989b501fd179bf89907e798532b0d9e6c7c7664db138bd2d29d4cc227da2e8",
+                "ioc_value": "ioc1",
                 "observation_date": "2024-01-23T22:53:36+00:00",
                 "severity_score": 100
             },
             "service": "Cyberint",
             "type": "File",
-            "value": "39989b501fd179bf89907e798532b0d9e6c7c7664db138bd2d29d4cc227da2e8"
+            "value": "ioc1"
         },
         {
             "fields": {
-                "Description": "Recognized as Gen:Variant.Cerbu.173465.",
+                "Description": "Recognized as zzz.",
                 "FirstSeenBySource": "2024-01-23T22:55:36+00:00",
                 "reportedby": "Cyberint",
                 "trafficlightprotocol": "GREEN"
             },
             "rawJSON": {
                 "confidence": 80,
-                "description": "Recognized as Gen:Variant.Cerbu.173465.",
+                "description": "Recognized as zzz.",
                 "detected_activity": "malware_payload",
                 "ioc_type": "file/sha256",
-                "ioc_value": "4669b5c52e264b1a3c6de0b402e2c10119fd09f2c0f3413b8a60ee4c30972747",
+                "ioc_value": "ioc2",
                 "observation_date": "2024-01-23T22:55:36+00:00",
                 "severity_score": 100
             },
             "service": "Cyberint",
             "type": "File",
-            "value": "4669b5c52e264b1a3c6de0b402e2c10119fd09f2c0f3413b8a60ee4c30972747"
+            "value": "ioc2"
         },
         {
             "fields": {
-                "Description": "Recognized as Trojan.GenericKDZ.105087.",
+                "Description": "Recognized as xxx.",
                 "FirstSeenBySource": "2024-01-23T22:53:35+00:00",
                 "reportedby": "Cyberint",
                 "trafficlightprotocol": "GREEN"
             },
             "rawJSON": {
                 "confidence": 80,
-                "description": "Recognized as Trojan.GenericKDZ.105087.",
+                "description": "Recognized as xxx.",
                 "detected_activity": "malware_payload",
                 "ioc_type": "file/sha256",
-                "ioc_value": "f92c2bb535bdbcff04cfa25553eec6cb6d502174c1588640e9a74082803e617b",
+                "ioc_value": "ioc3",
                 "observation_date": "2024-01-23T22:53:35+00:00",
                 "severity_score": 100
             },
             "service": "Cyberint",
             "type": "File",
-            "value": "f92c2bb535bdbcff04cfa25553eec6cb6d502174c1588640e9a74082803e617b"
+            "value": "ioc3"
         },
         {
             "fields": {
-                "Description": "Recognized as Trojan.Agent.GIKJ.",
+                "Description": "Recognized as xxx.",
                 "FirstSeenBySource": "2024-01-23T22:55:31+00:00",
                 "reportedby": "Cyberint",
                 "trafficlightprotocol": "GREEN"
             },
             "rawJSON": {
                 "confidence": 80,
-                "description": "Recognized as Trojan.Agent.GIKJ.",
+                "description": "Recognized as xxx.",
                 "detected_activity": "malware_payload",
                 "ioc_type": "file/sha256",
-                "ioc_value": "451a04d491861299b059596ae3d28a11c890a7498b940052352b6158e0adbdf7",
+                "ioc_value": "ioc4",
                 "observation_date": "2024-01-23T22:55:31+00:00",
                 "severity_score": 100
             },
             "service": "Cyberint",
             "type": "File",
-            "value": "451a04d491861299b059596ae3d28a11c890a7498b940052352b6158e0adbdf7"
+            "value": "ioc4"
         },
         {
             "fields": {
-                "Description": "Recognized as Application.Coinminer.GU.",
+                "Description": "Recognized as xxx.",
                 "FirstSeenBySource": "2024-01-23T22:55:35+00:00",
                 "reportedby": "Cyberint",
                 "trafficlightprotocol": "GREEN"
             },
             "rawJSON": {
                 "confidence": 80,
-                "description": "Recognized as Application.Coinminer.GU.",
+                "description": "Recognized as xxx.",
                 "detected_activity": "malware_payload",
                 "ioc_type": "file/sha256",
-                "ioc_value": "93d145854c297fb81a04c5af74eb08391d2ad269b103a90f7f3236992733a159",
+                "ioc_value": "ioc5",
                 "observation_date": "2024-01-23T22:55:35+00:00",
                 "severity_score": 100
             },
             "service": "Cyberint",
             "type": "File",
-            "value": "93d145854c297fb81a04c5af74eb08391d2ad269b103a90f7f3236992733a159"
+            "value": "ioc5"
         },
         {
             "fields": {
-                "Description": "Recognized as Trojan.GenericKDZ.70387.",
+                "Description": "Recognized as Trojan.xxx.",
                 "FirstSeenBySource": "2024-01-23T22:55:39+00:00",
                 "reportedby": "Cyberint",
                 "trafficlightprotocol": "GREEN"
             },
             "rawJSON": {
                 "confidence": 80,
-                "description": "Recognized as Trojan.GenericKDZ.70387.",
+                "description": "Recognized as Trojan.xxx.",
                 "detected_activity": "malware_payload",
                 "ioc_type": "file/sha256",
-                "ioc_value": "c8ab4a1b80a984ec32d81dd02beed44368f36db6d567c868965b275a4ceb1ed3",
+                "ioc_value": "ioc6",
                 "observation_date": "2024-01-23T22:55:39+00:00",
                 "severity_score": 100
             },
             "service": "Cyberint",
             "type": "File",
-            "value": "c8ab4a1b80a984ec32d81dd02beed44368f36db6d567c868965b275a4ceb1ed3"
+            "value": "ioc6"
         },
         {
             "fields": {
-                "Description": "Recognized as AIT:Trojan.Nymeria.4261.",
+                "Description": "Recognized as xxx.",
                 "FirstSeenBySource": "2024-01-12T01:39:06+00:00",
                 "reportedby": "Cyberint",
                 "trafficlightprotocol": "GREEN"
             },
             "rawJSON": {
                 "confidence": 80,
-                "description": "Recognized as AIT:Trojan.Nymeria.4261.",
+                "description": "Recognized as xxx.",
                 "detected_activity": "malware_payload",
                 "ioc_type": "file/sha256",
-                "ioc_value": "a092e3e8e7da270af60a7b05aa55e00e90ae6067cd09a5533bf7c994185ed0f2",
+                "ioc_value": "ioc7",
                 "observation_date": "2024-01-12T01:39:06+00:00",
                 "severity_score": 100
             },
             "service": "Cyberint",
             "type": "File",
-            "value": "a092e3e8e7da270af60a7b05aa55e00e90ae6067cd09a5533bf7c994185ed0f2"
+            "value": "ioc7"
         },
         {
             "fields": {
-                "Description": "Recognized as Trojan.GenericKD.70718472.",
+                "Description": "Recognized as xxx.",
                 "FirstSeenBySource": "2024-01-23T22:55:36+00:00",
                 "reportedby": "Cyberint",
                 "trafficlightprotocol": "GREEN"
             },
             "rawJSON": {
                 "confidence": 80,
-                "description": "Recognized as Trojan.GenericKD.70718472.",
+                "description": "Recognized as xxx.",
                 "detected_activity": "malware_payload",
                 "ioc_type": "file/sha256",
-                "ioc_value": "07392601ec30bb83eace25e2b4045a6c98821ef3f3242ba32d9b9e245043918c",
+                "ioc_value": "ioc8",
                 "observation_date": "2024-01-23T22:55:36+00:00",
                 "severity_score": 100
             },
             "service": "Cyberint",
             "type": "File",
-            "value": "07392601ec30bb83eace25e2b4045a6c98821ef3f3242ba32d9b9e245043918c"
+            "value": "ioc8"
         },
         {
             "fields": {
-                "Description": "Recognized as RiskWare/MSIL.Gamehack.",
+                "Description": "Recognized as xxx.",
                 "FirstSeenBySource": "2023-12-16T21:28:01+00:00",
                 "reportedby": "Cyberint",
                 "trafficlightprotocol": "GREEN"
             },
             "rawJSON": {
                 "confidence": 70,
-                "description": "Recognized as RiskWare/MSIL.Gamehack.",
+                "description": "Recognized as xxx.",
                 "detected_activity": "malware_payload",
                 "ioc_type": "file/sha256",
-                "ioc_value": "4a2a580d7a2bfc76efa3e7ddca9f2811051b85dd125264b436fe148e9bf6b521",
+                "ioc_value": "ioc9",
                 "observation_date": "2023-12-16T21:28:01+00:00",
                 "severity_score": 100
             },
             "service": "Cyberint",
             "type": "File",
-            "value": "4a2a580d7a2bfc76efa3e7ddca9f2811051b85dd125264b436fe148e9bf6b521"
+            "value": "ioc9"
         },
         {
             "fields": {
-                "Description": "Recognized as Trojan.GenericKD.71273579.",
+                "Description": "Recognized as xxx.",
                 "FirstSeenBySource": "2024-01-23T22:55:35+00:00",
                 "reportedby": "Cyberint",
                 "trafficlightprotocol": "GREEN"
             },
             "rawJSON": {
                 "confidence": 80,
-                "description": "Recognized as Trojan.GenericKD.71273579.",
+                "description": "Recognized as xxx.",
                 "detected_activity": "malware_payload",
                 "ioc_type": "file/sha256",
-                "ioc_value": "3028203f4b301ed16f2aa70d4f9f1b01c27401b4fb17cf9a36b30543ac003986",
+                "ioc_value": "ioc10",
                 "observation_date": "2024-01-23T22:55:35+00:00",
                 "severity_score": 100
             },
             "service": "Cyberint",
             "type": "File",
-            "value": "3028203f4b301ed16f2aa70d4f9f1b01c27401b4fb17cf9a36b30543ac003986"
+            "value": "ioc10"
         }
     ]
 }
@@ -278,13 +278,13 @@ Gets indicators from the feed.
 >### Indicators from Cyberint Feed:
 >|Value|Type|
 >|---|---|
->| 39989b501fd179bf89907e798532b0d9e6c7c7664db138bd2d29d4cc227da2e8 | File |
->| 4669b5c52e264b1a3c6de0b402e2c10119fd09f2c0f3413b8a60ee4c30972747 | File |
->| f92c2bb535bdbcff04cfa25553eec6cb6d502174c1588640e9a74082803e617b | File |
->| 451a04d491861299b059596ae3d28a11c890a7498b940052352b6158e0adbdf7 | File |
->| 93d145854c297fb81a04c5af74eb08391d2ad269b103a90f7f3236992733a159 | File |
->| c8ab4a1b80a984ec32d81dd02beed44368f36db6d567c868965b275a4ceb1ed3 | File |
->| a092e3e8e7da270af60a7b05aa55e00e90ae6067cd09a5533bf7c994185ed0f2 | File |
->| 07392601ec30bb83eace25e2b4045a6c98821ef3f3242ba32d9b9e245043918c | File |
->| 4a2a580d7a2bfc76efa3e7ddca9f2811051b85dd125264b436fe148e9bf6b521 | File |
->| 3028203f4b301ed16f2aa70d4f9f1b01c27401b4fb17cf9a36b30543ac003986 | File |
+>| ioc1 | File |
+>| ioc2 | File |
+>| ioc3 | File |
+>| ioc4 | File |
+>| ioc5 | File |
+>| ioc6 | File |
+>| ioc7 | File |
+>| ioc8 | File |
+>| ioc9 | File |
+>| ioc10 | File |
