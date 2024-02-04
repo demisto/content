@@ -1,12 +1,13 @@
 commonfields:
-  id: GetIncidentTasksByState
+  id: GetIncidentTasks
   version: -1
-name: GetIncidentTasksByState
+name: GetIncidentTasks
 script: ''
-type: javascript
+type: python
+subtype: python3
 tags:
 - Utility
-comment: Deprecated. Use the GetIncidentTasks script instead.
+comment: Get all tasks for a specific incident by the given state, name and/or tag.
 enabled: true
 args:
 - name: inc_id
@@ -14,7 +15,12 @@ args:
   default: true
   description: Incident ID to get tasks from.
 - name: states
-  description: 'Comma separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, Skipped, Blocked (leave empty to get all tasks).'
+  isArray: true
+  description: 'Comma-separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, LoopError, Skipped, Blocked. (Leave empty to get all tasks).'
+- name: name
+  description: 'The name of the task to search.'
+- name: tag
+  description: 'The tag to search.'
 outputs:
 - contextPath: Tasks
   description: The entire task object.
@@ -31,7 +37,7 @@ outputs:
   description: Task owner.
   type: string
 - contextPath: Tasks.state
-  description: Task state (inprogress, Completed, WillNotBeExecuted, Error, Waiting, Blocked, and empty string for not started).
+  description: Task state (inprogress, Completed, WillNotBeExecuted, Error, LoopError, Waiting, Blocked, and empty string for not started).
   type: string
 - contextPath: Tasks.scriptId
   description: Task related script (empty if manual).
@@ -46,14 +52,14 @@ outputs:
   description: Task due date (SLA).
   type: unknown
 - contextPath: Tasks.parentPlaybookID
-  description: Task parent playbook ID (in case the task is part of sub-playbook).
+  description: Task parent playbook ID (in case the task is part of a sub-playbook).
   type: unknown
 - contextPath: Tasks.completedBy
   description: Task completed by (username).
   type: string
 scripttarget: 0
 sensitive: true
+dockerimage: demisto/python3:3.10.13.86272
 tests:
-- No tests (deprecated)
-fromversion: 5.0.0
-deprecated: true
+- No test
+fromversion: 6.10.0
