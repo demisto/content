@@ -603,7 +603,7 @@ def main():
                                 f"the change status is: {pipeline_changed_status}")
 
                     if pipeline_changed_status is not None:
-                        shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,
+                        shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,       # type: ignore[attr-defined]
                                                              options.name_mapping_path)
                         computed_slack_channel = "test_slack_notifier_when_master_is_broken"
 
