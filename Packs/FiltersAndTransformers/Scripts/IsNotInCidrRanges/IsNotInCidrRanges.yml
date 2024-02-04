@@ -7,7 +7,7 @@ args:
   required: true
 comment: Checks whether an IPv4 address is not contained in one or more comma-delimited CIDR ranges.
 commonfields:
-  id: IsNotInCidrRange
+  id: IsNotInCidrRanges
   version: -1
 contentitemexportablefields:
   contentitemfields:
