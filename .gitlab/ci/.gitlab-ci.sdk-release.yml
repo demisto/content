@@ -6,6 +6,7 @@ create-release-branch:
   stage: create-release-branch
   extends:
     - .release-sdk
+    - .default-job-settings
   variables:
     SLACK_CHANNEL: $SLACK_CHANNEL
     RELEASE_VERSION: $RELEASE_VERSION
@@ -14,16 +15,17 @@ create-release-branch:
     CI_PIPELINE_URL: $CI_PIPELINE_URL
     REVIEWER: $REVIEWER
   script:
-#    - section_start "Create release branch" --collapsed
+    - section_start "Create release branch" --collapsed
     - python3 ./Tests/sdk_release/pre_validations.py -t "${GITHUB_TOKEN}" -gt "${GITLAB_API_TOKEN}" -v "${RELEASE_VERSION}" -r "${REVIEWER}" -b "${SDK_BRANCH_NAME}"
     - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "The release of demisto-sdk version \`"$RELEASE_VERSION"\` has started:\`"$CI_PIPELINE_URL"\` " --allow-failure "${SLACK_ALLOW_FAILURE}" -ch "${SLACK_CHANNEL}"
     - python3 ./Tests/sdk_release/create_release_branch.py -t "${GITHUB_TOKEN}" -n "${RELEASE_VERSION}" -b "${SDK_BRANCH_NAME}"
-#    - section_end "Create release branch"
+    - section_end "Create release branch"
 
 trigger-content-private-nightly:
   stage: trigger-nightlies
   extends:
     - .release-sdk
+    - .default-job-settings
   needs:
     - create-release-branch
   artifacts:
@@ -45,6 +47,7 @@ trigger-content-internal-dist-nightly:
   stage: trigger-nightlies
   extends:
     - .release-sdk
+    - .default-job-settings
   needs:
     - create-release-branch
   artifacts:
@@ -69,6 +72,7 @@ trigger-demisto-sdk-nightly:
   stage: trigger-nightlies
   extends:
     - .release-sdk
+    - .default-job-settings
   needs:
     - create-release-branch
   artifacts:
@@ -93,6 +97,7 @@ wait-for-content-private-nightly:
   stage: wait-for-build-to-finish
   extends:
     - .release-sdk
+    - .default-job-settings
   allow_failure: true
   needs:
     - trigger-content-private-nightly
@@ -112,6 +117,7 @@ wait-for-content-internal-dist-nightly:
   stage: wait-for-build-to-finish
   extends:
     - .release-sdk
+    - .default-job-settings
   allow_failure: true
   needs:
     - trigger-content-internal-dist-nightly
@@ -131,6 +137,7 @@ wait-for-demisto-sdk-nightly:
   stage: wait-for-build-to-finish
   extends:
     - .release-sdk
+    - .default-job-settings
   allow_failure: true
   needs:
     - trigger-demisto-sdk-nightly
@@ -150,6 +157,7 @@ slack-notify:
   stage: wait-for-build-to-finish
   extends:
     - .release-sdk
+    - .default-job-settings
   allow_failure: true
   needs:
     - wait-for-demisto-sdk-nightly
@@ -167,6 +175,7 @@ create-release-pull-request:
   stage: release-flow
   extends:
     - .release-sdk
+    - .default-job-settings
   needs:
     - slack-notify
   when: manual
@@ -187,6 +196,7 @@ deploy-sdk-to-pypi:
   stage: release-flow
   extends:
     - .release-sdk
+    - .default-job-settings
   needs:
     - create-release-pull-request
   when: manual
@@ -208,6 +218,7 @@ wait-for-prs:
   stage: release-flow
   extends:
     - .release-sdk
+    - .default-job-settings
   needs:
     - deploy-sdk-to-pypi
   variables:
