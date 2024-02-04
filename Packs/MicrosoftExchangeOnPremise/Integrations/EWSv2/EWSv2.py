@@ -2,10 +2,13 @@ import email
 import hashlib
 import subprocess
 import warnings
+from mailbox import Mailbox
 from multiprocessing import Process
+from typing import Tuple
 
 import dateparser  # type: ignore
 import exchangelib
+
 from CommonServerPython import *
 from io import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
@@ -1767,10 +1770,11 @@ def parse_physical_address(address):
 
 
 def parse_phone_number(phone_number):
-    result = {}
-    for attr in ['label', 'phone_number']:
-        result[attr] = getattr(phone_number, attr, None)
-    return result
+    result = {
+        attr: getattr(phone_number, attr, None)
+        for attr in ['label', 'phone_number']
+    }
+    return result if result.get('phone_number') else {}
 
 
 def is_jsonable(x):
@@ -1792,7 +1796,7 @@ def parse_contact(contact):
     if isinstance(contact, Contact) and contact.physical_addresses:
         contact_dict['physical_addresses'] = list(map(parse_physical_address, contact.physical_addresses))
     if isinstance(contact, Contact) and contact.phone_numbers:
-        contact_dict['phone_numbers'] = list(map(parse_phone_number, contact.phone_numbers))
+        contact_dict['phone_numbers'] = [elt for elt in map(parse_phone_number, contact.phone_numbers) if elt]
     if isinstance(contact, Contact) and contact.email_addresses and len(contact.email_addresses) > 0:
         contact_dict['emailAddresses'] = [x.email for x in contact.email_addresses]
     contact_dict = keys_to_camel_case(contact_dict)
@@ -2132,21 +2136,31 @@ def get_autodiscovery_config():  # pragma: no cover
     }
 
 
-def get_contact_information_command(unresolved_entries_arg, protocol):  # pragma: no cover
-    unresolved_entries = argToList(unresolved_entries_arg)
-    demisto.results(f'{len(unresolved_entries)=}')
-    resolved_names = protocol.resolve_names(unresolved_entries, return_full_contact_data=True)
-    outputs = [{
-        'Mailbox': parse_item_as_dict(mailbox),
-        'Contact': parse_contact(contact)
-    }
-        for mailbox, contact in resolved_names]
-    return CommandResults(
-        outputs_prefix="EWS.ResolvedNames",
-        outputs_key_field='Mailbox.item_id',
-        outputs=outputs,
-        readable_output=f'{len(outputs)=}'
-    )
+def resolve_name_command(args, protocol):  # pragma: no cover
+    unresolved_entries = argToList(args['identifier'])
+    full_contact_data = argToBoolean(args.get('full_contact_data'))
+    demisto.debug(f'{len(unresolved_entries)=}')
+    resolved_names = protocol.resolve_names(unresolved_entries, return_full_contact_data=full_contact_data, search_scope='')
+    demisto.debug(f'{len(resolved_names)=}')
+
+    output = []
+    for rn in resolved_names:
+        if isinstance(rn, ErrorNameResolutionNoResults):
+            demisto.info(f'got ErrorNameResolutionNoResults error, {str(rn)}')
+            return 'No results were found.'
+        elif isinstance(rn, Tuple):
+            mail, contact = rn
+        else:
+            mail, contact = rn, None
+        mail_context = parse_item_as_dict(mail)
+        if contact:
+            mail_context['FullContactInfo'] = parse_contact(contact)
+        output.append(mail_context)
+    return get_entry_for_object('Resolved Names',
+                            'EWS.ResolvedNames(val.email_address && val.email_address == obj.email_address)',
+                            remove_empty_elements(output),  # noqa: F405
+                            headers=['email_address', 'name', 'mailbox_type', 'routing_type'])
+
 
 
 def mark_item_as_read(item_ids, operation='read', target_mailbox=None):  # pragma: no cover
@@ -2443,14 +2457,16 @@ def sub_main():  # pragma: no cover
             encode_and_submit_results(get_expanded_group(protocol, **args))
         elif demisto.command() == 'ews-mark-items-as-read':
             encode_and_submit_results(mark_item_as_read(**args))
-        elif demisto.command() == 'ews-get-contact-information':
-            return_results(get_contact_information_command(args['identifiers'], protocol))
+        elif demisto.command() == 'ews-resolve-name':
+            encode_and_submit_results(resolve_name_command(args, protocol))
         elif demisto.command() == 'ews-get-items-as-eml':
             encode_and_submit_results(get_item_as_eml(**args))
         elif demisto.command() == 'send-mail':
             encode_and_submit_results(send_email(args))
         elif demisto.command() == 'reply-mail':
             encode_and_submit_results(reply_email(args))
+        else:
+            return_error('Command was not recognized by this integration')
 
     except Exception as e:
         import time
