@@ -13,7 +13,7 @@ args:
 - auto: PREDEFINED
   default: true
   defaultValue: 'false'
-  description: Set 'true' to have a raw html list of results displayed in the war rom
+  description: Set 'true' to have a raw html list of results displayed in the war room.
   name: HTML
   predefined:
   - 'false'

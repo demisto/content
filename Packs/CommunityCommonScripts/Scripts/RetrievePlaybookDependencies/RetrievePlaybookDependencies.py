@@ -1,12 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 from typing import Any
 import traceback
 import re
 from json import dumps
-
 
 ''' STANDALONE FUNCTION '''
 
@@ -91,69 +89,79 @@ def get_subplaybook_tasks(playbooks, integrations, script_ids, commands, lists, 
     return playbooks, integrations, script_ids, commands, lists
 
 
-def create_markdown_list(incident_types, layouts, incident_fields, indicator_fields, jobs, lists, mappers, pre_process_rules, scripts, integrations, playbooks, parent_playbook):
+def create_markdown_list(incident_types, layouts, incident_fields, indicator_fields, jobs, lists, mappers, pre_process_rules,
+                         scripts, integrations, playbooks, parent_playbook):
     markdown_string = '## XSOAR Objects\n'
     markdown_string += '* Incident Types\n  * None\n' if len(incident_types) == 0 else '* Incident Types\n  * ' + \
-        '\n  * '.join(incident_types) + '\n'
+                                                                                       '\n  * '.join(incident_types) + '\n'
     markdown_string += '* Layouts\n  * None\n' if len(layouts) == 0 else '* Layouts\n  * ' + \
-        '\n  * '.join(layouts) + '\n'
+                                                                         '\n  * '.join(layouts) + '\n'
     markdown_string += '* Incident Fields\n  * None\n' if len(incident_fields) == 0 else '* Incident Fields\n  * ' + \
-        '\n  * '.join(incident_fields) + '\n'
+                                                                                         '\n  * '.join(incident_fields) + '\n'
     markdown_string += '* Indicator Fields\n  * None\n' if len(indicator_fields) == 0 else '* Indicator Fields\n  * ' + \
-        '\n  * '.join(indicator_fields) + '\n'
+                                                                                           '\n  * '.join(indicator_fields) + '\n'
     markdown_string += '* Jobs\n  * None\n' if len(jobs) == 0 else '* Jobs\n  * ' + \
-        '\n  * '.join(jobs) + '\n'
+                                                                   '\n  * '.join(jobs) + '\n'
     markdown_string += '* Lists\n  * None\n' if len(lists) == 0 else '* Lists\n  * ' + \
-        '\n  * '.join(lists) + '\n'
+                                                                     '\n  * '.join(lists) + '\n'
     markdown_string += '* Mappers\n  * None\n' if len(mappers) == 0 else '* Mappers\n  * ' + \
-        '\n  * '.join(mappers) + '\n'
+                                                                         '\n  * '.join(mappers) + '\n'
     markdown_string += '* Pre-Process Rules\n  * None\n' if len(pre_process_rules) == 0 else '* Pre-Process Rules\n  * ' + \
-        '\n  * '.join(pre_process_rules) + '\n'
+                                                                                             '\n  * '.join(
+                                                                                                 pre_process_rules) + '\n'
     markdown_string += '* Parent Playbook: ' + parent_playbook + '\n'
     markdown_string += '* Custom Automations\n  * None\n' if len(scripts) == 0 else '* Custom Automations\n  * ' + \
-        '\n  * '.join(scripts) + '\n'
+                                                                                    '\n  * '.join(scripts) + '\n'
     markdown_string += '* Integrations\n  * None\n' if len(integrations) == 0 else '* Integrations\n  * ' + \
-        '\n  * '.join(integrations) + '\n'
+                                                                                   '\n  * '.join(integrations) + '\n'
     markdown_string += '* Playbooks\n  * None\n' if len(playbooks) == 0 else '* Playbooks\n  * ' + \
-        '\n  * '.join(playbooks) + '\n'
+                                                                             '\n  * '.join(playbooks) + '\n'
     return markdown_string
 
 
-def create_html_list(incident_types, layouts, incident_fields, indicator_fields, jobs, lists, mappers, pre_process_rules, scripts, integrations, playbooks, parent_playbook):
+def create_html_list(incident_types, layouts, incident_fields, indicator_fields, jobs, lists, mappers, pre_process_rules, scripts,
+                     integrations, playbooks, parent_playbook):
     html_string = '<h2>XSOAR Objects</h2><ul>'
-    html_string += '<li>Incident Types</li><ul><li>None</li></ul>' if len(incident_types) == 0 else '<li>Incident Types</li><ul><li>' + \
-        '</li><li>'.join(incident_types) + '</li></ul>'
+    html_string += '<li>Incident Types</li><ul><li>None</li></ul>' if len(
+        incident_types) == 0 else '<li>Incident Types</li><ul><li>' + \
+                                  '</li><li>'.join(incident_types) + '</li></ul>'
     html_string += '<li>Layouts</li><ul><li>None</li></ul>' if len(layouts) == 0 else '<li>Layouts</li><ul><li>' + \
-        '</li><li>'.join(layouts) + '</li></ul>'
-    html_string += '<li>Incident Fields</li><ul><li>None</li></ul>' if len(incident_fields) == 0 else '<li>Incident Fields</li><ul><li>' + \
-        '</li><li>'.join(incident_fields) + '</li></ul>'
-    html_string += '<li>Indicator Fields</li><ul><li>None</li></ul>' if len(indicator_fields) == 0 else '<li>Indicator Fields</li><ul><li>' + \
-        '</li><li>'.join(indicator_fields) + '</li></ul>'
+                                                                                      '</li><li>'.join(layouts) + '</li></ul>'
+    html_string += '<li>Incident Fields</li><ul><li>None</li></ul>' if len(
+        incident_fields) == 0 else '<li>Incident Fields</li><ul><li>' + \
+                                   '</li><li>'.join(incident_fields) + '</li></ul>'
+    html_string += '<li>Indicator Fields</li><ul><li>None</li></ul>' if len(
+        indicator_fields) == 0 else '<li>Indicator Fields</li><ul><li>' + \
+                                    '</li><li>'.join(indicator_fields) + '</li></ul>'
     html_string += '<li>Jobs</li><ul><li>None</li></ul>' if len(jobs) == 0 else '<li>Jobs</li><ul><li>' + \
-        '</li><li>'.join(jobs) + '</li></ul>'
+                                                                                '</li><li>'.join(jobs) + '</li></ul>'
     html_string += '<li>Lists</li><ul><li>None</li></ul>' if len(lists) == 0 else '<li>Lists</li><ul><li>' + \
-        '</li><li>'.join(lists) + '</li></ul>'
+                                                                                  '</li><li>'.join(lists) + '</li></ul>'
     html_string += '<li>Mappers</li><ul><li>None</li></ul>' if len(mappers) == 0 else '<li>Mappers</li><ul><li>' + \
-        '</li><li>'.join(mappers) + '</li></ul>'
-    html_string += '<li>Pre-Process Rules</li><ul><li>None</li></ul>' if len(pre_process_rules) == 0 else '<li>Pre-Process Rules</li><ul><li>' + \
-        '</li><li>'.join(pre_process_rules) + '</li></ul>'
+                                                                                      '</li><li>'.join(mappers) + '</li></ul>'
+    html_string += '<li>Pre-Process Rules</li><ul><li>None</li></ul>' if len(
+        pre_process_rules) == 0 else '<li>Pre-Process Rules</li><ul><li>' + \
+                                     '</li><li>'.join(pre_process_rules) + '</li></ul>'
     html_string += '<li>Parent Playbook: ' + parent_playbook + '</li>'
-    html_string += '<li>Custom Automations</li><ul><li>None</li></ul>' if len(scripts) == 0 else '<li>Custom Automations</li><ul><li>' + \
-        '</li><li>'.join(scripts) + '</li></ul>'
-    html_string += '<li>Integrations</li><ul><li>None</li></ul>' if len(integrations) == 0 else '<li>Integrations</li><ul><li>' + \
-        '</li><li>'.join(integrations) + '</li></ul>'
+    html_string += '<li>Custom Automations</li><ul><li>None</li></ul>' if len(
+        scripts) == 0 else '<li>Custom Automations</li><ul><li>' + \
+                           '</li><li>'.join(scripts) + '</li></ul>'
+    html_string += '<li>Integrations</li><ul><li>None</li></ul>' if len(integrations) == 0 \
+        else '<li>Integrations</li><ul><li>' + '</li><li>'.join(integrations) + '</li></ul>'
     html_string += '<li>Playbooks</li><ul><li>None</li></ul>' if len(playbooks) == 0 else '<li>Playbooks</li><ul><li>' + \
-        '</li><li>'.join(playbooks) + '</li></ul></ul>'
+                                                                                          '</li><li>'.join(
+                                                                                              playbooks) + '</li></ul></ul>'
     return html_string
 
 
 def get_xsoar_list_name(task, lists):
     # Search for lists in tasks
-    if 'scriptArguments' in task.keys():
+    if 'scriptArguments' in task:
         script_arguments = task.get('scriptArguments')
         # Check if the complex argument is a list
         try:
-            if (script_arguments['value']['complex']['accessor'] not in lists and script_arguments['value']['complex']['root'] == 'lists'):
+            if (script_arguments['value']['complex']['accessor'] not in lists
+                    and script_arguments['value']['complex']['root'] == 'lists'):
                 lists.append(script_arguments['value']['complex']['accessor'])
         except KeyError:
             pass
@@ -172,10 +180,10 @@ def retrieve_playbook_dependencies(args: dict[str, Any]) -> CommandResults:
     playbooks: list[str] = []
     integrations: list[str] = []
     script_ids: list[str] = []
-    commands: dict[str, Any] = {}   # commands not using brand
-    lists: list[str] = []       # XSOAR List names
+    commands: dict[str, Any] = {}  # commands not using brand
+    lists: list[str] = []  # XSOAR List names
 
-    parent_playbook = args.get('playbook_name')
+    parent_playbook = args.get('playbook_name') or ''
     # Call parent playbook's data, then recursivley call all subplaybooks' data
     playbooks_json = perform_rest_call('post', 'playbook/search', {'query': f'''name:"{parent_playbook}"'''})
 
@@ -264,7 +272,8 @@ def retrieve_playbook_dependencies(args: dict[str, Any]) -> CommandResults:
     pre_process_rules = argToList(args.get('pre_process_rules')) if args.get('pre_process_rules') else []
 
     markdown_string = create_markdown_list(incident_types, layouts, incident_fields, indicator_fields,
-                                           jobs, lists, mappers, pre_process_rules, custom_scripts, integrations, playbooks, parent_playbook)
+                                           jobs, lists, mappers, pre_process_rules, custom_scripts,
+                                           integrations, playbooks, parent_playbook)
     if args.get('Markdown') == 'true':
         demisto.results(markdown_string)
     html_string = create_html_list(incident_types, layouts, incident_fields, indicator_fields, jobs,
