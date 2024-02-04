@@ -42,7 +42,7 @@ tasks:
     task:
       id: 9ce410b8-ddde-4690-8625-2cfab080cd83
       version: -1
-      name: Get device id list by SHA1
+      name: Get device ID list by SHA1
       description: Returns a list of device IDs that the indicator ran on.
       script: '|||cs-falcon-device-ran-on'
       type: regular
@@ -151,7 +151,7 @@ tasks:
       id: 9b555544-59aa-45db-81b2-a12eb98fc56e
       version: -1
       name: Should enrich the returned results?
-      description: "If the hash was found on additional hosts the playbook will enrich the endpoint details.\nIn case we provided host id and there is no additional endpoints that were found, the playbook will be will stop and finish without the enrich. "
+      description: "If the hash was found on additional hosts the playbook will enrich the endpoint details.\nIn case we provided a host ID and there is no additional endpoints that were found, the playbook will stop and finish without the enrichment."
       type: condition
       iscommand: false
       brand: ""
@@ -491,7 +491,7 @@ tasks:
       id: b930b6ef-bb8c-417e-88a8-d5cecabb228d
       version: -1
       name: Is there any MD5?
-      description: Is there any MD5 provided?
+      description: Are there any MD5 files provided?
       type: condition
       iscommand: false
       brand: ""
@@ -537,7 +537,7 @@ tasks:
       id: 169383f7-4adc-460a-8cf3-125b8422fecc
       version: -1
       name: Is there any SHA1?
-      description: Is there any SHA1 provided?
+      description: Are there any SHA1 files provided?
       type: condition
       iscommand: false
       brand: ""
@@ -583,7 +583,7 @@ tasks:
       id: 2334a9cf-94c0-4b2c-81fc-90330616c546
       version: -1
       name: Is there any SHA256?
-      description: 'Is there any SHA256 provided '
+      description: Are there any SHA256 files provided?
       type: condition
       iscommand: false
       brand: ""
@@ -709,7 +709,7 @@ tasks:
       id: a69c0320-8da4-4f7d-8c06-e1b3733e544f
       version: -1
       name: Should enrich the returned results?
-      description: "If the hash was found on additional hosts the playbook will enrich the endpoint details.\nIn case we provided host id and there is no additional endpoints that were found, the playbook will be will stop and finish without the enrich. "
+      description: "If the hash was found on additional hosts the playbook will enrich the endpoint details.\nIn case we provided a host ID and there is no additional endpoints that were found, the playbook will stop and finish without the enrichment."
       type: condition
       iscommand: false
       brand: ""
@@ -789,7 +789,7 @@ tasks:
       id: d61e2bb3-62ba-4eaa-850f-e4c4e0ab3342
       version: -1
       name: Should enrich the returned results?
-      description: "If the hash was found on additional hosts the playbook will enrich the endpoint details.\nIn case we provided host id and there is no additional endpoints that were found, the playbook will be will stop and finish without the enrich. "
+      description: "If the hash was found on additional hosts the playbook will enrich the endpoint details.\nIn case we provided a host ID and there is no additional endpoints that were found, the playbook will stop and finish without the enrichment. "
       type: condition
       iscommand: false
       brand: ""

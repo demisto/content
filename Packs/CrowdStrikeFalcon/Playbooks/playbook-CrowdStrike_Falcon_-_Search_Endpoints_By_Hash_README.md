@@ -11,11 +11,11 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CrowdStrikeFalcon
+CrowdStrikeFalcon
 
 ### Scripts
 
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 
