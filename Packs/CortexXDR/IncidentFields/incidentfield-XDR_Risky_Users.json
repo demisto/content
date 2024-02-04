@@ -25,7 +25,8 @@
         "Cortex XDR Device Control Violations",
         "Cortex XDR Disconnected endpoints",
         "Cortex XDR Incident",
-        "Cortex XDR Port Scan"
+        "Cortex XDR Port Scan",
+        "Cortex XDR - Lite"
     ],
     "associatedToAll": false,
     "unmapped": false,
