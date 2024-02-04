@@ -199,9 +199,23 @@ class OktaClient(BaseClient):
 
             except DemistoException as e:
                 # If the client application already has the "SUPER_ADMIN" role, ignore the error.
-                # E0000090 Error code official docs description: Duplicate role assignment exception.
-                if e.res.headers.get('content-type') == 'application/json' and e.res.json().get('errorCode') == 'E0000090':
+                # E0000090 error: Duplicate role assignment exception.
+                if (
+                    e.res.headers.get('content-type') == 'application/json' and
+                    e.res.json().get('errorCode') == 'E0000090'
+                ):
                     demisto.debug('The client application already has the "SUPER_ADMIN" role assigned.')
+
+                # If a permission error occurs, raise a more informative error message.
+                # E0000006 error: Access denied exception.
+                # E0000015 error: Feature not enabled exception.
+                elif (
+                    e.res.headers.get('content-type') == 'application/json' and
+                    e.res.json().get('errorCode') in ('E0000006', 'E0000015')
+                ):
+                    raise DemistoException(f"Failed to configure app '{self.client_id}' with a 'SUPER_ADMIN' role.\n"
+                                           f"Please ensure the configured API token is valid "
+                                           f"and has administrative permissions.") from e
 
                 else:
                     raise e
