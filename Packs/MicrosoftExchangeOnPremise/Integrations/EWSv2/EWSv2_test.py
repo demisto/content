@@ -1,13 +1,15 @@
 import datetime
 
+from exchangelib.indexed_properties import PhoneNumber
+
 import EWSv2
 import logging
 
 import dateparser
 import pytest
-from exchangelib import Message
+from exchangelib import Message, Mailbox, Contact
 from EWSv2 import fetch_last_emails
-from exchangelib.errors import UnauthorizedError
+from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
 from exchangelib import EWSDateTime, EWSTimeZone
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
 import demistomock as demisto
@@ -93,6 +95,7 @@ def test_fetch_last_emails_first_fetch(mocker, since_datetime, expected_result):
     Then:
         - Verify datetime_received__gte is ten minutes earlier
     """
+
     class MockObject:
         def filter(self, datetime_received__gte=''):
             return MockObject2()
@@ -131,6 +134,7 @@ def test_fetch_last_emails_last_run(mocker, since_datetime, expected_result):
     Then:
         - Verify datetime_received__gte according to the datetime received
     """
+
     class MockObject:
         def filter(self, datetime_received__gte=''):
             return MockObject2()
@@ -173,6 +177,7 @@ def test_fetch_last_emails_limit(mocker, limit, expected_result):
         - Return 2 emails
         - Return 5 emails
     """
+
     class MockObject:
         def filter(self, datetime_received__gte=''):
             return MockObject2()
@@ -664,3 +669,66 @@ def test_get_time_zone(mocker):
     mocker.patch.object(demisto, 'callingContext', new={'context': {'User': {'timeZone': 'Asia/Jerusalem'}}})
     results = get_time_zone()
     assert results.key == 'Asia/Jerusalem'
+
+
+def test_resolve_names_command_no_contact(mocker):
+    """
+        Given:
+            Calling resolve_name_command
+        When:
+            Only a Mailbox is returned
+        Then:
+            The results are displayed correctly without FullContactInfo
+    """
+    from EWSv2 import resolve_name_command
+    protocol = mocker.Mock()
+    email = '1234@demisto.com'
+    protocol.resolve_names.return_value = [Mailbox(email_address=email)]
+    result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
+    assert email in result.get('HumanReadable')
+    assert email == list(result.get('EntryContext').values())[0][0].get('email_address')
+    assert not list(result.get('EntryContext').values())[0][0].get('FullContactInfo')
+
+
+def test_resolve_names_command_with_contact(mocker):
+    """
+        Given:
+            Calling resolve_name_command
+        When:
+            A Mailbox, Contact tuple is returned
+        Then:
+            The results are displayed correctly with FullContactInfo
+    """
+    from EWSv2 import resolve_name_command
+    protocol = mocker.Mock()
+    email = '1234@demisto.com'
+    number_label = 'Bussiness2'
+    phone_numbers = [PhoneNumber(label=number_label, phone_number='+972 058 000 0000'),
+                     PhoneNumber(label='Bussiness', phone_number='+972 058 000 0000')]
+    protocol.resolve_names.return_value = [(Mailbox(email_address=email), Contact(phone_numbers=phone_numbers))]
+    result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
+    assert email in result.get('HumanReadable')
+    context_output = list(result.get('EntryContext').values())[0][0]
+    assert email == context_output.get('email_address')
+
+    assert any(number.get('label') == number_label for number in context_output.get('FullContactInfo').get('phoneNumbers'))
+
+
+def test_resolve_names_command_no_result(mocker):
+    """
+        Given:
+            Calling resolve_name_command
+        When:
+            ErrorNameResolutionNoResults is returned
+        Then:
+            A human readable string is returned
+    """
+    from EWSv2 import resolve_name_command
+    protocol = mocker.Mock()
+    email = '1234@demisto.com'
+    number_label = 'Bussiness2'
+    phone_numbers = [PhoneNumber(label=number_label, phone_number='+972 058 000 0000'),
+                     PhoneNumber(label='Bussiness', phone_number='+972 058 000 0000')]
+    protocol.resolve_names.return_value = [ErrorNameResolutionNoResults(value='No results')]
+    result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
+    assert result == 'No results were found.'

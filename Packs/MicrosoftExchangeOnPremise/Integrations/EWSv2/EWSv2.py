@@ -2138,7 +2138,7 @@ def get_autodiscovery_config():  # pragma: no cover
 
 def resolve_name_command(args, protocol):  # pragma: no cover
     unresolved_entries = argToList(args['identifier'])
-    full_contact_data = argToBoolean(args.get('full_contact_data'))
+    full_contact_data = argToBoolean(args.get('full_contact_data', False))
     demisto.debug(f'{len(unresolved_entries)=}')
     resolved_names = protocol.resolve_names(unresolved_entries, return_full_contact_data=full_contact_data, search_scope='')
     demisto.debug(f'{len(resolved_names)=}')
