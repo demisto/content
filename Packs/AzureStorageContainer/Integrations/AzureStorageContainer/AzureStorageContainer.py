@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import hashlib
 import hmac
 import shutil
-from typing import Callable
+from collections.abc import Callable
 from urllib import parse  # noqa: F401
 import defusedxml.ElementTree as defused_ET
 from requests import Response
@@ -999,6 +999,7 @@ def test_module(client: Client) -> None:
         raise exception
 
     return_results('ok')
+    return None
 
 
 def main() -> None:  # pragma: no cover
