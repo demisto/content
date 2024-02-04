@@ -3143,11 +3143,9 @@ class TestBaseClient:
     def test_http_request_execution_metrics_success_but_polling_in_progress(cls, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text="success")
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        tmp = client.is_polling_in_progress
         client.is_polling_in_progress = lambda _: True
         client._http_request('get', 'event', resp_type='response', with_metrics=True)
         assert client.execution_metrics.success == 0
-        client.is_polling_in_progress = tmp
 
     def test_http_request_execution_metrics_timeout(cls, requests_mock):
         from CommonServerPython import DemistoException
@@ -3237,7 +3235,9 @@ class TestBaseClient:
             client._http_request('get', 'event', with_metrics=True)
         result = client.execution_metrics_results()
         assert isinstance(result, CommandResults)
-        assert result.execution_metrics[0].get("Type") == ErrorTypes.GENERAL_ERROR
+        assert isinstance(result.execution_metrics, list) and len(result.execution_metrics) == 1
+        assert result.execution_metrics[0]["Type"] == ErrorTypes.GENERAL_ERROR
+        assert result.execution_metrics[0]["APICallsCount"] == 1
 
     @pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
     def test_http_request_params_parser_quote(self, requests_mock):
