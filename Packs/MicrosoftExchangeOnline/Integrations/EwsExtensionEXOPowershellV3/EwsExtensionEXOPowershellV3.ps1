@@ -1348,12 +1348,19 @@ function EXOGetTenantAllowBlockListCommand
     $action = $kwargs.action
     $no_expiration = if ($kwargs.no_expiration -eq "true") { $true } else { $false }
     $expiration_date = $kwargs.expiration_date
-    $raw_response = $client.EXOGetTenantAllowBlockList(
-        $entry, $list_type, $list_subtype, $action, $no_expiration, $expiration_date
-    )
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CurrentTenantBlocks" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    try
+    {
+        $raw_response = $client.EXOGetTenantAllowBlockList(
+            $entry, $list_type, $list_subtype, $action, $no_expiration, $expiration_date
+        )
+        $human_readable = TableToMarkdown $raw_response "Results of $command"
+        $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CurrentTenantBlocks" = $raw_response }
+        Write-Output $human_readable, $entry_context, $raw_response
+    }
+    catch [$System.Management.Automation.ParameterBindingException]
+    {
+        Write-Output "No results", @{}, @{}
+    }
 }
 
 function EXOCountTenantAllowBlockListCommand
