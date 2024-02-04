@@ -279,6 +279,13 @@ class Client(BaseClient):
 
         return response
 
+    def get_external_websites(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
+        data = {"request_data": request_data}
+
+        response = self._http_request('POST', f'{V1_URL_SUFFIX}/assets/get_external_websites/', json_data=data)
+
+        return response
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -976,6 +983,51 @@ def get_incident_command(client: Client, args: dict[str, Any]) -> CommandResults
     return command_results
 
 
+def list_external_websites_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    list_external_websites command: Get external websites .
+
+    Args:
+        client (Client): CortexXpanse client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['filter']`` Used for filter websites based on authentication type
+            ``args['limit']`` Used for limit num of results
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``
+    """
+    limit = int(args.get('limit', DEFAULT_SEARCH_LIMIT))
+    searchFilter = args.get('authentication')
+    if limit > 500:
+        raise ValueError('Limit cannot be more than 500, please try again')
+
+    filters = {'filters': [], 'search_to': limit}
+    if searchFilter:
+        filters['filters'] = [{'field': 'authentication',
+                               'operator': 'contains',
+                               'value': searchFilter}]
+
+    response = client.get_external_websites(filters)
+
+    hosts = []
+    for each in response['reply']['websites']:
+        hosts.append({'Host': each['host'], 'Authentication type': each['authentication']})
+
+    human_readable = (f"Total results: {len(hosts)}\n \
+        {tableToMarkdown('External Websites', hosts, ['Host', 'Authentication type'])}" if hosts else "No Results")
+    command_results = CommandResults(
+        outputs_prefix='ASM.ExternalWebsite',
+        outputs_key_field='',
+        raw_response=response,
+        readable_output=human_readable
+    )
+
+    if outputs := response.get('reply', {}).get('websites', None):
+        command_results.outputs = outputs
+
+    return command_results
+
+
 def update_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-update-incident command: Updates the state of an incident.
@@ -1381,6 +1433,7 @@ def main() -> None:
             'asm-get-incident': get_incident_command,
             'asm-update-incident': update_incident_command,
             'asm-update-alerts': update_alert_command,
+            'asm-list-external-websites': list_external_websites_command,
             'ip': ip_command,
             'domain': domain_command
         }
