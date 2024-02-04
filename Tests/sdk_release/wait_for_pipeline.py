@@ -12,8 +12,7 @@ from Utils.github_workflow_scripts.utils import get_env_var
 urllib3.disable_warnings()
 
 GITLAB_SERVER_URL = get_env_var('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
-# TIMEOUT = 60 * 60 * 6  # 6 hours
-TIMEOUT = 60  # TODO: remove
+TIMEOUT = 60 * 60 * 6  # 6 hours
 
 
 def get_pipeline_status(pipeline_id, project_id, token):
