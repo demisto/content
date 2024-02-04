@@ -64,7 +64,7 @@ def options_handler():
 
 
 def main():
-    install_logging("CreateSDKRelease.log", logger=logging)
+    install_logging("create_release.log", logger=logging)
 
     options = options_handler()
     release_branch_name = options.release_branch_name

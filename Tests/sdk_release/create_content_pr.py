@@ -59,7 +59,7 @@ def options_handler():
 
 
 def main():
-    install_logging("CreateContentPR.log", logger=logging)
+    install_logging("create_content_pr.log", logger=logging)
 
     options = options_handler()
     release_branch_name = options.release_branch_name

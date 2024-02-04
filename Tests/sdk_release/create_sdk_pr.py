@@ -40,7 +40,7 @@ def options_handler():
 
 
 def main():
-    install_logging("CreateSDKPR.log", logger=logging)
+    install_logging("create_sdk_pr.log", logger=logging)
 
     options = options_handler()
     access_token = options.access_token

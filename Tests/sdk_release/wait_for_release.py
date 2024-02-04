@@ -23,7 +23,7 @@ def options_handler():
 
 
 def main():
-    install_logging("WaitForSDKRelease.log", logger=logging)
+    install_logging("wait_for_release.log", logger=logging)
 
     options = options_handler()
     release_branch_name = options.release_branch_name

@@ -10,7 +10,9 @@ from Tests.scripts.gitlab_basic_slack_notifier import get_slack_user
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-REGEX = '\d{1,3}\.\d{1,3}\.\d{1,3}'
+# regex to validate that the version format is correct e.g: <2.1.3>
+VERSION_FORMAT_REGEX = '\d{1,3}\.\d{1,3}\.\d{1,3}'
+
 GITHUB_USER_URL = 'https://api.github.com/users/{username}'
 GITHUB_BRANCH_URL = 'https://api.github.com/repos/demisto/demisto-sdk/branches/{branch_name}'
 
@@ -29,7 +31,7 @@ def options_handler():
 
 
 def main():
-    install_logging('SDKReleaseValidations.log')
+    install_logging('pre_validations.log')
     options = options_handler()
     github_token = options.github_token
     release_version = options.release_version
@@ -38,7 +40,7 @@ def main():
     sdk_branch_name = options.sdk_branch_name
 
     # validate version format
-    if not re.match(REGEX, release_version):
+    if not re.match(VERSION_FORMAT_REGEX, release_version):
         logging.error(f'The SDK release version {release_version} is not according to the expected format.'
                       f' The format of version should be in x.y.z format, e.g: <2.1.3>')
         sys.exit(1)

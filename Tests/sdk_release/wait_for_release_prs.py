@@ -40,7 +40,7 @@ def options_handler():
 
 
 def main():
-    install_logging("WaitForReleasePRs.log", logger=logging)
+    install_logging("wait_for_release_prs.log", logger=logging)
 
     options = options_handler()
     access_token = options.access_token
