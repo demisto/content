@@ -1774,7 +1774,7 @@ def parse_phone_number(phone_number):
         attr: getattr(phone_number, attr, None)
         for attr in ['label', 'phone_number']
     }
-    return result
+    return result if result.get('phone_number') else {}
 
 
 def is_jsonable(x):
