@@ -32,8 +32,8 @@ PRIVATE_REPO_WORKFLOW_ID_FILE = 'PRIVATE_REPO_WORKFLOW_ID.txt'
 
 GET_WORKFLOWS_MAX_RETRIES = 5
 
-GET_WORKFLOWS_TIMEOUT_THRESHOLD = int(60 * 60 * 1.5)  # 1h 30m
-
+# GET_WORKFLOWS_TIMEOUT_THRESHOLD = int(60 * 60 * 1.5)  # 1h 30m
+GET_WORKFLOWS_TIMEOUT_THRESHOLD = int(60)  # TODO: remove
 
 def get_modified_files(branch_name: str = None) -> list[str]:
     """ Gets modified files between master branch and the input branch_name, If the branch_name is empty the method
