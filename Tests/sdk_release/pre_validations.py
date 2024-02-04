@@ -11,8 +11,8 @@ from Tests.scripts.gitlab_basic_slack_notifier import get_slack_user
 urllib3.disable_warnings()
 
 REGEX = '\d{1,3}\.\d{1,3}\.\d{1,3}'
-GITHUB_USER_URL = 'https://api.github.com/users/{}'
-GITHUB_BRANCH_URL = 'https://api.github.com/repos/demisto/demisto-sdk/branches/{}'
+GITHUB_USER_URL = 'https://api.github.com/users/{username}'
+GITHUB_BRANCH_URL = 'https://api.github.com/repos/demisto/demisto-sdk/branches/{branch_name}'
 
 
 def options_handler():
@@ -48,7 +48,7 @@ def main():
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {github_token}'
     }
-    url = GITHUB_USER_URL.format(reviewer)
+    url = GITHUB_USER_URL.format(username=reviewer)
     response = requests.request("GET", url, headers=headers, verify=False)
     if response.status_code != 200:
         logging.error(f'Failed to retrieve the user {reviewer} from github')
@@ -56,7 +56,7 @@ def main():
         sys.exit(1)
 
     # validate if branch exists
-    url = GITHUB_BRANCH_URL.format(sdk_branch_name)
+    url = GITHUB_BRANCH_URL.format(branch_name=sdk_branch_name)
     response = requests.request("GET", url, verify=False)
     if response.status_code != 200:
         logging.error(f'Failed to retrieve the branch {sdk_branch_name} from demisto-sdk repo')

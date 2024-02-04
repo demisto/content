@@ -12,13 +12,13 @@ from Tests.scripts.utils import logging_wrapper as logging
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-PR_BY_ID_TEMPLATE = 'https://api.github.com/repos/demisto/{}/pulls/{}'
+PR_BY_ID_TEMPLATE = 'https://api.github.com/repos/demisto/{repo}/pulls/{pr_id}'
 
 TIMEOUT = 60 * 60 * 6  # 6 hours
 
 
 def get_pr_by_id(repository, pr_id, access_token):
-    url = PR_BY_ID_TEMPLATE.format(repository, pr_id)
+    url = PR_BY_ID_TEMPLATE.format(repo=repository, pr_id=pr_id)
     res = requests.get(url, headers={'Authorization': f'Bearer {access_token}'}, verify=False)
     if res.status_code != 200:
         logging.error(f'Failed to retrieve pull request with id {pr_id}')

@@ -18,20 +18,22 @@ CONTENT_PR_NUMBER_FILE = 'CONTENT_PR.txt'
 
 TIMEOUT = 60 * 60  # 1 hour
 
-PRS_LIST_TEMPLATE = 'https://api.github.com/repos/demisto/{}/pulls?head=demisto:{}'
+PRS_LIST_TEMPLATE = 'https://api.github.com/repos/demisto/{repo}/pulls'
 UPDATE_SDK_VERSION_WORKFLOW = 'https://api.github.com/repos/demisto/content/actions' \
                               '/workflows/update-demisto-sdk-version.yml/dispatches'
 
-SLACK_MERGE_PRS_MESSAGE = 'Please merge the demisto-sdk and content pull requests:\n{}\n{}'
-SLACK_RELEASE_MESSAGE = 'demisto-sdk `{}` has been released :party-github:\n' \
+SLACK_MERGE_PRS_MESSAGE = 'Please merge the demisto-sdk and content pull requests:\n{sdk_pr}\n{content_pr}'
+SLACK_RELEASE_MESSAGE = 'demisto-sdk `{sdk_version}` has been released :party-github:\n' \
                         ':alert: Please run in the terminal\n' \
                         '`~/dev/demisto/demisto-sdk/demisto_sdk/scripts/update_demisto_sdk_version.sh ~/dev/' \
-                        'demisto/content ~/dev/demisto/demisto-sdk`\nChange log\n```\n{}\n```'
+                        'demisto/content ~/dev/demisto/demisto-sdk`\nChange log\n```\n{changelog}\n```'
 
 
 def get_pr_from_branch(repository, branch, access_token):
-    url = PRS_LIST_TEMPLATE.format(repository, branch)
-    res = requests.get(url, headers={'Authorization': f'Bearer {access_token}'}, verify=False)
+    url = PRS_LIST_TEMPLATE.format(repo=repository)
+    params = {'head': f'demisto:{branch}'}
+    res = requests.get(url, headers={'Authorization': f'Bearer {access_token}'},
+                       params=params, verify=False)
     if res.status_code != 200:
         logging.error(f'Failed to retrieve pull request from branch {branch}')
         logging.error(res.text)
@@ -125,7 +127,7 @@ def main():
 
     # write the changelog text to SLACK_CHANGELOG_FILE
     changelog_text = get_changelog_text(release_branch_name, text_format='slack')
-    changelog_text = SLACK_RELEASE_MESSAGE.format(release_branch_name, changelog_text)
+    changelog_text = SLACK_RELEASE_MESSAGE.format(sdk_version=release_branch_name, changelog=changelog_text)
     changelog_file = os.path.join(artifacts_folder, SLACK_CHANGELOG_FILE)
     with open(changelog_file, "w") as f:
         f.write(str(changelog_text))
@@ -137,7 +139,9 @@ def main():
 
     # write the SLACK_MERGE_PRS_FILE
     sdk_pr = get_pr_from_branch('demisto-sdk', release_branch_name, access_token)
-    slack_message = SLACK_MERGE_PRS_MESSAGE.format(content_pr.get("html_url"), sdk_pr.get("html_url"))
+    slack_message = SLACK_MERGE_PRS_MESSAGE.format(content_pr=content_pr.get("html_url"),
+                                                   sdk_pr=sdk_pr.get("html_url"))
+
     slack_merge_prs_file = os.path.join(artifacts_folder, SLACK_MERGE_PRS_FILE)
     with open(slack_merge_prs_file, "w") as f:
         f.write(str(slack_message))
