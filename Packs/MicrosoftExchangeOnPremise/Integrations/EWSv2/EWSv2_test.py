@@ -727,8 +727,6 @@ def test_resolve_names_command_no_result(mocker):
     protocol = mocker.Mock()
     email = '1234@demisto.com'
     number_label = 'Bussiness2'
-    phone_numbers = [PhoneNumber(label=number_label, phone_number='+972 058 000 0000'),
-                     PhoneNumber(label='Bussiness', phone_number='+972 058 000 0000')]
     protocol.resolve_names.return_value = [ErrorNameResolutionNoResults(value='No results')]
     result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
     assert result == 'No results were found.'
