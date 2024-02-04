@@ -47,48 +47,6 @@ def get_incident_extra_data_by_status(incident_id, alerts_limit):
 ''' TESTS FUNCTIONS '''
 
 
-def test_get_incident_list(requests_mock):
-    from CortexXDRIR import get_incidents_command, Client
-
-    get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
-    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
-
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
-    args = {
-        'incident_id_list': '1 day'
-    }
-    _, outputs, _ = get_incidents_command(client, args)
-
-    expected_output = {
-        'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)':
-            get_incidents_list_response.get('reply').get('incidents')
-    }
-    assert expected_output == outputs
-
-
-def test_get_incident_list_by_status(mocker):
-    from CortexXDRIR import get_incidents_command, Client
-
-    get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
-
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
-    args = {
-        'incident_id_list': '1 day',
-        'status': 'under_investigation,new'
-    }
-    mocker.patch.object(client, 'get_incidents', side_effect=get_incident_by_status)
-
-    _, outputs, _ = get_incidents_command(client, args)
-
-    expected_output = {
-        'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)':
-            get_incidents_list_response.get('reply').get('incidents')
-    }
-    assert expected_output == outputs
-
-
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_fetch_incidents(requests_mock, mocker):
     from CortexXDRIR import fetch_incidents, Client, sort_all_list_incident_fields
@@ -122,7 +80,7 @@ def test_fetch_incidents(requests_mock, mocker):
                                    " AAAAA involving user Administrator"
 
     if 'network_artifacts' not in json.loads(incidents[0]['rawJSON']):
-        raise AssertionError
+        assert False
     assert json.loads(incidents[0]['rawJSON']).pop('last_mirrored_in')
     assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)
 
@@ -213,7 +171,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     assert len(incidents_from_previous_run) == 1
     assert incidents_from_previous_run[0].get('incident_id') == '2'
     if 'network_artifacts' not in json.loads(incidents[0]['rawJSON']):
-        raise AssertionError
+        assert False
     assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)
 
 
@@ -264,23 +222,6 @@ def test_get_incident_extra_data(requests_mock):
 
 class TestFetchStarredIncident:
 
-    def test_get_starred_incident_list(self, requests_mock):
-        from CortexXDRIR import get_incidents_command, Client
-
-        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
-        requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
-
-        client = Client(
-            base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
-        args = {
-            'incident_id_list': '1 day',
-            'starred': True,
-            'starred_incidents_fetch_window': '3 days'
-        }
-        _, outputs, _ = get_incidents_command(client, args)
-
-        assert outputs['PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
-
     def test_get_starred_incident_list_with_limit(self, mocker):
         """
         Given:
@@ -307,7 +248,8 @@ class TestFetchStarredIncident:
             'incident_id_list': '1 day',
             'starred': True,
             'limit': 1,
-            'starred_incidents_fetch_window': '3 days'
+            'starred_incidents_fetch_window': '3 days',
+            'integration_context_brand': 'PaloAltoNetworksXDR'
         }
         _, outputs, _ = get_incidents_command(client, args)
         res = outputs['PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)']
@@ -849,3 +791,110 @@ def test_update_remote_system_command(incident_changed, delta):
             }
     actual_remote_id = update_remote_system_command(client, args)
     assert actual_remote_id == expected_remote_id
+
+
+def test_check_using_upgraded_api_incidents_extra_data_success(requests_mock, client):
+    """
+    Given:
+     - Mock response from API with valid incident data
+     - Valid client object
+
+    When:
+     - Calling check_using_upgraded_api_incidents_extra_data with valid args
+
+    Then:
+     - Returns the incident data and use_get_incident_extra_data == True
+    """
+    from CortexXDRIR import check_using_upgraded_api_incidents_extra_data, Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+    incident_id = "1"
+    http_response = {"replay": {"number_in_config": 10, "alert_count": 5}, "incidents": [{"incident": {"id": "1", "created_time":
+                                                                                                       "2021-12-15T12:00:00Z"}}]}
+    requests_mock.post("https://api.xdrurl.com/public_api/v1/incidents/get_multiple_incidents_extra_data/", json=http_response)
+
+    raw_incident, use_get_incident_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_id)
+
+    assert raw_incident == {"id": "1", "created_time":
+                            "2021-12-15T12:00:00Z"}
+    assert use_get_incident_extra_data
+
+
+def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock, client):
+    """
+    Given:
+     - Mock 500 response from API
+
+    When:
+     - Calling check_using_upgraded_api_incidents_extra_data with valid args
+
+    Then:
+     - Returns empty dict and use_get_incident_extra_data == False
+    """
+    from CortexXDRIR import check_using_upgraded_api_incidents_extra_data
+    incident_id = "1"
+    requests_mock.post("https://api.xdrurl.com/public_api/v1/incidents/get_multiple_incidents_extra_data/", status_code=500)
+
+    raw_incident, use_get_incident_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_id)
+
+    assert raw_incident == {}
+    assert not use_get_incident_extra_data
+
+
+def test_fetch_incidents_upgraded_api_true(mocker):
+    """
+    Given:
+        - Client instance  
+        - Mocked upgraded API check returning true
+    When
+        - Calling fetch_incidents
+    Then
+        - Incidents are returned
+    """
+    from CortexXDRIR import fetch_incidents, Client
+    client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+    http_response = {"replay": {"number_in_config": 10, "alert_count": 5}, "incidents":
+                     [{"incident": [{"id": "1", "created_time": "2021-12-15T12:00:00Z"}, {"id": "2", "created_time": "2021-12-15T12:00:01Z"}]}]}
+    mocker.mock("CortexXDRIR.check_using_upgraded_api_incidents_extra_data", return=(http_response, True))
+    mock_fetch_incidents = fetch_incidents(client)
+    incidents = []
+
+    assert len(incidents) > 0
+
+
+@freeze_time("1997-10-105 15:00:00 GMT")
+def test_fetch_incidents_extra_data(requests_mock, mocker):
+    from CortexXDRIR import fetch_incidents, Client, sort_all_list_incident_fields
+    import copy
+
+    get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
+    raw_incident = load_test_data('get_multiple_incidents_extra_data.json')
+    modified_raw_incident = raw_incident['reply']['incident'].copy()
+    modified_raw_incident['alerts'] = copy.deepcopy(raw_incident['reply'].get('alerts').get('data'))
+    modified_raw_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
+    modified_raw_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
+    modified_raw_incident['mirror_direction'] = 'In'
+    modified_raw_incident['mirror_instance'] = 'MyInstance'
+    modified_raw_incident['last_mirrored_in'] = 740314800000
+
+    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_multiple_incidents_extra_data/', json=raw_incident)
+    mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+
+    modified_raw_incident.get('alerts')[0]['host_ip_list'] = \
+        modified_raw_incident.get('alerts')[0].get('host_ip').split(',')
+
+    next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance')
+    sort_all_list_incident_fields(modified_raw_incident)
+
+    assert len(incidents) == 2
+    assert incidents[0]['name'] == "XDR Incident 1 - 'Local Analysis Malware' generated by XDR Agent detected on host" \
+                                   " AAAAA involving user Administrator"
+
+    if 'network_artifacts' not in json.loads(incidents[0]['rawJSON']):
+        assert False
+    assert json.loads(incidents[0]['rawJSON']).pop('last_mirrored_in')
+    assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)

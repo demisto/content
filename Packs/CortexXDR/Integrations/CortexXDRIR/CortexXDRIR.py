@@ -307,7 +307,7 @@ class Client(CoreClient):
             timeout=self.timeout
         )
         return reply.get('reply', {})
-    
+
     def get_multiple_incidents_extra_data(self, incident_id):
         """
         Returns incident by id
@@ -328,10 +328,7 @@ class Client(CoreClient):
             timeout=self.timeout,
 
         )
-
-        incident = reply.get('reply')
-
-        return incident
+        return reply
 
 
 def get_headers(params: dict) -> dict:
@@ -425,16 +422,28 @@ def get_last_mirrored_in_time(args):
     return last_mirrored_in_timestamp
 
 
-def get_multiple_incidents_extra_data_response(client, args) -> bool:
+def check_using_upgraded_api_incidents_extra_data(client, incident_id: str | List):
+    """Checks if the new XDR version is installed (otherwise we will get internal error 500)
+        and get_multiple_incidents_extra_data returns at least number_in_config indicators.
+
+    Args:
+        client (Client): The Cortex XDR client used to make API calls.
+        incident_id (list or str):incident_ids that specifies which incidents to get data for.
+
+    Returns:
+        bool: True if the additional incident data retrieval was successful, False otherwise.
+        Dict: if the call sus
+    """
     try:
-        raw_incident: dict = client.get_multiple_incidents_extra_data(args.get('incident_id')) or {}
-        use_get_incident_extra_data = int(raw_incident.get('incident', {}).get('replay', {}).get('alert_count')) > \
-            int(raw_incident.get('incident', {}).get('replay', {}).get('number_in_config'))
-        return use_get_incident_extra_data
+        raw_incident: dict = client.get_multiple_incidents_extra_data(incident_id) or {}
+        indicators_limit_number_in_config_map = int(raw_incident.get('incident', {}).get('replay', {}).get('number_in_config'))
+        fetch_alert_count = int(raw_incident.get('incident', {}).get('replay', {}).get('alert_count'))
+        use_get_incident_extra_data = fetch_alert_count > indicators_limit_number_in_config_map
+        return raw_incident.get('incident', {}).get('replay', {}), use_get_incident_extra_data
     except Exception as err:
         if err.res.status_code == 500:  # type: ignore
-            return False
-    return True
+            return {}, False
+    return {}, True
 
 
 def get_incident_extra_data_command(client, args):
@@ -451,18 +460,19 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-    use_get_incident_extra_data = get_multiple_incidents_extra_data_response(client, args)  # 500: {},True
-    raw_incident = client.get_multiple_incidents_extra_data(incident_id) if use_get_incident_extra_data else \
-        client.get_incident_extra_data(incident_id, alerts_limit)
+    raw_incident, use_get_incident_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_id)
+    if not use_get_incident_extra_data:
+        demisto.debug('Using the original API to retrieve incident extra data')
+        raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
 
-    incident = raw_incident.get('incident')
+    incident = raw_incident.get('incident', {})
     incident_id = incident.get('incident_id')
-    raw_alerts = raw_incident.get('alerts').get('data')
+    raw_alerts = raw_incident.get('alerts', {}).get('data')
     context_alerts = clear_trailing_whitespace(raw_alerts)
     for alert in context_alerts:
         alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
-    file_artifacts = raw_incident.get('file_artifacts').get('data')
-    network_artifacts = raw_incident.get('network_artifacts').get('data')
+    file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
+    network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
 
     readable_output = [tableToMarkdown(f'Incident {incident_id}', incident)]
 
@@ -866,16 +876,23 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     try:
         # The count of incidents, so as not to pass the limit
         count_incidents = 0
+        incident_ids: list[str] = []
+        incidents_data = []
+        if_upgraded_extra_data = False
+        if raw_incidents and (check_using_upgraded_api_incidents_extra_data(client, raw_incidents[0].get('incident_id'))):
+            incident_ids: list[str] = [raw_incident.get('incident_id') for raw_incident in raw_incidents
+                                       if len(incident_ids) < max_fetch]
+            raw_incidents_data, if_upgraded_extra_data = client.check_using_upgraded_api_incidents_extra_data(incident_ids)
+            incidents_data = sorted(raw_incidents_data, key=lambda inc: inc['creation_time'])
 
-        use_get_incident_extra_data = get_multiple_incidents_extra_data_response(client, raw_incidents[0].get('incident_id')) if \
-            raw_incidents else False
-        
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
-
-            incident_data = client.get_multiple_incidents_extra_data(incident_id) if use_get_incident_extra_data else \
-               client.get_incident_extra_data(incident_id, {"incident_id": incident_id,
-                                                            "alerts_limit": 1000})[2].get('incident')
+            incident_data: dict = {}
+            if if_upgraded_extra_data:
+                incident_data = next((incident for incident in incidents_data if incident.get('id') == incident_id), None)
+            else:
+                incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
+                                                                         "alerts_limit": 1000})[2].get('incident') or {}
 
             sort_all_list_incident_fields(incident_data)
 
@@ -886,7 +903,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
 
             description = raw_incident.get('description')
             occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
-            incident = {
+            incident: Dict[str, Any] = {
                 'name': f'XDR Incident {incident_id} - {description}',
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
