@@ -42,7 +42,7 @@ class Client(jbxapi.JoeSandbox):
 
 def update_metrics(exception: Exception, exe_metrics: ExecutionMetrics):
     """
-        Helper function that supports the update of the execution metrics.
+        Helper function t hat supports the update of the execution metrics.
 
         Args:
             exception: Exception: The exception.
