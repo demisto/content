@@ -886,8 +886,8 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
             "SerialNumber": "SERIAL_NUMBER_VALUE",
             "TotalStorageSpaceInBytes": -2097152,
             "UserID": "USER_ID_VALUE",
-            "UserPrincipalName": "USER_PRINCIPAL_VALUE_NAME",
-            "NextLink": {
+            "UserPrincipalName": "USER_PRINCIPAL_VALUE_NAME"},
+            "DeviceNextLink": {
             "NextLink": "https://graph.microsoft.com/v1.0/deviceManagement/managedDevices"
         }
     }
