@@ -1,0 +1,137 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: FeedNVDv2
+  version: -1
+configuration:
+- defaultvalue: "true"
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- display: ""
+  displaypassword: API Key
+  hiddenusername: true
+  name: apiKey
+  required: true
+  type: 9
+- additionalinfo: First CVE was published in September of 1999
+  defaultvalue: "2013-01-01"
+  display: Date to begin fetching CVEs from (YYYY-MM-DD)
+  name: start_date
+  required: true
+  type: 0
+- additionalinfo: 'See the following URL for more information: https://nvd.nist.gov/developers/vulnerabilities#cves-hasKev' # disable-secrets-detection
+  defaultvalue: "false"
+  display: Return only CVEs that have a known exploited vulnerability (KEV) associated with them
+  name: hasKev
+  required: false
+  type: 8
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- defaultvalue: never
+  display: ""
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  defaultvalue: "true"
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  required: false
+description: "This feed pulls CVE information from the NIST National Vulnerability Database using v2.0 of the API.\n\nRejected CVEs are not ingested as part of this integration.\n\nThis integration/feed deprecates the original National Vulnerability Database Feed integraiton as v1.0 of the API is being sunsetted in 2023. "
+detaileddescription: |-
+  ## BaseIntegration Help
+
+  Markdown file for integration configuration  help snippet. In this file add:
+
+  - Brief information about how to retrieve the API key of your product
+  - Other useful information on how to configure your integration in XSOAR
+
+  Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+
+
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/feed-nv-dv2)
+display: National Vulnerability Database Feed v2
+image: ''
+name: FeedNVDv2
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      description: Number of days back to retrieve CVEs.
+      name: history
+      predefined:
+      - ""
+      required: true
+    description: Manually retrieve CVEs from NVD using the history parameter for number of days back to fetch.
+    name: nvd-get-indicators
+  dockerimage: demisto/python3:3.10.13.86272
+  feed: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
