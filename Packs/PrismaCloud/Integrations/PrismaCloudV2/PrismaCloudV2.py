@@ -214,7 +214,6 @@ class Client(BaseClient):
 
         return self._http_request('POST', 'search/config', json_data=data)
 
-
     def event_search_request(self,
                              time_range: Dict[str, Any],
                              query: str,
