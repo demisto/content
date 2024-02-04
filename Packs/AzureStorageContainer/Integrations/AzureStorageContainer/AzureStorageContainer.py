@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import hashlib
 import hmac
 import shutil
-from typing import Callable
+from collections.abc import Callable
 from urllib import parse  # noqa: F401
 import defusedxml.ElementTree as defused_ET
 from requests import Response
@@ -975,7 +975,7 @@ def generate_sas_token_command(client: Client, args: dict) -> CommandResults:  #
         )
         return result
     else:
-        return_error("Permissions are invalid or in wrong order. Correct order for permissions are \'racwdl\'")
+        raise DemistoException("Permissions are invalid or in wrong order. Correct order for permissions are \'racwdl\'")
 
 
 def test_module(client: Client) -> None:
@@ -999,6 +999,7 @@ def test_module(client: Client) -> None:
         raise exception
 
     return_results('ok')
+    return None
 
 
 def main() -> None:  # pragma: no cover
@@ -1012,6 +1013,8 @@ def main() -> None:  # pragma: no cover
     global account_sas_token
     global storage_account_name
     account_sas_token = params.get('credentials', {}).get('password')
+    if account_sas_token and not account_sas_token.startswith("?"):
+        account_sas_token = f"?{account_sas_token}"
     storage_account_name = params['credentials']['identifier']
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     api_version = "2020-10-02"
