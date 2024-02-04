@@ -21,8 +21,4 @@ dockerimage: demisto/netutils:1.0.0.86390
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-runonce: false
+fromversion: 5.0.0
