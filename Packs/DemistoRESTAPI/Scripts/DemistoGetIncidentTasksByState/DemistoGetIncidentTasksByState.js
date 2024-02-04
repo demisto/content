@@ -56,7 +56,7 @@ function getStates(states) {
 
 var states = getStates(args.states || '');
 var incidentId = args.incidentId;
-var res = executeCommand('demisto-api-get', {'uri': '/investigation/' + incidentId + '/workplan'});
+var res = executeCommand('core-api-get', {'uri': '/investigation/' + incidentId + '/workplan'});
 if (isError(res[0])) {
     return res;
 }

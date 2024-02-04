@@ -1,7 +1,7 @@
 """
 Gets an instance configuration and a parameter to modify, to check if is works.
 """
-from typing import Iterable
+from collections.abc import Iterable
 
 from CommonServerPython import *
 
@@ -28,7 +28,7 @@ def change_keys(instance: dict, keys: Iterable) -> dict:
 
 def save_configuration(arguments: dict) -> List[str]:
     res = demisto.executeCommand(
-        'demisto-api-put',
+        'core-api-put',
         {
             'uri': 'settings/integration',
             'body': arguments
@@ -38,7 +38,7 @@ def save_configuration(arguments: dict) -> List[str]:
 
 def execute_test_module(arguments: dict) -> List[str]:
     res = demisto.executeCommand(
-        'demisto-api-post',
+        'core-api-post',
         {
             'uri': '/settings/integration/test',
             'body': arguments
