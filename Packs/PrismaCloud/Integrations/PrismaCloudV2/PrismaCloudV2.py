@@ -530,11 +530,11 @@ def extract_namespace(response_items: List[Dict[str, Any]]):
                 break
 
 
-def remove_additional_resource_fields(self, input_dict, keys):
+def remove_additional_resource_fields(input_dict, keys):
     if isinstance(input_dict, dict):
-        return {k: self.remove_additional_resource_fields(v, keys) for k, v in input_dict.items() if k not in keys}
+        return {k: remove_additional_resource_fields(v, keys) for k, v in input_dict.items() if k not in keys}
     elif isinstance(input_dict, list):
-        return [self.remove_additional_resource_fields(element, keys) for element in input_dict]
+        return [remove_additional_resource_fields(element, keys) for element in input_dict]
     else:
         return input_dict
 
