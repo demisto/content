@@ -3332,8 +3332,10 @@ class TestBaseClient:
         demisto_results_mock.assert_called_once
         entry = demisto_results_mock.call_args[0][0]
         assert entry["Type"] == EntryType.EXECUTION_METRICS
-        assert entry["APIExecutionMetrics"]["Type"] == ErrorTypes.GENERAL_ERROR
-        assert entry["APIExecutionMetrics"]["APICallsCount"] == 1
+        assert entry["APIExecutionMetrics"] == [{
+            "Type": ErrorTypes.GENERAL_ERROR,
+            "APICallsCount": 1,
+        }]
 
     def test_http_request_no_execution_metrics_results(cls, requests_mock, mocker):
         """
