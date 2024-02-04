@@ -218,6 +218,36 @@ script:
     description: Download a file from the repository.
     name: wfr-download-file
   - arguments:
+    - name: path
+      required: true
+      description: The file path.
+    - name: encoding
+      auto: PREDEFINED
+      predefined:
+      - utf-8
+      - base64
+      description: Encoding type to convert the file data when setting to the context.
+        Default is utf-8.
+      defaultValue: utf-8
+    outputs:
+    - contextPath: WebFileRepository.Files.Name
+      description: The file name.
+      type: string
+    - contextPath: WebFileRepository.Files.Path
+      description: The file path.
+      type: string
+    - contextPath: WebFileRepository.Files.Size
+      description: The file size in bytes.
+      type: number
+    - contextPath: WebFileRepository.Files.Data
+      description: The file data encoded in the encoding.
+      type: string
+    - contextPath: WebFileRepository.Files.Encoding
+      description: The encoding name.
+      type: string
+    description: Retrieve the file data from the repository into the context.
+    name: wfr-download-as-text
+  - arguments:
     - description: The name to give the archive-file to save.
       name: save_as
     description: Download a file to which all the files are archived.
