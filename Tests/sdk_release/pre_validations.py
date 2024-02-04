@@ -38,12 +38,12 @@ def main():
     gitlab_token = options.gitlab_token
     reviewer = options.reviewer
     sdk_branch_name = options.sdk_branch_name
+    errors = []
 
     # validate version format
     if not re.match(VERSION_FORMAT_REGEX, release_version):
-        logging.error(f'The SDK release version {release_version} is not according to the expected format.'
+        errors.append(f'The SDK release version {release_version} is not according to the expected format.'
                       f' The format of version should be in x.y.z format, e.g: <2.1.3>')
-        sys.exit(1)
 
     # validate if github user exists
     headers = {
@@ -53,20 +53,23 @@ def main():
     url = GITHUB_USER_URL.format(username=reviewer)
     response = requests.request("GET", url, headers=headers, verify=False)
     if response.status_code != requests.codes.ok:
-        logging.error(f'Failed to retrieve the user {reviewer} from github')
-        logging.error(response.text)
-        sys.exit(1)
+        errors.append(f'Failed to retrieve the user {reviewer} from github,\nerror: {response.text}')
 
     # validate if branch exists
     url = GITHUB_BRANCH_URL.format(branch_name=sdk_branch_name)
     response = requests.request("GET", url, verify=False)
     if response.status_code != requests.codes.ok:
-        logging.error(f'Failed to retrieve the branch {sdk_branch_name} from demisto-sdk repo')
-        logging.error(response.text)
-        sys.exit(1)
+        errors.append(f'Failed to retrieve the branch {sdk_branch_name} from demisto-sdk repo,\nerror: {response.text}')
 
     # validate if the user exists in name_mapping.json file
-    get_slack_user(gitlab_token, reviewer)
+    try:
+        get_slack_user(gitlab_token, reviewer)
+    except Exception as e:
+        errors.append(f'Failed to retrieve the user from name_mapping.json file,\nerror: {str(e)}')
+
+    if errors:
+        logging.error('\n'.join(errors))
+        sys.exit(1)
 
 
 if __name__ == "__main__":
