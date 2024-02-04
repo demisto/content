@@ -8746,6 +8746,7 @@ if 'requests' in sys.modules:
             self.execution_metrics = ExecutionMetrics()
 
         def __del__(self):
+            self._return_execution_metrics_results()
             try:
                 self._session.close()
             except AttributeError:
@@ -9180,10 +9181,11 @@ if 'requests' in sys.modules:
                 err_msg += '\n{}'.format(res.text)
                 raise DemistoException(err_msg, res=res)
 
-        def execution_metrics_results(self):
+        def _return_execution_metrics_results(self):
             """ Returns execution metrics results.
             """
-            return cast(CommandResults, self.execution_metrics.metrics)
+            if self.execution_metrics.metrics:
+                return_results(cast(CommandResults, self.execution_metrics.metrics))
 
 
 def batch(iterable, batch_size=1):

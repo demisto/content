@@ -393,9 +393,6 @@ def main() -> None:  # pragma: no cover
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
-    finally:
-        if client:
-            return_results(client.execution_metrics_results())
 
 
 ''' ENTRY POINT '''
