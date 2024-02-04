@@ -5,9 +5,18 @@ from CommonServerPython import *  # noqa: F401
 import ipaddress
 
 
-def validate_cidr(cidr: str):
+def validate_cidr(cidr: str) -> bool:
     """
-    Validates CIDR format.
+    Validates if the input string is in CIDR format.
+
+    Args:
+        cidr (str): The string to be validated.
+
+    Returns:
+        bool: True if the string is a valid CIDR, False otherwise.
+
+    Raises:
+        ValueError: If the string is not a valid CIDR.
     """
     try:
         ipaddress.ip_network(cidr)
@@ -20,7 +29,7 @@ def validate_cidr(cidr: str):
 
 
 def main():
-    """ Check if given IP (or IPs) address is part of a given CIDR (or a list of CIDRs).
+    """Check if given IP (or IPs) address is part of a given CIDR (or a list of CIDRs).
 
     Args:
         ip_addresses (str): A list of IPs/IPv6s
@@ -52,5 +61,5 @@ def main():
         return_error(f'Failed to execute IsNotInCidrRange. Error: {str(e)}')
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
