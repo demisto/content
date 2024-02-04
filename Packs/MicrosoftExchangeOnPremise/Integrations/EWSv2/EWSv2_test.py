@@ -725,8 +725,6 @@ def test_resolve_names_command_no_result(mocker):
     """
     from EWSv2 import resolve_name_command
     protocol = mocker.Mock()
-    email = '1234@demisto.com'
-    number_label = 'Bussiness2'
     protocol.resolve_names.return_value = [ErrorNameResolutionNoResults(value='No results')]
     result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
     assert result == 'No results were found.'
