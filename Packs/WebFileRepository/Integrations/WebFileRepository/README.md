@@ -103,6 +103,33 @@ Remove all the files from the repository
 
 There is no context output for this command.
 
+
+### wfr-upload-as-file
+
+***
+Upload a file from data to the repository.
+
+
+#### Base Command
+
+`wfr-upload-as-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_name | The name of the file. | Required |
+| data | Input data to create the file. | Optional |
+| encoding | Encoding type of the input data. Default is utf-8. | Optional |
+| extract_archive | Set to true to extract files to archive files, otherwise false. Possible values are: true, false. Default is false. | Optional | 
+| upload_directory | The directory path where to upload. Default is /. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
 ### wfr-upload-file
 
 ***
@@ -219,6 +246,35 @@ Download a file from the repository
 #### Context Output
 
 There is no context output for this command.
+
+### wfr-download-as-text
+
+***
+Retrieve the file data from the repository into the context.
+
+
+#### Base Command
+
+`wfr-download-as-text`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| path | The file path. | Required | 
+| encoding | Encoding type to convert the file data when setting to the context. Default is utf-8. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| WebFileRepository.Files.Name | string | The file name | 
+| WebFileRepository.Files.Path | string | The file path | 
+| WebFileRepository.Files.Size | number | The file size in bytes | 
+| WebFileRepository.Files.Data | string | The file data encoded in the encoding | 
+| WebFileRepository.Files.Encoding | string | The encoding name | 
+
 
 ### wfr-archive-zip
 

@@ -257,6 +257,28 @@ def test_fetch_mail_gets_bytes(mocker, src_data, expected):
     assert mail_mocker.call_args[0][0] == expected
 
 
+def test_fetch_mail__default_uid(mocker,):
+    """
+    Given:
+        - No uid is passed to fetch_mails function
+    When:
+        - Fetching mails
+    Then:
+        - Validate search query is empty
+    """
+    from MailListenerV2 import fetch_mails
+    import demistomock as demisto
+    from imapclient import IMAPClient
+
+    mocker.patch('MailListenerV2.Email')
+    mocker.patch.object(demisto, 'debug')
+    search_mocker = mocker.patch.object(IMAPClient, 'search')
+    mocker.patch.object(IMAPClient, 'fetch')
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
+    fetch_mails(IMAPClient('http://example_url.com'))
+    assert search_mocker.call_args[0][0] == []  # default uid is 0 so no search query is passed
+
+
 def test_invalid_mail_object_handling(mocker):
     """
     Given:
