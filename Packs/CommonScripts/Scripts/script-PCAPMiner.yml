@@ -1,4 +1,4 @@
-  commonfields:
+commonfields:
   id: PCAPMiner
   version: -1
 name: PCAPMiner
