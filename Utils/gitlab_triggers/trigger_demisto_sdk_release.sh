@@ -10,7 +10,7 @@
 # Ways to run this script are:
 # trigger_demisto_sdk_release.sh -ct <trigger-token> -rv <release-version> [-b <branch-name> -ch <slack-channel-name>]
 # For more information:
-https://confluence-dc.paloaltonetworks.com/display/DemistoContent/Demisto-sdk+automate+release+flow
+# https://confluence-dc.paloaltonetworks.com/display/DemistoContent/Demisto-sdk+automate+release+flow
 
 if [ "$#" -lt "1" ]; then
   echo "Usage:
