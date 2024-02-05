@@ -864,24 +864,20 @@ def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock,moc
 @freeze_time("1997-10-05 15:00:00 GMT")
 def test_fetch_incidents_extra_data(requests_mock, mocker):
     from CortexXDRIR import fetch_incidents, Client, sort_all_list_incident_fields
-    import copy
-
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
     raw_incident = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
-    modified_raw_incident = raw_incident['reply']['incident'].copy()
-    modified_raw_incident['alerts'] = copy.deepcopy(raw_incident['reply'].get('alerts').get('data'))
-    modified_raw_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
-    modified_raw_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
+    modified_raw_incident = raw_incident['reply'].copy()
+    modified_raw_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
     modified_raw_incident['mirror_direction'] = 'In'
     modified_raw_incident['mirror_instance'] = 'MyInstance'
     modified_raw_incident['last_mirrored_in'] = 740314800000
-
-    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
-    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_multiple_incidents_extra_data/', json=raw_incident)
+    mocker.patch.object(Client, '_http_request', side_effect=get_incidents_list_response)
+    # requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/multiple_incidents_extra_data', json=raw_incident)
+    # mocker.patch.object(client,"get_multiple_incidents_extra_data", return_value=raw_incident)
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
-
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
 
     modified_raw_incident.get('alerts')[0]['host_ip_list'] = \
         modified_raw_incident.get('alerts')[0].get('host_ip').split(',')
