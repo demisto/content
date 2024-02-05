@@ -7,20 +7,23 @@ The EWS v2 integration implants EWS leading services. The integration allows get
 **Multi-Factor Authentication (MFA)**
 EWS v2 does not support Multi-Factor Authentication (MFA).
 
-If using MFA, use EWS O365 (see https://xsoar.pan.dev/docs/reference/integrations/ewso365) 
+If using MFA, use EWS O365 (see <https://xsoar.pan.dev/docs/reference/integrations/ewso365>) 
 
-or if you have Graph Outlook use O365 Outlook Mail (Using Graph API) (see https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail)
+or if you have Graph Outlook use O365 Outlook Mail (Using Graph API) (see <https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail>)
 
-or O365 Outlook Mail Single User (Using Graph API) (see https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail-single-user).
+or O365 Outlook Mail Single User (Using Graph API) (see <https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail-single-user>).
 
 ## EWS v2 Playbooks
+
 - Office 365 Search and Delete
 - Search And Delete Emails - EWS
 - Get Original Email - EWS
 - Process Email - EWS
 
 ## Use Cases
+
 The EWS integration can be used for the following use cases:
+
 - Monitor a specific email account and create incidents from incoming emails to the defined folder.
 Follow the instructions in the [Fetched Incidents Data](#fetched-incidents-data) section.
 - Search for an email message across mailboxes and folders.
@@ -67,6 +70,7 @@ Follow the instructions in the [Fetched Incidents Data](#fetched-incidents-data)
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
+
 The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email, Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files.
 
 To use Fetch incidents, configure a new instance and select the ```Fetches incidents``` option in the instance settings.
@@ -88,9 +92,12 @@ Find more information on impersonation or delegation rights in the  [Additional 
 
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ews-get-attachment
+
 ***
 Retrieves the actual attachments from an item (email message). To get all attachments for a message, only specify the item-id argument.
 
@@ -98,6 +105,7 @@ Retrieves the actual attachments from an item (email message). To get all attach
 #### Base Command
 
 `ews-get-attachment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -133,9 +141,11 @@ Retrieves the actual attachments from an item (email message). To get all attach
 
 
 #### Command Example
+
 ```!ews-get-attachment item-id=BBFDShfdafFSDF3FADR3434DFASDFADAFDADFADFCJebinpkUAAAfxuiVAAA= target-mailbox=test@demistodev.onmicrosoft.com```
 
 #### Context Example
+
 ```json
 {
   "EWS": {
@@ -178,7 +188,9 @@ Retrieves the actual attachments from an item (email message). To get all attach
   }
 }
 ```
+
 ### ews-delete-attachment
+
 ***
 Deletes the attachments of an item (email message).
 
@@ -186,6 +198,7 @@ Deletes the attachments of an item (email message).
 #### Base Command
 
 `ews-delete-attachment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -206,14 +219,17 @@ Deletes the attachments of an item (email message).
 
 
 #### Command Example
+
 ```!ews-delete-attachment item-id=AAMkADQ0NmwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUQZfBJjfaljfAFDVSDinpkUAAAfxxd9AAA= target-mailbox=test@demistodev.onmicrosoft.com```
 
 #### Human Readable Output
+
 >|action|attachmentId|
 >|---|---|
 >| deleted | AAMkADQ0NmwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUQZfBJjfaljfAFDVSDinpkUAAAfxxd9AAABEgAQAIUht2vrOdErec33= |
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -228,6 +244,7 @@ Deletes the attachments of an item (email message).
 ```
 
 ### ews-get-searchable-mailboxes
+
 ***
 Returns a list of searchable mailboxes. This command requires eDiscovery permissions to the Exchange Server. For more information, see the EWSv2 integration documentation.
 
@@ -235,6 +252,7 @@ Returns a list of searchable mailboxes. This command requires eDiscovery permiss
 #### Base Command
 
 `ews-get-searchable-mailboxes`
+
 #### Input
 
 There are no input arguments for this command.
@@ -251,14 +269,17 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!ews-get-searchable-mailboxes```
 
 #### Human Readable Output
+
 >|displayName|isExternal|mailbox|mailboxId|
 >|---|---|---|--- |
 >| test | false |test@demistodev.onmicrosoft.com | /o=Exchange***/ou=Exchange Administrative Group ()/cn=**/cn=**-**|
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -276,6 +297,7 @@ There are no input arguments for this command.
 
 
 ### ews-search-mailboxes
+
 ***
 Searches over multiple mailboxes or all Exchange mailboxes. Use either the mailbox-search-scope command or the email-addresses command to search specific mailboxes. This command requires eDiscovery permissions to the Exchange Server. For more information, see the EWS v2 integration documentation.
 
@@ -283,6 +305,7 @@ Searches over multiple mailboxes or all Exchange mailboxes. Use either the mailb
 #### Base Command
 
 `ews-search-mailboxes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -308,14 +331,17 @@ Searches over multiple mailboxes or all Exchange mailboxes. Use either the mailb
 
 
 #### Command Example
+
 ```!ews-search-mailboxes filter="subject:Test" limit=1```
 
 #### Human Readable Output
+
 >|datetimeReceived|datetimeSent|hasAttachments|itemId|mailbox|sender|subject|toRecipients|
 >|---|---|---|---|---|---|---|---|
 >| 2019-08-11T11:00:28Z | 2019-08-11T11:00:28Z |false | AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGACASFAACYCKjWAnXDFrfsdhdnfkanpAAA=|<a href="mailto:test2@demistodev.onmicrosoft.com">test2@demistodev.onmicrosoft.com</a>|John Smith|test report|<a href="mailto:dem@demistodev.onmicrosoft.com">dem@demistodev.onmicrosoft.com</a>| |
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -337,6 +363,7 @@ Searches over multiple mailboxes or all Exchange mailboxes. Use either the mailb
 
 
 ### ews-move-item
+
 ***
 Move an item to different folder in the mailbox.
 
@@ -344,6 +371,7 @@ Move an item to different folder in the mailbox.
 #### Base Command
 
 `ews-move-item`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -364,6 +392,7 @@ Move an item to different folder in the mailbox.
 | EWS.Items.action | string | The action taken. The value will be "moved". | 
 
 ### ews-delete-items
+
 ***
 Delete items from mailbox.
 
@@ -371,6 +400,7 @@ Delete items from mailbox.
 #### Base Command
 
 `ews-delete-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -389,14 +419,17 @@ Delete items from mailbox.
 | EWS.Items.action | string | The deletion action. Can be 'trash-deleted', 'soft-deleted', or 'hard-deleted'. | 
 
 #### Command Example
+
 ```!ews-delete-items item-ids=VWAFA3hmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMGAACyw+kAAA= delete-type=soft target-mailbox=test@demistodev.onmicrosoft.com```
 
 #### Human Readable Output
+
 >|action|itemId|messageId|
 >|---|---|---|
 >| soft-deleted | VWAFA3hmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMGAACyw+kAAA= |<message_id>|
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -410,6 +443,7 @@ Delete items from mailbox.
 ```
 
 ### ews-search-mailbox
+
 ***
 Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
 
@@ -417,11 +451,12 @@ Searches for items in the specified mailbox. Specific permissions are needed for
 #### Base Command
 
 `ews-search-mailbox`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The search query string. For more information about the query syntax, see the Microsoft documentation: https://msdn.microsoft.com/en-us/library/ee693615.aspx. | Optional | 
+| query | The search query string. For more information about the query syntax, see the Microsoft documentation: <https://msdn.microsoft.com/en-us/library/ee693615.aspx>. | Optional | 
 | folder-path | The folder path in which to search. If empty, searches all the folders in the mailbox. | Optional | 
 | limit | Maximum number of results to return. Default is 100. | Optional | 
 | target-mailbox | The mailbox on which to apply the search. | Optional | 
@@ -455,14 +490,17 @@ Searches for items in the specified mailbox. Specific permissions are needed for
 
 
 #### Command Example
+
 ```!ews-search-mailbox query="subject:"Get Attachment Email" target-mailbox=test@demistodev.onmicrosoft.com limit=1```
 
 #### Human Readable Output
+
 >|sender|subject|hasAttachments|datetimeReceived|receivedBy|author|toRecipients|
 >|---|---|---|---|---|---|---|
 >| test2@demistodev.onmicrosoft.com | Get Attachment Email |true |2019-08-11T10:57:37Z|test@demistodev.onmicrosoft.com|test2@demistodev.onmicrosoft.com|test@demistodev.onmicrosoft.com|
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -514,6 +552,7 @@ Searches for items in the specified mailbox. Specific permissions are needed for
 ```
 
 ### ews-get-contacts
+
 ***
 Retrieves contacts for a specified mailbox.
 
@@ -521,6 +560,7 @@ Retrieves contacts for a specified mailbox.
 #### Base Command
 
 `ews-get-contacts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -541,14 +581,17 @@ Retrieves contacts for a specified mailbox.
 
 
 #### Command Example
+
 ```!ews-get-contacts limit="1"```
 
 #### Human Readable Output
+
 >|changekey|culture|datetimeCreated|datetimeReceived|datetimeSent|displayName|emailAddresses|fileAs|fileAsMapping|givenName|id|importance|itemClass|lastModifiedName|lastModifiedTime|postalAddressIndex|sensitivity|subject|uniqueBody|webClientReadFormQueryString|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| EABYACAADcsxRwRjq/zTrN6vWSzKAK1Dl3N | en-US |2019-08-05T12:35:36Z |2019-08-05T12:35:36Z|2019-08-05T12:35:36Z|Contact Name|some@dev.microsoft.com|Contact Name|LastCommaFirst|Contact Name|AHSNNK3NQNcasnc3SAS/zTrN6vWSzK4OWAAAAAAEOAADrxRwRjq/zTrNFSsfsfVWAAK1KsF3AAA=|Normal|IPM.Contact|John Smith|2019-08-05T12:35:36Z|None|Normal|Contact Name| |https://outlook.office365.com/owa/?ItemID=***|
+>| EABYACAADcsxRwRjq/zTrN6vWSzKAK1Dl3N | en-US |2019-08-05T12:35:36Z |2019-08-05T12:35:36Z|2019-08-05T12:35:36Z|Contact Name|some@dev.microsoft.com|Contact Name|LastCommaFirst|Contact Name|AHSNNK3NQNcasnc3SAS/zTrN6vWSzK4OWAAAAAAEOAADrxRwRjq/zTrNFSsfsfVWAAK1KsF3AAA=|Normal|IPM.Contact|John Smith|2019-08-05T12:35:36Z|None|Normal|Contact Name| |<https://outlook.office365.com/owa/?ItemID>=***|
 
 #### Context Example
+
 ```json
 {
     "Account.Email": [
@@ -625,8 +668,11 @@ This operation can be used to verify aliases and resolve display names to the ap
 
 
 #### Command example
+
 ```!ews-resolve-name identifier=`SMTP:ews-2016-test@lab-demisto.com` full-contact-data=True```
+
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -693,12 +739,14 @@ This operation can be used to verify aliases and resolve display names to the ap
 #### Human Readable Output
 
 >### Resolved Names
+
 >|email_address|name|mailbox_type|routing_type|
 >|---|---|---|---|
 >| ews-2016-test@lab-demisto.com | ews-2016-test EW2016. | Mailbox | SMTP |
 
 
 ### ews-get-out-of-office
+
 ***
 Retrieves the out-of-office status for a specified mailbox.
 
@@ -706,6 +754,7 @@ Retrieves the out-of-office status for a specified mailbox.
 #### Base Command
 
 `ews-get-out-of-office`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -726,14 +775,17 @@ Retrieves the out-of-office status for a specified mailbox.
 | Account.Email.OutOfOffice.mailbox | Unknown | Out-of-office mailbox. | 
 
 #### Command Example
+
 ```!ews-get-out-of-office target-mailbox=test@demistodev.onmicrosoft.com```
 
 #### Human Readable Output
+
 >|end|externalAudienc|mailbox|start|state|
 >|---|---|---|---|---|
 >| 2019-08-12T13:00:00Z | all |test@demistodev.onmicrosoft.com|2019-08-11T13:00:00Z|Disabled|
 
 #### Context Example
+
 ```json
 {
     "Account": {
@@ -752,6 +804,7 @@ Retrieves the out-of-office status for a specified mailbox.
 
 
 ### ews-recover-messages
+
 ***
 Recovers messages that were soft-deleted.
 
@@ -759,6 +812,7 @@ Recovers messages that were soft-deleted.
 #### Base Command
 
 `ews-recover-messages`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -778,14 +832,17 @@ Recovers messages that were soft-deleted.
 | EWS.Items.action | Unknown | The action taken on the item. The value will be 'recovered'. | 
 
 #### Command Example
+
 ```!ews-recover-messages message-ids=&lt;DFVDFmvsCSCS.com&gt; target-folder-path=Moving target-mailbox=test@demistodev.onmicrosoft.com```
 
 #### Human Readable Output
+
 >|action|itemId|messageId|
 >|---|---|---|
 >| recovered | AAVCSVS1hN2NkLThmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed33wX3aBwCyyVyFtlsUQZfBJebinpkUAAAa2bUBAACyyVyFtlscfxxd/AAA= |DFVDFmvsCSCS.com|
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -799,6 +856,7 @@ Recovers messages that were soft-deleted.
 ```
 
 ### ews-create-folder
+
 ***
 Creates a new folder in a specified mailbox.
 
@@ -806,6 +864,7 @@ Creates a new folder in a specified mailbox.
 #### Base Command
 
 `ews-create-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -820,20 +879,24 @@ Creates a new folder in a specified mailbox.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ews-create-folder folder-path=Inbox new-folder-name="Created Folder" target-mailbox=test@demistodev.onmicrosoft.com```
 
 #### Human Readable Output
+
 ```Folder Inbox\Created Folder created successfully```
 
 
 ### ews-mark-item-as-junk
+
 ***
-Marks an item as junk. This is commonly used to block an email address. For more information, see the Microsoft documentation: https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx
+Marks an item as junk. This is commonly used to block an email address. For more information, see the Microsoft documentation: <https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx>
 
 
 #### Base Command
 
 `ews-mark-item-as-junk`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -844,17 +907,21 @@ Marks an item as junk. This is commonly used to block an email address. For more
 
 
 #### Context Output
+
 There is no context output for this command.
 
 #### Command Example
+
 ```!ews-mark-item-as-junk item-id=AAMkcSQ0NmFkOhmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUcsBJebinpkUAAAAAAEMASFDkUAAAfxuiSAAA= move-items=yes target-mailbox=test@demistodev.onmicrosoft.com```
 
 #### Human Readable Output
+
 >|action|itemId|
 >|---|---|
 >| marked-as-junk |AAMkcSQ0NmFkOhmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUcsBJebinpkUAAAAAAEMASFDkUAAAfxuiSAAA=|
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -867,6 +934,7 @@ There is no context output for this command.
 ```
 
 ### ews-find-folders
+
 ***
 Retrieves information for folders for a specified mailbox. Only folders with read permissions will be returned. Your visual folders on the mailbox, such as "Inbox", are under the folder "Top of Information Store".
 
@@ -874,6 +942,7 @@ Retrieves information for folders for a specified mailbox. Only folders with rea
 #### Base Command
 
 `ews-find-folders`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -894,9 +963,11 @@ Retrieves information for folders for a specified mailbox. Only folders with rea
 | EWS.Folders.childrenFolderCount | number | Number of sub-folders. | 
 
 #### Command Example
+
 ```!ews-find-folders target-mailbox=test@demistodev.onmicrosoft.com```
 
 #### Human Readable Output
+
 ```
 root
 ├── AllContacts
@@ -938,6 +1009,7 @@ root
 ```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -956,6 +1028,7 @@ root
 ```
 
 ### ews-get-items-from-folder
+
 ***
 Retrieves items from a specified folder in a mailbox. The items are order by the item created time, most recent is first.
 
@@ -963,6 +1036,7 @@ Retrieves items from a specified folder in a mailbox. The items are order by the
 #### Base Command
 
 `ews-get-items-from-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1000,14 +1074,17 @@ Retrieves items from a specified folder in a mailbox. The items are order by the
 
 
 #### Command Example
+
 ```!ews-get-items-from-folder folder-path=Test target-mailbox=test@demistodev.onmicrosoft.com limit=1```
 
 #### Human Readable Output
+
 >|sender|subject|hasAttachments|datetimeReceived|receivedBy|author|toRecipients|itemId|
 >|---|---|---|---|---|---|---|---|
 >| test2@demistodev.onmicrosoft.com |Get Attachment Email|true|2019-08-11T10:57:37Z|test@demistodev.onmicrosoft.com|test2@demistodev.onmicrosoft.com|test@demistodev.onmicrosoft.com|AAFSFSFFtlsUQZfBJebinpkUAAABjKMGAACyyVyFtlsUQZfBJebinpkUAAAsfw+jAAA=|
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -1059,6 +1136,7 @@ Retrieves items from a specified folder in a mailbox. The items are order by the
 ```
 
 ### ews-get-items
+
 ***
 Retrieves items by item ID.
 
@@ -1066,6 +1144,7 @@ Retrieves items by item ID.
 #### Base Command
 
 `ews-get-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1109,14 +1188,17 @@ Retrieves items by item ID.
 
 
 #### Command Example
+
 ```!ews-get-items item-ids=AAMkADQ0NmFkODFkLWQ4MDEtNDFDFZjNTMxNwBGAAAAAAA4kxhFFAfxw+jAAA= target-mailbox=test@demistodev.onmicrosoft.com```
 
 #### Human Readable Output
+
 ```
 Identical outputs to ews-get-items-from-folder command.
 ```
 
 ### ews-move-item-between-mailboxes
+
 ***
 Moves an item from one mailbox to different mailbox.
 
@@ -1124,6 +1206,7 @@ Moves an item from one mailbox to different mailbox.
 #### Base Command
 
 `ews-move-item-between-mailboxes`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1144,14 +1227,17 @@ Moves an item from one mailbox to different mailbox.
 | EWS.Items.action | string | The action taken on the item. The value will be "moved". | 
 
 #### Command Example
+
 ```!ews-move-item-between-mailboxes item-id=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NFSFSyNzBkNABGAAAAAACYCKjWAjq/zTrN6vWSzK4OWAAK2ISFSA= destination-folder-path=Moving destination-mailbox=test@demistodev.onmicrosoft.com source-mailbox=test2@demistodev.onmicrosoft.com```
 
 #### Human Readable Output
+
 ```
 Item was moved successfully.
 ```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -1164,6 +1250,7 @@ Item was moved successfully.
 ```
 
 ### ews-get-folder
+
 ***
 Retrieves a single folder.
 
@@ -1171,6 +1258,7 @@ Retrieves a single folder.
 #### Base Command
 
 `ews-get-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1192,15 +1280,18 @@ Retrieves a single folder.
 | EWS.Folders.unreadCount | number | Number of unread emails in the folder. | 
 
 #### Command Example
+
 ```!ews-get-folder folder-path=demistoEmail target-mailbox=test@demistodev.onmicrosoft.com```
 
 #### Human Readable Output
+
 >|changeKey|childrenFolderCount|id|name|totalCount|unreadCount|
 >|---|---|---|---|---|---|
 >| ***yFtCdJSH |0|AAMkADQ0NmFkODFkLWQ4MDEtNDE4Mi1hN2NlsjflsjfSF=|demistoEmail|1|0|
 
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -1217,6 +1308,7 @@ Retrieves a single folder.
 ```
 
 ### ews-o365-start-compliance-search
+
 ***
 Starts a compliance search.
 
@@ -1224,6 +1316,7 @@ Starts a compliance search.
 #### Base Command
 
 `ews-o365-start-compliance-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1239,12 +1332,15 @@ Starts a compliance search.
 | EWS.ComplianceSearch.Status | string | The status of the compliance search. | 
 
 #### Command Example
+
 ```!ews-o365-start-compliance-search query="subject:"Wanted Email""```
 
 #### Human Readable Output
+
 ```Search started: DemistoSearch67e67371d0004c46bebfa3219b5a14bf```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -1257,6 +1353,7 @@ Starts a compliance search.
 ```
 
 ### ews-o365-get-compliance-search
+
 ***
 Returns the status and results of a compliance search.
 
@@ -1264,6 +1361,7 @@ Returns the status and results of a compliance search.
 #### Base Command
 
 `ews-o365-get-compliance-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1282,15 +1380,18 @@ Returns the status and results of a compliance search.
 | EWS.ComplianceSearch.Results.Total Size | Number | Total number of emails in the mailbox. | 
 
 #### Command Example
+
 ```!ews-o365-get-compliance-search search-name=DemistoSearch67e67371d0004c46bebfa3219b5a14bf```
 
 #### Human Readable Output
+
 >|Location|Item Count|Total Size|
 >|---|---|---|
 >| test@demistodev.onmicrosoft.com |0|0|
 
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -1303,6 +1404,7 @@ Returns the status and results of a compliance search.
 ```
 
 ### ews-o365-purge-compliance-search-results
+
 ***
 Purges the results found in the compliance search.
 
@@ -1310,6 +1412,7 @@ Purges the results found in the compliance search.
 #### Base Command
 
 `ews-o365-purge-compliance-search-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1324,12 +1427,15 @@ Purges the results found in the compliance search.
 | EWS.ComplianceSearch.Status | string | The status of the compliance search. | 
 
 #### Command Example
+
 ```!ews-o365-purge-compliance-search-results search-name=DemistoSearch67e67371d0004c46bebfa3219b5a14bf```
 
 #### Human Readable Output
+
 ```Search DemistoSearch67e67371d0004c46bebfa3219b5a14bf status: Purging```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -1342,6 +1448,7 @@ Purges the results found in the compliance search.
 ```
 
 ### ews-o365-remove-compliance-search
+
 ***
 Removes the compliance search.
 
@@ -1349,6 +1456,7 @@ Removes the compliance search.
 #### Base Command
 
 `ews-o365-remove-compliance-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1363,12 +1471,15 @@ Removes the compliance search.
 | EWS.ComplianceSearch.Status | string | The status of the compliance search. | 
 
 #### Command Example
+
 ```!ews-o365-remove-compliance-search search-name=DemistoSearch67e67371d0004c46bebfa3219b5a14bf```
 
 #### Human Readable Output
+
 ```Search DemistoSearch67e67371d0004c46bebfa3219b5a14bf status: Removed```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -1381,6 +1492,7 @@ Removes the compliance search.
 ```
 
 ### ews-o365-get-compliance-search-purge-status
+
 ***
 Checks the status of the purge operation on the compliance search.
 
@@ -1388,6 +1500,7 @@ Checks the status of the purge operation on the compliance search.
 #### Base Command
 
 `ews-o365-get-compliance-search-purge-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1402,12 +1515,15 @@ Checks the status of the purge operation on the compliance search.
 | EWS.ComplianceSearch.Status | Unknown | The status of the compliance search. | 
 
 #### Command Example
+
 ```!ews-o365-get-compliance-search-purge-status search-name=DemistoSearch67e67371d0004c46bebfa3219b5a14bf```
 
 #### Human Readable Output
+
 ```Search DemistoSearch67e67371d0004c46bebfa3219b5a14bf status: Purged```
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -1420,6 +1536,7 @@ Checks the status of the purge operation on the compliance search.
 ```
 
 ### ews-get-autodiscovery-config
+
 ***
 Returns the auto-discovery information. Can be used to manually configure the Exchange Server.
 
@@ -1427,6 +1544,7 @@ Returns the auto-discovery information. Can be used to manually configure the Ex
 #### Base Command
 
 `ews-get-autodiscovery-config`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1436,15 +1554,18 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!ews-get-autodiscovery-config```
 
 #### Human Readable Output
+
 >|api_version|auth_type|build|service_endpoint|
 >|---|---|---|---|
->| Exchange2016 |###|--|https://outlook.office365.com/EWS/Exchange.asmx|
+>| Exchange2016 |###|--|<https://outlook.office365.com/EWS/Exchange.asmx>|
 
 
 ### ews-expand-group
+
 ***
 Expands a distribution list to display all members. By default, expands only first layer of the distribution list. If recursive-expansion is "True", the command expands nested distribution lists and returns all members.
 
@@ -1452,6 +1573,7 @@ Expands a distribution list to display all members. By default, expands only fir
 #### Base Command
 
 `ews-expand-group`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1465,14 +1587,17 @@ Expands a distribution list to display all members. By default, expands only fir
 There is no context output for this command.
 
 #### Command Example
+
 ```!ews-expand-group email-address="TestPublic" recursive-expansion="False"```
 
 #### Human Readable Output
+
 >|displayNam|mailbox|mailboxtype|
 >|---|---|---|
 >| John Wick|john@wick.com|MailBox|
 
 #### Context Example
+
 ```json
 {
     "EWS.ExpandGroup": {
@@ -1489,6 +1614,7 @@ There is no context output for this command.
 ```
 
 ### ews-mark-items-as-read
+
 ***
 Marks items as read or unread.
 
@@ -1496,6 +1622,7 @@ Marks items as read or unread.
 #### Base Command
 
 `ews-mark-items-as-read`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1515,14 +1642,17 @@ Marks items as read or unread.
 
 
 #### Command Example
+
 ```!ews-mark-items-as-read item-ids=AAMkADQ0NFSffU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMnpkUAAAfxw+jAAA= operation=read target-mailbox=test@demistodev.onmicrosoft.com```
 
 #### Human Readable Output
+
 >|action|itemId|messageId|
 >|---|---|---|
 >| mark-as-read|AAMkADQ0NFSffU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMnpkUAAAfxw+jAAA=|id|
 
 #### Context Example
+
 ```json
 {
     "EWS": {
@@ -1536,6 +1666,7 @@ Marks items as read or unread.
 ```
 
 ### ews-get-items-as-eml
+
 ***
 Retrieves items by item ID and uploads it's content as eml file.
 
@@ -1543,6 +1674,7 @@ Retrieves items by item ID and uploads it's content as eml file.
 #### Base Command
 
 `ews-get-items-as-eml`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1568,6 +1700,7 @@ Retrieves items by item ID and uploads it's content as eml file.
 | File.Extension | String | The extension of the file. | 
 
 ### send-mail
+
 ***
 Sends an email using EWS.
 
@@ -1575,6 +1708,7 @@ Sends an email using EWS.
 #### Base Command
 
 `send-mail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1596,16 +1730,20 @@ Sends an email using EWS.
 #### Context Output
 
 There is no context output for this command.
+
 ### reply-mail
+
 ***
 Replies to an email using EWS.
 
 #### Command Example
+
 ```!send-mail body="hello this is a test" subject=Hi to=avishai@demistodev.onmicrosoft.com```
 
 #### Human Readable Output
 
 >### Sent email
+
 >|attachments|from|subject|to|
 >|---|---|---|---|
 >|  | avishai@demistodev.onmicrosoft.com | Hi | avishai@demistodev.onmicrosoft.com |
@@ -1614,6 +1752,7 @@ Replies to an email using EWS.
 #### Base Command
 
 `reply-mail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1635,18 +1774,22 @@ Replies to an email using EWS.
 There is no context output for this command.
 
 #### Command Example
+
 ```!reply-mail item_id=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq/zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq/zTrN6vWSzK4OWAAPYQGFeAAA= body=hello subject=hi to="avishai@demistodev.onmicrosoft.com"```
 
 #### Human Readable Output
 
 >### Sent email
+
 >|attachments|from|subject|to|
 >|---|---|---|---|
 >|  | avishai@demistodev.onmicrosoft.com | hi | avishai@demistodev.onmicrosoft.com |
 
 
 ## Additional Information
+
 #### EWS Permissions
+
 To perform actions on mailboxes of other users, and to execute searches on the Exchange server, you need specific permissions. For a comparison between Delegate and Impersonation permissions, see the [Microsoft documentation](https://blogs.msdn.microsoft.com/exchangedev/2009/06/15/exchange-impersonation-vs-delegate-access/)
 
 | **Permission** | **Use Case** | **How to Configure** |
@@ -1658,6 +1801,9 @@ To perform actions on mailboxes of other users, and to execute searches on the E
 
 
 #### New-Compliance Search
+
 The EWS v2 integration uses remote ps-session to run commands of compliance search as part of Office 365. To check if your account can connect to Office 365 Security &amp; Compliance Center via powershell, check the following [steps](https://docs.microsoft.com/en-us/powershell/exchange/office-365-scc/connect-to-scc-powershell/connect-to-scc-powershell?view=exchange-ps). New-Compliance search is a long-running task which has no limitation of searched mailboxes and therefore the suggestion is to use``` Office 365 Search and Delete```playbook. New-Compliance search returns statistics of matched content search query and doesn't return preview of found emails in contrast to```ews-search-mailboxes```command.
+
 ## Troubleshooting
+
 For troubleshooting information, see the [EWS V2 Troubleshooting](https://xsoar.pan.dev/docs/reference/articles/EWS_V2_Troubleshooting).
