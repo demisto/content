@@ -580,6 +580,124 @@ Retrieves contacts for a specified mailbox.
 }
 ```
 
+### ews-resolve-name
+
+***
+This operation can be used to verify aliases and resolve display names to the appropriate mailbox user. Only one ambiguous name can be specified in a single command call. If multiple candidates exist then all will be returned. A maximum of 100 candidates will be returned; the 100 candidates that are returned are the first 100 that are encountered in the lookup operation. Email addresses with prefixed routing types, such as smtp or sip, are saved in a multivalue array. The ResolveNames operation performs a partial match against each value of that array when you add the routing type at the beginning of the unresolved name, such as "sip:User1@Contoso.com". If you don't specify a routing type, this command  will default to the routing type of smtp, match it to a primary smtp address property, and not search the multivalue array.
+
+#### Base Command
+
+`ews-resolve-name`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | The text value of this argument is used to resolve names against the following fields: First name, Last name, Display name, Full name, Office, Alias, SMTP address. | Required | 
+| full-contact-data | Describes whether the full contact details for public contacts for a resolved name are returned. Possible values are: True, False. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.ResolvedNames.FullContactInfo.contactSource | String | Whether the contact is located in the Exchange store or Active Directory Domain Services \(AD DS\). | 
+| EWS.ResolvedNames.FullContactInfo.culture | String | Represents the culture for a given item in a mailbox. | 
+| EWS.ResolvedNames.FullContactInfo.displayName | String | The display name of a contact. | 
+| EWS.ResolvedNames.FullContactInfo.ItemId | String | Contains the unique identifier and change key of an item in the Exchange store. | 
+| EWS.ResolvedNames.FullContactInfo.emailAddresses | String | Represents a collection of e-mail addresses for a contact. | 
+| EWS.ResolvedNames.FullContactInfo.givenName | String | Contains a contact's given name. | 
+| EWS.ResolvedNames.FullContactInfo.importance | String | Describes the importance of an item. | 
+| EWS.ResolvedNames.FullContactInfo.initials | String | Represents the initials of a contact. | 
+| EWS.ResolvedNames.FullContactInfo.phoneNumbers.label | String | The following are the possible values for this attribute: AssistantPhone, BusinessFax, BusinessPhone, BusinessPhone2, Callback, CarPhone, CompanyMainPhone, HomeFax, HomePhone, HomePhone2, Isdn, MobilePhone, OtherFax, OtherTelephone, Pager, PrimaryPhone, RadioPhone, Telex, TtyTddPhone | 
+| EWS.ResolvedNames.FullContactInfo.phoneNumbers.phoneNumber | String | The Phone number of the contact | 
+| EWS.ResolvedNames.FullContactInfo.physicalAddresses.city | String | The physicalAddresses city assosciated with the contact. | 
+| EWS.ResolvedNames.FullContactInfo.physicalAddresses.country | String | The physicalAddresses country assosciated with the contact. | 
+| EWS.ResolvedNames.FullContactInfo.physicalAddresses.label | String | The physicalAddresses label assosciated with the contact. | 
+| EWS.ResolvedNames.FullContactInfo.physicalAddresses.state | String | The physicalAddresses state assosciated with the contact. | 
+| EWS.ResolvedNames.FullContactInfo.physicalAddresses.street | String | The physicalAddresses street assosciated with the contact. | 
+| EWS.ResolvedNames.FullContactInfo.physicalAddresses.zipcode | String | The physicalAddresses zipcode assosciated with the contact. | 
+| EWS.ResolvedNames.FullContactInfo.postalAddressIndex | String | Represents the display types for physical addresses. | 
+| EWS.ResolvedNames.FullContactInfo.sensitivity | String | Indicates the sensitivity level of an item. | 
+| EWS.ResolvedNames.email_address | String | The primary SMTP address of a mailbox user. | 
+| EWS.ResolvedNames.mailbox_type | String | The type of mailbox that is represented by the e-mail address. | 
+| EWS.ResolvedNames.name | String | The name of a mailbox user. | 
+| EWS.ResolvedNames.routing_type | String | The address type for the mailbox | 
+
+
+#### Command example
+```!ews-resolve-name identifier=`SMTP:ews-2016-test@lab-demisto.com` full-contact-data=True```
+#### Context Example
+```json
+{
+    "EWS": {
+        "ResolvedNames": {
+            "FullContactInfo": {
+                "contactSource": "ActiveDirectory",
+                "culture": "en-US",
+                "displayName": "ews-2016-test EW2016.",
+                "emailAddresses": [
+                    "smtp:ews-2016-test-sec@lab-demisto.com",
+                    "SMTP:ews-2016-test@lab-demisto.com"
+                ],
+                "givenName": "ews-2016-test",
+                "importance": "Normal",
+                "initials": "EW2016",
+                "phoneNumbers": [
+                    {
+                        "label": "AssistantPhone",
+                        "phoneNumber": null
+                    },
+                    {
+                        "label": "BusinessFax",
+                        "phoneNumber": null
+                    },
+                    {
+                        "label": "BusinessPhone",
+                        "phoneNumber": null
+                    },
+                    {
+                        "label": "HomePhone",
+                        "phoneNumber": null
+                    },
+                    {
+                        "label": "MobilePhone",
+                        "phoneNumber": null
+                    },
+                    {
+                        "label": "Pager",
+                        "phoneNumber": null
+                    }
+                ],
+                "physicalAddresses": [
+                    {
+                        "city": null,
+                        "country": null,
+                        "label": "Business",
+                        "state": null,
+                        "street": null,
+                        "zipcode": null
+                    }
+                ],
+                "postalAddressIndex": "None",
+                "sensitivity": "Normal"
+            },
+            "email_address": "ews-2016-test@lab-demisto.com",
+            "mailbox_type": "Mailbox",
+            "name": "ews-2016-test EW2016.",
+            "routing_type": "SMTP"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Resolved Names
+>|email_address|name|mailbox_type|routing_type|
+>|---|---|---|---|
+>| ews-2016-test@lab-demisto.com | ews-2016-test EW2016. | Mailbox | SMTP |
+
+
 ### ews-get-out-of-office
 ***
 Retrieves the out-of-office status for a specified mailbox.
