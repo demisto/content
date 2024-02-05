@@ -225,12 +225,9 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | PaloAltoNetworksXDR.Incident.alert_count | number | Total number of alerts in the incident. | 
 | PaloAltoNetworksXDR.Incident.med_severity_alert_count | number | Number of alerts with the severity MEDIUM. | 
 | PaloAltoNetworksXDR.Incident.user_count | number | Number of users involved in the incident. | 
-| PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Valid values are:
-"low","medium","high"
- | 
+| PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Valid values are: "low","medium","high" | 
 | PaloAltoNetworksXDR.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
- | 
+| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".  | 
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. | 
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
 | PaloAltoNetworksXDR.Incident.notes | String | Comments entered by the user regarding the incident. | 
