@@ -24,7 +24,7 @@ This script uses the following commands and scripts.
 | **Argument Name** | **Description** |
 | --- | --- |
 | task_name | The name of the Ask task in the playbook to generate links. |
-| inc_id | The investigation id for which generate the links. When omitted, the current investigation is used |
+| inc_id | The investigation id for which generate the links. When omitted, the current investigation is used. |
 
 ## Outputs
 

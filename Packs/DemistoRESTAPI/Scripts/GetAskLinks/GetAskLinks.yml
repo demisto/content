@@ -3,7 +3,7 @@ args:
   required: true
   description: 'The name of the Ask task in the playbook to generate links.'
 - name: inc_id
-  description: 'The investigation id for which generate the links. When omitted, the current investigation is used'
+  description: 'The investigation id for which generate the links. When omitted, the current investigation is used.'
 comment: 'Creates external ask links for the `Ask` task with the given name.'
 commonfields:
   id: GetAskLinks
