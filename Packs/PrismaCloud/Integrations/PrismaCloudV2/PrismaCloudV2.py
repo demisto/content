@@ -529,7 +529,7 @@ def extract_namespace(response_items: List[Dict[str, Any]]):
                 break
 
 
-def remove_additional_resource_fields(input_dict, keys_to_remove, values_to_remove):
+def remove_additional_resource_fields(input_dict):
     disks = demisto.get(input_dict, "data.disks")
     if disks:
         for current_disk in disks:
