@@ -505,7 +505,8 @@ def file_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any]
      """
     file_path = demisto.getFilePath(file)
     with open(file_path['path'], 'rb') as f:
-        res = client.submit_sample(sample=f, params=params, cookbook=args.get('cookbook'))
+        s = (args.get('file_name'), f) if args.get('file_name') else f
+        res = client.submit_sample(sample=s, params=params, cookbook=args.get('cookbook'))
         exe_metrics.success += 1
         partial_res = CommandResults(
             readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...')
