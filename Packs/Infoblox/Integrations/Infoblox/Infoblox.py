@@ -1,3 +1,4 @@
+# TODO update integration readme
 from enum import Enum
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -40,6 +41,9 @@ INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY = "IPv4Address"
 INTEGRATION_HOST_RECORDS_RAW_RESULT_CONFIGURE_FOR_DHCP_KEY = "configure_for_dhcp"
 INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY = "ConfigureForDHCP"
 INTEGRATION_HOST_RECORDS_RAW_RESULT_HOST_KEY = "host"
+INTEGRATION_HOST_RECORDS_RAW_RESULT_NAME_KEY = "name"
+INTEGRATION_HOST_RECORDS_RAW_RESULT_VIEW_KEY = "view"
+INTEGRATION_HOST_RECORDS_VIEW_CONTEXT_KEY = "View"
 
 INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORK_KEY = "network"
 INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORKVIEW_KEY = "network_view"
@@ -599,7 +603,13 @@ def transform_network_info_context(network_info: list[dict[str, Any]]) -> list[d
             elif k == INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORKVIEW_KEY:
                 n[INTEGRATION_NETWORK_INFO_CONTEXT_KEY] = v
             elif k == INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY:
-                n[INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY] = v
+                if isinstance(v, dict) and bool(v):
+                    ext_attr_value = {}
+                    for ext_attr_key, ext_attr_val in v.items():
+                        ext_attr_value[ext_attr_key] = cast(dict[str, Any], ext_attr_val).get("value")
+                    n[f"{INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY}"] = ext_attr_value
+                else:
+                    n[INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY] = {}
             else:
                 additional_options.append(v)
         if additional_options:
@@ -653,20 +663,41 @@ def transform_host_records_context(records: list[dict[str, Any]]) -> list[dict[s
     """
 
     output: list[dict[str, Any]] = []
+    additional_options: list[dict[str, Any]] = []
 
     for record in records:
         r: dict[str, Any] = {}
+        for record_key, record_value in record.items():
+            if record_key == INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY:
+                continue
+            elif record_key == INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY:
+                if isinstance(record_value, dict) and bool(record_value):
+                    ext_attr_value = {}
+                    for ext_attr_key, ext_attr_val in record_value.items():
+                        ext_attr_value[ext_attr_key] = cast(dict[str, Any], ext_attr_val).get("value")
+                    r[f"{INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY}"] = ext_attr_value
+                else:
+                    r[INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY] = {}
+            elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY:
+                first_address: dict[str, Any] = cast(list, record.get(INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY))[0]
+                for k, v in first_address.items():
+                    if k == INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESS_KEY:
+                        r[INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY] = v
+                    elif k == INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY:
+                        r[INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY] = v
+                    elif k == INTEGRATION_HOST_RECORDS_RAW_RESULT_CONFIGURE_FOR_DHCP_KEY:
+                        r[INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY] = v
+            elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_NAME_KEY:
+                r[INTEGRATION_COMMON_NAME_CONTEXT_KEY] = record_value
+            elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_NAME_KEY:
+                continue
+            elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_VIEW_KEY:
+                continue
+            else:
+                additional_options.append({string_to_context_key(record_key): record_value})
+        if additional_options:
+            r[INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY] = additional_options
 
-        for address in cast(list, record.get(INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY)):
-            for k, v in address.items():
-                if k == INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY:
-                    r[INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY] = v
-                elif k == INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESS_KEY:
-                    r[INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY] = v
-                elif k == INTEGRATION_HOST_RECORDS_RAW_RESULT_CONFIGURE_FOR_DHCP_KEY:
-                    r[INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY] = v
-                elif k == INTEGRATION_HOST_RECORDS_RAW_RESULT_HOST_KEY:
-                    r[INTEGRATION_COMMON_NAME_CONTEXT_KEY] = v
         output.append(r)
 
     return output
@@ -1305,10 +1336,18 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
     - `tuple[str, Dict, Dict]`: The human readable output, the records and the raw response.
     """
 
-    hostname = args.get("host_name", None)
+    hostname = args.get("host_name")
 
-    extended_attributes = args.get("extattrs", None)
-    if extended_attributes:
+    max_results = arg_to_number(args.get("max_results", INTEGRATION_MAX_RESULTS_DEFAULT))
+    additional_return_fields = transform_return_fields(
+        args.get("additional_return_fields", INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY))
+
+    extended_attributes = args.get(INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY)
+    if (
+        extended_attributes
+        and additional_return_fields
+        and INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY in cast(str, additional_return_fields.get(client.REQUEST_PARAM_RETURN_FIELDS_KEY))  # noqa: E501
+    ):
         client.set_param(client.REQUEST_PARAM_EXTRA_ATTRIBUTES)
 
         extended_attributes_params = transform_ext_attrs(extended_attributes)
@@ -1316,11 +1355,8 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
         for e in extended_attributes_params:
             client.set_param(e)
 
-    max_results = arg_to_number(args.get('max_results', INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
     client.set_param({InfoBloxNIOSClient.REQUEST_PARAM_MAX_RESULTS_KEY: max_results})
-
-    # TODO
-    # add additional_return_fields
+    client.set_param(additional_return_fields)
 
     raw = client.get_host_records(name=hostname)
     records = raw.get("result", [])

@@ -728,15 +728,22 @@ script:
       required: false
     - name: max_results
       description: The maximum number of records to return. Default is 50, maximum is 1000.
+    - name: additional_return_fields
+      description: Comma separated list of additional fields to return for each host, e.g. extattrs,aliases.
+      required: false
     outputs:
     - contextPath: Infoblox.Host.Reference
       description: The host record reference ID.
     - contextPath: Infoblox.Host.IPv4Address
-      description: The host record IPv4 addresses.
+      description: The host first IPv4 address.
     - contextPath: Infoblox.Host.ConfigureForDHCP
       description: Whether the host is configured for DHCP.
     - contextPath: Infoblox.Host.Name
       description: The host record name.
+    - contextPath: Infoblox.Host.ExtendedAttributes
+      description: The network extended attributes.
+    - contextPath: Infoblox.Host.AdditionalFields
+      description: The additional fields for network.
   - name: infoblox-list-network-info
     description: List network information.
     arguments:

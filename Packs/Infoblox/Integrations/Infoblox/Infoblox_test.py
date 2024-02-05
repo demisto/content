@@ -5,6 +5,8 @@ from Infoblox import (
     INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY,
     INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY,
     INTEGRATION_COMMON_NAME_CONTEXT_KEY,
+    INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY,
+    INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY,
     INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY,
     INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY,
     INTEGRATION_CONTEXT_NAME,
@@ -680,7 +682,7 @@ class TestIPOperations:
 
 class TestHostRecordsOperations:
 
-    CONTEXT_KEY = f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_HOST_RECORDS_CONTEXT_NAME}(val._ref && val._ref === obj._ref)"
+    CONTEXT_KEY = f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_HOST_RECORDS_CONTEXT_NAME}"
 
     def test_get_all_records(self, requests_mock):
         """
@@ -767,7 +769,74 @@ class TestHostRecordsOperations:
 
         assert len(cast(list, records.get(self.CONTEXT_KEY))) == 1
         assert "Host records" in hr
-        assert "extattrs" in hr
+        assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in hr
+
+    def test_get_rerords_with_extattrs_aliases(self, requests_mock):
+        """
+        Test to get host records with extended attributes and additional fields.
+
+        Given:
+        - Mock response for get host records by.
+
+        When:
+        - We specify extattrs and aliases as additional fields.
+
+        Then:
+        - 4 records are returned.
+        - The 3 records don't include an AdditionalFields key.
+        - The last record includes an AdditionalFields key.
+        """
+
+        input = "extattrs,aliases"
+
+        mock_response = (Path(__file__).parent.resolve() / "test_files"
+                         / self.__class__.__name__ / "get_records_extattrs_aliases.json").read_text()
+
+        requests_mock.get(
+            client._base_url + InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={input}",
+            json=json.loads(mock_response)
+        )
+
+        actual_hr, actual_records, actual_raw_response = get_host_records_command(client, {"additional_return_fields": input})
+
+        assert f"Host records (first {INTEGRATION_MAX_RESULTS_DEFAULT})" in actual_hr
+        assert self.CONTEXT_KEY in actual_records
+        actual_output = cast(list, actual_records.get(self.CONTEXT_KEY))
+        assert len(actual_output) == 4
+
+        first_record = actual_output[0]
+        assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in first_record
+        assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in first_record
+        assert INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY in first_record
+        assert INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY in first_record
+        assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in first_record
+        assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in first_record
+
+        second_record = actual_output[1]
+        assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in second_record
+        assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in second_record
+        assert INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY in second_record
+        assert INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY in second_record
+        assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in second_record
+        assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in second_record
+
+        third_record = actual_output[2]
+        assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in third_record
+        assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in third_record
+        assert INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY in third_record
+        assert INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY in third_record
+        assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in third_record
+        assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in third_record
+
+        fourth_record = actual_output[3]
+        assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in fourth_record
+        assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in fourth_record
+        assert INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY in fourth_record
+        assert INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY in fourth_record
+        assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in fourth_record
+        assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY in fourth_record
+
+        assert actual_raw_response == json.loads(mock_response)
 
 
 class TestNetworkInfoOperations:
