@@ -79,3 +79,58 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.graph]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+def test_get_managed_device_physical_memory_command(mocker):
+    """
+    Given:
+        - device_id
+    When:
+        - running get_managed_device_physical_memory_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from MicrosoftGraphDeviceManagement import get_managed_device_physical_memory_command
+    client = MsGraphClient(self_deployed=False, tenant_id='123', auth_and_token_url='abc', enc_key='abc', app_name='abc',
+                           azure_cloud=None, use_ssl=True, proxy=False, ok_codes=(200),
+                           certificate_thumbprint='abc', private_key='abc', managed_identities_client_id=None)
+    response_client = {"device_id": '1'}, {'@odata.context':
+                                           'https://graph.microsoft.com/v1.0/$metadata#deviceManagement/managedDevices\
+                                           (id,physicalMemoryInBytes,deviceName)/$entity',
+                                           'id': '1111111-1111-1111-1111-11111111',
+                                           'physicalMemoryInBytes': 1, 'deviceName': 'Test'}, {"### Managed device DC1ENV11XPC01\
+                                            \n|physicalMemoryInBytes|id|\n\
+                                            |---|---|\n| 1 | 1111111-1111-1111-1111-11111111\
+                                            |\n"}
+
+    mocker.patch.object(client, 'get_managed_device_physical_memory', return_value=(response_client, '1'))
+    mocker.patch('MicrosoftGraphDeviceManagement.build_device_object', return_value={'ID': '1111111-1111-1111-1111-11111111',
+                                                                                     'Name': 'Test',
+                                                                                     'PhysicalMemoryInBytes': 1})
+    outputs = mocker.patch('MicrosoftGraphDeviceManagement.return_outputs')
+    get_managed_device_physical_memory_command(client, {"device_id": '1'})
+    assert outputs.call_args.args[0] == '### Managed device Test\n|PhysicalMemoryInBytes|\n|---|\n| 1 |\n'
+
+
+def test_get_managed_device_physical_memory_command_error(mocker):
+    """
+    Given:
+        - device_id
+    When:
+        - running get_managed_device_physical_memory_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from MicrosoftGraphDeviceManagement import get_managed_device_physical_memory_command
+    client = MsGraphClient(self_deployed=False, tenant_id='123', auth_and_token_url='abc', enc_key='abc', app_name='abc',
+                           azure_cloud=None, use_ssl=True, proxy=False, ok_codes=(200),
+                           certificate_thumbprint='abc', private_key='abc', managed_identities_client_id=None)
+
+    mocker.patch.object(
+        client,
+        'get_managed_device_physical_memory',
+        return_value=({"error": {"code": "ResourceNotFound"}}, '0'),
+    )
+    outputs = mocker.patch('MicrosoftGraphDeviceManagement.return_outputs')
+    get_managed_device_physical_memory_command(client, {"device_id": '0'})
+    assert outputs.call_args.args[0] == "Managed device 0 not found."

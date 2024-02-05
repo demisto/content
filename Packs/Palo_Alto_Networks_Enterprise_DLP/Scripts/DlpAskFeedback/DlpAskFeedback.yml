@@ -9,7 +9,7 @@ enabled: true
 comment: Sends a message via Slack or MS Teams to the user whose activity violated DLP policies and triggered the incident.
 args:
 - name: messenger
-  description: The messenger to use for sending notification,
+  description: The messenger to use for sending notification,.
   auto: PREDEFINED
   predefined:
   - Slack
@@ -58,7 +58,7 @@ dependson:
   should:
   - SlackV3|||send-notification
 runonce: false
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

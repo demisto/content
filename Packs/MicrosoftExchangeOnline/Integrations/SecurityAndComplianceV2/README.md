@@ -706,6 +706,8 @@ There is no context output for this command.
 ***
 After you create a content search using the ***o365-sc-new-search*** command and run it using the ***o365-sc-start-search*** command, you assign a search action to the search using the ***o365-sc-new-search-action*** command.
 
+Please note that when performing the *Delete* action, items which are deleted will still follow your EWS365 data retention policies. Some data retention policies will move emails to the "Purges" or "Recoverable Items" folder.
+
 
 #### Base Command
 

@@ -258,7 +258,7 @@ script:
       description: Whether the certificate has any zlint errors.
       type: Unknown
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: IP.ASN
       description: 'The autonomous system name for the IP address, for example: "AS8948".'
@@ -381,7 +381,7 @@ script:
     - contextPath: Censys.Search.parsed.issuer_dn
       description: Distinguished name of the entity that has signed and issued the certificate.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
   subtype: python3

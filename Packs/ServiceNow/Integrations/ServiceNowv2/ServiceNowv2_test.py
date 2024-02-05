@@ -1,5 +1,7 @@
 import re
 
+from pytest_mock import MockerFixture
+from requests_mock import MockerCore
 import pytest
 import json
 from datetime import datetime, timedelta
@@ -8,12 +10,12 @@ import ServiceNowv2
 import requests
 from CommonServerPython import DemistoException, EntryType
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
-    generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
+    generate_body, parse_dict_ticket_fields, split_fields, Client, update_ticket_command, create_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
-    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
+    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, delete_ticket_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
     converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS
@@ -51,6 +53,52 @@ from urllib.parse import urlencode
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def test_force_default_url_arg(mocker: MockerFixture, requests_mock: MockerCore):
+    """Unit test
+    Given
+        - The argument force_default_url=true
+    When
+        - Calling the command servicenow-create-co-from-template
+    Then
+        - Validate that the api version configured as a parameter was not used in the API request
+    """
+    url = 'https://test.service-now.com'
+    api_endpoint = '/api/sn_chg_rest/change/standard/dummy_template'
+    api_version = '2'
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'isFetch': True,
+            'url': url,
+            'credentials': {
+                'identifier': 'identifier',
+                'password': 'password',
+            },
+            'api_version': api_version,  # << We test overriding this value
+            'incident_name': None,
+            'file_tag_from_service_now': 'FromServiceNow',
+            'file_tag_to_service_now': 'ToServiceNow',
+            'comment_tag': 'comments',
+            'comment_tag_from_servicenow': 'CommentFromServiceNow',
+            'work_notes_tag': 'work_notes',
+            'work_notes_tag_from_servicenow': 'WorkNoteFromServiceNow'
+        }
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'template': 'dummy_template',
+            'force_default_url': 'true'
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='servicenow-create-co-from-template')
+    requests_mock.post(f'{url}{api_endpoint}', json=util_load_json('test_data/create_co_from_template_result.json'))
+    main()
+    assert requests_mock.request_history[0].path == api_endpoint
 
 
 def test_get_server_url():
@@ -2031,3 +2079,34 @@ def test_send_request_with_str_error_response(mocker, mock_json, expected_result
     with pytest.raises(Exception) as e:
         client.send_request(path='table')
     assert str(e.value) == expected_results
+
+
+@pytest.mark.parametrize('ticket, expected_ticket',
+                         [
+                             ({}, {}),
+                             ({"assigned_to": ""}, {"assigned_to": ""}),
+                             ({"assigned_to": {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
+                                               'value': 'oscar@example.com'}}, {'assigned_to': 'oscar@example.com'})
+                         ])
+def test_parse_dict_ticket_fields_empty_ticket(ticket, expected_ticket):
+    """
+    Given:
+     - a ticket
+     - case 1: Ticket is completely empty (obtained from the case where last_update > ticket_last_update).
+     - case 2: Ticket contains assigned_to field with an empty string as a value.
+     - case 3: Ticket contains assigned_to field with a user dict as a value.
+
+    When:
+     - Running parse_dict_ticket_fields function.
+
+    Then:
+     - Verify that the ticket fields were updated correctly.
+     - case 1: Shouldn't add the assigned_to field to the obtained ticket.
+     - case 2: Should add assigned_to field with an empty string as a value.
+     - case 3: Should add assigned_to field with the user email as a value.
+    """
+    class Client:
+        def get(self, table, value, no_record_found_res):
+            return USER_RESPONSE
+    parse_dict_ticket_fields(Client(), ticket)  # type: ignore
+    assert ticket == expected_ticket

@@ -129,7 +129,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - echo "successfully activated google cloud service account"
     - section_end "Activate GCloud Service Account"
     - section_start "Download private ID set" --collapsed
-    - gsutil cp "gs://${TEST_XDR_PREFIX}marketplace-dist/content/private_id_set.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/unified_id_set.json"
+    - gsutil cp "gs://marketplace-dist/content/private_id_set.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/unified_id_set.json"
     - echo "successfully downloaded private ID set"
     - section_end "Download private ID set"
     - section_start "Revoking GCP Auth"
@@ -273,7 +273,7 @@ demisto-sdk-nightly:run-end-to-end-tests-general:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
   services: # needed for running lint
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+    - name: ${DOCKER_IO}/library/docker:20.10.12-dind
       alias: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
@@ -313,7 +313,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
   services: # needed for running e2e tests for docker
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+    - name: ${DOCKER_IO}/library/docker:20.10.12-dind
       alias: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
@@ -380,13 +380,15 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - !reference [.destroy_xsoar_instances]
 
 demisto-sdk-nightly:run-end-to-end-tests-xsiam:
+  rules:
+    - when: never
   tags:
     - gce
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
   services: # needed for running e2e tests for docker
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+    - name: ${DOCKER_IO}/library/docker:20.10.12-dind
       alias: docker
   variables:
       CLOUD_MACHINES_TYPE: "build"
@@ -402,7 +404,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
       ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_MPV2}/instance_${INSTANCE_ROLE}"
       GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
       GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
-      GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+      GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
       SERVER_TYPE: "XSIAM"
       MARKETPLACE_NAME: "marketplacev2"
       NON_REMOVABLE_PACKS: "Base"
@@ -444,13 +446,15 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
     - !reference [.unlock-machine]
 
 demisto-sdk-nightly:run-end-to-end-tests-xsoar-saas:
+  rules:
+    - when: never
   tags:
     - gce
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
   services: # needed for running e2e tests for docker
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+    - name: ${DOCKER_IO}/library/docker:20.10.12-dind
       alias: docker
   variables:
     CLOUD_MACHINES_TYPE: "build"
@@ -464,7 +468,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-saas:
     GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_${INSTANCE_ROLE}"
-    GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
+    GCS_MACHINES_BUCKET: "marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
     FAIL_ON_ERROR: "true"
@@ -522,9 +526,12 @@ demisto-sdk-nightly:trigger-slack-notify:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: "Demisto SDK Nightly"
     JOB_NAME: "demisto-sdk-nightly:fan-in"
+    DEMISTO_SDK_NIGHTLY: $DEMISTO_SDK_NIGHTLY
+    OVERRIDE_SDK_REF: $OVERRIDE_SDK_REF
+    SDK_REF: $SDK_REF
     SLACK_CHANNEL: $SLACK_CHANNEL
     SLACK_JOB: "true"
-    SLACK_ALLOW_FAILURE: 'false'
+    SLACK_ALLOW_FAILURE: "false"
     CI_PROJECT_ID: $CI_PROJECT_ID
     CI_SERVER_URL: $CI_SERVER_URL
     JIRA_SERVER_URL: $JIRA_SERVER_URL

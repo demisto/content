@@ -53,52 +53,52 @@ name: LogsignSiem
 script:
   commands:
   - arguments:
-    - description: Query Description
+    - description: Query Description.
       name: query
       required: true
-    - description: 'Group Column '
+    - description: 'Group Column.'
       name: grouped_column
       required: true
     - auto: PREDEFINED
-      description: Criteria Value
+      description: Criteria Value.
       name: criteria
       predefined:
       - unique
       - value
       required: true
-    - description: Time Frame (e.g 1 hour)
+    - description: Time Frame (e.g 1 hour).
       name: time_frame
       required: true
-    description: Query for columns
+    description: Query for columns.
     name: logsign-get-columns-query
     outputs:
     - contextPath: LogsignSiem.Columns
-      description: Column list returned as the result of the query
+      description: Column list returned as the result of the query.
       type: Unknown
   - arguments:
-    - description: Query
+    - description: Query.
       name: query
       required: true
-    - description: Grouped Column
+    - description: Grouped Column.
       name: grouped_column
       required: true
     - auto: PREDEFINED
-      description: Criteria Value
+      description: Criteria Value.
       name: criteria
       predefined:
       - unique
       - value
       required: true
-    - description: Time Frame (e.g 1 day)
+    - description: Time Frame (e.g 1 day).
       name: time_frame
       required: true
-    description: Get Count Query
+    description: Get Count Query.
     name: logsign-get-count-query
     outputs:
     - contextPath: LogsignSiem.Count
-      description: Count number returned as the result of the query
+      description: Count number returned as the result of the query.
       type: Number
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   runonce: false
   script: '-'
