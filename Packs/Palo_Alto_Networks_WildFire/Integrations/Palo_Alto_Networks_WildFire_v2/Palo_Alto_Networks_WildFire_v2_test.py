@@ -1,9 +1,11 @@
 import json
+from pytest_mock import MockerFixture
 from requests import Response
 import pytest
 
 import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import (
+    main,
     prettify_upload,
     prettify_report_entry,
     prettify_verdict,
@@ -694,3 +696,36 @@ def test_get_agent(api_key_source, platform, token, expected_agent, test_id, moc
 
     # Assert
     assert agent == expected_agent, f"Test failed for {test_id}"
+
+
+@pytest.mark.parametrize(
+    "platform",
+    [
+        "x2",
+        "xsoar",
+        "xsoar-hosted"
+    ]
+)
+def test_empty_api_token_with_get_license(mocker: MockerFixture, platform: str):
+    """
+    Given:
+        - command, params, platform
+    When:
+        - run main function
+    Then:
+        - Ensure that `Tim license` supported for the integration for all platforms.
+    """
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': ''})
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.get_demisto_version", return_value={"platform": platform})
+    mock_get_license = mocker.patch.object(
+        demisto,
+        'getLicenseCustomField',
+        return_value="".join(["X" for i in range(32)])
+    )
+
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.set_http_params")
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.test_module")
+    main()
+
+    mock_get_license.assert_called()
