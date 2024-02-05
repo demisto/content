@@ -530,17 +530,25 @@ def extract_namespace(response_items: List[Dict[str, Any]]):
 
 
 def remove_additional_resource_fields(input_dict):
-    disks = demisto.get(input_dict, "data.disks")
-    if disks:
-        for current_disk in disks:
-            if 'shieldedInstanceInitialState' in current_disk:
-                del current_disk['shieldedInstanceInitialState']
-
-    items = demisto.get(input_dict, "data.metadata.items")
+    items = demisto.get(input_dict, "data.items")
     if items:
         for current_item in list(items):
-            if 'key' in current_item and current_item['key'] == 'configure-sh':
-                items.remove(current_item)
+            data = current_item['data']
+
+            if data:
+
+                disks = data["disks"]
+                if disks:
+                    for current_disk in disks:
+                        if 'shieldedInstanceInitialState' in current_disk:
+                            del current_disk['shieldedInstanceInitialState']
+
+                metadata = data["metadata"]
+                metadata_items = metadata["items"]
+                if metadata_items:
+                    for current_metadata_item in list(metadata_items):
+                        if 'key' in current_metadata_item and current_metadata_item['key'] == 'configure-sh':
+                            metadata_items.remove(current_metadata_item)
 
 
 ''' FETCH AND MIRRORING HELPER FUNCTIONS '''
