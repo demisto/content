@@ -611,18 +611,18 @@ def test_fetch_incidents(mocker):
     """
     from MailListenerV2 import fetch_incidents
     mocker.patch('MailListenerV2.Email.convert_to_incident', return_value={})
-    fetch_mail_mocker = mocker.patch('MailListenerV2.fetch_mails', return_value=([mock_email()],[ mock_email()], 5))
+    fetch_mail_mocker = mocker.patch('MailListenerV2.fetch_mails', return_value=([mock_email()], [mock_email()], 5))
 
     next_run, incidents = fetch_incidents(
-        client = mocker.Mock(),
-        last_run ={'last_uid': '8'},
-        first_fetch_time = '2022-01-01 00:00:00',
-        include_raw_body =False,
-        with_headers = False,
-        permitted_from_addresses ='test@example.com',
+        client=mocker.Mock(),
+        last_run={'last_uid': '8'},
+        first_fetch_time='2022-01-01 00:00:00',
+        include_raw_body=False,
+        with_headers=False,
+        permitted_from_addresses='test@example.com',
         permitted_from_domains='example.com',
-        delete_processed =False,
-        limit = 10,
+        delete_processed=False,
+        limit=10,
         save_file=False
     )
     assert isinstance(fetch_mail_mocker.call_args[1]['uid_to_fetch_from'], int)
