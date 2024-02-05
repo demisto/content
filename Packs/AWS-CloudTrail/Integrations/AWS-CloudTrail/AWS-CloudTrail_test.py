@@ -127,7 +127,7 @@ def test_aws_session_params(mocker, aws_cloudtrail):
     - Ensure a cloudtrail client is returned
     """
     mocker.patch.object(aws_cloudtrail.boto3, "client", side_effect=mock_boto3_client)
-    aws_cloudtrail.aws_session()
+    assert aws_cloudtrail.aws_session()
 
 
 def test_aws_session_args(mocker, aws_cloudtrail):
@@ -147,7 +147,7 @@ def test_aws_session_args(mocker, aws_cloudtrail):
         "roleSessionName": "name",
         "roleSessionDuration": "5",
     }
-    aws_cloudtrail.aws_session(**args)
+    assert aws_cloudtrail.aws_session(**args)
 
 
 def mock_command(mocker, aws_cloudtrail, command, args):
