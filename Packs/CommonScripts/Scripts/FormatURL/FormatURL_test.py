@@ -78,7 +78,9 @@ ATP_REDIRECTS = [
      'https://google.com:443/search?q=a*test&gs=ps'),
     ('https://na01.safelinks.protection.outlook.com/?url=https%3A//urldefense.com/v3/__'
      'hxxps%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&',
-     'https://google.com:443/search?q=a*test&gs=ps')
+     'https://google.com:443/search?q=a*test&gs=ps'),
+    ('http://nam12.safelinks.protection.outlook.com/?url=http%3A%2F%2Fi.ms00.net%2Fsubscribe%3Fserver_action%3DUnsubscribe%26list%3Dvalintry2%26sublist%3D*%26msgid%3D1703700099.20966%26email_address%3Dpaulameixner%2540curo.com&data=05%7C02%7Cpaulameixner%40curo.com%7C93f0eea20f1c47350eb508dc07b40542%7C2dc14abb79414377a7d259f436e42867%7C1%7C0%7C638393716982915257%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=%2FwfuIapNXRbZBgLVK651uTH%2FwXrSZFqwdvhvWK6Azwk%3D&reserved=0',
+     'http://i.ms00.net/subscribe?server_action=Unsubscribe&list=valintry2&sublist=*&msgid=1703700099.20966&email_address=paulameixner@curo.com')
 ]
 
 PROOF_POINT_REDIRECTS = [
@@ -190,9 +192,9 @@ FORMAT_PUNYCODE = [
 ]
 
 FORMAT_HEX = [
-    ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz%20%21%22%23%24%25%26'),
-    ('foo.bar/baz%20%21%22%23%24%25%26', 'foo.bar/baz%20%21%22%23%24%25%26'),
-    ('https://foo.com/?key=foo%26bar', 'https://foo.com/?key=foo%26bar'),    # disable-secrets-detection
+    ('ftps://foo.bar/baz%26bar', 'ftps://foo.bar/baz&bar'),
+    ('foo.bar/baz%26bar', 'foo.bar/baz&bar'),
+    ('https://foo.com/?key=foo%26bar', 'https://foo.com/?key=foo&bar'),    # disable-secrets-detection
     ('https%3A//foo.com/?key=foo%26bar', 'https://foo.com/?key=foo&bar'),    # disable-secrets-detection
 ]
 
