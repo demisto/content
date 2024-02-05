@@ -448,7 +448,7 @@ def build_submission_command_result(client: Client, res: Dict[str, Any], args: D
     return command_results
 
 
-def build_submission_params(args: Dict[str, Any], on_premise: bool = True) -> Dict[str, Any]:
+def build_submission_params(args: Dict[str, Any], on_premise: bool) -> Dict[str, Any]:
     """
          Helper function that builds the submission parameters.
 
