@@ -1,4 +1,5 @@
 comment: 'Assigns the current Incident to the Cortex XSOAR user who clicked the button '
+comment_x2: 'Assigns the current Incident to the Cortex XSOAR user who clicked the button. NOTE: in XSIAM, it only works when executed in the alert warroom, or in a playbook running in an alert.'
 commonfields:
   id: AssignToMeButton
   version: -1
