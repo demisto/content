@@ -282,7 +282,7 @@ def fetch_incidents(client: IMAPClient,
         permitted_from_addresses=permitted_from_addresses,
         permitted_from_domains=permitted_from_domains,
         save_file=save_file,
-        uid_to_fetch_from=uid_to_fetch_from
+        uid_to_fetch_from=uid_to_fetch_from     # type: ignore[arg-type]
     )
     incidents = []
     for mail in mails_fetched:

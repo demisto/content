@@ -627,8 +627,8 @@ def test_fetch_incidents_last_uid_as_int(mocker):
     )
     assert isinstance(fetch_mail_mocker.call_args[1]['uid_to_fetch_from'], int)
     assert isinstance(next_run['last_uid'], str)
-    
-    
+
+
 def test_fetch_incidents_last_uid_as_string(mocker):
     """
     Given: 
