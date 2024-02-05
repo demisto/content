@@ -3,27 +3,55 @@ args:
   name: playbook_name
   required: true
 - auto: PREDEFINED
-  default: true
   defaultValue: "false"
-  description: Set 'true' to get a generated markdown list of results.
+  description: Set 'true' to have a raw markdown list of results displayed in the war room.
   name: Markdown
   predefined:
   - "true"
   - "false"
   type: textArea
-comment: Retrieves all Playbook (and Sub-Playbook) Names, Integrations, Automation Scripts and Commands (not using-brand), and lists for a provided Playbook name.
+- auto: PREDEFINED
+  default: true
+  defaultValue: 'false'
+  description: Set 'true' to have a raw html list of results displayed in the war room.
+  name: HTML
+  predefined:
+  - 'false'
+  - 'true'
+- description: A list of incident types associated with the use case. If left empty then will display "None".
+  isArray: true
+  name: incident_types
+- description: A list of incident layouts to be included in the documentation. If left empty then will display "None".
+  isArray: true
+  name: layouts
+- description: A list of incident fields to be included in the documentation. If left empty then will display "None".
+  isArray: true
+  name: incident_fields
+- description: A list of indicator fields to be included in the documentation. If left empty then will display "None".
+  isArray: true
+  name: indicator_fields
+- description: A list of jobs to be included in the documentation. If left empty then will display "None".
+  isArray: true
+  name: jobs
+- description: A list of mappers to be included in the documentation. If left empty then will display "None".
+  isArray: true
+  name: mappers
+- description: A list of preprocess rules to be included in the documentation. If left empty then will display "None".
+  isArray: true
+  name: pre_process_rules
+comment: Retrieves all Playbook (and Sub-Playbook) Names, Integrations, Automation Scripts, Commands not using-brand, and lists for a provided Playbook name. Also accepts inputs for incident types, layouts, incident fields, indicator fields, jobs, mappers, and pre-process rules connected to the parent playbook. Results can be output as an HTML or Markdown list.
 commonfields:
   id: RetrievePlaybookDependencies
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.13.86272
 enabled: true
 name: RetrievePlaybookDependencies
 outputs:
 - contextPath: RetrievePlaybookDependencies
-  description: The automations (sorted into base and custom scripts), commands, integrations, lists, and un-branded commands a playbook and its sub-playbooks use.
+  description: The automations (sorted into base and custom scripts), brandless commands, integrations, lists, and un-branded commands a playbook and its sub-playbooks use. Will generate html and/or markdown lists for documentation.
 runas: DBotWeakRole
 runonce: false
 script: ''
