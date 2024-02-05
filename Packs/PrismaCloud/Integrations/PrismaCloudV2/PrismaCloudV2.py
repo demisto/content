@@ -530,21 +530,21 @@ def extract_namespace(response_items: List[Dict[str, Any]]):
 
 
 def remove_additional_resource_fields(input_dict):
-    items = demisto.get(input_dict, "data.items")
+    items = demisto.get(input_dict, 'data.items')
     if items:
         for current_item in list(items):
             data = current_item['data']
 
             if data:
 
-                disks = data["disks"]
+                disks = data['disks']
                 if disks:
                     for current_disk in disks:
                         if 'shieldedInstanceInitialState' in current_disk:
                             del current_disk['shieldedInstanceInitialState']
 
-                metadata = data["metadata"]
-                metadata_items = metadata["items"]
+                metadata = data['metadata']
+                metadata_items = metadata['items']
                 if metadata_items:
                     for current_metadata_item in list(metadata_items):
                         if 'key' in current_metadata_item and current_metadata_item['key'] == 'configure-sh':
