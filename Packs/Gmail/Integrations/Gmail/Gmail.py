@@ -374,7 +374,7 @@ def get_email_context(email_data, mailbox):
         # only for incident
         'Cc': headers.get('cc', []),
         'Bcc': headers.get('bcc', []),
-        'Date': get_date_isoformat_server(occurred),
+        'Date': format_datetime(occurred),
         'Html': None,
     }
 
@@ -394,7 +394,7 @@ def get_email_context(email_data, mailbox):
 
         'CC': headers.get('cc', []),
         'BCC': headers.get('bcc', []),
-        'Date': get_date_isoformat_server(occurred),
+        'Date': format_datetime(occurred),
         'Body/HTML': None,
     }
 

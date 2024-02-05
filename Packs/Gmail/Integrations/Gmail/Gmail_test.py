@@ -1,3 +1,5 @@
+from freezegun import freeze_time
+
 import demistomock as demisto
 import pytest
 from test_data import input_data
@@ -613,14 +615,15 @@ def test_no_date_mail():
         Then:
             -the 'Date' is valid.
     """
-    from email.utils import parsedate_to_datetime
+    from email.utils import format_datetime
 
     from Gmail import get_email_context
+    expected_date = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
     context_gmail, _, _, occurred, is_valid = get_email_context(input_data.email_without_date, "some_mail")
     # check that the x-received date was usd
-    assert occurred.timestamp() == parsedate_to_datetime('Mon, 21 Dec 2020 12:11:57 -0800').timestamp()
+    assert occurred.timestamp() == expected_date.timestamp()
     assert is_valid
-    assert context_gmail.get('Date') == 'Mon, 21 Dec 2020 12:11:57 -0800'
+    assert context_gmail.get('Date') == format_datetime(expected_date)
 
 
 class MockMessages:
@@ -677,6 +680,7 @@ class MockService:
     ({'lastRun': '2018-10-24T14:13:20+00:00', 'gmt_time': '2017-10-24T14:13:20Z', 'page_token': '02582292467408105606'},
      input_data.second_incident_result)
 ])
+@freeze_time("2012-10-24 14:13:20", tz_offset=+0)
 def test_fetch_incidents(mocker, return_value_get_last_run, expected_result):
     """
     Tests fetch_incidents function.
@@ -710,9 +714,9 @@ def test_get_occurred_date():
     """
     from Gmail import get_occurred_date
     occurred, occurred_is_valid = get_occurred_date(input_data.email_without_date)
-    assert str(occurred) == '2020-12-21 12:11:57-08:00'
-    assert occurred == datetime.datetime(2020, 12, 21, 12, 11, 57,
-                                         tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=57600)))
+    assert str(occurred) == '2020-12-21 20:11:57+00:00'
+    assert occurred == datetime.datetime(2020, 12, 21, 20, 11, 57,
+                                         tzinfo=datetime.timezone.utc)
     assert occurred_is_valid is True
 
 
