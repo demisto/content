@@ -576,7 +576,7 @@ def main():  # pragma: no cover
         raise DemistoException('API Token must be provided.')
     client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], api_token, params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
-                    params.get('polling_timeout'), params.get('proxy'), params.get('malicious_threshold'),
+                    params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
                     params.get('suspicious_threshold'), params.get('risk_score_threshold'),
                     argToList(params.get('feedTags')), params.get('tlp_color'))
     command = demisto.command()
