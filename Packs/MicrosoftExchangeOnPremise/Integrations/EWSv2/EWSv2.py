@@ -711,7 +711,7 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     Send an email to a mailbox.
 
     Args:
-        body_type: type of the body. Can be 'html' or 'text'.
+        body_type: type of the body. Can be 'html' or 'text' or None.
         account (Account): account from which to send an email.
         to (list[str]): a list of emails to send an email.
         subject (str): subject of the mail.
@@ -727,7 +727,7 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     """
     if not attachments:
         attachments = []
-    message_body = HTMLBody(html_body) if body_type == 'html' and html_body else Body(body)
+    message_body = get_message_for_body_type(body, body_type, html_body)
     m = Message(
         account=account,
         mime_content=raw_message.encode('UTF-8') if raw_message else None,
@@ -752,6 +752,23 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     return m
 
 
+def get_message_for_body_type(body, body_type, html_body):
+    """
+    Compatibility with Data Collection - where body_type is not provided, we will use the html_body if it exists.
+    Compatibility with 'send-mail' command - where body_type should be provided, we will use the body_type to decide.
+    Args:
+        body_type: type of the body. Can be 'html' or 'text' or None.
+        body: plain text body.
+        html_body: HTML formatted content (body) of the email to be sent.
+
+    Returns:
+        Body: the body of the message.
+    """
+    if body_type is None:
+        return HTMLBody(html_body) if html_body else Body(body)
+    return HTMLBody(html_body) if body_type.lower() == 'html' and html_body else Body(body)
+
+
 def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
                                 attachments=None, from_mailbox=None):  # pragma: no cover
     if attachments is None:
@@ -761,6 +778,7 @@ def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bc
         raise Exception(item_to_reply_to)
 
     subject = subject or item_to_reply_to.subject
+    # Reply to email does not support body_type, so we will use the html_body if it exists.
     message_body = HTMLBody(html_body) if html_body else body
     reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
                                           bcc_recipients=bcc, author=from_mailbox)
@@ -2260,7 +2278,7 @@ def send_email(args):
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
 
     # Lowering case as list options provided as capitalized for the argument
-    body_type = args.get('bodyType', '').lower() or args.get('body_type', '').lower() or 'text'
+    body_type = args.get('bodyType', args.get('body_type'))
     send_email_to_mailbox(
         account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
         html_body=args.get('htmlBody'), attachments=attachments, raw_message=args.get('raw_message'),
