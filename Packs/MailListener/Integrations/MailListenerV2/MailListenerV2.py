@@ -272,7 +272,7 @@ def fetch_incidents(client: IMAPClient,
         demisto.debug(f"no last_run, using {time_to_fetch_from=}")
 
     # Otherwise use the mail UID
-    uid_to_fetch_from = int(last_run.get('last_uid', 0))
+    uid_to_fetch_from = arg_to_number(last_run.get('last_uid', 0))
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
         client=client,
         include_raw_body=include_raw_body,
