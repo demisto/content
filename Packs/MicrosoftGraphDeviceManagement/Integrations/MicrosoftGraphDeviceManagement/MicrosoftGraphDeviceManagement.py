@@ -250,7 +250,7 @@ def build_device_object(raw_device: dict) -> dict:
 
 def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
     limit: int = try_parse_integer(args.get('limit', 10), err_msg='This value for limit must be an integer.')
-    page_size: int = try_parse_integer(args.get('page_size', 50), err_msg='This value for page_size must be an integer.')
+    page_size: int | None = arg_to_number(args.get('page_size'))
     next_link = args.get('next_link')
     list_raw_devices, next_link, raw_response = client.list_managed_devices(limit, page_size, next_link)
     list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
