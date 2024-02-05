@@ -1,0 +1,26 @@
+{
+    "TableMetadataList": [
+        {
+            "Name": "test",
+            "TableType": "test",
+            "Columns": [
+                {
+                    "Name": "test",
+                    "Type": "test",
+                    "Comment": "test"
+                }
+            ],
+            "PartitionKeys": [
+                {
+                    "Name": "test",
+                    "Type": "test",
+                    "Comment": "test"
+                }
+            ],
+            "Parameters": {
+                "string": "test"
+            }
+        }
+    ],
+    "NextToken": "test"
+}
