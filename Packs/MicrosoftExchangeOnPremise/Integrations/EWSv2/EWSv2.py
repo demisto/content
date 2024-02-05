@@ -1,8 +1,6 @@
 import email
 import hashlib
 import subprocess
-import warnings
-from mailbox import Mailbox
 from multiprocessing import Process
 from typing import Tuple
 
@@ -2148,7 +2146,7 @@ def resolve_name_command(args, protocol):  # pragma: no cover
         if isinstance(rn, ErrorNameResolutionNoResults):
             demisto.info(f'got ErrorNameResolutionNoResults error, {str(rn)}')
             return 'No results were found.'
-        elif isinstance(rn, Tuple):
+        elif isinstance(rn, tuple):
             mail, contact = rn
         else:
             mail, contact = rn, None
