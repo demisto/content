@@ -2072,7 +2072,7 @@ def email_command(eiq_api):
     observable_value = demisto.args()["email"]
     response_eiq = eiq_api.lookup_observable(observable_value, "email")
     email_result = parse_reputation_results(
-        response_eiq, observable_value, "email", FILE_THRESHOLD, "Email"
+        response_eiq, observable_value, "email", EMAIL_THRESHOLD, "Email"
     )
 
     if SIGHTINGS_AUTO_CREATE:
