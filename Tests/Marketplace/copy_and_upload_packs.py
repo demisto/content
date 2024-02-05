@@ -271,34 +271,6 @@ def download_and_extract_index(build_bucket: Bucket, extract_destination_path: s
         sys.exit(1)
 
 
-def upload_packs_results_upload_file(artifacts_bucket: Bucket, build_bucket: Bucket, build_bucket_base_path,
-                                     packs_results_file_path):
-
-    sha1 = os.environ['CI_COMMIT_SHA']
-    packs_results_file_path = Path(packs_results_file_path)
-    packs_results_file_path = f"{packs_results_file_path.stem}_upload.json"
-
-    packs_results_upload_blob = build_bucket.blob(packs_results_file_path)
-
-    if not packs_results_upload_blob.exists():
-        logging.error(f"packs_results_upload.json file does not exists in build bucket in path: {packs_results_file_path}")
-        sys.exit(1)
-
-    artifacts_packs_results_upload_path = os.path.join(os.path.dirname(artifacts_bucket), sha1, 'packs_results_upload.json')
-    try:
-        copied_blob = build_bucket.copy_blob(
-            blob=packs_results_upload_blob, destination_bucket=artifacts_bucket, new_name=artifacts_packs_results_upload_path
-        )
-        if not copied_blob.exists():
-            logging.error(f"Failed to upload packs_results_upload.json to {artifacts_packs_results_upload_path}")
-            sys.exit(1)
-        else:
-            logging.success("Finished uploading packs_results_upload.json to storage.")
-    except Exception as e:
-        logging.exception(f"Failed copying packs_results_upload.json. Additional Info: {str(e)}")
-        sys.exit(1)
-
-
 def copy_id_set(production_bucket: Bucket, build_bucket: Bucket, storage_base_path: str, build_bucket_base_path: str):
     """ Copies the id_set.json artifact from the build bucket to the production bucket.
 
@@ -421,7 +393,6 @@ def main():
 
     # Google cloud storage client initialized
     storage_client = init_storage_client(service_account)
-    artifacts_bucket = storage_client.bucket('xsoar-ci-artifacts')
     production_bucket = storage_client.bucket(production_bucket_name)
     build_bucket = storage_client.bucket(build_bucket_name)
 
@@ -557,9 +528,6 @@ def main():
         packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, successful_packs,
         successful_uploaded_dependencies_zip_packs, failed_packs, list(pc_successful_private_packs_dict)
     )
-
-    # upload packs_results_upload.json to bucket
-    upload_packs_results_upload_file(artifacts_bucket, build_bucket, build_bucket_base_path, packs_results_file_path)
 
     # verify that the successful from Prepare content and are the ones that were copied
     logging.warning("verify that no packs were mistakenly copied from successful_packs dict")
