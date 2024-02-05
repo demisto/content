@@ -1006,6 +1006,14 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
             continue_to_poll=False,
         )
 
+    if sample_state == "fail":
+        raise DemistoException(
+            dict_safe_get(
+                command_results.raw_response,["error"],
+                default_return_value=f"Uploading {args['sample_id']} to ThreatGrid failed\n{command_results.raw_response}"
+            )
+        )
+
     return PollResult(
         response=command_results,
         continue_to_poll=True,

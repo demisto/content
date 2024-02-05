@@ -696,3 +696,23 @@ def test_validate_url_template(url):
     result = validate_url_template(url)
 
     assert result == 'http://test.com:80/'
+
+
+@pytest.mark.parametrize(
+    "mock_raw_response",
+    [
+        ({"error": "test", "state": "fail"}, "")
+        ({"state": "fail"}, "")
+    ]
+)
+def test_schedule_command_sample_upload(mocker, mock_client, mock_raw_response: dict[str, str], expected_exception: str):
+    from ThreatGridv2 import schedule_command
+    mocker.patch(
+        "ThreatGridv2.sample_state_get_command",
+        return_value=CommandResults(
+            raw_response=mock_raw_response
+        )
+    )
+    with pytest.raises(DemistoException, match=expected_exception):
+        schedule_command({"sample_id": "test"}, mock_client)
+    
