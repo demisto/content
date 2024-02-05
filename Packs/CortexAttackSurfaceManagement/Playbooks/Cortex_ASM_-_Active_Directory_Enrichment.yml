@@ -687,7 +687,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: ActiveDirectory.Users.mail
+              simple: manager-email
           operator: isNotEmpty
           right:
             value: {}

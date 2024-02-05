@@ -25,73 +25,69 @@
             "mandatory": true,
             "display_name": "Filters And Transformers"
         },
-        "GCP-Enrichment-Remediation": {
+        "Active_Directory_Query": {
             "mandatory": false,
-            "display_name": "GCP Enrichment and Remediation"
+            "display_name": "Active Directory Query"
+        },
+        "qualys": {
+            "mandatory": false,
+            "display_name": "Qualys"
         },
         "Rapid7_Nexpose": {
             "mandatory": false,
             "display_name": "Rapid7 InsightVM"
         },
-        "PrismaCloud": {
-            "mandatory": true,
-            "display_name": "Prisma Cloud by Palo Alto Networks"
-        },
-        "ServiceNow": {
-            "mandatory": true,
-            "display_name": "ServiceNow"
-        },
-        "Active_Directory_Query": {
-            "mandatory": true,
-            "display_name": "Active Directory Query"
-        },
-        "qualys": {
-            "mandatory": true,
-            "display_name": "Qualys"
-        },
-        "MicrosoftGraphUser": {
-            "mandatory": true,
-            "display_name": "Microsoft Graph User"
-        },
-        "Tenable_io": {
-            "mandatory": true,
-            "display_name": "Tenable.io"
-        },
-        "CommonScripts": {
+        "GCP-Enrichment-Remediation": {
             "mandatory": false,
-            "display_name": "Common Scripts"
-        },
-        "Azure-Enrichment-Remediation": {
-            "mandatory": false,
-            "display_name": "Azure Enrichment and Remediation"
-        },
-        "SplunkPyPreRelease": {
-            "mandatory": false,
-            "display_name": "Splunk Prerelease (Deprecated)"
-        },
-        "Jira": {
-            "mandatory": false,
-            "display_name": "Atlassian Jira"
-        },
-        "Core": {
-            "mandatory": false,
-            "display_name": "Core - Investigation and Response"
-        },
-        "CortexXDR": {
-            "mandatory": false,
-            "display_name": "Cortex XDR by Palo Alto Networks"
+            "display_name": "GCP Enrichment and Remediation"
         },
         "AWS-Enrichment-Remediation": {
             "mandatory": false,
             "display_name": "AWS Enrichment and Remediation"
         },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "PrismaCloud": {
+            "mandatory": false,
+            "display_name": "Prisma Cloud by Palo Alto Networks"
+        },
         "SplunkPy": {
             "mandatory": false,
             "display_name": "Splunk"
         },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
         "PAN-OS": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "PAN-OS by Palo Alto Networks"
+        },
+        "SplunkPyPreRelease": {
+            "mandatory": false,
+            "display_name": "Splunk Prerelease (Deprecated)"
+        },
+        "Azure-Enrichment-Remediation": {
+            "mandatory": false,
+            "display_name": "Azure Enrichment and Remediation"
+        },
+        "Jira": {
+            "mandatory": false,
+            "display_name": "Atlassian Jira"
+        },
+        "Tenable_io": {
+            "mandatory": false,
+            "display_name": "Tenable.io"
+        },
+        "GCP-IAM": {
+            "mandatory": false,
+            "display_name": "GCP-IAM"
+        },
+        "MicrosoftGraphUser": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph User"
         }
     },
     "marketplaces": [
@@ -102,23 +98,18 @@
         "ASM"
     ],
     "displayedImages": [
-        "FiltersAndTransformers",
-        "GCP-Enrichment-Remediation",
-        "Rapid7_Nexpose",
-        "PrismaCloud",
-        "ServiceNow",
         "Active_Directory_Query",
         "qualys",
-        "MicrosoftGraphUser",
-        "Tenable_io",
-        "CommonScripts",
-        "Azure-Enrichment-Remediation",
-        "SplunkPyPreRelease",
-        "Jira",
-        "Core",
-        "CortexXDR",
+        "Rapid7_Nexpose",
+        "GCP-Enrichment-Remediation",
         "AWS-Enrichment-Remediation",
+        "MicrosoftGraphUser",
+        "PrismaCloud",
         "SplunkPy",
-        "PAN-OS"
+        "ServiceNow",
+        "PAN-OS",
+        "Azure-Enrichment-Remediation",
+        "Jira",
+        "Tenable_io"
     ]
 }

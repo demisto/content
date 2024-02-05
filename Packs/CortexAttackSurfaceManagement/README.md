@@ -113,7 +113,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
 
 A playbook that given the email address enriches Service owner in Azure  and On-Prem directory.
 
-![Cortex ASM - Active Directory Enrichment](https://raw.githubusercontent.com/demisto/content/394aad3c8e680a444018c82322c449205ccd31a1/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Active_Directory_Enrichment.png)
+![Cortex ASM - Active Directory Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Active_Directory_Enrichment.png)
 
 #### Cortex ASM - ASM Alert
 
