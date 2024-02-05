@@ -67,7 +67,7 @@ VALID_QUERY = {
     "count": 1,
     "data": [
         {
-            "ip": "36.236.103.182",
+            "ip": "1.1.1.1",
             "bot": False,
             "vpn": False,
             "vpn_service": "N/A",
@@ -90,7 +90,7 @@ VALID_QUERY = {
 COMMAND_OUTPUT = [
     {
         'Type': 'IP',
-        'Value': '36.236.103.182',
+        'Value': '1.1.1.1',
         'fields':
             {
                 'firstseenbysource': '2024-01-28T00:00:00Z',
@@ -106,7 +106,7 @@ COMMAND_OUTPUT = [
                 'classification': 'unknown',
                 'cve': [],
                 'first_seen': '2024-01-28',
-                'ip': '36.236.103.182',
+                'ip': '1.1.1.1',
                 'last_seen': '2024-01-30',
                 'seen': True,
                 'spoofable': False,

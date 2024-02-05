@@ -6,9 +6,6 @@ from greynoise import GreyNoise, exceptions, util  # type: ignore
 
 from CommonServerPython import *
 
-# disable insecure warnings
-urllib3.disable_warnings()
-
 INTEGRATION_NAME = "GreyNoise Indicator Feed"
 API_SERVER = util.DEFAULT_CONFIG.get("api_server")
 TIMEOUT = 300
@@ -252,12 +249,12 @@ def main():
         if packs.get("name") == "FeedGreyNoiseIndicator":
             pack_version = packs.get("currentVersion")
 
-    api_key = demisto.params().get("credentials", {}).get("password") or demisto.params().get("apikey")
+    api_key = params.get("credentials", {}).get("password") or params.get("apikey")
     if not api_key:
         return_error('Please provide a valid API token')
-    proxy = demisto.params().get("proxy", False)
+    proxy = params.get("proxy", False)
 
-    demisto.debug(f"Command being called is {demisto.command()}")
+    demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
             api_key=api_key,
