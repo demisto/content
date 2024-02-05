@@ -764,9 +764,11 @@ def get_message_for_body_type(body, body_type, html_body):
     Returns:
         Body: the body of the message.
     """
-    if body_type is None:
+    if body_type is None: # when called from a data collection task
         return HTMLBody(html_body) if html_body else Body(body)
-    return HTMLBody(html_body) if body_type.lower() == 'html' and html_body else Body(body)
+    if body_type.lower() == 'html' and html_body:
+        return HTMLBody(html_body) 
+    return Body(body)
 
 
 def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
