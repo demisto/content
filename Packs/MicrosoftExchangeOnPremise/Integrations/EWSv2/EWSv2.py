@@ -764,10 +764,10 @@ def get_message_for_body_type(body, body_type, html_body):
     Returns:
         Body: the body of the message.
     """
-    if body_type is None: # when called from a data collection task
+    if body_type is None:  # When called from a data collection task.
         return HTMLBody(html_body) if html_body else Body(body)
-    if body_type.lower() == 'html' and html_body:
-        return HTMLBody(html_body) 
+    if body_type.lower() == 'html' and html_body:  # When called from 'send-mail' command.
+        return HTMLBody(html_body)
     return Body(body)
 
 
