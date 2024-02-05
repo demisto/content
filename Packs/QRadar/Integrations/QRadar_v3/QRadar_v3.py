@@ -2189,7 +2189,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
             context_data.update({'samples': incident_batch_for_sample, LAST_FETCH_KEY: int(new_highest_id)})
 
         # if incident creation fails, it'll drop the data and try again in the next iteration
-        demisto.createIncidents(incidents, {LAST_FETCH_KEY: new_highest_id})
+        demisto.createIncidents(incidents, {LAST_FETCH_KEY: str(new_highest_id)})
         safely_update_context_data(context_data=context_data,
                                    version=ctx_version,
                                    should_update_last_fetch=True)
@@ -2230,17 +2230,17 @@ def long_running_execution_command(client: Client, params: dict):
     is_reset_triggered()
     context_data, version = get_integration_context_with_version()
     last_run = demisto.getLastRun() or {}
-    last_highest_id_last_run = last_run.get(LAST_FETCH_KEY, 0)
+    last_highest_id_last_run = int(last_run.get(LAST_FETCH_KEY, 0))
     print_debug_msg(f'Last highest ID from last run: {last_highest_id_last_run}')
-    last_highest_id_context = context_data.get(LAST_FETCH_KEY, 0)
-    if last_highest_id_last_run != last_highest_id_context and int(last_highest_id_last_run) > 0:
+    last_highest_id_context = int(context_data.get(LAST_FETCH_KEY, 0))
+    if last_highest_id_last_run != last_highest_id_context and last_highest_id_last_run > 0:
         # if there is inconsistency between last run and context, we need to update the context
         print_debug_msg(
             f'Updating context data with last highest ID from last run: {last_highest_id_last_run}.'
             f'ID from context: {last_highest_id_context}')
         safely_update_context_data(context_data | {LAST_FETCH_KEY: int(last_highest_id_last_run)},
                                    version, should_update_last_fetch=True)
-    last_highest_id = int(last_highest_id_last_run)
+    last_highest_id = last_highest_id_last_run
     while True:
         try:
             perform_long_running_loop(
