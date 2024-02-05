@@ -1537,12 +1537,12 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
 
     input = {
         'data': {
-            'items': [ {
+            'items': [{
                 'data': {
-                    'disks': [{"mode": "READ_WRITE", 'shieldedInstanceInitialState': 's_val'} ],
+                    'disks': [{"mode": "READ_WRITE", 'shieldedInstanceInitialState': 's_val'}],
                     'metadata': {'items': [{'key': 'configure-sh', 'value': 'configure_sh_val'},
-                                    {'key': 'not-removed-value', 'value': 'not_removed_value_val'} ] },
-                } }
+                                           {'key': 'not-removed-value', 'value': 'not_removed_value_val'}]},
+                }}
             ]
         }
     }
@@ -1552,11 +1552,11 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
     # }
     expected = {
         'data': {
-            'items': [ {
+            'items': [{
                 'data': {
-                    'disks': [{"mode": "READ_WRITE"} ],
-                    'metadata': {'items': [{'key': 'not-removed-value', 'value': 'not_removed_value_val'} ] },
-                } }
+                    'disks': [{"mode": "READ_WRITE"}],
+                    'metadata': {'items': [{'key': 'not-removed-value', 'value': 'not_removed_value_val'}]},
+                }}
             ]
         }
     }
