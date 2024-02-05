@@ -1546,10 +1546,6 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
             ]
         }
     }
-    # expected = {
-    #     'data': {'items': [{'key': 'not-removed-value', 'value': 'not_removed_value_val'}]},
-    #                        'disks': [{"mode": "READ_WRITE"}]
-    # }
     expected = {
         'data': {
             'items': [{
