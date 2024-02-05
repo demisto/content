@@ -603,7 +603,7 @@ def test_fetch_incidents_last_uid_as_int(mocker):
     """
     Given:
         - A mock client and last run with 'last_uid' as an integer - 8
-    When:  
+    When:
         - Fetching incidents
     Then:
         - Ensure that the "last_uid" received from the 'last_run' of previous cycles is converted to an integer.
@@ -631,9 +631,9 @@ def test_fetch_incidents_last_uid_as_int(mocker):
 
 def test_fetch_incidents_last_uid_as_string(mocker):
     """
-    Given: 
+    Given:
         - A mock client and last run with 'last_uid' as a string - "8"
-    When:  
+    When:
         - Fetching incidents
     Then:
         - Ensure that the "last_uid" received from the 'last_run' of previous cycles is converted to an integer.
