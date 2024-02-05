@@ -848,13 +848,8 @@ def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock,moc
     """
     from CommonServerPython import DemistoException
     from CortexXDRIR import check_using_upgraded_api_incidents_extra_data, Client
-    raw_incident = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
-    # Patch the 'get_multiple_incidents_extra_data' method to return a mock response with a 500 status code
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
-    # Call the function with a mock client and the incident ID
-    
-    requests_mock.post(f'{XDR_URL}/public_api/v1', status_code=500, json=raw_incident)
     class MockException:
         def __init__(self, status_code) -> None:
             self.status_code = status_code
@@ -872,7 +867,7 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
     import copy
 
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
-    raw_incident = load_test_data('.get_multiple_incidents_extra_data.json')
+    raw_incident = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
     modified_raw_incident = raw_incident['reply']['incident'].copy()
     modified_raw_incident['alerts'] = copy.deepcopy(raw_incident['reply'].get('alerts').get('data'))
     modified_raw_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
