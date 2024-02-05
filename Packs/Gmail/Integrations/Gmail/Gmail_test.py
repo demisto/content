@@ -703,22 +703,51 @@ def test_fetch_incidents(mocker, return_value_get_last_run, expected_result):
     assert incidents == expected_result
 
 
-def test_get_occurred_date():
+email_no_internalDate = input_data.email_without_date
+expected_occurred_no_internalDate = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
+email_internalDate_early = input_data.email_with_early_internalDate
+expected_occurred_internalDate_early = datetime.datetime(2020, 12, 21, 20, 11, 40, tzinfo=datetime.timezone.utc)
+email_header_early = input_data.email_with_internalDate_header_early
+expected_occurred_header_early = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
+email_no_header = input_data.email_no_header
+expected_occurred_no_header = datetime.datetime(2020, 12, 21, 20, 11, 58, tzinfo=datetime.timezone.utc)
+email_no_date = input_data.email_no_date
+expected_occurred_no_date = datetime.datetime(2020, 12, 22, 14, 13, 20, tzinfo=datetime.timezone.utc)
+
+
+@pytest.mark.parametrize("email_data, expected_occurred, expected_occurred_is_valid",
+                         [
+                             (email_no_internalDate, expected_occurred_no_internalDate, True), # no internalDate
+                             (email_internalDate_early, expected_occurred_internalDate_early, True), # both internalDate and date header, but the internalDate is earlier
+                             (email_header_early, expected_occurred_header_early, True), # both internalDate and date header, but the date header is earlier
+                             (email_no_header, expected_occurred_no_header, True), # no date in the headers
+                             (email_no_date, expected_occurred_no_date, False), # no internalDate and no date in the headers -> datetime.now
+                         ])
+@freeze_time("2020-12-22 14:13:20", tz_offset=+0)
+def test_get_occurred_date(email_data, expected_occurred, expected_occurred_is_valid):
     """
     Tests test_get_occurred_date function.
         Given:
-             - an email message without date header.
+             - case A: an email without an internalDate.
+             - case B: an email with an internalDate and a date header, but the internalDate is earlier.
+             - case C: an email with an internalDate and a date header, but the date header is earlier.
+             - case D: an email without a date in the headers.
+             - case E: an email without an internalDate and no date in the headers.
         When:
             - executing test_get_occurred_date function.
         Then:
             - the occurred date is valid and corresponding to the date in the email.
+            - case A: the occurred date is the date in the headers.
+            - case B: the occurred date is the date in the internalDate.
+            - case C: the occurred date is the date in the date header.
+            - case D: the occurred date is the date in the internalDate.
+            - case E: the occurred date is the current date in UTC (datetime.now).
     """
     from Gmail import get_occurred_date
-    occurred, occurred_is_valid = get_occurred_date(input_data.email_without_date)
-    assert str(occurred) == '2020-12-21 20:11:57+00:00'
-    assert occurred == datetime.datetime(2020, 12, 21, 20, 11, 57,
-                                         tzinfo=datetime.timezone.utc)
-    assert occurred_is_valid is True
+    occurred, occurred_is_valid = get_occurred_date(email_data)
+    assert str(occurred) == str(expected_occurred)
+    assert occurred == expected_occurred
+    assert occurred_is_valid is expected_occurred_is_valid
 
 
 def test_get_date_from_email_header():

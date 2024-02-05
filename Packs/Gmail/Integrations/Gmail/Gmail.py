@@ -302,7 +302,7 @@ def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
         # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
         # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
         timestamp_len = len(str(int(time.time())))
-        if len(str(internalDate)) > timestamp_len:
+        if len(str(internalDate)) >= timestamp_len:
             internalDate = (str(internalDate)[:timestamp_len])
             internalDate_dt = datetime.fromtimestamp(int(internalDate), tz=timezone.utc)
             demisto.debug(f"{internalDate=} {internalDate_dt=}")
