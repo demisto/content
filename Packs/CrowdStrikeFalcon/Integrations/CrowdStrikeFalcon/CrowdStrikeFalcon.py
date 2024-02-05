@@ -368,19 +368,21 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             res_json = res.json()
             reason = res.reason
             resources = res_json.get('resources', {})
+            extracted_error_message = ''
             if resources:
                 if isinstance(resources, list):
-                    reason += f'\n{str(resources)}'
+                    extracted_error_message += f'\n{str(resources)}'
                 else:
                     for host_id, resource in resources.items():
-                        errors = resource.get('errors', [])
+                        errors = resource.get('errors', []) if isinstance(resource, dict) else ''
                         if errors:
                             error_message = errors[0].get('message')
-                            reason += f'\nHost ID {host_id} - {error_message}'
-            elif res_json.get('errors'):
+                            extracted_error_message += f'\nHost ID {host_id} - {error_message}'
+            elif res_json.get('errors') and not extracted_error_message:
                 errors = res_json.get('errors', [])
                 for error in errors:
-                    reason += f"\n{error.get('message')}"
+                    extracted_error_message += f"\n{error.get('message')}"
+            reason += extracted_error_message
             err_msg = 'Error in API call to CrowdStrike Falcon: code: {code} - reason: {reason}'.format(
                 code=res.status_code,
                 reason=reason
@@ -1270,6 +1272,38 @@ def get_token_request():
     return token_res.get('access_token')
 
 
+def get_behaviors(behavior_ids: list[str]) -> dict:
+    """
+    Get details on behaviors by providing behavior IDs
+
+    Args:
+        behavior_ids: List of behavior IDs to get details on
+
+    Returns:
+        dict: Response data
+    """
+    return http_request(
+        'POST',
+        '/incidents/entities/behaviors/GET/v1',
+        data=json.dumps({'ids': behavior_ids}),
+    )
+
+
+def get_ioarules(rule_ids: list[str]) -> dict:
+    """
+        Sends ioa rules entities request
+        :param rule_ids: IDs of the requested ioa rule.
+        :return: Response json of the get ioa rule entities endpoint (ioa rule objects)
+    """
+    params = {'ids': rule_ids}
+
+    return http_request(
+        'GET',
+        '/ioarules/entities/rules/v1',
+        params=params,
+    )
+
+
 def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     """
         Sends detections request. The function will ignore the arguments passed according to priority:
@@ -1415,6 +1449,74 @@ def get_idp_detection_entities(incidents_ids: list):
         'POST',
         '/alerts/entities/alerts/v1',
         data=json.dumps({'ids': incidents_ids})
+    )
+
+
+def get_users(offset: int, limit: int, query_filter: str | None = None) -> dict:
+    """
+    Get a list of users using pagination.
+
+    Note:
+        The result will include all collected paginated data, but the 'meta' key will only include information of the first page.
+
+    Args:
+        offset (int): The offset to begin from.
+        limit (int): The maximum number of records to return.
+        query_filter (str): Filter to use for the API request.
+
+    Returns:
+        dict: The response from the API (a combination of all paginated data).
+    """
+    def generate_paginated_request(_offset: int, _limit: int) -> dict:
+        result: dict = {
+            'method': 'GET',
+            'url_suffix': '/user-management/queries/users/v1',
+            'params': {
+                'offset': _offset,
+                'limit': _limit,
+                # We need to use sort since the API doesn't guarantee a consistent order,
+                # which can cause issues when using the offset parameter (repetitive & missing values)
+                'sort': 'uid',
+            },
+        }
+
+        if query_filter:
+            result['params']['filter'] = query_filter
+
+        return result
+
+    response = http_request(
+        **generate_paginated_request(_offset=offset, _limit=limit)
+    )
+
+    total_results = response.get('meta', {}).get('pagination', {}).get('total', 0)
+    fetched_results_count = len(response.get('resources', []))
+
+    while fetched_results_count < limit and fetched_results_count + offset < total_results:
+        current_offset = offset + fetched_results_count
+        remaining_results_count = min(limit, total_results) - fetched_results_count
+
+        if remaining_results_count > 500:
+            current_limit = 500
+
+        else:
+            current_limit = remaining_results_count
+
+        current_response = http_request(
+            **generate_paginated_request(_offset=current_offset, _limit=current_limit)
+        )
+
+        response['resources'].extend(current_response.get('resources', []))
+        fetched_results_count += len(current_response.get('resources', []))
+
+    return response
+
+
+def get_users_data(user_ids: list[str]) -> dict:
+    return http_request(
+        'POST',
+        '/user-management/entities/users/GET/v1',
+        data=json.dumps({'ids': user_ids}),
     )
 
 
@@ -1867,27 +1969,17 @@ def host_group_members(filter: str | None,
     return response
 
 
-def resolve_incident(ids: list[str], status: str):
-    if status not in STATUS_TEXT_TO_NUM:
-        raise DemistoException(f'CrowdStrike Falcon Error: '
-                               f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM.keys()}')
-    return update_incident_request(ids, STATUS_TEXT_TO_NUM[status], 'update_status')
-
-
-def update_incident_comment(ids: list[str], comment: str):
-    return update_incident_request(ids, comment, 'add_comment')
-
-
-def update_incident_request(ids: list[str], value: str, action_name: str):
+def update_incident_request(ids: list[str], action_parameters: dict[str, Any]):
     data = {
         "action_parameters": [
             {
                 "name": action_name,
-                "value": value
-            }
+                "value": action_value
+            } for action_name, action_value in action_parameters.items()
         ],
-        "ids": ids
+        "ids": ids,
     }
+
     return http_request(method='POST',
                         url_suffix='/incidents/entities/incident-actions/v1',
                         json=data)
@@ -2428,12 +2520,18 @@ def update_remote_incident(delta: dict[str, Any], inc_status: IncidentStatus, in
 def update_remote_incident_status(delta, inc_status: IncidentStatus, incident_id: str) -> str:
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
         demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
-        return str(resolve_incident([incident_id], 'Closed'))
+        return str(update_incident_request(ids=[incident_id], action_parameters={'update_status': STATUS_TEXT_TO_NUM['Closed']}))
 
     # status field in CS Falcon is mapped to Source Status field in XSOAR. Don't confuse with state field
     elif 'status' in delta:
         demisto.debug(f'Incident with remote ID {incident_id} status will change to "{delta.get("status")}" in remote system.')
-        return str(resolve_incident([incident_id], delta.get('status')))
+        status = delta.get('status')
+
+        if status not in STATUS_TEXT_TO_NUM:
+            raise DemistoException(f'CrowdStrike Falcon Error: '
+                                   f"Status '{status}' is not a valid status ({' | '.join(STATUS_TEXT_TO_NUM.keys())}).")
+
+        return str(update_incident_request(ids=[incident_id], action_parameters={'update_status': STATUS_TEXT_TO_NUM[status]}))
 
     return ''
 
@@ -2460,7 +2558,7 @@ def remote_incident_handle_tags(tags: Set, request: str, incident_id: str) -> st
     result = ''
     for tag in tags:
         demisto.debug(f'{request} will be requested for incident with remote ID {incident_id} and tag "{tag}" in remote system.')
-        result += str(update_incident_request([incident_id], tag, request))
+        result += str(update_incident_request(ids=[incident_id], action_parameters={request: tag}))
     return result
 
 
@@ -4614,14 +4712,47 @@ def remove_host_group_members_command(host_group_id: str, host_ids: list[str]) -
                           raw_response=response)
 
 
-def resolve_incident_command(ids: list[str], status: str):
-    resolve_incident(ids, status)
-    readable = '\n'.join([f'{incident_id} changed successfully to {status}' for incident_id in ids])
-    return CommandResults(readable_output=readable)
+def resolve_incident_command(ids: list[str], status: str | None = None, user_uuid: str | None = None,
+                             user_name: str | None = None, add_comment: str | None = None, add_tag: str | None = None,
+                             remove_tag: str | None = None) -> CommandResults:
+    if not any([status, user_uuid, user_name, add_comment, add_tag, remove_tag]):
+        raise DemistoException('At least one of the following arguments must be provided:'
+                               'status, assigned_to_uuid, username, add_tag, remove_tag, add_comment')
+
+    if user_name and not user_uuid:
+        user_uuid = get_username_uuid(username=user_name)
+
+    action_parameters = {}
+    readable_output = f"Incident IDs '{', '.join(ids)}' have been updated successfully:\n"
+
+    if status:
+        action_parameters['update_status'] = STATUS_TEXT_TO_NUM[status]
+        readable_output += f"Status has been updated to '{status}'.\n"
+
+    if user_uuid:
+        action_parameters['update_assigned_to_v2'] = user_uuid
+        readable_output += f"Assigned user has been updated to '{user_uuid}'.\n"
+
+    if add_tag:
+        action_parameters['add_tag'] = add_tag
+        readable_output += f"Tag '{add_tag}' has been added.\n"
+
+    if remove_tag:
+        action_parameters['delete_tag'] = remove_tag
+        readable_output += f"Tag '{remove_tag}' has been removed.\n"
+
+    if add_comment:
+        action_parameters['add_comment'] = add_comment
+        readable_output += f"Comment '{add_comment}' has been added.\n"
+
+    update_incident_request(ids=ids,
+                            action_parameters=action_parameters)
+
+    return CommandResults(readable_output=readable_output)
 
 
 def update_incident_comment_command(ids: list[str], comment: str):
-    update_incident_comment(ids, comment)
+    update_incident_request(ids=ids, action_parameters={'add_comment': comment})
     readable = '\n'.join([f'{incident_id} updated successfully with comment \"{comment}\"' for incident_id in ids])
     return CommandResults(readable_output=readable)
 
@@ -4668,7 +4799,7 @@ def upload_batch_custom_ioc_command(
     return entry_objects_list
 
 
-def test_module():
+def module_test():
     try:
         get_token(new_token=True)
     except ValueError:
@@ -5107,7 +5238,7 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
                           outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
 
 
-def get_cve_command(args: dict) -> list[CommandResults]:
+def get_cve_command(args: dict) -> list[dict[str, Any]]:
     """
         Get a list of vulnerabilities by spotlight
         : args: filter which include params or filter param.
@@ -5138,10 +5269,10 @@ def get_cve_command(args: dict) -> list[CommandResults]:
                               'Base Score': cve.get('base_score')}
         human_readable = tableToMarkdown('CrowdStrike Falcon CVE', cve_human_readable,
                                          headers=['ID', 'Description', 'Published Date', 'Base Score'])
-        command_results_list.append(CommandResults(raw_response=cve,
-                                                   readable_output=human_readable,
-                                                   relationships=relationships_list,
-                                                   indicator=cve_indicator))
+        command_results = CommandResults(raw_response=cve, readable_output=human_readable, relationships=relationships_list,
+                                         indicator=cve_indicator).to_context()
+        if command_results not in command_results_list:
+            command_results_list.append(command_results)
     return command_results_list
 
 
@@ -6338,18 +6469,120 @@ def cs_falcon_resolve_identity_detection(args: dict[str, Any]) -> CommandResults
     return CommandResults(readable_output=f'IDP Detection(s) {", ".join(ids)} were successfully updated')
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+def cs_falcon_list_users_command(args: dict[str, Any]) -> CommandResults:
+    users_ids = argToList(args.get('id'))
+    offset = arg_to_number(args.get('offset')) or 0
+    limit = arg_to_number(args.get('limit')) or 50
+    query_filter = args.get('filter')
+
+    if not users_ids:
+        users_api_response = get_users(offset=offset, limit=limit, query_filter=query_filter)
+        users_ids = users_api_response.get('resources', [])
+
+        if not users_ids:
+            return CommandResults(readable_output='No matching results found.')
+
+    users_data_api_response = get_users_data(user_ids=users_ids)
+    users_data = users_data_api_response.get('resources', [])
+
+    def table_headers_transformer(header: str) -> str:
+        mapping = {
+            'uuid': 'UUID',
+            'first_name': 'First Name',
+            'last_name': 'Last Name',
+            'uid': 'E-Mail (UID)',
+            'last_login_at': 'Last Login',
+        }
+
+        return mapping.get(header, header)
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.Users',
+        outputs_key_field='uuid',
+        outputs=users_data,
+        readable_output=tableToMarkdown(
+            name='CrowdStrike Users',
+            t=users_data,
+            headers=['uuid', 'first_name', 'last_name', 'uid', 'last_login_at'],
+            headerTransform=table_headers_transformer,
+            sort_headers=False,
+        ),
+        raw_response=users_data_api_response,
+    )
 
 
-LOG(f'Command being called is {demisto.command()}')
+def get_incident_behavior_command(args: dict) -> CommandResults:
+    behavior_ids = argToList(args['behavior_ids'])
+    raw_response = get_behaviors(behavior_ids=behavior_ids)
+
+    results = raw_response.get('resources', [])
+
+    def table_headers_transformer(header: str) -> str:
+        mapping = {
+            'behavior_id': 'Behavior ID',
+            'incident_ids': 'Incident IDs',
+            'cid': 'CID',
+            'aid': 'AID',
+            'pattern_id': 'Pattern ID',
+            'timestamp': 'Timestamp',
+            'cmdline': 'Command Line',
+            'filepath': 'File Path',
+            'sha256': 'SHA256',
+            'tactic': 'Tactic',
+            'technique': 'Technique',
+            'display_name': 'Display Name',
+            'objective': 'Objective',
+        }
+
+        return mapping.get(header, header)
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IncidentBehavior',
+        outputs_key_field='behavior_id',
+        outputs=results,
+        readable_output=tableToMarkdown(
+            name='CrowdStrike Incident Behavior',
+            t=results,
+            headers=['behavior_id', 'incident_ids', 'cid', 'aid', 'pattern_id', 'timestamp', 'cmdline', 'filepath',
+                     'sha256', 'tactic', 'technique', 'display_name', 'objective'],
+            headerTransform=table_headers_transformer,
+            removeNull=True,
+            sort_headers=False,
+        ),
+        raw_response=raw_response,
+    )
+
+
+def get_ioarules_command(args: dict) -> CommandResults:
+    rule_ids = argToList(args['rule_ids'])
+    ioarules_response_data = get_ioarules(rule_ids)
+
+    ioarules = ioarules_response_data.get('resources', [])
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IOARules',
+        outputs_key_field='instance_id',
+        outputs=ioarules,
+        readable_output=tableToMarkdown(
+            name='CrowdStrike IOA Rules',
+            t=ioarules,
+            headers=['instance_id', 'description', 'enabled', 'name', 'pattern_id'],
+            headerTransform=string_to_table_header,
+            removeNull=True,
+            sort_headers=False,
+        ),
+        raw_response=ioarules_response_data,
+    )
 
 
 def main():
     command = demisto.command()
     args = demisto.args()
+    demisto.debug(f'Command being called is {command}')
+
     try:
         if command == 'test-module':
-            result = test_module()
+            result = module_test()
             return_results(result)
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents())
@@ -6456,8 +6689,14 @@ def main():
             return_results(remove_host_group_members_command(host_group_id=args.get('host_group_id'),
                                                              host_ids=argToList(args.get('host_ids'))))
         elif command == 'cs-falcon-resolve-incident':
-            return_results(resolve_incident_command(status=args.get('status'),
-                                                    ids=argToList(args.get('ids'))))
+            return_results(resolve_incident_command(ids=argToList(args.get('ids')),
+                                                    status=args.get('status'),
+                                                    user_uuid=args.get('assigned_to_uuid'),
+                                                    user_name=args.get('username'),
+                                                    add_comment=args.get('add_comment'),
+                                                    add_tag=args.get('add_tag'),
+                                                    remove_tag=args.get('remove_tag'),
+                                                    ))
         elif command == 'cs-falcon-update-incident-comment':
             return_results(update_incident_comment_command(comment=args.get('comment'),
                                                            ids=argToList(args.get('ids'))))
@@ -6561,6 +6800,12 @@ def main():
             return_results(cs_falcon_cspm_update_policy_settings_command(args=args))
         elif command == 'cs-falcon-resolve-identity-detection':
             return_results(cs_falcon_resolve_identity_detection(args=args))
+        elif command == 'cs-falcon-list-users':
+            return_results(cs_falcon_list_users_command(args=args))
+        elif command == 'cs-falcon-get-incident-behavior':
+            return_results(get_incident_behavior_command(args=args))
+        elif command == 'cs-falcon-get-ioarules':
+            return_results(get_ioarules_command(args=args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')

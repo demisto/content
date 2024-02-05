@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes": "description argument was removed from ***tc-add-indicator*** command, since it does not appear in ThreatConnect V3 API documentation."}
