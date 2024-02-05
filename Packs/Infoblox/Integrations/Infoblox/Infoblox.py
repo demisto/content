@@ -47,6 +47,7 @@ INTEGRATION_HOST_RECORDS_VIEW_CONTEXT_KEY = "View"
 
 INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORK_KEY = "network"
 INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORKVIEW_KEY = "network_view"
+INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY = "NetworkView"
 INTEGRATION_NETWORK_INFO_ADDITIONAL_FIELDS_CONTEXT_KEY = "AdditionalFields"
 
 INTEGRATION_IPV4_CONTEXT_NAME = "IP"
@@ -601,7 +602,7 @@ def transform_network_info_context(network_info: list[dict[str, Any]]) -> list[d
             elif k == INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORK_KEY:
                 n[INTEGRATION_COMMON_NAME_CONTEXT_KEY] = v
             elif k == INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORKVIEW_KEY:
-                n[INTEGRATION_NETWORK_INFO_CONTEXT_KEY] = v
+                n[INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY] = v
             elif k == INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY:
                 if isinstance(v, dict) and bool(v):
                     ext_attr_value = {}

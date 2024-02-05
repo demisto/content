@@ -731,19 +731,26 @@ script:
     - name: additional_return_fields
       description: Comma separated list of additional fields to return for each host, e.g. extattrs,aliases.
       required: false
+      defaultValue: extattrs
     outputs:
     - contextPath: Infoblox.Host.Reference
       description: The host record reference ID.
+      type: String
     - contextPath: Infoblox.Host.IPv4Address
       description: The host first IPv4 address.
+      type: String
     - contextPath: Infoblox.Host.ConfigureForDHCP
       description: Whether the host is configured for DHCP.
+      type: Boolean
     - contextPath: Infoblox.Host.Name
       description: The host record name.
+      type: String
     - contextPath: Infoblox.Host.ExtendedAttributes
       description: The network extended attributes.
+      type: Unknown
     - contextPath: Infoblox.Host.AdditionalFields
       description: The additional fields for network.
+      type: Unknown
   - name: infoblox-list-network-info
     description: List network information.
     arguments:
@@ -759,17 +766,23 @@ script:
     - name: additional_return_fields
       description: Comma separated list of additional fields to return for each host, e.g. extattrs,aliases.
       required: false
+      defaultValue: extattrs
     outputs:
     - contextPath: Infoblox.NetworkInfo.Reference
       description: The network reference.
+      type: String
     - contextPath: Infoblox.NetworkInfo.Name
       description: The network name.
+      type: String
     - contextPath: Infoblox.NetworkInfo.NetworkView
       description: The network view name.
+      type: String
     - contextPath: Infoblox.NetworkInfo.ExtendedAttributes
       description: The network extended attributes.
+      type: Unknown
     - contextPath: Infoblox.NetworkInfo.AdditionalFields
       description: The additional fields for network.
+      type: Unknown
   dockerimage: demisto/python3:3.10.13.86272
   runonce: false
   script: ''
