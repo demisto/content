@@ -3,7 +3,8 @@ import json
 
 import pytest
 from freezegun import freeze_time
-
+from unittest import mock
+from unittest.mock import patch, MagicMock
 import demistomock as demisto
 from CommonServerPython import Common
 from CortexXDRIR import XDR_RESOLVED_STATUS_TO_XSOAR
@@ -80,7 +81,7 @@ def test_fetch_incidents(requests_mock, mocker):
                                    " AAAAA involving user Administrator"
 
     if 'network_artifacts' not in json.loads(incidents[0]['rawJSON']):
-        assert False
+        raise AssertionError
     assert json.loads(incidents[0]['rawJSON']).pop('last_mirrored_in')
     assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)
 
@@ -171,7 +172,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     assert len(incidents_from_previous_run) == 1
     assert incidents_from_previous_run[0].get('incident_id') == '2'
     if 'network_artifacts' not in json.loads(incidents[0]['rawJSON']):
-        assert False
+        raise AssertionError
     assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)
 
 
@@ -793,7 +794,7 @@ def test_update_remote_system_command(incident_changed, delta):
     assert actual_remote_id == expected_remote_id
 
 
-def test_check_using_upgraded_api_incidents_extra_data_success(requests_mock, client):
+def test_check_using_upgraded_api_incidents_extra_data_success(mocker):
     """
     Given:
      - Mock response from API with valid incident data
@@ -805,22 +806,36 @@ def test_check_using_upgraded_api_incidents_extra_data_success(requests_mock, cl
     Then:
      - Returns the incident data and use_get_incident_extra_data == True
     """
-    from CortexXDRIR import check_using_upgraded_api_incidents_extra_data, Client
+    from CortexXDRIR import Client, check_using_upgraded_api_incidents_extra_data
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     incident_id = "1"
-    http_response = {"replay": {"number_in_config": 10, "alert_count": 5}, "incidents": [{"incident": {"id": "1", "created_time":
-                                                                                                       "2021-12-15T12:00:00Z"}}]}
-    requests_mock.post("https://api.xdrurl.com/public_api/v1/incidents/get_multiple_incidents_extra_data/", json=http_response)
+    http_response = {"replay": {"number_in_config": 10, "alert_count": 5, "incidents": [{"id": "1", "created_time":
+                                                                                                       "2021-12-15T12:00:00Z"}]}}
+    mocker.patch.object(client, '_http_request', return_value=http_response)
 
     raw_incident, use_get_incident_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_id)
 
-    assert raw_incident == {"id": "1", "created_time":
-                            "2021-12-15T12:00:00Z"}
+    assert raw_incident == [{"id": "1", "created_time":
+                            "2021-12-15T12:00:00Z"}]
     assert use_get_incident_extra_data
 
 
-def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock, client):
+def _mock_response(status=500, content="CONTENT", json_data=None, raise_for_status=None):
+    mock_resp = MagicMock()
+    # Set status code and content
+    mock_resp.status_code = status
+    mock_resp.content = content
+    # Add JSON data if provided
+    if json_data:
+        mock_resp.json = MagicMock(return_value=json_data)
+    # Mock raise_for_status call with optional error
+    if raise_for_status:
+        mock_resp.raise_for_status = MagicMock(side_effect=raise_for_status)
+    return mock_resp
+
+
+def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock,mocker):
     """
     Given:
      - Mock 500 response from API
@@ -831,44 +846,33 @@ def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock, cl
     Then:
      - Returns empty dict and use_get_incident_extra_data == False
     """
-    from CortexXDRIR import check_using_upgraded_api_incidents_extra_data
-    incident_id = "1"
-    requests_mock.post("https://api.xdrurl.com/public_api/v1/incidents/get_multiple_incidents_extra_data/", status_code=500)
+    from CommonServerPython import DemistoException
+    from CortexXDRIR import check_using_upgraded_api_incidents_extra_data, Client
+    raw_incident = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
+    # Patch the 'get_multiple_incidents_extra_data' method to return a mock response with a 500 status code
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
+    # Call the function with a mock client and the incident ID
+    
+    requests_mock.post(f'{XDR_URL}/public_api/v1', status_code=500, json=raw_incident)
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
 
-    raw_incident, use_get_incident_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_id)
-
-    assert raw_incident == {}
-    assert not use_get_incident_extra_data
-
-
-def test_fetch_incidents_upgraded_api_true(mocker):
-    """
-    Given:
-        - Client instance  
-        - Mocked upgraded API check returning true
-    When
-        - Calling fetch_incidents
-    Then
-        - Incidents are returned
-    """
-    from CortexXDRIR import fetch_incidents, Client
-    client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
-    http_response = {"replay": {"number_in_config": 10, "alert_count": 5}, "incidents":
-                     [{"incident": [{"id": "1", "created_time": "2021-12-15T12:00:00Z"}, {"id": "2", "created_time": "2021-12-15T12:00:01Z"}]}]}
-    mocker.mock("CortexXDRIR.check_using_upgraded_api_incidents_extra_data", return=(http_response, True))
-    mock_fetch_incidents = fetch_incidents(client)
-    incidents = []
-
-    assert len(incidents) > 0
+    mocker.patch.object(client,"get_multiple_incidents_extra_data",side_effect=DemistoException(
+            message="Group 'test' was not found", res=MockException(500)
+        ))
+    result = check_using_upgraded_api_incidents_extra_data(client, '1')
+    assert result == ({}, False)
 
 
-@freeze_time("1997-10-105 15:00:00 GMT")
+@freeze_time("1997-10-05 15:00:00 GMT")
 def test_fetch_incidents_extra_data(requests_mock, mocker):
     from CortexXDRIR import fetch_incidents, Client, sort_all_list_incident_fields
     import copy
 
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
-    raw_incident = load_test_data('get_multiple_incidents_extra_data.json')
+    raw_incident = load_test_data('.get_multiple_incidents_extra_data.json')
     modified_raw_incident = raw_incident['reply']['incident'].copy()
     modified_raw_incident['alerts'] = copy.deepcopy(raw_incident['reply'].get('alerts').get('data'))
     modified_raw_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
@@ -895,6 +899,6 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
                                    " AAAAA involving user Administrator"
 
     if 'network_artifacts' not in json.loads(incidents[0]['rawJSON']):
-        assert False
+        raise AssertionError
     assert json.loads(incidents[0]['rawJSON']).pop('last_mirrored_in')
     assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)

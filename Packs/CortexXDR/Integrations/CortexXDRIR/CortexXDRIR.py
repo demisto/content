@@ -435,11 +435,11 @@ def check_using_upgraded_api_incidents_extra_data(client, incident_id: str | Lis
         Dict: if the call sus
     """
     try:
-        raw_incident: dict = client.get_multiple_incidents_extra_data(incident_id) or {}
-        indicators_limit_number_in_config_map = int(raw_incident.get('incident', {}).get('replay', {}).get('number_in_config'))
-        fetch_alert_count = int(raw_incident.get('incident', {}).get('replay', {}).get('alert_count'))
-        use_get_incident_extra_data = fetch_alert_count > indicators_limit_number_in_config_map
-        return raw_incident.get('incident', {}).get('replay', {}), use_get_incident_extra_data
+        raw_incident: dict = client.get_multiple_incidents_extra_data(incident_id)
+        indicators_limit_number_in_config_map = int(raw_incident.get('replay', {}).get('number_in_config'))
+        fetch_alert_count = int(raw_incident.get('replay', {}).get('alert_count'))
+        use_get_incident_extra_data = fetch_alert_count <= indicators_limit_number_in_config_map
+        return raw_incident.get('replay', {}).get('incidents', {}), use_get_incident_extra_data
     except Exception as err:
         if err.res.status_code == 500:  # type: ignore
             return {}, False
