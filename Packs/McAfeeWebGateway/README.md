@@ -35,6 +35,10 @@ Gateway appliance system.
       * To send data to a syslog server under TCP, insert - `daemon.info @<IP>:<Port>`
       * To send data to a syslog server under the UDP protocol, insert - `daemon.info @<IP>:514`
 
+
+*  Pay Attention: Timestamp ingestion is currently available for the **time_stamp** field in **%d/%h/%Y %H:%M:%S %z** (e.g. 11/Oct/2023:04:50:18 -0500) format.
+
+
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option. 
  
