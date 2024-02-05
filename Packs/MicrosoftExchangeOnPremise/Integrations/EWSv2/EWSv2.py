@@ -3,7 +3,7 @@ import hashlib
 import subprocess
 import warnings
 from multiprocessing import Process
-
+import quopri
 import dateparser  # type: ignore
 import exchangelib
 from CommonServerPython import *
@@ -2149,18 +2149,45 @@ def mark_item_as_read(item_ids, operation='read', target_mailbox=None):  # pragm
                                 marked_items)
 
 
+def parse_quoted_printable(email_content: str) -> str:
+    """
+    Parses email content if this email is encoded in quoted-printable, using quopri.
+    """
+    if 'Content-Transfer-Encoding: quoted-printable' in email_content:
+        split_email = email_content.split('charset=')
+        charset = 'utf-8'
+        if len(split_email) > 1:
+            charset = split_email[1].strip('"').split('"')[0] or charset
+        email_content = quopri.decodestring(email_content).decode(charset, errors='ignore')
+
+        email_content = email_content.replace('Content-Transfer-Encoding: quoted-printable\n', '')
+        # email_content = email_content.replace(f"charset=\"{charset}\"", "charset=\"utf-8\"")
+        # email_content = email_content.replace("charset=\"iso-8859-2\"", "charset=\"utf-8\"")
+        # email_content = email_content.replace("charset=utf-8\"", "charset=\"utf-8\";")
+        # email_content = email_content.replace("content=\"text/html;", "content=\"text/html\";")
+
+        demisto.info(f'After replacing, {email_content=}')
+    return email_content
+
+
 def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     item = get_item_from_mailbox(account, item_id)
+    demisto.info(f'After get_item_from_mailbox, {item=}')
 
     if item.mime_content:
         # came across an item with bytes attachemnt which failed in the source code, added this to keep functionality
         if isinstance(item.mime_content, bytes):
             email_content = email.message_from_bytes(item.mime_content)
+            demisto.info(f'Was bytes, now {str(email_content)=}')
         else:
             email_content = email.message_from_string(item.mime_content)
+            demisto.info(f'Was string, now {str(email_content)=}')
+
         if item.headers:
+            demisto.info(f'Headers are: {item.headers=}')
             attached_email_headers = []
+            demisto.info(f'{list(email_content.items())=}')
             for h, v in list(email_content.items()):
                 if not isinstance(v, str):
                     try:
@@ -2174,8 +2201,11 @@ def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
                 if (header.name, header.value) not in attached_email_headers and header.name != 'Content-Type':
                     email_content.add_header(header.name, header.value)
 
+        email_content_str = email_content.as_string()
+        demisto.info(f'After as_string, {email_content_str=}')
+        email_content_str = parse_quoted_printable(email_content_str)
         eml_name = item.subject if item.subject else 'demisto_untitled_eml'
-        file_result = fileResult(eml_name + ".eml", email_content.as_string())
+        file_result = fileResult(eml_name + ".eml", email_content_str)
         file_result = file_result if file_result else "Failed uploading eml file to war room"
 
         return file_result
