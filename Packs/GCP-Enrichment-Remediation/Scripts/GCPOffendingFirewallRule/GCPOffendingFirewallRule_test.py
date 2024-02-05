@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import CommandResults
+import pytest
 
 
 def test_test_range_func(mocker):
@@ -97,7 +98,7 @@ def test_test_match_func(mocker):
             "sourceRanges": ["0.0.0.0/0"],
             "targetTags": ["test-tag"],
         },
-        ['bad_tag'],
+        ["bad_tag"],
     )
     # Disabled
     assert not test_match(
@@ -111,3 +112,58 @@ def test_test_match_func(mocker):
         },
         no_tags,
     )
+
+
+@pytest.mark.parametrize(
+    "scenario, command_return, command_result",
+    [
+        (
+            "Firewall rule match",
+            [
+                {
+                    "Type": 1,
+                    "Contents": {
+                        "id": "example-id",
+                        "items": [
+                            {
+                                "allowed": [{"IPProtocol": "tcp", "ports": ["22"]}],
+                                "direction": "INGRESS",
+                                "disabled": False,
+                                "name": "rule1",
+                                "sourceRanges": ["0.0.0.0/0"],
+                            }
+                        ],
+                    },
+                }
+            ],
+            "Potential Offending GCP Firewall Rule(s) Found: ['rule1']",
+        ),
+    ],
+)
+def test_gcp_offending_firewall_rule_command(
+    scenario, command_return, command_result, mocker
+):
+    """Tests gcp_offending_firewall_rule function.
+
+    Given:
+        - Mocked arguments
+    When:
+        - Sending args to gcp_offending_firewall_rule function.
+    Then:
+        - Checks the output of the function with the expected output.
+    """
+    from GCPOffendingFirewallRule import gcp_offending_firewall_rule
+
+    mocker.patch.object(demisto, "executeCommand", return_value=command_return)
+
+    args = {
+        "project_id": "gcp-project",
+        "network_url": "https://gcp-network",
+        "port": "22",
+        "protocol": "tcp",
+        "network_tags": ["test-tag"],
+    }
+    result = gcp_offending_firewall_rule(args)
+    expected_result = CommandResults(readable_output=f"{command_result}")
+
+    assert result.readable_output == expected_result.readable_output
