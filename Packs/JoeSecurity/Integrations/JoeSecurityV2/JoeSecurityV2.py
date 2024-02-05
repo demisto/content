@@ -854,7 +854,18 @@ def submit_sample_command(client: Client, args: Dict[str, Any], exe_metrics: Exe
              result: (CommandResults) The CommandResults object.
     """
     params = build_submission_params(args, client.on_premise)
-    return polling_submit_command(args, client, params, exe_metrics)
+    try:
+        return polling_submit_command(args, client, params, exe_metrics)
+    except jbxapi.InvalidParameterError as e:
+        if e.message == 'Unknown parameter delete-after-days.':
+            raw = {"code": 3,
+                   "message":
+                       ('The parameter delete-after-days is only available in the cloud version.\n'
+                        'Check the "On-Premise" option in the integration settings for on-premise setups to avoid this error')
+                   }
+            raise jbxapi.ApiError(raw)
+        else:
+            raise
 
 
 def submit_url_command(client: Client, args: Dict[str, Any], exe_metrics: ExecutionMetrics) -> PollResult:
