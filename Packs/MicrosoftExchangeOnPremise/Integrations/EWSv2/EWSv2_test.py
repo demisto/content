@@ -729,12 +729,13 @@ def test_resolve_names_command_no_result(mocker):
     result = resolve_name_command({'identifier': 'someIdentifier'}, protocol)
     assert result == 'No results were found.'
 
+
 def test_parse_phone_number():
     """
         Given: A filled phone number and a Phonenumber with no backing number
         When: Calling parse_phone_number
         Then: Only get the a context object when the phpone_number is populated
     """
-    good_number = EWSv2.parse_phone_number(PhoneNumber(label='123', phone_number = '123123123'))
+    good_number = EWSv2.parse_phone_number(PhoneNumber(label='123', phone_number='123123123'))
     assert good_number.get('label') and good_number.get('phone_number')
     assert not EWSv2.parse_phone_number(PhoneNumber(label='123'))
