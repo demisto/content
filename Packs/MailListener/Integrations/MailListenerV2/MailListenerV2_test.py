@@ -615,7 +615,7 @@ def test_fetch_incidents_last_uid_as_int(mocker):
 
     next_run, _ = fetch_incidents(
         client=mocker.Mock(),
-        last_run={'last_uid': '8'},
+        last_run={'last_uid': 8},
         first_fetch_time='2022-01-01 00:00:00',
         include_raw_body=False,
         with_headers=False,
@@ -641,7 +641,7 @@ def test_fetch_incidents_last_uid_as_string(mocker):
     """
     from MailListenerV2 import fetch_incidents
     mocker.patch('MailListenerV2.Email.convert_to_incident', return_value={})
-    fetch_mail_mocker = mocker.patch('MailListenerV2.fetch_mails', return_value=([mock_email()], [mock_email()], "5"))
+    fetch_mail_mocker = mocker.patch('MailListenerV2.fetch_mails', return_value=([mock_email()], [mock_email()], 5))
 
     next_run, incidents = fetch_incidents(
         client=mocker.Mock(),
