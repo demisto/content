@@ -53,7 +53,7 @@ async def handle_post(
 ):
 
     try:
-        raw_json = json.loads(raw_json)
+        raw_json = json.loads(raw_json)  # type: ignore
     except json.JSONDecodeError:
         return Response(status_code=status.HTTP_400_BAD_REQUEST, content='Invalid JSON data.')
 
@@ -84,7 +84,7 @@ async def handle_post(
     request_headers.pop(secret_header, None)
 
     raw_json = raw_json or await request.json()
-    raw_json['headers'] = request_headers
+    raw_json['headers'] = request_headers  # type: ignore
 
     incident = {
         'name': name or 'Generic webhook triggered incident',

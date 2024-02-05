@@ -48,28 +48,18 @@ configuration:
   required: false
   section: Connect
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 1398efb0-38b5-4808-80bf-ef8e0e14191c
-    packName: Generic Webhook (Form Data)
-    prevname: ""
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: The Generic Webhook (Form Data) integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
 display: Generic Webhook (Form Data)
 name: Generic Webhook (Form Data)
 script:
-  dockerimage: demisto/fastapi:1.0.0.76036
-  isFetchSamples: true
+  commands: []
+  dockerimage: demisto/fastapi:1.0.0.86962
   longRunning: true
   longRunningPort: true
-  runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-sourcemoduleid: Generic Webhook
+  isFetchSamples: true
 fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
