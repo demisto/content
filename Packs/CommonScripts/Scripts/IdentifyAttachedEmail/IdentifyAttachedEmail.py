@@ -15,14 +15,14 @@ CONFIDENT_EMAIL_INFOS = [
 # IMPORTANT: If you modify the logic here make sure to update ParseEmailFiles too
 def is_email(file_info, file_name):
     if not file_info:
-        demisto.info("IdentifyAttachedEmail: No file info for file: {}. Returning false.".format(file_name))
+        demisto.info(f"IdentifyAttachedEmail: No file info for file: {file_name}. Returning false.")
         return False
     file_info = file_info.lower().strip()
     for info in CONFIDENT_EMAIL_INFOS:
         if info in file_info:
             return True
     file_name = file_name.lower().strip() if file_name else ''
-    if file_name.endswith('.eml') and ('text' in file_info or 'data' == file_info):
+    if file_name.endswith('.eml') and ('text' in file_info or file_info == 'data'):
         return True
     if file_name.endswith('.msg') and 'composite document file v2 document' in file_info:
         return True
@@ -44,14 +44,14 @@ def is_entry_email(entry):
 
 
 def identify_attached_mail(args):
-    entry_ids = demisto.get(args, 'entryid')
+    entry_ids = args.get('entryid')
     if entry_ids:
         if isinstance(entry_ids, STRING_TYPES):
             # playbook inputs may be in the form: [\"23@2\",\"24@2\"] if passed as a string and not array
             entry_ids = entry_ids.strip().replace(r'\"', '"')  # type:ignore
         entry_ids = argToList(entry_ids)
         entries = []  # type: List[str]
-        
+
         if is_xsiam_or_xsoar_saas():
             entry_ids_str = ",".join(entry_ids)
             entries = demisto.executeCommand('getEntriesByIDs', {'entryIDs': entry_ids_str})
