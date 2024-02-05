@@ -482,7 +482,6 @@ var fileDeleteCommand = function(EntryID) {
     return  {Type: entryTypes.note,
             Contents: '',
             ContentsType: formats.json,
-            EntryContext: invContext,
             HumanReadable: `File ${EntryID} was deleted successfully.`};
 }
 
