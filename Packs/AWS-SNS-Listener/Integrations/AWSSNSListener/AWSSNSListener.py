@@ -22,7 +22,7 @@ basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 
 
-def handle_teams_proxy_and_ssl():
+def handle_proxy_and_ssl():
     proxies = None
     use_ssl = not PARAMS.get('insecure', False)
     if not is_demisto_version_ge('8.0.0'):
@@ -38,10 +38,10 @@ def handle_teams_proxy_and_ssl():
     return proxies, use_ssl
 
 
-PROXIES, USE_SSL = handle_teams_proxy_and_ssl()
+PROXIES, USE_SSL = handle_proxy_and_ssl()
 
 
-def valid_sns_message(sns_payload):
+def is_valid_sns_message(sns_payload):
     """
     Validates an incoming Amazon Simple Notification Service (SNS) message.
 
@@ -58,10 +58,10 @@ def valid_sns_message(sns_payload):
         return False
 
     # Amazon SNS currently supports signature version 1 or 2.
-    if sns_payload["SignatureVersion"] not in ["1", "2"]:
+    if sns_payload.get("SignatureVersion") not in ["1", "2"]:
         demisto.error('Not using the supported AWS-SNS SignatureVersion 1 or 2')
         return False
-
+    demisto.debug(f'Handling Signature Version: {sns_payload.get("SignatureVersion")}')
     # Fields for a standard notification.
     fields = ["Message", "MessageId", "Subject", "Timestamp", "TopicArn", "Type"]
 
@@ -107,11 +107,23 @@ def valid_sns_message(sns_payload):
 async def handle_post(request: Request,
                       credentials: HTTPBasicCredentials = Depends(basic_auth),
                       token: APIKey = Depends(token_auth)):
+    """
+    Handles incoming AWS-SNS POST requests.
+    Supports SubscriptionConfirmation, Notification and UnsubscribeConfirmation.
+
+    Args:
+        request (Request): The incoming HTTP request.
+        credentials (HTTPBasicCredentials): Basic authentication credentials.
+        token (APIKey): API key for authentication.
+
+    Returns:
+        Union[Response, str]: Response data or error message.
+    """
     data = ''
     header_name = None
     request_headers = dict(request.headers)
 
-    credentials_param = demisto.params().get('credentials')
+    credentials_param = PARAMS.get('credentials')
 
     if credentials_param and (username := credentials_param.get('identifier')):
         password = credentials_param.get('password', '')
@@ -141,7 +153,7 @@ async def handle_post(request: Request,
     except Exception as e:
         demisto.error(f'Error in request parsing: {e}')
         return 'Failed parsing request'
-    if not valid_sns_message(payload):
+    if not is_valid_sns_message(payload):
         return 'Validation of SNS message failed.'
 
     if type == 'SubscriptionConfirmation':
@@ -166,7 +178,7 @@ async def handle_post(request: Request,
             'type': 'AWS-SNS Notification'
         }
         demisto.debug(f'demisto.createIncidents with:{incident}')
-        if demisto.params().get('store_samples'):
+        if PARAMS.get('store_samples'):
             try:
                 sample_events_to_store.append(incident)
                 integration_context = get_integration_context()
@@ -193,7 +205,6 @@ async def handle_post(request: Request,
 
 
 def main():
-    # PARAMS = demisto.params()
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         try:
