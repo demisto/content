@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Dict, List
 
-import urllib3
 from greynoise import GreyNoise, exceptions, util  # type: ignore
 
 from CommonServerPython import *

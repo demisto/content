@@ -1,5 +1,5 @@
 GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide scan and attack traffic. With this integration, users can contextualize existing alerts, filter false-positives, identify compromised devices, and track emerging threats. This Integration provides a feed of IPv4 Internet Scanners from GreyNoise.
-This integration was integrated and tested with version xx of GreyNoise Indicator Feed.
+This integration was integrated and tested with version 1.0.0 of GreyNoise Indicator Feed.
 
 ## Configure GreyNoise Indicator Feed on Cortex XSOAR
 

@@ -102,8 +102,7 @@ display: GreyNoise Indicator Feed
 name: GreyNoise Indicator Feed
 script:
   commands:
-  - arguments: []
-    description: Gets the feed indicators.
+  - description: Gets the feed indicators.
     name: greynoise-get-indicators
   dockerimage: demisto/greynoise:1.0.0.86382
   feed: true
