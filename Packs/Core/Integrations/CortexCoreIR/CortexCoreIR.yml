@@ -2931,59 +2931,11 @@ script:
     - contextPath: Core.UserGroup.source
       description: Type of user group.
       type: String
-  - arguments:
-    - description: A comma-separated list of one or more role names in your environment for which you want detailed information.
-      name: role_names
-      required: true
-    name: core-list-roles
-    description: Retrieve information about one or more roles created in your environment.
-    outputs:
-    - contextPath: Core.Role.pretty_name
-      description: Name of the role as it appears in the management console.
-      type: String
-    - contextPath: Core.Role.permissions
-      description: List of permissions associated with this role.
-      type: array
-    - contextPath: Core.Role.insert_time
-      description: Timestamp of when the role was created.
-      type: Number
-    - contextPath: Core.Role.update_time
-      description: Timestamp of when the role was last updated.
-      type: Number
-    - contextPath: Core.Role.created_by
-      description: Email of the user who created the role.
-      type: String
-    - contextPath: Core.Role.description
-      description: Description of the role, if available.
-      type: String
-    - contextPath: Core.Role.groups
-      description: Group names associated with the role.
-      type: array
-    - contextPath: Core.Role.users
-      description: Email address of users associated with the role.
-      type: array
-  - arguments:
-    - description: A comma-separated list of one or more user emails of users you want to add to a role.
-      name: user_emails
-      required: true
-      isArray: true
-    - description: Name of the role you want to add a user to.
-      name: role_name
-      required: true
-    name: core-set-user-role
-    description: Add one or more users to a role.
-  - arguments:
-    - description: A comma-separated list of one or more user emails of users you want to remove from a role.
-      name: user_emails
-      required: true
-      isArray: true
-    name: core-remove-user-role
-    description: Remove one or more users from a role.
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.13.85667
 tests:
 - No tests
 fromversion: 6.2.0
