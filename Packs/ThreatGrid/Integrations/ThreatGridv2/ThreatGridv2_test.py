@@ -699,13 +699,26 @@ def test_validate_url_template(url):
 
 
 @pytest.mark.parametrize(
-    "mock_raw_response",
+    "mock_raw_response, expected_exception",
     [
-        ({"error": "test", "state": "fail"}, "")
-        ({"state": "fail"}, "")
+        ({"error": "test", "state": "fail"}, ""),
+        ({"state": "fail"}, "Uploading test to ThreatGrid failed\n{'state': 'fail'}")
     ]
 )
-def test_schedule_command_sample_upload(mocker, mock_client, mock_raw_response: dict[str, str], expected_exception: str):
+def test_schedule_command_sample_upload_when_state_is_fail(
+    mocker,
+    mock_client,
+    mock_raw_response: dict[str, str],
+    expected_exception: str,
+):
+    """
+    Given:
+        - sample_id
+    When:
+        - run schedule_command function
+    Then:
+        - Ensure the 
+    """
     from ThreatGridv2 import schedule_command
     mocker.patch(
         "ThreatGridv2.sample_state_get_command",
