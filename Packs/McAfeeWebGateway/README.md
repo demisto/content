@@ -4,6 +4,7 @@ This pack includes Cortex XSIAM content.
 Skyhigh Secure Web Gateway (SWG) is a cloud-native web security solution that provides an advanced layered protection from threats and data loss with integrated RBI, CASB, and DLP capabilities in the web and cloud. It enables organizations to implement a simplified SSE architecture that delivers security, scalability, and availability for a distributed and remote workforce.
 
 <~XSIAM>
+
 ## Configuration on Server Side
 You need to configure Web Gateway to forward Syslog messages.
  
