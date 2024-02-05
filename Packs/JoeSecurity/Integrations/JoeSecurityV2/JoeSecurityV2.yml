@@ -28,7 +28,7 @@ configuration:
   required: true
   type: 15
 - name: onprem
-  display: On-Premise 
+  display: On-Premise
   type: 8
   additionalinfo: Only use Features that are available in On-Premise installations
   required: false
@@ -760,7 +760,7 @@ script:
       description: The War Room entry ID of the file to submit.
       required: true
     - name: file_name
-      description: The filename of the submitted sample
+      description: The filename of the submitted sample.
     - name: full_display
       description: When is set to true, indicators information, including their DBot Scores, will be displayed.
       defaultValue: "true"
