@@ -1,4 +1,4 @@
-Creates external ask links for the `Ask` task with the given name in the current investigation.
+Creates external ask links for the `Ask` task with the given name.
 
 ## Script Data
 
@@ -14,8 +14,8 @@ Creates external ask links for the `Ask` task with the given name in the current
 ---
 This script uses the following commands and scripts.
 
-* Core REST API
 * core-api-get
+* Core REST API
 
 ## Inputs
 
@@ -24,7 +24,7 @@ This script uses the following commands and scripts.
 | **Argument Name** | **Description** |
 | --- | --- |
 | task_name | The name of the Ask task in the playbook to generate links. |
-| inc_id | The investigation id for which generate the links. |
+| inc_id | The investigation id for which generate the links. When omitted, the current investigation is used |
 
 ## Outputs
 
