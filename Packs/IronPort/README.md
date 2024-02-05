@@ -1,4 +1,5 @@
 # Cisco ESA (Email Security Appliance)
+This pack includes Cortex XSIAM content. 
 
 # Integration:
 The Cisco Email Security Appliance is an email security gateway product. It is designed to detect and block a wide variety of email-born threats, such as malware, spam and phishing attempts.
@@ -11,7 +12,7 @@ The Cisco Email Security Appliance is an email security gateway product. It is d
 - Retrieve tracking messages enrichment summaries - AMP, DLP, URL.
 - Reporting - get Cisco SMA's statistics reports.
 - Fetch quarantine messages as incidents.
-
+<~XSIAM>
 ## Creating a Log Subscription in the Cisco ESA GUI
 
 1. Choose System Administration > Log Subscriptions.
@@ -40,3 +41,4 @@ You can configure the specific vendor and product for this instance.
 4. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - cisco
    - product as product - esa
+</~XSIAM>

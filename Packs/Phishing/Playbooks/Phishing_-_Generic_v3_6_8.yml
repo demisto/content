@@ -1133,10 +1133,10 @@ tasks:
       version: -1
       name: Authenticate email
       description: Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.
-      script: CheckEmailAuthenticity
       type: regular
       iscommand: false
       brand: ""
+      scriptName: CheckEmailAuthenticity
     nexttasks:
       '#none#':
       - "83"
@@ -1244,17 +1244,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 987110a5-1108-468d-85bb-7dcbd9baad15
+    taskid: 5bb34c10-a58e-480a-8c9a-af220dac1b71
     type: playbook
     task:
-      id: 987110a5-1108-468d-85bb-7dcbd9baad15
+      id: 5bb34c10-a58e-480a-8c9a-af220dac1b71
       version: -1
       name: Calculate Severity - Generic v2
       playbookName: Calculate Severity - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+        Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
+
+        - DBotScores of indicators
+        - Critical assets
+        - Email authenticity
+        - Current incident severity
+        - Microsoft Headers
+        - Risky users (XDR)
+        - Risky hosts (XDR)
     nexttasks:
       '#none#':
       - "2"
@@ -1274,6 +1283,62 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      Account:
+        complex:
+          root: Account
+          transformers:
+          - operator: uniq
+      DBotScoreIndicators:
+        complex:
+          root: DBotScore
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      DBotScoreMaxScore:
+        complex:
+          root: DBotScore
+          accessor: Score
+          transformers:
+          - operator: sort
+            args:
+              descending:
+                value:
+                  simple: "true"
+          - operator: uniq
+          - operator: FirstArrayElement
+      EmailAuthenticityCheck:
+        complex:
+          root: Email
+          accessor: AuthenticityCheck
+          transformers:
+          - operator: uniq
+      Endpoint:
+        complex:
+          root: Endpoint
+          transformers:
+          - operator: uniq
+      MicrosoftHeadersSeverityCheck:
+        complex:
+          root: Email
+          accessor: MicrosoftHeadersSeverityCheck
+      XDRRiskyHosts:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: RiskyHost
+          transformers:
+          - operator: uniq
+      XDRRiskyUsers:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: RiskyUser
+          transformers:
+          - operator: uniq
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
   "85":
     id: "85"
     taskid: 2eecb8e9-8b1d-4ba5-87d3-dbfbb10baf6e
@@ -2930,17 +2995,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "217":
     id: "217"
-    taskid: 2339bed3-a001-409f-8a65-a2b59923fa51
+    taskid: f36a1fb4-aab4-4a3d-8203-138e42b0c453
     type: playbook
     task:
-      id: 2339bed3-a001-409f-8a65-a2b59923fa51
+      id: f36a1fb4-aab4-4a3d-8203-138e42b0c453
       version: -1
       name: TIM - Indicator Relationships Analysis
       playbookName: TIM - Indicator Relationships Analysis
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+        This playbook is designed to assist with a security investigation by providing an analysis of indicator relationships. The following information is included:
+        - Indicators of compromise (IOCs) related to the investigation.
+        - Attack patterns related to the investigation.
+        - Campaigns related to the investigation.
+        - IOCs associated with the identified campaigns.
+        - Reports containing details on the identified campaigns.
     nexttasks:
       '#none#':
       - "218"
@@ -2962,8 +3033,9 @@ tasks:
                 value:
                   simple: Domain.Name
                 iscontext: true
+          - operator: uniq
       LimitResults:
-        simple: "300"
+        simple: "150"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -3431,17 +3503,37 @@ tasks:
     isautoswitchedtoquietmode: false
   "227":
     id: "227"
-    taskid: 109a066f-22b3-479e-8779-5e8f6fe4a080
+    taskid: b7d56405-d0e0-4421-8d2a-54bdb5104285
     type: playbook
     task:
-      id: 109a066f-22b3-479e-8779-5e8f6fe4a080
+      id: b7d56405-d0e0-4421-8d2a-54bdb5104285
       version: -1
       name: Detonate URL - Generic v1.5
       playbookName: Detonate URL - Generic v1.5
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+        Detonate a URL through one or more active integrations that support URL detonation.
+        Supported integrations:
+        - SecneurX Analysis
+        - ANY.RUN
+        - McAfee Advanced Threat Defense
+        - WildFire
+        - Lastline
+        - Cuckoo Sandbox
+        - Cisco Secure Malware Analytics (ThreatGrid)
+        - JoeSecurity
+        - CrowdStrike Falcon Sandbox
+        - FireEye AX
+        - VMRay Analyzer
+        - Polygon
+        - CrowdStrike Falcon Intelligence Sandbox
+        - OPSWAT Filescan
+        - ANYRUN
+        -  VirusTotal
+        - Anomali ThreatStream
+        - Hatching Triage
     nexttasks:
       '#none#':
       - "52"
@@ -3461,6 +3553,18 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
 view: |-
   {
     "linkLabelsPosition": {
@@ -3697,47 +3801,44 @@ inputs:
     This input is used in the "Spear Phishing Investigation" sub-playbook.
   playbookInputQuery:
 inputSections:
-- name: Role and Assignment
-  description:  Parameters defining user responsibilities and task allocations.
-  inputs: 
+- inputs:
   - Role
   - OnCall
-- name: Search and Delete Functionality
-  description: Input criteria to locate specific entries and actions to remove them.
-  inputs:
+  - EmailHuntingCreateNewIncidents
+  - ListenerMailbox
+  - SendMailInstance
+  - UserEngagement
+  - TakeManualActions
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, and user engagements.
+- inputs:
+  - DetonateURL
+  - InternalRange
+  - InternalDomains
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
+  - AuthenticateEmail
+  - CheckMicrosoftHeaders
+  - GetOriginalEmail
+  - OriginalAuthenticationHeader
+  - PhishingModelName
+  - DBotPredictURLPhishingURLsNumber
+  - EmailFileToExtract
+  - HuntEmailIndicators
+  - KeyWordsToSearch
+  name: Investigation
+  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - BlockIndicators
   - SearchAndDelete
   - SearchAndDeleteIntegration
   - O365DeleteType
   - O365ExchangeLocation
   - O365AllowNotFoundSearchLocations
   - O365ExchangeLocationExclusion
-- name: Email Verification and Classification
-  description: Criteria and actions for authenticating email sources and categorizing by content.
-  inputs:
-  - AuthenticateEmail
-  - CheckMicrosoftHeaders
-  - InternalDomains
-  - GetOriginalEmail
-  - OriginalAuthenticationHeader
-- name: Analysis and Threat Detection
-  description: Parameters for examining data, identifying, and assessing security threats.
-  inputs:
-  - BlockIndicators
-  - DetonateURL
-  - InternalRange
-  - PhishingModelName
-  - DBotPredictURLPhishingURLsNumber
-  - EmailFileToExtract
-  - HuntEmailIndicators
-- name: Incident Management and User Engagement
-  description: Input settings for handling security events and involving end-users in the resolution process.
-  inputs:
-  - EmailHuntingCreateNewIncidents
-  - ListenerMailbox
-  - SendMailInstance
-  - UserEngagement
-  - TakeManualActions
-  - KeyWordsToSearch
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
 outputs: []
 tests:
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
