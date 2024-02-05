@@ -635,71 +635,74 @@ script:
       predefined:
       - 'True'
       - 'False'
-    description: This operation can be used to verify aliases and resolve display names to the appropriate mailbox user. If ambiguous names exist then each mailbox will be returned. A maximum of 100 candidates will be returned; the 100 candidates that are returned are the first 100 that are encountered in the lookup operation. Email addresses with prefixed routing types, such as smtp or sip, are saved in a multivalue array. The ResolveNames operation performs a partial match against each value of that array when you add the routing type at the beginning of the unresolved name, such as "sip:User1@Contoso.com". If you don't specify a routing type, this command  will default to the routing type of smtp, match it to a primary smtp address property, and not search the multivalue array.
+    description: This operation can be used to verify aliases and resolve display names to the appropriate mailbox user. Only one ambiguous name can be specified in a single command call. If multiple candidates exist then all will be returned. A maximum of 100 candidates will be returned; the 100 candidates that are returned are the first 100 that are encountered in the lookup operation. Email addresses with prefixed routing types, such as smtp or sip, are saved in a multivalue array. The ResolveNames operation performs a partial match against each value of that array when you add the routing type at the beginning of the unresolved name, such as "sip:User1@Contoso.com". If you don't specify a routing type, this command  will default to the routing type of smtp, match it to a primary smtp address property, and not search the multivalue array.
     name: ews-resolve-name
     outputs:
     - contextPath: EWS.ResolvedNames.FullContactInfo.contactSource
-      description: ''
+      description: 'Whether the contact is located in the Exchange store or Active Directory Domain Services (AD DS).'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.culture
-      description: ''
+      description: 'Represents the culture for a given item in a mailbox.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.displayName
-      description: ''
+      description: 'The display name of a contact.'
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.ItemId
+      description: 'Contains the unique identifier and change key of an item in the Exchange store.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.emailAddresses
-      description: ''
+      description: 'Represents a collection of e-mail addresses for a contact.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.givenName
-      description: ''
+      description: Contains a contact's given name.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.importance
-      description: ''
+      description: 'Describes the importance of an item.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.initials
-      description: ''
+      description: 'Represents the initials of a contact.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.phoneNumbers.label
-      description: ''
+      description: 'The following are the possible values for this attribute: AssistantPhone, BusinessFax, BusinessPhone, BusinessPhone2, Callback, CarPhone, CompanyMainPhone, HomeFax, HomePhone, HomePhone2, Isdn, MobilePhone, OtherFax, OtherTelephone, Pager, PrimaryPhone, RadioPhone, Telex, TtyTddPhone'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.phoneNumbers.phoneNumber
-      description: ''
+      description: 'The Phone number of the contact'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.city
-      description: ''
+      description: 'The physicalAddresses city assosciated with the contact.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.country
-      description: ''
+      description: 'The physicalAddresses country assosciated with the contact.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.label
-      description: ''
+      description: 'The physicalAddresses label assosciated with the contact.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.state
-      description: ''
+      description: 'The physicalAddresses state assosciated with the contact.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.street
-      description: ''
+      description: 'The physicalAddresses street assosciated with the contact.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.zipcode
-      description: ''
+      description: 'The physicalAddresses zipcode assosciated with the contact.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.postalAddressIndex
-      description: ''
+      description: 'Represents the display types for physical addresses.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.sensitivity
-      description: ''
+      description: 'Indicates the sensitivity level of an item.'
       type: String
     - contextPath: EWS.ResolvedNames.email_address
-      description: ''
+      description: 'The primary SMTP address of a mailbox user.'
       type: String
     - contextPath: EWS.ResolvedNames.mailbox_type
-      description: ''
+      description: 'The type of mailbox that is represented by the e-mail address.'
       type: String
     - contextPath: EWS.ResolvedNames.name
-      description: ''
+      description: 'The name of a mailbox user.'
       type: String
     - contextPath: EWS.ResolvedNames.routing_type
-      description: ''
+      description: 'The address type for the mailbox'
       type: String
   - arguments:
     - description: A CSV list if item IDs.
