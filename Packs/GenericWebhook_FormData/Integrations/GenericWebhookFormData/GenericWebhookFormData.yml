@@ -72,3 +72,4 @@ script:
   subtype: python3
   type: python
 sourcemoduleid: Generic Webhook
+fromversion: 6.9.0

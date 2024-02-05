@@ -2,22 +2,18 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
 import json
 from collections import deque
 from copy import copy
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
 from traceback import format_exc
-from typing import Dict
 
 import uvicorn
 from fastapi import Depends, FastAPI, Request, Response, status, Form
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKey, APIKeyHeader
-from pydantic import BaseModel
 from uvicorn.logging import AccessFormatter
-
 
 
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
@@ -29,7 +25,7 @@ token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 
 
 class GenericWebhookAccessFormatter(AccessFormatter):
-    def get_user_agent(self, scope: Dict) -> str:
+    def get_user_agent(self, scope: dict) -> str:
         headers = scope.get('headers', [])
         user_agent_header = list(filter(lambda header: header[0].decode() == 'user-agent', headers))
         user_agent = ''
@@ -110,6 +106,7 @@ async def handle_post(
 
     return demisto.createIncidents([incident])
 
+
 def fetch_samples() -> None:
     """Extracts sample events stored in the integration context and returns them as incidents
 
@@ -140,7 +137,7 @@ def main() -> None:
                 certificate_path = ''
                 private_key_path = ''
                 try:
-                    ssl_args = dict()
+                    ssl_args = {}
 
                     if certificate and private_key:
                         certificate_file = NamedTemporaryFile(delete=False)
@@ -185,4 +182,3 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
