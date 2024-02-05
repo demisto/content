@@ -2768,7 +2768,7 @@ def main():
             return_results(results=get_hosts_info(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-runtime-container-audit-events-list":
             return_results(results=get_runtime_container_audit_events(client=client, args=demisto.args()))
-        elif requested_command == "prisma-cloud-archive-audit-incident":
+        elif requested_command == "prisma-cloud-compute-archive-audit-incident":
             return_results(results=archive_audit_incident_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-runtime-host-audit-events-list":
             return_results(results=get_host_audit_list_command(client=client, args=demisto.args()))

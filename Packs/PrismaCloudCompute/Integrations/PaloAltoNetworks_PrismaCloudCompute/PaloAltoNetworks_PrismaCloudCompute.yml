@@ -2729,7 +2729,7 @@ script:
     - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.provider
       description: The provider of the container.
       type: String
-  - name: prisma-cloud-archive-audit-incident
+  - name: prisma-cloud-compute-archive-audit-incident
     description: Acknowledges an incident and moves it to an archived state.
     arguments:
       - name: incident_id

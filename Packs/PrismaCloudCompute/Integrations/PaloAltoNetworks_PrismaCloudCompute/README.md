@@ -4741,14 +4741,14 @@ Retrieves all container audit events when a runtime sensor such as process, netw
 >| b5 | n7 | na6 | img6 | block | filesystem | malwareFileFeed | high |
 
 
-### prisma-cloud-archive-audit-incident
+### prisma-cloud-compute-archive-audit-incident
 
 ***
 Acknowledges an incident and moves it to an archived state.
 
 #### Base Command
 
-`prisma-cloud-archive-audit-incident`
+`prisma-cloud-compute-archive-audit-incident`
 
 #### Input
 
@@ -4758,7 +4758,7 @@ Acknowledges an incident and moves it to an archived state.
 | action | Action for the command. archive - incident will be archived, unarchive - incident will be unarchived. Possible values are: archive, unarchive. Default is archive. | Optional | 
 
 #### Command example
-```!prisma-cloud-archive-audit-incident incident_id="1111"```
+```!prisma-cloud-compute-archive-audit-incident incident_id="1111"```
 #### Human Readable Output
 
 >Incident 1111 was successfully archived
