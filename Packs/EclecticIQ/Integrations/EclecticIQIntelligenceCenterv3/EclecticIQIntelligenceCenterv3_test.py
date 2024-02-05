@@ -327,3 +327,22 @@ def test_ip_command(mocker):
 
     assert response[0].raw_response['maliciousness'] == "medium"
     assert response[0].outputs_prefix == "EclecticIQ.IP"
+
+
+def test_get_source_group_uid(mocker):
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = {"data": [{"source": "1111-1111-1111-2222"}]}
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    response = client.get_source_group_uid("testing_group")
+
+    assert isinstance(response, str)
+    assert response == "1111-1111-1111-2222"
