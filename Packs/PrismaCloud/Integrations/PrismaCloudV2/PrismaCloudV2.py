@@ -533,22 +533,18 @@ def remove_additional_resource_fields(input_dict):
     items = demisto.get(input_dict, 'data.items')
     if items:
         for current_item in list(items):
-            data = current_item['data']
+            data = current_item.get('data', {})
 
-            if data:
+            disks = data.get('disks', [])
+            for current_disk in disks:
+                if 'shieldedInstanceInitialState' in current_disk:
+                    del current_disk['shieldedInstanceInitialState']
 
-                disks = data['disks']
-                if disks:
-                    for current_disk in disks:
-                        if 'shieldedInstanceInitialState' in current_disk:
-                            del current_disk['shieldedInstanceInitialState']
-
-                metadata = data['metadata']
-                metadata_items = metadata['items']
-                if metadata_items:
-                    for current_metadata_item in list(metadata_items):
-                        if 'key' in current_metadata_item and current_metadata_item['key'] == 'configure-sh':
-                            metadata_items.remove(current_metadata_item)
+            metadata = data.get('metadata', {})
+            metadata_items = metadata.get('items', [])
+            for current_metadata_item in list(metadata_items):
+                if 'key' in current_metadata_item and current_metadata_item['key'] == 'configure-sh':
+                    metadata_items.remove(current_metadata_item)
 
 
 ''' FETCH AND MIRRORING HELPER FUNCTIONS '''
