@@ -635,7 +635,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-    description: This operation can be used to verify aliases and resolve display names to the appropriate mailbox user. Only one ambiguous name can be specified in a single command call. If multiple candidates exist then all will be returned. A maximum of 100 candidates will be returned; the 100 candidates that are returned are the first 100 that are encountered in the lookup operation. Email addresses with prefixed routing types, such as smtp or sip, are saved in a multivalue array. The ResolveNames operation performs a partial match against each value of that array when you add the routing type at the beginning of the unresolved name, such as "sip:User1@Contoso.com". If you don't specify a routing type, this command  will default to the routing type of smtp, match it to a primary smtp address property, and not search the multivalue array.
+    description: This operation can be used to verify aliases and resolve display names to the appropriate mailbox user. Only one ambiguous name can be specified in a single command call. If multiple candidates exist then all will be returned. A maximum of 100 candidates will be returned; the 100 candidates that are returned are the first 100 that are encountered in the lookup operation. Email addresses with prefixed routing types, such as smtp or sip, are saved in a multivalue array. The ResolveNames operation performs a partial match against each value of that array when you add the routing type at the beginning of the unresolved name, such as "sip:User1@example.com". If you don't specify a routing type, this command  will default to the routing type of smtp, match it to a primary smtp address property, and not search the multivalue array.
     name: ews-resolve-name
     outputs:
     - contextPath: EWS.ResolvedNames.FullContactInfo.contactSource
@@ -663,10 +663,10 @@ script:
       description: 'Represents the initials of a contact.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.phoneNumbers.label
-      description: 'The following are the possible values for this attribute: AssistantPhone, BusinessFax, BusinessPhone, BusinessPhone2, Callback, CarPhone, CompanyMainPhone, HomeFax, HomePhone, HomePhone2, Isdn, MobilePhone, OtherFax, OtherTelephone, Pager, PrimaryPhone, RadioPhone, Telex, TtyTddPhone'
+      description: 'The following are the possible values for this attribute: AssistantPhone, BusinessFax, BusinessPhone, BusinessPhone2, Callback, CarPhone, CompanyMainPhone, HomeFax, HomePhone, HomePhone2, Isdn, MobilePhone, OtherFax, OtherTelephone, Pager, PrimaryPhone, RadioPhone, Telex, TtyTddPhone.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.phoneNumbers.phoneNumber
-      description: 'The Phone number of the contact'
+      description: 'The Phone number of the contact.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.city
       description: 'The physicalAddresses city assosciated with the contact.'
@@ -702,7 +702,7 @@ script:
       description: 'The name of a mailbox user.'
       type: String
     - contextPath: EWS.ResolvedNames.routing_type
-      description: 'The address type for the mailbox'
+      description: 'The address type for the mailbox.'
       type: String
   - arguments:
     - description: A CSV list if item IDs.

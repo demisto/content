@@ -2,7 +2,6 @@ import email
 import hashlib
 import subprocess
 from multiprocessing import Process
-from typing import Tuple
 
 import dateparser  # type: ignore
 import exchangelib
@@ -488,7 +487,6 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE, time_zone=N
         except Exception as e:
             # fixing flake8 correction where original_exc is assigned but unused
             original_exc = e
-            pass
 
     try:
         account = Account(
@@ -538,10 +536,10 @@ def fix_2010():  # pragma: no cover
     version = SERVER_BUILD if SERVER_BUILD else get_build(VERSION_STR)
     if version <= EXCHANGE_2010_SP2:
         for m in (
-            Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
-            exchangelib.items.DistributionList,
-            exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
-            exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
+                Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
+                exchangelib.items.DistributionList,
+                exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
+                exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
             for i, f in enumerate(m.FIELDS):
                 if f.name == 'text_body':
                     m.FIELDS.pop(i)
@@ -1274,7 +1272,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
 
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
-                                        and header.name != 'Content-Type':
+                                            and header.name != 'Content-Type':
                                         attached_email.add_header(header.name, header.value)
 
                             file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
@@ -2155,10 +2153,9 @@ def resolve_name_command(args, protocol):  # pragma: no cover
             mail_context['FullContactInfo'] = parse_contact(contact)
         output.append(mail_context)
     return get_entry_for_object('Resolved Names',
-                            'EWS.ResolvedNames(val.email_address && val.email_address == obj.email_address)',
-                            output,  # remove_empty_elements(output),  # noqa: F405
-                            headers=['email_address', 'name', 'mailbox_type', 'routing_type'])
-
+                                'EWS.ResolvedNames(val.email_address && val.email_address == obj.email_address)',
+                                remove_empty_elements(output),  # noqa: F405
+                                headers=['email_address', 'name', 'mailbox_type', 'routing_type'])
 
 
 def mark_item_as_read(item_ids, operation='read', target_mailbox=None):  # pragma: no cover
