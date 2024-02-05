@@ -16,10 +16,8 @@ INVALID_CREDENTIALS_ERROR_MSG = (
     "for SpyCloud is invalid. Please provide a "
     "valid API Key."
 )
-DEFAULT_PAGE_SIZE = 50
 MAX_RETRIES = 5
 BACK_OFF_TIME = 0.1
-DEFAULT_OFFSET = 0
 PAGE_NUMBER_ERROR_MSG = "Invalid Input Error: page number should be greater than zero."
 PAGE_SIZE_ERROR_MSG = "Invalid Input Error: page size should be greater than zero."
 LIMIT_EXCEED = "LimitExceededException"
@@ -36,7 +34,6 @@ MONTHLY_QUOTA_EXCEED_MSG = (
 WATCHLIST_ENDPOINT = "breach/data/watchlist"
 DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default
 DEFAULT_DATE = "-1days"
-DEFAULT_UNTIL = "now"
 # in XSOAR
 INCIDENT_TYPE = {
     2: "SpyCloud Informative Data",
@@ -50,7 +47,12 @@ INCIDENT_NAME = {
     20: "SpyCloud Breach Alert on",
     25: "SpyCloud Malware Alert on",
 }
-SEVERITY_VALUE = {2: 0.5, 5: 0.5, 20: 3, 25: 4}
+SEVERITY_VALUE = {
+    2: IncidentSeverity.INFO,
+    5: IncidentSeverity.INFO,
+    20: IncidentSeverity.HIGH,
+    25: IncidentSeverity.CRITICAL
+}
 
 
 class Client(BaseClient):
