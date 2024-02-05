@@ -783,7 +783,7 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 | --- | --- | --- |
 | MSGraphDeviceManagement.DeviceNextLink | String | A link that specifies a starting point to use for subsequent calls. | 
 | MSGraphDeviceManagement.Device.ID | String | The ID of the managed device. | 
-| MSGraphDeviceManagement.Device.UserID | String | Unique Identifier for the user associated with the device. | 
+| MSGraphDeviceManagement.Device.UserID | String | Unique identifier for the user associated with the device. | 
 | MSGraphDeviceManagement.Device.Name | String | Name of the device. | 
 | MSGraphDeviceManagement.Device.ManagedDeviceOwnerType | String | Ownership of the device. Possible values are unknown, company, personal. | 
 | MSGraphDeviceManagement.Device.ActionResults.actionName | String | Action name. | 
@@ -794,10 +794,10 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 | MSGraphDeviceManagement.Device.LastSyncDateTime | Date | The date and time that the device last completed a successful sync with Intune. | 
 | MSGraphDeviceManagement.Device.OperatingSystem | String | Operating system of the device. Windows, iOS, etc. | 
 | MSGraphDeviceManagement.Device.ComplianceState | String | Compliance state of the device. Possible values are unknown, compliant, noncompliant, conflict, error, inGracePeriod, configManager. | 
-| MSGraphDeviceManagement.Device.JailBroken | String | whether the device is jail broken or rooted. | 
+| MSGraphDeviceManagement.Device.JailBroken | String | Whether the device is jail broken or rooted. | 
 | MSGraphDeviceManagement.Device.ManagementAgent | String | Management channel of the device. Possible values are eas, mdm, easMdm, intuneClient, easIntuneClient, configurationManagerClient, configurationManagerClientMdm, configurationManagerClientMdmEas, unknown, jamf, googleCloudDevicePolicyController. | 
 | MSGraphDeviceManagement.Device.OSVersion | String | Operating system version of the device. | 
-| MSGraphDeviceManagement.Device.EASDeviceId | String | Exchange ActiveSync Id of the device. | 
+| MSGraphDeviceManagement.Device.EASDeviceId | String | Exchange ActiveSync ID of the device. | 
 | MSGraphDeviceManagement.Device.EASActivationDateTime | Date | Exchange ActivationSync activation time of the device. | 
 | MSGraphDeviceManagement.Device.ActivationLockBypassCode | String | Code that allows the Activation Lock on a device to be bypassed. | 
 | MSGraphDeviceManagement.Device.EmailAddress | String | Email\(s\) for the user associated with the device. | 
@@ -821,8 +821,8 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 | MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.compliancePolicy | Boolean | Whether compliance policy is managed by Intune. | 
 | MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.windowsUpdateForBusiness | Boolean | Whether Windows Update for Business is managed by Intune. | 
 | MSGraphDeviceManagement.Device.WiFiMacAddress | String | Wi-Fi MAC. | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.lastUpdateDateTime | String | The Timestamp of the last update. | 
-| MSGraphDeviceManagement.Device.HealthAttestationState.issuedDateTime | Date | The DateTime when device was evaluated or issued to MDM. | 
+| MSGraphDeviceManagement.Device.HealthAttestationState.lastUpdateDateTime | String | The timestamp of the last update. | 
+| MSGraphDeviceManagement.Device.HealthAttestationState.issuedDateTime | Date | The datetime when the device was evaluated or issued to MDM. | 
 | MSGraphDeviceManagement.Device.HealthAttestationState.resetCount | Number | The number of times a PC device has hibernated or resumed. | 
 | MSGraphDeviceManagement.Device.HealthAttestationState.restartCount | Number | The number of times a PC device has rebooted. | 
 | MSGraphDeviceManagement.Device.HealthAttestationState.bitLockerStatus | String | On or Off of BitLocker Drive Encryption. | 
@@ -847,10 +847,10 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 | MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemRevListInfo | String | The Operating System Revision List that was loaded during initial boot on the attested device. | 
 | MSGraphDeviceManagement.Device.HealthAttestationState.healthStatusMismatchInfo | String | This attribute appears if DHA-Service detects an integrity issue. | 
 | MSGraphDeviceManagement.Device.HealthAttestationState.healthAttestationSupportedStatus | String | This attribute indicates if DHA is supported for the device. | 
-| MSGraphDeviceManagement.Device.SubscriberCarrier | String | Subscriber Carrier. | 
-| MSGraphDeviceManagement.Device.MEID | String | MEID. | 
-| MSGraphDeviceManagement.Device.TotalStorageSpaceInBytes | Number | Total Storage in Bytes. | 
-| MSGraphDeviceManagement.Device.FreeStorageSpaceInBytes | Number | Free Storage in Bytes. | 
+| MSGraphDeviceManagement.Device.SubscriberCarrier | String | Subscriber carrier. | 
+| MSGraphDeviceManagement.Device.MEID | String | Mobile Equipment Identifier. | 
+| MSGraphDeviceManagement.Device.TotalStorageSpaceInBytes | Number | Total storage in bytes. | 
+| MSGraphDeviceManagement.Device.FreeStorageSpaceInBytes | Number | Free storage in bytes. | 
 | MSGraphDeviceManagement.Device.ManagedDeviceName | String | Automatically generated name to identify a device. Can be overwritten to a user friendly name. | 
 | MSGraphDeviceManagement.Device.PartnerReportedThreatState | String | Indicates the threat state of a device when a Mobile Threat Defense partner is in use by the account and device. Read Only. Possible values are unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity, unresponsive, compromised, misconfigured. | 
 
