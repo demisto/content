@@ -6,132 +6,132 @@ from test_data import input_data
 import datetime
 
 MOCK_MAIL_NO_LABELS = {
-    u'internalDate': u'1572251535000',
-    u'historyId': u'249781',
-    u'payload': {
-        u'mimeType': u'multipart/mixed',
-        u'body': {u'size': 0},
-        u'partId': u'',
-        u'filename': u'',
-        u'headers': [
+    'internalDate': '1572251535000',
+    'historyId': '249781',
+    'payload': {
+        'mimeType': 'multipart/mixed',
+        'body': {'size': 0},
+        'partId': '',
+        'filename': '',
+        'headers': [
             {
-                u'name': u'Received',
-                u'value': u'from 1041831412594 named unknown by gmailapi.google.com with '
-                          u'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
+                'name': 'Received',
+                'value': 'from 1041831412594 named unknown by gmailapi.google.com with '
+                u'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
             }, {
-                u'name': u'Content-Type',
-                u'value': u'mixed; boundary="===============4922146810840031257=="'
+                'name': 'Content-Type',
+                'value': 'mixed; boundary="===============4922146810840031257=="'
             }, {
-                u'name': u'MIME-Version',
-                u'value': u'1.0'
+                'name': 'MIME-Version',
+                'value': '1.0'
             }, {
-                u'name': u'to',
-                u'value': u'<some_mail>'
+                'name': 'to',
+                'value': '<some_mail>'
             }, {
-                u'name': u'cc',
-                u'value': u''
+                'name': 'cc',
+                'value': ''
             }, {
-                u'name': u'bcc',
-                u'value': u''
+                'name': 'bcc',
+                'value': ''
             }, {
-                u'name': u'from',
-                u'value': u'<some_mail>'
+                'name': 'from',
+                'value': '<some_mail>'
             }, {
-                u'name': u'subject',
-                u'value': u'a mail subject'
+                'name': 'subject',
+                'value': 'a mail subject'
             }, {
-                u'name': u'reply-to',
-                u'value': u''
+                'name': 'reply-to',
+                'value': ''
             }, {
-                u'name': u'Date',
-                u'value': u'Mon, 28 Oct 2019 04:32:15 -0400'
+                'name': 'Date',
+                'value': 'Mon, 28 Oct 2019 04:32:15 -0400'
             }, {
-                u'name': u'Message-Id',
-                u'value': u'<some_id>'
+                'name': 'Message-Id',
+                'value': '<some_id>'
             }
         ],
-        u'parts': [
+        'parts': [
             {
-                u'mimeType': u'text/plain',
-                u'headers': [
+                'mimeType': 'text/plain',
+                'headers': [
                     {
-                        u'name': u'Content-Type',
-                        u'value': u'text/plain; charset="utf-8"'
+                        'name': 'Content-Type',
+                        'value': 'text/plain; charset="utf-8"'
                     }, {
-                        u'name': u'MIME-Version',
-                        u'value': u'1.0'
+                        'name': 'MIME-Version',
+                        'value': '1.0'
                     }, {
-                        u'name': u'Content-Transfer-Encoding',
-                        u'value': u'base64'
+                        'name': 'Content-Transfer-Encoding',
+                        'value': 'base64'
                     }
                 ],
-                u'body': {
-                    u'data': u'<data>',
-                    u'size': 9
+                'body': {
+                    'data': '<data>',
+                    'size': 9
                 },
-                u'partId': u'0',
-                u'filename': u''
+                'partId': '0',
+                'filename': ''
             }
         ]
     },
-    u'snippet': u'some info',
-    u'sizeEstimate': 637,
-    u'threadId': u'<id>',
-    u'id': u'<id>'
+    'snippet': 'some info',
+    'sizeEstimate': 637,
+    'threadId': '<id>',
+    'id': '<id>'
 }
 
 EXPECTED_GMAIL_CONTEXT = {
-    'To': u'<some_mail>',
-    'Body': u'',
-    'From': u'<some_mail>',
-    'Attachments': u'',
-    'Format': u'mixed',
-    'Cc': u'',
+    'To': '<some_mail>',
+    'Body': '',
+    'From': '<some_mail>',
+    'Attachments': '',
+    'Format': 'mixed',
+    'Cc': '',
     'Labels': '',
     'Mailbox': 'some_mail',
     'Headers': [
         {
-            'Name': u'Received',
-            'Value': u'from 1041831412594 named '
+            'Name': 'Received',
+            'Value': 'from 1041831412594 named '
                      u'unknown by gmailapi.google.com with HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
         }, {
-            'Name': u'Content-Type',
-            'Value': u'mixed; boundary="===============4922146810840031257=="'
+            'Name': 'Content-Type',
+            'Value': 'mixed; boundary="===============4922146810840031257=="'
         }, {
-            'Name': u'MIME-Version',
-            'Value': u'1.0'
+            'Name': 'MIME-Version',
+            'Value': '1.0'
         }, {
-            'Name': u'to',
-            'Value': u'<some_mail>'
+            'Name': 'to',
+            'Value': '<some_mail>'
         }, {
-            'Name': u'cc',
-            'Value': u''
+            'Name': 'cc',
+            'Value': ''
         }, {
-            'Name': u'bcc', 'Value': u''
+            'Name': 'bcc', 'Value': ''
         }, {
-            'Name': u'from', 'Value': u'<some_mail>'
+            'Name': 'from', 'Value': '<some_mail>'
         }, {
-            'Name': u'subject',
-            'Value': u'a mail subject'
+            'Name': 'subject',
+            'Value': 'a mail subject'
         }, {
-            'Name': u'reply-to',
-            'Value': u''
+            'Name': 'reply-to',
+            'Value': ''
         }, {
-            'Name': u'Date',
-            'Value': u'Mon, 28 Oct 2019 04:32:15 -0400'
+            'Name': 'Date',
+            'Value': 'Mon, 28 Oct 2019 04:32:15 -0400'
         }, {
-            'Name': u'Message-Id',
-            'Value': u'<some_id>'
+            'Name': 'Message-Id',
+            'Value': '<some_id>'
         }
     ],
     'Html': None,
     'RawData': None,
-    'ThreadId': u'<id>',
+    'ThreadId': '<id>',
     'Date': 'Mon, 28 Oct 2019 04:32:15 -0400',
-    'Bcc': u'',
+    'Bcc': '',
     'Type': 'Gmail',
-    'ID': u'<id>',
-    'Subject': u'a mail subject'
+    'ID': '<id>',
+    'Subject': 'a mail subject'
 }
 
 
@@ -660,6 +660,7 @@ class MockExecute:
                 return input_data.service_result_without_pageToken
         if self.name == "get":
             return self.message()
+        return None
 
 
 class MockListAndGet:
