@@ -352,6 +352,7 @@ upload-packs-to-marketplace:
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
         
         gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" "gs://xsoar-ci-artifacts/content/test-daud/$CI_COMMIT_SHA/packs_results_upload.json"
+        echo "packs_results_upload.json upload successfully"
         
         core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
         if [ "${core_packs_files_count}" -eq 0 ]; then
