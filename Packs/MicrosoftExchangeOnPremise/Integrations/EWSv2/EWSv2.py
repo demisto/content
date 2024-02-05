@@ -778,7 +778,7 @@ def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bc
         raise Exception(item_to_reply_to)
 
     subject = subject or item_to_reply_to.subject
-    # Reply to email does not support body_type, so we will use the html_body if it exists.
+    # `reply-mail` command does not support body_type, so we will use the html_body if it exists.
     message_body = HTMLBody(html_body) if html_body else body
     reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
                                           bcc_recipients=bcc, author=from_mailbox)
@@ -2277,7 +2277,6 @@ def send_email(args):
     attachments, attachments_names = process_attachments(args.get('attachCIDs', ''), args.get('attachIDs', ''),
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
 
-    # Lowering case as list options provided as capitalized for the argument
     body_type = args.get('bodyType', args.get('body_type'))
     send_email_to_mailbox(
         account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
