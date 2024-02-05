@@ -1,4 +1,5 @@
 ## SpyCloud Enterprise Protection Feed
+
 Create breach and malware incidents in Cortex® XSOAR™ using the SpyCloud Enterprise Protection API.
 This integration was integrated and tested with version 3.5 of SpyCloud Enterprise Protection API
 

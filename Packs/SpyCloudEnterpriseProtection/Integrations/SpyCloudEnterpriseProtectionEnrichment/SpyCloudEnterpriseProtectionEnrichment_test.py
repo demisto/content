@@ -74,63 +74,63 @@ client = Client(
             BREACH_LIST_RESPONSE,
             BREACH_LIST_README,
             {"limit": 5},
-            "spycloud-list-breaches",
+            "spycloud-breach-catalog-list",
         ),
         (
             BREACH_LIST_RESPONSE,
             BREACH_LIST_RESPONSE,
             BREACH_DATA_README,
             {"id": "12345"},
-            "spycloud-get-breach-data",
+            "spycloud-breach-catalog-get",
         ),
         (
             BREACH_DATA_BY_INDICATOR,
             BREACH_DATA_BY_INDICATOR,
             BREACH_DOMAIN_README,
             {"domain": "abc.com"},
-            "spycloud-domain-data",
+            "spycloud-domain-data-get",
         ),
         (
             BREACH_DATA_BY_INDICATOR,
             BREACH_DATA_BY_INDICATOR,
             BREACH_USERNAME_README,
             {"username": "abc"},
-            "spycloud-username-data",
+            "spycloud-username-data-get",
         ),
         (
             BREACH_DATA_BY_INDICATOR,
             BREACH_DATA_BY_INDICATOR,
             BREACH_IP_README,
             {"ip": "1.1.1.1"},
-            "spycloud-ip-address-data",
+            "spycloud-ip-address-data-get",
         ),
         (
             BREACH_DATA_BY_INDICATOR,
             BREACH_DATA_BY_INDICATOR,
             BREACH_EMAIL_README,
             {"email": "Dummy_Email"},
-            "spycloud-email-data",
+            "spycloud-email-data-get",
         ),
         (
             BREACH_DATA_BY_INDICATOR,
             BREACH_DATA_BY_INDICATOR,
             BREACH_PASSWORD_README,
             {"password": "password"},
-            "spycloud-password-data",
+            "spycloud-password-data-get",
         ),
         (
             BREACH_DATA_BY_INDICATOR,
             BREACH_DATA_BY_INDICATOR,
             BREACH_WATCHLIST_README,
             {},
-            "spycloud-watchlist-data",
+            "spycloud-watchlist-data-list",
         ),
         (
             BREACH_DATA_BY_INDICATOR,
             BREACH_DATA_BY_INDICATOR,
             COMPASS_DEVICE_DATA_README,
             {"infected_machine_id": "12345"},
-            "spycloud-compass-device-data",
+            "spycloud-compass-device-data-get",
         ),
         (
             BREACH_DATA_BY_INDICATOR,
@@ -151,7 +151,7 @@ client = Client(
             BREACH_DATA_BY_INDICATOR,
             COMPASS_APPLICATION_README,
             {"target_application": "abcd"},
-            "spycloud-compass-application-data",
+            "spycloud-compass-application-data-get",
         ),
     ],
 )
@@ -173,7 +173,7 @@ def test_command_helper_function(
             BREACH_LIST_RESPONSE,
             BREACH_LIST_WITH_PAGINATION_README,
             {"limit": 5, "page": 1, "page_size": 10},
-            "spycloud-list-breaches",
+            "spycloud-breach-catalog-list",
         )
     ],
 )
@@ -189,7 +189,7 @@ def test_command_helper_function_with_pagination(
 
 @pytest.mark.parametrize(
     "raw_response, expected, args, command",
-    [(EMPTY_DATA, EMPTY_DATA, {"limit": 5}, "spycloud-list-breaches")],
+    [(EMPTY_DATA, EMPTY_DATA, {"limit": 5}, "spycloud-breach-catalog-list")],
 )
 def test_command_helper_function_exception(
     mocker, raw_response, expected, args, command
@@ -206,7 +206,7 @@ def test_command_helper_function_exception(
             BREACH_LIST_RESPONSE,
             BREACH_LIST_RESPONSE,
             {"page": 5, "page_size": 10},
-            "spycloud-list-breaches",
+            "spycloud-breach-catalog-list",
         )
     ],
 )
@@ -225,7 +225,7 @@ def test_command_helper_function_pagination_exception(
             BREACH_LIST_RESPONSE,
             BREACH_LIST_RESPONSE,
             {"all_resultS": "yes"},
-            "spycloud-list-breaches",
+            "spycloud-breach-catalog-list",
         )
     ],
 )

@@ -30,7 +30,9 @@ X_AMAZON_ERROR_TYPE = "x-amzn-ErrorType"
 SPYCLOUD_ERROR = "SpyCloud-Error"
 INVALID_IP_MSG = "Kindly contact SpyCloud support to whitelist your IP Address."
 WRONG_API_URL = "Verify that the API URL parameter is correct and that you have access to the server from your host"
-MONTHLY_QUOTA_EXCEED_MSG = "You have exceeded your monthly quota. Kindly contact SpyCloud support."
+MONTHLY_QUOTA_EXCEED_MSG = (
+    "You have exceeded your monthly quota. Kindly contact SpyCloud support."
+)
 WATCHLIST_ENDPOINT = "breach/data/watchlist"
 DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default
 DEFAULT_DATE = "-1days"
@@ -65,7 +67,7 @@ class Client(BaseClient):
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            headers={"Content-type": "application/json", "X-API-Key": apikey},
+            headers={"Content-type": "application/json", "X-API-Key": apikey, "User-Agent": "XSOAR-ENT/1.0.0 "},
         )
         self.apikey = apikey
 
@@ -90,7 +92,6 @@ class Client(BaseClient):
             retries = MAX_RETRIES
             status_list_to_retry = {429}
             backoff_factor = BACK_OFF_TIME
-
         response = self._http_request(
             method="GET",
             full_url=url_path,
@@ -139,10 +140,7 @@ class Client(BaseClient):
         sets the last run
         """
         current_date = datetime.utcnow()
-        demisto.setIntegrationContext(
-            {"last_modified_time": current_date.strftime("%Y-%m-%d")}
-        )
-        demisto.setLastRun({"last_run": current_date.strftime(DATE_TIME_FORMAT)})
+        demisto.setLastRun({"lastRun": current_date.strftime(DATE_TIME_FORMAT)})
 
     @staticmethod
     def get_last_run() -> str:
@@ -150,7 +148,12 @@ class Client(BaseClient):
         Returns:
             last run in timestamp, or '' if no last run
         """
-        return demisto.getIntegrationContext().get("last_modified_time")
+
+        last_run = demisto.getLastRun().get('lastRun')
+        if last_run:
+            last_run = arg_to_datetime(last_run)
+            last_run = last_run.strftime("%Y-%m-%d")
+        return last_run
 
 
 """ HELPER FUNCTIONS """
@@ -171,22 +174,31 @@ def test_module(client: Client, params: dict) -> str:
     return "ok"
 
 
-def build_iterators(results: list) -> list:
+def build_iterators(client: Client, results: list) -> list:
     """
     Function to parse data and create relationship.
     Args:
+        client: Client class
         results: API response.
     Returns:
         Connection ok
     """
     incident_record = []
     for item in results:
+        source_id = item.get("source_id")
+        catalog_resp = client.query_spy_cloud_api(
+            f"breach/catalog/{source_id}", {}
+        ).get("results", [])
+        breach_title = catalog_resp[0].get("title") if catalog_resp else ""
+        item["breach_title"] = breach_title
         severity = item["severity"]
+        email = item.get('email')
+        ip_add = item.get('ip_addresses')
+        username = item.get('username')
+        name_ext = email or (ip_add[0] if ip_add else username) or item["document_id"]
         incident = {
             "type": INCIDENT_TYPE[severity],
-            "name": f"{INCIDENT_NAME[severity]} {item['email']}"
-            if item.get("email")
-            else f"{INCIDENT_NAME[severity]} {item['ip_addresses'][0]}",
+            "name": f"{INCIDENT_NAME[severity]} {name_ext}",
             "rawJSON": dumps(item),
             "severity": SEVERITY_VALUE[severity],
             "dbotMirrorId": item["document_id"],
@@ -201,6 +213,7 @@ def create_spycloud_args(args: dict, client: Client) -> dict:
     API based on the demisto.args().
     Args:
         args: demisto.args()
+        client: Client class
     Returns:
         Return arguments dict.
     """
@@ -211,17 +224,15 @@ def create_spycloud_args(args: dict, client: Client) -> dict:
     until: Any
     until_modification_date: Any
     if last_run:
-        since = since_modification_date = last_run
-        current_time: datetime = datetime.utcnow()
-        until = until_modification_date = current_time.strftime("%Y-%m-%d")
+        since = since_modification_date = until = until_modification_date = last_run
     else:
         since = arg_to_datetime(args.get("first_fetch", DEFAULT_DATE), "Since")
-        until = arg_to_datetime(args.get("until", DEFAULT_UNTIL), "Until")
+        until = arg_to_datetime(args.get("until", DEFAULT_DATE), "Until")
         since_modification_date = arg_to_datetime(
             args.get("since_modification_date", DEFAULT_DATE), "Since Modification Date"
         )
         until_modification_date = arg_to_datetime(
-            args.get("until_modification_date", DEFAULT_UNTIL),
+            args.get("until_modification_date", DEFAULT_DATE),
             "Until Modification Date",
         )
         if until:
@@ -283,20 +294,17 @@ def fetch_incident(client: Client, args: dict):
     cursor_since, cursor_since_modification = " ", " "
     modified_results, since_results = [], []
     left_results = demisto.getIntegrationContext().get("results")
-
     if left_results and len(left_results) > 0:
         demisto.debug(f"length of left_result {len(left_results)}")
-        incident_record = build_iterators(left_results[:200])
+        incident_record = build_iterators(client, left_results[:200])
         if len(left_results) < 200:
             demisto.setIntegrationContext({"results": []})
-            client.set_last_run()
         else:
             demisto.setIntegrationContext({"results": left_results[200:]})
         return incident_record
     last_run = client.get_last_run()
     demisto.debug(f"last_run_today {last_run}")
     if last_run == datetime.utcnow().strftime("%Y-%m-%d"):
-        client.set_last_run()
         return []
     param = create_spycloud_args(args, client)
     since = param.pop("since")
@@ -336,10 +344,10 @@ def fetch_incident(client: Client, args: dict):
             break
     incidents = remove_duplicate(since_results, modified_results)
     if len(incidents) > 200:
-        incident_record = build_iterators(incidents[:200])
+        incident_record = build_iterators(client, incidents[:200])
         demisto.setIntegrationContext({"results": incidents[200:]})
         return incident_record
-    incident_record = build_iterators(incidents)
+    incident_record = build_iterators(client, incidents)
     return incident_record
 
 

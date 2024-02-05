@@ -76,9 +76,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Lists the breaches identified. By default, this lists all breaches known in SpyCloud. With the arguments, it's possible to scope the results on date and keywords.
+    description: List the Breach Catalog. By default, this lists all breaches in SpyCloud. With the arguments, it's possible to scope the results.
     execution: false
-    name: spycloud-list-breaches
+    name: spycloud-breach-catalog-list
     outputs:
     - contextPath: SpyCloud.BreachList.site
       description: Website of breached organization, when available.
@@ -193,9 +193,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieve Breach Catalog Information by ID.
+    description: Get Breach Catalog Information by ID.
     execution: false
-    name: spycloud-get-breach-data
+    name: spycloud-breach-catalog-get
     outputs:
     - contextPath: SpyCloud.BreachData.site
       description: Website of breached organization, when available.
@@ -403,9 +403,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get Breach Data by Domain Search.
+    description: Get Breach Data by Domain.
     execution: false
-    name: spycloud-domain-data
+    name: spycloud-domain-data-get
     outputs:
     - contextPath: SpyCloud.Domain.username
       description: Username.
@@ -567,9 +567,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get Breach Data by Username Search.
+    description: Get Breach Data by Username.
     execution: false
-    name: spycloud-username-data
+    name: spycloud-username-data-get
     outputs:
     - contextPath: SpyCloud.Username.username
       description: Username.
@@ -731,9 +731,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get Breach Data by IP Address Search.
+    description: Get Breach Data by IP Address.
     execution: false
-    name: spycloud-ip-address-data
+    name: spycloud-ip-address-data-get
     outputs:
     - contextPath: SpyCloud.IPAddress.username
       description: Username.
@@ -895,9 +895,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get Breach Data by Email Search.
+    description: Get Breach Data by Email.
     execution: false
-    name: spycloud-email-data
+    name: spycloud-email-data-get
     outputs:
     - contextPath: SpyCloud.EmailAddress.username
       description: Username.
@@ -1059,9 +1059,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get Breach Data by Password Search.
+    description: Get Breach Data by Password.
     execution: false
-    name: spycloud-password-data
+    name: spycloud-password-data-get
     outputs:
     - contextPath: SpyCloud.Password.username
       description: Username.
@@ -1239,9 +1239,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get Breach Data by Password Search.
+    description: List Breach Data. By default, this lists all breach data for the customer's configured watchlist. With the arguments, it's possible to scope the results.
     execution: false
-    name: spycloud-watchlist-data
+    name: spycloud-watchlist-data-list
     outputs:
     - contextPath: SpyCloud.Watchlist.username
       description: Username.
@@ -1347,9 +1347,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get compass device data by infected_machine_id.
+    description: Get Compass device data by infected_machine_id.
     execution: false
-    name: spycloud-compass-device-data
+    name: spycloud-compass-device-data-get
     outputs:
     - contextPath: SpyCloud.CompassDeviceData.username
       description: Username.
@@ -1499,7 +1499,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Compass data list.
+    description: List Compass data. By default, this lists all Compass data. With the arguments, it's possible to scope the results.
     execution: false
     name: spycloud-compass-data-list
     outputs:
@@ -1627,7 +1627,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Compass device list data.
+    description: List Compass device data. By default, this lists all devices. With the arguments, it's possible to scope the results.
     execution: false
     name: spycloud-compass-device-list
     outputs:
@@ -1755,9 +1755,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get compass application data.
+    description: Get Compass application data for a specific application.
     execution: false
-    name: spycloud-compass-application-data
+    name: spycloud-compass-application-data-get
     outputs:
     - contextPath: SpyCloud.CompassApplicationData.username
       description: Username.
@@ -1835,7 +1835,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.80593
+  dockerimage: demisto/python3:3.10.13.86272
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

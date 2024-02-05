@@ -6,7 +6,7 @@
     "name": "SpyCloud Breach Data",
     "prevName": "SpyCloud Breach Data",
     "color": "#E3FF88",
-    "playbookId": "Breach Investigation-SpyCloud",
+    "playbookId": "SpyCloud - Breach Investigation",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -52,5 +52,5 @@
             }
         }
     },
-    "fromVersion": "6.9.0"
+    "fromVersion": "6.10.0"
 }

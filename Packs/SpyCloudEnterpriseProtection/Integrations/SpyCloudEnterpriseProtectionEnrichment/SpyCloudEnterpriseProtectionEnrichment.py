@@ -31,7 +31,9 @@ X_AMAZON_ERROR_TYPE = "x-amzn-ErrorType"
 WRONG_API_URL = "Verify that the API URL parameter is correct and that you have access to the server from your host"
 SPYCLOUD_ERROR = "SpyCloud-Error"
 INVALID_IP_MSG = "Kindly contact SpyCloud support to whitelist your IP Address."
-MONTHLY_QUOTA_EXCEED_MSG = "You have exceeded your monthly quota. Kindly contact SpyCloud support."
+MONTHLY_QUOTA_EXCEED_MSG = (
+    "You have exceeded your monthly quota. Kindly contact SpyCloud support."
+)
 COMMAND_PARAMS = namedtuple(
     "COMMAND_PARAMS",
     ["endpoint", "title_string", "context", "key_field", "search_args"],
@@ -341,7 +343,7 @@ def command_helper_function(client: Client, args: dict[str, Any], command: str):
                 f"are {ceil(total_records / page_size)}"
             )
         results = get_paginated_results(results, offset, updated_limit)
-    breach_command = ["spycloud-list-breaches", "spycloud-get-breach-data"]
+    breach_command = ["spycloud-breach-catalog-list", "spycloud-breach-catalog-get"]
     readable_output = (
         lookup_to_markdown_table(results, title)
         if command not in breach_command
@@ -380,63 +382,63 @@ def get_command_title_string(
 
 
 command_dict = {
-    "spycloud-list-breaches": COMMAND_PARAMS(
+    "spycloud-breach-catalog-list": COMMAND_PARAMS(
         "breach/catalog",
         "Breach List",
         "BreachList",
         "uuid",
         "",
     ),
-    "spycloud-get-breach-data": COMMAND_PARAMS(
+    "spycloud-breach-catalog-get": COMMAND_PARAMS(
         "breach/catalog/{}",
         "Breach data for id {}",
         "BreachData",
         "id",
         "id",
     ),
-    "spycloud-domain-data": COMMAND_PARAMS(
+    "spycloud-domain-data-get": COMMAND_PARAMS(
         "breach/data/domains/{}",
         "Breach List for domain {}",
         "Domain",
         "document_id",
         "domain",
     ),
-    "spycloud-username-data": COMMAND_PARAMS(
+    "spycloud-username-data-get": COMMAND_PARAMS(
         "breach/data/usernames/{}",
         "Breach List for username {}",
         "Username",
         "document_id",
         "username",
     ),
-    "spycloud-ip-address-data": COMMAND_PARAMS(
+    "spycloud-ip-address-data-get": COMMAND_PARAMS(
         "breach/data/ips/{}",
         "Breach List for IP address {}",
         "IPAddress",
         "document_id",
         "ip",
     ),
-    "spycloud-email-data": COMMAND_PARAMS(
+    "spycloud-email-data-get": COMMAND_PARAMS(
         "breach/data/emails/{}",
         "Breach List for Email address {}",
         "EmailAddress",
         "document_id",
         "email",
     ),
-    "spycloud-password-data": COMMAND_PARAMS(
+    "spycloud-password-data-get": COMMAND_PARAMS(
         "breach/data/passwords/{}",
         "Breach List for Password {}",
         "Password",
         "document_id",
         "password",
     ),
-    "spycloud-watchlist-data": COMMAND_PARAMS(
+    "spycloud-watchlist-data-list": COMMAND_PARAMS(
         "breach/data/watchlist",
         "Watchlist Data",
         "Watchlist",
         "document_id",
         "",
     ),
-    "spycloud-compass-device-data": COMMAND_PARAMS(
+    "spycloud-compass-device-data-get": COMMAND_PARAMS(
         "compass/data/devices/{}",
         "Compass Devices - Data",
         "CompassDeviceData",
@@ -457,7 +459,7 @@ command_dict = {
         "document_id",
         "",
     ),
-    "spycloud-compass-application-data": COMMAND_PARAMS(
+    "spycloud-compass-application-data-get": COMMAND_PARAMS(
         "compass/data/applications/{}",
         "Compass Applications - Data",
         "CompassDeviceData",

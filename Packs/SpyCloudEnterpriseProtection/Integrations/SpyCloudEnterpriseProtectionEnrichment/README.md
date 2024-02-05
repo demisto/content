@@ -22,14 +22,14 @@ Provide enrichment for domains, IPs, emails, usernames, and passwords using the 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### spycloud-list-breaches
+### spycloud-breach-catalog-list
 
 ***
-Lists the breaches identified. By default, this lists all breaches known in SpyCloud. With the arguments, it's possible to scope the results on date and keywords.
+List the Breach Catalog. By default, this lists all breaches in SpyCloud. With the arguments, it's possible to scope the results.
 
 #### Base Command
 
-`spycloud-list-breaches`
+`spycloud-breach-catalog-list`
 
 #### Input
 
@@ -85,7 +85,7 @@ Lists the breaches identified. By default, this lists all breaches known in SpyC
 
 #### Command example
 
-```!spycloud-list-breaches limit=2```
+```!spycloud-breach-catalog-list limit=2```
 
 #### Context Example
 
@@ -167,14 +167,14 @@ Lists the breaches identified. By default, this lists all breaches known in SpyC
 >| stealc Stealer | 2023-05-05T00:00:00Z | stealc Stealer is a Windows-targeted stealer designed to grab form data such as IP addresses, browsing history, saved passwords, cryptocurrency, private messages and/or screenshots from affected users. | 3 | 43491 | 2023-05-02T00:00:00Z | 16689989-fe33-49ec-b02f-0442963ef0b7 | PRIVATE |
 
 
-### spycloud-get-breach-data
+### spycloud-breach-catalog-get
 
 ***
-Retrieve Breach Catalog Information by ID.
+Get Breach Catalog Information by ID.
 
 #### Base Command
 
-`spycloud-get-breach-data`
+`spycloud-breach-catalog-get`
 
 #### Input
 
@@ -224,7 +224,7 @@ Retrieve Breach Catalog Information by ID.
 
 #### Command example
 
-```!spycloud-get-breach-data id=39897 limit=2```
+```!spycloud-breach-catalog-get id=39897 limit=2```
 
 #### Context Example
 
@@ -272,14 +272,14 @@ Retrieve Breach Catalog Information by ID.
 >| Mansfield Independent School District | 2023-04-18T00:00:00Z | On an unknown date, data allegedly belonging to Mansfield Independent School District, a U.S-based educational district, was leaked online. The data contains names, email addresses, phone numbers, addresses and additional personal information. This leak is being publicly shared on online forums. | 3 | 39897 | 2022-10-04T00:00:00Z | c504f30a-6fe7-48df-becf-4e14f16e6c0d | PUBLIC |
 
 
-### spycloud-domain-data
+### spycloud-domain-data-get
 
 ***
-Get Breach Data by Domain Search
+Get Breach Data by Domain.
 
 #### Base Command
 
-`spycloud-domain-data`
+`spycloud-domain-data-get`
 
 #### Input
 
@@ -329,7 +329,7 @@ Get Breach Data by Domain Search
 
 #### Command example
 
-```!spycloud-domain-data domain=dummy.com limit=2```
+```!spycloud-domain-data-get domain=dummy.com limit=2```
 
 #### Context Example
 
@@ -389,14 +389,14 @@ Get Breach Data by Domain Search
 >| 41180 | Dummy Email | Sam Robert | dummy.com | srobert | <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>2023-03-28T00:00:00Z | <br/>dummy.com | 0fa88054-5d74-412a-bc40-0935a6d6e2d5 | 5 |
 
 
-### spycloud-username-data
+### spycloud-username-data-get
 
 ***
-Get Breach Data by Username Search.
+Get Breach Data by Username.
 
 #### Base Command
 
-`spycloud-username-data`
+`spycloud-username-data-get`
 
 #### Input
 
@@ -445,21 +445,21 @@ Get Breach Data by Username Search.
 
 #### Command example
 
-```!spycloud-username-data username=abc limit=2```
+```!spycloud-username-data-get username=abc limit=2```
 
 #### Human Readable Output
 
 >No data to present.
 
 
-### spycloud-ip-address-data
+### spycloud-ip-address-data-get
 
 ***
-Get Breach Data by IP Address Search
+Get Breach Data by IP Address.
 
 #### Base Command
 
-`spycloud-ip-address-data`
+`spycloud-ip-address-data-get`
 
 #### Input
 
@@ -508,7 +508,7 @@ Get Breach Data by IP Address Search
 
 #### Command example
 
-```!spycloud-ip-address-data ip=4.4.4.4 limit=2```
+```!spycloud-ip-address-data-get ip=4.4.4.4 limit=2```
 
 #### Context Example
 
@@ -571,14 +571,14 @@ Get Breach Data by IP Address Search
 >| 16670 | Dummy Email | Ghouse | ghouse260 | dummy.com | sghouse | ******** | bcrypt | 4.4.4.4 | 2021-05-05T00:00:00Z | dummy.com | cb71703c-9447-421f-b53a-6a1e3508eadc | 5 | 1 |
 
 
-### spycloud-email-data
+### spycloud-email-data-get
 
 ***
-Get Breach Data by Email Search.
+Get Breach Data by Email.
 
 #### Base Command
 
-`spycloud-email-data`
+`spycloud-email-data-get`
 
 #### Input
 
@@ -627,7 +627,7 @@ Get Breach Data by Email Search.
 
 #### Command example
 
-```!spycloud-email-data email=Dummmy Email limit=2```
+```!spycloud-email-data-get email=Dummmy Email limit=2```
 
 #### Context Example
 
@@ -663,14 +663,14 @@ Get Breach Data by Email Search.
 >| 41180 | Dummy Email | Shyam Moolagiri | dummy.com | smoolagiri | 2023-03-28T00:00:00Z | dummy.com   | 0046c7e3-fcf4-4d24-9c45-255116054640 | 5 |
 
 
-### spycloud-password-data
+### spycloud-password-data-get
 
 ***
-Get Breach Data by Password Search.
+Get Breach Data by Password.
 
 #### Base Command
 
-`spycloud-password-data`
+`spycloud-password-data-get`
 
 #### Input
 
@@ -719,7 +719,7 @@ Get Breach Data by Password Search.
 
 #### Command example
 
-```!spycloud-password-data password=welcome@123 limit=2```
+```!spycloud-password-data-get password=welcome@123 limit=2```
 
 #### Context Example
 
@@ -764,14 +764,14 @@ Get Breach Data by Password Search.
 >| 37732 | Dummy Email | dummy.com | kummadisetti | slack.com | dummy.slack.com | welcome@123 | welcome@123 | plaintext | dummy.slack.com | 4.4.4.4 | 51aa3c3d-090e-417a-8e8c-3a94726e5fed | saket | 2021-06-24T00:00:00Z | dummy.com | bc436d97-395c-4b03-819b-9b8fad7711bd | 25 | 1 |
 
 
-### spycloud-watchlist-data
+### spycloud-watchlist-data-list
 
 ***
-Get Breach Data by Password Search.
+List Breach Data. By default, this lists all breach data for the customer's configured watchlist. With the arguments, it's possible to scope the results.
 
 #### Base Command
 
-`spycloud-watchlist-data`
+`spycloud-watchlist-data-list`
 
 #### Input
 
@@ -821,7 +821,7 @@ Get Breach Data by Password Search.
 
 #### Command example
 
-```!spycloud-watchlist-data limit=2```
+```!spycloud-watchlist-data-list limit=2```
 
 #### Context Example
 
@@ -881,14 +881,14 @@ Get Breach Data by Password Search.
 >| 41180 | Dummy Email | Sam Robert | dummy.com | srobert | 2023-03-28T00:00:00Z | dummy.com | 0fa88054-5d74-412a-bc40-0935a6d6e2d5 | 5 |
 
 
-### spycloud-compass-device-data
+### spycloud-compass-device-data-get
 
 ***
-Get compass device data by infected_machine_id.
+Get Compass device data by infected_machine_id.
 
 #### Base Command
 
-`spycloud-compass-device-data`
+`spycloud-compass-device-data-get`
 
 #### Input
 
@@ -930,7 +930,7 @@ Get compass device data by infected_machine_id.
 
 #### Command example
 
-```!spycloud-compass-device-data infected_machine_id=72aaaec1-afa1-4d9e-838f-abfcbbf3ff82 limit=2```
+```!spycloud-compass-device-data-get infected_machine_id=72aaaec1-afa1-4d9e-838f-abfcbbf3ff82 limit=2```
 
 #### Context Example
 
@@ -973,7 +973,7 @@ Get compass device data by infected_machine_id.
 ### spycloud-compass-data-list
 
 ***
-Compass data list.
+List Compass data. By default, this lists all Compass data. With the arguments, it's possible to scope the results.
 
 #### Base Command
 
@@ -1098,7 +1098,7 @@ Compass data list.
 ### spycloud-compass-device-list
 
 ***
-Compass device list data.
+List Compass device data. By default, this lists all devices. With the arguments, it's possible to scope the results.
 
 #### Base Command
 
@@ -1193,14 +1193,14 @@ Compass device list data.
 >| 40883 | 4.4.4.4 | eb36d8f4-b802-416a-9e94-cdb419782b10 | 2022-12-29T11:01:47Z | LAPPY | Windows 10 Pro [x64] | 2023-01-06T00:00:00Z |
 
 
-### spycloud-compass-application-data
+### spycloud-compass-application-data-get
 
 ***
-Get compass application data.
+Get Compass application data for a specific application.
 
 #### Base Command
 
-`spycloud-compass-application-data`
+`spycloud-compass-application-data-get`
 
 #### Input
 
@@ -1245,7 +1245,7 @@ Get compass application data.
 
 #### Command example
 
-```!spycloud-compass-application-data target_application=dummy.greythr.com limit=2```
+```!spycloud-compass-application-data-get target_application=dummy.greythr.com limit=2```
 
 #### Context Example
 
