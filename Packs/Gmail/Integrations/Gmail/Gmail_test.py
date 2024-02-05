@@ -717,11 +717,16 @@ expected_occurred_no_date = datetime.datetime(2020, 12, 22, 14, 13, 20, tzinfo=d
 
 @pytest.mark.parametrize("email_data, expected_occurred, expected_occurred_is_valid",
                          [
-                             (email_no_internalDate, expected_occurred_no_internalDate, True), # no internalDate
-                             (email_internalDate_early, expected_occurred_internalDate_early, True), # both internalDate and date header, but the internalDate is earlier
-                             (email_header_early, expected_occurred_header_early, True), # both internalDate and date header, but the date header is earlier
-                             (email_no_header, expected_occurred_no_header, True), # no date in the headers
-                             (email_no_date, expected_occurred_no_date, False), # no internalDate and no date in the headers -> datetime.now
+                             # no internalDate
+                             (email_no_internalDate, expected_occurred_no_internalDate, True),
+                             # both internalDate and date header, but the internalDate is earlier
+                             (email_internalDate_early, expected_occurred_internalDate_early, True),
+                             # both internalDate and date header, but the date header is earlier
+                             (email_header_early, expected_occurred_header_early, True),
+                             # no date in the headers
+                             (email_no_header, expected_occurred_no_header, True),
+                             # no internalDate and no date in the headers -> datetime.now
+                             (email_no_date, expected_occurred_no_date, False),
                          ])
 @freeze_time("2020-12-22 14:13:20", tz_offset=+0)
 def test_get_occurred_date(email_data, expected_occurred, expected_occurred_is_valid):
