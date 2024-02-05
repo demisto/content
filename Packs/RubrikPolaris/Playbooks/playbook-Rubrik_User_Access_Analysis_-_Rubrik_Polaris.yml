@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d660b4f4-0641-46f2-861b-3b175a000488
+    taskid: a87f1954-dc85-453c-81b1-1a8c589a89c1
     type: start
     task:
-      id: d660b4f4-0641-46f2-861b-3b175a000488
+      id: a87f1954-dc85-453c-81b1-1a8c589a89c1
       version: -1
       name: ""
       iscommand: false
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": -90
+          "x": 255,
+          "y": 50
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: b1f0112c-1394-477f-8a15-f85baa0e0c87
+    taskid: ab40e8df-e86c-4ec6-862e-7f41b101c65f
     type: title
     task:
-      id: b1f0112c-1394-477f-8a15-f85baa0e0c87
+      id: ab40e8df-e86c-4ec6-862e-7f41b101c65f
       version: -1
       name: Done
       type: title
@@ -51,8 +51,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -115,
-          "y": 1860
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -64,10 +64,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 3ef186c2-3b29-4595-81a2-b80ee203f4f2
+    taskid: 395aa82c-bc5b-4edf-890f-74b275cd4251
     type: condition
     task:
-      id: 3ef186c2-3b29-4595-81a2-b80ee203f4f2
+      id: 395aa82c-bc5b-4edf-890f-74b275cd4251
       version: -1
       name: Is Rubrik Polaris integration enabled?
       description: Checks whether Rubrik Polaris integration is enabled or not.
@@ -78,7 +78,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "28"
+      - "37"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -111,8 +111,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 50
+          "x": 255,
+          "y": 195
         }
       }
     note: false
@@ -124,10 +124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 51897159-6c64-4dfb-8363-46065eb476b5
+    taskid: bdbdc7b9-7afa-4b85-82ed-0bb91d1c440a
     type: collection
     task:
-      id: 51897159-6c64-4dfb-8363-46065eb476b5
+      id: bdbdc7b9-7afa-4b85-82ed-0bb91d1c440a
       version: -1
       name: Collect the username, the email, and the risk level.
       description: |-
@@ -144,7 +144,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 152.5,
           "y": 1070
         }
       }
@@ -240,10 +240,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 714c3b50-57d8-4b8c-89e0-929f6ec29188
+    taskid: 1141fdee-3036-41f5-8b1f-2f29890bd36e
     type: condition
     task:
-      id: 714c3b50-57d8-4b8c-89e0-929f6ec29188
+      id: 1141fdee-3036-41f5-8b1f-2f29890bd36e
       version: -1
       name: Check whether user meta information is available or not.
       description: Check whether user meta information is available or not from the playbook input.
@@ -279,7 +279,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 367.5,
           "y": 720
         }
       }
@@ -292,10 +292,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 69a59295-d1c7-491c-838d-401cb166d1fe
+    taskid: 66bf6b42-4949-4fa8-83ab-025e1177d9f1
     type: regular
     task:
-      id: 69a59295-d1c7-491c-838d-401cb166d1fe
+      id: 66bf6b42-4949-4fa8-83ab-025e1177d9f1
       version: -1
       name: Delete context for the previous user inputs.
       description: |-
@@ -314,53 +314,15 @@ tasks:
     scriptarguments:
       key:
         simple: User Access information
+      subplaybook:
+        simple: auto
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 152.5,
           "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: 13d17535-6916-4c6c-89cb-d23272a5c38b
-    type: regular
-    task:
-      id: 13d17535-6916-4c6c-89cb-d23272a5c38b
-      version: -1
-      name: Delete context for the previous user access information.
-      description: |-
-        Delete context for the previous user access information.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      key:
-        simple: RubrikPolaris.UserAccess
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 230
         }
       }
     note: false
@@ -372,10 +334,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 858c95ed-f275-4ca4-845c-1b1635998e17
+    taskid: ee2a77c4-718b-4641-8ec7-edca34453d06
     type: playbook
     task:
-      id: 858c95ed-f275-4ca4-845c-1b1635998e17
+      id: ee2a77c4-718b-4641-8ec7-edca34453d06
       version: -1
       name: Rubrik Retrieve User Access Information - Rubrik Polaris
       description: This playbook retrieves user access information for the provided username or email with the pagination related information.
@@ -446,7 +408,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 152.5,
           "y": 1245
         }
       }
@@ -459,10 +421,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: a5ceb828-06d0-4281-83c1-03e1785b0a60
+    taskid: a5ed1ad2-afd7-4dbf-85b2-4ab0306bddd9
     type: playbook
     task:
-      id: a5ceb828-06d0-4281-83c1-03e1785b0a60
+      id: a5ed1ad2-afd7-4dbf-85b2-4ab0306bddd9
       version: -1
       name: Rubrik Retrieve User Access Information - Rubrik Polaris
       description: This playbook retrieves user access information for the provided username or email with the pagination related information.
@@ -527,48 +489,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 582.5,
           "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: f14cb2b8-88ad-4033-870b-cd481f3dde39
-    type: regular
-    task:
-      id: f14cb2b8-88ad-4033-870b-cd481f3dde39
-      version: -1
-      name: Delete context for the previous user access page information.
-      description: |-
-        Delete context for the previous user access page information.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      key:
-        simple: RubrikPolaris.PageToken.UserAccess
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 395
         }
       }
     note: false
@@ -580,13 +502,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 76dd175d-f4cc-47df-8b24-9470888072f8
+    taskid: 5a5da784-2835-48e6-810d-ba65958800f2
     type: condition
     task:
-      id: 76dd175d-f4cc-47df-8b24-9470888072f8
+      id: 5a5da784-2835-48e6-810d-ba65958800f2
       version: -1
-      name: Check if any user is available for the provided filter.
-      description: Check if any user is available for the provided filter.
+      name: Check if any user risk levels are available for the provided filter.
+      description: Check if any user risk levels are available for the provided filter.
       type: condition
       iscommand: false
       brand: ""
@@ -603,8 +525,7 @@ tasks:
           left:
             value:
               complex:
-                root: RubrikPolaris
-                accessor: UserAccess
+                root: user_risk_levels
             iscontext: true
           right:
             value: {}
@@ -612,8 +533,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1430
+          "x": 367.5,
+          "y": 1420
         }
       }
     note: false
@@ -625,10 +546,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 64ed0a9b-756b-441d-854e-15c20b468577
+    taskid: df5d79af-7f06-47a7-8544-02b7b3feddf9
     type: regular
     task:
-      id: 64ed0a9b-756b-441d-854e-15c20b468577
+      id: df5d79af-7f06-47a7-8544-02b7b3feddf9
       version: -1
       name: Update incident severity as per user risk level.
       description: Script used to set the incident severity using the risk level(s) provided from the argument.
@@ -642,15 +563,14 @@ tasks:
     scriptarguments:
       risk_levels:
         complex:
-          root: RubrikPolaris.UserAccess
-          accessor: riskLevel
+          root: user_risk_levels
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1670
+          "x": 480,
+          "y": 1595
         }
       }
     note: false
@@ -660,16 +580,60 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: 2348ac23-59d2-4195-8759-4a5e1f9fd97d
+  "37":
+    id: "37"
+    taskid: 3fb9630a-92bb-4da4-827c-7b8ffadc3426
     type: regular
     task:
-      id: 2348ac23-59d2-4195-8759-4a5e1f9fd97d
+      id: 3fb9630a-92bb-4da4-827c-7b8ffadc3426
       version: -1
-      name: Delete context for the previous page token information.
+      name: Set the delete keys.
       description: |-
-        Delete context for the previous page token information.
+        Set the delete keys.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: delete_keys_for_rubrik_user_access_analysis_playbook
+      value:
+        simple: user_risk_levels,subplaybook_user_risk_levels,RubrikPolaris.PageToken.UserAccess,next_page_token
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: c0c727d0-a587-447f-84dc-28184e5cffdb
+    type: regular
+    task:
+      id: c0c727d0-a587-447f-84dc-28184e5cffdb
+      version: -1
+      name: Delete context for the specified keys.
+      description: |-
+        Delete context for the specified keys.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
@@ -683,14 +647,23 @@ tasks:
       - "21"
     scriptarguments:
       key:
-        simple: next_page_token
+        complex:
+          root: delete_keys_for_rubrik_user_access_analysis_playbook
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+      subplaybook:
+        simple: auto
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 560
+          "x": 367.5,
+          "y": 545
         }
       }
     note: false
@@ -705,10 +678,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2015,
-        "width": 975,
-        "x": -115,
-        "y": -90
+        "height": 1785,
+        "width": 912.5,
+        "x": 50,
+        "y": 50
       }
     }
   }

@@ -1663,7 +1663,7 @@ def prepare_context_hr_ioc_scan_list(data: list):
 
 def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results: bool, user_email: str,
                                         page_number: int = 1, limit: int = DEFAULT_LIMIT
-                                        ) -> Tuple[list[dict], str, int]:
+                                        ) -> Tuple[list[dict], str, int, set[str]]:
     """
     Prepare context output and human-readable response for rubrik-sonar-user-access-list command.
 
@@ -1682,10 +1682,11 @@ def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results
     :type limit: ``int``
     :param limit: Limit the records for the output.
 
-    :return: Context output, human-readable and the total pages for the command.
+    :return: Context output, human-readable, the total pages and the risk levels for the command.
     """
     hr_content = []
     context: list[dict] = []
+    risk_levels: set[str] = set()
     upn_match_count = 0
     for edge in edges:
         node = edge.get('node')
@@ -1704,6 +1705,9 @@ def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results
                 continue
         context.append(node)
         sensitive_files = node.get('sensitiveFiles') or {}
+        risk_level = node.get('riskLevel')
+        if risk_level:
+            risk_levels.add(risk_level)
 
         total_sensitive_files = 0
         # Go for totalHits if include_whitelisted_results is True else go for violatedHits.
@@ -1743,7 +1747,7 @@ def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results
                  TOTAL_SENSITIVE_FILES, TOTAL_SENSITIVE_HITS],
         removeNull=True)
 
-    return context, hr, pages
+    return context, hr, pages, risk_levels
 
 
 def prepare_context_hr_user_access_get(principal_summary: Dict, policy_hits_context: list,
@@ -3534,6 +3538,8 @@ def rubrik_sonar_user_access_list_command(client: PolarisClient, args: Dict[str,
 
     response = client._query_raw(raw_query=USER_ACCESS_QUERY, operation_name="UserAccessPrincipalListQuery",
                                  variables=filters, timeout=60)
+
+    response["xsoar_risk_levels"] = []
     data = response.get('data', {}).get('principalSummaries', {})
     edges = data.get('edges', [])
     page_cursor = remove_empty_elements(data.get('pageInfo', {}))
@@ -3550,8 +3556,10 @@ def rubrik_sonar_user_access_list_command(client: PolarisClient, args: Dict[str,
         return CommandResults(outputs=outputs, raw_response=response,
                               readable_output=MESSAGES["NO_RECORDS_FOUND"].format("user accesses"))
 
-    context, hr, pages = prepare_context_hr_user_access_list(
+    context, hr, pages, risk_levels = prepare_context_hr_user_access_list(
         edges, include_whitelisted_results, user_email, page_number, limit)  # type: ignore
+
+    response["xsoar_risk_levels"] = list(risk_levels)
 
     if context:
         outputs[f"{OUTPUT_PREFIX['USER_ACCESS']}(val.principalId == obj.principalId)"] = context

@@ -95,7 +95,8 @@
         },
         "__typename": "PrincipalSummaryConnection"
       }
-    }
+    },
+    "xsoar_risk_levels": ["HIGH_RISK"]
   },
   "raw_response_when_not_whitelisted": {
     "data": {
@@ -193,7 +194,8 @@
         },
         "__typename": "PrincipalSummaryConnection"
       }
-    }
+    },
+    "xsoar_risk_levels": ["HIGH_RISK"]
   },
   "empty_response": {
     "data": {}

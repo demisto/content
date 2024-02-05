@@ -2939,7 +2939,7 @@ script:
     - contextPath: RubrikPolaris.PageToken.FileContext.hasNextPage
       description: Whether the result has the next page or not.
       type: Boolean
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.85947
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.86433
   isfetch: true
   runonce: false
   script: '-'
