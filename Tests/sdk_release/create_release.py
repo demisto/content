@@ -11,7 +11,8 @@ from Tests.scripts.utils import logging_wrapper as logging
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-REGEX = re.compile(r"^(.*) \[(#\d+)\]\((http.*)\)")
+# regex to split the changelog line to 3 pieces- description, pr number and url
+CHANGELOG_REGEX = re.compile(r"^(.*) \[(#\d+)\]\((http.*)\)")
 
 
 def get_changelog_text(release_branch_name, text_format='markdown'):
@@ -32,7 +33,7 @@ def get_changelog_text(release_branch_name, text_format='markdown'):
     for change in release_changes:
         try:
             # Ignoring the mypy error because the regex must match
-            change_parts = REGEX.match(change).groups()  # type: ignore[union-attr]
+            change_parts = CHANGELOG_REGEX.match(change).groups()  # type: ignore[union-attr]
 
             if text_format == 'markdown':
                 releases.append(
