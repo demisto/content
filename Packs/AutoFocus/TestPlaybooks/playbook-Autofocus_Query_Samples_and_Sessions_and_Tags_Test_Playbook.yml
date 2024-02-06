@@ -10,24 +10,25 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1d79a656-8442-4171-89c4-ae253c769434
+    taskid: 05a7cb53-fca3-46d1-8e34-2b03ee732ef8
     type: start
     task:
-      id: 1d79a656-8442-4171-89c4-ae253c769434
+      id: 05a7cb53-fca3-46d1-8e34-2b03ee732ef8
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
+      - "6"
       - "9"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": -90
+          "x": 265,
+          "y": 50
         }
       }
     note: false
@@ -39,10 +40,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 9a90ebd2-97bc-414d-86bb-da2da08c6d97
+    taskid: f5a5761f-8688-495e-89e3-96321fbc2064
     type: playbook
     task:
-      id: 9a90ebd2-97bc-414d-86bb-da2da08c6d97
+      id: f5a5761f-8688-495e-89e3-96321fbc2064
       version: -1
       name: Autofocus Query Samples and Sessions
       description: |-
@@ -85,8 +86,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 215
+          "x": 50,
+          "y": 515
         }
       }
     note: false
@@ -98,10 +99,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6386c645-907c-4247-81b7-2adc15aec524
+    taskid: e99b55c8-806e-4dee-8e07-8ed28b05fe63
     type: title
     task:
-      id: 6386c645-907c-4247-81b7-2adc15aec524
+      id: e99b55c8-806e-4dee-8e07-8ed28b05fe63
       version: -1
       name: Done
       type: title
@@ -112,8 +113,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 620
+          "x": 265,
+          "y": 865
         }
       }
     note: false
@@ -125,10 +126,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 9aafe622-4188-4d1d-8707-c7476fdfa256
+    taskid: d98c84bf-6ea6-489f-8d1b-fd08c3d5ebe0
     type: condition
     task:
-      id: 9aafe622-4188-4d1d-8707-c7476fdfa256
+      id: d98c84bf-6ea6-489f-8d1b-fd08c3d5ebe0
       version: -1
       name: Got Results
       type: condition
@@ -159,8 +160,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 380
+          "x": 50,
+          "y": 690
         }
       }
     note: false
@@ -172,10 +173,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 82b92959-c002-409e-8df3-b3d1609c75f8
+    taskid: aa07e84d-4817-4ade-8af5-7af36ec52fe7
     type: title
     task:
-      id: 82b92959-c002-409e-8df3-b3d1609c75f8
+      id: aa07e84d-4817-4ade-8af5-7af36ec52fe7
       version: -1
       name: Test IP and tags input
       type: title
@@ -189,8 +190,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 70
+          "x": 50,
+          "y": 355
         }
       }
     note: false
@@ -202,10 +203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: f00513b7-c9e3-48ef-83c5-a26c497dad77
+    taskid: 22f01ae4-d512-4bc0-8271-7c9bd598b7d8
     type: playbook
     task:
-      id: f00513b7-c9e3-48ef-83c5-a26c497dad77
+      id: 22f01ae4-d512-4bc0-8271-7c9bd598b7d8
       version: -1
       name: Autofocus Query Samples and Sessions
       description: |-
@@ -237,8 +238,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 215
+          "x": 480,
+          "y": 515
         }
       }
     note: false
@@ -250,10 +251,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 901a25e1-024d-4827-8c89-f52c743bb979
+    taskid: 9ca1720c-7462-4f05-8bad-8d25f582efe3
     type: condition
     task:
-      id: 901a25e1-024d-4827-8c89-f52c743bb979
+      id: 9ca1720c-7462-4f05-8bad-8d25f582efe3
       version: -1
       name: Got Results
       type: condition
@@ -261,7 +262,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "6"
+      - "2"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -284,8 +285,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 380
+          "x": 480,
+          "y": 690
         }
       }
     note: false
@@ -297,10 +298,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d9cfebde-2cfc-4f04-8f35-b21171299f5b
+    taskid: b1521221-197a-4137-8e98-f191e2001d4c
     type: title
     task:
-      id: d9cfebde-2cfc-4f04-8f35-b21171299f5b
+      id: b1521221-197a-4137-8e98-f191e2001d4c
       version: -1
       name: Test Query input
       type: title
@@ -308,14 +309,49 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "10"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 70
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 9e782470-7695-4b9a-8fa7-796f369814cc
+    type: regular
+    task:
+      id: 9e782470-7695-4b9a-8fa7-796f369814cc
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      seconds:
+        simple: "120"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
         }
       }
     note: false
@@ -332,10 +368,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 775,
-        "width": 790,
-        "x": 270,
-        "y": -90
+        "height": 880,
+        "width": 810,
+        "x": 50,
+        "y": 50
       }
     }
   }
