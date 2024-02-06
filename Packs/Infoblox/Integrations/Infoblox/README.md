@@ -3476,7 +3476,7 @@ List network information.
 | --- | --- | --- |
 | pattern | Filter networks by pattern, e.g. '.0/24' for netmask, '192.168' for subnet. | Optional | 
 | extattrs | comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue". | Optional | 
-| max_results | The maximum number of records to return. Default is 50, maximum is 1000. Default is 50. | Optional | 
+| max_results | The maximum number of records to return. Maximum is 1000. Default is 50. | Optional | 
 | additional_return_fields | Comma separated list of additional fields to return for each host, e.g. extattrs,aliases. Default is extattrs. | Optional | 
 
 #### Context Output

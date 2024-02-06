@@ -299,7 +299,7 @@ class TestHelperFunctions:
         when provided with only extattr
         """
 
-        input = json.loads((Path(__file__).parent.resolve() / "test_files"
+        input = json.loads((Path(__file__).parent.resolve() / "test_data"
                             / "TestNetworkInfoOperations" / "get_network_return_fields_extattrs.json").read_text()).get("result")
 
         actual = transform_network_info_context(input)
@@ -317,7 +317,7 @@ class TestHelperFunctions:
         when provided with additional fields specified
         """
 
-        input = json.loads((Path(__file__).parent.resolve() / "test_files"
+        input = json.loads((Path(__file__).parent.resolve() / "test_data"
                             / "TestNetworkInfoOperations" / "get_networks_return_fields_options_extattrs.json").read_text()).get("result")  # noqa: E501
 
         actual = transform_network_info_context(input)
@@ -335,7 +335,7 @@ class TestHelperFunctions:
         when provided with additional fields specified
         """
 
-        input = json.loads((Path(__file__).parent.resolve() / "test_files"
+        input = json.loads((Path(__file__).parent.resolve() / "test_data"
                             / "TestHostRecordsOperations" / "get_records.json").read_text()).get("result")  # noqa: E501
 
         actual = transform_host_records_context(input)
@@ -485,7 +485,7 @@ class TestIPOperations:
         - The context includes the IP address object with the input IP address.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_files" / self.__class__.__name__
+        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
                          / "get_ipv4_address_from_ip_address.json").read_text()
 
         requests_mock.get(
@@ -523,7 +523,7 @@ class TestIPOperations:
         - The context includes the IP address object with the input IP address.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_files" / self.__class__.__name__
+        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
                          / "get_ipv4_address_from_ip_address.json").read_text()
 
         requests_mock.get(
@@ -563,7 +563,7 @@ class TestIPOperations:
         from_ip = self.VALID_IP_ADDRESS
         to_ip = self.VALID_IP_ADDRESS[:-1] + "9"
 
-        mock_response = (Path(__file__).parent.resolve() / "test_files" / self.__class__.__name__
+        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
                          / "get_ipv4_addresses_from_network.json").read_text()
 
         requests_mock.get(
@@ -641,7 +641,7 @@ class TestIPOperations:
         - The context includes the IP address object with the input netmask.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_files" / self.__class__.__name__
+        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
                          / "get_ipv4_addresses_from_network.json").read_text()
 
         requests_mock.get(
@@ -697,7 +697,7 @@ class TestHostRecordsOperations:
         - Ensure records are returned as expected.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_files"
+        mock_response = (Path(__file__).parent.resolve() / "test_data"
                          / self.__class__.__name__ / "get_records.json").read_text()
 
         requests_mock.get(
@@ -725,7 +725,7 @@ class TestHostRecordsOperations:
         - Ensure only matching record is returned.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_files"
+        mock_response = (Path(__file__).parent.resolve() / "test_data"
                          / self.__class__.__name__ / "get_record_by_hostname.json").read_text()
         host_name = "ciac-3607.test"
 
@@ -755,7 +755,7 @@ class TestHostRecordsOperations:
         - Ensure only matching record is returned.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_files"
+        mock_response = (Path(__file__).parent.resolve() / "test_data"
                          / self.__class__.__name__ / "get_record_extattrs.json").read_text()
         input = "Site=Tel-Aviv"
 
@@ -788,7 +788,7 @@ class TestHostRecordsOperations:
 
         input = "extattrs,aliases"
 
-        mock_response = (Path(__file__).parent.resolve() / "test_files"
+        mock_response = (Path(__file__).parent.resolve() / "test_data"
                          / self.__class__.__name__ / "get_records_extattrs_aliases.json").read_text()
 
         requests_mock.get(
@@ -860,7 +860,7 @@ class TestNetworkInfoOperations:
         - No additional fields context key is set.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_files"
+        mock_response = (Path(__file__).parent.resolve() / "test_data"
                          / self.__class__.__name__ / "get_networks.json").read_text()
 
         requests_mock.get(
@@ -900,7 +900,7 @@ class TestNetworkInfoOperations:
         - No additional fields context key is set.
         """
 
-        mock_response = (Path(__file__).parent.resolve() / "test_files"
+        mock_response = (Path(__file__).parent.resolve() / "test_data"
                          / self.__class__.__name__ / "get_network_return_fields_extattrs.json").read_text()
 
         pattern = "192.168."
@@ -946,7 +946,7 @@ class TestNetworkInfoOperations:
 
         limit = 10
 
-        mock_response = (Path(__file__).parent.resolve() / "test_files"
+        mock_response = (Path(__file__).parent.resolve() / "test_data"
                          / self.__class__.__name__ / "get_networks_return_fields_options_extattrs.json").read_text()
 
         requests_mock.get(
