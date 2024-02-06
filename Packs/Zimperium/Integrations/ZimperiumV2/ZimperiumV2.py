@@ -354,7 +354,8 @@ class Client(BaseClient):
                                   headers=self._headers)
 
 
-def test_module(client: Client, first_fetch_time: Optional[str], fetch_query: Optional[list], max_fetch: int, look_back: int = 1) -> str:
+def test_module(client: Client, first_fetch_time: Optional[str],
+                fetch_query: Optional[list], max_fetch: int, look_back: int = 1) -> str:
     """
     Performs basic get request to get incident samples
     """
@@ -942,7 +943,8 @@ def fetch_incidents(client: Client, last_run: dict, fetch_query: Optional[list],
     Returns:
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created
-    # """
+    """
+    fetch_query = fetch_query or []
     demisto.debug(f"Last run before the fetch run: {last_run}")
     limit = last_run.get('limit', max_fetch)
     start_time, end_time = get_fetch_run_time_range(

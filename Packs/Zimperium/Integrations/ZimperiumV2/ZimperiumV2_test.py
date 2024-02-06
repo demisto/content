@@ -57,7 +57,7 @@ def test_devices_search_command(client, requests_mock):
     assert results.outputs_prefix == 'Zimperium.Device'
     assert results.outputs[0].get('id') == mock_response_device_search.get('content', [''])[0].get('id')
     assert results.outputs_key_field == 'id'
-    assert 'Device search' in results.readable_output
+    assert 'Device Search' in results.readable_output
 
 
 def test_report_get_command(client, requests_mock):
@@ -95,7 +95,7 @@ def test_threat_search_command(client, requests_mock):
     assert results.outputs_prefix == 'Zimperium.Threat'
     assert results.outputs[0].get('id') == mock_response_threat_search.get('content', [''])[0].get('id')
     assert results.outputs_key_field == 'id'
-    assert 'Threat search' in results.readable_output
+    assert 'Threat Search' in results.readable_output
     assert results.raw_response == mock_response_threat_search
 
 
@@ -135,7 +135,7 @@ def test_device_cve_get_command(client, requests_mock):
     assert results.outputs_prefix == 'Zimperium.DeviceCVE'
     assert results.outputs[0].get('id') == mock_response_app_version_list.get('content', [''])[0].get('id')
     assert results.outputs_key_field == 'id'
-    assert 'Device CVE' in results.readable_output
+    assert 'Devices Associated with' in results.readable_output
     assert results.raw_response == mock_response_app_version_list
 
 
