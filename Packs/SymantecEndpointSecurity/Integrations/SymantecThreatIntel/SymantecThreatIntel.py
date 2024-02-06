@@ -90,11 +90,11 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def intersect(a: List, b: List) -> List:
+def intersect(a: list, b: list) -> list:
     return [x for x in a if x in b]
 
 
-def has_intersection(a: List, b: List) -> bool:
+def has_intersection(a: list, b: list) -> bool:
     return len(intersect(a, b)) > 0
 
 
@@ -163,7 +163,7 @@ def parse_file_insight_response(response: dict) -> dict:
     return response
 
 
-def execute_network_command(client: Client, args: List[str]) -> List[dict]:
+def execute_network_command(client: Client, args: list[str]) -> list[dict]:
     results = []
     for arg in args:
         response = client.broadcom_network_insight(arg)
@@ -210,7 +210,7 @@ def test_module(client: Client, oauth: str) -> str:
     # https://xsoar.pan.dev/docs/integrations/code-conventions#credentials
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def ip_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     values = argToList(arg=args.get('ip', ''))
     results = execute_network_command(client, values)
     command_results = []
@@ -233,7 +233,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any]) -> List[CommandR
     return command_results
 
 
-def url_reputation_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def url_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     values = argToList(arg=args.get('url', ''))
     results = execute_network_command(client, values)
     command_results = []
@@ -256,7 +256,7 @@ def url_reputation_command(client: Client, args: Dict[str, Any]) -> List[Command
     return command_results
 
 
-def domain_reputation_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def domain_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     values = argToList(arg=args.get('domain', ''))
     results = execute_network_command(client, values)
     command_results = []
@@ -279,7 +279,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any]) -> List[Comm
     return command_results
 
 
-def file_reputation_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def file_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     values = argToList(arg=args.get('file', ''))
     results = []
     for file in values:
@@ -309,7 +309,7 @@ def file_reputation_command(client: Client, args: Dict[str, Any]) -> List[Comman
     return command_results
 
 
-def symantec_protection_file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def symantec_protection_file_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     values = argToList(arg=args.get('file', ''))
     results = []
     for file in values:
@@ -327,7 +327,7 @@ def symantec_protection_file_command(client: Client, args: Dict[str, Any]) -> Li
     return command_results
 
 
-def symantec_protection_network_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def symantec_protection_network_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     values = argToList(arg=args.get('network', ''))
     results = []
     for network in values:
@@ -346,7 +346,7 @@ def symantec_protection_network_command(client: Client, args: Dict[str, Any]) ->
     return command_results
 
 
-def symantec_protection_cve_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def symantec_protection_cve_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     values = argToList(arg=args.get('cve', ''))
     results = []
     for cve in values:
