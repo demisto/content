@@ -16,6 +16,10 @@
         "xsoar",
         "marketplacev2"
     ],
+    "itemPrefix": [
+        "SpyCloud Enterprise Protection",
+        "SpyCloud"
+    ],
     "devEmail": [
         "integrations@spycloud.com"
     ],
