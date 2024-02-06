@@ -744,5 +744,5 @@ def test_parse_phone_number():
 def test_switch_hr_headers():
     assert (EWSv2.switch_hr_headers(
         {'willswitch': '1234', 'wontswitch': '111', 'alsoswitch': 5555},
-        {'willswitch': 'newkey', 'alsoswitch': 'annothernewkey'})
+        {'willswitch': 'newkey', 'alsoswitch': 'annothernewkey', 'doesnt_exiest': 'doesnt break'})
             == {'annothernewkey': 5555, 'newkey': '1234', 'wontswitch': '111'})
