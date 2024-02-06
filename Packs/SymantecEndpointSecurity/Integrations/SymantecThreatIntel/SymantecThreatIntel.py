@@ -1,8 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Symantec Threat Intel Insight
+"""Symantec Threat Intel
 
-This is an integration that allows to query the Symantec Threat Intel Insight Reputation information
+This is an integration that allows to query the Symantec Threat Intel information
 """
 
 from CommonServerUserPython import *  # noqa
@@ -17,8 +17,9 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-INTEGRATION_NAME = 'BroadcomInsightCloud'
-CONTEXT_PREFIX = 'Broadcom.Insight'
+INTEGRATION_NAME = 'SymantecThreatIntel'
+INSIGHT_CONTEXT_PREFIX = 'Symantec.Insight'
+PROTECTION_CONTEXT_PREFIX = 'Symantec.Protection'
 OUTPUT_KEY = 'indicator'
 MALICIOUS_CATEGORIES = ['Malicious Outbound Data/Botnets', 'Malicious Sources/Malnets', 'Phishing', 'Proxy Avoidance']
 SUSPICIOUS_CATEGORIES = ['Compromised Sites', 'Dynamic DNS Host', 'Hacking', 'Placeholders', 'Potentially Unwanted Software',
@@ -76,6 +77,15 @@ class Client(BaseClient):
         resp = self._http_request('GET', url_suffix=f'/threat-intel/insight/network/{network}', headers=headers)
         return resp
 
+    def broadcom_file_protection(self, file_hash: str):
+        pass
+
+    def broadcom_network_protection(self, network: str):
+        pass
+
+    def broadcom_cve_protection(self, cve: str):
+        pass
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -121,16 +131,16 @@ def calculate_network_severity(result: dict) -> tuple[int, str | None]:
     return (final_score, malicious_description)
 
 
-def parse_response(response: dict) -> dict | None:
+def parse_insight_response(response: dict) -> dict | None:
     if 'network' in response:
-        return parse_network_response(response)
+        return parse_network_insight_response(response)
     elif 'file' in response:
-        return parse_file_response(response)
+        return parse_file_insight_response(response)
     else:
         return None
 
 
-def parse_network_response(response: dict) -> dict:
+def parse_network_insight_response(response: dict) -> dict:
     network = response.get('network')
     reputation = response.get('reputation', 'UNKNOWN')
     risk_level = response.get('threatRiskLevel', {}).get('level', 0)
@@ -143,7 +153,7 @@ def parse_network_response(response: dict) -> dict:
     return response
 
 
-def parse_file_response(response: dict) -> dict:
+def parse_file_insight_response(response: dict) -> dict:
     file = response.get('file')
     reputation = response.get('reputation', 'UNKNOWN')
     actors = response.get('actors', [])
@@ -157,7 +167,7 @@ def execute_network_command(client: Client, args: List[str]) -> List[dict]:
     results = []
     for arg in args:
         response = client.broadcom_network_insight(arg)
-        result = parse_response(response)
+        result = parse_insight_response(response)
         if result:
             results.append(result)
 
@@ -214,7 +224,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any]) -> List[CommandR
                                       )
 
         ip = Common.IP(ip=result['indicator'], dbot_score=dbot_score)
-        command_result = CommandResults(outputs_prefix=f'{CONTEXT_PREFIX}.IP',
+        command_result = CommandResults(outputs_prefix=f'{INSIGHT_CONTEXT_PREFIX}.IP',
                                         outputs_key_field=OUTPUT_KEY,
                                         outputs=result,
                                         indicator=ip)
@@ -237,7 +247,7 @@ def url_reputation_command(client: Client, args: Dict[str, Any]) -> List[Command
                                       )
 
         url = Common.URL(url=result['indicator'], dbot_score=dbot_score)
-        command_result = CommandResults(outputs_prefix=f'{CONTEXT_PREFIX}.URL',
+        command_result = CommandResults(outputs_prefix=f'{INSIGHT_CONTEXT_PREFIX}.URL',
                                         outputs_key_field=OUTPUT_KEY,
                                         outputs=result,
                                         indicator=url)
@@ -260,7 +270,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any]) -> List[Comm
                                       )
 
         domain = Common.Domain(domain=result['indicator'], dbot_score=dbot_score)
-        command_result = CommandResults(outputs_prefix=f'{CONTEXT_PREFIX}.Domain',
+        command_result = CommandResults(outputs_prefix=f'{INSIGHT_CONTEXT_PREFIX}.Domain',
                                         outputs_key_field=OUTPUT_KEY,
                                         outputs=result,
                                         indicator=domain)
@@ -273,9 +283,9 @@ def file_reputation_command(client: Client, args: Dict[str, Any]) -> List[Comman
     values = argToList(arg=args.get('file', ''))
     results = []
     for file in values:
-        if not re.match('^[A-Fa-f0-9]{64}$', file):
-            continue
-        file_result = parse_response(client.broadcom_file_insight(file))
+        # The API only supports SHA256, so return a "Unknown" Reputation otherwise
+        resp = {'file': file} if not re.match('^[A-Fa-f0-9]{64}$', file) else client.broadcom_file_insight(file)
+        file_result = parse_insight_response(resp)
         if file_result:
             results.append(file_result)
 
@@ -290,10 +300,65 @@ def file_reputation_command(client: Client, args: Dict[str, Any]) -> List[Comman
                                       )
 
         file = Common.File(sha256=result['indicator'], dbot_score=dbot_score)
-        command_result = CommandResults(outputs_prefix=f'{CONTEXT_PREFIX}.File',
+        command_result = CommandResults(outputs_prefix=f'{INSIGHT_CONTEXT_PREFIX}.File',
                                         outputs_key_field=OUTPUT_KEY,
                                         outputs=result,
                                         indicator=file)
+        command_results.append(command_result)
+
+    return command_results
+
+
+def symantec_protection_file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    values = argToList(arg=args.get('file', ''))
+    results = []
+    for file in values:
+        # The API only supports SHA256, so return a "Unknown" Reputation otherwise
+        resp = {'file': file} if not re.match('^[A-Fa-f0-9]{64}$', file) else client.broadcom_file_protection(file)
+        results.append(resp)
+
+    command_results = []
+    for result in results:
+        command_result = CommandResults(outputs_prefix=f'{PROTECTION_CONTEXT_PREFIX}.File',
+                                        outputs_key_field='file',
+                                        outputs=result)
+        command_results.append(command_result)
+
+    return command_results
+
+
+def symantec_protection_network_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    values = argToList(arg=args.get('network', ''))
+    results = []
+    for network in values:
+        result = client.broadcom_network_protection(network)
+        if result:
+            results.append(result)
+
+    command_results = []
+    for result in results:
+
+        command_result = CommandResults(outputs_prefix=f'{PROTECTION_CONTEXT_PREFIX}.Network',
+                                        outputs_key_field='network',
+                                        outputs=result)
+        command_results.append(command_result)
+
+    return command_results
+
+
+def symantec_protection_cve_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    values = argToList(arg=args.get('cve', ''))
+    results = []
+    for cve in values:
+        result = client.broadcom_cve_protection(cve)
+        if result:
+            results.append(result)
+
+    command_results = []
+    for result in results:
+        command_result = CommandResults(outputs_prefix=f'{PROTECTION_CONTEXT_PREFIX}.Network',
+                                        outputs_key_field='file',  # Based on the documentation, the CVE is in the 'file' field
+                                        outputs=result)
         command_results.append(command_result)
 
     return command_results
@@ -339,6 +404,18 @@ def main() -> None:
         elif demisto.command() == 'file':
             client.authenticate(oauth)
             return_results(file_reputation_command(client, demisto.args()))
+        elif demisto.command() == 'symantec-protection-file':
+            client.authenticate(oauth)
+            return_results(symantec_protection_file_command(client, demisto.args()))
+            pass
+        elif demisto.command() == 'symantec-protection-network':
+            client.authenticate(oauth)
+            return_results(symantec_protection_network_command(client, demisto.args()))
+            pass
+        elif demisto.command() == 'symantec-protection-cve':
+            client.authenticate(oauth)
+            return_results(symantec_protection_cve_command(client, demisto.args()))
+            pass
         else:
             raise NotImplementedError(demisto.command())
 

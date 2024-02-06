@@ -1,6 +1,6 @@
 {
     "name": "Symantec Endpoint Security (SES)",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "Query the Symantec Endpoint Security Cloud using the official REST API.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
