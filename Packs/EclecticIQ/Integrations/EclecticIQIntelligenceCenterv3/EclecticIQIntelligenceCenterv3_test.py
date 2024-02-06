@@ -509,3 +509,89 @@ def test_lookup_observable(mocker):
 
     assert response['type'] == 'ipv4'
     assert response['source_name'] == 'user: Testing; user: Testing; '
+
+
+def test_get_feed_content_blocks(mocker):
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = {
+          "count": 2,
+          "data": 
+            {
+              "content_blocks": "urn:eclecticiq.com:csv-extracts:1.0",
+              "created_at": "2023-06-20T18:06:08.632279",
+              "delivery_status": "null",
+              "filename": "qradarfeedtest2-5d6c9551-1.csv",
+              "id": 11,
+              "items_count": 25,
+              "meta": {
+                "destination": "a80e31f1-3123-4f96-a15c-944e5f72f302"
+              },
+              "outgoing_feed": "https://ic-playground.eclecticiq.com/api/v2/outgoing-feeds/10",
+              "run_id": "5d6c9551-9ad4-4c88-9936-01620a2fe5e7",
+              "size": 12991
+            },
+          "limit": 100,
+          "offset": 0,
+          "total_count": 2
+        }
+
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    feed_to_request = {"packaging_status": "SUCCESS", "update_strategy": "REPLACE", "id": "10", "created_at": "2023-06-20T18:06:08.632279"}
+    feed_last_run = {"last_ingested":"2023-06-20T18:06:08.632279", "created_at":"2023-06-20T18:06:08.632279"}
+
+    response = client.get_feed_content_blocks(feed_to_request, feed_last_run)
+
+    assert response == "urn:eclecticiq.com:csv-extracts:1.0"
+    assert isinstance(response, str)
+
+
+def test_get_feed_content_blocks_append(mocker):
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = {
+          "count": 2,
+          "data": 
+            {
+              "content_blocks": "urn:eclecticiq.com:csv-extracts:1.0",
+              "created_at": "2023-06-20T18:06:08.632279",
+              "delivery_status": "null",
+              "filename": "qradarfeedtest2-5d6c9551-1.csv",
+              "id": 11,
+              "items_count": 25,
+              "meta": {
+                "destination": "a80e31f1-3123-4f96-a15c-944e5f72f302"
+              },
+              "outgoing_feed": "https://ic-playground.eclecticiq.com/api/v2/outgoing-feeds/10",
+              "run_id": "5d6c9551-9ad4-4c88-9936-01620a2fe5e7",
+              "size": 12991
+            },
+          "limit": 100,
+          "offset": 0,
+          "total_count": 2
+        }
+
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    feed_to_request = {"packaging_status": "SUCCESS", "update_strategy": "APPEND", "id": "10", "created_at": "2023-06-20T18:06:08.632279"}
+    feed_last_run = {"last_ingested":"2023-06-20T18:06:08.632279", "created_at":"2023-06-20T18:06:08.632271"}
+
+    response = client.get_feed_content_blocks(feed_to_request, feed_last_run)
+
+    assert response == "urn:eclecticiq.com:csv-extracts:1.0"
+    assert isinstance(response, str)
