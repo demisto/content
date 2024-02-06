@@ -2070,7 +2070,7 @@ def send_message():
 
     if message:
         entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
-        if entitlement_match and is_json(message):
+        if entitlement_match and is_teams_ask_message(message):
             # In TeamsAsk process
             adaptive_card = process_ask_user(message)
             conversation = {
