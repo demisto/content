@@ -456,8 +456,10 @@ tasks:
           transformers:
           - operator: uniq
           - operator: FirstArrayElement
-      Timeout:
+      execution-timeout:
         simple: "600"
+      retry-count:
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -638,8 +640,10 @@ tasks:
           transformers:
           - operator: uniq
           - operator: FirstArrayElement
-      Timeout:
+      execution-timeout:
         simple: "600"
+      retry-count:
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -880,8 +884,10 @@ tasks:
           transformers:
           - operator: uniq
           - operator: FirstArrayElement
-      Timeout:
+      execution-timeout:
         simple: "600"
+      retry-count:
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -1091,8 +1097,10 @@ tasks:
           transformers:
           - operator: uniq
           - operator: FirstArrayElement
-      Timeout:
+      execution-timeout:
         simple: "600"
+      retry-count:
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -1229,8 +1237,10 @@ tasks:
           transformers:
           - operator: uniq
           - operator: FirstArrayElement
-      Timeout:
+      execution-timeout:
         simple: "600"
+      retry-count:
+        simple: "3"
     separatecontext: false
     view: |-
       {
