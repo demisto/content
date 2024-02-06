@@ -361,6 +361,11 @@ def main() -> None:  # pragma: no cover
 
                 end = datetime.utcnow()
                 demisto.debug(f'Handled {len(events)} total events in {(end - start).seconds} seconds')
+
+                # set nextTrigger key in the lastRun dictionary to 0 (seconds) - this will trigger the next
+                # fetch-events to start immediately after the current fetch-events ends (CRTX-89345)
+                new_last_run['nextTrigger'] = '0'
+
                 demisto.setLastRun(new_last_run)
 
     # Log exceptions and return errors
