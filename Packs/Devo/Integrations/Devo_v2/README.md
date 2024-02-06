@@ -146,16 +146,16 @@ Please refer to to the Devo documentation for building a query with LINQ
 `devo-run-query`
 ##### Input
 
-| **Argument Name** | **Description**                                                                                    | **Required** |
-|-------------------|----------------------------------------------------------------------------------------------------|--------------|
-| query             | A LINQ query to run in Devo, with pagination support.                                                                                | Required     |
-| from              | Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes. | Required     |
-| to                | End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range. (Decimal milliseconds okay)   | Optional     |
-| items_per_page               | per page item count.   | Optional     |
-| queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds                          | Optional     |
-| writeToContext    | Whether to write results to context or not                                                         | Optional     |
-| linqLinkBase      | Overrides the global link base so is able to be set at run time                                    | Optional     |
-| filtered_columns  | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | A LINQ query to run in Devo, with pagination support. | Required | 
+| from | Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes. | Required | 
+| to | End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range. | Optional | 
+| items_per_page | Enter the per page value you want to set. Default is 50. | Optional | 
+| queryTimeout | Timeout in seconds for this query to run against Devo to override the minute default in the platform. Default is 60. | Optional | 
+| writeToContext | Whether to write results to context. Can be "true" or "false". Default is true. | Optional | 
+| linqLinkBase | Overrides the global Devo base domain for linq linking. | Optional | 
+| filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional | 
 
 
 ##### __from__ and __to__ time note:
@@ -209,15 +209,18 @@ that are allowed.
 `devo-get-alerts`
 ##### Input
 
-| **Argument Name** | **Description**                                                           | **Required** |
-|-------------------|---------------------------------------------------------------------------|--------------|
-| from              | Start datetime for alerts to fetch                                        | Required     |
-| to                | End datetime for alerts to fetch                                          | Optional     |
-| filters           | key value filter to apply to retrieve specified alerts. refer to docs     | Optional     |
-| queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds | Optional     |
-| writeToContext    | write results to context or not                                           | Optional     |
-| linqLinkBase      | Overrides the global link base so is able to be set at run time           | Optional     |
-| filtered_columns  | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| table_name | name of alert table to fetch alerts from a table. If not provided 'siem.logtrust.alert.info' will be used. | Optional | 
+| prefix | Prefix to use for the column names. | Optional | 
+| from | Start datetime for alerts to fetch. | Required | 
+| to | End datetime for alerts to fetch. | Optional | 
+| items_per_page | Enter the per page value you want to set. Default is 50. | Optional | 
+| filters | Key value filter to apply to retrieve the specified alerts. For more information, see the Devo documentation. | Optional | 
+| queryTimeout | Timeout in seconds for this query to run against Devo to override the minute default in the platform. Default is 60. | Optional | 
+| writeToContext | Whether to write results to context. Can be "true" or "false". Default is true. | Optional | 
+| linqLinkBase | Overrides the global Devo base domain for linq linking. | Optional | 
+| filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional |
 
 
 ##### __from__ and __to__ time note:
@@ -266,17 +269,17 @@ Thus querying all columns for the search token and returning a union of the give
 `devo-multi-table-query`
 ##### Input
 
-| **Argument Name** | **Description**                                                           | **Required** |
-|-------------------|---------------------------------------------------------------------------|--------------|
-| tables            | List of table names to check for searchToken                              | Required     |
-| searchToken       | String that you wish to search for in given tables in any column          | Required     |
-| from              | Start time in seconds unix timestamp                                      | Required     |
-| to                | End time in seconds unix timestamp                                        | Optional     |
-| items_per_page               | per page item count.   | Optional     |
-| limit             | Number of entries to return to context. Default is 50. 0 sets to no limit | Optional     |
-| queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds | Optional     |
-| writeToContext    | write results to context or not                                           | Optional     |
-| filtered_columns  | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tables | A list of table names to check for the searchToken. | Required | 
+| searchToken | A string to search for in the specified tables (in any column). | Required | 
+| from | Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes. | Required | 
+| to | End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range. | Optional | 
+| limit | Limit of results to return to context. 0 for no limit. Default is 50. | Optional | 
+| queryTimeout | Timeout in seconds for this query to run against Devo to override the minute default in the platform. Default is 60. | Optional | 
+| writeToContext | Whether to write results to context. Can be "true" or "false". Default is true. | Optional | 
+| items_per_page | Enter the per page value you want to set. Default is 50. | Optional | 
+| filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional |
 
 ##### __from__ and __to__ time note:
 This integration allows for the following formats. Note that when __from__ and __to__ times
