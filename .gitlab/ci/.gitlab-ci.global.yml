@@ -132,6 +132,11 @@
   - chmod +x ./Tests/scripts/*
   - chmod +x ./Tests/Marketplace/*
   - section_end "Granting execute permissions on files"
+  # in nightly builds we set the DEMISTO_SDK_GRAPH_FORCE_CREATE in order to carate the graph from scratch
+  - |
+    if [[-n $NIGHTLY ]]; then
+      export DEMISTO_SDK_GRAPH_FORCE_CREATE=true
+    fi
 
 .get_contribution_pack: &get_contribution_pack
   - section_start "getting contrib packs" --collapsed
