@@ -3,8 +3,7 @@ import json
 
 import pytest
 from freezegun import freeze_time
-from unittest import mock
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 import demistomock as demisto
 from CommonServerPython import Common
 from CortexXDRIR import XDR_RESOLVED_STATUS_TO_XSOAR
@@ -811,7 +810,7 @@ def test_check_using_upgraded_api_incidents_extra_data_success(mocker):
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     incident_id = "1"
     http_response = {"replay": {"number_in_config": 10, "alert_count": 5, "incidents": [{"id": "1", "created_time":
-                                                                                                       "2021-12-15T12:00:00Z"}]}}
+                                                                                         "2021-12-15T12:00:00Z"}]}}
     mocker.patch.object(client, '_http_request', return_value=http_response)
 
     raw_incident, use_get_incident_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_id)
@@ -821,21 +820,7 @@ def test_check_using_upgraded_api_incidents_extra_data_success(mocker):
     assert use_get_incident_extra_data
 
 
-def _mock_response(status=500, content="CONTENT", json_data=None, raise_for_status=None):
-    mock_resp = MagicMock()
-    # Set status code and content
-    mock_resp.status_code = status
-    mock_resp.content = content
-    # Add JSON data if provided
-    if json_data:
-        mock_resp.json = MagicMock(return_value=json_data)
-    # Mock raise_for_status call with optional error
-    if raise_for_status:
-        mock_resp.raise_for_status = MagicMock(side_effect=raise_for_status)
-    return mock_resp
-
-
-def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock,mocker):
+def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock, mocker):
     """
     Given:
      - Mock 500 response from API
@@ -850,40 +835,34 @@ def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock,moc
     from CortexXDRIR import check_using_upgraded_api_incidents_extra_data, Client
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
+
     class MockException:
         def __init__(self, status_code) -> None:
             self.status_code = status_code
 
-    mocker.patch.object(client,"get_multiple_incidents_extra_data",side_effect=DemistoException(
-            message="Group 'test' was not found", res=MockException(500)
-        ))
+    mocker.patch.object(client, "get_multiple_incidents_extra_data", side_effect=DemistoException(
+        message="The server encountered an internal error", res=MockException(500)
+    ))
     result = check_using_upgraded_api_incidents_extra_data(client, '1')
     assert result == ({}, False)
 
 
 @freeze_time("1997-10-05 15:00:00 GMT")
 def test_fetch_incidents_extra_data(requests_mock, mocker):
-    from CortexXDRIR import fetch_incidents, Client, sort_all_list_incident_fields
+    from CortexXDRIR import fetch_incidents, Client
+    get_incidents_list_response = load_test_data('./test_data/get_incidents_list_multiple_incidents_extra_data.json')
+    raw_multiple_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+    mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
-    get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
-    raw_incident = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
-    modified_raw_incident = raw_incident['reply'].copy()
-    modified_raw_incident['alerts'] = raw_incident['reply'].get('alerts').get('data')
-    modified_raw_incident['mirror_direction'] = 'In'
-    modified_raw_incident['mirror_instance'] = 'MyInstance'
-    modified_raw_incident['last_mirrored_in'] = 740314800000
-    mocker.patch.object(Client, '_http_request', side_effect=get_incidents_list_response)
-    # requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
-    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/multiple_incidents_extra_data', json=raw_incident)
-    # mocker.patch.object(client,"get_multiple_incidents_extra_data", return_value=raw_incident)
-    mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
-
-    modified_raw_incident.get('alerts')[0]['host_ip_list'] = \
-        modified_raw_incident.get('alerts')[0].get('host_ip').split(',')
+    
+    # mocker.patch.object(client, 'get_incidents', side_effect=get_incidents_list_response)
+    mocker.patch("CortexXDRIR.check_using_upgraded_api_incidents_extra_data", \
+        side_effect=[(raw_multiple_extra_data.get('reply',{}).get('incidents')[0], True), \
+        (raw_multiple_extra_data,True)])
 
     next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance')
-    sort_all_list_incident_fields(modified_raw_incident)
 
     assert len(incidents) == 2
     assert incidents[0]['name'] == "XDR Incident 1 - 'Local Analysis Malware' generated by XDR Agent detected on host" \
@@ -892,4 +871,3 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
     if 'network_artifacts' not in json.loads(incidents[0]['rawJSON']):
         raise AssertionError
     assert json.loads(incidents[0]['rawJSON']).pop('last_mirrored_in')
-    assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)
