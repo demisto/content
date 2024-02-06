@@ -181,8 +181,8 @@ FORMAT_NON_ASCII = [
     ('https://testö.com/test.html', 'https://testö.com/test.html'),
     ('www.testö.com/test.aspx', 'www.testö.com/test.aspx'),
     ('https://www.teöst.com/', 'https://www.teöst.com/'),
-    ('https://www.test.se/Auth/?&rUrl=https://test.com/wp–images/amclimore@test.com',  # disable-secrets-detection
-     'https://www.test.se/Auth/?&rUrl=https://test.com/wp–images/amclimore@test.com'),  # disable-secrets-detection
+    ('https://www.test.se/Auth/?&rUrl=https://test.com/wp-images/amclimore@test.com',  # disable-secrets-detection
+     'https://www.test.se/Auth/?&rUrl=https://test.com/wp-images/amclimore@test.com'),  # disable-secrets-detection
     ('test.com/#/?q=(1,2)', "test.com/#/?q=(1,2)"),  # disable-secrets-detection
 ]
 
