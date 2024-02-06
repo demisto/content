@@ -73,10 +73,10 @@ Get IP info
 | Infoblox.IP.NetworkView | string | The name of the network view. |
 | Infoblox.IP.Status | string | The current status of the address. |
 | Infoblox.IP.IsConflict | string | Whether the IP address has either a MAC address conflict or a DHCP lease conflict detected through a network discovery (if set to true). |
-| Infoblox.IP. Objects | string | The objects associated with the IP address. |
+| Infoblox.IP.Objects | string | The objects associated with the IP address. |
 | Infoblox.IP.Types | string | The current status of the address. |
-| Infoblox.IP. Names | string | The DNS names. For example, if the IP address belongs to a host record, this field contains the hostname. |
-| Infoblox.IP. Extattrs | string | Extra attributes relevant for this object. |
+| Infoblox.IP.Names | string | The DNS names. For example, if the IP address belongs to a host record, this field contains the hostname. |
+| Infoblox.IP.Extattrs | string | Extra attributes relevant for this object. |
 | Infoblox.IP.IpAddress | string | The IP address. |
 | Infoblox.IP.Usage | string | Indicates whether the IP address is configured for DNS or DHCP. |
 
