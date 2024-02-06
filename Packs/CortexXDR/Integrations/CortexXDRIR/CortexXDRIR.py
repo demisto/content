@@ -33,6 +33,8 @@ XDR_INCIDENT_FIELDS = {
     "manual_severity": {"description": "Incident severity assigned by the user. "
                                        "This does not affect the calculated severity low medium high",
                         "xsoar_field_name": "severity"},
+    "close_reason": {"description": "The close reason of the XSOAR incident",
+                     "xsoar_field_name": "closeReason"}
 }
 
 MIRROR_DIRECTION = {
