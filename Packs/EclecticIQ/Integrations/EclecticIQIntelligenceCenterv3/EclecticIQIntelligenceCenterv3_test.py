@@ -333,7 +333,26 @@ def test_ip_command(mocker):
 
 def test_get_source_group_uid(mocker):
     mock_response = mocker.Mock()
-    mock_response.json.return_value = {"data": [{"source": "1111-1111-1111-2222"}]}
+    mock_response.json.return_value = {
+          "data": [
+            {
+              "created_at": "2023-05-08T11:23:13.870452+00:00",
+              "description": "",
+              "id": 1,
+              "last_updated_at": "2023-05-08T11:23:13.870452+00:00",
+              "name": "Testing Group",
+              "source": [
+                "https://ic-playground.eclecticiq.com/api/v2/sources/95c654c9-e1de-4639-9d17-b12a883164b6"
+              ],
+              "users": [
+                "https://ic-playground.eclecticiq.com/api/v2/users/48?role=member",
+                "https://ic-playground.eclecticiq.com/api/v2/users/63?role=member",
+                "https://ic-playground.eclecticiq.com/api/v2/users/9?role=admin"
+              ]
+            }
+          ]
+        }
+
     mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
 
     client = EclecticIQ_api(baseurl=SERVER,
@@ -346,8 +365,8 @@ def test_get_source_group_uid(mocker):
 
     response = client.get_source_group_uid("testing_group")
 
-    assert isinstance(response, str)
-    assert response == "1111-1111-1111-2222"
+    assert isinstance(response, list)
+    assert response[0] == "https://ic-playground.eclecticiq.com/api/v2/sources/95c654c9-e1de-4639-9d17-b12a883164b6"
 
 
 def test_get_source_group_order_id(mocker):
