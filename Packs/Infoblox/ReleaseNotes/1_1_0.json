@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The infoblox-get-ip command now outputs a list of IPs in the Infoblox.IP context path."
+    "breakingChangesNotes": "The infoblox-get-ip command now outputs a list of IPs in the Infoblox.IP context path. In addition, the Infoblox.IP.Objects, Infoblox.IP.Names, Infoblox.IP.Extattrs were stripped of the leading whitespace, e.g. Infoblox.IP. Objects -> Infoblox.IP.Objects"
 }

@@ -57,7 +57,7 @@ script:
     outputs:
     - contextPath: Infoblox.IP.ReferenceID
       description: Reference ID of the object.
-      type: number
+      type: string
     - contextPath: Infoblox.IP.MacAddress
       description: The Mac address of the IP.
       type: string
@@ -72,7 +72,7 @@ script:
       type: string
     - contextPath: Infoblox.IP.IsConflict
       description: Whether the IP address has either a MAC address conflict or a DHCP lease conflict detected through a network discovery (if set to true).
-      type: string
+      type: boolean
     - contextPath: Infoblox.IP.Objects
       description: The objects associated with the IP address.
       type: string
@@ -84,13 +84,13 @@ script:
       type: string
     - contextPath: Infoblox.IP.Extattrs
       description: Extra attributes relevant for this object.
-      type: string
+      type: unknown
     - contextPath: Infoblox.IP.IpAddress
       description: The IP address.
       type: string
     - contextPath: Infoblox.IP.Usage
       description: Indicates whether the IP address is configured for DNS or DHCP.
-      type: string
+      type: unknown
   - arguments:
     - description: The IP address for which to search.
       name: ip
