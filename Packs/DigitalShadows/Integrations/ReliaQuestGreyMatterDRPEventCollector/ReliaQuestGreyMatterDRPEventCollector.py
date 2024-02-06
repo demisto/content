@@ -390,6 +390,7 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
         client when a new request can be made, keep it in the last-run and wait until this time has reached
     """
     new_last_run = last_run.copy()
+    fetched_events = 0
     try:
         if retry_after := last_run.get(RATE_LIMIT_LAST_RUN):
             retry_after_datetime = dateparser.parse(retry_after)
@@ -410,6 +411,7 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
                 demisto.info(f'There are no events to fetch when last run is {last_run}, hence exiting')
                 break
             send_events_to_xsiam(enriched_events, vendor=VENDOR, product=PRODUCT)
+            fetched_events += len(enriched_events)
             new_last_run.update({LAST_FETCHED_EVENT_NUM: largest_event})
             demisto.info(f'Sent the following events {[event.get("event-num") for event in events]} successfully')
     except RateLimitError as rate_limit_error:
@@ -418,6 +420,7 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
             {RATE_LIMIT_LAST_RUN: rate_limit_error.retry_after}
         )
     finally:
+        demisto.updateModuleHealth({f'EventsPulled': fetched_events})
         demisto.setLastRun(new_last_run)
         demisto.info(f'Updated the last run from {last_run} to {new_last_run} successfully')
 

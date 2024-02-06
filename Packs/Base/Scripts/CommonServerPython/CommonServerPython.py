@@ -11275,7 +11275,7 @@ def split_data_to_chunks(data, target_chunk_size):
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE):
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module: bool = True):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11306,7 +11306,17 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :return: None
     :rtype: ``None``
     """
-    send_data_to_xsiam(events, vendor, product, data_format, url_key, num_of_attempts, chunk_size, data_type="events")
+    send_data_to_xsiam(
+        events,
+        vendor,
+        product,
+        data_format,
+        url_key,
+        num_of_attempts,
+        chunk_size,
+        data_type="events",
+        should_update_health_modue=should_update_health_module
+    )
 
 
 def is_scheduled_command_retry():
@@ -11416,7 +11426,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS):
+                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_modue: bool = True):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11541,7 +11551,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True)
 
-    demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+    if should_update_health_modue:
+        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
 
 ###########################################
