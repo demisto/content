@@ -1729,32 +1729,26 @@ The following sections list the changes in this version.
 
 ### Commands
 #### The following commands were removed in this version:
-* *commandName* - this command was replaced by XXX.
-* *commandName* - this command was replaced by XXX.
+* *zimperium-events-search* - this command was replaced by zimprerium-threat-search.
+* *zimperium-user-get-by-id* - this command was replaced by zimprerium-users-search.
+* *zimperium-device-get-by-id* - this command was replaced by zimperium-devices-search.
+* *zimperium-app-classification-get* - this command was replaced by zimperium-app-version-list.
+* *zimperium-devices-search* - this command was removed.
+* *file* - this command was removed.
+
 
 ### Arguments
 #### The following arguments were removed in this version:
 
-In the *commandName* command:
-* *argumentName* - this argument was replaced by XXX.
-* *argumentName* - this argument was replaced by XXX.
+In the *zimperium-users-search* command:
+* *query* and *email*.
 
-#### The behavior of the following arguments was changed:
+In the *zimperium-devices-search* command:
+* *query*.
 
-In the *commandName* command:
-* *argumentName* - is now required.
-* *argumentName* - supports now comma separated values.
+In the *zimperium-report-get* command:
+* *bundle_id*, *itunes_id*, *app_hash* and *platform*.
 
-### Outputs
-#### The following outputs were removed in this version:
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
 
 ## Additional Considerations for this version
 %%FILL HERE%%
