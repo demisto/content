@@ -478,7 +478,7 @@ tasks:
         Determine potential offending firewall rules in GCP based on port, protocol and possibly target tags (network tags).
 
         Considerations:
-        - At this time this automation only find potential offending rules and not necessarily the rule that is matching traffic.
+        - At this time this automation only finds potential offending rules and not necessarily the rule that is matching traffic.
       id: 56f41c15-7d0c-4156-8a3e-0c22925e8bcb
       iscommand: false
       name: GCPOffendingFirewallRule
@@ -640,7 +640,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Google Cloud Compute
-      description: Returns the specified Instance resource. Gets a list of available instances by making a list() request.
+      description: Returns the specified instance resource. Gets a list of available instances by making a list() request.
       id: aa2c2401-139e-4209-8a56-3f8fd5e3326a
       iscommand: true
       name: Get network tags information.
