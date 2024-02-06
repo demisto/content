@@ -6,7 +6,7 @@ from wurlitzer import pipes
 # pylint: disable=E1101  # disable pylint not recognizing cv2's attributes.
 
 
-def read_qr_code(filename: str) -> list[str]:
+def read_qr_code(filename: str) -> list:
 
     debug_messages = []  # don't use demisto.debug under the context manager.
     with pipes() as (out, _):
@@ -24,7 +24,7 @@ def read_qr_code(filename: str) -> list[str]:
     return text if isinstance(text, list) else [text]
 
 
-def extract_indicators_from_text(text: list[str]) -> dict:
+def extract_indicators_from_text(text: list) -> dict:
     return json.loads(demisto.executeCommand(
         'extractIndicators', {'text': text}
     )[0]['Contents'])  # type: ignore
