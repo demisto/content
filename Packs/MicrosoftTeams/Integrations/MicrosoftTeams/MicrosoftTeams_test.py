@@ -2353,8 +2353,9 @@ def test_handle_teams_proxy_and_ssl(mocker, is_xsoar_8, expected_result):
     assert (proxies, use_ssl) == expected_result
 
 
+DUMMY_ASK_MESSAGE = {"message_text": "message", "options": [
+    "option"], "entitlement": "id", "investigation_id": "inv_id", "task_id": "task", "form_type": "form"}
 
-DUMMY_ASK_MESSAGE = {"message_text": "message", "options": ["option"], "entitlement": "id", "investigation_id": "inv_id", "task_id": "task", "form_type": "form"}
 
 @pytest.mark.parametrize('message, result', [
     (json.dumps(DUMMY_ASK_MESSAGE), True),
