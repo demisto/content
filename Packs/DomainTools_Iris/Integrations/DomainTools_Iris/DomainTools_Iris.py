@@ -94,7 +94,7 @@ def http_request(method, params=None):
     Returns: request result
 
     """
-    proxy_url = PROXIES.get('https', PROXIES.get('http', False))
+    proxy_url = PROXIES['https'] if PROXIES['https'] != '' else PROXIES.get('http', False)
     api = API(
         USERNAME,
         API_KEY,
