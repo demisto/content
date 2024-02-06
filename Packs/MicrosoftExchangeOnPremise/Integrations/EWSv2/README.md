@@ -626,18 +626,17 @@ Retrieves contacts for a specified mailbox.
 ### ews-resolve-name
 
 ***
-This operation can be used to verify aliases and resolve display names to the appropriate mailbox user. Only one ambiguous name can be specified in a single command call. If multiple candidates exist then all will be returned. A maximum of 100 candidates will be returned; the 100 candidates that are returned are the first 100 that are encountered in the lookup operation. Email addresses with prefixed routing types, such as smtp or sip, are saved in a multivalue array. The ResolveNames operation performs a partial match against each value of that array when you add the routing type at the beginning of the unresolved name, such as "sip:User1@Contoso.com". If you don't specify a routing type, this command  will default to the routing type of smtp, match it to a primary smtp address property, and not search the multivalue array.
-
+This operation verifies aliases and matches display names to the correct mailbox user. It handles one ambiguous name at a time. If there are multiple potential matches, all will be returned, but limited to a maximum of 100 candidates.
 #### Base Command
 
 `ews-resolve-name`
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| identifier | The text value of this argument is used to resolve names against the following fields: First name, Last name, Display name, Full name, Office, Alias, SMTP address. | Required | 
-| full-contact-data | Describes whether the full contact details for public contacts for a resolved name are returned. Possible values are: True, False. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                  | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| identifier | The text value of this argument is used to resolve names against the following fields: First name, Last name, Display name, Full name, Office, Alias, SMTP address. Eg. `John Doe` or `sip:johndoe@example.com`. | Required | 
+| full-contact-data | Describes whether the full contact details for public contacts for a resolved name are returned. Possible values are: True, False.                                                                               | Optional | 
 
 #### Context Output
 
@@ -740,8 +739,8 @@ This operation can be used to verify aliases and resolve display names to the ap
 
 >### Resolved Names
 
->|email_address|name|mailbox_type|routing_type|
->|---|---|---|---|
+>| primary_email_address         |name|mailbox_type|routing_type|
+>|-------------------------------|---|---|---|
 >| ews-2016-test@lab-demisto.com | ews-2016-test EW2016. | Mailbox | SMTP |
 
 

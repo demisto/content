@@ -625,7 +625,7 @@ script:
       description: The categories of the email.
       type: unknown
   - arguments:
-    - description: 'The text value of this argument is used to resolve names against the following fields: First name, Last name, Display name, Full name, Office, Alias, SMTP address.'
+    - description: 'The text value of this argument is used to resolve names against the following fields: First name, Last name, Display name, Full name, Office, Alias, SMTP address. Eg. `John Doe` or `sip:johndoe@example.com`.'
       isArray: false
       name: identifier
       required: true
@@ -635,7 +635,8 @@ script:
       predefined:
       - 'True'
       - 'False'
-    description: This operation can be used to verify aliases and resolve display names to the appropriate mailbox user. Only one ambiguous name can be specified in a single command call. If multiple candidates exist then all will be returned. A maximum of 100 candidates will be returned; the 100 candidates that are returned are the first 100 that are encountered in the lookup operation. Email addresses with prefixed routing types, such as smtp or sip, are saved in a multivalue array. The ResolveNames operation performs a partial match against each value of that array when you add the routing type at the beginning of the unresolved name, such as "sip:User1@example.com". If you don't specify a routing type, this command  will default to the routing type of smtp, match it to a primary smtp address property, and not search the multivalue array.
+      defaultValue: 'True'
+    description: This operation verifies aliases and matches display names to the correct mailbox user. It handles one ambiguous name at a time. If there are multiple potential matches, all will be returned, but limited to a maximum of 100 candidates.
     name: ews-resolve-name
     outputs:
     - contextPath: EWS.ResolvedNames.FullContactInfo.contactSource

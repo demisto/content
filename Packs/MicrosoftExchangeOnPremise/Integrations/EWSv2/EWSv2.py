@@ -1,3 +1,4 @@
+import copy
 import email
 import hashlib
 import subprocess
@@ -536,10 +537,10 @@ def fix_2010():  # pragma: no cover
     version = SERVER_BUILD if SERVER_BUILD else get_build(VERSION_STR)
     if version <= EXCHANGE_2010_SP2:
         for m in (
-                Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
-                exchangelib.items.DistributionList,
-                exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
-                exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
+            Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
+            exchangelib.items.DistributionList,
+            exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
+            exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
             for i, f in enumerate(m.FIELDS):
                 if f.name == 'text_body':
                     m.FIELDS.pop(i)
@@ -607,12 +608,26 @@ def get_attachment_name(attachment_name):  # pragma: no cover
     return attachment_name
 
 
-def get_entry_for_object(title, context_key, obj, headers=None):  # pragma: no cover
+def switch_hr_headers(obj, hr_header_changes):
+    if not isinstance(obj, dict):
+        return obj
+    obj = copy.deepcopy(obj)
+    for old_header, new_header in hr_header_changes.items():
+        if val := obj.get(old_header):
+            del obj[old_header]
+            obj[new_header] = val
+    return obj
+
+
+def get_entry_for_object(title, context_key, obj, headers=None, hr_header_changes={}):  # pragma: no cover
     if is_empty_object(obj):
         return "There is no output results"
     obj = filter_dict_null(obj)
+    hr_obj = switch_hr_headers(obj, hr_header_changes)
     if isinstance(obj, list):
         obj = [filter_dict_null(k) for k in obj]
+        hr_obj = [switch_hr_headers(k, hr_header_changes) for k in obj]
+    demisto.results(f'{json.dumps(obj)}')
     if headers and isinstance(obj, dict):
         headers = list(set(headers).intersection(set(obj.keys())))
 
@@ -621,7 +636,7 @@ def get_entry_for_object(title, context_key, obj, headers=None):  # pragma: no c
         'Contents': obj,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, obj, headers),
+        'HumanReadable': tableToMarkdown(title, hr_obj, headers),
         ENTRY_CONTEXT: {
             context_key: obj
         }
@@ -1272,7 +1287,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
 
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
-                                            and header.name != 'Content-Type':
+                                        and header.name != 'Content-Type':
                                         attached_email.add_header(header.name, header.value)
 
                             file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
@@ -2132,9 +2147,17 @@ def get_autodiscovery_config():  # pragma: no cover
     }
 
 
+def format_identifier(identifier):
+    """
+    Exchangelib has a default smtp routing type. If there's no given routingtype, add explicitly so that
+    exchangelib can be searched by secondary email addresses without making cusomter add it manually
+    """
+    return f'smtp:{identifier}' if '@' in identifier and ':' not in identifier else identifier
+
+
 def resolve_name_command(args, protocol):  # pragma: no cover
-    unresolved_entries = argToList(args['identifier'])
-    full_contact_data = argToBoolean(args.get('full_contact_data', False))
+    unresolved_entries = [format_identifier(identifier) for identifier in argToList(args['identifier'])]
+    full_contact_data = argToBoolean(args.get('full_contact_data', True))
     demisto.debug(f'{len(unresolved_entries)=}')
     resolved_names = protocol.resolve_names(unresolved_entries, return_full_contact_data=full_contact_data, search_scope='')
     demisto.debug(f'{len(resolved_names)=}')
@@ -2155,7 +2178,8 @@ def resolve_name_command(args, protocol):  # pragma: no cover
     return get_entry_for_object('Resolved Names',
                                 'EWS.ResolvedNames(val.email_address && val.email_address == obj.email_address)',
                                 remove_empty_elements(output),  # noqa: F405
-                                headers=['email_address', 'name', 'mailbox_type', 'routing_type'])
+                                headers=['primary_email_address', 'name', 'mailbox_type', 'routing_type'],
+                                hr_header_changes={'email_address': 'primary_email_address'})
 
 
 def mark_item_as_read(item_ids, operation='read', target_mailbox=None):  # pragma: no cover
