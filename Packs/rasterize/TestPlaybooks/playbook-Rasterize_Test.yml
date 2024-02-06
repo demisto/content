@@ -456,6 +456,8 @@ tasks:
           transformers:
           - operator: uniq
           - operator: FirstArrayElement
+      Timeout:
+        simple: "600"
     separatecontext: false
     view: |-
       {
@@ -636,6 +638,8 @@ tasks:
           transformers:
           - operator: uniq
           - operator: FirstArrayElement
+      Timeout:
+        simple: "600"
     separatecontext: false
     view: |-
       {
@@ -876,6 +880,8 @@ tasks:
           transformers:
           - operator: uniq
           - operator: FirstArrayElement
+      Timeout:
+        simple: "600"
     separatecontext: false
     view: |-
       {
@@ -1085,6 +1091,8 @@ tasks:
           transformers:
           - operator: uniq
           - operator: FirstArrayElement
+      Timeout:
+        simple: "600"
     separatecontext: false
     view: |-
       {
@@ -1221,6 +1229,8 @@ tasks:
           transformers:
           - operator: uniq
           - operator: FirstArrayElement
+      Timeout:
+        simple: "600"
     separatecontext: false
     view: |-
       {
