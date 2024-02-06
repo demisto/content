@@ -1,4 +1,4 @@
-[file:OPSWAT-Filescan.yml]
+[file:MetaDefenderSandbox.yml]
 ignore=IN126,IN135,IN153
 
 [file:README.md]
@@ -7,3 +7,4 @@ ignore=RM104,RM102
 [known_words]
 OPSWAT
 Filescan
+MetaDefender

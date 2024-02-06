@@ -1,10 +1,10 @@
 commonfields:
-  id: OPSWAT Filescan
+  id: MetaDefender Sandbox
   version: -1
-name: OPSWAT Filescan
-display: OPSWAT Filescan Sandbox
+name: MetaDefender Sandbox
+display: MetaDefender Sandbox
 category: Forensics & Malware Analysis
-description: Unique adaptive threat analysis technology, enabling zero-day malware detection and more Indicator of Compromise (IOCs) extraction.
+description: Unique adaptive threat analysis technology, enabling zero-day malware detection and more Indicator of Compromise (IOCs) extraction. (previously known as OPSWAT Filescan Sandbox)
 configuration:
 - name: url
   display: Server URL (e.g. https://www.filescan.io/api)
@@ -32,7 +32,7 @@ script:
   dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   commands:
-  - name: opswat-filescan-scan-url
+  - name: metadefender-sandbox-scan-url
     description: Scan URL resource.
     polling: true
     arguments:
@@ -80,59 +80,59 @@ script:
     - contextPath: File.Malicious.Vendor
       description: The vendor that reported the file as malicious.
       type: String
-    - contextPath: OPSWAT.Filescan.Submission.flow_id
+    - contextPath: MetaDefender.Sandbox.Submission.flow_id
       description: The flow ID.
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.finalVerdict.verdict
+    - contextPath: MetaDefender.Sandbox.Analysis.finalVerdict.verdict
       description: The final verdict
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.allTags
+    - contextPath: MetaDefender.Sandbox.Analysis.allTags
       description: All tags
       type: Unknown
-    - contextPath: OPSWAT.Filescan.Analysis.overallState
+    - contextPath: MetaDefender.Sandbox.Analysis.overallState
       description: Overall state of the scan
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.name
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.name
       description: Name of the main scan task
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.additionalInfo
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.additionalInfo
       description: Additional informations about the main scan task
       type: Unknown
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.ID
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.ID
       description: ID of the main scan task
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.state
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.state
       description: State of the main scan task
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.resourceReference
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.resourceReference
       description: Resource reference of the main scan task
       type: Unknown
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.opcount
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.opcount
       description: Counter
       type: Number
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.processTime
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.processTime
       description: processTime
       type: Number
-    - contextPath: OPSWAT.Filescan.Analysis.subtaskReferences
+    - contextPath: MetaDefender.Sandbox.Analysis.subtaskReferences
       description: Status of scan subtasks
       type: Unknown
-    - contextPath: OPSWAT.Filescan.Analysis.allSignalGroups
+    - contextPath: MetaDefender.Sandbox.Analysis.allSignalGroups
       description: All signal groups
       type: Unknown
-    - contextPath: OPSWAT.Filescan.Analysis.resources
+    - contextPath: MetaDefender.Sandbox.Analysis.resources
       description: Resources
       type: Unknown
-    - contextPath: OPSWAT.Filescan.Analysis.file.name
+    - contextPath: MetaDefender.Sandbox.Analysis.file.name
       description: The name of the file
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.file.hash
+    - contextPath: MetaDefender.Sandbox.Analysis.file.hash
       description: The SHA256 of the file
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.file.type
+    - contextPath: MetaDefender.Sandbox.Analysis.file.type
       description: The type of the submission
       type: String
 
-  - name: opswat-filescan-scan-file
+  - name: metadefender-sandbox-scan-file
     description: Scan file resource.
     polling: true
     arguments:
@@ -179,59 +179,59 @@ script:
     - contextPath: File.Malicious.Vendor
       description: The vendor that reported the file as malicious.
       type: String
-    - contextPath: OPSWAT.Filescan.Submission.flow_id
+    - contextPath: MetaDefender.Sandbox.Submission.flow_id
       description: The flow ID.
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.finalVerdict.verdict
+    - contextPath: MetaDefender.Sandbox.Analysis.finalVerdict.verdict
       description: The final verdict
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.allTags
+    - contextPath: MetaDefender.Sandbox.Analysis.allTags
       description: All tags
       type: Unknown
-    - contextPath: OPSWAT.Filescan.Analysis.overallState
+    - contextPath: MetaDefender.Sandbox.Analysis.overallState
       description: Overall state of the scan
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.name
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.name
       description: Name of the main scan task
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.additionalInfo
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.additionalInfo
       description: Additional informations about the main scan task
       type: Unknown
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.ID
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.ID
       description: ID of the main scan task
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.state
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.state
       description: State of the main scan task
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.resourceReference
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.resourceReference
       description: Resource reference of the main scan task
       type: Unknown
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.opcount
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.opcount
       description: Counter
       type: Number
-    - contextPath: OPSWAT.Filescan.Analysis.taskReference.processTime
+    - contextPath: MetaDefender.Sandbox.Analysis.taskReference.processTime
       description: processTime
       type: Number
-    - contextPath: OPSWAT.Filescan.Analysis.subtaskReferences
+    - contextPath: MetaDefender.Sandbox.Analysis.subtaskReferences
       description: Status of scan subtasks
       type: Unknown
-    - contextPath: OPSWAT.Filescan.Analysis.allSignalGroups
+    - contextPath: MetaDefender.Sandbox.Analysis.allSignalGroups
       description: All signal groups
       type: Unknown
-    - contextPath: OPSWAT.Filescan.Analysis.resources
+    - contextPath: MetaDefender.Sandbox.Analysis.resources
       description: Resources
       type: Unknown
-    - contextPath: OPSWAT.Filescan.Analysis.file.name
+    - contextPath: MetaDefender.Sandbox.Analysis.file.name
       description: The name of the file
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.file.hash
+    - contextPath: MetaDefender.Sandbox.Analysis.file.hash
       description: The SHA256 of the file
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.file.type
+    - contextPath: MetaDefender.Sandbox.Analysis.file.type
       description: The type of the submission
       type: String
 
-  - name: opswat-filescan-search-query
+  - name: metadefender-sandbox-search-query
     description: Search for reports. Finds reports and uploaded files by various tokens.
     arguments:
     - name: query
@@ -250,31 +250,31 @@ script:
     - name: limit
       description: Number of total results. Maximum 50. (If page and page_size was also provided, then it will be ignored.)
     outputs:
-    - contextPath: OPSWAT.Filescan.Analysis.id
+    - contextPath: MetaDefender.Sandbox.Analysis.id
       description: The analysis id
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.file.name
+    - contextPath: MetaDefender.Sandbox.Analysis.file.name
       description: The file name.
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.file.sha256
+    - contextPath: MetaDefender.Sandbox.Analysis.file.sha256
       description: The file SHA256
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.verdict
+    - contextPath: MetaDefender.Sandbox.Analysis.verdict
       description: The scan verdict
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.state
+    - contextPath: MetaDefender.Sandbox.Analysis.state
       description: The scan state. Eg. success, failed
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.date
+    - contextPath: MetaDefender.Sandbox.Analysis.date
       description: The scan date
       type: Date
-    - contextPath: OPSWAT.Filescan.Analysis.file.mime_type
+    - contextPath: MetaDefender.Sandbox.Analysis.file.mime_type
       description: The file MimeType
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.file.short_type
+    - contextPath: MetaDefender.Sandbox.Analysis.file.short_type
       description: The type of the submission
       type: String
-    - contextPath: OPSWAT.Filescan.Analysis.tags
+    - contextPath: MetaDefender.Sandbox.Analysis.tags
       description: Tags
       type: Unknown
 fromversion: 6.0.0

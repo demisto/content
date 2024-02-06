@@ -9,8 +9,8 @@ import urllib3
 urllib3.disable_warnings()
 
 """GLOBALS/PARAMS """
-INTEGRATION_NAME = "OPSWAT Filescan Sandbox Integration"
-INTEGRATION_CONTEXT_NAME = "OPSWAT.Filescan"
+INTEGRATION_NAME = "MetaDefender Sandbox Integration"
+INTEGRATION_CONTEXT_NAME = "MetaDefender.Sandbox"
 
 
 class Client(BaseClient):
@@ -124,7 +124,7 @@ def build_one_reputation_result(report: dict[str, Any]):
     dbot_score = Common.DBotScore(
         indicator=report_hash,
         indicator_type=DBotScoreType.FILE,
-        integration_name="OPSWAT Filescan Sandbox",
+        integration_name="MetaDefender Sandbox",
         score=score,
     )
 
@@ -186,7 +186,7 @@ def build_serach_query_result(analyses: list[dict]) -> CommandResults:
         dbot_score = Common.DBotScore(
             indicator=analysis_file.get("sha256"),
             indicator_type=DBotScoreType.FILE,
-            integration_name="OPSWAT Filescan Sandbox",
+            integration_name="MetaDefender Sandbox",
             score=score,
         )
 
@@ -380,11 +380,11 @@ def main():
 
         if command == "test-module":
             return_results(test_module_command(client))
-        elif command == "opswat-filescan-scan-url":
+        elif command == "metadefender-sandbox-scan-url":
             return_results(scan_command(client, args))
-        elif command == "opswat-filescan-scan-file":
+        elif command == "metadefender-sandbox-scan-file":
             return_results(scan_command(client, args))
-        elif command == "opswat-filescan-search-query":
+        elif command == "metadefender-sandbox-search-query":
             return_results(search_query_command(client, args))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")

@@ -1,9 +1,9 @@
-Unique adaptive threat analysis technology, enabling zero-day malware detection and more Indicator of Compromise (IOCs) extraction.
+Unique adaptive threat analysis technology, enabling zero-day malware detection and more Indicator of Compromise (IOCs) extraction. (previously known as OPSWAT Filescan Sandbox)
 
-## Configure OPSWAT Filescan Sandbox on Cortex XSOAR
+## Configure MetaDefender Sandbox on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OPSWAT Filescan Sandbox.
+2. Search for MetaDefender Sandbox.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -22,18 +22,18 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
-### opswat-filescan-scan-url
+### metadefender-sandbox-scan-url
 
 ***
-Scan URL with OPSWAT Filescan Sandbox
+Scan URL with MetaDefender Sandbox
 
-**Note**: OPSWAT Filescan Sandbox handles URL scanning as a file scan.
+**Note**: MetaDefender Sandbox handles URL scanning as a file scan.
 
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 
-`opswat-filescan-scan-url`
+`metadefender-sandbox-scan-url`
 
 #### Input
 
@@ -58,26 +58,26 @@ Notice: Submitting indicators using this command might make the indicator data p
 | File.Name | String | The full file name. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | String | The vendor that reported the file as malicious. | 
-| OPSWAT.Filescan.Analysis.finalVerdict.verdict | String | The final verdict. | 
-| OPSWAT.Filescan.Analysis.allTags | Unknown | All tags. | 
-| OPSWAT.Filescan.Analysis.overallState | String | Overall state of the scan. | 
-| OPSWAT.Filescan.Analysis.taskReference.name | String | Name of the main scan task. | 
-| OPSWAT.Filescan.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. | 
-| OPSWAT.Filescan.Analysis.taskReference.ID | String | ID of the main scan task. | 
-| OPSWAT.Filescan.Analysis.taskReference.state | String | State of the main scan task. | 
-| OPSWAT.Filescan.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. | 
-| OPSWAT.Filescan.Analysis.taskReference.opcount | Number | Counter. | 
-| OPSWAT.Filescan.Analysis.taskReference.processTime | Number | processTime. | 
-| OPSWAT.Filescan.Analysis.subtaskReferences | Unknown | Status of scan subtasks. | 
-| OPSWAT.Filescan.Analysis.allSignalGroups | Unknown | All signal groups. | 
-| OPSWAT.Filescan.Analysis.resources | Unknown | Resources. | 
-| OPSWAT.Filescan.Analysis.file.name | String | The name of the file. | 
-| OPSWAT.Filescan.Analysis.file.hash | String | The SHA256 of the file. | 
-| OPSWAT.Filescan.Analysis.file.type| String | The type of the submission. | 
+| MetaDefender.Sandbox.Analysis.finalVerdict.verdict | String | The final verdict. | 
+| MetaDefender.Sandbox.Analysis.allTags | Unknown | All tags. | 
+| MetaDefender.Sandbox.Analysis.overallState | String | Overall state of the scan. | 
+| MetaDefender.Sandbox.Analysis.taskReference.name | String | Name of the main scan task. | 
+| MetaDefender.Sandbox.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. | 
+| MetaDefender.Sandbox.Analysis.taskReference.ID | String | ID of the main scan task. | 
+| MetaDefender.Sandbox.Analysis.taskReference.state | String | State of the main scan task. | 
+| MetaDefender.Sandbox.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. | 
+| MetaDefender.Sandbox.Analysis.taskReference.opcount | Number | Counter. | 
+| MetaDefender.Sandbox.Analysis.taskReference.processTime | Number | processTime. | 
+| MetaDefender.Sandbox.Analysis.subtaskReferences | Unknown | Status of scan subtasks. | 
+| MetaDefender.Sandbox.Analysis.allSignalGroups | Unknown | All signal groups. | 
+| MetaDefender.Sandbox.Analysis.resources | Unknown | Resources. | 
+| MetaDefender.Sandbox.Analysis.file.name | String | The name of the file. | 
+| MetaDefender.Sandbox.Analysis.file.hash | String | The SHA256 of the file. | 
+| MetaDefender.Sandbox.Analysis.file.type| String | The type of the submission. | 
 
 #### Command example
 
-```!opswat-filescan-scan-url url=https://www.test.com```
+```!metadefender-sandbox-scan-url url=https://www.test.com```
 
 #### Context Example
 
@@ -90,7 +90,7 @@ Notice: Submitting indicators using this command might make the indicator data p
             "Indicator": "1111111111111111111111111111111111111111111111111111111111111111",
             "Score": 1,
             "Type": "file",
-            "Vendor": "OPSWAT Filescan Sandbox"
+            "Vendor": "MetaDefender Sandbox"
         }
     ],
     "File":
@@ -100,9 +100,9 @@ Notice: Submitting indicators using this command might make the indicator data p
             "SHA256": "1111111111111111111111111111111111111111111111111111111111111111"
         }
     ],
-    "OPSWAT":
+    "MetaDefender":
     {
-        "Filescan":
+        "Sandbox":
         {
             "Analysis":
             [
@@ -237,14 +237,14 @@ Notice: Submitting indicators using this command might make the indicator data p
 >|---|---|---|---|---|---|
 >| 1111111111111111111111111111111111111111111111111111111111111111 | <https://www.test.com> | other | BENIGN | osint, url-render, domain-resolve | html, png |
 
-### opswat-filescan-scan-file
+### metadefender-sandbox-scan-file
 
 ***
-Scan File with OPSWAT Filescan Sandbox
+Scan File with MetaDefender Sandbox
 
 #### Base Command
 
-`opswat-filescan-scan-file`
+`metadefender-sandbox-scan-file`
 
 #### Input
 
@@ -269,26 +269,26 @@ Scan File with OPSWAT Filescan Sandbox
 | File.Name | String | The full file name. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | String | The vendor that reported the file as malicious. | 
-| OPSWAT.Filescan.Analysis.finalVerdict.verdict | String | The final verdict. | 
-| OPSWAT.Filescan.Analysis.allTags | Unknown | All tags. | 
-| OPSWAT.Filescan.Analysis.overallState | String | Overall state of the scan. | 
-| OPSWAT.Filescan.Analysis.taskReference.name | String | Name of the main scan task. | 
-| OPSWAT.Filescan.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. | 
-| OPSWAT.Filescan.Analysis.taskReference.ID | String | ID of the main scan task. | 
-| OPSWAT.Filescan.Analysis.taskReference.state | String | State of the main scan task. | 
-| OPSWAT.Filescan.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. | 
-| OPSWAT.Filescan.Analysis.taskReference.opcount | Number | Counter. | 
-| OPSWAT.Filescan.Analysis.taskReference.processTime | Number | processTime. | 
-| OPSWAT.Filescan.Analysis.subtaskReferences | Unknown | Status of scan subtasks. | 
-| OPSWAT.Filescan.Analysis.allSignalGroups | Unknown | All signal groups. | 
-| OPSWAT.Filescan.Analysis.resources | Unknown | Resources. | 
-| OPSWAT.Filescan.Analysis.file.name | String | The name of the file. | 
-| OPSWAT.Filescan.Analysis.file.hash | String | The SHA256 of the file. | 
-| OPSWAT.Filescan.Analysis.file.type| String | The type of the submission. | 
+| MetaDefender.Sandbox.Analysis.finalVerdict.verdict | String | The final verdict. | 
+| MetaDefender.Sandbox.Analysis.allTags | Unknown | All tags. | 
+| MetaDefender.Sandbox.Analysis.overallState | String | Overall state of the scan. | 
+| MetaDefender.Sandbox.Analysis.taskReference.name | String | Name of the main scan task. | 
+| MetaDefender.Sandbox.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. | 
+| MetaDefender.Sandbox.Analysis.taskReference.ID | String | ID of the main scan task. | 
+| MetaDefender.Sandbox.Analysis.taskReference.state | String | State of the main scan task. | 
+| MetaDefender.Sandbox.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. | 
+| MetaDefender.Sandbox.Analysis.taskReference.opcount | Number | Counter. | 
+| MetaDefender.Sandbox.Analysis.taskReference.processTime | Number | processTime. | 
+| MetaDefender.Sandbox.Analysis.subtaskReferences | Unknown | Status of scan subtasks. | 
+| MetaDefender.Sandbox.Analysis.allSignalGroups | Unknown | All signal groups. | 
+| MetaDefender.Sandbox.Analysis.resources | Unknown | Resources. | 
+| MetaDefender.Sandbox.Analysis.file.name | String | The name of the file. | 
+| MetaDefender.Sandbox.Analysis.file.hash | String | The SHA256 of the file. | 
+| MetaDefender.Sandbox.Analysis.file.type| String | The type of the submission. | 
 
 #### Command example
 
-```!opswat-filescan-scan-file  entry_id=1234@abcd-efgh-ijkl-mnop-xyz```
+```!metadefender-sandbox-scan-file  entry_id=1234@abcd-efgh-ijkl-mnop-xyz```
 
 #### Context Example
 
@@ -301,7 +301,7 @@ Scan File with OPSWAT Filescan Sandbox
             "Indicator": "1111111111111111111111111111111111111111111111111111111111111111",
             "Score": 1,
             "Type": "file",
-            "Vendor": "OPSWAT Filescan Sandbox"
+            "Vendor": "MetaDefender Sandbox"
         }
     ],
     "File":
@@ -311,9 +311,9 @@ Scan File with OPSWAT Filescan Sandbox
             "SHA256": "1111111111111111111111111111111111111111111111111111111111111111"
         }
     ],
-    "OPSWAT":
+    "MetaDefender":
     {
-        "Filescan":
+        "Sandbox":
         {
             "Analysis":
             [
@@ -439,14 +439,14 @@ Scan File with OPSWAT Filescan Sandbox
 >|---|---|---|---|---|---|
 >| 1111111111111111111111111111111111111111111111111111111111111111 | 1234@abcd-efgh-ijkl-mnop-xyz | pe | MALICIOUS | visualization, osint, domain-resolve | html, peexe |
 
-### opswat-filescan-search-query
+### metadefender-sandbox-search-query
 
 ***
 Search for reports. Finds reports and uploaded files by various tokens.
 
 #### Base Command
 
-`opswat-filescan-search-query`
+`metadefender-sandbox-search-query`
 
 #### Input
 
@@ -462,27 +462,27 @@ Search for reports. Finds reports and uploaded files by various tokens.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OPSWAT.Filescan.Analysis.id | String | The analysis id. | 
-| OPSWAT.Filescan.Analysis.file.name | String | The name of the file. | 
-| OPSWAT.Filescan.Analysis.file.sha256 | String | The SHA256 of the file. | 
-| OPSWAT.Filescan.Analysis.verdict | String | The final verdict. | 
-| OPSWAT.Filescan.Analysis.state | String | Overall state of the scan. | 
-| OPSWAT.Filescan.Analysis.date | Date | The scan date. | 
-| OPSWAT.Filescan.Analysis.file.mime_type | String | The file MimeType. |
-| OPSWAT.Filescan.Analysis.file.short_type | String | The type of the submission. |
-| OPSWAT.Filescan.Analysis.tags | Unknown | All tags. | 
+| MetaDefender.Sandbox.Analysis.id | String | The analysis id. | 
+| MetaDefender.Sandbox.Analysis.file.name | String | The name of the file. | 
+| MetaDefender.Sandbox.Analysis.file.sha256 | String | The SHA256 of the file. | 
+| MetaDefender.Sandbox.Analysis.verdict | String | The final verdict. | 
+| MetaDefender.Sandbox.Analysis.state | String | Overall state of the scan. | 
+| MetaDefender.Sandbox.Analysis.date | Date | The scan date. | 
+| MetaDefender.Sandbox.Analysis.file.mime_type | String | The file MimeType. |
+| MetaDefender.Sandbox.Analysis.file.short_type | String | The type of the submission. |
+| MetaDefender.Sandbox.Analysis.tags | Unknown | All tags. | 
 
 #### Command example
 
-```!opswat-filescan-search-query query="834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"```
+```!metadefender-sandbox-search-query query="834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"```
 
 #### Context Example
 
 ```json
 {
-    "OPSWAT":
+    "MetaDefender":
     {
-        "Filescan":
+        "Sandbox":
         {
             "Analysis":
             [
