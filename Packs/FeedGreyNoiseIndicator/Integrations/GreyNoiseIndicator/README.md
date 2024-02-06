@@ -1,5 +1,5 @@
 GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide scan and attack traffic. With this integration, users can contextualize existing alerts, filter false-positives, identify compromised devices, and track emerging threats. This Integration provides a feed of IPv4 Internet Scanners from GreyNoise.
-This integration was integrated and tested with version 1.0.0 of GreyNoise Indicator Feed.
+This integration was integrated and tested with version 2.0.1 of GreyNoise SDK.
 
 ## Configure GreyNoise Indicator Feed on Cortex XSOAR
 
@@ -17,8 +17,8 @@ This integration was integrated and tested with version 1.0.0 of GreyNoise Indic
     | GreyNoise Feed Type | Select which GreyNoise Feed to ingest | True |
     | Tags | Supports CSV values. | False |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-    |  |  | False |
-    |  |  | False |
+    | feedExpirationPolicy |  | False |
+    | feedExpirationInterval |  | False |
     | Feed Fetch Interval |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
     | Use system proxy settings |  | False |
@@ -42,9 +42,12 @@ Gets the feed indicators.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GreyNoiseFeed.Indicators.Value | String | The value of the indicator. | 
+| GreyNoiseFeed.Indicators.Type | String | The type of the indicator. | 
+| GreyNoiseFeed.Indicators.Tags | String | The GreyNoise tags associated with the indicator. | 

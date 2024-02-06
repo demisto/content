@@ -191,9 +191,14 @@ def get_indicators_command(client: Client, params) -> CommandResults:
     try:
         response = client.query(query=feed_query, exclude_raw=True, size=25)
         hr_indicators: List = []
+        output_list: List = []
 
         for indicator in response.get("data", []):
-            hr_indicators.append(format_indicator(indicator, tlp_color))
+            hr = format_indicator(indicator, tlp_color)
+            hr_indicators.append(hr)
+            output_list.append({'Type': hr.get('Type'),
+                                'Value': hr.get('Value'),
+                                'Tags': hr.get('fields', {}).get('tags')})
 
     except Exception as err:
         demisto.debug(str(err))
@@ -204,6 +209,7 @@ def get_indicators_command(client: Client, params) -> CommandResults:
     human_readable += "Note: This display is limited to the first 25 indicators returned by the feed.\n"
 
     return CommandResults(
+        outputs=output_list,
         readable_output=human_readable,
         outputs_prefix='GreyNoiseFeed.Indicators',
         outputs_key_field='value',

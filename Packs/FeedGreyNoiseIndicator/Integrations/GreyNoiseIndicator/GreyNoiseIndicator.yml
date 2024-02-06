@@ -1,4 +1,3 @@
----
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: GreyNoise Indicator Feed
@@ -104,6 +103,16 @@ script:
   commands:
   - description: Gets the feed indicators.
     name: greynoise-get-indicators
+    outputs:
+    - contextPath: GreyNoiseFeed.Indicators.Value
+      description: 'The value of the indicator.'
+      type: String
+    - contextPath: GreyNoiseFeed.Indicators.Type
+      description: 'The type of the indicator.'
+      type: String
+    - contextPath: GreyNoiseFeed.Indicators.Tags
+      description: 'The GreyNoise tags associated with the indicator.'
+      type: String
   dockerimage: demisto/greynoise:1.0.0.86382
   feed: true
   runonce: false
@@ -112,4 +121,4 @@ script:
   type: python
 tests:
 - No tests
-fromversion: 5.5.0
+fromversion: 6.10.0

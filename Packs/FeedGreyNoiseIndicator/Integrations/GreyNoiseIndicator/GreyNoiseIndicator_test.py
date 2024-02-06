@@ -243,5 +243,5 @@ def test_fetch_indicators(test_case, api_response, status_code, expected_output,
         assert response == expected_output
     else:
         with pytest.raises(Exception) as err:
-            _ = GreyNoiseIndicator.fetch_indicators(client, params)
+            GreyNoiseIndicator.fetch_indicators(client, params)
         assert str(err.value) == expected_output
