@@ -609,14 +609,17 @@ def get_attachment_name(attachment_name):  # pragma: no cover
 
 
 def switch_hr_headers(obj, hr_header_changes):
+    """
+    Will swap keys according to hr_header_changes.
+    hr_header_changes: a dict, keys are the old value, value is the new value
+    """
     if not isinstance(obj, dict):
         return obj
-    obj = copy.deepcopy(obj)
+    obj_copy = obj.copy()
     for old_header, new_header in hr_header_changes.items():
-        if val := obj.get(old_header):
-            del obj[old_header]
-            obj[new_header] = val
-    return obj
+        if old_header in obj:
+            obj_copy[new_header] = obj_copy.pop(old_header)
+    return obj_copy
 
 
 def get_entry_for_object(title, context_key, obj, headers=None, hr_header_changes={}):  # pragma: no cover

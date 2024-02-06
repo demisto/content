@@ -739,3 +739,10 @@ def test_parse_phone_number():
     good_number = EWSv2.parse_phone_number(PhoneNumber(label='123', phone_number='123123123'))
     assert good_number.get('label') and good_number.get('phone_number')
     assert not EWSv2.parse_phone_number(PhoneNumber(label='123'))
+
+
+def test_switch_hr_headers():
+    assert (EWSv2.switch_hr_headers(
+        {'willswitch': '1234', 'wontswitch': '111', 'alsoswitch': 5555},
+        {'willswitch': 'newkey', 'alsoswitch': 'annothernewkey'})
+            == {'annothernewkey': 5555, 'newkey': '1234', 'wontswitch': '111'})
