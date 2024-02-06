@@ -1,9 +1,11 @@
 import pytest  # noqa: F401
 import demistomock as demisto  # noqa: F401
 import EclecticIQIntelligenceCenterv3
+from datetime import datetime
 from EclecticIQIntelligenceCenterv3 import (EclecticIQ_api, create_sighting, create_indicator, prepare_entity_observables,
                                             domain_command, ip_command, url_command, file_command, email_command,
-                                            parse_reputation_results)
+                                            parse_reputation_results, extract_uuid_from_url, observable_id_from_url,
+                                            taxonomie_id_from_url, format_ts, format_ts_human)
 
 
 SERVER = "https://test.eclecticiq.com"
@@ -346,3 +348,78 @@ def test_get_source_group_uid(mocker):
 
     assert isinstance(response, str)
     assert response == "1111-1111-1111-2222"
+
+
+def test_get_source_group_order_id(mocker):
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = {"data": [{"id": "order_id"}]}
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    response = client.get_source_group_order_id("example_group")
+
+    assert response == "order_id"
+    assert isinstance(response, str)
+
+
+def test_get_enrichers_list(mocker):
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = {"data": ["enricher1", "enricher2"]}
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    response = client.get_enrichers_list()
+
+    assert response == ["enricher1", "enricher2"]
+
+
+def test_extract_uuid_from_url():
+    url = "https://example.com/123-def456-ghi789-jkl012-ghi789-jkl0"
+    assert extract_uuid_from_url(url) == "123-def456-ghi789-jkl012-ghi789-jkl0"
+
+
+def test_extract_uuid_from_url_empty():    
+    invalid_url = "https://example.com/no-uuid-here"
+    assert extract_uuid_from_url(invalid_url) is None
+
+
+def test_observable_id_from_url():
+    url = "https://example.com/observables/42"
+    assert observable_id_from_url(url) == "42"
+    
+    invalid_url = "https://example.com/no-id-here"
+    assert observable_id_from_url(invalid_url) is None
+
+
+def test_taxonomie_id_from_url():
+    url = "https://example.com/taxonomies/123"
+    assert taxonomie_id_from_url(url) == "123"
+    
+    invalid_url = "https://example.com/no-id-here"
+    assert taxonomie_id_from_url(invalid_url) is None
+
+
+def test_format_ts():
+    dt = datetime(2024, 2, 6, 12, 34, 56)
+    expected_result = "2024-02-06T12:34:56Z"
+    assert format_ts(dt) == expected_result
+
+
+def test_format_ts_human():
+    dt = datetime(2024, 2, 6, 12, 34, 56)
+    expected_result = "2024-02-06T12:34:56Z"
+    assert format_ts_human(dt) == expected_result
