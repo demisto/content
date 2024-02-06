@@ -6,7 +6,8 @@ from datetime import datetime
 from EclecticIQIntelligenceCenterv3 import (EclecticIQ_api, create_sighting, create_indicator, prepare_entity_observables,
                                             domain_command, ip_command, url_command, file_command, email_command,
                                             parse_reputation_results, extract_uuid_from_url, observable_id_from_url,
-                                            taxonomie_id_from_url, format_ts, format_ts_human)
+                                            taxonomie_id_from_url, format_ts, format_ts_human, request_get, request_post,
+                                            request_delete)
 
 
 SERVER = "https://test.eclecticiq.com"
@@ -595,3 +596,157 @@ def test_get_feed_content_blocks_append(mocker):
 
     assert response == "urn:eclecticiq.com:csv-extracts:1.0"
     assert isinstance(response, str)
+
+
+def test_request_get(mocker):
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = {"status": "OK"}
+    mock_response.status_code = "200"
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+    mocker.patch.object(demisto, 'args', return_value={"uri": "test"})
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    response = request_get(client)
+
+    assert response.outputs["ReplyStatus"] == "200"
+    assert response.outputs_prefix == "EclecticIQ.GET"
+
+
+def test_request_post(mocker):
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = {"status": "OK"}
+    mock_response.status_code = "200"
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+    mocker.patch.object(demisto, 'args', return_value={"uri": "test"})
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    response = request_post(client)
+
+    assert response.outputs["ReplyStatus"] == "200"
+    assert response.outputs_prefix == "EclecticIQ.POST"
+
+    
+def test_request_delete(mocker):
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = {"status": "OK"}
+    mock_response.status_code = "200"
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+    mocker.patch.object(demisto, 'args', return_value={"uri": "test"})
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    response = request_delete(client)
+
+    assert response.outputs["ReplyStatus"] == "200"
+    assert response.outputs_prefix == "EclecticIQ.DELETE"
+
+
+def test_get_feed_info(mocker):
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = {
+          "data": {
+            "content_type": "urn:eclecticiq.com:csv-extracts:1.0",
+            "created_at": "2023-06-20T18:05:06.625499+00:00",
+            "id": "10",
+            "is_active": True,
+            "last_triggered_at": "2023-11-15T17:52:24.733800+00:00",
+            "last_updated_at": "2023-07-13T10:29:52.787017+00:00",
+            "name": "qradarfeedtest2",
+            "packaging_last_run_at": "2023-11-15T17:52:24.733800+00:00",
+            "packaging_status": "SUCCESS",
+            "transport_type": "eiq.outgoing-transports.http-download",
+            "update_strategy": "DIFF",
+            "update_task": "https://ic-playground.eclecticiq.com/api/v2/tasks/195"
+          }
+        }
+
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    response = client.get_feed_info("10")
+
+    assert response[0]["id"] == "10"
+    assert isinstance(response[0], dict)
+
+
+def test_eiq_get_entity_by_id(mocker):
+    mock_response = mocker.Mock()
+    mock_response.text = json.dumps({
+                          "data": {
+                            "attachments": [],
+                            "created_at": "2024-02-06T15:36:35.251514+00:00",
+                            "data": {
+                              "id": "indicator-2c082ad0-cd32-47c2-8ff1-7c6adde759d4",
+                              "timestamp": "2024-02-06T15:36:35.251514+00:00",
+                              "title": "test IOC",
+                              "type": "indicator"
+                            },
+                            "datasets": [],
+                            "id": "2c082ad0-cd32-47c2-8ff1-7c6adde759d4",
+                            "incoming_feed": "null",
+                            "last_updated_at": "2024-02-06T15:36:36.805980+00:00",
+                            "meta": {
+                              "attacks": [],
+                              "estimated_observed_time": "2024-02-06T15:36:35.251514+00:00",
+                              "estimated_threat_start_time": "2024-02-06T15:36:35.251514+00:00",
+                              "half_life": "30",
+                              "source_reliability": "C",
+                              "taxonomies": [],
+                              "title": "parth 6 feb test 15",
+                              "tlp_color": "null"
+                            },
+                            "observables": [
+                              "https://ic-playground.eclecticiq.com/api/v2/observables/651905"
+                            ],
+                            "outgoing_feeds": [],
+                            "relevancy": "1",
+                            "sources": [
+                              "https://ic-playground.eclecticiq.com/api/v2/sources/2411da8d-9b07-4507-8e9e-ed64abd179c8"
+                            ]
+                          }
+                        })
+
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_taxonomy_dict", [])
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    client.taxonomie_dict = ["1","2"]
+
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    response = client.get_entity_by_id("2c082ad0-cd32-47c2-8ff1-7c6adde759d4", observables_lookup=False, relationships_lookup=False)
+
+    assert response["entity_title"] == "test IOC"
+    assert isinstance(response, dict)
