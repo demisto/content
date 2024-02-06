@@ -4,7 +4,7 @@ import demistomock as demisto
 import json
 import pytest
 
-MS_TEAMS_ASK_MESSAGE_KEYS = {'message_text', 'options', 'entitlement', 'investigation_id', 'task_id', 'form_type'}
+MS_TEAMS_ASK_MESSAGE_KEYS = {'message_text', 'options', 'entitlement', 'investigation_id', 'task_id', 'form_type'}  # must be synced with ones in MicrosoftTeams.py
 
 
 def execute_command(name, args=None):

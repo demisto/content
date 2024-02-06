@@ -103,7 +103,7 @@ MAX_SAMPLES = 10
 TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, }  # See: https://login.microsoftonline.com/error?code=
 REGEX_SEARCH_ERROR_DESC = r"^[^:]*:\s(?P<desc>.*?\.)"
 
-MS_TEAMS_ASK_MESSAGE_KEYS = {'message_text', 'options', 'entitlement', 'investigation_id', 'task_id', 'form_type'}
+MS_TEAMS_ASK_MESSAGE_KEYS = {'message_text', 'options', 'entitlement', 'investigation_id', 'task_id', 'form_type'} # must be synced with ones in TeamsAsk
 
 
 class Handler:
@@ -507,7 +507,7 @@ def process_mirror_or_unknown_message(message: str) -> dict:
 def is_teams_ask_message(msg: str) -> bool:
     try:
         message: dict = json.loads(msg)
-        return set(message.keys()) == MS_TEAMS_ASK_MESSAGE_KEYS 
+        return message.keys() == MS_TEAMS_ASK_MESSAGE_KEYS 
     except json.decoder.JSONDecodeError:
         return False
 
