@@ -11275,7 +11275,7 @@ def split_data_to_chunks(data, target_chunk_size):
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module: bool = True):
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11303,6 +11303,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type chunk_size: ``int``
     :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
 
+    :type should_update_health_module: ``bool``
+    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
+
     :return: None
     :rtype: ``None``
     """
@@ -11315,7 +11318,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         num_of_attempts,
         chunk_size,
         data_type="events",
-        should_update_health_modue=should_update_health_module
+        should_update_health_module=should_update_health_module
     )
 
 
@@ -11426,7 +11429,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_modue: bool = True):
+                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11456,6 +11459,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     :type data_type: ``str``
     :param data_type: Type of data to send to Xsiam, events or assets.
+
+    :type should_update_health_module: ``bool``
+    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
 
     :return: None
     :rtype: ``None``
@@ -11551,7 +11557,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True)
 
-    if should_update_health_modue:
+    if should_update_health_module:
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
 
