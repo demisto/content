@@ -397,6 +397,10 @@ class Pack:
             Metadata.INTEGRATIONS: self._related_integration_images
         }
 
+    def no_rn_metadata(self):
+        return {
+
+        }
     @staticmethod
     def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
                                     pack_dependencies_by_download_count: list):

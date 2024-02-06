@@ -1159,6 +1159,7 @@ def main():
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
     pack_ids_to_upload = get_packs_ids_to_upload(option.pack_names or "")
+    # pack_ids_to_update = get_packs_ids_to_update(option.pack_names or "")
     upload_specific_pack = option.upload_specific_pack
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs

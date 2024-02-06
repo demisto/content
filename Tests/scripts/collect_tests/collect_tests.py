@@ -1447,28 +1447,19 @@ def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[set, set]:  # TODO
     packs_to_update = set()
     git_util = GitUtil()
     changed_files = git_util._get_all_changed_files()
-    logger.info(f"{changed_files=}")
-    logger.info(f"sort_packs_to_upload: {packs_to_upload=}")
-
     for pack_id in packs_to_upload:
-        pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
-        logger.info(f"{pack_metadata=}")
-        current_version = pack_metadata.get('currentVersion', '')
-        logger.info(f"{current_version=}")
+        current_version = PACK_MANAGER.get_current_version(pack_id)
         rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
-        logger.info(rn_path)
         pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
+
         if rn_path not in changed_files and pack_metadata_path in changed_files:
             packs_to_update.add(pack_id)
 
     packs_to_upload = packs_to_upload - packs_to_update
-    logger.info(f"sort_packs_to_upload end: {packs_to_upload=}")
-    logger.info(f"sort_packs_to_upload end: {packs_to_update=}")
-
     return packs_to_upload, packs_to_update
 
 
-def output(result: CollectionResult | None):  # todo
+def output(result: CollectionResult | None):
     """
     writes to both log and files
     """
