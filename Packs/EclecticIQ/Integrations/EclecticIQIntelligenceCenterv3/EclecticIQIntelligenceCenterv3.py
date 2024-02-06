@@ -505,63 +505,6 @@ class EclecticIQ_api:
         result = (json.loads(r.text))["data"]
         return result
 
-    def delete_outgoing_feed(self, feed_id):
-        # To delete Outgoing feed
-        self.eiq_logging.info(f"Delete Outgoing Feed {feed_id}")
-
-        self.send_api_request(
-            "delete",
-            path=API_PATHS[self.eiq_api_version]["outgoing_feeds"] + str(feed_id),
-        )
-
-        result = "Outgoing Feed deleted"
-        return result
-
-    def delete_incoming_feed(self, feed_id):
-        # To delete Incoming feed
-        self.eiq_logging.info(f"Delete Incoming Feed {feed_id}")
-
-        self.send_api_request(
-            "delete",
-            params="with_linked_data=true",
-            path=API_PATHS[self.eiq_api_version]["incoming_feeds"] + str(feed_id),
-        )
-
-        result = "Incoming Feed deleted"
-        return result
-
-    def delete_data_set(self, data_set_id):
-        # To delete dataset
-        self.eiq_logging.info(f"Delete Dataset {data_set_id}")
-
-        self.send_api_request(
-            "delete", path=API_PATHS[self.eiq_api_version]["dataset"] + str(data_set_id)
-        )
-
-        result = "Dataset deleted"
-        return result
-
-    def create_dataset(self, title, search_query):
-        # To create Dataset
-
-        self.eiq_logging.info(f"Creating Dataset {title}")
-
-        create_dataset = {
-            "data": {
-                "is_dynamic": True,
-                "name": title,
-                "search_query": search_query,
-                "workspaces": [1],
-            }
-        }
-
-        r = self.send_api_request(
-            "post", path=API_PATHS[self.eiq_api_version]["dataset"], data=create_dataset
-        )
-
-        result = (json.loads(r.text))["data"]
-
-        return result
 
     def create_outgoing_feed(
         self,
@@ -755,79 +698,6 @@ class EclecticIQ_api:
         )
 
         result = r.json()["data"]
-
-        return result
-
-    def enable_outgoing_feed(self, outgoing_feed_full_info):
-        # enable outgoing feed
-
-        self.eiq_logging.info(
-            "Enable Outgoing Feed id={}".format(outgoing_feed_full_info["id"])
-        )
-
-        enable_outgoing_feed_payload = {"data": outgoing_feed_full_info}
-
-        enable_outgoing_feed_payload["data"]["is_active"] = True
-
-        r = self.send_api_request(
-            "put",
-            path=API_PATHS[self.eiq_api_version]["outgoing_feeds"]
-            + str(outgoing_feed_full_info["id"]),
-            data=enable_outgoing_feed_payload,
-        )
-
-        result = (json.loads(r.text))["data"]
-
-        return result
-
-    def run_outgoing_feed(self, feed_id):
-        # run outgoing feed
-
-        self.eiq_logging.info(f"Run Outgoing Feed {feed_id}")
-
-        outgoing_feed_full_info = self.get_full_feed_info(feed_id=feed_id)
-
-        self.enable_outgoing_feed(outgoing_feed_full_info)
-
-        run_task_outgoing_feed = {
-            "data": {
-                "id": outgoing_feed_full_info["update_task"],
-                "is_active": True,
-                # "parameters": {
-                #     "basic_authentication_mode": False,
-                #     "collection_name": "multi-binding-fixed",
-                #     "polling_service_url": "https://test.taxiistand.com/read-only/services/poll",
-                #     "ssl_authentication_mode": False,
-                #     "taxii_version": "1.1",
-                #     "verify_ssl": False
-                # },
-                "task_name": "eiq.outgoing-feeds.feed_update",
-                "task_type": "utility_task",
-                "trigger": "null",
-            }
-        }
-
-        r = self.send_api_request(
-            "post",
-            path=API_PATHS[self.eiq_api_version]["tasks"]
-            + str(outgoing_feed_full_info["update_task"])
-            + "/run",
-            data=run_task_outgoing_feed,
-        )
-
-        result = (json.loads(r.text))["data"]
-        return result
-
-    def get_task_status(self, task_id):
-        # get task status
-
-        self.eiq_logging.info(f"Requesting status of task: {task_id}")
-
-        r = self.send_api_request(
-            "get", path=API_PATHS[self.eiq_api_version]["task_status"] + task_id
-        )
-
-        result = (json.loads(r.text))["data"]
 
         return result
 
@@ -1175,28 +1045,6 @@ class EclecticIQ_api:
         )
 
         return json.loads(r.text)
-
-    def batch_delete_observables(self, observables_list):
-        self.eiq_logging.info("Searching all Observable.")
-
-        observables_to_delete = {"data": {"observables": observables_list}}
-
-        r = self.send_api_request(
-            "delete",
-            path=API_PATHS[self.eiq_api_version]["observables_batch_delete"],
-            data=observables_to_delete,
-        )
-
-        return json.loads(r.text)
-
-    def delete_entity(self, entity_id):
-        self.eiq_logging.info(f"Deleteing entity. id: {entity_id}")
-
-        self.send_api_request(
-            "delete", path=API_PATHS[self.eiq_api_version]["entities"] + str(entity_id)
-        )
-
-        return "deleted"
 
     def get_taxonomy_dict(self):
         """Method returns dictionary with all the available taxonomy in Platform.
