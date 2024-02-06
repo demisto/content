@@ -105,6 +105,7 @@ REGEX_SEARCH_ERROR_DESC = r"^[^:]*:\s(?P<desc>.*?\.)"
 
 MS_TEAMS_ASK_MESSAGE_KEYS = {'message_text', 'options', 'entitlement', 'investigation_id', 'task_id', 'form_type'}
 
+
 class Handler:
     @staticmethod
     def write(msg: str):
@@ -509,6 +510,7 @@ def is_teams_ask_message(msg: str) -> bool:
         return MS_TEAMS_ASK_MESSAGE_KEYS == message.keys()
     except json.decoder.JSONDecodeError:
         return False
+
 
 def process_ask_user(message: str) -> dict:
     """

@@ -560,7 +560,8 @@ def test_send_message_with_entitlement(mocker, requests_mock):
         'options': ['yes', 'no', 'maybe'],
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8',
         'investigation_id': '72',
-        'task_id': '23'
+        'task_id': '23',
+        'form_type': 'predefined-options'
     }
     mocker.patch.object(
         demisto,
