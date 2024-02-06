@@ -176,6 +176,7 @@ class Client(BaseClient):
         Raises:
             DemistoException: Incase the credentials are wrong or too many attempts were made.
         """
+        demisto.debug('starting login')
         response: requests.Response = self._http_request(
             method="POST",
             full_url=urljoin(self.server, "logincheck"),
@@ -210,10 +211,12 @@ class Client(BaseClient):
                 method="POST",
                 full_url=urljoin(self.server, login_disclaimer),
                 data={"confirm": "1"},
+                resp_type="response",
                 error_handler=Client._error_handler,
             )
 
         Client.IS_ONLINE = True
+        demisto.debug('ended login')
 
     def logout(self) -> None:
         """Due to limited amount of simultaneous connections we log out."""
