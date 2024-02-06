@@ -141,8 +141,8 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: Palo Alto Networks Cortex Data Lake XSOAR Connector provides cloud-based, centralized log storage and aggregation for your organization on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
-display: Cortex Data Lake XSOAR Connector
+description: Palo Alto Networks Strata Logging Service XSOAR Connector provides cloud-based, centralized log storage and aggregation for your organization on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
+display: Strata Logging Service XSOAR Connector
 name: Cortex Data Lake
 script:
   commands:
@@ -352,7 +352,7 @@ script:
       description: Severity associated with the event.
       type: String
     - contextPath: CDL.Logging.Threat.LogTime
-      description: Time the log was received in Cortex Data Lake XSOAR Connector.
+      description: Time the log was received in Strata Logging Service XSOAR Connector.
       type: String
     - contextPath: CDL.Logging.Threat.LogSourceID
       description: ID that uniquely identifies the source of the log. If the source is a firewall, then it is its serial number.
@@ -412,7 +412,7 @@ script:
       description: Indicates whether the firewall is performing network address translation (NAT) for the logged traffic. If it is, this value is 1, otherwise it is 0.
       type: Boolean
     - contextPath: CDL.Logging.Traffic.LogTime
-      description: Time the log was received in Cortex Data Lake XSOAR Connector.
+      description: Time the log was received in Strata Logging Service XSOAR Connector.
       type: date
     - contextPath: CDL.Logging.Traffic.SubcategoryOfApp
       description: Identifies the application's subcategory. The subcategory is related to the application's category.
@@ -622,7 +622,7 @@ script:
       description: Severity associated with the event.
       type: String
     - contextPath: CDL.Logging.Threat.LogTime
-      description: Time the log was received in Cortex Data Lake XSOAR Connector.
+      description: Time the log was received in Strata Logging Service XSOAR Connector.
       type: String
     - contextPath: CDL.Logging.Threat.LogSourceID
       description: ID that uniquely identifies the source of the log. If the source is a firewall, then it is its serial number.
@@ -846,7 +846,7 @@ script:
       description: Indicates whether the firewall is performing network address translation (NAT) for the logged traffic. If it is, this value is 1, otherwise it is 0.
       type: Boolean
     - contextPath: CDL.Logging.Traffic.LogTime
-      description: Time the log was received in Cortex Data Lake XSOAR Connector.
+      description: Time the log was received in Strata Logging Service XSOAR Connector.
       type: date
     - contextPath: CDL.Logging.Traffic.SubcategoryOfApp
       description: Identifies the application's subcategory. The subcategory is related to the application's category.
@@ -1245,7 +1245,7 @@ script:
       description: Severity associated with the event.
       type: String
     - contextPath: CDL.Logging.Threat.LogTime
-      description: Time the log was received in Cortex Data Lake XSOAR Connector.
+      description: Time the log was received in Strata Logging Service XSOAR Connector.
       type: String
     - contextPath: CDL.Logging.Threat.LogSourceID
       description: ID that uniquely identifies the source of the log. If the source is a firewall, then it is its serial number.
@@ -1518,7 +1518,7 @@ script:
       description: Identifies the log subtype.
       type: String
     - contextPath: CDL.Logging.URL.LogTime
-      description: The time the log was received in Cortex Data Lake XSOAR Connector.
+      description: The time the log was received in Strata Logging Service XSOAR Connector.
       type: String
     - contextPath: CDL.Logging.URL.LogSourceName
       description: The name of the source of the log.
@@ -1874,10 +1874,10 @@ script:
         its standard port.
       type: Number
     - contextPath: CDL.Logging.File.IsDupLog
-      description: Indicates whether this log data is available in multiple locations, such as from Cortex Data Lake XSOAR Connector as well as from an on-premise log collector.
+      description: Indicates whether this log data is available in multiple locations, such as from Strata Logging Service XSOAR Connector as well as from an on-premise log collector.
       type: Boolean
     - contextPath: CDL.Logging.File.LogTime
-      description: Time the log was received in Cortex Data Lake XSOAR Connector.
+      description: Time the log was received in Strata Logging Service XSOAR Connector.
       type: Date
     - contextPath: CDL.Logging.File.SessionID
       description: Identifies the firewall's internal identifier for a specific network session.
@@ -1943,7 +1943,7 @@ script:
       description: IP protocol associated with the session.
       type: String
     - contextPath: CDL.Logging.File.CustomerID
-      description: The ID that uniquely identifies the Cortex Data Lake XSOAR Connector instance which received this log record.
+      description: The ID that uniquely identifies the Strata Logging Service XSOAR Connector instance which received this log record.
       type: Number
     - contextPath: CDL.Logging.File.Subtype
       description: Identifies the log subtype.
@@ -1992,7 +1992,7 @@ script:
       type: String
   - description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
     name: cdl-reset-authentication-timeout
-  dockerimage: demisto/python_pancloud_v2:1.0.0.81488
+  dockerimage: demisto/python_pancloud_v2:1.0.0.85993
   isfetch: true
   runonce: false
   script: '-'

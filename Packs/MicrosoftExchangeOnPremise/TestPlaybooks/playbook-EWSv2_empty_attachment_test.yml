@@ -1,6 +1,6 @@
-id: EWSv2_empty_attachment_testt
+id: EWSv2_empty_attachment_test
 version: -1
-name: EWSv2_empty_attachment_testt
+name: EWSv2_empty_attachment_test
 starttaskid: "0"
 description: ""
 tasks:
@@ -79,3 +79,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+

@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b0f0baa0-e143-462d-8d65-40afab3ee28f
+    taskid: d20ee622-b5c3-4968-8e15-86a7a6cc9dd6
     type: start
     task:
-      id: b0f0baa0-e143-462d-8d65-40afab3ee28f
+      id: d20ee622-b5c3-4968-8e15-86a7a6cc9dd6
       version: -1
       name: ""
       iscommand: false
@@ -34,55 +34,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 753f7d27-7bf4-4285-88ea-33dc9addd41f
-    type: regular
-    task:
-      id: 753f7d27-7bf4-4285-88ea-33dc9addd41f
-      version: -1
-      name: Lookup EC2 information associated with IP
-      description: Describes EC2 instance based off public IP address.
-      script: AWS - EC2|||aws-ec2-describe-instances
-      type: regular
-      iscommand: true
-      brand: AWS - EC2
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      filters:
-        complex:
-          root: inputs.AwsIP
-          transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: Name=ip-address,Values=
-              suffix: {}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": -330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f2639ea7-6574-456e-81f6-083abf047f34
+    taskid: 4e8583c6-a9a7-47de-832d-7b2343bfe76d
     type: title
     task:
-      id: f2639ea7-6574-456e-81f6-083abf047f34
+      id: 4e8583c6-a9a7-47de-832d-7b2343bfe76d
       version: -1
       name: |
         Done
@@ -95,8 +52,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 420
+          "x": 210,
+          "y": 1730
         }
       }
     note: false
@@ -108,13 +65,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b78275c7-b0cb-4a9b-8215-fdae8f7aa1a1
+    taskid: 8d20eec3-078e-44e6-849d-739876ba76a1
     type: regular
     task:
-      id: b78275c7-b0cb-4a9b-8215-fdae8f7aa1a1
+      id: 8d20eec3-078e-44e6-849d-739876ba76a1
       version: -1
       name: Lookup SecurityGroup information associated with InstanceID
-      description: Describes security groups of EC2 instance.
+      description: Describes one or more of your security groups.
       script: AWS - EC2|||aws-ec2-describe-security-groups
       type: regular
       iscommand: true
@@ -127,13 +84,19 @@ tasks:
         complex:
           root: AWS.EC2.Instances.NetworkInterfaces.Groups
           accessor: GroupId
+      region:
+        simple: ${AWS.EC2.Instances.Region}
+      roleArn:
+        simple: ${AssumeRoleArn}
+      roleSessionName:
+        simple: AWS-Enrichment
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 170
+          "x": 470,
+          "y": 1370
         }
       }
     note: false
@@ -145,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 8dedaf42-1479-43d2-82cf-4d34946dc410
+    taskid: 34bd81f1-1ad3-4ca5-8ceb-e87b995b16be
     type: condition
     task:
-      id: 8dedaf42-1479-43d2-82cf-4d34946dc410
+      id: 34bd81f1-1ad3-4ca5-8ceb-e87b995b16be
       version: -1
       name: Was there an EC2 instance?
       description: Check whether the last command returned EC2 information or not.
@@ -160,6 +123,7 @@ tasks:
       - "2"
       "yes":
       - "3"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -177,8 +141,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": -160
+          "x": 470,
+          "y": 1150
         }
       }
     note: false
@@ -190,10 +154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 53eb9bbe-3269-44d9-878e-6ba4f77f9c98
+    taskid: 28f25d84-28e3-4cf2-8480-832175edc4d5
     type: condition
     task:
-      id: 53eb9bbe-3269-44d9-878e-6ba4f77f9c98
+      id: 28f25d84-28e3-4cf2-8480-832175edc4d5
       version: -1
       name: Is AWS - EC2 enabled and is Input value defined?
       description: Determines if the AWS - EC2 integration instance is configured and Input values are defined to pull enrichment data.
@@ -204,7 +168,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "1"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -255,17 +219,548 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Describes one or more regions that are currently available to you.
+      id: 2936884e-c1ab-422a-81a8-0f380ee56d80
+      iscommand: true
+      name: aws-ec2-describe-regions
+      script: AWS - EC2|||aws-ec2-describe-regions
+      type: regular
+      version: -1
+    taskid: 2936884e-c1ab-422a-81a8-0f380ee56d80
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -440
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: AWS.Regions.RegionName
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if AWS regions were returned from the last command in order to proceed.
+      id: e8eb9593-4a8d-4203-84a2-12bf1490c09d
+      iscommand: false
+      name: Were regions returned?
+      type: condition
+      version: -1
+    taskid: e8eb9593-4a8d-4203-84a2-12bf1490c09d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -280
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AddressRegion:
+        simple: ${AWS.Regions.RegionName}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources that belong to the owning account.
+      id: d4b9a34c-46d1-46bf-8298-c3d7a5e84b22
+      iscommand: true
+      name: aws-ec2-describe-ipam-resource-discoveries
+      script: AWS - EC2|||aws-ec2-describe-ipam-resource-discoveries
+      type: regular
+      version: -1
+    taskid: d4b9a34c-46d1-46bf-8298-c3d7a5e84b22
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -90
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if AWS IPAM resources discoveries were returned from the last command in order to proceed.
+      id: 1779dfae-71e4-460b-8e8f-295dd08a340f
+      iscommand: false
+      name: Were IPAM resources discoveries returned?
+      type: condition
+      version: -1
+    taskid: 1779dfae-71e4-460b-8e8f-295dd08a340f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 60
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filters:
+        complex:
+          root: inputs.AwsIP
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: Name=ip-address,Values=
+              suffix: {}
+            operator: concat
+      region:
+        simple: ${AWS.Regions.RegionName}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Describes one or more of your instances.
+      id: daab41ad-5569-4a64-8a87-64b678af54a6
+      iscommand: true
+      name: Lookup EC2 information associated with IP (default/all regions)
+      script: AWS - EC2|||aws-ec2-describe-instances
+      type: regular
+      version: -1
+    taskid: daab41ad-5569-4a64-8a87-64b678af54a6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 980
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AddressRegion:
+        simple: ${AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion}
+      Filters:
+        complex:
+          root: inputs.AwsIP
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: Name=address,Values=
+              suffix: {}
+            operator: concat
+      IpamResourceDiscoveryId:
+        simple: ${AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Gets the public IP addresses that have been discovered by IPAM.
+      id: c6086dbb-2e37-4747-8ae1-517cba869c2c
+      iscommand: true
+      name: aws-ec2-get-ipam-discovered-public-addresses
+      script: AWS - EC2|||aws-ec2-get-ipam-discovered-public-addresses
+      type: regular
+      version: -1
+    taskid: c6086dbb-2e37-4747-8ae1-517cba869c2c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 290
+        }
+      }
+  "18":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: AWS.EC2.IpamDiscoveredPublicAddresses.Address
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if an AWS IPAM public IP was returned from the last command in order to proceed.
+      id: d7730d11-6c48-4b1e-8476-c84a01f20418
+      iscommand: false
+      name: Was there an IPAM discovered public IP returned?
+      type: condition
+      version: -1
+    taskid: d7730d11-6c48-4b1e-8476-c84a01f20418
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 450
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.AWSAssumeRoleName
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the AWSAssumeRoleName input values are defined in order to proceed.
+      id: 95e5b728-aaa4-4c5c-8caa-f7278422f282
+      iscommand: false
+      name: Is AWSAssumeRoleName input defined?
+      type: condition
+      version: -1
+    taskid: 95e5b728-aaa4-4c5c-8caa-f7278422f282
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 640
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      instanceIds:
+        simple: ${AWS.EC2.IpamDiscoveredPublicAddresses.InstanceId}
+      region:
+        simple: ${AWS.EC2.IpamDiscoveredPublicAddresses.AddressRegion}
+      roleArn:
+        simple: ${AssumeRoleArn}
+      roleSessionName:
+        simple: AWS-Enrichment
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - EC2
+      description: Describes one or more of your instances.
+      id: 310aa2ab-87a5-4a20-873d-a131b4e65119
+      iscommand: true
+      name: Lookup EC2 information associated with IP (IPAM info)
+      script: AWS - EC2|||aws-ec2-describe-instances
+      type: regular
+      version: -1
+    taskid: 310aa2ab-87a5-4a20-873d-a131b4e65119
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 980
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: AssumeRoleArn
+      value:
+        complex:
+          accessor: AddressOwnerId
+          root: AWS.EC2.IpamDiscoveredPublicAddresses
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'arn:aws:iam::'
+              suffix:
+                value:
+                  simple: :role/
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: inputs.AWSAssumeRoleName
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 021bf9ac-5325-4d87-8001-7f55417b5ba5
+      iscommand: false
+      name: Set roleArn in temporary context
+      script: Set
+      type: regular
+      version: -1
+    taskid: 021bf9ac-5325-4d87-8001-7f55417b5ba5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 810
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AWS - Organizations
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the AWS - Organizations integration instance is configured to pull hierarchy info.
+      id: 96d1440f-aa11-440f-8489-b31756d03013
+      iscommand: false
+      name: Is AWS - Organizations enabled ?
+      type: condition
+      version: -1
+    taskid: 96d1440f-aa11-440f-8489-b31756d03013
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1370
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      account_id:
+        complex:
+          accessor: OwnerId
+          root: AWS.EC2.Instances.NetworkInterfaces
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Determine AWS account hierarchy by looking up parent objects until the organization level is reached.
+      id: 7a4dfb5b-d397-4880-8a10-39c3362f2152
+      iscommand: false
+      name: AWSAccountHierarchy
+      script: AWSAccountHierarchy
+      type: regular
+      version: -1
+    taskid: 7a4dfb5b-d397-4880-8a10-39c3362f2152
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1550
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
-      "10_2_#default#": 0.27,
-      "10_3_yes": 0.55
+      "10_2_#default#": 0.42,
+      "10_3_yes": 0.55,
+      "13_16_#default#": 0.35,
+      "15_16_#default#": 0.22,
+      "18_16_#default#": 0.35,
+      "20_21_#default#": 0.31,
+      "23_2_#default#": 0.33
     },
     "paper": {
       "dimensions": {
-        "height": 1265,
-        "width": 800,
-        "x": 140,
+        "height": 2575,
+        "width": 1190,
+        "x": 210,
         "y": -780
       }
     }
@@ -280,8 +775,8 @@ inputs:
     queryEntity: indicators
     results:
     daterange:
-      fromdate: 0001-01-01T00:00:00Z
-      todate: 0001-01-01T00:00:00Z
+      fromdate: "0001-01-01T00:00:00Z"
+      todate: "0001-01-01T00:00:00Z"
       period:
         by: ""
         byto: ""
@@ -289,7 +784,7 @@ inputs:
         tovalue:
         fromvalue:
         field: ""
-      fromdatelicenseval: 0001-01-01T00:00:00Z
+      fromdatelicenseval: "0001-01-01T00:00:00Z"
     runFromLastJobTime: true
 - key: AwsIP
   value:
@@ -299,6 +794,11 @@ inputs:
   required: true
   description: AWS IP in alert
   playbookInputQuery:
+- description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
+  key: AWSAssumeRoleName
+  playbookInputQuery:
+  required: false
+  value: {}
 outputs:
 - contextPath: AWS.EC2.Instances
   description: AWS EC2 information.
@@ -306,9 +806,10 @@ outputs:
 - contextPath: AWS.EC2.SecurityGroups
   description: AWS Security group information.
   type: unknown
+- contextPath: AWSHierarchy
+  description: AWS account hierarchy information.
+  type: unknown
 quiet: true
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
-contentitemexportablefields:
-  contentitemfields: {}
