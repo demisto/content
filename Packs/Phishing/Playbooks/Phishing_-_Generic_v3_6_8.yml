@@ -3529,9 +3529,9 @@ tasks:
         - VMRay Analyzer
         - Polygon
         - CrowdStrike Falcon Intelligence Sandbox
-        - OPSWAT Filescan
+        - MetaDefender Sandbox
         - ANYRUN
-        -  VirusTotal
+        - VirusTotal
         - Anomali ThreatStream
         - Hatching Triage
     nexttasks:

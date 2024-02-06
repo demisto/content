@@ -26,7 +26,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Integrations
 
 * CrowdStrike Falcon Sandbox V2
-* OPSWAT Filescan
+* MetaDefender Sandbox
 
 ### Scripts
 
@@ -35,7 +35,7 @@ This playbook does not use any scripts.
 ### Commands
 
 * cs-falcon-sandbox-submit-url
-* opswat-filescan-scan-url
+* metadefender-sandbox-scan-url
 
 ## Playbook Inputs
 

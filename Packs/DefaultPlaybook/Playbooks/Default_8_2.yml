@@ -359,7 +359,7 @@ tasks:
         - VMRay Analyzer
         - Polygon
         - CrowdStrike Falcon Intelligence Sandbox
-        - OPSWAT Filescan.
+        - MetaDefender Sandbox.
       playbookName: Detonate File - Generic
       type: playbook
       iscommand: false

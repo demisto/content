@@ -21,6 +21,8 @@ DetectedHashes
 NonFoundHashes
 opswat
 filescan
+MetaDefender
+Sandbox
 Stringify
 
 [file:playbook-File_Enrichment_-_File_reputation.yml]

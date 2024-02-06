@@ -19,7 +19,7 @@ description: |-
   - VMRay Analyzer
   - Polygon
   - CrowdStrike Falcon Intelligence Sandbox
-  - OPSWAT Filescan
+  - MetaDefender Sandbox
   - ANYRUN
   - VirusTotal
   - Anomali ThreatStream
@@ -648,7 +648,7 @@ tasks:
       version: -1
       name: Detonate URL - OPSWAT
       description: Scan URL resource.
-      script: '|||opswat-filescan-scan-url'
+      script: '|||metadefender-sandbox-scan-url'
       type: regular
       iscommand: true
       brand: ""
@@ -2197,55 +2197,55 @@ outputs:
 - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
   description: ID of the IOC pack to download (MAEC).
   type: String
-- contextPath: OPSWAT.Filescan.Submission.flow_id
+- contextPath: MetaDefender.Sandbox.Submission.flow_id
   description: The flow ID.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.finalVerdict.verdict
+- contextPath: MetaDefender.Sandbox.Analysis.finalVerdict.verdict
   description: The final verdict.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.allTags
+- contextPath: MetaDefender.Sandbox.Analysis.allTags
   description: All tags.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.overallState
+- contextPath: MetaDefender.Sandbox.Analysis.overallState
   description: Overall state of the scan.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.subtaskReferences
+- contextPath: MetaDefender.Sandbox.Analysis.subtaskReferences
   description: Status of scan subtasks.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.allSignalGroups
+- contextPath: MetaDefender.Sandbox.Analysis.allSignalGroups
   description: All signal groups.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.resources
+- contextPath: MetaDefender.Sandbox.Analysis.resources
   description: Resources.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.name
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.name
   description: Name of the main scan task.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.additionalInfo
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.additionalInfo
   description: Additional informations about the main scan task.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.ID
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.ID
   description: ID of the main scan task.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.state
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.state
   description: State of the main scan task.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.resourceReference
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.resourceReference
   description: Resource reference of the main scan task.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.opcount
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.opcount
   description: Counter.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.processTime
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.processTime
   description: processTime.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.file.name
+- contextPath: MetaDefender.Sandbox.Analysis.file.name
   description: The name of the file.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.file.hash
+- contextPath: MetaDefender.Sandbox.Analysis.file.hash
   description: The SHA256 of the file.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.file.type
+- contextPath: MetaDefender.Sandbox.Analysis.file.type
   description: The type of the submission.
   type: string
 tests:

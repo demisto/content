@@ -13,7 +13,7 @@ Supported integrations:
 - VMRay Analyzer
 - Polygon
 - CrowdStrike Falcon Intelligence Sandbox
-- OPSWAT Filescan
+- MetaDefender Sandbox
 - ANYRUN
 - VirusTotal
 - Anomali ThreatStream
@@ -51,7 +51,7 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* opswat-filescan-scan-url
+* metadefender-sandbox-scan-url
 * joe-submit-url
 
 ## Playbook Inputs
@@ -497,23 +497,23 @@ This playbook does not use any scripts.
 | csfalconx.resource.ioc_report_broad_stix_artifact_id | ID of the IOC pack to download \(STIX\). | Int |
 | csfalconx.resource.ioc_report_strict_maec_artifact_id | ID of the IOC pack to download \(MAEC\). | String |
 | csfalconx.resource.ioc_report_broad_maec_artifact_id | ID of the IOC pack to download \(MAEC\). | String |
-| OPSWAT.Filescan.Submission.flow_id | The flow ID. | string |
-| OPSWAT.Filescan.Analysis.finalVerdict.verdict | The final verdict. | string |
-| OPSWAT.Filescan.Analysis.allTags | All tags. | string |
-| OPSWAT.Filescan.Analysis.overallState | Overall state of the scan. | string |
-| OPSWAT.Filescan.Analysis.subtaskReferences | Status of scan subtasks. | string |
-| OPSWAT.Filescan.Analysis.allSignalGroups | All signal groups. | string |
-| OPSWAT.Filescan.Analysis.resources | Resources. | string |
-| OPSWAT.Filescan.Analysis.taskReference.name | Name of the main scan task. | string |
-| OPSWAT.Filescan.Analysis.taskReference.additionalInfo | Additional informations about the main scan task. | string |
-| OPSWAT.Filescan.Analysis.taskReference.ID | ID of the main scan task. | string |
-| OPSWAT.Filescan.Analysis.taskReference.state | State of the main scan task. | string |
-| OPSWAT.Filescan.Analysis.taskReference.resourceReference | Resource reference of the main scan task. | string |
-| OPSWAT.Filescan.Analysis.taskReference.opcount | Counter. | string |
-| OPSWAT.Filescan.Analysis.taskReference.processTime | processTime. | string |
-| OPSWAT.Filescan.Analysis.file.name | The name of the file. | string |
-| OPSWAT.Filescan.Analysis.file.hash | The SHA256 of the file. | string |
-| OPSWAT.Filescan.Analysis.file.type | The type of the submission. | string |
+| MetaDefender.Sandbox.Submission.flow_id | The flow ID. | string |
+| MetaDefender.Sandbox.Analysis.finalVerdict.verdict | The final verdict. | string |
+| MetaDefender.Sandbox.Analysis.allTags | All tags. | string |
+| MetaDefender.Sandbox.Analysis.overallState | Overall state of the scan. | string |
+| MetaDefender.Sandbox.Analysis.subtaskReferences | Status of scan subtasks. | string |
+| MetaDefender.Sandbox.Analysis.allSignalGroups | All signal groups. | string |
+| MetaDefender.Sandbox.Analysis.resources | Resources. | string |
+| MetaDefender.Sandbox.Analysis.taskReference.name | Name of the main scan task. | string |
+| MetaDefender.Sandbox.Analysis.taskReference.additionalInfo | Additional informations about the main scan task. | string |
+| MetaDefender.Sandbox.Analysis.taskReference.ID | ID of the main scan task. | string |
+| MetaDefender.Sandbox.Analysis.taskReference.state | State of the main scan task. | string |
+| MetaDefender.Sandbox.Analysis.taskReference.resourceReference | Resource reference of the main scan task. | string |
+| MetaDefender.Sandbox.Analysis.taskReference.opcount | Counter. | string |
+| MetaDefender.Sandbox.Analysis.taskReference.processTime | processTime. | string |
+| MetaDefender.Sandbox.Analysis.file.name | The name of the file. | string |
+| MetaDefender.Sandbox.Analysis.file.hash | The SHA256 of the file. | string |
+| MetaDefender.Sandbox.Analysis.file.type | The type of the submission. | string |
 
 ## Playbook Image
 

@@ -17,7 +17,7 @@ description: |-
   - VMRay Analyzer
   - Polygon
   - CrowdStrike Falcon Intelligence Sandbox
-  - OPSWAT Filescan.
+  - MetaDefender Sandbox.
 starttaskid: "0"
 tasks:
   "0":
@@ -548,12 +548,12 @@ tasks:
     task:
       id: 4643aaf7-5f3b-4851-8773-b74b87e18603
       version: -1
-      name: Detonate File - OPSWAT Filescan
-      description: Detonates a file using the OPSWAT-Filescan Integration. Returns relevant reports to the War Room and file reputations to the context data.
-      script: OPSWAT Filescan|||opswat-filescan-scan-file
+      name: Detonate File - MetaDefender Sandbox
+      description: Detonates a file using the MetaDefender-Sandbox Integration. Returns relevant reports to the War Room and file reputations to the context data.
+      script: MetaDefender Sandbox|||metadefender-sandbox-scan-file
       type: regular
       iscommand: true
-      brand: OPSWAT Filescan
+      brand: MetaDefender Sandbox
     nexttasks:
       '#none#':
       - "3"
@@ -1698,53 +1698,53 @@ outputs:
 - contextPath: csfalconx.resource.snadbox.environment_description
   description: Environment description.
   type: String
-- contextPath: OPSWAT.Filescan.Submission.flow_id
+- contextPath: MetaDefender.Sandbox.Submission.flow_id
   description: The flow ID.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.finalVerdict.verdict
+- contextPath: MetaDefender.Sandbox.Analysis.finalVerdict.verdict
   description: The final verdict.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.allTags
+- contextPath: MetaDefender.Sandbox.Analysis.allTags
   description: All tags.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.overallState
+- contextPath: MetaDefender.Sandbox.Analysis.overallState
   description: Overall state of the scan.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.subtaskReferences
+- contextPath: MetaDefender.Sandbox.Analysis.subtaskReferences
   description: Status of scan subtasks.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.allSignalGroups
+- contextPath: MetaDefender.Sandbox.Analysis.allSignalGroups
   description: All signal groups.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.resources
+- contextPath: MetaDefender.Sandbox.Analysis.resources
   description: Resources.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.name
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.name
   description: Name of the main scan task.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.additionalInfo
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.additionalInfo
   description: Additional informations about the main scan task.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.ID
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.ID
   description: ID of the main scan task.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.state
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.state
   description: State of the main scan task.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.resourceReference
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.resourceReference
   description: Resource reference of the main scan task.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.opcount
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.opcount
   description: Counter.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.taskReference.processTime
+- contextPath: MetaDefender.Sandbox.Analysis.taskReference.processTime
   description: processTime.
   type: string
-- contextPath: OPSWAT.Filescan.Analysis.file.name
+- contextPath: MetaDefender.Sandbox.Analysis.file.name
   description: The name of the file.
-- contextPath: OPSWAT.Filescan.Analysis.file.hash
+- contextPath: MetaDefender.Sandbox.Analysis.file.hash
   description: The SHA256 of the file.
-- contextPath: OPSWAT.Filescan.Analysis.file.type
+- contextPath: MetaDefender.Sandbox.Analysis.file.type
   description: The type of the submission.
 fromversion: 5.0.0
 tests:
