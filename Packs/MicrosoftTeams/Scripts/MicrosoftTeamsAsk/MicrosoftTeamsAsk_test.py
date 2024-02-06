@@ -82,3 +82,6 @@ def test_microsoft_teams_ask(mocker):
     )
     main()
     assert demisto.executeCommand.call_count == 2
+
+
+# todo: add test to validate  the message stucture is the same  all dict keys, describe why, and point to teams integration to update accordingly wih the keys
