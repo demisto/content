@@ -66,5 +66,7 @@ script:
   isfetchevents: true
 fromversion: 8.0.0
 supportlevelheader: xsoar
+marketplaces:
+  - marketplacev2
 tests:
 - No tests (auto formatted)
