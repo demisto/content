@@ -153,7 +153,7 @@ class TestHelperFunctions:
         expected = [{'*IB Discovery Owned': 'EMEA'}, {'*Site': 'Tel-Aviv'}]
         assert actual == expected
 
-    def test_transform_ext_attrs_2_attrs_comma_attr_end(self):
+    def test_transform_ext_attrs_2_attrs_comma_attr_end(self, capfd):
         """
         Test transform_ext_attrs with 2 comma-separated values
         and comma in the end of value.
@@ -170,11 +170,13 @@ class TestHelperFunctions:
         """
 
         input = "IB Discovery Owned=EMEA,Site=Tel-Aviv, Yafo"
-        actual = transform_ext_attrs(input)
-        expected = [{'*IB Discovery Owned': 'EMEA'}, {'*Site': 'Tel-Aviv'}]
-        assert actual == expected
 
-    def test_transform_ext_attrs_2_attrs_comma_attr_beginning(self):
+        with capfd.disabled():
+            actual = transform_ext_attrs(input)
+            expected = [{'*IB Discovery Owned': 'EMEA'}, {'*Site': 'Tel-Aviv'}]
+            assert actual == expected
+
+    def test_transform_ext_attrs_2_attrs_comma_attr_beginning(self, capfd):
         """
         Test transform_ext_attrs with 2 comma-separated values
         and comma in the beginning of value.
@@ -190,10 +192,11 @@ class TestHelperFunctions:
         - A list of 2 dictionaries is returned with the key-value pairs as expected.
         """
 
-        input = "IB Discovery Owned=EMEA,Site=,Tel-Aviv"
-        actual = transform_ext_attrs(input)
-        expected = [{'*IB Discovery Owned': 'EMEA'}]
-        assert actual == expected
+        with capfd.disabled():
+            input = "IB Discovery Owned=EMEA,Site=,Tel-Aviv"
+            actual = transform_ext_attrs(input)
+            expected = [{'*IB Discovery Owned': 'EMEA'}]
+            assert actual == expected
 
     def test_transform_ext_attrs_no_delimiter(self):
         """

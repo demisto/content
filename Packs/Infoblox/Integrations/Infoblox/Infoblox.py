@@ -1,5 +1,5 @@
 # TODO update integration readme
-from enum import Enum
+from enum import Enum, unique
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
@@ -121,6 +121,7 @@ class InvalidIPRange(ValueError):
     pass
 
 
+@unique
 class IPv4AddressStatus(Enum):
     """Possible statuses for an IPv4 address."""
     ACTIVE = "ACTIVE"
@@ -152,8 +153,7 @@ class InfoBloxNIOSClient(BaseClient):
 
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
-        self.params: dict[str, Any] = {}
-        self.params.update({self.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY: '1'})
+        self.params: dict[str, Any] = {self.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY: '1'}
 
     def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None, params=None,
                       data=None, files=None, timeout=10, resp_type='json', ok_codes=None, **kwargs):
@@ -733,7 +733,7 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
         raise ValueError("Please specify only one of the `ip`, `network` or `from_ip`/`to_ip` arguments")
 
     # If neither ip, network nor from/to_ip were specified, return an error.
-    elif sum(arg is not None for arg in [ip, network, from_ip and to_ip]) == 0:
+    elif not any([ip, network, from_ip and to_ip]):
         raise ValueError("Please specify either the `ip`, `network` or `from_ip`/`to_ip` argument")
 
     extended_attributes = args.get("extended_attrs")
