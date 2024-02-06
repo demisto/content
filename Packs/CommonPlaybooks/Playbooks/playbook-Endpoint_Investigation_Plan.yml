@@ -402,14 +402,14 @@ tasks:
     task:
       id: 4814aba4-bd30-4c19-895a-8d3e28e73393
       version: -1
-      name: Should investigate by attacker fields?
+      name: Should investigate by attacker source IP?
       description: Whether to hunt by the attacker indicators.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+      - "53"
       "yes":
       - "43"
     separatecontext: false
@@ -427,12 +427,6 @@ tasks:
               simple: "True"
           ignorecase: true
       - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.attackerExternalHost
-            iscontext: true
-        - operator: isNotEmpty
           left:
             value:
               complex:
@@ -543,7 +537,7 @@ tasks:
       {
         "position": {
           "x": 1310,
-          "y": 180
+          "y": 670
         }
       }
     note: false
@@ -594,7 +588,7 @@ tasks:
       {
         "position": {
           "x": 1310,
-          "y": 650
+          "y": 1140
         }
       }
     note: false
@@ -621,7 +615,7 @@ tasks:
       {
         "position": {
           "x": 1310,
-          "y": 1135
+          "y": 1625
         }
       }
     note: false
@@ -1631,7 +1625,7 @@ tasks:
     task:
       id: 5f2ba1a9-54c3-4c18-8332-31e820dc3238
       version: -1
-      name: Hunt by attacker source IP or external host
+      name: Hunt by attacker source IP
       description: |-
         Searches Demisto incidents.
 
@@ -1644,10 +1638,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "53"
     scriptarguments:
       query:
-        simple: (dnsqueryname:${inputs.attackerExternalHost} or localip:${inputs.attackerRemoteIP} ) and caseid:${parentIncidentFields.incident_id}
+        simple: localip:${inputs.attackerRemoteIP} and caseid:${parentIncidentFields.incident_id}
     separatecontext: false
     view: |-
       {
@@ -1683,7 +1677,7 @@ tasks:
       {
         "position": {
           "x": 1710,
-          "y": 350
+          "y": 840
         }
       }
     note: false
@@ -1722,7 +1716,7 @@ tasks:
       {
         "position": {
           "x": 1710,
-          "y": 480
+          "y": 970
         }
       }
     note: false
@@ -1752,7 +1746,7 @@ tasks:
       {
         "position": {
           "x": 1710,
-          "y": 820
+          "y": 1310
         }
       }
     note: false
@@ -1791,7 +1785,7 @@ tasks:
       {
         "position": {
           "x": 1710,
-          "y": 950
+          "y": 1440
         }
       }
     note: false
@@ -1879,6 +1873,129 @@ tasks:
         "position": {
           "x": 450,
           "y": 4480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: ea421052-65ec-4e66-81e9-179f1b37c4c3
+    type: condition
+    task:
+      id: ea421052-65ec-4e66-81e9-179f1b37c4c3
+      version: -1
+      name: Should investigate by attacker's external host?
+      description: Whether to hunt by the attacker indicators.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HuntAttacker
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.attackerExternalHost
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 94139bf4-5524-4a4a-8d8e-d3860d4d1054
+    type: title
+    task:
+      id: 94139bf4-5524-4a4a-8d8e-d3860d4d1054
+      version: -1
+      name: Attacker network activity
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 82c5b670-b168-4827-818e-917e725f93b8
+    type: regular
+    task:
+      id: 82c5b670-b168-4827-818e-917e725f93b8
+      version: -1
+      name: Hunt by attacker source external host
+      description: |-
+        Searches Demisto alerts.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      query:
+        simple: dnsqueryname:${inputs.attackerExternalHost} and caseid:${parentIncidentFields.incident_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 490
         }
       }
     note: false
