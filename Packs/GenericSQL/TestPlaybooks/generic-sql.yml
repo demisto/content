@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bb01e201-beb4-4a36-8a12-c911e4c3eedc
+    taskid: e7764a70-e1e0-46a2-84dc-432c24d1486a
     type: start
     task:
-      id: bb01e201-beb4-4a36-8a12-c911e4c3eedc
+      id: e7764a70-e1e0-46a2-84dc-432c24d1486a
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 6e34fa11-7dad-4fb3-8c75-ce26909f06a2
+    taskid: 49bae430-54d9-48f8-8eb4-f673c6d98c95
     type: regular
     task:
-      id: 6e34fa11-7dad-4fb3-8c75-ce26909f06a2
+      id: 49bae430-54d9-48f8-8eb4-f673c6d98c95
       version: -1
       name: Select query - show all test table
       script: Generic SQL|||sql-command
@@ -73,10 +73,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 5d6fbcf4-affc-4799-8752-44585cadeaa1
+    taskid: 9ac36363-e578-4070-8910-858f6d9f0eb2
     type: regular
     task:
-      id: 5d6fbcf4-affc-4799-8752-44585cadeaa1
+      id: 9ac36363-e578-4070-8910-858f6d9f0eb2
       version: -1
       name: Insert query in mssql syntax with bind variables values
       script: Generic SQL|||sql-command
@@ -111,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 4aef1152-8b07-49e5-894d-df38b123adc0
+    taskid: c4eda9c1-d3bf-4d7f-8040-77733aa47c79
     type: regular
     task:
-      id: 4aef1152-8b07-49e5-894d-df38b123adc0
+      id: c4eda9c1-d3bf-4d7f-8040-77733aa47c79
       version: -1
       name: Select Query - Get New Entry
       script: Generic SQL|||sql-command
@@ -148,10 +148,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: a3a4fac2-4e43-483e-87cb-b329fe13a0c7
+    taskid: cb0e5df5-ea1d-4c7b-8469-0a8489ad591a
     type: regular
     task:
-      id: a3a4fac2-4e43-483e-87cb-b329fe13a0c7
+      id: cb0e5df5-ea1d-4c7b-8469-0a8489ad591a
       version: -1
       name: Delete New Entry
       script: Generic SQL|||sql-command
@@ -183,10 +183,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: fd1a5a3a-529e-4e32-8ebb-63fc6d0f7dd2
+    taskid: 3dc12780-af17-42d5-8c99-efbdf08b6d3d
     type: title
     task:
-      id: fd1a5a3a-529e-4e32-8ebb-63fc6d0f7dd2
+      id: 3dc12780-af17-42d5-8c99-efbdf08b6d3d
       version: -1
       name: Done
       type: title
@@ -211,10 +211,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 2276ff05-6f6d-4927-84b1-943d9f3a93c0
+    taskid: fdff4c5f-daad-4b23-8377-871c64ce899a
     type: regular
     task:
-      id: 2276ff05-6f6d-4927-84b1-943d9f3a93c0
+      id: fdff4c5f-daad-4b23-8377-871c64ce899a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -246,10 +246,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: edaa37d9-f6c8-424c-8545-6da756e13e46
+    taskid: b54f17e3-1a5d-461d-8ef0-81d987792612
     type: regular
     task:
-      id: edaa37d9-f6c8-424c-8545-6da756e13e46
+      id: b54f17e3-1a5d-461d-8ef0-81d987792612
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -283,10 +283,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: b0dd99d6-2f64-4eb7-89bd-219543271e4d
+    taskid: 7966c652-4f26-4520-88cf-a5317cf63197
     type: regular
     task:
-      id: b0dd99d6-2f64-4eb7-89bd-219543271e4d
+      id: 7966c652-4f26-4520-88cf-a5317cf63197
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -315,10 +315,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 2e4cfff9-2de6-4a16-8f61-1d2eb9019cb6
+    taskid: 9a98232e-7bd7-4b40-8ea3-06e83291ae5e
     type: regular
     task:
-      id: 2e4cfff9-2de6-4a16-8f61-1d2eb9019cb6
+      id: 9a98232e-7bd7-4b40-8ea3-06e83291ae5e
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -347,10 +347,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 84a3b5bf-c700-477a-85a4-4c5630777ffd
+    taskid: 5ca50db6-f767-40f0-8b83-23d6296ea597
     type: regular
     task:
-      id: 84a3b5bf-c700-477a-85a4-4c5630777ffd
+      id: 5ca50db6-f767-40f0-8b83-23d6296ea597
       version: -1
       name: Insert query in mysql/postgresql syntax with bind variables values
       script: Generic SQL|||sql-command
@@ -385,10 +385,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 12ab07aa-c1d9-400c-8965-c80874d97f00
+    taskid: 6c3a1d52-baf0-4846-83cc-329e07229847
     type: regular
     task:
-      id: 12ab07aa-c1d9-400c-8965-c80874d97f00
+      id: 6c3a1d52-baf0-4846-83cc-329e07229847
       version: -1
       name: Delete New Entry (If was created)
       script: Generic SQL|||sql-command
@@ -420,10 +420,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 2712a650-ec5f-47ca-8680-f2aedaa3f672
+    taskid: 2d4c02ad-b7b3-43ce-8d22-7d187b1bb66c
     type: regular
     task:
-      id: 2712a650-ec5f-47ca-8680-f2aedaa3f672
+      id: 2d4c02ad-b7b3-43ce-8d22-7d187b1bb66c
       version: -1
       name: Insert query in oracle syntax with bind variables values
       script: Generic SQL|||sql-command
@@ -460,10 +460,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: c96e50be-7097-44c6-8b10-b5726d599f8e
+    taskid: 87e3a7e1-656e-4637-8ec9-c60e95a76ee6
     type: regular
     task:
-      id: c96e50be-7097-44c6-8b10-b5726d599f8e
+      id: 87e3a7e1-656e-4637-8ec9-c60e95a76ee6
       version: -1
       name: Generate Random ID
       description: Generates random string
@@ -505,10 +505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: b8793adb-eed4-43b7-8401-571cbca6e121
+    taskid: 61e0caa4-a709-4046-8833-f697f9002a4c
     type: condition
     task:
-      id: b8793adb-eed4-43b7-8401-571cbca6e121
+      id: 61e0caa4-a709-4046-8833-f697f9002a4c
       version: -1
       name: Was New Entry Created?
       description: Prints text to war room (Markdown supported)
@@ -557,10 +557,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: ca4dff12-a4b4-45de-8bcc-50dd5bd7d0cb
+    taskid: 63ebb0f5-69c5-43f4-8e1a-60d862aa5c32
     type: condition
     task:
-      id: ca4dff12-a4b4-45de-8bcc-50dd5bd7d0cb
+      id: 63ebb0f5-69c5-43f4-8e1a-60d862aa5c32
       version: -1
       name: Was New Entry Deleted?
       description: Prints text to war room (Markdown supported)
@@ -600,10 +600,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: fd9d4d31-00e5-44d7-8baf-dcee9505a47f
+    taskid: 82fac520-644b-49b7-8749-b4c6edffd84d
     type: regular
     task:
-      id: fd9d4d31-00e5-44d7-8baf-dcee9505a47f
+      id: 82fac520-644b-49b7-8749-b4c6edffd84d
       version: -1
       name: Select query - show all test table
       description: Running a sql query
@@ -637,10 +637,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 5788a7f3-e71d-4634-8ede-e7951265a3bf
+    taskid: 9a452697-5a93-4c43-8d20-9f70c3d02d33
     type: title
     task:
-      id: 5788a7f3-e71d-4634-8ede-e7951265a3bf
+      id: 9a452697-5a93-4c43-8d20-9f70c3d02d33
       version: -1
       name: 'Insert New Entry '
       type: title
@@ -668,10 +668,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 87b044d1-ee60-4c10-842d-0a62287742f8
+    taskid: b80438bf-178f-47d3-8ea1-78f5cd463402
     type: title
     task:
-      id: 87b044d1-ee60-4c10-842d-0a62287742f8
+      id: b80438bf-178f-47d3-8ea1-78f5cd463402
       version: -1
       name: Validate New Entry
       type: title
@@ -699,10 +699,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 307067cc-d7d5-4543-83f7-e7b92a1bcf80
+    taskid: 0fa8900a-6cf2-4364-87c7-f9a3b893abb2
     type: title
     task:
-      id: 307067cc-d7d5-4543-83f7-e7b92a1bcf80
+      id: 0fa8900a-6cf2-4364-87c7-f9a3b893abb2
       version: -1
       name: Query Succeeded - Retrieve Table Back To Original State
       type: title
@@ -730,10 +730,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 6ce7e669-2c19-464d-844c-291de0cd874f
+    taskid: 66ee96f5-1407-4998-84ea-d2023f82fb5d
     type: title
     task:
-      id: 6ce7e669-2c19-464d-844c-291de0cd874f
+      id: 66ee96f5-1407-4998-84ea-d2023f82fb5d
       version: -1
       name: Error Creating New Entry
       type: title
@@ -761,10 +761,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 3051d18f-d19a-4df6-86ae-5df2a9f01431
+    taskid: a912a266-26f9-44cc-8ee1-51ec48b9cab1
     type: condition
     task:
-      id: 3051d18f-d19a-4df6-86ae-5df2a9f01431
+      id: a912a266-26f9-44cc-8ee1-51ec48b9cab1
       version: -1
       name: Choose proper query syntax based on DB type
       type: condition
