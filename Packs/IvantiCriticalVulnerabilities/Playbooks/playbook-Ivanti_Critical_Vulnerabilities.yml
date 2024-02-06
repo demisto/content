@@ -960,7 +960,7 @@ tasks:
       type:
         simple: IP
       value:
-        simple: ${IP.Address}
+        simple: ${ExtractedIndicators.IP}
       verdict:
         simple: Malicious
     reputationcalc: 1
