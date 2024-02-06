@@ -2821,8 +2821,8 @@ def handle_message(item: results.Message | dict) -> bool:
 
 
 def notable_event_fetch(args: dict, service: client.Service) -> CommandResults:
-    service.jobs.oneshot('search index=security notable=true | head 1')
-    return CommandResults()
+    res = service.jobs.oneshot(f'search `notable_by_id({args["entry_id"]})')
+    return CommandResults(readable_output=str(res))
 
 
 def main():  # pragma: no cover
