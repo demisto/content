@@ -703,30 +703,30 @@ def test_fetch_incidents(mocker, return_value_get_last_run, expected_result):
     assert incidents == expected_result
 
 
-email_no_internalDate = input_data.email_without_date
-expected_occurred_no_internalDate = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
-email_internalDate_early = input_data.email_with_early_internalDate
-expected_occurred_internalDate_early = datetime.datetime(2020, 12, 21, 20, 11, 40, tzinfo=datetime.timezone.utc)
-email_header_early = input_data.email_with_internalDate_header_early
-expected_occurred_header_early = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
-email_no_header = input_data.email_no_header
-expected_occurred_no_header = datetime.datetime(2020, 12, 21, 20, 11, 58, tzinfo=datetime.timezone.utc)
-email_no_date = input_data.email_no_date
-expected_occurred_no_date = datetime.datetime(2020, 12, 22, 14, 13, 20, tzinfo=datetime.timezone.utc)
+EMAIL_NO_INTERNALDATE = input_data.email_without_date
+EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
+EMAIL_INTERNALDATE_EARLY = input_data.email_with_early_internalDate
+EXPECTED_OCCURRED_INTERNALDATE_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 40, tzinfo=datetime.timezone.utc)
+EMAIL_HEADER_EARLY = input_data.email_with_internalDate_header_early
+EXPECTED_OCCURRED_HEADER_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
+EMAIL_NO_HEADER = input_data.email_no_header
+EXPECTED_OCCURRED_NO_HEADER = datetime.datetime(2020, 12, 21, 20, 11, 58, tzinfo=datetime.timezone.utc)
+EMAIL_NO_DATE = input_data.email_no_date
+EXPECTED_OCCURRED_NO_DATE = datetime.datetime(2020, 12, 22, 14, 13, 20, tzinfo=datetime.timezone.utc)
 
 
 @pytest.mark.parametrize("email_data, expected_occurred, expected_occurred_is_valid",
                          [
                              # no internalDate
-                             (email_no_internalDate, expected_occurred_no_internalDate, True),
+                             (EMAIL_NO_INTERNALDATE, EXPECTED_OCCURRED_NO_INTERNALDATE, True),
                              # both internalDate and date header, but the internalDate is earlier
-                             (email_internalDate_early, expected_occurred_internalDate_early, True),
+                             (EMAIL_INTERNALDATE_EARLY, EXPECTED_OCCURRED_INTERNALDATE_EARLY, True),
                              # both internalDate and date header, but the date header is earlier
-                             (email_header_early, expected_occurred_header_early, True),
+                             (EMAIL_HEADER_EARLY, EXPECTED_OCCURRED_HEADER_EARLY, True),
                              # no date in the headers
-                             (email_no_header, expected_occurred_no_header, True),
+                             (EMAIL_NO_HEADER, EXPECTED_OCCURRED_NO_HEADER, True),
                              # no internalDate and no date in the headers -> datetime.now
-                             (email_no_date, expected_occurred_no_date, False),
+                             (EMAIL_NO_DATE, EXPECTED_OCCURRED_NO_DATE, False),
                          ])
 @freeze_time("2020-12-22 14:13:20", tz_offset=+0)
 def test_get_occurred_date(email_data, expected_occurred, expected_occurred_is_valid):
