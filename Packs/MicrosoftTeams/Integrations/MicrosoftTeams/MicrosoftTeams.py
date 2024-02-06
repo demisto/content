@@ -503,7 +503,7 @@ def process_mirror_or_unknown_message(message: str) -> dict:
     return create_adaptive_card(body)
 
 
-def is_teams_ask_message(msg: str) -> bool: # is_teams_ask_message (add unit test, to update with the test in ask test)
+def is_teams_ask_message(msg: str) -> bool:
     try:
         message: dict = json.loads(msg)
         return MS_TEAMS_ASK_MESSAGE_KEYS == message.keys()
