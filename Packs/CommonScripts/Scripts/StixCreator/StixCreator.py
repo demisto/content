@@ -101,6 +101,7 @@ def search_related_indicators(value: str) -> list[dict]:
             demisto.info(f"Relationship: {rel} is not relevant for indicator: {value}")
             continue
         query += " or "
+    demisto.debug(f"query is: {query}")
     if not query:
         demisto.info(f"No relevant relationship found for indicator: {value}")
         return []
