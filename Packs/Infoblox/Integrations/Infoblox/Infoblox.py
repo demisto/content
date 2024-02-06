@@ -672,7 +672,7 @@ def transform_host_records_context(records: list[dict[str, Any]]) -> list[dict[s
             if record_key == INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY:
                 continue
             elif record_key == INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY:
-                if isinstance(record_value, dict) and bool(record_value):
+                if isinstance(record_value, dict) and record_value:
                     ext_attr_value = {}
                     for ext_attr_key, ext_attr_val in record_value.items():
                         ext_attr_value[ext_attr_key] = cast(dict[str, Any], ext_attr_val).get("value")
