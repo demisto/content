@@ -442,3 +442,23 @@ def test_format_ts_human():
     dt = datetime(2024, 2, 6, 12, 34, 56)
     expected_result = "2024-02-06T12:34:56Z"
     assert format_ts_human(dt) == expected_result
+
+
+def test_create_outgoing_feed(mocker):
+    mock_response = mocker.Mock()
+    mock_response.json.return_value = {"data": "123321"}
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+    #mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_source_group_order_id", )
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    mocker.patch.object(client, 'get_source_group_order_id', return_value="123-123-123")
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    response = client.create_outgoing_feed("CSV Observables", "8", "New Feed", "http download", "REPLACE", "testing Group")
+
+    assert response == "123321"

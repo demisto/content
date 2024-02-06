@@ -576,9 +576,9 @@ class EclecticIQ_api:
 
         self.eiq_logging.info(f"Creating Outgoing Feed {feed_title}")
 
-        authorized_group_order_id = str(
-            self.get_source_group_order_id(access_group_name)
-        )
+        group_id = self.get_source_group_order_id(access_group_name)
+
+        authorized_group_order_id = str(group_id)
 
         create_outgoing_feed = {
             "data": {
@@ -754,7 +754,7 @@ class EclecticIQ_api:
             data=create_outgoing_feed,
         )
 
-        result = (json.loads(r.text))["data"]
+        result = r.json()["data"]
 
         return result
 
