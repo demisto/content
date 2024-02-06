@@ -1,3 +1,4 @@
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import asyncio
@@ -1349,7 +1350,7 @@ def is_dm(channel: str) -> bool:
     return bool(channel and channel[0] == 'D' and ENABLE_DM)
 
 
-async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
+async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse, files: list[dict]):
     """
     Process messages which have been identified as possible mirrored messages. If so, we grab the context (cached), and
     check for a match of the channel_id in the cached mirrors. If we find one, we will update the mirror object and send
@@ -1391,7 +1392,20 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
                                                         OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
         investigation_id = mirror['investigation_id']
-        await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
+        demisto.info(f'{files=}, {text=}')
+        if files:
+            for file in files:
+                data = await get_file(file.get("url_private"))
+                file_name = file.get("name")
+                demisto.info(f'got file {file_name} data')
+                file_entry = fileResult(file_name, data)
+                if text:
+                    file_entry["HumanReadable"] = text
+                demisto.info(f'{file_entry=}')
+                demisto.info(f'{user=}')
+                await handle_file(investigation_id, json.dumps(file_entry), user)
+            else:
+                await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
 
 
 def fetch_context(force_refresh: bool = False) -> dict:
@@ -1444,6 +1458,13 @@ def reset_listener_health():
     demisto.info("SlackV3 - Event handled successfully.")
 
 
+async def get_file(url_private: str):
+    demisto.debug(f'download url is {url_private=}')
+    res = requests.get(url_private, headers={'Authorization': f'Bearer {ASYNC_CLIENT.token}'}, verify=VERIFY_CERT)  # TODO: verify from params.
+    demisto.debug(f'{url_private} {res.status_code=}')
+    return res.content
+
+
 async def listen(client: SocketModeClient, req: SocketModeRequest):
     """
     This is the main listener which is attached to the open socket connection. When a SocketModeRequest has been received
@@ -1477,6 +1498,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
     try:
         data: dict = req.payload
         event: dict = data.get('event', {})
+        demisto.info(f'Received event: {event} in listen')
         text = event.get('text', '')
         user_id = data.get('user', {}).get('id', '')
         if not user_id:
@@ -1538,9 +1560,10 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         if event.get('subtype') == 'message_changed':
             return
 
+        user = await get_user_details(user_id=user_id)
+
         # Check if the message is being sent directly to our bot.
         if is_dm(channel):
-            user = await get_user_details(user_id=user_id)
             await handle_dm(user, text, ASYNC_CLIENT)  # type: ignore
             reset_listener_health()
             return
@@ -1548,7 +1571,6 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         # If a thread_id is found in the payload, we will check if it is a reply to a SlackAsk task. Currently threads
         # are not mirrored
         if thread:
-            user = await get_user_details(user_id=user_id)
             entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
             if entitlement_reply:
                 await process_entitlement_reply(entitlement_reply, user_id, action_text, channel=channel,
@@ -1556,10 +1578,11 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 reset_listener_health()
                 return
 
+        demisto.info(f'before mirroring enabled, {event=}')
+
         # If a message has made it here, we need to check if the message is being mirrored. If not, we will ignore it.
         if MIRRORING_ENABLED:
-            user = await get_user_details(user_id=user_id)
-            await process_mirror(channel, text, user)
+            await process_mirror(channel, text, user, event.get("files") or [])
         reset_listener_health()
         return
     except Exception as e:
@@ -1599,6 +1622,17 @@ async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, 
                          email=user.get('profile', {}).get('email', ''),
                          footer=MESSAGE_FOOTER
                          )
+
+
+async def handle_file(investigation_id: str, file_content: str, user: dict):
+    demisto.addEntry(
+        id=investigation_id,
+        entry=file_content,
+        username=user.get('name', ''),
+        email=user.get('profile', {}).get('email', ''),
+        footer=MESSAGE_FOOTER
+    )
+
 
 
 async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> str:
