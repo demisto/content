@@ -601,22 +601,23 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
         page_to_query = 1
 
     for item in items:
-        # Make datetime object unaware of timezone for comparison
-        parsed_date = dateparser.parse(item['Timestamp'])
-        assert parsed_date is not None, f"failed parsing {item['Timestamp']}"
-        incident_created_time = parsed_date.replace(tzinfo=None)
-
         # Don't add duplicated incidents
-        # if item["ResourceID"] not in last_run_rids:
-        incident = {
-            'name': item.get('Description', None),
-            'occurred': incident_created_time.strftime(DATE_FORMAT),
-            'severity': CTD_TO_DEMISTO_SEVERITY.get(item.get('Severity', None), None),
-            'rawJSON': json.dumps(item)
-        }
+        rid = item["ResourceID"]
+        if rid not in last_run_rids:
+            # Make datetime object unaware of timezone for comparison
+            parsed_date = dateparser.parse(item['Timestamp'])
+            assert parsed_date is not None, f"failed parsing {item['Timestamp']}"
+            incident_created_time = parsed_date.replace(tzinfo=None)
 
-        incidents.append(incident)
-        current_rids.append(item["ResourceID"])
+            incident = {
+                'name': item.get('Description', None),
+                'occurred': incident_created_time.strftime(DATE_FORMAT),
+                'severity': CTD_TO_DEMISTO_SEVERITY.get(item.get('Severity', None), None),
+                'rawJSON': json.dumps(item)
+            }
+
+            incidents.append(incident)
+            current_rids.append(rid)
 
     # If there were no items queried, latest_created_time is the same as last run
     if latest_created_time is None:
