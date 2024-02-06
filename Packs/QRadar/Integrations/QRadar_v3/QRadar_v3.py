@@ -2160,12 +2160,12 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
 def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mode: str,
                               user_query: str, events_columns: str, events_limit: int, ip_enrich: bool,
                               asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str],
-                              first_fetch: str, mirror_options: str, assets_limit: int, last_highest_id: int):
+                              first_fetch: str, mirror_options: str, assets_limit: int):
     if is_reset_triggered():
         last_highest_id = 0
     else:
         context_data, _ = get_integration_context_with_version()
-        last_highest_id = last_highest_id or context_data.get(LAST_FETCH_KEY, 0)
+        last_highest_id = context_data.get(LAST_FETCH_KEY, 0)
     print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
     incidents, new_highest_id = get_incidents_long_running_execution(
         client=client,
@@ -2243,7 +2243,6 @@ def long_running_execution_command(client: Client, params: dict):
             f'ID from context: {last_highest_id_context}')
         safely_update_context_data(context_data | {LAST_FETCH_KEY: int(last_highest_id_last_run)},
                                    version, should_update_last_fetch=True)
-    last_highest_id = last_highest_id_last_run
     while True:
         try:
             perform_long_running_loop(
@@ -2260,7 +2259,6 @@ def long_running_execution_command(client: Client, params: dict):
                 first_fetch=first_fetch,
                 mirror_options=mirror_options,
                 assets_limit=assets_limit,
-                last_highest_id=last_highest_id,
             )
             demisto.updateModuleHealth('')
 
