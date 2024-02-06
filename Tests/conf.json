@@ -2735,7 +2735,7 @@
             ],
             "instance_names": "active_directory_ninja",
             "fromversion": "4.5.0",
-            "memory_threshold": 80
+            "memory_threshold": 100
         },
         {
             "integrations": "Freshdesk",
