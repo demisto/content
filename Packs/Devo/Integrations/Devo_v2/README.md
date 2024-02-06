@@ -148,15 +148,17 @@ Please refer to to the Devo documentation for building a query with LINQ
 
 | **Argument Name** | **Description**                                                                                    | **Required** |
 |-------------------|----------------------------------------------------------------------------------------------------|--------------|
-| query             | A LINQ Query to run                                                                                | Required     |
-| from              | Start datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay) | Required     |
-| to                | End datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay)   | Optional     |
+| query             | A LINQ query to run in Devo, with pagination support.                                                                                | Required     |
+| from              | Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes. | Required     |
+| to                | End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range. (Decimal milliseconds okay)   | Optional     |
 | items_per_page               | per page item count.   | Optional     |
 | queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds                          | Optional     |
 | writeToContext    | Whether to write results to context or not                                                         | Optional     |
 | linqLinkBase      | Overrides the global link base so is able to be set at run time                                    | Optional     |
+| filtered_columns  | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional |
 
-#####__from__ and __to__ time note:
+
+##### __from__ and __to__ time note:
 This integration allows for the following formats. Note that when __from__ and __to__ times
 are both given that they must be the same given format.
 - When __from__ is a date range such as "1 day", "30 minute", etc... __to__ is not needed and will be ignored even if given.
@@ -215,8 +217,10 @@ that are allowed.
 | queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds | Optional     |
 | writeToContext    | write results to context or not                                           | Optional     |
 | linqLinkBase      | Overrides the global link base so is able to be set at run time           | Optional     |
+| filtered_columns  | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional |
 
-#####__from__ and __to__ time note:
+
+##### __from__ and __to__ time note:
 This integration allows for the following formats. Note that when __from__ and __to__ times
 are both given that they must be the same given format.
 - When __from__ is a date range such as "1 day", "30 minute", etc... __to__ is not needed and will be ignored even if given.
@@ -272,8 +276,9 @@ Thus querying all columns for the search token and returning a union of the give
 | limit             | Number of entries to return to context. Default is 50. 0 sets to no limit | Optional     |
 | queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds | Optional     |
 | writeToContext    | write results to context or not                                           | Optional     |
+| filtered_columns  | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional |
 
-#####__from__ and __to__ time note:
+##### __from__ and __to__ time note:
 This integration allows for the following formats. Note that when __from__ and __to__ times
 are both given that they must be the same given format.
 - When __from__ is a date range such as "1 day", "30 minute", etc... __to__ is not needed and will be ignored even if given.
