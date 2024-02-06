@@ -17,15 +17,6 @@
 						"isVisible": true,
 						"items": [
 							{
-								"endCol": 2,
-								"fieldId": "spycoudseverity",
-								"height": 22,
-								"id": "38b31f90-e59e-11ed-8a6e-c34d060e36eb",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "severity",

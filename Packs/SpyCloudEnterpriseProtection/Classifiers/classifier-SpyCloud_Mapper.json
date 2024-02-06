@@ -108,9 +108,6 @@
 				"SpyCloud User Browser": {
 					"simple": "user_browser"
 				},
-				"SpyCloud User Hostname": {
-					"simple": "user_hostname"
-				},
 				"SpyCloud User SYS Registered Owner": {
 					"simple": "user_sys_registered_owner"
 				},
