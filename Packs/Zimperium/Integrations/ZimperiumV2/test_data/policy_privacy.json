@@ -1,0 +1,61 @@
+{
+    "id": "a2",
+    "accountId": "25",
+    "groups": [
+        {
+            "id": "65",
+            "accountId": "25",
+            "name": "Test",
+            "description": "test_22_01",
+            "created": "2024-01-22T11:37:36.749+00:00",
+            "modified": "2024-01-22T11:37:36.749+00:00",
+            "staticFilesWritten": "2024-01-22T11:37:38.280+00:00",
+            "zapps": [],
+            "userActivations": [],
+            "groupActivations": [],
+            "global": false,
+            "emm": false
+        },
+        {
+            "id": "37",
+            "accountId": "25",
+            "name": "Default Group",
+            "description": "Default Group",
+            "created": "2023-12-05T20:09:16.621+00:00",
+            "modified": "2023-12-05T20:09:16.621+00:00",
+            "staticFilesWritten": "2024-01-16T06:00:54.585+00:00",
+            "zapps": [],
+            "userActivations": [
+                {
+                    "id": "40"
+                }
+            ],
+            "groupActivations": [],
+            "global": true,
+            "emm": false
+        }
+    ],
+    "name": "Default",
+    "locationAccuracy": 0,
+    "rules": [
+        {
+            "id": "3b",
+            "collectibleId": 0,
+            "shouldCollect": false
+        },
+        {
+            "id": "3c",
+            "collectibleId": 35,
+            "shouldCollect": true
+        }
+    ],
+    "created": "2023-12-05T20:09:16.621+00:00",
+    "modified": "2023-12-05T20:09:16.853+00:00",
+    "staticFilesWritten": "2023-12-05T20:09:19.079+00:00",
+    "jsonHash": "hash",
+    "protoHash": "hash§",
+    "team": null,
+    "assigned": true,
+    "teamId": null,
+    "global": true
+}

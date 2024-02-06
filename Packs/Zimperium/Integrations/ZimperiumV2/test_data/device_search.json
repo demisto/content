@@ -1,0 +1,192 @@
+{
+    "totalHits": 2,
+    "totalHitsRelation": "EQUAL_TO",
+    "maxScore": "NaN",
+    "scrollId": "qZw==",
+    "searchHits": [],
+    "aggregations": null,
+    "content": [
+        {
+            "id": "5",
+            "groupId": "1",
+            "riskPosture": 2,
+            "riskPostureName": "ELEVATED",
+            "accountId": "2",
+            "teamId": "3",
+            "teamName": "Default",
+            "created": 1703082619686,
+            "lastSeen": 1703083587626,
+            "os": {
+                "id": 2,
+                "name": "ios",
+                "type": "iOS",
+                "version": "16.3",
+                "versionUpgradeable": true,
+                "maxOsVersion": "17.2",
+                "osVersionId": 57106,
+                "policyCompliant": false
+            },
+            "deviceOwner": {
+                "email": "user@email.com"
+            },
+            "zappInstance": [
+                {
+                    "id": "ed3",
+                    "zappId": "c2c",
+                    "groupId": "1d",
+                    "name": "MTD",
+                    "bundleId": "bundle.id",
+                    "version": "5.2.16",
+                    "buildNumber": "1234",
+                    "lastSeen": 1703083587626,
+                    "agentType": 2,
+                    "policiesInfo": [
+                        {
+                            "type": "App Policy iOS v2",
+                            "hash": "c8a",
+                            "deployedAt": 1702304980000,
+                            "downloadedAt": 1703082620000
+                        },
+                        {
+                            "type": "App Settings",
+                            "hash": "616",
+                            "deployedAt": 1702303536000,
+                            "downloadedAt": 1703082620000
+                        },
+                        {
+                            "type": "Phishing",
+                            "hash": "381",
+                            "deployedAt": 1703083089000,
+                            "downloadedAt": 1703083248000
+                        }
+                    ],
+                    "serverlessDetection": false,
+                    "zversion": "5.2.16",
+                    "zbuildNumber": "20231130"
+                }
+            ],
+            "fullType": "iPhone14,5",
+            "model": "iphone145",
+            "developerOptionsOn": true,
+            "lockScreenUnprotected": true,
+            "deleted": false,
+            "additionalDeviceInfo": [],
+            "activationName": "user@email.com",
+            "agentType": 2,
+            "appVersions": [],
+            "processed": true,
+            "processedAt": 1703082624526,
+            "threatState": {
+                "hadCriticalMitigation": false,
+                "criticalThreats": [],
+                "addOrRemoveCritical": false,
+                "hadRiskyMitigation": false,
+                "riskyThreats": [
+                    "5",
+                    "d",
+                    "7",
+                    "8",
+                    "9"
+                ],
+                "numberOfRiskyThreats": 5,
+                "addOrRemoveRisky": false
+            },
+            "appStatus": "ACTIVE",
+            "dormancyProcessed": false,
+            "zdeviceId": "AF"
+        },
+        {
+            "id": "62",
+            "groupId": "3",
+            "riskPosture": 3,
+            "riskPostureName": "CRITICAL",
+            "accountId": "2",
+            "teamId": "3",
+            "teamName": "Default",
+            "created": 1702393155483,
+            "lastSeen": 1702393458060,
+            "os": {
+                "id": 1,
+                "name": "android",
+                "type": "Android",
+                "version": "7.1.1",
+                "patchDate": "2017-09-01",
+                "versionUpgradeable": true,
+                "maxOsVersion": "10",
+                "maxOsPatchDate": "2",
+                "osVersionId": 57063,
+                "policyCompliant": false
+            },
+            "deviceOwner": {
+                "email": "user2@email.com"
+            },
+            "zappInstance": [
+                {
+                    "id": "6",
+                    "zappId": "4",
+                    "groupId": "3",
+                    "name": "MTD",
+                    "bundleId": "bundle.id",
+                    "version": "5.2.14",
+                    "buildNumber": "2",
+                    "lastSeen": 1702393458060,
+                    "isUnknownSourceEnabled": false,
+                    "externalTrackingId1": "",
+                    "externalTrackingId2": "",
+                    "agentType": 2,
+                    "policiesInfo": [
+                        {
+                            "type": "App Policy Android v2",
+                            "hash": "6",
+                            "deployedAt": 1701806956000,
+                            "downloadedAt": 1702393157000
+                        }
+                    ],
+                    "serverlessDetection": false,
+                    "zversion": "5.2.14",
+                    "zbuildNumber": "2"
+                }
+            ],
+            "fullType": "OnePlus5",
+            "model": "ONEPLUS A5000",
+            "isJailbroken": true,
+            "lockScreenUnprotected": true,
+            "deleted": false,
+            "additionalDeviceInfo": [],
+            "activationName": "user2@email.com",
+            "agentType": 2,
+            "appVersions": [
+                {
+                    "appVersionId": "ca",
+                    "bundleId": "bundle.id"
+                }
+            ],
+            "processed": true,
+            "processedAt": 1702393159337,
+            "threatState": {
+                "hadCriticalMitigation": false,
+                "criticalThreats": [
+                    "5",
+                    "a",
+                    "f"
+                ],
+                "numberOfCriticalThreats": 3,
+                "addOrRemoveCritical": false,
+                "hadRiskyMitigation": false,
+                "riskyThreats": [
+                    "3",
+                    "5",
+                    "f",
+                    "b",
+                    "a"
+                ],
+                "numberOfRiskyThreats": 5,
+                "addOrRemoveRisky": false
+            },
+            "appStatus": "ACTIVE",
+            "dormancyProcessed": false,
+            "zdeviceId": "5"
+        }
+    ],
+    "empty": true
+}

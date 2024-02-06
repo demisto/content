@@ -1,0 +1,992 @@
+category: Network Security
+commonfields:
+  id: Zimperium
+  version: -1
+configuration:
+- defaultvalue: https://domain.zimperium.com
+  display: Server URL (e.g. https://domain.zimperium.com)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: api_key
+  type: 4
+  hidden: true
+  required: false
+- displaypassword: API Key
+  name: credentials_api_key
+  hiddenusername: true
+  type: 9
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Fetch Query. e.g, severity==CRITICAL
+  name: fetch_query
+  type: 0
+  required: false
+- defaultvalue: '50'
+  display: Max fetch
+  name: max_fetch
+  type: 0
+  required: false
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  name: fetch_time
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  type: 17
+  required: false
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  type: 1
+  required: false
+description: Fetch and investigate mobile security alerts, generated based on anomalous or unauthorized activities detected on a user's mobile device.
+name: Zimperium
+fromversion: 5.0.0
+display: Zimperium
+script:
+  commands:
+  - arguments:
+    - defaultValue: eventId==*
+      description: Search events query.
+      name: query
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Retrieve event full details.
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '10'
+      description: Maximum number of events to retrieve in each page. Default is 10.
+      name: size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    description: Search events.
+    name: zimperium-events-search
+    outputs:
+    - contextPath: Zimperium.Events.appName
+      description: Application name.
+      type: String
+    - contextPath: Zimperium.Events.bssid
+      description: Network BSSID.
+      type: String
+    - contextPath: Zimperium.Events.bundleId
+      description: Bundle ID.
+      type: String
+    - contextPath: Zimperium.Events.country
+      description: Event country.
+      type: String
+    - contextPath: Zimperium.Events.customerContactName
+      description: Customer contact name.
+      type: String
+    - contextPath: Zimperium.Events.customerContactPhone
+      description: Customer contact phone.
+      type: String
+    - contextPath: Zimperium.Events.customerId
+      description: Customer ID.
+      type: String
+    - contextPath: Zimperium.Events.deviceHash
+      description: Device hash.
+      type: String
+    - contextPath: Zimperium.Events.deviceId
+      description: Device ID.
+      type: string
+    - contextPath: Zimperium.Events.deviceModel
+      description: Device model.
+      type: String
+    - contextPath: Zimperium.Events.deviceTime
+      description: Device time.
+      type: String
+    - contextPath: Zimperium.Events.eventDetail
+      description: Event additional details.
+      type: Unknown
+    - contextPath: Zimperium.Events.eventFullName
+      description: Event full name.
+      type: String
+    - contextPath: Zimperium.Events.eventId
+      description: Event ID.
+      type: String
+    - contextPath: Zimperium.Events.eventName
+      description: Event name.
+      type: String
+    - contextPath: Zimperium.Events.eventState
+      description: Event state.
+      type: String
+    - contextPath: Zimperium.Events.eventStateCode
+      description: Event status code.
+      type: Number
+    - contextPath: Zimperium.Events.eventVector
+      description: Device or network attack vector.
+      type: String
+    - contextPath: Zimperium.Events.firstName
+      description: First name of the phone owner.
+      type: String
+    - contextPath: Zimperium.Events.lastName
+      description: Last name of the phone owner.
+      type: String
+    - contextPath: Zimperium.Events.middleName
+      description: Middle name of the phone owner.
+      type: String
+    - contextPath: Zimperium.Events.incidentSummary
+      description: Incident summary.
+      type: String
+    - contextPath: Zimperium.Events.lastSeenTime
+      description: Event last seen time.
+      type: Date
+    - contextPath: Zimperium.Events.locationDetail
+      description: Location details.
+      type: String
+    - contextPath: Zimperium.Events.latitude
+      description: Latitude of the phone.
+      type: String
+    - contextPath: Zimperium.Events.longitude
+      description: Longitude of the phone.
+      type: String
+    - contextPath: Zimperium.Events.mdmId
+      description: MD ID.
+      type: String
+    - contextPath: Zimperium.Events.mitigatedDate
+      description: Mitigated date of the phone.
+      type: Date
+    - contextPath: Zimperium.Events.osType
+      description: OS type of the phone.
+      type: String
+    - contextPath: Zimperium.Events.osVersion
+      description: OS version of the phone.
+      type: String
+    - contextPath: Zimperium.Events.persistedTime
+      description: Persisted time of the event.
+      type: Date
+    - contextPath: Zimperium.Events.queuedTime
+      description: Queued time of the event.
+      type: Date
+    - contextPath: Zimperium.Events.severity
+      description: Severity of the event.
+      type: String
+    - contextPath: Zimperium.Events.ssid
+      description: Network SSID.
+      type: String
+    - contextPath: Zimperium.Events.tag1
+      description: User pre-defined Zimperium tag.
+      type: String
+    - contextPath: Zimperium.Events.tag2
+      description: User pre defined Zimperium tag.
+      type: String
+    - contextPath: Zimperium.Events.typeDesc
+      description: Event type description.
+      type: String
+    - contextPath: Zimperium.Events.userEmail
+      description: Email address of the phone user.
+      type: String
+    - contextPath: Zimperium.Events.userPhoneNumber
+      description: Phone number of the phone user.
+      type: String
+    - contextPath: Zimperium.Events.zdid
+      description: Zimperium device ID.
+      type: String
+    - contextPath: Zimperium.Events.zipsVersion
+      description: zIPS version where the event occurred.
+      type: String
+  - arguments:
+    - description: The query to search for users.
+      name: query
+    - description: Search users by email address.
+      name: email
+    - defaultValue: '10'
+      description: Maximum number of users to retrieve in each page. Default is 10.
+      name: size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    description: Search users.
+    name: zimperium-users-search
+    outputs:
+    - contextPath: Zimperium.Users.activationTokenUrl
+      description: Activation token that is used to activate zIPS.
+      type: String
+    - contextPath: Zimperium.Users.agreedToTerms
+      description: Whether the user completed enrollment.
+      type: bool
+    - contextPath: Zimperium.Users.alias
+      description: User alias.
+      type: String
+    - contextPath: Zimperium.Users.createdDate
+      description: User created date.
+      type: Date
+    - contextPath: Zimperium.Users.dateJoined
+      description: User joined date.
+      type: Date
+    - contextPath: Zimperium.Users.email
+      description: User email address.
+      type: String
+    - contextPath: Zimperium.Users.firstName
+      description: User first name.
+      type: String
+    - contextPath: Zimperium.Users.lastLogin
+      description: User last login date.
+      type: Date
+    - contextPath: Zimperium.Users.lastName
+      description: User last name.
+      type: String
+    - contextPath: Zimperium.Users.middleName
+      description: User middle name.
+      type: String
+    - contextPath: Zimperium.Users.lastSyncFromMdm
+      description: Last time the user synced from MDM, e.g., AirWatch, Mobile Iron, etc.
+      type: Date
+    - contextPath: Zimperium.Users.lastZconsoleLogin
+      description: User last login to the Zimperium console.
+      type: Date
+    - contextPath: Zimperium.Users.modifiedDate
+      description: User modified date.
+      type: Date
+    - contextPath: Zimperium.Users.objectId
+      description: User object ID.
+      type: String
+    - contextPath: Zimperium.Users.passwordExpirationDate
+      description: Use password expiration date.
+      type: Date
+    - contextPath: Zimperium.Users.phoneNumber
+      description: User phone number.
+      type: String
+    - contextPath: Zimperium.Users.phoneNumberVerified
+      description: Whether the user phone number is verified.
+      type: bool
+    - contextPath: Zimperium.Users.pwdRecoveryRequest
+      description: Whether the user requested password recovery.
+      type: bool
+    - contextPath: Zimperium.Users.role
+      description: User role.
+      type: Number
+    - contextPath: Zimperium.Users.roles.roleId
+      description: User role ID.
+      type: Number
+    - contextPath: Zimperium.Users.signupSteps
+      description: User sign-up steps.
+      type: Number
+    - contextPath: Zimperium.Users.staff
+      description: Whether the user is a staff member.
+      type: bool
+    - contextPath: Zimperium.Users.status
+      description: User status.
+      type: Number
+    - contextPath: Zimperium.Users.superuser
+      description: Whether the user is a superuser.
+      type: bool
+    - contextPath: Zimperium.Users.syncedFromMdm
+      description: Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron, etc.
+      type: bool
+    - contextPath: Zimperium.Users.termsVersion
+      description: User terms version.
+      type: String
+  - arguments:
+    - description: Object ID.
+      name: object_id
+      required: true
+    description: Retrieves details for a single user by object ID.
+    name: zimperium-user-get-by-id
+    outputs:
+    - contextPath: Zimperium.Users.activationTokenUrl
+      description: Activation token that is used to activate zIPS.
+      type: String
+    - contextPath: Zimperium.Users.agreedToTerms
+      description: Whether the user completed enrollment.
+      type: Number
+    - contextPath: Zimperium.Users.alias
+      description: User alias.
+      type: String
+    - contextPath: Zimperium.Users.createdDate
+      description: User created date.
+      type: Date
+    - contextPath: Zimperium.Users.dateJoined
+      description: User joined date.
+      type: Date
+    - contextPath: Zimperium.Users.email
+      description: User email address.
+      type: String
+    - contextPath: Zimperium.Users.firstName
+      description: User first name.
+      type: String
+    - contextPath: Zimperium.Users.lastName
+      description: User last name.
+      type: String
+    - contextPath: Zimperium.Users.middleName
+      description: User middle name.
+      type: String
+    - contextPath: Zimperium.Users.lastLogin
+      description: User last login date.
+      type: Date
+    - contextPath: Zimperium.Users.lastSyncFromMdm
+      description: Last time the user synced from MDM, e.g., AirWatch, Mobile Iron, etc.
+      type: Unknown
+    - contextPath: Zimperium.Users.lastZconsoleLogin
+      description: User last login to the Zimperium console.
+      type: Date
+    - contextPath: Zimperium.Users.modifiedDate
+      description: User last modified date.
+      type: Date
+    - contextPath: Zimperium.Users.objectId
+      description: User object ID.
+      type: String
+    - contextPath: Zimperium.Users.passwordExpirationDate
+      description: Use password expiration date.
+      type: Date
+    - contextPath: Zimperium.Users.phoneNumber
+      description: User phone number.
+      type: String
+    - contextPath: Zimperium.Users.phoneNumberVerified
+      description: Whether the user phone number is verified.
+      type: bool
+    - contextPath: Zimperium.Users.pwdRecoveryRequest
+      description: Whether the user requested password recovery.
+      type: bool
+    - contextPath: Zimperium.Users.role
+      description: User role.
+      type: Number
+    - contextPath: Zimperium.Users.roles.roleId
+      description: User role ID.
+      type: Number
+    - contextPath: Zimperium.Users.signupSteps
+      description: User sign-up steps.
+      type: Number
+    - contextPath: Zimperium.Users.staff
+      description: Whether the user is a staff member.
+      type: bool
+    - contextPath: Zimperium.Users.status
+      description: User status.
+      type: Number
+    - contextPath: Zimperium.Users.superuser
+      description: Whether the user is a superuser.
+      type: bool
+    - contextPath: Zimperium.Users.syncedFromMdm
+      description: Whether the user is synced from MDM, e.g., AirWatch, Mobile Iron, etc.
+      type: bool
+    - contextPath: Zimperium.Users.termsVersion
+      description: User terms version.
+      type: String
+  - arguments:
+    - defaultValue: deviceId==*
+      description: Search devices query.
+      name: query
+    - defaultValue: '10'
+      description: Maximum number of users to retrieve in each page. Default is 10.
+      name: size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    description: Search devices.
+    name: zimperium-devices-search
+    outputs:
+    - contextPath: Zimperium.Devices.appName
+      description: Application name.
+      type: String
+    - contextPath: Zimperium.Devices.bundleId
+      description: Bundle ID.
+      type: String
+    - contextPath: Zimperium.Devices.country
+      description: Device country.
+      type: String
+    - contextPath: Zimperium.Devices.countryCode
+      description: Device country code.
+      type: String
+    - contextPath: Zimperium.Devices.createdAt
+      description: Created time of the device.
+      type: Date
+    - contextPath: Zimperium.Devices.deviceGroupName
+      description: Device group name.
+      type: String
+    - contextPath: Zimperium.Devices.deviceHash
+      description: Device hash.
+      type: String
+    - contextPath: Zimperium.Devices.deviceId
+      description: Device ID.
+      type: String
+    - contextPath: Zimperium.Devices.email
+      description: Email address associated to the device.
+      type: String
+    - contextPath: Zimperium.Devices.externalTrackingId1
+      description: User pre-defined Zimperium tag.
+      type: String
+    - contextPath: Zimperium.Devices.externalTrackingId2
+      description: User pre-defined Zimperium tag.
+      type: String
+    - contextPath: Zimperium.Devices.firstName
+      description: Device owner first name.
+      type: String
+    - contextPath: Zimperium.Devices.lastName
+      description: Device owner last name.
+      type: String
+    - contextPath: Zimperium.Devices.middleName
+      description: Device owner middle name.
+      type: String
+    - contextPath: Zimperium.Devices.lastSeen
+      description: Device last seen.
+      type: Date
+    - contextPath: Zimperium.Devices.mdmId
+      description: 'MDM ID, e.g., AirWatch, Mobile Iron.'
+      type: String
+    - contextPath: Zimperium.Devices.model
+      description: Device model.
+      type: String
+    - contextPath: Zimperium.Devices.operatorAlpha
+      description: Name of the mobile operator.
+      type: String
+    - contextPath: Zimperium.Devices.osBuild
+      description: OS build.
+      type: String
+    - contextPath: Zimperium.Devices.osSecurityPatch
+      description: OS security patch.
+      type: String
+    - contextPath: Zimperium.Devices.osType
+      description: OS type of the phone.
+      type: String
+    - contextPath: Zimperium.Devices.osUpgradeable
+      description: Whether the OS is upgradable.
+      type: bool
+    - contextPath: Zimperium.Devices.osVersion
+      description: OS version.
+      type: String
+    - contextPath: Zimperium.Devices.osVulnerable
+      description: Whether the OS is vulnerable.
+      type: bool
+    - contextPath: Zimperium.Devices.phoneNumber
+      description: Device phone number.
+      type: String
+    - contextPath: Zimperium.Devices.processor
+      description: Device processor.
+      type: String
+    - contextPath: Zimperium.Devices.riskPosture
+      description: Device risk.
+      type: String
+    - contextPath: Zimperium.Devices.riskPostureCode
+      description: Device risk code.
+      type: Number
+    - contextPath: Zimperium.Devices.status
+      description: Device status.
+      type: String
+    - contextPath: Zimperium.Devices.statusCode
+      description: Device status code.
+      type: Number
+    - contextPath: Zimperium.Devices.systemToken
+      description: Device system token.
+      type: String
+    - contextPath: Zimperium.Devices.type
+      description: Device type.
+      type: String
+    - contextPath: Zimperium.Devices.updatedDate
+      description: Device updated date.
+      type: Date
+    - contextPath: Zimperium.Devices.userId
+      description: User ID of the device owner.
+      type: String
+    - contextPath: Zimperium.Devices.version
+      description: Device version.
+      type: String
+    - contextPath: Zimperium.Devices.vulnerabilities
+      description: Device vulnerabilities.
+      type: String
+    - contextPath: Zimperium.Devices.zdid
+      description: Device ZD ID.
+      type: String
+    - contextPath: Zimperium.Devices.zipsDistributionVersion
+      description: zIPS distribution version.
+      type: String
+    - contextPath: Zimperium.Devices.zipsVersion
+      description: zIPS version.
+      type: String
+  - arguments:
+    - description: Device ID.
+      name: device_id
+    - description: Zimperium ID.
+      name: zdid
+    description: Retrieves details for a single device.
+    name: zimperium-device-get-by-id
+    outputs:
+    - contextPath: Zimperium.Devices.appName
+      description: Application name.
+      type: String
+    - contextPath: Zimperium.Devices.bundleId
+      description: Bundle ID.
+      type: String
+    - contextPath: Zimperium.Devices.country
+      description: Device country.
+      type: String
+    - contextPath: Zimperium.Devices.countryCode
+      description: Device country code.
+      type: String
+    - contextPath: Zimperium.Devices.createdAt
+      description: Created time of the device.
+      type: Date
+    - contextPath: Zimperium.Devices.deviceGroupName
+      description: Device group name.
+      type: String
+    - contextPath: Zimperium.Devices.deviceHash
+      description: Device hash.
+      type: String
+    - contextPath: Zimperium.Devices.deviceId
+      description: Device ID.
+      type: String
+    - contextPath: Zimperium.Devices.email
+      description: Email address associated to the device.
+      type: String
+    - contextPath: Zimperium.Devices.externalTrackingId1
+      description: User pre-defined Zimperium tag.
+      type: String
+    - contextPath: Zimperium.Devices.externalTrackingId2
+      description: User pre-defined Zimperium tag.
+      type: String
+    - contextPath: Zimperium.Devices.firstName
+      description: Device owner first name.
+      type: String
+    - contextPath: Zimperium.Devices.lastName
+      description: Device owner last name.
+      type: String
+    - contextPath: Zimperium.Devices.middleName
+      description: Device owner middle name.
+      type: String
+    - contextPath: Zimperium.Devices.lastSeen
+      description: Device last seen time.
+      type: Date
+    - contextPath: Zimperium.Devices.mdmId
+      description: 'MDM ID. e.g: AirWatch, Iron Mobile.'
+      type: String
+    - contextPath: Zimperium.Devices.model
+      description: Device model.
+      type: String
+    - contextPath: Zimperium.Devices.operatorAlpha
+      description: Name of the mobile operator.
+      type: String
+    - contextPath: Zimperium.Devices.osBuild
+      description: OS build.
+      type: String
+    - contextPath: Zimperium.Devices.osSecurityPatch
+      description: OS security patch.
+      type: String
+    - contextPath: Zimperium.Devices.osType
+      description: OS type of the phone.
+      type: String
+    - contextPath: Zimperium.Devices.osUpgradeable
+      description: Whether the OS is upgradable.
+      type: bool
+    - contextPath: Zimperium.Devices.osVersion
+      description: OS version.
+      type: String
+    - contextPath: Zimperium.Devices.osVulnerable
+      description: Whether the OS is vulnerable.
+      type: bool
+    - contextPath: Zimperium.Devices.phoneNumber
+      description: Phone number.
+      type: String
+    - contextPath: Zimperium.Devices.processor
+      description: Device processor.
+      type: String
+    - contextPath: Zimperium.Devices.riskPosture
+      description: Device risk.
+      type: String
+    - contextPath: Zimperium.Devices.riskPostureCode
+      description: Device risk code.
+      type: Number
+    - contextPath: Zimperium.Devices.status
+      description: Device status.
+      type: String
+    - contextPath: Zimperium.Devices.statusCode
+      description: Device status code.
+      type: Number
+    - contextPath: Zimperium.Devices.systemToken
+      description: Device system token.
+      type: String
+    - contextPath: Zimperium.Devices.type
+      description: Device type.
+      type: String
+    - contextPath: Zimperium.Devices.updatedDate
+      description: Device updated date.
+      type: Date
+    - contextPath: Zimperium.Devices.userId
+      description: Device owner user ID.
+      type: String
+    - contextPath: Zimperium.Devices.version
+      description: Device version.
+      type: String
+    - contextPath: Zimperium.Devices.vulnerabilities
+      description: Device vulnerabilities.
+      type: String
+    - contextPath: Zimperium.Devices.zdid
+      description: Device ZD ID.
+      type: String
+    - contextPath: Zimperium.Devices.zipsDistributionVersion
+      description: zIPS distribution version.
+      type: String
+    - contextPath: Zimperium.Devices.zipsVersion
+      description: zIPS version.
+      type: String
+  - arguments:
+    - defaultValue: 1 day
+      description: <number> <time unit>, e.g., 7 days, 3 months, 1 year
+      name: from_last_update
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether to exclude deleted devices. Default is True.
+      name: exclude_deleted
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '10'
+      description: Number of devices to retrieve in each page.
+      name: size
+    - defaultValue: '0'
+      description: Page number.
+      name: page
+    description: Retrieves devices from Greater than Last Updated.
+    name: zimperium-devices-get-last-updated
+    outputs:
+    - contextPath: Zimperium.Devices.appName
+      description: Application name.
+      type: String
+    - contextPath: Zimperium.Devices.bundleId
+      description: Bundle ID.
+      type: String
+    - contextPath: Zimperium.Devices.country
+      description: Device country.
+      type: String
+    - contextPath: Zimperium.Devices.countryCode
+      description: Device country code.
+      type: String
+    - contextPath: Zimperium.Devices.createdAt
+      description: Created time of the device.
+      type: Date
+    - contextPath: Zimperium.Devices.deviceGroupName
+      description: Device group name.
+      type: String
+    - contextPath: Zimperium.Devices.deviceHash
+      description: Device hash.
+      type: String
+    - contextPath: Zimperium.Devices.deviceId
+      description: Device ID.
+      type: String
+    - contextPath: Zimperium.Devices.email
+      description: Email associated to the device.
+      type: String
+    - contextPath: Zimperium.Devices.externalTrackingId1
+      description: User pre defined Zimperium Tag.
+      type: String
+    - contextPath: Zimperium.Devices.externalTrackingId2
+      description: User pre defined Zimperium Tag.
+      type: String
+    - contextPath: Zimperium.Devices.firstName
+      description: Device owner first name.
+      type: String
+    - contextPath: Zimperium.Devices.lastName
+      description: Device owner last name.
+      type: String
+    - contextPath: Zimperium.Devices.middleName
+      description: Device owner middle name.
+      type: String
+    - contextPath: Zimperium.Devices.lastSeen
+      description: Device last seen time.
+      type: Date
+    - contextPath: Zimperium.Devices.mdmId
+      description: 'MDM ID, e.g., AirWatch, Mobile Iron.'
+      type: String
+    - contextPath: Zimperium.Devices.model
+      description: Device model.
+      type: String
+    - contextPath: Zimperium.Devices.operatorAlpha
+      description: Name of the mobile operator.
+      type: String
+    - contextPath: Zimperium.Devices.osBuild
+      description: OS build.
+      type: String
+    - contextPath: Zimperium.Devices.osSecurityPatch
+      description: OS security patch.
+      type: String
+    - contextPath: Zimperium.Devices.osType
+      description: OS type of the phone.
+      type: String
+    - contextPath: Zimperium.Devices.osUpgradeable
+      description: Whether the OS is upgradable.
+      type: bool
+    - contextPath: Zimperium.Devices.osVersion
+      description: OS version.
+      type: String
+    - contextPath: Zimperium.Devices.osVulnerable
+      description: Whether the OS is vulnerable.
+      type: bool
+    - contextPath: Zimperium.Devices.phoneNumber
+      description: Phone number.
+      type: String
+    - contextPath: Zimperium.Devices.processor
+      description: Device processor.
+      type: String
+    - contextPath: Zimperium.Devices.riskPosture
+      description: Device risk.
+      type: String
+    - contextPath: Zimperium.Devices.riskPostureCode
+      description: Device risk code.
+      type: Number
+    - contextPath: Zimperium.Devices.status
+      description: Device status.
+      type: String
+    - contextPath: Zimperium.Devices.statusCode
+      description: Device status code.
+      type: Number
+    - contextPath: Zimperium.Devices.systemToken
+      description: Device system token.
+      type: String
+    - contextPath: Zimperium.Devices.type
+      description: Device type.
+      type: String
+    - contextPath: Zimperium.Devices.updatedDate
+      description: Device updated date.
+      type: Date
+    - contextPath: Zimperium.Devices.userId
+      description: Device owner user ID.
+      type: String
+    - contextPath: Zimperium.Devices.version
+      description: Device version.
+      type: String
+    - contextPath: Zimperium.Devices.vulnerabilities
+      description: Device vulnerabilities.
+      type: String
+    - contextPath: Zimperium.Devices.zdid
+      description: Device ZD ID.
+      type: String
+    - contextPath: Zimperium.Devices.zipsDistributionVersion
+      description: zIPS distribution version.
+      type: String
+    - contextPath: Zimperium.Devices.zipsVersion
+      description: zIPS version.
+      type: String
+  - arguments:
+    - description: Application name.
+      name: app_name
+    - description: Application hash.
+      name: app_hash
+    description: Retrieves application classification.
+    name: zimperium-app-classification-get
+    outputs:
+    - contextPath: Zimperium.Application.classification
+      description: Application classification.
+      type: String
+    - contextPath: Zimperium.Application.deviceCount
+      description: Application device count.
+      type: Number
+    - contextPath: Zimperium.Application.hash
+      description: Application hash.
+      type: String
+    - contextPath: Zimperium.Application.metadata
+      description: Application metadata.
+      type: Unknown
+    - contextPath: Zimperium.Application.modifiedDate
+      description: Application modified date.
+      type: Date
+    - contextPath: Zimperium.Application.name
+      description: Application name.
+      type: String
+    - contextPath: Zimperium.Application.namespace
+      description: Application name space.
+      type: String
+    - contextPath: Zimperium.Application.objectId
+      description: Application object ID.
+      type: String
+    - contextPath: Zimperium.Application.privacyEnum
+      description: Application privacy enum.
+      type: Number
+    - contextPath: Zimperium.Application.privacyRisk
+      description: Application privacy risk.
+      type: String
+    - contextPath: Zimperium.Application.processState
+      description: Application process state.
+      type: String
+    - contextPath: Zimperium.Application.score
+      description: Application score (0 to 100). 0 is the best, 100 is the worst.
+      type: Number
+    - contextPath: Zimperium.Application.securityEnum
+      description: Application security enum.
+      type: Number
+    - contextPath: Zimperium.Application.securityRisk
+      description: Application security risk.
+      type: String
+    - contextPath: Zimperium.Application.systemToken
+      description: System token.
+      type: String
+    - contextPath: Zimperium.Application.type
+      description: Application type.
+      type: Number
+    - contextPath: Zimperium.Application.version
+      description: Application version.
+      type: String
+  - arguments:
+    - description: Bundle ID.
+      name: bundle_id
+    - description: iTunes ID.
+      name: itunes_id
+    - description: Application hash.
+      name: app_hash
+    - auto: PREDEFINED
+      defaultValue: android
+      description: Application platform.
+      name: platform
+      predefined:
+      - ios
+      - android
+    description: Gets a report.
+    name: zimperium-report-get
+    outputs:
+    - contextPath: Zimperium.Reports.app_analysis.analysis
+      description: Application analysis data.
+      type: Unknown
+    - contextPath: Zimperium.Reports.behavior.count_sms
+      description: The number of SMS messages.
+      type: Number
+    - contextPath: Zimperium.Reports.behavior.network.http_requests
+      description: Network related data.
+      type: Unknown
+    - contextPath: Zimperium.Reports.behavior.telephony
+      description: Standard permissions of the application.
+      type: Telephony related data.
+    - contextPath: Zimperium.Reports.certificate.app_signature
+      description: Application signature.
+      type: String
+    - contextPath: Zimperium.Reports.certificate.serial_number_app_instances
+      description: Application serial number.
+      type: Number
+    - contextPath: Zimperium.Reports.certificate.serial_number_risk_score
+      description: Application risk score.
+      type: Number
+    - contextPath: Zimperium.Reports.distribution
+      description: Related distribution data.
+      type: Unknown
+    - contextPath: Zimperium.Reports.md5
+      description: Application md5 hash.
+      type: String
+    - contextPath: Zimperium.Reports.risk_profile.detection_rate
+      description: Detection rate of the application.
+      type: String
+    - contextPath: Zimperium.Reports.risk_profile.intell_privacy
+      description: Privacy intelligence,
+      type: String
+    - contextPath: Zimperium.Reports.risk_profile.intell_security
+      description: Security intelligence.
+      type: String
+    - contextPath: Zimperium.Reports.risk_profile.overall_risk
+      description: Overall risk.
+      type: String
+    - contextPath: Zimperium.Reports.risk_profile.privacy.Category
+      description: Privacy category
+      type: String
+    - contextPath: Zimperium.Reports.risk_profile.privacy.Risk Level
+      description: Privacy risk level.
+      type: String
+    - contextPath: Zimperium.Reports.risk_profile.privacy.desc
+      description: Privacy description.
+      type: String
+    - contextPath: Zimperium.Reports.risk_profile.privacy_risk
+      description: Privacy risk.
+      type: Number
+    - contextPath: Zimperium.Reports.risk_profile.security.Category
+      description: Security category.
+      type: String
+    - contextPath: Zimperium.Reports.risk_profile.security.Risk Level
+      description: Security risk level.
+      type: String
+    - contextPath: Zimperium.Reports.risk_profile.security.desc
+      description: Security description.
+      type: String
+    - contextPath: Zimperium.Reports.risk_profile.security_risk
+      description: Security risk.
+      type: Number
+    - contextPath: Zimperium.Reports.threats.detected
+      description: Threats detected.
+      type: Number
+    - contextPath: Zimperium.Reports.threats.detected_skip
+      description: Number of Skipped detected threats.
+      type: Number
+    - contextPath: Zimperium.Reports.threats.status
+      description: Threats status.
+      type: String
+    - contextPath: Zimperium.Reports.threats.total
+      description: Total threats.
+      type: Number
+  - arguments:
+    - default: true
+      description: The MD5 hash of the file.
+      isArray: true
+      name: file
+      required: true
+    outputs:
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    description: Checks the reputation of an app in Zimperium.
+    name: file
+  dockerimage: demisto/python3:3.10.13.72123
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- Zimperium_Test
+- Test Convert file hash to corresponding hashes
+defaultmapperin: Zimperium-mapper
+defaultclassifier: Zimperium
