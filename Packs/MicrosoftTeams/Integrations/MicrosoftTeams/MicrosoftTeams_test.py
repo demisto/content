@@ -2364,9 +2364,7 @@ DUMMY_ASK_MESSAGE = {"message_text": "message", "options": ["option"], "entitlem
 def test_is_teams_ask_message(message, result):
     """
     Given:
-        - A message in json format that has the exact same keys as ms teams ask card keys.
-        - A message in json format that has all ms teams ask card keys and an extra key.
-        - A message that's not json format.
+        - input message string
     When:
         - Running is_teams_ask_message.
     Then:
