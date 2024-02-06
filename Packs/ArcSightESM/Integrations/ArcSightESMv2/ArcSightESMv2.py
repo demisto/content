@@ -249,6 +249,7 @@ def test():
 
 @logger
 def get_query_viewer_results(query_viewer_id):
+    demisto.debug(f"XSUP-29725: running get_query_viewer_results function")
     query_path = 'www/manager-service/rest/QueryViewerService/getMatrixData'
     params = {
         'authToken': AUTH_TOKEN,
@@ -256,7 +257,7 @@ def get_query_viewer_results(query_viewer_id):
         'alt': 'json'
     }
     res = send_request(query_path, params=params, method='get')
-
+    demisto.debug(f"XSUP-29725: len(res)={len(res)}")
     if not res.ok:
         demisto.debug(res.text)
         if 'ResourceNotFoundException' in res.text:
@@ -340,6 +341,8 @@ def get_query_viewer_results(query_viewer_id):
     ]
     """
     results = [{field: result.get('value')[idx].get('$') for idx, field in enumerate(fields)} for result in results]
+    if results:
+        demisto.debug(f"XSUP-29725: len(result): {len(results)}, results[-1]: {results[-1]}")
     return fields, results
 
 
@@ -373,24 +376,33 @@ def fetch():
     and converts them to Demisto incidents. We can query Cases or Events. If Cases are fetched then the
     query viewer query must return fields ID and Create Time. If Events are fetched then Event ID and Start Time.
     """
+    demisto.debug(f"XSUP-29725: running fetch function")
     events_query_viewer_id = demisto.params().get('viewerId')
     cases_query_viewer_id = demisto.params().get('casesQueryViewerId')
     type_of_incident = 'case' if events_query_viewer_id else 'event'
     last_run = json.loads(demisto.getLastRun().get('value', '{}'))
     already_fetched = last_run.get('already_fetched', [])
-
+    demisto.debug(f"XSUP-29725: {events_query_viewer_id=}, {cases_query_viewer_id=}, {type_of_incident=}, {last_run=}, {already_fetched=}")
     fields, query_results = get_query_viewer_results(events_query_viewer_id or cases_query_viewer_id)
     # sort query_results by creation time
     query_results.sort(key=lambda k: int(k.get('Start Time') or k.get('Create Time')))
-
+    if query_results:
+        demisto.debug(f"XSUP-29725: len(query_results): {len(query_results)}, query_results[0]: {query_results[0]}, query_results[-1]: {query_results[-1]}")
+    else:
+        demisto.debug(f"XSUP-29725: query_results is empty")
     incidents = []
     for result in query_results:
         # convert case or event to demisto incident
         r_id = result.get('ID') or result.get('Event ID')
+        demisto.debug(f"XSUP-29725: {r_id=}")
         if r_id not in already_fetched:
+            demisto.debug(f"XSUP-29725: r_id not in already_fetched")
             create_time_epoch = int(result.get('Start Time') or result.get('Create Time'))
+            demisto.debug(f"XSUP-29725: {create_time_epoch=}")
             result['Create Time'] = parse_timestamp_to_datestring(create_time_epoch)
+            demisto.debug(f"XSUP-29725: {result['Create Time']=}")
             incident_name = result.get('Name') or f'New {type_of_incident} from arcsight at {datetime.now()}'
+            demisto.debug(f"XSUP-29725: {incident_name=}")
             labels = [{'type': key.encode('utf-8'), 'value': value.encode('utf-8') if value else value} for key, value
                       in result.items()]
             incident = {
@@ -401,8 +413,11 @@ def fetch():
             }
 
             incidents.append(incident)
+            demisto.debug(f"XSUP-29725: len(incidents)={len(incidents)}")
 
             if len(already_fetched) > MAX_UNIQUE:
+                demisto.debug(f"XSUP-29725: len(already_fetched={len(already_fetched)}")
+                demisto.debug(f"XSUP-29725: already_fetched[0]={already_fetched[0]}")
                 already_fetched.pop(0)
             already_fetched.append(r_id)
 
@@ -412,9 +427,10 @@ def fetch():
     last_run = {
         'already_fetched': already_fetched,
     }
+    demisto.debug(f"XSUP-29725: {last_run=}")
     demisto.setLastRun({'value': json.dumps(last_run)})
     decode_arcsight_output(incidents)
-
+    demisto.debug(f"XSUP-29725: incidents[-1] after decode_arcsight_output: {incidents[-1]}")
     if demisto.command() == 'as-fetch-incidents':
         contents = {
             'last_run': last_run,
@@ -950,7 +966,7 @@ def main():
     AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token') or login()
 
     use_detect_api = demisto.params().get('productVersion') == '7.4 and above'
-
+    demisto.debug(f"XSUP-29725: command being run: {demisto.command()}")
     try:
         if demisto.command() == 'test-module':
             test()
