@@ -1,4 +1,5 @@
 import pytest  # noqa: F401
+import json
 import demistomock as demisto  # noqa: F401
 import EclecticIQIntelligenceCenterv3
 from datetime import datetime
@@ -462,3 +463,49 @@ def test_create_outgoing_feed(mocker):
     response = client.create_outgoing_feed("CSV Observables", "8", "New Feed", "http download", "REPLACE", "testing Group")
 
     assert response == "123321"
+
+
+def test_lookup_observable(mocker):
+    mock_response = mocker.Mock()
+    mock_response.text = json.dumps({
+          "count": 1,
+          "data": [
+            {
+              "created_at": "2023-05-24T16:52:29.715750+00:00",
+              "entities": [
+                "https://ic-playground.eclecticiq.com/api/v2/entities/4de74eae-68fd-427b-808c-45dc7fb8c650",
+                "https://ic-playground.eclecticiq.com/api/v2/entities/dfd0d6ae-7dd6-435f-ab73-66088b46ea7c"
+              ],
+              "id": 2,
+              "last_updated_at": "2024-01-29T07:42:07.059329+00:00",
+              "meta": {
+                "maliciousness": "low"
+              },
+              "sources": [
+                "https://ic-playground.eclecticiq.com/api/v2/sources/5601ee2a-f85a-4b14-a626-00052600b313",
+                "https://ic-playground.eclecticiq.com/api/v2/sources/0ce29afd-bdac-47bd-9f11-f6a4f479bc1c"
+              ],
+              "type": "ipv4",
+              "value": "1.1.1.1"
+            }
+          ],
+          "limit": 100,
+          "offset": 0,
+          "total_count": 1
+        })
+
+    mocker.patch("EclecticIQIntelligenceCenterv3.EclecticIQ_api.get_outh_token", platform_auth_mock_response)
+
+    client = EclecticIQ_api(baseurl=SERVER,
+                            eiq_api_version=API_VERSION,
+                            username="",
+                            password=PASSWORD,
+                            verify_ssl=USE_SSL)
+
+    mocker.patch.object(client, 'get_group_name', return_value={"name":"Testing", "type":"user"})
+    mocker.patch.object(client, 'send_api_request', return_value=mock_response)
+
+    response = client.lookup_observable("1.1.1.1", "ipv4")
+
+    assert response['type'] == 'ipv4'
+    assert response['source_name'] == 'user: Testing; user: Testing; '
