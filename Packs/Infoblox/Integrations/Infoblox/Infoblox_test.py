@@ -14,6 +14,7 @@ from Infoblox import (
     INTEGRATION_IPV4_CONTEXT_NAME,
     INTEGRATION_MAX_RESULTS_DEFAULT,
     INTEGRATION_NETWORK_INFO_CONTEXT_KEY,
+    INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY,
     IPv4AddressStatus,
     InfoBloxNIOSClient,
     InvalidIPAddress,
@@ -306,7 +307,7 @@ class TestHelperFunctions:
         assert len(actual) == 1
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual[0]
         assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual[0]
-        assert INTEGRATION_NETWORK_INFO_CONTEXT_KEY in actual[0]
+        assert INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY in actual[0]
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual[0]
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in actual[0]
 
@@ -324,7 +325,7 @@ class TestHelperFunctions:
         assert len(actual) == 2
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual[1]
         assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual[1]
-        assert INTEGRATION_NETWORK_INFO_CONTEXT_KEY in actual[1]
+        assert INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY in actual[1]
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual[1]
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY in actual[1]
 
@@ -877,7 +878,7 @@ class TestNetworkInfoOperations:
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual_output[0]
-        assert INTEGRATION_NETWORK_INFO_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in actual_output[0]
 
         assert actual_raw_response == json.loads(mock_response)
@@ -919,7 +920,7 @@ class TestNetworkInfoOperations:
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual_output[0]
-        assert INTEGRATION_NETWORK_INFO_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in actual_output[0]
 
         assert actual_raw_response == json.loads(mock_response)
@@ -972,8 +973,8 @@ class TestNetworkInfoOperations:
         assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual_output[1]
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual_output[1]
-        assert INTEGRATION_NETWORK_INFO_CONTEXT_KEY in actual_output[0]
-        assert INTEGRATION_NETWORK_INFO_CONTEXT_KEY in actual_output[1]
+        assert INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY in actual_output[1]
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY in actual_output[1]
 
