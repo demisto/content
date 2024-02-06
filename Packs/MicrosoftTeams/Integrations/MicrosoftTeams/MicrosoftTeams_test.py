@@ -2371,8 +2371,8 @@ def test_is_teams_ask_message(message, result):
         - Assert that the message is a legit ms teams ask message (from ms teams ask script flow).
         - Assert that the message is not a message from ms teams ask script.
         - Assert that the message is not a message from ms teams ask script.
-    If the test fails, please update the MS_TEAMS_ASK_MESSAGE_KEYS constant in MicrosoftTeams, and update the is_valid_card_keys
-     test in MsTeamsAsk script.
+    If the test fails, please update the first message param in the test to have the same keys as MS_TEAMS_ASK_MESSAGE_KEYS
+     constant in MicrosoftTeams.
     """
     from MicrosoftTeams import is_teams_ask_message
 
