@@ -507,7 +507,7 @@ def process_mirror_or_unknown_message(message: str) -> dict:
 def is_teams_ask_message(msg: str) -> bool:
     try:
         message: dict = json.loads(msg)
-        return MS_TEAMS_ASK_MESSAGE_KEYS == message.keys()
+        return set(message.keys()) == MS_TEAMS_ASK_MESSAGE_KEYS 
     except json.decoder.JSONDecodeError:
         return False
 

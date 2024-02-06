@@ -2353,25 +2353,22 @@ def test_handle_teams_proxy_and_ssl(mocker, is_xsoar_8, expected_result):
     assert (proxies, use_ssl) == expected_result
 
 
+
+DUMMY_ASK_MESSAGE = {"message_text": "message", "options": ["option"], "entitlement": "id", "investigation_id": "inv_id", "task_id": "task", "form_type": "form"}
+
 @pytest.mark.parametrize('message, result', [
-    ('{"message_text": "message", "options": ["option"], "entitlement": "id", "investigation_id": "inv_id", "task_id": "task", '
-     '"form_type": "form"}', True),
-    ('{"message_text": "message", "options": ["option"], "entitlement": "id", "investigation_id": "inv_id", "task_id": "task",'
-     ' "form_type": "form", "extra_key": "extra"}', False),
+    (json.dumps(DUMMY_ASK_MESSAGE), True),
+    (json.dumps(DUMMY_ASK_MESSAGE | {"extra_key": "extra"}), False),
     ("non json message", False)
 ])
 def test_is_teams_ask_message(message, result):
     """
     Given:
-        - A message in json format that has the exact same keys as ms teams ask card keys.
-        - A message in json format that has all ms teams ask card keys and an extra key.
-        - A message that's not json format.
+        - input message string
     When:
         - Running is_teams_ask_message.
     Then:
-        - Assert that the message is a legit ms teams ask message (from ms teams ask script flow).
-        - Assert that the message is not a message from ms teams ask script.
-        - Assert that the message is not a message from ms teams ask script.
+        - Assert only ask_teams messages return True
     If the test fails, please update the first message param in the test to have the same keys as MS_TEAMS_ASK_MESSAGE_KEYS
      constant in MicrosoftTeams.
     """
