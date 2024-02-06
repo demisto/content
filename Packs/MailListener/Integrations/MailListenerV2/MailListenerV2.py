@@ -272,7 +272,7 @@ def fetch_incidents(client: IMAPClient,
         demisto.debug(f"no last_run, using {time_to_fetch_from=}")
 
     # Otherwise use the mail UID
-    uid_to_fetch_from = last_run.get('last_uid', 0)
+    uid_to_fetch_from = arg_to_number(last_run.get('last_uid', 0))
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
         client=client,
         include_raw_body=include_raw_body,
@@ -282,13 +282,13 @@ def fetch_incidents(client: IMAPClient,
         permitted_from_addresses=permitted_from_addresses,
         permitted_from_domains=permitted_from_domains,
         save_file=save_file,
-        uid_to_fetch_from=uid_to_fetch_from
+        uid_to_fetch_from=uid_to_fetch_from     # type: ignore[arg-type]
     )
     incidents = []
     for mail in mails_fetched:
         incidents.append(mail.convert_to_incident())
         uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
-    next_run = {'last_uid': uid_to_fetch_from}
+    next_run = {'last_uid': str(uid_to_fetch_from)}
     if delete_processed:
         client.delete_messages(messages)
     return next_run, incidents
