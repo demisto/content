@@ -3,13 +3,14 @@ from CommonServerPython import entryTypes
 import demistomock as demisto
 import json
 import pytest
-from Packs.MicrosoftTeams.Integrations.MicrosoftTeams.MicrosoftTeams import MS_TEAMS_ASK_MESSAGE_KEYS
+
+MS_TEAMS_ASK_MESSAGE_KEYS = {'message_text', 'options', 'entitlement', 'investigation_id', 'task_id', 'form_type'}
 
 
 def execute_command(name, args=None):
     """
-    if assert MS_TEAMS_ASK_MESSAGE_KEYS == json_message.keys() test fails, update the MS_TEAMS_ASK_MESSAGE_KEYS constant in
-     MicrosoftTeams to have the same keys as the message keys in the MsTeamsAsk script and the test.
+    if assert MS_TEAMS_ASK_MESSAGE_KEYS == json_message.keys() test fails, update the MS_TEAMS_ASK_MESSAGE_KEYS constant
+     to have the same keys as the message keys in the MsTeamsAsk script and the test.
     """
     if name == 'addEntitlement':
         return [
