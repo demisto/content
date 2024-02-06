@@ -15,7 +15,7 @@ from typing import Any
 
 from requests import Response
 
-from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
+from Tests.Marketplace.marketplace_services import init_storage_client, Pack, is_pack_modified, \
     load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
     json_write
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
@@ -933,7 +933,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
             pack_or_dependency_was_uploaded = any(dep_pack.status == PackStatus.SUCCESS.name for dep_pack in
                                                   pack_and_its_dependencies)
             if pack_or_dependency_was_uploaded:
-                logging.debug(f"Starting to collect pack with dependencies for pack '{pack_name}'. {pack_and_its_dependencies=}")
+                logging.debug(f"Starting to collect pack with dependencies for pack '{pack_name}'. "
+                              f"pack_and_its_dependencies={[p.name for p in pack_and_its_dependencies]}")
                 pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
                 zip_with_deps_path = os.path.join(pack.path, f"{pack_name}_with_dependencies.zip")
                 upload_path = os.path.join(storage_base_path, pack_name, f"{pack_name}_with_dependencies.zip")
@@ -942,6 +943,11 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                     if current_pack.hidden:
                         continue
                     logging.debug(f"Starting to collect zip of pack {current_pack.name}")
+                    if current_pack.status and current_pack.status not in [PackStatus.SUCCESS.name, *SKIPPED_STATUS_CODES]:
+                        pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
+                        logging.debug(f"Skipping uploading {pack.name} with its dependencies since dependency pack "
+                                      f"{current_pack.name} has failed to upload")
+                        break
                     # zip the pack and each of the pack's dependencies (or copy existing zip if was already zipped)
                     if not (current_pack.zip_path and os.path.isfile(current_pack.zip_path)):
                         # the zip does not exist yet, zip the current pack
@@ -953,7 +959,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                             break
                     shutil.copy(current_pack.zip_path, os.path.join(pack_with_dep_path, current_pack.name + ".zip"))
                 if pack.status == PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name:
-                    break
+                    continue
 
                 logging.debug(f"Zipping {pack_name} with its dependencies")
                 Pack.zip_folder_items(pack_with_dep_path, pack_with_dep_path, zip_with_deps_path)
@@ -1201,7 +1207,7 @@ def main():
 
     # list of packs to iterate on over and upload/update them in bucket
     all_packs_objects_list = [Pack(pack_id, os.path.join(extract_destination_path, pack_id),
-                                   is_modified=pack_id in pack_ids_to_upload)
+                                   is_modified=is_pack_modified(pack_id, content_repo, index_folder_path, pack_ids_to_upload))
                               for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
 
     # if it's not a regular upload-flow, then upload only collected/modified packs
