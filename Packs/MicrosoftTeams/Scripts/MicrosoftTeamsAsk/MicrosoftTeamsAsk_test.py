@@ -9,7 +9,7 @@ from Packs.MicrosoftTeams.Integrations.MicrosoftTeams.MicrosoftTeams import MS_T
 def execute_command(name, args=None):
     """
     if assert MS_TEAMS_ASK_MESSAGE_KEYS == json_message.keys() test fails, update the MS_TEAMS_ASK_MESSAGE_KEYS constant in
-     MicrosoftTeams to have the same keys as the message keys in the test.
+     MicrosoftTeams to have the same keys as the message keys in the MsTeamsAsk script and the test.
     """
     if name == 'addEntitlement':
         return [
