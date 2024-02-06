@@ -74,7 +74,7 @@ def test_with_non_image_file(mocker: MockerFixture):
         extract_info_from_qr_code('entry_id')
 
 
-def test_read_qr_code_multiple_codes(mocker: MockerFixture):
+def test_read_qr_code_multiple_codes():
     """
     Given:
         An image that has multiple QR codes.
