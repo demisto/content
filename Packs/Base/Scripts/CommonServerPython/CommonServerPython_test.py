@@ -9284,7 +9284,8 @@ def test_create_clickable_url_list_of_urls_with_list_of_text():
             A list of URLs with different texts than the links.
     """
     from CommonServerPython import create_clickable_url
-    assert create_clickable_url(['https://example1.com', 'https://example2.com'], ['click here1', 'click here2']) == ['[click here1](https://example1.com)', '[click here2](https://example2.com)']
+    expected = ['[click here1](https://example1.com)', '[click here2](https://example2.com)']
+    assert create_clickable_url(['https://example1.com', 'https://example2.com'], ['click here1', 'click here2']) == expected
 
 
 def test_create_clickable_url_list_of_urls_without_text():
@@ -9298,7 +9299,8 @@ def test_create_clickable_url_list_of_urls_without_text():
             A list URLs without texts as the links.
     """
     from CommonServerPython import create_clickable_url
-    assert create_clickable_url(['https://example1.com', 'https://example2.com'], None) == ['[https://example1.com](https://example1.com)', '[https://example2.com](https://example2.com)']
+    expected = ['[https://example1.com](https://example1.com)', '[https://example2.com](https://example2.com)']
+    assert create_clickable_url(['https://example1.com', 'https://example2.com'], None) == expected
 
 
 def test_create_clickable_test_wrong_text_value():

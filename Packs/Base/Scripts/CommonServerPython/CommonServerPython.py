@@ -2018,7 +2018,7 @@ def url_to_clickable_markdown(data, url_keys):
     return data
 
 
-def create_clickable_url(url, text = None):
+def create_clickable_url(url, text=None):
     """
     Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
 
