@@ -400,7 +400,7 @@ class BucketVerifier:
 
         # TODO: need to cause this pack to fail in another way because the current way cause validation to fail
         # Case 8: Verify failing pack - Absolute
-        # self.verify_failed_pack('Absolute')
+        self.verify_failed_pack('Absolute')
 
         # Case 9: Verify changed image - Armis
         self.verify_new_image('Armis', Path(

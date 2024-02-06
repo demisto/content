@@ -307,7 +307,7 @@ def do_changes_on_branch(packs_path: Path):
 
     # TODO: need to cause this pack to fail in another way because the current way cause validation to fail
     # Case 8: Verify failing pack - Absolute
-    # create_failing_pack(packs_path / 'Absolute')
+    create_failing_pack(packs_path / 'Absolute')
 
     # Case 9: Verify changed image - Armis
     change_image(packs_path / 'Armis')
