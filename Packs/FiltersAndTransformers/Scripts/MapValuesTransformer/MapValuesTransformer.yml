@@ -24,14 +24,13 @@ comment: |-
 
   input_values ="firstkey: datahere,secondkey: datathere"
   mapper_values = "datathere,datahere"
-  value(dict)= {
-                                  "firstkey": "datahere"
-                            }
+  value(dict) = \{
+                   "firstkey": "datahere"
+                 }
 
-  Output would be:
-                            {
-                                  "firstkey": "datathere"
-                             }
+  Output would be: \{
+                      "firstkey": "datathere"
+                    }
 
   The reason for matching the key AND value pair in a dictionary is to allow the mappig of values that have a specific key name. In most cases, dictionaries will continan key-value pairs in which the values are the same. You might want to change the value of KeyA, but not the value of KeyB. This method gives control over which key is changed.
 

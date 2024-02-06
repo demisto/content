@@ -6,10 +6,10 @@ description: |-
   Enrich URLs using one or more integrations.
 
   URL enrichment includes:
-  * SSL verification for URLs.
-  * Threat information.
-  * Providing of URL screenshots.
-  * URL Reputation using !url.
+   * SSL verification for URLs.
+   * Threat information.
+   * Providing of URL screenshots.
+   * URL Reputation using !url.
 starttaskid: "0"
 tasks:
   "0":

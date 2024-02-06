@@ -6,10 +6,10 @@ description: |-
   Deprecated. Use "URL Enrichment - Generic v2" playbook instead. Enrich URL using one or more integrations.
 
   URL enrichment includes:
-  * Verify URL SSL
-  * Threat information
-  * URL reputaiton
-  * Take URL screenshot
+   * Verify URL SSL
+   * Threat information
+   * URL reputaiton
+   * Take URL screenshot
 starttaskid: "0"
 hidden: true
 tasks:

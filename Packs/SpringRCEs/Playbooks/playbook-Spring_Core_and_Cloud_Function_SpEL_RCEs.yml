@@ -8,38 +8,38 @@ description: |
 
   Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
 
-  **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell**
+   **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell**
 
-  **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL"**
+   **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL"**
 
-  **CVE-2022-22947 - RCE in "Spring Cloud Gateway"**
+   **CVE-2022-22947 - RCE in "Spring Cloud Gateway"**
 
-  **Spring Core vulnerability requirements:**
+   **Spring Core vulnerability requirements:**
 
-  * JDK 9 or higher
-  * Apache Tomcat as the Servlet container
-  * Packaged as WAR
-  * spring-webmvc or spring-webflux dependency
-  * Spring Framework versions 5.3.0 to 5.3.17, 5.2.0 to 5.2.19, and older versions
+   * JDK 9 or higher
+   * Apache Tomcat as the Servlet container
+   * Packaged as WAR
+   * spring-webmvc or spring-webflux dependency
+   * Spring Framework versions 5.3.0 to 5.3.17, 5.2.0 to 5.2.19, and older versions
 
-  **Spring Cloud Function unaffected versions:**
+   **Spring Cloud Function unaffected versions:**
 
-  * 3.1.7
-  * 3.2.3
+   * 3.1.7
+   * 3.2.3
 
-  **This playbook will provide you with a first response kit which includes:**
+   **This playbook will provide you with a first response kit which includes:**
 
-  * Hunting
-      * Panorama
-      * Prisma Cloud Compute
-      * XDR XQL queries - set the playbook input **RunXQLHuntingQueries** to 'True' if you would like the XQL to be executed via the playbook.
-      * XDR Alerts - Search for new incidents including one or more of Spring RCEs dedicated Cortex XDR signatures
-  * Remediation
-  * Mitigations
+   * Hunting
+       * Panorama
+       * Prisma Cloud Compute
+       * XDR XQL queries - set the playbook input **RunXQLHuntingQueries** to 'True' if you would like the XQL to be executed via the playbook.
+       * XDR Alerts - Search for new incidents including one or more of Spring RCEs dedicated Cortex XDR signatures
+   * Remediation
+   * Mitigations
 
-  **Note:** You can execute this playbook using the Incidents view by creating a new incident or by using a dedicated job to schedule the playbook execution.
+   **Note:** You can execute this playbook using the Incidents view by creating a new incident or by using a dedicated job to schedule the playbook execution.
 
-  **Additional resources:**
+   **Additional resources:**
 
   [Spring Framework RCE](https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement)
 

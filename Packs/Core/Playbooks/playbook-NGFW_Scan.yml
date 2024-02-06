@@ -4,35 +4,35 @@ name: NGFW Scan
 description: |-
   This playbook handles external and internal scanning alerts.
 
-  **Attacker's Goals:**
+   **Attacker's Goals:**
 
   Adversaries may attempt to get a listing of services running on remote hosts, including those that may be vulnerable to remote software exploitation. Methods to acquire this information include port scans and vulnerability scans using tools that are brought onto a system.
 
-  **Investigative Actions:**
+   **Investigative Actions:**
 
   Investigate the scanner IP address using:
 
-  * IP enrichment:
-  * NGFW Internal Scan playbook
-  * Endpoint Investigation Plan playbook
-  * Entity enrichment
+   * IP enrichment:
+   * NGFW Internal Scan playbook
+   * Endpoint Investigation Plan playbook
+   * Entity enrichment
 
-  **Response Actions**
+   **Response Actions**
 
   The playbook's response actions are based on the initial data provided within the alert. In that phase, the playbook will execute:
 
-  * Automatically block IP address
-  * Report IP address (If configured as true in the playbook inputs)
+   * Automatically block IP address
+   * Report IP address (If configured as true in the playbook inputs)
 
   When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan playbook, is executed.
   This phase will execute the following containment actions:
 
-  * Automatically isolate involved endpoint
-  * Manual block indicators
-  * Manual file quarantine
-  * Manual disable user
+   * Automatically isolate involved endpoint
+   * Manual block indicators
+   * Manual file quarantine
+   * Manual disable user
 
-  **External resources:**
+   **External resources:**
 
   [Mitre technique T1046 - Network Service Scanning](https://attack.mitre.org/techniques/T1046/)
 
