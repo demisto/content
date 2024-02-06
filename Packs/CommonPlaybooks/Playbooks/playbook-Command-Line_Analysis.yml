@@ -1113,6 +1113,12 @@ tasks:
                 value:
                   simple: inputs.Commandline
                 iscontext: true
+          - operator: RemoveEmpty
+            args:
+              empty_values: { }
+              remove_keys:
+                value:
+                  simple: "true"
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
@@ -1792,9 +1798,6 @@ outputs:
 - contextPath: commandline.decoded
   description: The decoded command line.
   type: unknown
-- contextPath: CommandlineVerdict
-  description: The command line verdict.
-  type: unknown
 - contextPath: IP
   description: The IP object.
   type: unknown
@@ -1806,6 +1809,27 @@ outputs:
   type: unknown
 - contextPath: Domain
   description: The domain object.
+  type: unknown
+- contextPath: CommandlineVerdict.base64
+  description: Command line verdict base64 was found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.suspiciousParameters
+  description: Command line verdict suspicious parameters found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.AMSI
+  description: Command line verdict AMSI found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.foundIndicators
+  description: Command line verdict foundIndicators found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.maliciousTools
+  description: Command line verdict maliciousTools found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.networkActivity
+  description: Command line verdict networkActivity found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.SuspiciousLolbinExecution
+  description: Command line verdict SuspiciousLolbinExecution found. True/False
   type: unknown
 tests:
   - no tests

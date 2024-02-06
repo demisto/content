@@ -90,6 +90,24 @@ script:
       name: initial-priority
     - description: Ticket final priority, given as number in the range 0-100.
       name: final-priority
+    - description: Ticket MemberOF ID.
+      isArray: true
+      name: member-of
+    - description: Ticket Members ID.
+      isArray: true
+      name: members
+    - description: Ticket DependedOn ID.
+      isArray: true
+      name: depends-on
+    - description: Ticket DependedOnBy ID.
+      isArray: true
+      name: depended-on-by
+    - description: Ticket RefersTo ID.
+      isArray: true
+      name: refers-to
+    - description: Ticket ReferredToBy ID.
+      isArray: true
+      name: referred-to-by
     - description: Attachment to add to the ticket, given as Entry ID. Comma-separated values supported, e.g., entryID1,entryID2.
       isArray: true
       name: attachment
@@ -219,6 +237,24 @@ script:
       name: status
     - description: Ticket due date, in format of YYYY-MM-DD, e.g. 2011-02-24.
       name: due
+    - description: Ticket MemberOF ID.
+      isArray: true
+      name: member-of
+    - description: Ticket Members ID.
+      isArray: true
+      name: members
+    - description: Ticket DependedOn ID.
+      isArray: true
+      name: depends-on
+    - description: Ticket DependedOnBy ID.
+      isArray: true
+      name: depended-on-by
+    - description: Ticket RefersTo ID.
+      isArray: true
+      name: refers-to
+    - description: Ticket ReferredToBy ID.
+      isArray: true
+      name: referred-to-by
     - description: 'Ticket custom fields, given in format: field1=value1,field2=value2, e.g. IP=8.8.8.8,HowReported=Email. Note: the command does not create custom fields, these should be created on RTIR.'
       name: customfields
     description: Modify a ticket on RTIR.
@@ -396,7 +432,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.80014
+  dockerimage: demisto/python3:3.10.13.85667
 tests:
 - RTIR Test
 fromversion: 5.0.0

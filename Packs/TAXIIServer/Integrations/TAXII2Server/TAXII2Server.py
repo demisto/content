@@ -545,7 +545,7 @@ def handle_response(status_code: int, content: dict, date_added_first: str = Non
     return make_response(jsonify(content), status_code, headers)
 
 
-def create_query(query: str, types: list[str]) -> str:
+def create_query(query: str, types: list[str], added_after: str) -> str:
     """
     Args:
         query: collections query
@@ -569,9 +569,8 @@ def create_query(query: str, types: list[str]) -> str:
             new_query += f' and ({or_part})'
 
         demisto.debug(f'modified query, after adding types: {new_query}')
-        return new_query
-    else:
-        return query
+        query = new_query
+    return f'{query} and modified:>="{added_after}"'
 
 
 def find_indicators(query: str, types: list, added_after, limit: int, offset: int, is_manifest: bool = False) -> tuple:
@@ -586,7 +585,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
 
     Returns: Created indicators and its extensions.
     """
-    new_query = create_query(query, types)
+    new_query = create_query(query, types, added_after)
     new_limit = offset + limit
     iocs = []
     extensions = []
@@ -606,7 +605,6 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
         query=new_query,
         limit=new_limit,
         size=PAGE_SIZE,
-        from_date=added_after,
         sort=[{"field": "modified", "asc": True}],
     )
 
