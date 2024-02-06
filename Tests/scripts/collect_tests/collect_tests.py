@@ -1453,11 +1453,11 @@ def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[set, set]:  # TODO
     for pack_id in packs_to_upload:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
         logger.info(f"{pack_metadata=}")
-        pack_path = pack_metadata.pack_path
+        pack_path = PACK_MANAGER.relative_to_packs(pack_metadata.pack_path)
         logger.info(f"{pack_path=}")
 
         current_version = pack_metadata.get('currentVersion', '')
-        if (pack_path / f"{current_version.replace('.', '_')}.md" not in changed_files
+        if (pack_path / f"ReleaseNotes/{current_version.replace('.', '_')}.md" not in changed_files
                 and pack_path / "pack_metadata.json" in changed_files):
             packs_to_update.add(pack_id)
 
