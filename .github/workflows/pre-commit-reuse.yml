@@ -41,7 +41,7 @@ jobs:
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
       run: |
         source .venv/bin/activate
-        demisto-sdk pre-commit -a xsoar-linter  -v
+        demisto-sdk pre-commit -a xsoar-lint  -v
 
     - name: "Check coverage.xml exists"
       if: always()
