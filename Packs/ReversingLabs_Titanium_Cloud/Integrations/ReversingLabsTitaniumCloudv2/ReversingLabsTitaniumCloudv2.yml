@@ -289,7 +289,7 @@ script:
     - contextPath: ReversingLabs.analyze_url
       description: The URL analysis.
       type: Unknown
-  - name: reversinglabs-titaniumcloud-submit-for-dynamic-analysis
+  - name: reversinglabs-titaniumcloud-submit-sample-for-dynamic-analysis
     description: Submit an existing sample for dynamic analysis.
     arguments:
     - name: sha1
@@ -303,13 +303,24 @@ script:
     - contextPath: ReversingLabs.detonate_sample_dynamic
       description: The dynamic analysis.
       type: Unknown
-  - name: reversinglabs-titaniumcloud-get-dynamic-analysis-results
-    description: Retrieve dynamic analysis results.
+  - name: reversinglabs-titaniumcloud-get-sample-dynamic-analysis-results
+    description: Retrieve dynamic analysis results for a sample.
     arguments:
     - name: sha1
       description: Sample SHA-1 hash.
       default: true
       required: true
+    - name: analysis_id
+      description: ID of a specific analysis to fetch.
+      required: false
+    - name: latest_analysis
+      description: Fetch the latest analysis.
+      required: false
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
     outputs:
     - contextPath: File.MD5
       description: MD5 hash.
@@ -332,9 +343,64 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
-    - contextPath: ReversingLabs.dynamic_analysis_results
-      description: The dynamic analysis results.
+    - contextPath: ReversingLabs.sample_dynamic_analysis_results
+      description: The sample dynamic analysis results.
       type: Unknown
+  - name: reversinglabs-titaniumcloud-submit-url-for-dynamic-analysis
+    description: Submit a URL for dynamic analysis.
+    arguments:
+      - name: url
+        description: URL string.
+        default: true
+        required: true
+      - name: platform
+        description: Desired platform; See the API documentation for possible values.
+        required: true
+    outputs:
+      - contextPath: ReversingLabs.detonate_url_dynamic
+        description: The dynamic analysis.
+        type: Unknown
+  - name: reversinglabs-titaniumcloud-get-url-dynamic-analysis-results
+    description: Retrieve dynamic analysis results for a URL.
+    arguments:
+      - name: sha1
+        description: URL SHA-1 hash. It can be found in the response while submitting the URL for analysis. Mutually exclusive with url.
+        default: false
+        required: false
+      - name: url
+        description: The requested URL- Mutually exclusive with sha1.
+        default: false
+        required: false
+      - name: analysis_id
+        description: ID of a specific analysis to fetch.
+        required: false
+      - name: latest_analysis
+        description: Fetch the latest analysis.
+        required: false
+        auto: PREDEFINED
+        defaultValue: 'false'
+        predefined:
+          - 'true'
+          - 'false'
+    outputs:
+      - contextPath: URL.Data
+        description: The URL.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: ReversingLabs.url_dynamic_analysis_results
+        description: The URL dynamic analysis results.
+        type: Unknown
   - name: reversinglabs-titaniumcloud-certificate-analytics
     description: Retrieve certificate analytics.
     arguments:
@@ -728,7 +794,7 @@ script:
     - contextPath: ReversingLabs.network_reputation_overrides_list
       description: Network reputation overrides list.
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.80178
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.86428
   runonce: false
   script: '-'
   subtype: python3
