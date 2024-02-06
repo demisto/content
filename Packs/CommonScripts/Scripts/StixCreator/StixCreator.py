@@ -86,8 +86,9 @@ HASH_TYPE_TO_STIX_HASH_TYPE = {  # pragma: no cover
 
 
 def search_related_indicators(value: str) -> list[dict]:
-    relationships = demisto.searchRelationships({"entities": [value]}).get("data", [])
-
+    demisto.debug(f"in search related indicators with: {value}")
+    relationships = demisto.searchRelationships({"entities": [value]}).get("data", []) or []
+    demisto.debug(f"found relationships: {relationships}")
     query = ""
     for rel in relationships:
         entity_a = rel.get("entityA", "").lower()
@@ -104,10 +105,12 @@ def search_related_indicators(value: str) -> list[dict]:
         demisto.info(f"No relevant relationship found for indicator: {value}")
         return []
     demisto_indicators = demisto.searchIndicators(query=query).get("iocs", [])
+    demisto.debug(f"found {len(demisto_indicators)} related indicators: {demisto_indicators}")
     return demisto_indicators
 
 
 def get_indicators_stix_ids(value: str, indicator_type: str, indicators: list[dict]) -> list[str]:
+    demisto.debug(f"in get_indicators_stix_ids with : {indicators}")
     stix_ids = []
     for indicator in indicators:
         if stix_id := indicator.get("stixid"):
@@ -125,6 +128,7 @@ def get_indicators_stix_ids(value: str, indicator_type: str, indicators: list[di
                 continue
             demisto.debug(f"Created stix id: {stix_id} for indicator: {indicator}")
         stix_ids.append(stix_id)
+    demisto.debug(f"returned {len(stix_ids)} stix_ids: {stix_ids}")
     return stix_ids
 
 
@@ -351,6 +355,7 @@ def main():
                         kwargs['is_family'] = argToBoolean(xsoar_indicator.get('ismalwarefamily', 'False').lower())
 
                     if indicator_type == 'report':
+                        demisto.debug(f"type is report with xsoar_indicator: {xsoar_indicator}")
                         kwargs['published'] = dateparser.parse(xsoar_indicator.get('timestamp', ''))
 
                         related_indicators = search_related_indicators(value)
