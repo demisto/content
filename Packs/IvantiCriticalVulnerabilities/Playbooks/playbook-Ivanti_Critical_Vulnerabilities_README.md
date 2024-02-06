@@ -43,11 +43,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Panorama Query Logs
 * Entity Enrichment - Generic v3
+* Search Endpoint by CVE - Generic
 * Threat Hunting - Generic
 * Rapid Breach Response - Set Incident Info
-* Search Endpoint by CVE - Generic
-* Panorama Query Logs
 * Block Indicators - Generic v3
 
 ### Integrations
@@ -60,10 +60,9 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* closeInvestigation
+* extractIndicators
 * expanse-get-issues
 * createNewIndicator
-* extractIndicators
 
 ## Playbook Inputs
 
@@ -75,7 +74,6 @@ This playbook does not use any integrations.
 | autoBlockIndicators | Wether to block the indicators automatically. | False | Optional |
 | QRadarTimeRange | QRadar hunting time range. | LAST 14 DAYS | Optional |
 | SplunkEarliestTime | Splunk hunting earliest time. | -14d@d | Optional |
-| ShouldCloseAutomatically | Whether to close the incident automatically. | True | Optional |
 | ShouldPauseForMitigation | Whether to wait for the analyst's response for the mitigation phase or let the playbook continue with the automated flow. | False | Optional |
 
 ## Playbook Outputs

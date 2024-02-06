@@ -273,7 +273,7 @@ tasks:
         simple: ${ExtractedIndicators.Domain}
       verdict:
         simple: Malicious
-    reputationcalc: 2
+    reputationcalc: 1
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -425,51 +425,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
-    taskid: 7897a924-b8ad-4cdd-8369-76429ed2e436
-    type: condition
-    task:
-      id: 7897a924-b8ad-4cdd-8369-76429ed2e436
-      version: -1
-      name: Should close the investigation?
-      description: Whether to continue with the investigation or close it.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "41"
-      "yes":
-      - "50"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.ShouldCloseAutomatically
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -744,37 +699,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
-    taskid: 62be319d-a3c8-418a-82c6-63aab4218ddb
-    type: regular
-    task:
-      id: 62be319d-a3c8-418a-82c6-63aab4218ddb
-      version: -1
-      name: Investigate further
-      description: Continue with the investigation manually.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "50"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 890,
-          "y": 2930
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "42":
     id: "42"
     taskid: ede2a696-f7e5-45a4-8c5d-8e8e1931f441
@@ -793,7 +717,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3260
+          "y": 2630
         }
       }
     note: false
@@ -884,7 +808,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+      - "42"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -892,37 +816,6 @@ tasks:
         "position": {
           "x": 890,
           "y": 2460
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
-    taskid: 108bec27-7ad3-4ffa-8158-bec493792f8e
-    type: title
-    task:
-      id: 108bec27-7ad3-4ffa-8158-bec493792f8e
-      version: -1
-      name: Resolution
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "37"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2630
         }
       }
     note: false
@@ -965,7 +858,7 @@ tasks:
         simple: ${ExtractedIndicators.File}
       verdict:
         simple: Malicious
-    reputationcalc: 2
+    reputationcalc: 1
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -974,38 +867,6 @@ tasks:
         "position": {
           "x": 240,
           "y": 730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
-    taskid: 1f0a8941-2aaf-4997-87cf-6fc060069222
-    type: regular
-    task:
-      id: 1f0a8941-2aaf-4997-87cf-6fc060069222
-      version: -1
-      name: Close Investigation
-      description: Close the current incident
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "42"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3100
         }
       }
     note: false
@@ -1048,7 +909,7 @@ tasks:
         simple: ${ExtractedIndicators.CVE}
       verdict:
         simple: Malicious
-    reputationcalc: 2
+    reputationcalc: 1
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -1099,6 +960,7 @@ tasks:
         simple: ${IP.Address}
       verdict:
         simple: Malicious
+    reputationcalc: 1
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -1424,13 +1286,14 @@ tasks:
     task:
       id: 689fb935-653a-4d2b-8249-e32ea9b8e309
       version: -1
-      name: Should pause for mitigation?
+      name: Should pause for mitigations?
+      description: Whether to pause at the mitigation phase
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "48"
+      - "42"
       "yes":
       - "45"
     separatecontext: false
@@ -1566,15 +1429,13 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "37_41_#default#": 0.63,
-      "37_50_yes": 0.51,
       "68_43_#default#": 0.16,
       "68_67_yes": 0.46,
-      "71_48_#default#": 0.52
+      "71_42_#default#": 0.5
     },
     "paper": {
       "dimensions": {
-        "height": 3495,
+        "height": 2865,
         "width": 2040,
         "x": -280,
         "y": -170
@@ -1605,12 +1466,6 @@ inputs:
     simple: -14d@d
   required: false
   description: Splunk hunting earliest time.
-  playbookInputQuery:
-- key: ShouldCloseAutomatically
-  value:
-    simple: "True"
-  required: false
-  description: Whether to close the incident automatically.
   playbookInputQuery:
 - key: ShouldPauseForMitigation
   value:
