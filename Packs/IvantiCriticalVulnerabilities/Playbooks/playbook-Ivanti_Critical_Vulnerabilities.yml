@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Ivanti Critical Vulnerabilities
-description: "Ivanti Critical Vulnerabilities\n\nSummary\n\nIvanti has recently disclosed four critical vulnerabilities in their VPN devices, identified as CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, and CVE-2024-21893, with active exploitation reported. These security flaws impact all supported versions of Ivanti Connect Secure and Ivanti Policy Secure gateways, including versions 9.x and 22.x, and Ivanti Neurons for ZTA.\n\n#### Disclosed Vulnerabilities\n\n* CVE-2023-46805, a high-severity vulnerability, allows attackers to bypass authentication checks in the web component, granting access to restricted resources without credentials.\n\n* CVE-2024-21887, of critical severity, enables command injection through specially crafted requests by authenticated administrators, leading to arbitrary command execution.\n\n* CVE-2024-21888, another critical vulnerability, permits privilege escalation within the web component, enabling users to gain administrative rights.\n\n* CVE-2024-21893 exposes a server-side request forgery (SSRF) vulnerability within the SAML component, allowing unauthorized access to specific restricted resources.\n\nThe combination of these vulnerabilities, particularly CVE-2023-46805 and CVE-2024-21887, facilitates attackers to execute commands on the compromised system sans authentication, posing a significant security risk. Organizations utilizing affected Ivanti products are urged to apply mitigations and patches to safeguard their systems against potential exploits.\n\n**This playbook should be triggered manually or can be configured as a job.** \n\n**IoCs Collection**\n- Unit42 IoCs download\n\n**Hunting**\n- PANW Hunting:\n  - Panorama Threat IDs hunting\n  - Cortex Xpanse issue hunting\n- Indicators hunting\n- Endpoints by CVE hunting\n\n**Mitigations**\n\nIvanti recommended workaround and patch.\n\n**References**\n\n[Unit42 Threat Brief: Multiple Ivanti Vulnerabilities](https://unit42.paloaltonetworks.com/threat-brief-ivanti-cve-2023-46805-cve-2024-21887/#ivanti-2024-addit-resources)\n\n[CVE-2023-46805 (Authentication Bypass) & CVE-2024-21887 (Command Injection) for Ivanti Connect Secure and Ivanti Policy Secure Gateways](https://forums.ivanti.com/s/article/CVE-2023-46805-Authentication-Bypass-CVE-2024-21887-Command-Injection-for-Ivanti-Connect-Secure-and-Ivanti-Policy-Secure-Gateways?language=en_US)\n\nNote: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.\n"
+description: "Ivanti has recently disclosed four critical vulnerabilities in their VPN devices, identified as CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, and CVE-2024-21893, with active exploitation reported. These security flaws impact all supported versions of Ivanti Connect Secure and Ivanti Policy Secure gateways, including versions 9.x and 22.x, and Ivanti Neurons for ZTA.\n\n#### Disclosed Vulnerabilities\n\n* CVE-2023-46805, a high-severity vulnerability, allows attackers to bypass authentication checks in the web component, granting access to restricted resources without credentials.\n\n* CVE-2024-21887, of critical severity, enables command injection through specially crafted requests by authenticated administrators, leading to arbitrary command execution.\n\n* CVE-2024-21888, another critical vulnerability, permits privilege escalation within the web component, enabling users to gain administrative rights.\n\n* CVE-2024-21893 exposes a server-side request forgery (SSRF) vulnerability within the SAML component, allowing unauthorized access to specific restricted resources.\n\nThe combination of these vulnerabilities, particularly CVE-2023-46805 and CVE-2024-21887, facilitates attackers to execute commands on the compromised system sans authentication, posing a significant security risk. Organizations utilizing affected Ivanti products are urged to apply mitigations and patches to safeguard their systems against potential exploits.\n\n**This playbook should be triggered manually or can be configured as a job.** \n\n**IoCs Collection**\n- Unit42 IoCs download\n\n**Hunting**\n- PANW Hunting:\n  - Panorama Threat IDs hunting\n  - Cortex Xpanse issues hunting\n- Indicators hunting\n- Endpoints by CVE hunting\n\n**Mitigations**\n\nIvanti recommended workaround and patch.\n\n**References**\n\n[Unit42 Threat Brief: Multiple Ivanti Vulnerabilities](https://unit42.paloaltonetworks.com/threat-brief-ivanti-cve-2023-46805-cve-2024-21887/#ivanti-2024-addit-resources)\n\n[CVE-2023-46805 (Authentication Bypass) & CVE-2024-21887 (Command Injection) for Ivanti Connect Secure and Ivanti Policy Secure Gateways](https://forums.ivanti.com/s/article/CVE-2023-46805-Authentication-Bypass-CVE-2024-21887-Command-Injection-for-Ivanti-Connect-Secure-and-Ivanti-Policy-Secure-Gateways?language=en_US)\n\nNote: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 150
+          "y": -170
         }
       }
     note: false
@@ -43,7 +43,7 @@ tasks:
     task:
       id: 13c5654f-bc6d-459e-89df-61f8aafaa943
       version: -1
-      name: Collect and Extract Indicators
+      name: Extract and Enrich Indicators
       type: title
       iscommand: false
       brand: ""
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 280
+          "y": -40
         }
       }
     note: false
@@ -82,13 +82,12 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "6"
+      - "69"
     scriptarguments:
       exclude_indicators:
         simple: raw.githubusercontent[.]com
       url:
         simple: https://unit42.paloaltonetworks.com/threat-brief-ivanti-cve-2023-46805-cve-2024-21887/
-    reputationcalc: 2
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -96,7 +95,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 420
+          "y": 100
         }
       }
     note: false
@@ -249,17 +248,19 @@ tasks:
       id: 3cd3a968-ac43-4930-81f4-0cfd87da6915
       version: -1
       name: Tag Domain Indicators
-      description: Create indicators to the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
-      scriptName: CreateNewIndicatorsOnly
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
-      indicator_values:
-        simple: ${Domain.Name}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
       source:
         complex:
           root: http.parsedBlog
@@ -268,10 +269,13 @@ tasks:
         simple: CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, CVE-2024-21893, Ivanti
       type:
         simple: Domain
+      value:
+        simple: ${ExtractedIndicators.Domain}
       verdict:
         simple: Malicious
     reputationcalc: 2
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -391,8 +395,16 @@ tasks:
         simple: now
       URLDomain:
         complex:
-          root: Domain
-          accessor: Name
+          root: Domain.Name
+          filters:
+          - - operator: notEndWith
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+              right:
+                value:
+                  simple: paloaltonetworks.com
           transformers:
           - operator: uniq
     separatecontext: true
@@ -423,49 +435,16 @@ tasks:
     task:
       id: 7897a924-b8ad-4cdd-8369-76429ed2e436
       version: -1
-      name: Should continue with the investigation?
+      name: Should close the investigation?
       description: Whether to continue with the investigation or close it.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "50"
-      "Yes":
       - "41"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2790
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
-    taskid: 063e6a9c-5dec-4101-8019-a60bef6b6433
-    type: condition
-    task:
-      id: 063e6a9c-5dec-4101-8019-a60bef6b6433
-      version: -1
-      name: Should block indicators automatically?
-      description: Checks whether to block the indicators automatically.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "40"
       "yes":
-      - "39"
+      - "50"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -473,8 +452,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              complex:
-                root: inputs.autoBlockIndicators
+              simple: inputs.ShouldCloseAutomatically
             iscontext: true
           right:
             value:
@@ -485,7 +463,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1990
+          "y": 2760
         }
       }
     note: false
@@ -521,7 +499,7 @@ tasks:
       - "44"
     scriptarguments:
       AutoBlockIndicators:
-        simple: "True"
+        simple: ${inputs.autoBlockIndicators}
       AutoCommit:
         simple: "No"
       CustomBlockRule:
@@ -549,6 +527,29 @@ tasks:
               right:
                 value:
                   simple: "1"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
           accessor: Indicator
           transformers:
           - operator: uniq
@@ -732,45 +733,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 2160
+          "x": 450,
+          "y": 1990
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: 81716d60-ffcd-4c48-888e-57637379e4f3
-    type: regular
-    task:
-      id: 81716d60-ffcd-4c48-888e-57637379e4f3
-      version: -1
-      name: Handle indicators manually
-      description: Manual task for indicators handling.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "44"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": 2160
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -795,7 +765,7 @@ tasks:
       {
         "position": {
           "x": 890,
-          "y": 2960
+          "y": 2930
         }
       }
     note: false
@@ -823,7 +793,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3290
+          "y": 3260
         }
       }
     note: false
@@ -847,7 +817,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "38"
+      - "39"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -878,14 +848,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "45"
+      - "71"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 2340
+          "y": 2160
         }
       }
     note: false
@@ -920,8 +890,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2490
+          "x": 890,
+          "y": 2460
         }
       }
     note: false
@@ -952,7 +922,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2660
+          "y": 2630
         }
       }
     note: false
@@ -970,17 +940,19 @@ tasks:
       id: de30002e-ea06-420e-853a-e1f29800142f
       version: -1
       name: Tag File Indicators
-      description: Create indicators to the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
-      scriptName: CreateNewIndicatorsOnly
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
-      indicator_values:
-        simple: ${File.SHA256}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
       source:
         complex:
           root: http.parsedBlog
@@ -989,10 +961,13 @@ tasks:
         simple: CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, CVE-2024-21893, Ivanti
       type:
         simple: File
+      value:
+        simple: ${ExtractedIndicators.File}
       verdict:
         simple: Malicious
     reputationcalc: 2
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1030,7 +1005,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3130
+          "y": 3100
         }
       }
     note: false
@@ -1048,17 +1023,19 @@ tasks:
       id: dc72209a-6751-46f0-837b-666423686c6f
       version: -1
       name: Tag CVE Indicators
-      description: Create indicators to the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
-      scriptName: CreateNewIndicatorsOnly
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
-      indicator_values:
-        simple: ${CVE.ID}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
       source:
         complex:
           root: http.parsedBlog
@@ -1067,10 +1044,13 @@ tasks:
         simple: CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, CVE-2024-21893, Ivanti
       type:
         simple: CVE
+      value:
+        simple: ${ExtractedIndicators.CVE}
       verdict:
         simple: Malicious
     reputationcalc: 2
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1094,17 +1074,19 @@ tasks:
       id: 9c1db421-afac-4c8a-8cf3-dd2eae309ceb
       version: -1
       name: Tag IP Indicators
-      description: Create indicators to the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
-      scriptName: CreateNewIndicatorsOnly
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
-      indicator_values:
-        simple: ${IP.Address}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
       source:
         complex:
           root: http.parsedBlog
@@ -1113,9 +1095,12 @@ tasks:
         simple: CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, CVE-2024-21893, Ivanti
       type:
         simple: IP
+      value:
+        simple: ${IP.Address}
       verdict:
         simple: Malicious
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1287,12 +1272,15 @@ tasks:
       iscommand: false
       brand: ""
       description: ''
+    nexttasks:
+      '#none#':
+      - "68"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1170,
+          "x": 1180,
           "y": 1350
         }
       }
@@ -1394,25 +1382,209 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: bf69dd86-58d0-46fa-894c-3898d6db06ef
+    type: regular
+    task:
+      id: bf69dd86-58d0-46fa-894c-3898d6db06ef
+      version: -1
+      name: Indicators extraction
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      text:
+        simple: ${http.parsedBlog.indicators}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 689fb935-653a-4d2b-8249-e32ea9b8e309
+    type: condition
+    task:
+      id: 689fb935-653a-4d2b-8249-e32ea9b8e309
+      version: -1
+      name: Should pause for mitigation?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ShouldPauseForMitigation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: e6f50106-b6e7-4c21-87b3-585fc9189233
+    type: playbook
+    task:
+      id: e6f50106-b6e7-4c21-87b3-585fc9189233
+      version: -1
+      name: Entity Enrichment - Generic v3
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Domain:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: ExtractedIndicators
+          accessor: File
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: ExtractedIndicators
+          accessor: URL
+          transformers:
+          - operator: uniq
+      URLSSLVerification:
+        simple: "False"
+      UseReputationCommand:
+        simple: "True"
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
+      "37_41_#default#": 0.63,
+      "37_50_yes": 0.51,
       "68_43_#default#": 0.16,
-      "68_67_yes": 0.46
+      "68_67_yes": 0.46,
+      "71_48_#default#": 0.52
     },
     "paper": {
       "dimensions": {
-        "height": 3205,
+        "height": 3495,
         "width": 2040,
         "x": -280,
-        "y": 150
+        "y": -170
       }
     }
   }
 inputs:
 - key: PlaybookDescription
   value:
-    simple: "Ivanti Critical Vulnerabilities\n\nSummary\n\nIvanti has recently disclosed four critical vulnerabilities in their VPN devices, identified as CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, and CVE-2024-21893, with active exploitation reported. These security flaws impact all supported versions of Ivanti Connect Secure and Ivanti Policy Secure gateways, including versions 9.x and 22.x, and Ivanti Neurons for ZTA.\n\n#### Disclosed Vulnerabilities\n\n* CVE-2023-46805, a high-severity vulnerability, allows attackers to bypass authentication checks in the web component, granting access to restricted resources without credentials.\n\n* CVE-2024-21887, of critical severity, enables command injection through specially crafted requests by authenticated administrators, leading to arbitrary command execution.\n\n* CVE-2024-21888, another critical vulnerability, permits privilege escalation within the web component, enabling users to gain administrative rights.\n\n* CVE-2024-21893 exposes a server-side request forgery (SSRF) vulnerability within the SAML component, allowing unauthorized access to specific restricted resources.\n\nThe combination of these vulnerabilities, particularly CVE-2023-46805 and CVE-2024-21887, facilitates attackers to execute commands on the compromised system sans authentication, posing a significant security risk. Organizations utilizing affected Ivanti products are urged to apply mitigations and patches to safeguard their systems against potential exploits.\n\n**This playbook should be triggered manually or can be configured as a job.** \n\n**IoCs Collection**\n- Unit42 IoCs download\n\n**Hunting**\n- PANW Hunting:\n  - Panorama Threat IDs hunting\n  - Cortex Xpanse issue hunting\n- Indicators hunting\n- Endpoints by CVE hunting\n\n**Mitigations**\n\nIvanti recommended workaround and patch.\n\n**References**\n\n[Unit42 Threat Brief: Multiple Ivanti Vulnerabilities](https://unit42.paloaltonetworks.com/threat-brief-ivanti-cve-2023-46805-cve-2024-21887/#ivanti-2024-addit-resources)\n\n[CVE-2023-46805 (Authentication Bypass) & CVE-2024-21887 (Command Injection) for Ivanti Connect Secure and Ivanti Policy Secure Gateways](https://forums.ivanti.com/s/article/CVE-2023-46805-Authentication-Bypass-CVE-2024-21887-Command-Injection-for-Ivanti-Connect-Secure-and-Ivanti-Policy-Secure-Gateways?language=en_US)"
+    simple: "Ivanti has recently disclosed four critical vulnerabilities in their VPN devices, identified as CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, and CVE-2024-21893, with active exploitation reported. These security flaws impact all supported versions of Ivanti Connect Secure and Ivanti Policy Secure gateways, including versions 9.x and 22.x, and Ivanti Neurons for ZTA.\n\n#### Disclosed Vulnerabilities\n\n* CVE-2023-46805, a high-severity vulnerability, allows attackers to bypass authentication checks in the web component, granting access to restricted resources without credentials.\n\n* CVE-2024-21887, of critical severity, enables command injection through specially crafted requests by authenticated administrators, leading to arbitrary command execution.\n\n* CVE-2024-21888, another critical vulnerability, permits privilege escalation within the web component, enabling users to gain administrative rights.\n\n* CVE-2024-21893 exposes a server-side request forgery (SSRF) vulnerability within the SAML component, allowing unauthorized access to specific restricted resources.\n\nThe combination of these vulnerabilities, particularly CVE-2023-46805 and CVE-2024-21887, facilitates attackers to execute commands on the compromised system sans authentication, posing a significant security risk. Organizations utilizing affected Ivanti products are urged to apply mitigations and patches to safeguard their systems against potential exploits.\n\n**This playbook should be triggered manually or can be configured as a job.** \n\n**IoCs Collection**\n- Unit42 IoCs download\n\n**Hunting**\n- PANW Hunting:\n  - Panorama Threat IDs hunting\n  - Cortex Xpanse issues hunting\n- Indicators hunting\n- Endpoints by CVE hunting\n\n**Mitigations**\n\nIvanti recommended workaround and patch.\n\n**References**\n\n[Unit42 Threat Brief: Multiple Ivanti Vulnerabilities](https://unit42.paloaltonetworks.com/threat-brief-ivanti-cve-2023-46805-cve-2024-21887/#ivanti-2024-addit-resources)\n\n[CVE-2023-46805 (Authentication Bypass) & CVE-2024-21887 (Command Injection) for Ivanti Connect Secure and Ivanti Policy Secure Gateways](https://forums.ivanti.com/s/article/CVE-2023-46805-Authentication-Bypass-CVE-2024-21887-Command-Injection-for-Ivanti-Connect-Secure-and-Ivanti-Policy-Secure-Gateways?language=en_US)\n\nNote: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.\n"
   required: false
   description: The playbook description to be used in the Rapid Breach Response - Set Incident Info sub-playbook.
   playbookInputQuery:
@@ -1433,6 +1605,18 @@ inputs:
     simple: -14d@d
   required: false
   description: Splunk hunting earliest time.
+  playbookInputQuery:
+- key: ShouldCloseAutomatically
+  value:
+    simple: "True"
+  required: false
+  description: Whether to close the incident automatically.
+  playbookInputQuery:
+- key: ShouldPauseForMitigation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to wait for the analyst's response for the mitigation phase or let the playbook continue with the automated flow.
   playbookInputQuery:
 outputs: []
 tests:
