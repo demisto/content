@@ -66,7 +66,7 @@ def get_ask_links_command(args: dict[str, Any]) -> CommandResults:
     """_summary_
 
     Args:
-        args (dict[str, Any]): The arguments given to the command 
+        args (dict[str, Any]): The arguments given to the command
 
     Raises:
         ValueError: No matching task found for the given name
