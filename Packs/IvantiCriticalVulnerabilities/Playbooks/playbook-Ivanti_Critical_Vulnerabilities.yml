@@ -711,6 +711,9 @@ tasks:
       iscommand: false
       brand: ""
       description: ''
+    nexttasks:
+      '#none#':
+      - "73"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1287,7 +1290,7 @@ tasks:
       id: 689fb935-653a-4d2b-8249-e32ea9b8e309
       version: -1
       name: Should pause for mitigations?
-      description: Whether to pause at the mitigation phase
+      description: Checks if the analyst chose to pause at the mitigation phase.
       type: condition
       iscommand: false
       brand: ""
@@ -1426,16 +1429,124 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 559c716c-7bfb-45da-8089-8a6f0b5642df
+    type: condition
+    task:
+      id: 559c716c-7bfb-45da-8089-8a6f0b5642df
+      version: -1
+      name: Should close automatically?
+      description: Checks if the analyst chose to close the investigation automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "75"
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ShouldCloseAutomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: ecef1e88-6050-4e1f-81a3-00908708fcbc
+    type: regular
+    task:
+      id: ecef1e88-6050-4e1f-81a3-00908708fcbc
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: b1bf6b00-7333-4814-8841-7514904ad015
+    type: title
+    task:
+      id: b1bf6b00-7333-4814-8841-7514904ad015
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "68_43_#default#": 0.16,
       "68_67_yes": 0.46,
-      "71_42_#default#": 0.5
+      "71_42_#default#": 0.5,
+      "71_45_yes": 0.61,
+      "73_74_yes": 0.61,
+      "73_75_#default#": 0.51
     },
     "paper": {
       "dimensions": {
-        "height": 2865,
+        "height": 3345,
         "width": 2040,
         "x": -280,
         "y": -170
@@ -1472,6 +1583,12 @@ inputs:
     simple: "False"
   required: false
   description: Whether to wait for the analyst's response for the mitigation phase or let the playbook continue with the automated flow.
+  playbookInputQuery:
+- key: ShouldCloseAutomatically
+  value:
+    simple: "False"
+  required: false
+  description: Whether to close the investigation automatically.
   playbookInputQuery:
 outputs: []
 tests:
