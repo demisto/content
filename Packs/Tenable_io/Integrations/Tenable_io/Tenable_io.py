@@ -1675,6 +1675,7 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
 
     audit_logs: List[dict] = []
     audit_logs_from_api = client.get_audit_logs_request(from_date=start_date)
+    demisto.debug(f"got {len(audit_logs_from_api)} events from api")
 
     if last_index_fetched < len(audit_logs_from_api):
         audit_logs.extend(audit_logs_from_api[last_index_fetched:last_index_fetched + limit])
@@ -1858,9 +1859,10 @@ def main():  # pragma: no cover
         elif command == 'fetch-events':
 
             last_run = demisto.getLastRun()
+            demisto.debug(f"saved lastrun events: {last_run}")
             events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
             send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-
+            demisto.debug(f"new lastrun events: {last_run}")
             demisto.setLastRun(new_last_run)
 
         elif command == 'fetch-assets':
