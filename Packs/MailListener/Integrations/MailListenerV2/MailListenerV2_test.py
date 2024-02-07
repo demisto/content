@@ -705,7 +705,7 @@ def test_fetch_mails__mail_id_is_greater(mocker):
     email_mock.return_value.id = '1'
     mocker.patch('MailListenerV2.generate_search_query')
 
-    _, _, next_uid_to_fetch_from = fetch_mails(client_mock,uid_to_fetch_from=2)
+    _, _, next_uid_to_fetch_from = fetch_mails(client_mock, uid_to_fetch_from=2)
 
     assert next_uid_to_fetch_from == 3
 
@@ -727,6 +727,6 @@ def test_fetch_mails__last_run_is_greater(mocker):
     email_mock.return_value.id = '1'
     mocker.patch('MailListenerV2.generate_search_query')
 
-    _, _, next_uid_to_fetch_from = fetch_mails(client_mock,uid_to_fetch_from=4)
+    _, _, next_uid_to_fetch_from = fetch_mails(client_mock, uid_to_fetch_from=4)
 
     assert next_uid_to_fetch_from == 4
