@@ -1748,8 +1748,3 @@ In the *zimperium-devices-search* command:
 
 In the *zimperium-report-get* command:
 * *bundle_id*, *itunes_id*, *app_hash* and *platform*.
-
-
-## Additional Considerations for this version
-%%FILL HERE%%
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.

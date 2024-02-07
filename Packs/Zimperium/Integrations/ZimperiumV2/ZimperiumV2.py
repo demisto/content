@@ -359,16 +359,17 @@ def test_module(client: Client, first_fetch_time: Optional[str],
     """
     Performs basic get request to get incident samples
     """
-    client.users_search(size=10, page=0)
     if demisto.params().get('isFetch'):
         fetch_incidents(
             client=client,
-            last_run=demisto.getLastRun(),
+            last_run={},
             fetch_query=fetch_query,
             first_fetch_time=first_fetch_time,
             max_fetch=max_fetch,
             look_back=look_back,
         )
+    else:
+        client.users_search(size=10, page=0)
 
     return 'ok'
 
