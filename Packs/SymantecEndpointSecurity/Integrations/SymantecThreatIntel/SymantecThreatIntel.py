@@ -159,7 +159,7 @@ def parse_network_insight_response(response: dict) -> dict:
         categories.append(category.get('name'))
 
     response = {'indicator': network, 'reputation': reputation, 'risk_level': risk_level, 'categories': categories,
-                'first_seen': first_seen ,'last_seen': last_seen}
+                'first_seen': first_seen, 'last_seen': last_seen}
 
     return response
 
