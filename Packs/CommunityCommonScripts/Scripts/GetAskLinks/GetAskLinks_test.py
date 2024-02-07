@@ -1,4 +1,5 @@
 import pytest
+from CommonServerPython import DemistoException
 import demistomock as demisto  # noqa: F401
 from GetAskLinks import get_ask_tasks, encode, generate_ask_link, get_ask_links_command
 import json
@@ -25,7 +26,8 @@ def test_get_ask_tasks(mocker):
     assert result == [{'id': '2', 'options': ['Yes', 'No'], 'name': 'Ask Question', 'state': None}]
 
     mocker.patch.object(demisto, "executeCommand", return_value=None)
-    assert get_ask_tasks('1') == []
+    with pytest.raises(DemistoException, match="No work plan found for the incident with id: 1"):
+        get_ask_tasks('1')
 
 
 @pytest.mark.parametrize('string, output', [('1@1', '4d554178')])
