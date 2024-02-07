@@ -186,7 +186,6 @@ class Client:
 
         headers = []
         if results:
-            # if the table isn't empty
             if self.dialect == TERADATA:
                 headers = list(result.keys())
             else:
@@ -258,8 +257,10 @@ def generate_bind_vars(bind_variables_names: str, bind_variables_values: str, qu
     elif len(bind_variables_names_list) == len(bind_variables_values_list):
         return dict(zip(bind_variables_names_list, bind_variables_values_list)), query
     else:
-        raise Exception("The bind variables lists are not is the same length")
-
+        raise Exception(
+            "Bind variables length must match the variable count."
+            f"Got {len(bind_variables_names_list)} variables and {len(bind_variables_values_list)} values"
+            )
 
 def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
     """
