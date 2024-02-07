@@ -7,7 +7,7 @@ import traceback
 ''' STANDALONE FUNCTION '''
 
 
-def test_range(port_range: str, port: str) -> bool:
+def is_port_in_range(port_range: str, port: str) -> bool:
     """
     Breaks a string port range (i.e. '20-25') into integers for comapirson
     Args:
@@ -23,7 +23,7 @@ def test_range(port_range: str, port: str) -> bool:
     return False
 
 
-def test_match(port: str, protocol: str, rule: Dict, network_tags: list) -> bool:
+def is_there_traffic_match(port: str, protocol: str, rule: Dict, network_tags: list) -> bool:
     """
     Breaks a string port range (i.e. '20-25') into integers for comapirson
     Args:
@@ -53,7 +53,7 @@ def test_match(port: str, protocol: str, rule: Dict, network_tags: list) -> bool
             elif entry.get('IPProtocol') == protocol.lower() and 'ports' in entry:
                 for port_entry in entry.get('ports'):
                     if "-" in port_entry:
-                        res = test_range(port_entry, port)
+                        res = is_port_in_range(port_entry, port)
                         if res and target_tags_verdict:
                             return True
                     else:
@@ -77,9 +77,9 @@ def gcp_offending_firewall_rule(args: Dict[str, Any]) -> CommandResults:
     """
 
     project_id = args["project_id"]
-    network_url = args.get("network_url")
-    port = args.get("port", "NO PORT")
-    protocol = args.get("protocol", "NO PROTOCOL")
+    network_url = args["network_url"]
+    port = args["port"]
+    protocol = args["protocol"]
     network_tags = args.get("network_tags", [])
 
     # Using `demisto.executeCommand` instead of `execute_command` because for
@@ -97,7 +97,7 @@ def gcp_offending_firewall_rule(args: Dict[str, Any]) -> CommandResults:
         return CommandResults(readable_output="Could not find specified firewall info")
     final_match_list = []
     for rule in fw_rules_returned[0].get('Contents', {}).get('items'):
-        if test_match(port, protocol, rule, network_tags):
+        if is_there_traffic_match(port, protocol, rule, network_tags):
             final_match_list.append(rule['name'])
     if not final_match_list:
         return CommandResults(readable_output="Could not find any potential offending firewall rules")

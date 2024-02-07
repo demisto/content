@@ -3,8 +3,8 @@ from CommonServerPython import CommandResults
 import pytest
 
 
-def test_test_range_func(mocker):
-    """Tests test_range helper function.
+def test_is_port_in_range_func(mocker):
+    """Tests is_port_in_range helper function.
 
     Given:
         - Mocked arguments
@@ -13,14 +13,14 @@ def test_test_range_func(mocker):
     Then:
         - Checks the output of the helpedfunction with the expected output.
     """
-    from GCPOffendingFirewallRule import test_range
+    from GCPOffendingFirewallRule import is_port_in_range
 
-    assert test_range("20-25", "22")
-    assert not test_range("20-21", "22")
+    assert is_port_in_range("20-25", "22")
+    assert not is_port_in_range("20-21", "22")
 
 
-def test_test_match_func(mocker):
-    """Tests test_match helper function.
+def test_is_there_traffic_match_func(mocker):
+    """Tests is_there_traffic_match helper function.
 
     Given:
         - Mocked arguments
@@ -29,7 +29,7 @@ def test_test_match_func(mocker):
     Then:
         - Checks the output of the helpedfunction with the expected output.
     """
-    from GCPOffendingFirewallRule import test_match
+    from GCPOffendingFirewallRule import is_there_traffic_match
 
     port = "22"
     protocol = "tcp"
@@ -37,7 +37,7 @@ def test_test_match_func(mocker):
     net_tags = ["test-tag"]
     # Matches on
     # all protocol and no target tags
-    assert test_match(
+    assert is_there_traffic_match(
         port,
         protocol,
         {
@@ -49,7 +49,7 @@ def test_test_match_func(mocker):
         no_tags,
     )
     # single port and target tags
-    assert test_match(
+    assert is_there_traffic_match(
         port,
         protocol,
         {
@@ -62,7 +62,7 @@ def test_test_match_func(mocker):
         net_tags,
     )
     # port range and no target tags
-    assert test_match(
+    assert is_there_traffic_match(
         port,
         protocol,
         {
@@ -76,7 +76,7 @@ def test_test_match_func(mocker):
 
     # Doesn't match on
     # wrong port/protocol
-    assert not test_match(
+    assert not is_there_traffic_match(
         "50",
         "udp",
         {
@@ -88,7 +88,7 @@ def test_test_match_func(mocker):
         no_tags,
     )
     # wrong target tag
-    assert not test_match(
+    assert not is_there_traffic_match(
         port,
         protocol,
         {
@@ -101,7 +101,7 @@ def test_test_match_func(mocker):
         ["bad_tag"],
     )
     # Disabled
-    assert not test_match(
+    assert not is_there_traffic_match(
         port,
         protocol,
         {
