@@ -378,15 +378,15 @@ def fetch_mails(client: IMAPClient,
             demisto.debug(f"{mail_id=}: Skipping {email_message_object.id=} since it's <= {uid_to_fetch_from=}."
                           f"{email_message_object.date=}")
     if messages_uids:
-        demisto.debug(f"messages_uids NOT empty, setting last_message_in_current_batch={messages_uids[-1]=}")
-        last_message_in_current_batch = messages_uids[-1]
+        next_uid_to_fetch_from = max( messages_uids[-1], uid_to_fetch_from)  
+        demisto.debug(f"messages_uids NOT empty, setting {next_uid_to_fetch_from=}")
     else:
-        demisto.debug(f"messages_uids empty, setting last_message_in_current_batch={uid_to_fetch_from=}")
-        last_message_in_current_batch = uid_to_fetch_from
+        next_uid_to_fetch_from = uid_to_fetch_from
+        demisto.debug(f"messages_uids IS empty, setting {next_uid_to_fetch_from=}")
 
     ids_fetched = [mail.id for mail in fetched_email_objects]
     demisto.debug(f"fetched {len(fetched_email_objects)} emails, {ids_fetched=}")
-    return fetched_email_objects, ids_fetched, last_message_in_current_batch
+    return fetched_email_objects, ids_fetched, next_uid_to_fetch_from
 
 
 def generate_search_query(time_to_fetch_from: datetime | None,
@@ -623,7 +623,7 @@ def main():     # pragma: no cover
                                                       delete_processed=delete_processed, limit=limit,
                                                       save_file=save_file)
                 demisto.debug(f"{next_run=}")
-                demisto.setLastRun(next_run)
+                demisto.setLastRun(next_run) if next_run != "0" else None
                 demisto.incidents(incidents)
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
