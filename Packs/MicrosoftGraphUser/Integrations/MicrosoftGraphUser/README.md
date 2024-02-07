@@ -13,8 +13,8 @@ Required Permissions:
 
 There are two different authentication methods for a self-deployed configuration:
 
-- [Client Credentials flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
-- [Authorization Code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user)
+- [Client Credentials flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#client-credentials-flow)
+- [Authorization Code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorization-code-flow)
 
 We recommend using the Client Credentials flow.
 In order to use the msgraph-user-change-password command, you must configure with the Authorization Code flow.
