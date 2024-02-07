@@ -89,7 +89,7 @@ configuration:
   name: insecure
   type: 8
   required: false
-- display: Connect with LDAP (for Teradata DB)
+- display: Use LDAP (Teradata only)
   name: is_ldap
   type: 8
   required: false
