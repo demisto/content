@@ -947,7 +947,7 @@ INCIDENTS_NEXT_RUN = {'latest_created_time': '2022-11-08T14:24:52.908000Z',
                               {'severity': {'Gte': 1}},
                               {"FindingIds": ["finding_id1", "finding_id2"], 'NextToken': ""}, [FINDING_1, FINDING_2],
                               False)
-                         ], ids=['case - 1', 'case - 2', 'case - 3', 'case - 4', 'case - 5', "case - 6"])
+                         ], ids=['case - 1', 'case - 2', 'case - 3', 'case - 4', 'case - 5', "last_updated_time is None"])
 def test_fetch_incidents(mocker, gd_severity, last_run, fetch_limit, first_fetch_time,
                          expected_incidents, expected_next_run, expected_criterion_conditions,
                          mock_list_finding_res, mock_get_finding_res, is_archive):
