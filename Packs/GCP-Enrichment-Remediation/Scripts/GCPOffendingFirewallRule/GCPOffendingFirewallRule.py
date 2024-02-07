@@ -47,10 +47,10 @@ def test_match(port: str, protocol: str, rule: Dict, network_tags: list) -> bool
                 return True
             # Complicated because just {'IPProtocol': 'udp'} means all udp ports
             # therefore if protocol match but no ports, this is a match
-            elif entry.get('IPProtocol') == protocol.lower() and 'ports' not in entry.keys():
+            elif entry.get('IPProtocol') == protocol.lower() and 'ports' not in entry:
                 return True
             # Else need to go through all ports to see if range or not
-            elif entry.get('IPProtocol') == protocol.lower() and 'ports' in entry.keys():
+            elif entry.get('IPProtocol') == protocol.lower() and 'ports' in entry:
                 for port_entry in entry.get('ports'):
                     if "-" in port_entry:
                         res = test_range(port_entry, port)
@@ -76,7 +76,7 @@ def gcp_offending_firewall_rule(args: Dict[str, Any]) -> CommandResults:
 
     """
 
-    project_id = args.get("project_id")
+    project_id = args["project_id"]
     network_url = args.get("network_url")
     port = args.get("port", "NO PORT")
     protocol = args.get("protocol", "NO PROTOCOL")
@@ -91,14 +91,13 @@ def gcp_offending_firewall_rule(args: Dict[str, Any]) -> CommandResults:
     fw_rules_returned = [
         instance
         for instance in fw_rules
-        if (not isError(instance) and instance.get("Contents").get("id"))
+        if (not isError(instance) and instance.get("Contents", {}).get("id"))
     ]
     if not fw_rules_returned:
         return CommandResults(readable_output="Could not find specified firewall info")
     final_match_list = []
-    for rule in fw_rules_returned[0].get('Contents').get('items'):
-        match = test_match(port, protocol, rule, network_tags)
-        if match:
+    for rule in fw_rules_returned[0].get('Contents', {}).get('items'):
+        if test_match(port, protocol, rule, network_tags):
             final_match_list.append(rule['name'])
     if not final_match_list:
         return CommandResults(readable_output="Could not find any potential offending firewall rules")
