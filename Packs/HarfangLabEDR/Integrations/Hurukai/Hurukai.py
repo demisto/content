@@ -2045,7 +2045,7 @@ def add_whitelist(client, args):
             '"orion", "glimps", "cape" or "driver"'
         )
     elif operator not in ["eq", "regex", "contains"]:
-        message = 'Invalid operator. Operator must be "eq", "regex", or "contains"'
+        raise ValueError("Invalid operator - operator must be 'eq', 'regex' or 'contains'")
     else:
         data = client.add_whitelist(
             comment, sigma_rule_id, target, field, case_insensitive, operator, value
@@ -2068,7 +2068,7 @@ def add_criterion_to_whitelist(client, args):
     data = None
 
     if operator not in ["eq", "regex", "contains"]:
-        message = 'Invalid operator. Operator must be "eq", "regex", or "contains"'
+        raise ValueError("Invalid operator - operator must be 'eq', 'regex' or 'contains'")
     else:
         data = client.add_criterion_to_whitelist(
             id, field, case_insensitive, operator, value
