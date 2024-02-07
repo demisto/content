@@ -863,8 +863,8 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             raw_incidents = sorted(raw_incidents, key=lambda inc: inc['creation_time'])
         else:
             raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
-                                                sort_by_creation_time='asc', starred=starred,
-                                                starred_incidents_fetch_window=starred_incidents_fetch_window)
+                                                 sort_by_creation_time='asc', starred=starred,
+                                                 starred_incidents_fetch_window=starred_incidents_fetch_window)
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -876,20 +876,20 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         # The count of incidents, so as not to pass the limit
         count_incidents = 0
         incident_ids: list[str] = []
-        incidents_data = []
+        incident_data_dict: dict[str, Any] = {}
         if_upgraded_extra_data = False
         if raw_incidents and (check_using_upgraded_api_incidents_extra_data(client, raw_incidents[0].get('incident_id')[-1])):
-            incident_ids: list[str] = [raw_incident.get('incident_id') for raw_incident in raw_incidents.get('reply', {}).get('incidents')
+            incident_ids: list[str] = [raw_incident.get('incident_id') for raw_incident in raw_incidents
                                        if len(incident_ids) < max_fetch]
-            incidents_data, if_upgraded_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_ids).get('reply', {}).get('incidents')
-
+            raw_incidents_data, if_upgraded_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_ids)
+            incident_data_dict = {incident['incident']['incident_id']: incident['incident'] for incident in raw_incidents_data.get
+                                  ('reply', {}).get('incidents')}
 
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
             incident_data: dict[str, Any] = {}
             if if_upgraded_extra_data:
-                incident_data = next((incident for incident in incidents_data if incident.get('incident')
-                                      .get('id') == incident_id), {})
+                incident_data = incident_data_dict.get(incident_id, {})
             else:
                 incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
                                                                          "alerts_limit": 1000})[2].get('incident') or {}
@@ -1046,7 +1046,7 @@ def main():  # pragma: no cover
     """
     Executes an integration command
     """
-    command = "fetch-incidents" # demisto.command()
+    command = "fetch-incidents"  # demisto.command()
     params = demisto.params()
     LOG(f'Command being called is {command}')
 
