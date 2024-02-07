@@ -460,7 +460,7 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
             {RATE_LIMIT_LAST_RUN: rate_limit_error.retry_after}
         )
     finally:
-        demisto.updateModuleHealth({'EventsPulled': events_sent})
+        demisto.updateModuleHealth({'eventsPulled': events_sent})
         demisto.setLastRun(new_last_run)
         demisto.info(f'Updated the last run from {last_run} to {new_last_run} successfully')
 
