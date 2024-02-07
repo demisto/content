@@ -931,8 +931,23 @@ INCIDENTS_NEXT_RUN = {'latest_created_time': '2022-11-08T14:24:52.908000Z',
                                                          'latest_updated_time': '2022-11-11T14:24:52.908000Z'},
                               {'severity': {'Gte': 1}},
                               {"FindingIds": ["finding_id1", "finding_id2"], 'NextToken': ""}, [FINDING_1, FINDING_2],
+                              False),
+                             # case - 6: A run given last_next_token and latest_updated_time is None,
+                             # validate the latest_updated_time is not used,
+                             # and the next run's latest_updated_time is the same as latest_created_time
+                             ([],
+                              {'last_incidents_ids': [],
+                               'last_next_token': "test",
+                               'latest_created_time': '2022-11-08T14:24:52.908000Z',
+                               'latest_updated_time': None}, 2, '3 days',
+                              [INCIDENT_1, INCIDENT_2], {'last_incidents_ids': ['finding_id1', 'finding_id2'],
+                                                         'last_next_token': "",
+                                                         'latest_created_time': '2022-11-08T14:24:52.908000Z',
+                                                         'latest_updated_time': '2022-11-08T14:24:52.908000Z'},
+                              {'severity': {'Gte': 1}},
+                              {"FindingIds": ["finding_id1", "finding_id2"], 'NextToken': ""}, [FINDING_1, FINDING_2],
                               False)
-                         ], ids=['case - 1', 'case - 2', 'case - 3', 'case - 4', 'case - 5'])
+                         ], ids=['case - 1', 'case - 2', 'case - 3', 'case - 4', 'case - 5', "last_updated_time is None"])
 def test_fetch_incidents(mocker, gd_severity, last_run, fetch_limit, first_fetch_time,
                          expected_incidents, expected_next_run, expected_criterion_conditions,
                          mock_list_finding_res, mock_get_finding_res, is_archive):
