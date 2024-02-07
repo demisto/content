@@ -16,7 +16,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # ISO8601 format
-DEFAULT_MAX_FETCH = 200
+DEFAULT_MAX_FETCH = 1000
 VENDOR = "ReliaQuest"
 PRODUCT = "GreyMatter DRP"
 LAST_FETCHED_EVENT_NUM = "last_fetched_event_num"

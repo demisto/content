@@ -21,7 +21,7 @@ configuration:
 - display: Maximum number of events per fetch
   name: max_fetch_events
   type: 0
-  defaultvalue: '200'
+  defaultvalue: '1000'
   required: true
   section: Collect
 - display: Trust any certificate (not secure)
