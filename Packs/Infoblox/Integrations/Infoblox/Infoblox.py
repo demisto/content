@@ -131,11 +131,6 @@ class IPv4AddressStatus(Enum):
 
 class InfoBloxNIOSClient(BaseClient):
 
-    GET_HOST_RECORDS_ENDPOINT = "record:host"
-    IPV4ADDRESS_ENDPOINT = "ipv4address"
-    POLICY_ZONES_ENDPOINT = "zone_rp"
-    NETWORK_ENDPOINT = "network"
-
     REQUEST_PARAMS_RETURN_AS_OBJECT_KEY = '_return_as_object'
     REQUEST_PARAM_RETURN_FIELDS_KEY = '_return_fields+'
 
@@ -237,7 +232,7 @@ class InfoBloxNIOSClient(BaseClient):
         return self._get_ipv4_addresses(params=transform_ipv4_range(start_ip, end_ip))
 
     def _get_ipv4_addresses(self, params: dict[str, Any]) -> dict:
-        return self._http_request('GET', self.IPV4ADDRESS_ENDPOINT, params=params)
+        return self._http_request('GET', "ipv4address", params=params)
 
     def search_related_objects_by_ip(self, ip: str | None, max_results: str | None) -> dict:
         """Search ip related objects.
@@ -292,7 +287,7 @@ class InfoBloxNIOSClient(BaseClient):
 
         data = assign_params(fqdn=fqdn, rpz_policy=rpz_policy, rpz_severity=rpz_severity,
                              substitute_name=substitute_name, rpz_type=rpz_type)
-        return self._http_request('POST', self.POLICY_ZONES_ENDPOINT, data=json.dumps(data), params=self.REQUEST_PARAM_ZONE)
+        return self._http_request('POST', "zone_rp", data=json.dumps(data), params=self.REQUEST_PARAM_ZONE)
 
     def delete_response_policy_zone(self, ref_id: str | None) -> dict:
         """Delete new response policy zone
@@ -434,7 +429,7 @@ class InfoBloxNIOSClient(BaseClient):
         """
 
         params = assign_params(name=name)
-        return self._http_request('GET', self.GET_HOST_RECORDS_ENDPOINT, params=params)
+        return self._http_request('GET', "record:host", params=params)
 
     def get_network_info(self, pattern: str | None) -> dict:
         """
@@ -448,10 +443,8 @@ class InfoBloxNIOSClient(BaseClient):
         - Response JSON
         """
 
-        if pattern:
-            return self._http_request("GET", self.NETWORK_ENDPOINT, params={"network~": pattern})
-        else:
-            return self._http_request("GET", self.NETWORK_ENDPOINT)
+        params = {"network~": pattern} if pattern else None
+        return self._http_request("GET", "network", params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -1364,9 +1357,8 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
 
     demisto.debug(f"Found {len(records)} host records")
 
-    if not hostname:
-        title = f"Host records (first {max_results})"
-    else:
+    title = "Host records"
+    if hostname:
         title = f"Host records for {hostname} (first {max_results})"
 
     if records:

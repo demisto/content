@@ -394,7 +394,7 @@ class TestIPOperations:
     CONTEXT_PATH = f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}'  # noqa: E501
     VALID_IP_ADDRESS = "192.168.1.1"
     VALID_NETMASK = "192.168.1.0/24"
-    BASE_URL = f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1"  # noqa: E501
+    BASE_URL = f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1"  # noqa: E501
 
     def test_get_ip_command_too_many_arguments(self):
         """
@@ -492,7 +492,7 @@ class TestIPOperations:
                          / "get_ipv4_address_from_ip_address.json").read_text()
 
         requests_mock.get(
-            f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}",
+            f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}",
             json=json.loads(mock_response)
         )
 
@@ -530,7 +530,7 @@ class TestIPOperations:
                          / "get_ipv4_address_from_ip_address.json").read_text()
 
         requests_mock.get(
-            f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}&status={IPv4AddressStatus.USED.value}",
+            f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}&status={IPv4AddressStatus.USED.value}",
             json=json.loads(mock_response)
         )
 
@@ -648,7 +648,7 @@ class TestIPOperations:
                          / "get_ipv4_addresses_from_network.json").read_text()
 
         requests_mock.get(
-            f"{client._base_url}{InfoBloxNIOSClient.IPV4ADDRESS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&network={self.VALID_NETMASK}&status={IPv4AddressStatus.USED.value}",
+            f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&network={self.VALID_NETMASK}&status={IPv4AddressStatus.USED.value}",
             json=json.loads(mock_response)
         )
 
@@ -685,6 +685,7 @@ class TestIPOperations:
 class TestHostRecordsOperations:
 
     CONTEXT_KEY = f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_HOST_RECORDS_CONTEXT_NAME}"
+    GET_HOST_RECORDS_ENDPOINT = "record:host"
 
     def test_get_all_records(self, requests_mock):
         """
@@ -704,7 +705,7 @@ class TestHostRecordsOperations:
                          / self.__class__.__name__ / "get_records.json").read_text()
 
         requests_mock.get(
-            f"{client._base_url}{InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1",
+            f"{client._base_url}{self.GET_HOST_RECORDS_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1",
             json=json.loads(mock_response)
         )
 
@@ -733,7 +734,7 @@ class TestHostRecordsOperations:
         host_name = "ciac-3607.test"
 
         requests_mock.get(
-            client._base_url + InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT
+            client._base_url + self.GET_HOST_RECORDS_ENDPOINT
             + f"?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&name={host_name}",
             json=json.loads(mock_response)
         )
@@ -763,7 +764,7 @@ class TestHostRecordsOperations:
         input = "Site=Tel-Aviv"
 
         requests_mock.get(
-            client._base_url + InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B=extattrs&*{input}",
+            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B=extattrs&*{input}",
             json=json.loads(mock_response)
         )
 
@@ -795,7 +796,7 @@ class TestHostRecordsOperations:
                          / self.__class__.__name__ / "get_records_extattrs_aliases.json").read_text()
 
         requests_mock.get(
-            client._base_url + InfoBloxNIOSClient.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={input}",
+            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={input}",
             json=json.loads(mock_response)
         )
 
@@ -844,7 +845,7 @@ class TestHostRecordsOperations:
 class TestNetworkInfoOperations:
 
     CONTEXT_KEY = f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_NETWORK_INFO_CONTEXT_KEY}"
-    BASE_URL = f"{client._base_url}{InfoBloxNIOSClient.NETWORK_ENDPOINT}?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1"  # noqa: E501
+    BASE_URL = f"{client._base_url}network?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1"  # noqa: E501
 
     def test_get_network_info_command(self, requests_mock):
         """
