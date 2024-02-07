@@ -188,6 +188,7 @@ def test_module() -> str:
         ]
         if fails:
             demisto.debug('\n\n'.join(fails))
+            #  extract the account ID form the readable_output encased in backticks
             fail_ids = ', '.join(res.split('`')[1] for res in fails)
             raise DemistoException(
                 f'AssumeRole with role name {ROLE_NAME!r} failed for the following accounts: {fail_ids}.'
