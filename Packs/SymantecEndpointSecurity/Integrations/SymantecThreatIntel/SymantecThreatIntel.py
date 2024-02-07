@@ -239,7 +239,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], reliability: str
         command_result = CommandResults(outputs_prefix=f'{INSIGHT_CONTEXT_PREFIX}.IP',
                                         outputs_key_field=OUTPUT_KEY,
                                         outputs=result,
-                                        indicator=ip)
+                                        indicator=ip,
+                                        ignore_auto_extract=True)
         command_results.append(command_result)
 
     return command_results
@@ -263,7 +264,8 @@ def url_reputation_command(client: Client, args: Dict[str, Any], reliability: st
         command_result = CommandResults(outputs_prefix=f'{INSIGHT_CONTEXT_PREFIX}.URL',
                                         outputs_key_field=OUTPUT_KEY,
                                         outputs=result,
-                                        indicator=url)
+                                        indicator=url,
+                                        ignore_auto_extract=True)
         command_results.append(command_result)
 
     return command_results
@@ -287,7 +289,8 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], reliability:
         command_result = CommandResults(outputs_prefix=f'{INSIGHT_CONTEXT_PREFIX}.Domain',
                                         outputs_key_field=OUTPUT_KEY,
                                         outputs=result,
-                                        indicator=domain)
+                                        indicator=domain,
+                                        ignore_auto_extract=True)
         command_results.append(command_result)
 
     return command_results
@@ -318,7 +321,8 @@ def file_reputation_command(client: Client, args: Dict[str, Any], reliability: s
         command_result = CommandResults(outputs_prefix=f'{INSIGHT_CONTEXT_PREFIX}.File',
                                         outputs_key_field=OUTPUT_KEY,
                                         outputs=result,
-                                        indicator=file_indicator)
+                                        indicator=file_indicator,
+                                        ignore_auto_extract=True)
         command_results.append(command_result)
 
     return command_results
