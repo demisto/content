@@ -3038,7 +3038,10 @@ def get_modified_remote_data(client, args):
     last_update_utc = dateparser.parse(
         remote_args.last_update, settings={"TIMEZONE": "UTC"}
     )  # convert to utc format
-    assert last_update_utc is not None, f"could not parse{remote_args.last_update}"
+
+    if not last_update_utc:
+        raise ValueError(f"Unable to parse '{remote_args.last_update}'")
+
     last_update_timestamp = last_update_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
     demisto.debug(f"Remote arguments last_update in UTC is {last_update_timestamp}")
 
