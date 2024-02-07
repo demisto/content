@@ -61,7 +61,8 @@ def test_alert_search_command_no_next_token(mocker, prisma_cloud_v2_client):
                                                            {'name': 'policy.remediable', 'operator': '=', 'value': 'true'},
                                                            {'name': 'cloud.type', 'operator': '=', 'value': 'gcp'},
                                                            {'name': 'policy.type', 'operator': '=', 'value': 'config'}],
-                                               'timeRange': {'type': 'relative', 'value': {'amount': 3, 'unit': 'week'}}})
+                                               'timeRange': {'type': 'relative', 'value': {'amount': 3, 'unit': 'week'}}},
+                                    retries=2)
 
 
 def test_alert_search_command_with_next_token(mocker, prisma_cloud_v2_client):
@@ -83,7 +84,7 @@ def test_alert_search_command_with_next_token(mocker, prisma_cloud_v2_client):
     http_request.assert_called_with('POST', 'v2/alert', params={'detailed': 'true'},
                                     json_data={'limit': 10,
                                                'timeRange': {'type': 'relative', 'value': {'amount': 3, 'unit': 'week'}},
-                                               'pageToken': 'TOKEN'})
+                                               'pageToken': 'TOKEN'}, retries=2)
 
 
 def test_alert_get_details_command(mocker, prisma_cloud_v2_client):
@@ -249,7 +250,9 @@ def test_config_search_command(mocker, prisma_cloud_v2_client):
     http_request.assert_called_with('POST', 'search/config',
                                     json_data={'limit': 1, 'query': "config from cloud.resource where cloud.region = 'AWS Ohio' ",
                                                'sort': [{'direction': 'desc', 'field': 'insertTs'}],
-                                               'timeRange': {'type': 'to_now', 'value': 'epoch'}})
+                                               'timeRange': {'type': 'to_now', 'value': 'epoch'},
+                                               'withResourceJson': 'true',
+                                               })
 
 
 def test_event_search_command(mocker, prisma_cloud_v2_client):
@@ -1519,3 +1522,41 @@ def test_update_remote_system_command(mocker, prisma_cloud_v2_mirroring_client, 
 
     assert mock_update_remote_alert.call_count == expected_call_count
     assert result == 'P-1111111'
+
+
+def test_remove_additional_resource_fields(prisma_cloud_v2_client):
+    """
+        Given
+            - Results of config_search_command.
+        When
+            - Running the config_search_command.
+        Then
+            - Verify that remove_additional_resource_fields removes only the required fields.
+    """
+    from PrismaCloudV2 import remove_additional_resource_fields
+
+    input = {
+        'data': {
+            'items': [{
+                'data': {
+                    'disks': [{"mode": "READ_WRITE", 'shieldedInstanceInitialState': 's_val'}],
+                    'metadata': {'items': [{'key': 'configure-sh', 'value': 'configure_sh_val'},
+                                           {'key': 'not-removed-value', 'value': 'not_removed_value_val'}]},
+                }}
+            ]
+        }
+    }
+    expected = {
+        'data': {
+            'items': [{
+                'data': {
+                    'disks': [{"mode": "READ_WRITE"}],
+                    'metadata': {'items': [{'key': 'not-removed-value', 'value': 'not_removed_value_val'}]},
+                }}
+            ]
+        }
+    }
+
+    remove_additional_resource_fields(input_dict=input)
+
+    assert input == expected
