@@ -270,7 +270,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2205
+          "y": 2030
         }
       }
     note: false
@@ -302,7 +302,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2205
+          "y": 2030
         }
       }
     note: false
@@ -334,7 +334,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2730
+          "y": 2555
         }
       }
     note: false
@@ -407,7 +407,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2030
+          "y": 1855
         }
       }
     note: false
@@ -545,7 +545,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1710
+          "y": 1535
         }
       }
     note: false
@@ -588,7 +588,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2555
+          "y": 2380
         }
       }
     note: false
@@ -625,7 +625,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2380
+          "y": 2205
         }
       }
     note: false
@@ -656,7 +656,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 710
+          "y": 720
         }
       }
     note: false
@@ -718,7 +718,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1885
+          "y": 1710
         }
       }
     note: false
@@ -749,7 +749,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1885
+          "y": 1710
         }
       }
     note: false
@@ -891,10 +891,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3015,
+        "height": 2600,
         "width": 1240,
         "x": 50,
-        "y": -190
+        "y": 50
       }
     }
   }
