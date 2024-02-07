@@ -51,7 +51,7 @@ def is_there_traffic_match(port: str, protocol: str, rule: dict, network_tags: l
                 return True
             # Else need to go through all ports to see if range or not
             elif entry.get('IPProtocol') == protocol.lower() and 'ports' in entry:
-                for port_entry in entry.get('ports'):
+                for port_entry in entry.get('ports', []):
                     if "-" in port_entry:
                         res = is_port_in_range(port_entry, port)
                         if res and target_tags_verdict:
