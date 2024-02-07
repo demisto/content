@@ -338,7 +338,7 @@ script:
       name: rasterize-html
       outputs:
         - contextPath: InfoFile.EntryID
-          description: The EntryID of the image/pdf file.
+          description: The entry ID of the image/pdf file.
           type: string
         - contextPath: InfoFile.Extension
           description: The extension of the image/pdf file.
