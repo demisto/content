@@ -668,7 +668,7 @@ This operation verifies aliases and matches display names to the correct mailbox
 
 #### Command example
 
-```!ews-resolve-name identifier=`SMTP:ews-2016-test@lab-demisto.com` full-contact-data=True```
+```!ews-resolve-name identifier=`example@example.com` full-contact-data=True```
 
 #### Context Example
 
@@ -681,8 +681,8 @@ This operation verifies aliases and matches display names to the correct mailbox
                 "culture": "en-US",
                 "displayName": "ews-2016-test EW2016.",
                 "emailAddresses": [
-                    "smtp:ews-2016-test-sec@lab-demisto.com",
-                    "SMTP:ews-2016-test@lab-demisto.com"
+                    "example-sec@example.com",
+                    "example@example.com"
                 ],
                 "givenName": "ews-2016-test",
                 "importance": "Normal",
