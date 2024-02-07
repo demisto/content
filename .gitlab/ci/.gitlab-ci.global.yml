@@ -134,7 +134,7 @@
   - section_end "Granting execute permissions on files"
   # DEMISTO_SDK_GRAPH_FORCE_CREATE set to true to create graph from scratch on last upload commit
   - |
-    if [[-n $NIGHTLY ]]; then
+    if [[ -n $NIGHTLY ]]; then
       export DEMISTO_SDK_GRAPH_FORCE_CREATE=true
     fi
 
