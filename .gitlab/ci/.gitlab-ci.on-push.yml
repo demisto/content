@@ -417,7 +417,6 @@ xpanse-prepare-testing-bucket:
       cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Copy env results to artifacts folder"
     - section_start "Install Packs and run Test-Module"
-    - echo "{$TEST_VAR_XSOAR8}" | sudo tee -a /etc/hosts
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     - section_end "Install Packs and run Test-Module"
@@ -435,11 +434,11 @@ xpanse-prepare-testing-bucket:
     - section_end "Cleanup env results from artifacts folder"
     - job-done
     - exit $EXIT_CODE
-  after_script:
-    - !reference [.default-after-script]
-    - !reference [.install_ssh_keys]
-    - !reference [.ssh-config-setup]
-    - !reference [.destroy_xsoar_instances]
+#  after_script:
+#    - !reference [.default-after-script]
+#    - !reference [.install_ssh_keys]
+#    - !reference [.ssh-config-setup]
+#    - !reference [.destroy_xsoar_instances]
   artifacts:
     when: always
     expire_in: 30 days
