@@ -933,7 +933,8 @@ INCIDENTS_NEXT_RUN = {'latest_created_time': '2022-11-08T14:24:52.908000Z',
                               {"FindingIds": ["finding_id1", "finding_id2"], 'NextToken': ""}, [FINDING_1, FINDING_2],
                               False),
                              # case - 6: A run given last_next_token and latest_updated_time is None,
-                             # validate the latest_updated_time is not used
+                             # validate the latest_updated_time is not used,
+                             # and the next run's latest_updated_time is the same as latest_created_time
                              ([],
                               {'last_incidents_ids': [],
                                'last_next_token': "test",
