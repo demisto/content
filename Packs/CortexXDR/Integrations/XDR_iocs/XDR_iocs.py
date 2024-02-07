@@ -356,6 +356,9 @@ def iocs_to_keep(client: Client):
     All the indicators not send to XDR with the file will be deleted from XDR.
     This is to sync the expired/deleted/no more under filter IOC.
     """
+    demisto.info("Skipping iocs_to_keep due to an issue with the XDR API")
+    return
+
     demisto.info("executing iocs_to_keep: this will send non-expired IOCs matching the query from XSOAR to XDR")
     if datetime.utcnow().hour not in range(1, 3):
         raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
