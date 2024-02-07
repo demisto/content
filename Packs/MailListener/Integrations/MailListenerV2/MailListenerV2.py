@@ -232,7 +232,7 @@ def fetch_incidents(client: IMAPClient,
                     delete_processed: bool,
                     limit: int,
                     save_file: bool
-                    ) -> tuple[dict| None, list]:
+                    ) -> tuple[dict | None, list]:
     """
     This function will execute each interval (default is 1 minute).
     The search is based on the criteria of the SINCE time and the UID.
@@ -378,7 +378,7 @@ def fetch_mails(client: IMAPClient,
             demisto.debug(f"{mail_id=}: Skipping {email_message_object.id=} since it's <= {uid_to_fetch_from=}."
                           f"{email_message_object.date=}")
     if messages_uids:
-        next_uid_to_fetch_from = max( messages_uids[-1], uid_to_fetch_from)  
+        next_uid_to_fetch_from = max(messages_uids[-1], uid_to_fetch_from)
         demisto.debug(f"messages_uids NOT empty, setting {next_uid_to_fetch_from=}")
     else:
         next_uid_to_fetch_from = uid_to_fetch_from
@@ -623,7 +623,7 @@ def main():     # pragma: no cover
                                                       delete_processed=delete_processed, limit=limit,
                                                       save_file=save_file)
                 demisto.debug(f"{next_run=}")
-                demisto.setLastRun(next_run) if next_run else None
+                demisto.setLastRun(next_run)
                 demisto.incidents(incidents)
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
