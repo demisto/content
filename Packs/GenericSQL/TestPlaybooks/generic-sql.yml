@@ -135,7 +135,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1535
+          "y": 1360
         }
       }
     note: false
@@ -170,7 +170,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2030
+          "y": 1855
         }
       }
     note: false
@@ -198,7 +198,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2745
+          "y": 2570
         }
       }
     note: false
