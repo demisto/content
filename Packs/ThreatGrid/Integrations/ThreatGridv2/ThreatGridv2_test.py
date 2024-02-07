@@ -728,4 +728,3 @@ def test_schedule_command_sample_upload_when_state_is_fail(
     )
     with pytest.raises(DemistoException, match=expected_exception):
         schedule_command({"sample_id": "test"}, mock_client)
-    
