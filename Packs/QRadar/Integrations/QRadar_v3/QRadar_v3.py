@@ -585,9 +585,11 @@ class Client(BaseClient):
 
     def reference_sets_list(self, range_: Optional[str] = None, ref_name: Optional[str] = None,
                             filter_: Optional[str] = None, fields: Optional[str] = None):
-        name_suffix = f'/{parse.quote(ref_name, safe="")}' if ref_name else ''
-        params = assign_params(fields=fields) if ref_name else assign_params(filter=filter_, fields=fields)
-        additional_headers = {'Range': range_} if not ref_name else None
+        name_suffix = f'/{parse.quote(ref_name, safe="")}' if ref_name and not filter_ else ''
+        filter_ = f"({filter_}) and name='{ref_name}'" if ref_name and filter_ else filter_
+        demisto.debug(f"### {filter_=}")
+        params = assign_params(filter=filter_, fields=fields)
+        additional_headers = {'Range': range_}
         return self.http_request(
             method='GET',
             url_suffix=f'/reference_data/sets{name_suffix}',
@@ -2830,7 +2832,8 @@ def qradar_reference_sets_list_command(client: Client, args: dict) -> CommandRes
 
     # if this call fails, raise an error and stop command execution
     response = client.reference_sets_list(range_, ref_name, filter_, fields)
-    if ref_name:
+    demisto.debug(f"#### {response=}")
+    if ref_name and not filter_:
         outputs = dict(response)
         if convert_date_value and outputs.get('element_type') == 'DATE':
             for data_entry in outputs.get('data', []):
