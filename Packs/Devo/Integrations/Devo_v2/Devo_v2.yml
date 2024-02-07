@@ -194,6 +194,8 @@ script:
     description: Queries multiple tables for a given token and returns relevant results.
   - name: devo-write-to-table
     arguments:
+    - name: tag
+      description: The tag to assign to the records.
     - name: tableName
       required: true
       description: The name of the table to write to.
@@ -221,7 +223,6 @@ script:
     - name: headers
       required: true
       description: Headers for lookup table control.
-      isArray: true
     - name: records
       required: true
       description: Records to write to the specified table.

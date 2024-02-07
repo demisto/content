@@ -520,48 +520,6 @@ def fetch_incidents():
     return incidents
 
 
-def filter_results_by_fields(results, filtered_columns_string):
-    """
-    Filter a list of dictionaries by including only specified fields.
-
-    Parameters:
-        - results (list): A list of dictionaries representing rows of data.
-        - filtered_columns_string (str): A comma-separated string containing field names to include.
-
-    Returns:
-        list: A new list of dictionaries with only the specified fields.
-
-    Raises:
-        ValueError: If the filtered_columns_string contains invalid column names.
-    """
-    if filtered_columns_string == "":
-        raise ValueError("filtered_columns cannot be empty.")
-
-    if not filtered_columns_string:
-        return results
-
-    if not results:
-        return results
-
-    filtered_columns_list = argToList(filtered_columns_string)
-
-    # Check if all fields from filtered_columns_list are present in the first dictionary in results
-    first_dict = results[0]
-    missing_columns = set(filtered_columns_list) - set(first_dict)
-    if missing_columns:
-        raise ValueError(f"Fields {list(missing_columns)} not found in query result")
-
-    filtered_results = []
-
-    for result in results:
-        filtered_result = {
-            column: result.get(column) for column in filtered_columns_list
-        }
-        filtered_results.append(filtered_result)
-
-    return filtered_results
-
-
 def run_query_command(offset, items):
     to_query = demisto.args()["query"]
     timestamp_from = demisto.args()["from"]
@@ -571,7 +529,6 @@ def run_query_command(offset, items):
     linq_base = demisto.args().get("linqLinkBase", None)
     time_range = get_time_range(timestamp_from, timestamp_to)
     to_query = f"{to_query} offset {offset} limit {items}"
-    filtered_columns = demisto.args().get("filtered_columns", None)
     results = list(
         ds.Reader(
             oauth_token=READER_OAUTH_TOKEN,
@@ -596,8 +553,6 @@ def run_query_command(offset, items):
             linq_base=linq_base,
         )
     }
-
-    results = filter_results_by_fields(results, filtered_columns)
 
     entry = {
         "Type": entryTypes["note"],
@@ -643,7 +598,6 @@ def get_alerts_command(offset, items):
     linq_base = demisto.args().get("linqLinkBase", None)
     user_alert_table = demisto.args().get("table_name", None)
     user_prefix = demisto.args().get("prefix", "")
-    filtered_columns = demisto.args().get("filtered_columns", None)
     user_alert_table = user_alert_table if user_alert_table else DEFAULT_ALERT_TABLE
     if user_prefix:
         user_prefix = f"{user_prefix}_"
@@ -708,8 +662,6 @@ def get_alerts_command(offset, items):
         for ed in res[extra_data]:
             res[extra_data][ed] = urllib.parse.unquote_plus(res[extra_data][ed])
 
-    results = filter_results_by_fields(results, filtered_columns)
-
     entry = {
         "Type": entryTypes["note"],
         "Contents": results,
@@ -749,13 +701,15 @@ def get_alerts_command(offset, items):
 
 
 def multi_table_query_command(offset, items):
+    # Check if items is negative
+    if items < 0:
+        raise ValueError("The 'limit' parameter cannot be negative.")
     tables_to_query = check_type(demisto.args()["tables"], list)
     search_token = demisto.args()["searchToken"]
     timestamp_from = demisto.args()["from"]
     timestamp_to = demisto.args().get("to", None)
     write_context = demisto.args()["writeToContext"].lower()
     query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
-    filtered_columns = demisto.args().get("filtered_columns", None)
     global COUNT_MULTI_TABLE
     time_range = get_time_range(timestamp_from, timestamp_to)
 
@@ -798,8 +752,6 @@ def multi_table_query_command(offset, items):
             )
 
     concurrent.futures.wait(futures)
-
-    all_results = filter_results_by_fields(all_results, filtered_columns)
 
     entry = {
         "Type": entryTypes["note"],
@@ -963,6 +915,7 @@ def write_to_lookup_table_command():
         con.flush_buffer()
         con.socket.shutdown(0)
 
+        # Return three lines as output
         return f"Lookup Table Name: {lookup_table_name}.\nTotal Records Sent: {total_events}.\nTotal Bytes Sent: {total_bytes}."
 
     except Exception as e:
