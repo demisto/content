@@ -235,7 +235,7 @@ tasks:
       {
         "position": {
           "x": 1260,
-          "y": 2380
+          "y": 2570
         }
       }
     note: false
@@ -269,8 +269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 2210
+          "x": 930,
+          "y": 2400
         }
       }
     note: false
@@ -379,11 +379,11 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      No:
-      - "51"
       Finish Playbook:
       - "30"
-      Yes:
+      "No":
+      - "51"
+      "Yes":
       - "76"
     separatecontext: false
     continueonerrortype: ""
@@ -837,6 +837,7 @@ tasks:
     nexttasks:
       '#none#':
       - "79"
+      - "83"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -927,8 +928,7 @@ tasks:
       autoResourceRemediation:
         simple: "False"
       autoUserRemediation:
-        complex:
-          root: inputs.autoUserRemediationautoUserRemediation
+        simple: ${inputs.autoUserRemediation}
       cloudProvider:
         complex:
           root: alert
@@ -964,7 +964,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
+          "x": 930,
           "y": 2040
         }
       }
@@ -1113,6 +1113,10 @@ tasks:
         simple: "1"
       AzureSearchTime:
         simple: ago(1d)
+      GcpProjectName:
+        complex:
+          root: alert.cloudproject
+          accessor: cloudproject
       GcpTimeSearchFrom:
         simple: "1"
       MfaAttemptThreshold:
@@ -1144,10 +1148,6 @@ tasks:
           accessor: cloudprovider
       failedLogonThreshold:
         simple: "20"
-      GcpProjectName:
-        complex:
-          root: alert.cloudproject
-          accessor: cloudproject
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1169,19 +1169,199 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: af782aef-ba76-45b9-87a3-e6e385bebb1e
+    type: condition
+    task:
+      id: af782aef-ba76-45b9-87a3-e6e385bebb1e
+      version: -1
+      name: Should rotate the credentials automatically?
+      description: Whether to rotate the credentials automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.autoUserRemediation
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: ff0f8a46-1a28-46b7-81bf-512130aefb3a
+    type: playbook
+    task:
+      id: ff0f8a46-1a28-46b7-81bf-512130aefb3a
+      version: -1
+      name: Cloud Credentials Rotation - Generic
+      description: |-
+        ## **Cloud Credentials Rotation - Generic**
+
+        This comprehensive playbook combines the remediation steps from AWS, Azure, and GCP sub-playbooks into a single, cohesive guide. Regardless of which Cloud Service Provider (CSP) you're working with, this playbook will direct you to the relevant steps, ensuring swift and effective response.
+
+        The primary objective is to offer an efficient way to address compromised credentials across different cloud platforms. By consolidating the key steps from AWS, Azure, and GCP, it minimizes the time spent searching for platform-specific procedures and accelerates the remediation process, ensuring the highest level of security for your cloud environments.
+
+        ## **Integrations for Each Sub-Playbook**
+
+        In order to seamlessly execute the actions mentioned in each sub-playbook, specific integrations are essential. These integrations facilitate the automated tasks and processes that the playbook carries out. Here are the required integrations for each sub-playbook:
+
+        ### **AWS Sub-Playbook:**
+        1. [**AWS - IAM**](https://xsoar.pan.dev/docs/reference/integrations/aws---iam): Used to manage AWS Identity and Access Management.
+        2. [**AWS - EC2**](https://xsoar.pan.dev/docs/reference/integrations/aws---ec2): Essential for managing Amazon Elastic Compute Cloud (EC2) instances.
+
+        ### **GCP Sub-Playbook:**
+        1. [**Google Workspace Admin**](https://xsoar.pan.dev/docs/reference/integrations/g-suite-admin): Manages users, groups, and other entities within Google Workspace.
+        2. [**GCP-IAM**](https://xsoar.pan.dev/docs/reference/integrations/gcp-iam): Ensures management and control of GCP's Identity and Access Management.
+
+        ### **Azure Sub-Playbook:**
+        1. [**Microsoft Graph Users**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-user): Manages users and related entities in Microsoft Graph.
+        2. [**Microsoft Graph Applications**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-applications): Manages applications within Microsoft Graph.
+      playbookName: Cloud Credentials Rotation - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      AWS-accessKeyID:
+        simple: ${Core.OriginalAlert.event.identity_orig.accessKeyId}
+      AWS-instanceID:
+        complex:
+          root: alert.username
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alert.username
+                iscontext: true
+              right:
+                value:
+                  simple: i-
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "2"
+      AWS-newInstanceProfileName:
+        simple: ${inputs.AWS-newInstanceProfileName}
+      AWS-newRoleName:
+        simple: ${inputs.AWS-newRoleName}
+      AWS-roleNameToRestrict:
+        simple: ${inputs.AWS-roleNameToRestrict}
+      AWS-userID:
+        simple: ${alert.username}
+      Azure-AppID:
+        simple: ${Core.OriginalAlert.event.identity_orig.claims.appid}
+      Azure-ObjectID:
+        complex:
+          root: Core.OriginalAlert.event.identity_orig
+          accessor: claims
+          transformers:
+          - operator: Stringify
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: http://schemas.microsoft.com/identity/claims/objectidentifier":"\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12}
+              unpack_matches: {}
+          - operator: ExtractInbetween
+            args:
+              from:
+                value:
+                  simple: http://schemas.microsoft.com/identity/claims/objectidentifier":"
+              to:
+                value:
+                  simple: '"'
+      Azure-userID:
+        simple: ${alert.username}
+      GCP-SAEmail:
+        simple: ${Core.OriginalAlert.event.identity_orig.principalEmail}
+      GCP-cloudProject:
+        simple: ${alert.cloudproject}
+      GCP-userID:
+        simple: ${alert.username}
+      GCP-zone:
+        simple: ${Core.OriginalAlert.event.zone}
+      RemediationType:
+        simple: ${inputs.credentialsRemediationType}
+      cloudProvider:
+        simple: ${alert.cloudprovider}
+      identityType:
+        simple: ${alert.cloudidentitytype}
+      shouldCloneSA:
+        simple: ${inputs.shouldCloneSA}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "32_47_#default#": 0.28,
       "32_64_Malicious": 0.21,
-      "37_51_False Positive": 0.58,
-      "37_76_True Positive": 0.43,
+      "37_30_Finish Playbook": 0.15,
       "61_57_#default#": 0.61,
-      "61_64_yes": 0.35
+      "61_64_yes": 0.35,
+      "83_31_#default#": 0.38,
+      "83_84_yes": 0.44
     },
     "paper": {
       "dimensions": {
-        "height": 2565,
+        "height": 2755,
         "width": 1710,
         "x": 280,
         "y": -120
@@ -1200,6 +1380,48 @@ inputs:
     simple: "False"
   required: false
   description: 'Whether to execute the block remediation automatically. (Default: False)'
+  playbookInputQuery:
+- key: credentialsRemediationType
+  value:
+    simple: Reset
+  required: false
+  description: |-
+    The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:
+
+    Reset: By entering "Reset" in the input, the playbook will execute password reset.
+    Supports: AWS, MSGraph Users, GCP and GSuite Admin.
+
+    Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.
+    Supports: GCP, GSuite Admin and MSGraph Users.
+
+    Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.
+    Supports: AWS.
+
+    ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP.
+  playbookInputQuery:
+- key: shouldCloneSA
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Whether to clone the compromised SA before putting a deny policy to it.
+    Supports: AWS.
+    True/False
+  playbookInputQuery:
+- key: AWS-newInstanceProfileName
+  value: {}
+  required: false
+  description: The new instance profile name to assign in the clone service account flow.
+  playbookInputQuery:
+- key: AWS-newRoleName
+  value: {}
+  required: false
+  description: The new role name to assign in the clone service account flow.
+  playbookInputQuery:
+- key: AWS-roleNameToRestrict
+  value: {}
+  required: false
+  description: If provided, the role will be attached with a deny policy without the compute instance analysis flow.
   playbookInputQuery:
 outputs: []
 tests:
