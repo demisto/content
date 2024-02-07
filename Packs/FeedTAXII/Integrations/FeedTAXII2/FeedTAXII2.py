@@ -49,21 +49,34 @@ def module_test_command(client, limit, fetch_full_feed):
 
 
 def filter_indicators(indicators, last_run):
+    """
+    Filter the indicators returned from the taxii server, by taking out indicators that we're ingested in the previous fetch
+    call and their modified date was not updated,
+    """
     last_indicators = last_run.get("latest_indicators")  # indicators from prev fetch
     new_indicators = []
-    if not last_indicators: # first fetch
+    if not last_indicators:    # first fetch
         last_run["latest_indicators"] = indicators
         return indicators
     for indicator in indicators:
-        value = indicator.get('value')
-        saved_indicator = list(filter(lambda ind: ind.get('value') == value, last_indicators))  # the indicator was fetched in the prev fetch as well
-        if saved_indicator:
-            modified_date = saved_indicator[0].get("modified")  # stored modified date of the indicator
-            if indicator.get("modified") > modified_date:  # the indicator was fetched in the last fetch, but also modified in this fetch -> should return
+        indicator_id = indicator.get("rawJSON", {}).get('id', "")
+
+        # check if the indicator is stored in latest_indicators
+        saved_indicator = list(filter(lambda ind: ind.get("rawJSON", {}).get('id', "") == indicator_id, last_indicators))
+
+        # if the indicator is stored in latest_indicators and it's not a dummy indicator -> check if it was modified
+        if saved_indicator and indicator.get("value") != "$$DummyIndicator$$":
+            modified_date = saved_indicator[0].get("rawJSON", {}).get("modified", "")
+
+            # the indicator is stored in latest_indicators, but got modified -> add to new_indicators
+            if indicator.get("rawJSON", {}).get("modified", "") > modified_date:
                 new_indicators.append(indicator)
-        else:   # the indicator was not fetched in the last fetch -> it's new/modified recently and should return to server
+
+        # the indicator is not stored in latest_indicators -> add to new_indicators
+        else:
             new_indicators.append(indicator)
 
+    # updated lastrun with the indicators fetched in the current round
     last_run["latest_indicators"] = indicators
     return new_indicators
 
