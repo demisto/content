@@ -19,9 +19,10 @@ def get_ask_tasks(inc_id: str) -> List[dict]:
         List[dict]: List of ask tasks from the given incident
     """
     res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
-    if not res or isError(res[0]):
-        raise Exception(res)
-
+    if not res:
+        raise DemistoException(f"No work plan found for the incident with id: {inc_id}")
+    if isError(res[0]):
+        raise DemistoException(f"Error occurred while fetching work plan for incident with id: {inc_id}. Error: {res}")
     tasks: list = list(dict_safe_get(res[0], ['Contents', 'response', 'invPlaybook', 'tasks'], {}).values())
     ask_tasks = []
     for task in tasks:
