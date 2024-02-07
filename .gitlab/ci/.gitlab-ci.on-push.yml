@@ -140,7 +140,7 @@ validate-content-conf:
     - |
       echo "${TEST_VAR_XSOAR8}" | tee -a /etc/hosts
       cat /etc/hosts
-      curl -v "${TEST_VAR_XSOAR8_API}/about" --insecure --header "x-xdr-auth-id: 1" --header "Authorization: "${DEMISTO_API_KEY_8}""
+      curl -v "${TEST_VAR_XSOAR8_API}/about" --insecure --header "Authorization: Basic "${DEMISTO_API_KEY_8}""
       !reference [.download-demisto-conf]
       !reference [.create-release-notes-and-common-docs]
       !reference [.secrets-fetch]
