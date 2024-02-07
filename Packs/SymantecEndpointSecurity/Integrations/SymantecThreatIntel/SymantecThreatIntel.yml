@@ -149,20 +149,20 @@ script:
     description: Get information whether a given file has been blocked by any Symantec technologies.
     arguments:
     - name: file
-      description: Comma-separated list of file Sha256 hashes
+      description: Comma-separated list of file Sha256 hashes.
       isArray: true
     outputs:
     - contextPath: Symantec.Protection.file
-      description: 'input file sha256'
+      description: 'input file sha256.'
       type: String
     - contextPath: Symantec.Protection.state.technology
-      description: 'Symantec technology providing protection'
+      description: 'Symantec technology providing protection.'
       type: String
     - contextPath: Symantec.Protection.state.firstDefsetVersion
-      description: 'The first definition version with protection'
+      description: 'The first definition version with protection.'
       type: String
     - contextPath: Symantec.Protection.state.threatName
-      description: 'The name of the threat the file is detected as'
+      description: 'The name of the threat the file is detected as.'
       type: String
   - name: symantec-protection-network
     description: Get  information whether given domain or ip has been blocked by any Symantec technologies.
@@ -172,16 +172,16 @@ script:
       isArray: true
     outputs:
     - contextPath: Symantec.Protection.network
-      description: 'input domain or ip'
+      description: 'input domain or ip.'
       type: String
     - contextPath: Symantec.Protection.state.technology
-      description: 'Symantec technology providing protection'
+      description: 'Symantec technology providing protection.'
       type: String
     - contextPath: Symantec.Protection.state.firstDefsetVersion
-      description: 'The first definition version with protections'
+      description: 'The first definition version with protections.'
       type: String
     - contextPath: Symantec.Protection.state.threatName
-      description: 'The name of the threat the domain or is detected as'
+      description: 'The name of the threat the domain or is detected as.'
       type: String
   - name: symantec-protection-cve
     description: Get returns information whether a given CVE has been blocked by any Symantec technologies.
@@ -191,16 +191,16 @@ script:
       isArray: true
     outputs:
     - contextPath: Symantec.Protection.file
-      description: 'input CVE'
+      description: 'input CVE.'
       type: String
     - contextPath: Symantec.Protection.state.technology
-      description: 'Symantec technology providing protection'
+      description: 'Symantec technology providing protection.'
       type: String
     - contextPath: Symantec.Protection.state.firstDefsetVersion
-      description: 'The first definition version with protections'
+      description: 'The first definition version with protections.'
       type: String
     - contextPath: Symantec.Protection.state.threatName
-      description: 'The name of the threat the domain or is detected as'
+      description: 'The name of the threat the domain or is detected as.'
       type: String
   runonce: false
   script: '-'

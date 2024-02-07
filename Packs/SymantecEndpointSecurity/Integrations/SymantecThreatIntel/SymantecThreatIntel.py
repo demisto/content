@@ -90,6 +90,14 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def ensure_argument(args: dict[str, Any], arg_name: str) -> list[str]:
+    value = args.get(arg_name)
+    if not value:
+        raise ValueError(f'the value of {arg_name} must not be empty')
+
+    return argToList(value)
+
+
 def intersect(a: list, b: list) -> list:
     return [x for x in a if x in b]
 
@@ -211,7 +219,7 @@ def test_module(client: Client, oauth: str) -> str:
 
 
 def ip_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
-    values = argToList(arg=args.get('ip', ''))
+    values = ensure_argument(args, 'ip')
     results = execute_network_command(client, values)
     command_results = []
     for result in results:
@@ -234,7 +242,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandR
 
 
 def url_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
-    values = argToList(arg=args.get('url', ''))
+    values = ensure_argument(args, 'url')
     results = execute_network_command(client, values)
     command_results = []
     for result in results:
@@ -257,7 +265,7 @@ def url_reputation_command(client: Client, args: Dict[str, Any]) -> list[Command
 
 
 def domain_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
-    values = argToList(arg=args.get('domain', ''))
+    values = ensure_argument(args, 'domain')
     results = execute_network_command(client, values)
     command_results = []
     for result in results:
@@ -280,7 +288,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any]) -> list[Comm
 
 
 def file_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
-    values = argToList(arg=args.get('file', ''))
+    values = ensure_argument(args, 'file')
     results = []
     for file in values:
         # The API only supports SHA256, so return a "Unknown" Reputation otherwise
@@ -299,18 +307,18 @@ def file_reputation_command(client: Client, args: Dict[str, Any]) -> list[Comman
                                       malicious_description=severity[1]
                                       )
 
-        file = Common.File(sha256=result['indicator'], dbot_score=dbot_score)
+        file_indicator = Common.File(sha256=result['indicator'], dbot_score=dbot_score)
         command_result = CommandResults(outputs_prefix=f'{INSIGHT_CONTEXT_PREFIX}.File',
                                         outputs_key_field=OUTPUT_KEY,
                                         outputs=result,
-                                        indicator=file)
+                                        indicator=file_indicator)
         command_results.append(command_result)
 
     return command_results
 
 
 def symantec_protection_file_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
-    values = argToList(arg=args.get('file', ''))
+    values = ensure_argument(args, 'file')
     results = []
     for file in values:
         # The API only supports SHA256, so return a "Unknown" Reputation otherwise
@@ -328,7 +336,7 @@ def symantec_protection_file_command(client: Client, args: Dict[str, Any]) -> li
 
 
 def symantec_protection_network_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
-    values = argToList(arg=args.get('network', ''))
+    values = ensure_argument(args, 'network')
     results = []
     for network in values:
         result = client.broadcom_network_protection(network)
@@ -347,7 +355,7 @@ def symantec_protection_network_command(client: Client, args: Dict[str, Any]) ->
 
 
 def symantec_protection_cve_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
-    values = argToList(arg=args.get('cve', ''))
+    values = ensure_argument(args, 'cve')
     results = []
     for cve in values:
         result = client.broadcom_cve_protection(cve)
