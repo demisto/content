@@ -11348,7 +11348,7 @@ def retry(
     :param times: The number of times to trigger the retry mechanism.
 
     :type delay: ``int``
-    :param delay: The time to sleep between each time
+    :param delay: The time in seconds to sleep between each time
 
     :type exceptions: ``Exception``
     :param exceptions: The exceptions that should be caught when executing
@@ -11462,6 +11462,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     :type should_update_health_module: ``bool``
     :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
+        This can be useful when using send_data_to_xsiam in batches for the same fetch.
 
     :return: None
     :rtype: ``None``

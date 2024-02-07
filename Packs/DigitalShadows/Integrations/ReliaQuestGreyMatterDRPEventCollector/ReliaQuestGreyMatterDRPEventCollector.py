@@ -55,6 +55,7 @@ class ReilaQuestClient(BaseClient):
         headers: dict[str, Any] | None = None,
         params: dict[str, Any] | None = None
     ) -> List[dict[str, Any]]:
+        demisto.debug(f'Running http request for url: {url_suffix} with params {params}')
         try:
             response = self._http_request(
                 method,
@@ -86,6 +87,8 @@ class ReilaQuestClient(BaseClient):
         limit: int = MAX_PAGE_SIZE
     ):
         """
+        A generator to retrieve the list of events according to the limit.
+
         Args:
             event_num_after (int): After which event number to continue retrieving the events
             event_created_before (str): retrieve events occurred before a specific time (included),format: YYYY-MM-DDThh:mm:ssTZD.
@@ -104,16 +107,17 @@ class ReilaQuestClient(BaseClient):
         while amount_of_fetched_events < limit:
             params["event-num-after"] = latest_event or event_num_after
             events = self.http_request("/triage-item-events", params=params)
-            if len(events) == 0:
-                break
             amount_of_fetched_events += len(events)
             end_index = min(amount_of_fetched_events - limit, limit) if amount_of_fetched_events > limit else MAX_PAGE_SIZE
             events = events[:end_index]
             event_numbers = [event.get("event-num") for event in events]
-            latest_event = max(event_numbers)
-            demisto.info(f'Fetched {len(events)} events')
-            demisto.info(f'Fetched the following event IDs: {event_numbers}')
+            if event_numbers:
+                latest_event = max(event_numbers)
+            demisto.debug(f'Fetched {len(events)} events')
+            demisto.debug(f'Fetched the following event IDs: {event_numbers}, latest event is {latest_event}')
             yield events, latest_event
+            if len(events) < page_size:
+                break
 
     def triage_items(self, triage_item_ids: list[str]) -> List[dict[str, Any]]:
         """
@@ -165,6 +169,7 @@ class ReilaQuestClient(BaseClient):
         Note:
             by default the maximum size page for each request is 100.
         """
+        demisto.debug(f'Starting pagination on {url_suffix} for the following IDs {_ids} with page size {page_size}')
         chunk = 0
         response = []
         while chunk < len(_ids):
@@ -228,7 +233,7 @@ def enrich_events_with_triage_item(
         mapping between alert|incident IDs to the triage-IDs
     """
     triage_item_ids = list(triage_item_ids_to_events.keys())
-    demisto.info(f"Fetched the following item IDs: {triage_item_ids}")
+    demisto.debug(f"Fetched the following item IDs: {triage_item_ids}")
     triaged_items = client.triage_items(triage_item_ids)
 
     alert_ids_to_triage_ids: dict[str, str] = {}
@@ -268,7 +273,16 @@ def get_mitre_attack_ids(_dict: dict, mitre_ids: Optional[set] = None) -> set[st
     return mitre_ids
 
 
-def enrich_events_with_mitre_attack_mapping(alert_incident: dict) -> tuple[list[str], list[str], list[str]]:
+def enrich_event_with_mitre_attack_mapping(alert_incident: dict) -> tuple[list[str], list[str], list[str]]:
+    """
+    Enrich a specific with mitre attack metadata
+
+    Args:
+        alert_incident: incident/alert raw response
+
+    Returns:
+        mitre-tactic-names, mitre-technique names and all mitre attack IDs within the mitre-attack-mapping response
+    """
     mitre_tactic_names, mitre_technique_names = set(), set()
     for tactic in (alert_incident.get("mitre-attack-mapping") or {}).get("tactics") or []:
         mitre_tactic_names.add(tactic.get("name"))
@@ -290,19 +304,31 @@ def enrich_events_with_incident_or_alert_metadata(
     assets_ids_to_triage_ids: dict[str, List[str]]
 ):
     """
-    Enrich events with incident/alerts metadata
+    Enrich events with incident/alerts metadata including mitre attack metadata
+
+    Args:
+        alerts_incidents: a list of raw response of incidents OR a list of raw response of alerts
+        triage_item_ids_to_events: This is a mapping between the triage item IDs to their events, each triage ID can have several
+            events associated with it
+        event_ids_to_triage_ids: mapping between the event IDs to the triage IDs to enrich events easily
+        event_type (str): The event type (incident or alert)
+        assets_ids_to_triage_ids: Will populate the asset-IDS to the triage IDs.
     """
     for alert_incident in alerts_incidents:
         _id = alert_incident.get("id")
-        mitre_tactic_names, mitre_technique_names, mitre_ids = enrich_events_with_mitre_attack_mapping(alert_incident)
+        # get mitre attack metadata
+        mitre_tactic_names, mitre_technique_names, mitre_ids = enrich_event_with_mitre_attack_mapping(alert_incident)
         for event in triage_item_ids_to_events[event_ids_to_triage_ids[_id]]:  # type: ignore[index]
+            # enrich the alert/incident with mitre-attack metadata.
             event[event_type] = alert_incident
             event["mitre_tactics"] = mitre_tactic_names
             event["mitre_techniques"] = mitre_technique_names
             event["mitre_ids"] = mitre_ids
+            # if event-action = create (its a new event) we enrich the _time with event-created and _ENTRY_STATUS with new
             if event.get("event-action") == "create" and (event_created := event.get("event-created")):
                 event["_time"] = event_created
                 event["_ENTRY_STATUS"] = "new"
+        # enrich the alert/incident with assets
         for asset in alert_incident.get("assets") or []:
             if asset_id := asset.get("id"):
                 if asset_id not in event_ids_to_triage_ids:
@@ -317,6 +343,11 @@ def enrich_events_with_assets_metadata(
 ):
     """
     Enrich events with assets metadata
+
+    Args:
+        client: the ReilaQuestClient client.
+        assets_ids_to_triage_ids: a mapping between the asset IDs to triage IDs to enrich them easily
+        triage_item_ids_to_events: a mapping between the triage item IDs to events.
     """
     asset_ids = list(assets_ids_to_triage_ids.keys())
     demisto.info(f'Fetched the following asset-IDs {asset_ids}')
@@ -334,6 +365,13 @@ def enrich_events_with_assets_metadata(
 def enrich_events(client: ReilaQuestClient, events: list[dict]) -> list[dict]:
     """
     Enrich the events with more data from the api.
+
+    Args:
+        client: The ReilaQuestClient client
+        events: a list of raw-response of events
+
+    Returns:
+        All the events enriched with assets/alert/incident/mitre-mapping metadata.
     """
     triage_item_ids_to_events, largest_event_num = get_triage_item_ids_to_events(events)
 
@@ -408,10 +446,10 @@ def fetch_events(client: ReilaQuestClient, last_run: dict[str, Any], max_fetch: 
         for events, largest_event in client.list_triage_item_events(
             event_num_after=last_run.get(LAST_FETCHED_EVENT_NUM), limit=max_fetch
         ):
-            enriched_events = enrich_events(client, events=events)
-            if not enriched_events:
+            if not events:
                 demisto.info(f'There are no events to fetch when last run is {last_run}, hence exiting')
                 break
+            enriched_events = enrich_events(client, events=events)
             send_events_to_xsiam(enriched_events, vendor=VENDOR, product=PRODUCT, should_update_health_module=False)
             events_sent += len(enriched_events)
             new_last_run.update({LAST_FETCHED_EVENT_NUM: largest_event})
