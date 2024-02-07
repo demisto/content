@@ -221,7 +221,7 @@ def test_module(client: Client, oauth: str) -> str:
     # https://xsoar.pan.dev/docs/integrations/code-conventions#credentials
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any], reliability: DBotScoreReliability) -> list[CommandResults]:
+def ip_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, 'ip')
     results = execute_network_command(client, values)
     command_results = []
@@ -245,7 +245,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], reliability: DBo
     return command_results
 
 
-def url_reputation_command(client: Client, args: Dict[str, Any], reliability: DBotScoreReliability) -> list[CommandResults]:
+def url_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, 'url')
     results = execute_network_command(client, values)
     command_results = []
@@ -269,7 +269,7 @@ def url_reputation_command(client: Client, args: Dict[str, Any], reliability: DB
     return command_results
 
 
-def domain_reputation_command(client: Client, args: Dict[str, Any], reliability: DBotScoreReliability) -> list[CommandResults]:
+def domain_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, 'domain')
     results = execute_network_command(client, values)
     command_results = []
@@ -293,7 +293,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], reliability:
     return command_results
 
 
-def file_reputation_command(client: Client, args: Dict[str, Any], reliability: DBotScoreReliability) -> list[CommandResults]:
+def file_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, 'file')
     results = []
     for file in values:

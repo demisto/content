@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: SymantecThreatIntel
+  id: Symantec Threat Intel
   version: -1
 configuration:
 - defaultvalue: https://api.sep.securitycloud.symantec.com/
