@@ -58,7 +58,11 @@ def identify_attached_mail(args):
         else:
             for ent_id in entry_ids:
                 res = demisto.executeCommand('getEntry', {'id': ent_id})
-                entries.extend(res)
+                if not is_error(res):
+                    id = is_entry_email(res[0])
+                    if id:
+                        # return the first email entry that we find.
+                        return 'yes', {'reportedemailentryid': id}
     else:
         entries = demisto.executeCommand('getEntries', {"filter": {"categories": ["attachments"]}})
 
@@ -68,6 +72,7 @@ def identify_attached_mail(args):
             # leave the following comment as server used it to detect the additional context path used beyond the condition values
             # demisto.setContext('reportedemailentryid', id)
             return 'yes', {'reportedemailentryid': id}
+
     return 'no', None
 
 
