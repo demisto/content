@@ -5,14 +5,26 @@ import pytest
 
 def execute_command(command, args):
     if command == 'getEntry':
-        return [
-            {
-                'Type': entryTypes['file'],
-                'FileMetadata': {
-                    'info': 'news or mail text, ASCII text'
+        if args['id'] == '23@2':
+            return [
+                {
+                    'Type': entryTypes['note'],
+                    'FileMetadata': {
+                        'info': 'koko'
+                    },
+                    'ID': '23@2'
                 }
-            }
-        ]
+            ]
+        elif args['id'] == '24@2':
+            return [
+                {
+                    'Type': entryTypes['file'],
+                    'FileMetadata': {
+                        'info': 'news or mail text, ASCII text'
+                    },
+                    'ID': '24@2'
+                }
+            ]
     if command == "getEntries":
         return {}
     return None
@@ -41,19 +53,17 @@ def test_identify_attached_mail(mocker):
     entry_ids = """[\"23@2\",\"24@2\"]"""
     from CommonServerPython import demisto
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
-    mocker.patch.object(IdentifyAttachedEmail, 'is_entry_email', return_value=True)
     args = {
         'entryid': entry_ids
     }
     results = identify_attached_mail(args)
-    assert results == ('yes', {'reportedemailentryid': True})
+    assert results == ('yes', {'reportedemailentryid': '24@2'})
 
 
 def test_identify_attached_mail_no_email_attached(mocker):
-    entry_ids = """[\"23@2\",\"24@2\"]"""
+    entry_ids = """[\"23@2\"]"""
     from CommonServerPython import demisto
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
-    mocker.patch.object(IdentifyAttachedEmail, 'is_entry_email', return_value=False)
 
     args = {
         'entryid': entry_ids
