@@ -2037,7 +2037,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):      # pra
     return None
 
 
-def handle_attached_email_with_incorrect_id(attached_email: Message):
+def handle_attached_email_with_incorrect_message_id(attached_email: Message):
     """This function handles a malformed Message-ID value which can be returned in the header of certain email objects.
     This issue happens due to a current bug in "email" library and further explained in XSUP-32074.
     Public issue link: https://github.com/python/cpython/issues/105802
@@ -2049,10 +2049,12 @@ def handle_attached_email_with_incorrect_id(attached_email: Message):
     Returns:
         Message: attached email object.
     """
+    demisto.debug('XSUP-32660: handle_attached_email_with_incorrect_message_id running')
     message_id_value = ""
     for i in range(len(attached_email._headers)):
         if attached_email._headers[i][0] == "Message-ID":
             message_id = attached_email._headers[i][1]
+            demisto.debug(f'XSUP-32660: {message_id=}')
             try:
                 if message_id.endswith("]>") and message_id.startswith("<["):
                     demisto.debug(f"Fixing invalid {message_id=} attachment header by removing its square bracket \
@@ -2071,8 +2073,21 @@ def handle_attached_email_with_incorrect_id(attached_email: Message):
             break
     if message_id_value:
         # If the Message-ID header was fixed in the context of this function, it will be inserted again to the _headers list
+        demisto.debug(f'XSUP-32660: {message_id_value=}')
         attached_email._headers.append(("Message-ID", message_id_value))
     return attached_email
+
+
+def handle_incorrect_message_id(incorrect_id):
+    """
+    Handles the same logic as handle_attached_email_with_incorrect_message_id but expects only a string.
+    """
+    demisto.debug('XSUP-32660: handle_incorrect_message_id running')
+    if incorrect_id.endswith("]>") and incorrect_id.startswith("<["):
+        demisto.debug(f'XSUP-32660: value returned from handle_incorrect_message_id: "<{incorrect_id[2:-2]}>"')
+        return f"<{incorrect_id[2:-2]}>"
+    demisto.debug(f'XSUP-32660: value returned from handle_incorrect_message_id: {incorrect_id=}')
+    return incorrect_id
 
 
 def parse_incident_from_item(item):     # pragma: no cover
@@ -2174,17 +2189,21 @@ def parse_incident_from_item(item):     # pragma: no cover
 
                 # save the attachment
                 if attachment.item.mime_content:
+                    demisto.debug('XSUP-32660: if attachment.item.mime_content')
                     mime_content = attachment.item.mime_content
                     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
+                    demisto.debug(f'XSUP-32660: {mime_content=}, {email_policy=}')
                     if isinstance(mime_content, str) and not mime_content.isascii():
                         mime_content = mime_content.encode()
                     attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
                         if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content, policy=email_policy)
+                    demisto.debug(f'XSUP-32660: {attached_email=}')
                     if attachment.item.headers:
+                        demisto.debug('XSUP-32660: if attachment.item.headers')
                         # compare header keys case-insensitive
                         attached_email_headers = []
-                        attached_email = handle_attached_email_with_incorrect_id(attached_email)
+                        attached_email = handle_attached_email_with_incorrect_message_id(attached_email)
                         for h, v in attached_email.items():
                             if not isinstance(v, str):
                                 try:
@@ -2195,7 +2214,7 @@ def parse_incident_from_item(item):     # pragma: no cover
 
                             v = ' '.join(map(str.strip, v.split('\r\n')))
                             attached_email_headers.append((h.lower(), v))
-                        demisto.debug(f'{attached_email_headers=}')
+                        demisto.debug(f'XSUP-32660: {attached_email_headers=}')
                         for header in attachment.item.headers:
                             if (
                                     (header.name.lower(), header.value)
@@ -2203,10 +2222,25 @@ def parse_incident_from_item(item):     # pragma: no cover
                                     and header.name.lower() != "content-type"
                             ):
                                 try:
-                                    attached_email.add_header(header.name, header.value)
+                                    if header.name.lower() == "message-id":
+                                        demisto.debug('XSUP-32660: header.name.lower() == "message-id"')
+                                        # Handle a case where a Message-ID header was NOT already in attached_email,
+                                        # and instead is coming from attachment.item.headers.
+                                        # Meaning it wasn't handled in handle_attached_email_with_incorrect_message_id function
+                                        # and instead it is handled here using handle_incorrect_message_id function.
+                                        correct_message_id = handle_incorrect_message_id(header.value)
+                                        demisto.debug(f'XSUP-32660: {correct_message_id=}')
+                                        if (header.name.lower(), correct_message_id) not in attached_email_headers:
+                                            demisto.debug('XSUP-32660: adding message-id header')
+                                            attached_email.add_header(header.name, correct_message_id)
+                                    else:
+                                        attached_email.add_header(header.name, header.value)
                                 except ValueError as err:
                                     if "There may be at most" not in str(err):
                                         raise err
+                                except IndexError as err:
+                                    demisto.debug('IndexError exception is raised from parse_incidents_from_item')
+                                    raise err
 
                     attached_email_bytes = attached_email.as_bytes()
                     chardet_detection = chardet.detect(attached_email_bytes)

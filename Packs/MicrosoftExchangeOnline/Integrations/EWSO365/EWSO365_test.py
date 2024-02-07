@@ -18,7 +18,7 @@ from EWSO365 import (
     get_expanded_group,
     get_item_as_eml,
     get_searchable_mailboxes,
-    handle_attached_email_with_incorrect_id,
+    handle_attached_email_with_incorrect_message_id,
     handle_html,
     handle_transient_files,
     parse_incident_from_item,
@@ -864,4 +864,4 @@ def test_handle_attached_email_with_incorrect_id(mocker, headers, expected_forma
     email_policy = SMTP
     attached_email = email.message_from_bytes(mime_content, policy=email_policy)
     attached_email._headers = headers
-    assert handle_attached_email_with_incorrect_id(attached_email)._headers == expected_formatted_headers
+    assert handle_attached_email_with_incorrect_message_id(attached_email)._headers == expected_formatted_headers
