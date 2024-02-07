@@ -2166,8 +2166,6 @@ def hunt_search_hash(client, args):
 
         return_results(results)
 
-        return outputs
-
 
 def hunt_search_running_process_hash(client, args):
     filehash = args.get("hash", None)
