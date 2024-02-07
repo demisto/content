@@ -221,7 +221,7 @@ def test_module(client: Client, oauth: str) -> str:
     # https://xsoar.pan.dev/docs/integrations/code-conventions#credentials
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
+def ip_reputation_command(client: Client, args: Dict[str, Any], reliability: DBotScoreReliability) -> list[CommandResults]:
     values = ensure_argument(args, 'ip')
     results = execute_network_command(client, values)
     command_results = []
@@ -231,6 +231,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandR
                                       indicator_type=DBotScoreType.IP,
                                       integration_name=INTEGRATION_NAME,
                                       score=severity[0],
+                                      reliability=reliability,
                                       malicious_description=severity[1]
                                       )
 
@@ -244,7 +245,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandR
     return command_results
 
 
-def url_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
+def url_reputation_command(client: Client, args: Dict[str, Any], reliability: DBotScoreReliability) -> list[CommandResults]:
     values = ensure_argument(args, 'url')
     results = execute_network_command(client, values)
     command_results = []
@@ -254,6 +255,7 @@ def url_reputation_command(client: Client, args: Dict[str, Any]) -> list[Command
                                       indicator_type=DBotScoreType.URL,
                                       integration_name=INTEGRATION_NAME,
                                       score=severity[0],
+                                      reliability=reliability,
                                       malicious_description=severity[1]
                                       )
 
@@ -267,7 +269,7 @@ def url_reputation_command(client: Client, args: Dict[str, Any]) -> list[Command
     return command_results
 
 
-def domain_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
+def domain_reputation_command(client: Client, args: Dict[str, Any], reliability: DBotScoreReliability) -> list[CommandResults]:
     values = ensure_argument(args, 'domain')
     results = execute_network_command(client, values)
     command_results = []
@@ -277,6 +279,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any]) -> list[Comm
                                       indicator_type=DBotScoreType.DOMAIN,
                                       integration_name=INTEGRATION_NAME,
                                       score=severity[0],
+                                      reliability=reliability,
                                       malicious_description=severity[1]
                                       )
 
@@ -290,7 +293,7 @@ def domain_reputation_command(client: Client, args: Dict[str, Any]) -> list[Comm
     return command_results
 
 
-def file_reputation_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
+def file_reputation_command(client: Client, args: Dict[str, Any], reliability: DBotScoreReliability) -> list[CommandResults]:
     values = ensure_argument(args, 'file')
     results = []
     for file in values:
@@ -307,7 +310,8 @@ def file_reputation_command(client: Client, args: Dict[str, Any]) -> list[Comman
                                       indicator_type=DBotScoreType.FILE,
                                       integration_name=INTEGRATION_NAME,
                                       score=severity[0],
-                                      malicious_description=severity[1]
+                                      malicious_description=severity[1],
+                                      reliability=reliability
                                       )
 
         file_indicator = Common.File(sha256=result['indicator'], dbot_score=dbot_score)
@@ -387,6 +391,7 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
 
     oauth = demisto.params().get('credentials', {}).get('password')
+    reliability = demisto.params().get('integration_reliability', DBotScoreReliability.B)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -402,19 +407,19 @@ def main() -> None:
 
         elif demisto.command() == 'url':
             client.authenticate(oauth)
-            return_results(url_reputation_command(client, demisto.args()))
+            return_results(url_reputation_command(client, demisto.args(), reliability))
 
         elif demisto.command() == 'ip':
             client.authenticate(oauth)
-            return_results(ip_reputation_command(client, demisto.args()))
+            return_results(ip_reputation_command(client, demisto.args(), reliability))
 
         elif demisto.command() == 'domain':
             client.authenticate(oauth)
-            return_results(domain_reputation_command(client, demisto.args()))
+            return_results(domain_reputation_command(client, demisto.args(), reliability))
 
         elif demisto.command() == 'file':
             client.authenticate(oauth)
-            return_results(file_reputation_command(client, demisto.args()))
+            return_results(file_reputation_command(client, demisto.args(), reliability))
         elif demisto.command() == 'symantec-protection-file':
             client.authenticate(oauth)
             return_results(symantec_protection_file_command(client, demisto.args()))

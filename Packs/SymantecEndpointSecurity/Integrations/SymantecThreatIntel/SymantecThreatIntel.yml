@@ -38,7 +38,7 @@ configuration:
   required: false
 description: 'Query Symantec Endpoint Security Threat Intel data.'
 display: Symantec Threat Intel
-name: SymantecThreatIntel
+name: Symantec Threat Intel
 script:
   commands:
   - name: file
