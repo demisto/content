@@ -157,6 +157,7 @@ To setup the mirroring follow these instructions:
   - The default playbook of the *Cortex XDR Incident* incident type is not *Cortex XDR Incident Sync*, change it to a 
      different playbook that does not use `XDRSyncScript`.
   - The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
+  - Mirroring impacts only incidents that were fetched after the mirroring was enabled for this instance. If incidents were fetched with the incorrect mapper, changing the mapper will not affect them. This can be resolved by resetting the last fetch run and re-fetching the incidents. New incidents will be created and the old ones will no longer be relevant.
 
 - The API includes a limit rate of 10 API requests per minute. Therefore, in a case of a limit rate exception, the sync loop will stop and will resume from the last incident. 
 
@@ -224,12 +225,9 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | PaloAltoNetworksXDR.Incident.alert_count | number | Total number of alerts in the incident. | 
 | PaloAltoNetworksXDR.Incident.med_severity_alert_count | number | Number of alerts with the severity MEDIUM. | 
 | PaloAltoNetworksXDR.Incident.user_count | number | Number of users involved in the incident. | 
-| PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Valid values are:
-"low","medium","high"
- | 
+| PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Valid values are: "low","medium","high" | 
 | PaloAltoNetworksXDR.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
- | 
+| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".  | 
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. | 
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
 | PaloAltoNetworksXDR.Incident.notes | String | Comments entered by the user regarding the incident. | 
