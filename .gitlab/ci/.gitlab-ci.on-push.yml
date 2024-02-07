@@ -313,6 +313,7 @@ xpanse-prepare-testing-bucket:
     - job: xsoar-prepare-testing-bucket
   script:
     - EXIT_CODE=0
+    - exit 1
     - section_start "Check if should run Instance role"
     - export INSTANCES_CREATED_FOR_ROLE=$(cat "${ENV_RESULTS_PATH}" | jq -c "map(select(.Role == \"${INSTANCE_ROLE}\")) | length")
     - |
