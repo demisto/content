@@ -305,7 +305,7 @@ script:
           type: string
     - arguments:
         - default: true
-          description: The entry ID of the html file.
+          description: The entry ID of the HTML file.
           name: EntryID
           required: true
         - defaultValue: 600px
