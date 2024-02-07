@@ -2488,7 +2488,7 @@ def sub_main():  # pragma: no cover
         elif demisto.command() == 'reply-mail':
             encode_and_submit_results(reply_email(args))
         else:
-            return_error('Command was not recognized by this integration')
+            return_error(f'Command: "{demisto.command()}" was not recognized by this integration')
 
     except Exception as e:
         import time
