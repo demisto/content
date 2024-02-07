@@ -1724,7 +1724,6 @@ Get policy device inactivity.
 
 
 ## Breaking changes from the previous version of this integration - Zimperium v2
-%%FILL HERE%%
 The following sections list the changes in this version.
 
 ### Commands
