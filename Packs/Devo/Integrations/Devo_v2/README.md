@@ -39,12 +39,36 @@ of the time that other traditional time series databases can't.
   * `CHAIN CA`
 
 
-## Configure Devo_v2 on Cortex XSOAR
+## Configure Devo v2 on Cortex XSOAR
 ---
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for Devo_v2
-3. Click __Add instance__ to create and configure a new integration instance.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Devo v2.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Query Server Endpoint (e.g. https://apiv2-us.devo.com/search/query) | True |
+    | Port (e.g. 443) | False |
+    | OAuth Token (Preferred method) | True |
+    | Writer relay to connect to (e.g. us.elb.relay.logtrust.net) | False |
+    | Writer JSON credentials | False |
+    | Devo base domain | False |
+    | Fetch incidents | False |
+    | Incident type | False |
+    | Custom Alert Table name(if not provided, 'siem.logtrust.alert.info' will be used) | False |
+    | Custom Alert Table prefix (provide prefix if custom table name provided) | False |
+    | Fetch incidents alert filter (Same filters for get-alerts) | False |
+    | Deduplication parameters JSON if required | False |
+    | Fetch Incident Limit(must be between 10 and 100; advisable 50 for better performance.) | False |
+    | Incidents Fetch Interval | False |
+    | Global query default timeout in seconds | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+    | Fetch Incidents Lookback Time (in seconds). Must be between 3600 (1 hour; default) to 86400 (24 hours). | False |
+    | Fetch Incident Time Frame (in seconds) | False |
+    
+    
     * __Name__: a textual name for the integration instance.
     * __Query Server Endpoint (e.g. `https://apiv2-us.devo.com/search/query`)__
     * __Port (e.g. 443)__
@@ -93,7 +117,6 @@ Note: single table query and multi table query can take long hours to complete r
     - key = <name_of_integration>.devo-multi-table-query.timeout, value = 1440
 - Click save.
 ## Fetched Incidents Data
----
 Fetched incidents data will resemble closely to that of the data you get back from the `devo-get-alerts` command.
 The format is as follows. The keyN in the main body will be the columns that you used to define your alert in Devo.
 ```
@@ -171,9 +194,8 @@ are both given that they must be the same given format.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Devo.QueryResults | unknown | List of dictionary of results |
-| Devo.QueryLink | unknown | Link back to Devo table for executed query |
-
+| Devo.QueryResults | unknown | List of dictionary alerts from the specified time range. | 
+| Devo.QueryLink | unknown | The link to the Devo table for executed query. | 
 
 ##### Command Example
 ```
@@ -220,8 +242,7 @@ that are allowed.
 | queryTimeout | Timeout in seconds for this query to run against Devo to override the minute default in the platform. Default is 60. | Optional | 
 | writeToContext | Whether to write results to context. Can be "true" or "false". Default is true. | Optional | 
 | linqLinkBase | Overrides the global Devo base domain for linq linking. | Optional | 
-| filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional |
-
+| filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional | 
 
 ##### __from__ and __to__ time note:
 This integration allows for the following formats. Note that when __from__ and __to__ times
@@ -238,7 +259,6 @@ are both given that they must be the same given format.
 | --- | --- | --- |
 | Devo.AlertsResults | list of dictionaries | List of dictionary alerts in specified time range |
 | Devo.QueryLink | string | Link back to Devo table for executed query |
-
 
 ##### Command Example
 ```
@@ -402,7 +422,10 @@ adding in extra lookup information found [HERE](https://github.com/DevoInc/pytho
 ```
 
 ##### Human Readable Output
-N/A
+| foo  | bar  | baz  |
+| ---- | ---- | ---- |
+| foo1 | bar1 | baz1 |
+
 
 
 #### Youtube Video Demo (Click Image, Will redirect to youtube)
