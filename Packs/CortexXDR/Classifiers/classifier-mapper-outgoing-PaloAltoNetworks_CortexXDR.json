@@ -15,6 +15,9 @@
 					"complex": null,
 					"simple": "xdrassigneduserprettyname"
 				},
+				"close_reason": {
+					"simple": "closeReason"
+				},
 				"manual_severity": {
 					"complex": {
 						"accessor": "",
@@ -133,6 +136,9 @@
 				"assigned_user_mail": {
 					"simple": "xdrassigneduseremail"
 				},
+				"close_reason": {
+					"simple": "closeReason"
+				},
 				"manual_severity": {
 					"complex": {
 						"filters": [],
@@ -207,6 +213,9 @@
 				},
 				"resolve_comment": {
 					"simple": "closeNotes"
+				},
+				"status": {
+					"simple": "xdrstatusv2"
 				}
 			}
 		}
