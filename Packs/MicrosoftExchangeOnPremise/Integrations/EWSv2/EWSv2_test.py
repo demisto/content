@@ -746,3 +746,13 @@ def test_switch_hr_headers():
         {'willswitch': '1234', 'wontswitch': '111', 'alsoswitch': 5555},
         {'willswitch': 'newkey', 'alsoswitch': 'annothernewkey', 'doesnt_exiest': 'doesnt break'})
             == {'annothernewkey': 5555, 'newkey': '1234', 'wontswitch': '111'})
+
+
+@pytest.mark.parametrize('input, output', [
+    ('John Smith', 'John Smith'),
+    ('SomeName', 'SomeName'),
+    ('sip:test@hello.com', 'sip:test@hello.com'),
+    ('hello@test.com', 'smtp:hello@test.com')
+])
+def test_format_identifier(input, output):
+    assert EWSv2.format_identifier(input) == output
