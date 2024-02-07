@@ -137,14 +137,14 @@ validate-content-conf:
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: prepare-testing-bucket
   script:
-    - echo "${TEST_VAR_XSOAR8}" | tee -a /etc/hosts
-    - cat /etc/hosts
-    - curl -v "${TEST_VAR_XSOAR8_API}" --insecure
-    - !reference [.download-demisto-conf]
-    - !reference [.create-release-notes-and-common-docs]
-    - !reference [.secrets-fetch]
-    - section_start "Create or update content graph" --collapsed
-
+    - |
+      - echo "${TEST_VAR_XSOAR8}" | tee -a /etc/hosts
+      - cat /etc/hosts
+      - curl -v "${TEST_VAR_XSOAR8_API}/about" --insecure --header "x-xdr-auth-id: 1" --header "Authorization: "${DEMISTO_API_KEY_8}""
+      - !reference [.download-demisto-conf]
+      - !reference [.create-release-notes-and-common-docs]
+      - !reference [.secrets-fetch]
+      - section_start "Create or update content graph" --collapsed
     - echo "Updating the content graph"
     - mkdir "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
     - demisto-sdk update-content-graph -g --marketplace "${MARKETPLACE_VERSION}" -o "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
