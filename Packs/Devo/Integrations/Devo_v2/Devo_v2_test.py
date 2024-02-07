@@ -355,7 +355,7 @@ def test_get_alerts(mock_query_results, mock_args_results):
     mock_args_results.return_value = MOCK_ALERT_ARGS
     results = get_alerts_command(OFFSET, ITEMS_PER_PAGE)
     assert len(results) == 2
-    assert results[0]["Contents"][0]["engine"] == "CPU_Usage_Alert"
+    assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
