@@ -15,11 +15,11 @@ This playbook does not use any integrations.
 ### Scripts
 
 * Set
-* GridFieldSetup
+GridFieldSetup
 
 ### Commands
 
-* setAlert
+setAlert
 
 ## Playbook Inputs
 
