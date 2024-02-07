@@ -696,7 +696,7 @@ def test_fetch_mails__mail_id_is_greater(mocker):
     When:
         - Fetching incidents
     Then:
-        - Ensure that the next run is 3 since it is greater than the last run
+        - Ensure that next_uid_to_fetch_from is 3 since it is greater than the last run
     """
     from MailListenerV2 import fetch_mails
     import demistomock as demisto
@@ -719,7 +719,7 @@ def test_fetch_mails__last_run_is_greater(mocker):
     When:
         - Fetching incidents
     Then:
-        - Ensure that the next run is 4 since it is greater than the greatest email UID
+        - Ensure that the next_uid_to_fetch_from is 4 since it is greater than the greatest email UID
     """
     from MailListenerV2 import fetch_mails
     import demistomock as demisto
