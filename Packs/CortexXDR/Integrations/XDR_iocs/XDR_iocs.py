@@ -175,7 +175,7 @@ def create_file_iocs_to_keep(file_path, batch_size: int = 200):
         for ioc in (batch.get('value', '') for batch in get_iocs_generator(size=batch_size)):
             _file.write(ioc + '\n')
             has_iocs = True
-            ioc_count +=1
+            ioc_count += 1
 
         if has_iocs:
             demisto.info(f"created iocs_to_keep file with {ioc_count} IOCs. File size is {_file.tell()}")
@@ -183,7 +183,7 @@ def create_file_iocs_to_keep(file_path, batch_size: int = 200):
         else:
             demisto.info('All IOCs matching the "Sync Query" are expired, only writing a space to the iocs_to_keep file.')
             _file.write(' ')
-    
+
 
 def create_file_sync(file_path, batch_size: int = 200):
     ioc_count = 0
@@ -191,11 +191,12 @@ def create_file_sync(file_path, batch_size: int = 200):
         for ioc in map(demisto_ioc_to_xdr, get_iocs_generator(size=batch_size)):
             if ioc:
                 _file.write(json.dumps(ioc) + '\n')
-                ioc_count +=1
+                ioc_count += 1
         if ioc_count:
             demisto.info(f"created sync file with {ioc_count} IOCs. File size is {_file.tell()}")
         else:
             demisto.info("created sync file without any indicators")
+
 
 def get_iocs_generator(size=200, query=None) -> Iterable:
     query = query or Client.query
@@ -423,7 +424,7 @@ def get_indicators(indicators: str) -> list:
 def tim_insert_jsons(client: Client):
     # takes our changes and pushes to XDR
     indicators = demisto.args().get('indicator', '')
-    if indicators:    
+    if indicators:
         demisto.info(f"pushing IOCs to XDR: querying with input {indicators}")
         iocs = get_indicators(indicators)
     else:
@@ -444,7 +445,7 @@ def tim_insert_jsons(client: Client):
         demisto.info("pushing IOCs to XDR: found no matching IOCs")
     if validation_errors:
         errors = create_validation_errors_response(validation_errors)
-        demisto.info('pushing IOCs to XDR:' + errors.replace('\n','. '))
+        demisto.info('pushing IOCs to XDR:' + errors.replace('\n', '. '))
         return_warning(errors)
     return_outputs('pushing IOCs to XDR: complete.')
 
@@ -557,6 +558,7 @@ def get_changes(client: Client):
         demisto.debug("pull XDR changes: done")
     else:
         demisto.info("pull XDR changes:Got 0 IOCs from XDR")
+
 
 def module_test(client: Client):
     ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
