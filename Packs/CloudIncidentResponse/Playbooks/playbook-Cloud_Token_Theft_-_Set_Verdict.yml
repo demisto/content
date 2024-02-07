@@ -250,9 +250,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              complex:
-                root: Core.OriginalAlert.[0].event
-                accessor: caller_ip_asn_org
+              simple: Core.OriginalAlert.event.caller_ip_asn_org
             iscontext: true
           right:
             value:
@@ -261,9 +259,7 @@ tasks:
         - operator: containsGeneral
           left:
             value:
-              complex:
-                root: Core.OriginalAlert.[0].event
-                accessor: caller_ip_asn_org
+              simple: Core.OriginalAlert.event.caller_ip_asn_org
             iscontext: true
           right:
             value:
@@ -271,9 +267,7 @@ tasks:
         - operator: containsGeneral
           left:
             value:
-              complex:
-                root: Core.OriginalAlert.[0].event
-                accessor: caller_ip_asn_org
+              simple: Core.OriginalAlert.event.caller_ip_asn_org
             iscontext: true
           right:
             value:
@@ -318,9 +312,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              complex:
-                root: alertJson.raw_abioc.event
-                accessor: cloud_agent_external_ip_days_seen_count
+              simple: Core.OriginalAlert.event.cloud_agent_external_ip_days_seen_count
             iscontext: true
           right:
             value:
@@ -328,9 +320,7 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              complex:
-                root: alertJson.raw_abioc.event
-                accessor: cloud_caller_ip_asn_count_distinct_cloud_best_identity
+              simple: Core.OriginalAlert.event.cloud_caller_ip_asn_count_distinct_cloud_best_identity
             iscontext: true
           right:
             value:
