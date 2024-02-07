@@ -393,14 +393,14 @@ xpanse-prepare-testing-bucket:
     - EXIT_CODE=0
     - section_start "Check if should run Instance role"
     - export INSTANCES_CREATED_FOR_ROLE=$(cat "${ENV_RESULTS_PATH}" | jq -c "map(select(.Role == \"${INSTANCE_ROLE}\")) | length")
-    - |
-      echo "Instance role:${INSTANCE_ROLE} Product type:${PRODUCT_TYPE} Instances created for role:${INSTANCES_CREATED_FOR_ROLE}"
-      if [[ "${INSTANCES_CREATED_FOR_ROLE}" -eq 0 ]]; then
-        echo "Instances with role ${INSTANCE_ROLE} were not created, not running the instance flow."
-        rm -f "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt" # delete the instance_role.txt file so the job will not be collected by slack notifier.
-        job-done
-        exit 0
-      fi
+#    - |
+#      echo "Instance role:${INSTANCE_ROLE} Product type:${PRODUCT_TYPE} Instances created for role:${INSTANCES_CREATED_FOR_ROLE}"
+#      if [[ "${INSTANCES_CREATED_FOR_ROLE}" -eq 0 ]]; then
+#        echo "Instances with role ${INSTANCE_ROLE} were not created, not running the instance flow."
+#        rm -f "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt" # delete the instance_role.txt file so the job will not be collected by slack notifier.
+#        job-done
+#        exit 0
+#      fi
     - section_end "Check if should run Instance role"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
