@@ -250,7 +250,7 @@ def test_fetch_mail_gets_bytes(mocker, src_data, expected):
 
     mail_mocker = mocker.patch('MailListenerV2.Email', return_value=mock_email())
     mocker.patch.object(demisto, 'debug')
-    mocker.patch.object(IMAPClient, 'search')
+    mocker.patch.object(IMAPClient, 'search', return_value=[1])
     mocker.patch.object(IMAPClient, 'fetch', return_value=src_data)
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     fetch_mails(IMAPClient('http://example_url.com'))
@@ -272,7 +272,7 @@ def test_fetch_mail__default_uid(mocker,):
 
     mocker.patch('MailListenerV2.Email')
     mocker.patch.object(demisto, 'debug')
-    search_mocker = mocker.patch.object(IMAPClient, 'search')
+    search_mocker = mocker.patch.object(IMAPClient, 'search', return_value=[1])
     mocker.patch.object(IMAPClient, 'fetch')
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     fetch_mails(IMAPClient('http://example_url.com'))
@@ -699,14 +699,15 @@ def test_fetch_mails__mail_id_is_greater(mocker):
         - Ensure that the next run is 3 since it is greater than the last run
     """
     from MailListenerV2 import fetch_mails
-    client_mock = mocker.MagicMock()
-    client_mock.search.return_value = [1, 2, 3]
-    email_mock = mocker.patch('MailListenerV2.Email')
-    email_mock.return_value.id = '1'
-    mocker.patch('MailListenerV2.generate_search_query')
+    import demistomock as demisto
+    from imapclient import IMAPClient
 
-    _, _, next_uid_to_fetch_from = fetch_mails(client_mock, uid_to_fetch_from=2)
-
+    mocker.patch('MailListenerV2.Email')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(IMAPClient, 'search', return_value=[1, 2, 3])
+    mocker.patch.object(IMAPClient, 'fetch')
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
+    _, _, next_uid_to_fetch_from = fetch_mails(IMAPClient('http://example_url.com'), uid_to_fetch_from=2)
     assert next_uid_to_fetch_from == 3
 
 
@@ -721,12 +722,13 @@ def test_fetch_mails__last_run_is_greater(mocker):
         - Ensure that the next run is 4 since it is greater than the greatest email UID
     """
     from MailListenerV2 import fetch_mails
-    client_mock = mocker.MagicMock()
-    client_mock.search.return_value = [1, 2, 3]
-    email_mock = mocker.patch('MailListenerV2.Email')
-    email_mock.return_value.id = '1'
-    mocker.patch('MailListenerV2.generate_search_query')
+    import demistomock as demisto
+    from imapclient import IMAPClient
 
-    _, _, next_uid_to_fetch_from = fetch_mails(client_mock, uid_to_fetch_from=4)
-
+    mocker.patch('MailListenerV2.Email')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(IMAPClient, 'search', return_value=[1, 2, 3])
+    mocker.patch.object(IMAPClient, 'fetch')
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
+    _, _, next_uid_to_fetch_from = fetch_mails(IMAPClient('http://example_url.com'), uid_to_fetch_from=4)
     assert next_uid_to_fetch_from == 4
