@@ -523,8 +523,8 @@ tasks:
           left:
             value:
               complex:
-                root: ActiveDirectory.Users
-                accessor: mail
+                root: Account
+                accessor: Email
             iscontext: true
     continueonerrortype: ""
     view: |-
