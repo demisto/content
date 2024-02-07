@@ -210,9 +210,7 @@ def get_demisto_indicators(search, tags, tlp_color):
 
 
 def update_last_fetch(client, ioc_lst):
-    demisto.info(f"{len(ioc_lst)=}")
-    iocs_ids = [ioc.get('id') for ioc in ioc_lst]
-    demisto.info(f"{iocs_ids=}")
+    demisto.debug(f"ElasticSearchFeed: Length of the indicators to fetch is: {len(ioc_lst)}")
     last_calculated_timestamp = None
     last_ids = []
     for ioc in reversed(ioc_lst):
@@ -225,13 +223,13 @@ def update_last_fetch(client, ioc_lst):
             last_calculated_timestamp = calculate_timestamp
             last_ids.append(ioc.get('id'))
         else:
-            demisto.info(f"{last_calculated_timestamp=}")
-            demisto.info(f"{calculate_timestamp=}")
+            demisto.debug(f"FeedElasticSearch: {last_calculated_timestamp=}")
+            demisto.debug(f"FeedElasticSearch: {calculate_timestamp=}")
             break
     if last_calculated_timestamp is None:
         last_calculated_timestamp = int(datetime.now().timestamp() * 1000)
-    demisto.info(f"{len(last_ids)=}")
-    demisto.info(f"{last_ids=}")
+    demisto.debug(f"FeedElasticSearch: The length of the indicators of the last time: {len(last_ids)}")
+    demisto.debug(f"FeedElasticSearch: The last ids which were fetched with the same last time: {last_ids}")
     return last_calculated_timestamp, last_ids
 
 
@@ -297,7 +295,8 @@ def get_scan_generic_format(client, now, last_fetch_timestamp=None, fetch_limit=
         range_field = {
             time_field: {'gte': last_fetch_timestamp, 'lte': now}} if last_fetch_timestamp else {
             time_field: {'lte': now}}
-        search = Search(using=es, index=fetch_index).filter({'range': range_field}).extra(size=fetch_limit).sort({time_field: {'order': 'asc'}}).query(query)
+        search = Search(using=es, index=fetch_index).filter({'range': range_field}).extra(
+            size=fetch_limit).sort({time_field: {'order': 'asc'}}).query(query)
     else:
         search = Search(using=es, index=fetch_index).query(QueryString(query=client.query))
     return search
