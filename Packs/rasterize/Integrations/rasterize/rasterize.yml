@@ -10,7 +10,7 @@ configuration:
     type: 8
     additionalinfo: null
   - name: wait_time
-    display: Time to wait before taking a screen shot (in seconds)
+    display: Time to wait before taking a screenshot (in seconds)
     required: false
     defaultvalue: "0"
     type: 0
