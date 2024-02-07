@@ -152,11 +152,14 @@ def parse_network_insight_response(response: dict) -> dict:
     network = response.get('network')
     reputation = response.get('reputation', 'UNKNOWN')
     risk_level = response.get('threatRiskLevel', {}).get('level', 0)
+    first_seen = response.get('firstSeen')
+    last_seen = response.get('lastSeen')
     categories = []
     for category in response.get('categorization', {}).get('categories', []):
         categories.append(category.get('name'))
 
-    response = {'indicator': network, 'reputation': reputation, 'risk_level': risk_level, 'categories': categories}
+    response = {'indicator': network, 'reputation': reputation, 'risk_level': risk_level, 'categories': categories,
+                'first_seen': first_seen ,'last_seen': last_seen}
 
     return response
 
