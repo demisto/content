@@ -671,7 +671,7 @@ class XSOARBuild(Build):
             logging.error("Failed to install nightly packs")
         return success
 
-    @run_with_proxy_configured
+    # @run_with_proxy_configured
     def test_integrations_post_update(self, new_module_instances: list,
                                       modified_module_instances: list) -> tuple:
         """
@@ -689,7 +689,7 @@ class XSOARBuild(Build):
         successful_tests_post, failed_tests_post = self.instance_testing(modified_module_instances, pre_update=False)
         return successful_tests_post, failed_tests_post
 
-    @run_with_proxy_configured
+    # @run_with_proxy_configured
     def configure_and_test_integrations_pre_update(self, new_integrations, modified_integrations) -> tuple:
         """
         Configures integration instances that exist in the current version and for each integration runs 'test-module'.
@@ -1959,6 +1959,7 @@ def main():
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
     build = create_build_object()
     logging.info(f"servers: {build.servers}")
+    build.servers[0]
     logging.info(f"Build Number: {build.ci_build_number}")
 
     # build.configure_servers_and_restart()
