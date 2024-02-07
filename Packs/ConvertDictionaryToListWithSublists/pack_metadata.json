@@ -1,0 +1,21 @@
+{
+    "name": "Convert Dictionary to List with sublists",
+    "description": "Testing the contribution process. You can disregard this request.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "yukisatop",
+    "url": "",
+    "email": "",
+    "created": "2024-02-07T16:01:42Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "yukisatop"
+    ]
+}
