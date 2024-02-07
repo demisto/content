@@ -851,12 +851,12 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
     from CortexXDRIR import fetch_incidents, Client
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list_multiple_incidents_extra_data.json')
     raw_multiple_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
-    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+    # requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
-
-    # mocker.patch.object(client, 'get_incidents', side_effect=get_incidents_list_response)
+    # mocker.patch.object(Client, '_http_request', return_value=get_incidents_list_response)
+    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
     mocker.patch("CortexXDRIR.check_using_upgraded_api_incidents_extra_data",
                  side_effect=[(raw_multiple_extra_data.get('reply', {}).get('incidents')[0], True),
                               (raw_multiple_extra_data, True)])
