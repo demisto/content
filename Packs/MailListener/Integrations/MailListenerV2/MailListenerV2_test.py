@@ -301,7 +301,7 @@ def test_invalid_mail_object_handling(mocker):
 
     mocker.patch('MailListenerV2.Email', side_effect=[mock_email_1, Exception('Invalid Mail'), mock_email_3])
     mocker.patch.object(demisto, 'debug')
-    mocker.patch.object(IMAPClient, 'search')
+    mocker.patch.object(IMAPClient, 'search', return_value=[1])
     mocker.patch.object(IMAPClient, 'fetch', return_value=src_data)
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     mails_fetched, messages_fetched, _ = fetch_mails(IMAPClient('http://example_url.com'))
