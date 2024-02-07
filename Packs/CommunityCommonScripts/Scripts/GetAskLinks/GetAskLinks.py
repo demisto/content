@@ -20,7 +20,7 @@ def get_ask_tasks(inc_id: str) -> List[dict]:
     """
     res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
     if not res or isError(res[0]):
-        return []
+        raise Exception(res)
 
     tasks: list = list(dict_safe_get(res[0], ['Contents', 'response', 'invPlaybook', 'tasks'], {}).values())
     ask_tasks = []
