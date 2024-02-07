@@ -742,6 +742,11 @@ def test_parse_phone_number():
 
 
 def test_switch_hr_headers():
+    """
+           Given: A context object
+           When: switching headers using a given header switch dict
+           Then: The keys that are present are switched
+       """
     assert (EWSv2.switch_hr_headers(
         {'willswitch': '1234', 'wontswitch': '111', 'alsoswitch': 5555},
         {'willswitch': 'newkey', 'alsoswitch': 'annothernewkey', 'doesnt_exiest': 'doesnt break'})
@@ -755,4 +760,9 @@ def test_switch_hr_headers():
     ('hello@test.com', 'smtp:hello@test.com')
 ])
 def test_format_identifier(input, output):
+    """
+           Given: several inputs with and without prefixes, that are or arent mails
+           When: calling format_identifier
+           Then: Only mails without a prefix have smtp appended
+       """
     assert EWSv2.format_identifier(input) == output
