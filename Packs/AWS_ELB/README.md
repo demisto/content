@@ -3,7 +3,7 @@
 This pack includes Cortex XSIAM content.
 
 ## Important Notes
-* The time in this pack is parsed with calculaton of UTC 00:00+.
+* Time in this pack is parsed with the calculaton of UTC 00:00+.
 
 ## Configuration on Server Side
 When you enable access logs for your load balancer, you must specify the name of the S3 bucket where the load balancer will store the logs. The bucket must have a bucket policy that grants Elastic Load Balancing permission to write to the bucket.
@@ -23,9 +23,9 @@ To create or configure the Amazon S3 collector, use the information described [h
 You can configure the specific vendor and product for this instance.
  
 1. Navigate to **Settings** &rarr; **Data Sources** &rarr **Add Data Source**.
-2. Click on **Amazon S3**.
+2. Click **Amazon S3**.
 3. Click **Connect** or **Connect Another Instance**.
-4. Select the **Access Key** or **Assumed Role** filter, due to implementation method of your choice.
+4. Select the **Access Key** or **Assumed Role** filter, according to the implementation method of your choice.
 5. When configuring the new Amazon S3 data source, set the following values:
    | Parameter     | Value   
    | :---          | :---        
