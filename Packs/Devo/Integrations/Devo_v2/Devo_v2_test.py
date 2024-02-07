@@ -115,6 +115,14 @@ MOCK_MULTI_ARGS = {
     "to": time.time(),
     "writeToContext": "true",
 }
+MOCK_MULTI_ARGUMENTS = {
+    "tables": ["app", "charlie", "test"],
+    "searchToken": "searching",
+    "from": time.time() - 60,
+    "to": time.time(),
+    "writeToContext": "true",
+    "items": -10
+}
 MOCK_WRITER_ARGS = {
     "tableName": "whatever.table",
     "records": [{"foo": "hello"}, {"foo": "world"}, {"foo": "demisto"}],
@@ -364,6 +372,35 @@ def test_multi_query(
     assert results["HumanReadable"] == "No results found"
 
 
+@patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
+@patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
+@patch("Devo_v2.concurrent.futures.wait")
+@patch("Devo_v2.concurrent.futures.ThreadPoolExecutor.submit")
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.ds.Reader")
+@patch("Devo_v2.get_types")
+def test_multi_query_negative_items(
+    mock_query_types,
+    mock_query_reader,
+    mock_query_results,
+    mock_args_results,
+    mock_submit_results,
+    mock_wait_results,
+):
+    mock_query_types.return_value = MOCK_KEYS
+    mock_query_reader.return_value = MOCK_READER
+    mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
+    mock_args_results.return_value = MOCK_MULTI_ARGUMENTS
+    mock_submit_results.return_value = None
+    mock_wait_results.return_value = (None, None)
+    try:
+        multi_table_query_command(OFFSET, ITEMS_PER_PAGE)
+    except ValueError as exc:
+        error_msg = str(exc)
+        assert "The 'limit' parameter cannot be negative." in error_msg
+
+
 @patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
 @patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
 @patch("Devo_v2.demisto.args")
@@ -373,6 +410,12 @@ def test_write_devo(mock_load_results, mock_write_args):
     mock_write_args.return_value = MOCK_WRITE_TO_TABLE_RECORDS
     results = write_to_table_command()
     assert len(results) == 2  # We expect two entries in the results list
+    found = False
+    for result in results:
+        if "HumanReadable" in result and result["HumanReadable"] == "Total Records Sent: 3.\nTotal Bytes Sent: 48.":
+            found = True
+            break
+    assert found, "Expected string not found in 'HumanReadable' field of results"
     assert results[0]["EntryContext"]["Devo.LinqQuery"] == "from whatever.table"
 
 
