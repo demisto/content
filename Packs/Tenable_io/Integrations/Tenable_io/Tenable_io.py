@@ -235,13 +235,12 @@ class Client(BaseClient):
         res = self._http_request(method='GET', url_suffix=f'/audit-log/v1/events{query}', headers=self._headers)
         return res.get('events', [])
 
-    def get_vuln_export_uuid(self, num_assets: int, last_found: Optional[float], severity: List[str]):
+    def get_vuln_export_uuid(self, num_assets: int, last_found: Optional[float]):
         """
 
         Args:
             num_assets: number of assets used to chunk the vulnerabilities.
             last_found: vulnerabilities that were last found between the specified date (in Unix time) and now.
-            severity: severity of the vulnerabilities to include in the export.
 
         Returns: The UUID of the vulnerabilities export job.
 
@@ -249,7 +248,6 @@ class Client(BaseClient):
         payload: dict[str, Any] = {
             "filters":
                 {
-                    "severity": severity,
                     "last_found": last_found
                 },
             "num_assets": num_assets
@@ -581,8 +579,7 @@ def get_timestamp(timestamp):
     return time.mktime(timestamp.timetuple())
 
 
-def generate_export_uuid(client: Client, last_run,
-                         severity: List[str]):
+def generate_export_uuid(client: Client, last_run):
     """
     Generate a job export uuid in order to fetch vulnerabilities.
 
@@ -590,13 +587,11 @@ def generate_export_uuid(client: Client, last_run,
         client: Client class object.
         first_fetch: time to first fetch from.
         last_run: last run object.
-        severity: severity of the vulnerabilities to include in the export.
-
     """
     demisto.info("Getting vulnerabilities export uuid for report.")
     last_found: float = get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))   # type: ignore
 
-    export_uuid = client.get_vuln_export_uuid(num_assets=CHUNK_SIZE, last_found=last_found, severity=severity)
+    export_uuid = client.get_vuln_export_uuid(num_assets=CHUNK_SIZE, last_found=last_found)
 
     demisto.info(f'vulnerabilities export uuid is {export_uuid}')
     last_run.update({'vuln_export_uuid': export_uuid})
@@ -1684,6 +1679,9 @@ def fetch_events_command(client: Client, first_fetch: datetime, last_run: dict, 
     if last_index_fetched < len(audit_logs_from_api):
         audit_logs.extend(audit_logs_from_api[last_index_fetched:last_index_fetched + limit])
 
+    for audit_log in audit_logs:
+        audit_log['_time'] = audit_log.get('received') or audit_log.get('indexed')
+
     next_run: str = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
     last_run.update({'index_audit_logs': len(audit_logs) + last_index_fetched if audit_logs else last_index_fetched,
                      'last_fetch_time': next_run})
@@ -1735,12 +1733,11 @@ def run_assets_fetch(client, last_run):
     return fetch_assets_command(client, last_run)
 
 
-def fetch_vulnerabilities(client: Client, last_run: dict, severity: List[str]):
+def fetch_vulnerabilities(client: Client, last_run: dict):
     """
     Fetches vulnerabilities if job has succeeded.
     Args:
         last_run: last run object.
-        severity: severity of the vulnerabilities to include in the export.
         client: Client class object.
 
     Returns:
@@ -1761,21 +1758,20 @@ def fetch_vulnerabilities(client: Client, last_run: dict, severity: List[str]):
                 last_run.pop('type', None)
         elif status in ['CANCELLED', 'ERROR']:
             export_uuid = client.get_vuln_export_uuid(num_assets=CHUNK_SIZE,
-                                                      last_found=get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)),
-                                                      severity=severity)
+                                                      last_found=get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
             last_run.update({'vuln_export_uuid': export_uuid})
 
     demisto.info(f'Done fetching {len(vulnerabilities)} vulnerabilities, {last_run=}.')
     return vulnerabilities
 
 
-def run_vulnerabilities_fetch(client, last_run, severity):
+def run_vulnerabilities_fetch(client, last_run):
 
     demisto.info("fetch vulnerabilies from the API")
     if not last_run.get('vuln_export_uuid'):
-        generate_export_uuid(client, last_run, severity)
+        generate_export_uuid(client, last_run)
 
-    return fetch_vulnerabilities(client, last_run, severity)
+    return fetch_vulnerabilities(client, last_run)
 
 
 def skip_fetch_assets(last_run):
@@ -1804,7 +1800,6 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
 
     # Events Params
-    severity = argToList(params.get('severity'))
     max_fetch = arg_to_number(params.get('max_fetch')) or 1000
     first_fetch: datetime = arg_to_datetime(params.get('first_fetch', '3 days'))  # type: ignore
 
@@ -1885,7 +1880,7 @@ def main():  # pragma: no cover
 
             # Fetch Vulnerabilities
             if assets_last_run_copy.get('vuln_export_uuid') or not assets_last_run_copy.get('nextTrigger'):
-                vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run, severity=severity)
+                vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
 
             demisto.info(f"Sending {len(assets)} assets and {len(vulnerabilities)} vulnerabilities to XSIAM.")
 
