@@ -42,7 +42,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -420
+          "y": -240
         }
       }
     note: false
@@ -75,7 +75,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -280
+          "y": -100
         }
       }
     note: false
@@ -121,7 +121,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -140
+          "y": 40
         }
       }
     note: false
@@ -156,8 +156,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": -140
+          "x": 980,
+          "y": 50
         }
       }
     note: false
@@ -275,8 +275,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": -140
+          "x": -60,
+          "y": 60
         }
       }
     note: false
@@ -336,13 +336,13 @@ tasks:
     scriptarguments:
       cloudProvider:
         complex:
-          root: JsonObject.raw_abioc.event
+          root: PaloAltoNetworksXDR.OriginalAlert.raw_abioc.event
           accessor: auth_server
           transformers:
           - operator: uniq
       username:
         complex:
-          root: JsonObject.raw_abioc.event
+          root: PaloAltoNetworksXDR.OriginalAlert.raw_abioc.event
           accessor: auth_identity
           transformers:
           - operator: uniq
@@ -509,7 +509,7 @@ tasks:
         simple: "10"
       Username:
         complex:
-          root: JsonObject.raw_abioc.event
+          root: PaloAltoNetworksXDR.OriginalAlert.raw_abioc.event
           accessor: auth_identity
           transformers:
           - operator: uniq
@@ -1297,57 +1297,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+      - "6"
     scriptarguments:
       alert_ids:
         complex:
           root: inputs.alert_id
-      extend-context:
-        simple: alertData=
+      filter_alert_fields:
+        simple: "false"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 40
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: c2d77809-ddf2-4749-8708-aa5a484d8276
-    type: regular
-    task:
-      id: c2d77809-ddf2-4749-8708-aa5a484d8276
-      version: -1
-      name: Load alert JSON
-      description: Loads a json from string input, and returns a json object result.
-      scriptName: LoadJSON
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      extend-context:
-        simple: alertJson=
-      input:
-        simple: ${alertData.alerts.original_alert_json}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 210
+          "y": 220
         }
       }
     note: false
@@ -1721,10 +1684,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3415,
+        "height": 3235,
         "width": 2320,
         "x": -410,
-        "y": -420
+        "y": -240
       }
     }
   }
