@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any
+from typing import Any
 import traceback
 
 
@@ -23,7 +23,7 @@ def is_port_in_range(port_range: str, port: str) -> bool:
     return False
 
 
-def is_there_traffic_match(port: str, protocol: str, rule: Dict, network_tags: list) -> bool:
+def is_there_traffic_match(port: str, protocol: str, rule: dict, network_tags: list) -> bool:
     """
     Breaks a string port range (i.e. '20-25') into integers for comapirson
     Args:
@@ -38,7 +38,7 @@ def is_there_traffic_match(port: str, protocol: str, rule: Dict, network_tags: l
     """
     # Match rule needs to be direction ingress, source from internet (0.0.0.0/0), enabled and an allow rule.
     if rule.get('direction') == 'INGRESS' and '0.0.0.0/0' in rule.get('sourceRanges', []) \
-       and rule.get('disabled') is False and 'allowed' in rule.keys():
+       and rule.get('disabled') is False and 'allowed' in rule:
         # Test if targetTags are relevant or not (if show up in keys or tag match)
         target_tags_verdict = ('targetTags' not in rule.keys() or len(set(rule.get('targetTags', [])) & set(network_tags)) > 0)
         for entry in rule.get('allowed', []):
@@ -65,7 +65,7 @@ def is_there_traffic_match(port: str, protocol: str, rule: Dict, network_tags: l
 ''' COMMAND FUNCTION '''
 
 
-def gcp_offending_firewall_rule(args: Dict[str, Any]) -> CommandResults:
+def gcp_offending_firewall_rule(args: dict[str, Any]) -> CommandResults:
     """
     Determine potential offending firewall rules in GCP based on port, protocol and possibly target tags (network tags).
     Args:
