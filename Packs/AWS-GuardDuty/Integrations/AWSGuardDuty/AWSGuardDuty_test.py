@@ -942,7 +942,7 @@ INCIDENTS_NEXT_RUN = {'latest_created_time': '2022-11-08T14:24:52.908000Z',
                               [INCIDENT_1, INCIDENT_2], {'last_incidents_ids': ['finding_id1', 'finding_id2'],
                                                          'last_next_token': "",
                                                          'latest_created_time': '2022-11-08T14:24:52.908000Z',
-                                                         'latest_updated_time': '2022-11-11T14:24:52.908000Z'},
+                                                         'latest_updated_time': '2022-11-08T14:24:52.908000Z'},
                               {'severity': {'Gte': 1}},
                               {"FindingIds": ["finding_id1", "finding_id2"], 'NextToken': ""}, [FINDING_1, FINDING_2],
                               False)
