@@ -48,6 +48,26 @@ def module_test_command(client, limit, fetch_full_feed):
         return_error("Could not connect to server")
 
 
+def filter_indicators(indicators, last_run):
+    last_indicators = last_run.get("latest_indicators")  # indicators from prev fetch
+    new_indicators = []
+    if not last_indicators: # first fetch
+        last_run["latest_indicators"] = indicators
+        return indicators
+    for indicator in indicators:
+        value = indicator.get('value')
+        saved_indicator = list(filter(lambda ind: ind.get('value') == value, last_indicators))  # the indicator was fetched in the prev fetch as well
+        if saved_indicator:
+            modified_date = saved_indicator[0].get("modified")  # stored modified date of the indicator
+            if indicator.get("modified") > modified_date:  # the indicator was fetched in the last fetch, but also modified in this fetch -> should return
+                new_indicators.append(indicator)
+        else:   # the indicator was not fetched in the last fetch -> it's new/modified recently and should return to server
+            new_indicators.append(indicator)
+
+    last_run["latest_indicators"] = indicators
+    return new_indicators
+
+
 def fetch_indicators_command(
     client,
     initial_interval,
@@ -110,6 +130,7 @@ def fetch_indicators_command(
             if client.last_fetched_indicator__modified
             else added_after
         )
+    filter_indicators(indicators, last_run_ctx)
     demisto.debug(f'{indicators=}')
     demisto.debug(f"returning last run as: {last_run_ctx}")
     return indicators, last_run_ctx
