@@ -630,7 +630,6 @@ def get_entry_for_object(title, context_key, obj, headers=None, hr_header_change
     if isinstance(obj, list):
         obj = [filter_dict_null(k) for k in obj]
         hr_obj = [switch_hr_headers(k, hr_header_changes) for k in obj]
-    demisto.results(f'{json.dumps(obj)}')
     if headers and isinstance(obj, dict):
         headers = list(set(headers).intersection(set(obj.keys())))
 
