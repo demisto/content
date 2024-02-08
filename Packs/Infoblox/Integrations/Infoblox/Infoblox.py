@@ -609,27 +609,6 @@ def transform_ipv4_range(from_ip: str, to_ip: str) -> dict[str, str]:
     return {"ip_address>": from_ip, "ip_address<": to_ip}
 
 
-def transform_return_fields(additional_fields: str) -> dict[str, Any]:
-    """
-    Helper function to transform the return fields into a
-    dictionary that we can feed into the client as request
-    parameters.
-
-    Arguments:
-    - `additional_fields` (``str``): A comma-separated list of additional fields.
-
-    Returns:
-    - `dict[str, Any]` request parameters
-    """
-
-    result = {}
-
-    if additional_fields:
-        result[InfoBloxNIOSClient.REQUEST_PARAM_RETURN_FIELDS_KEY] = additional_fields
-
-    return result
-
-
 def transform_network_info_context(network_info: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Helper function to transform the network info
