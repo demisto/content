@@ -593,7 +593,7 @@ class XSOARBuild(Build):
     def __init__(self, options):
         super().__init__(options)
         self.ami_env = options.ami_env
-        self.servers = [XSOARServer(internal_ip,
+        self.servers = [XSOARServer(internal_ip + "/xsoar",
                                     self.username,
                                     self.password,
                                     self.ci_build_number) for internal_ip in self.get_servers(options.ami_env)]
@@ -1958,8 +1958,7 @@ def main():
     """
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
     build = create_build_object()
-    logging.info(f"servers: {build.servers}")
-    build.servers[0]
+    logging.info(f"servers: {build.servers[0]}")
     logging.info(f"Build Number: {build.ci_build_number}")
 
     # build.configure_servers_and_restart()
