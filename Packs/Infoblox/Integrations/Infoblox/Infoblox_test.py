@@ -14,9 +14,10 @@ from Infoblox import (
     INTEGRATION_IPV4_CONTEXT_NAME,
     INTEGRATION_MAX_RESULTS_DEFAULT,
     INTEGRATION_NETWORK_INFO_CONTEXT_KEY,
-    INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY,
+    INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY,
     IPv4AddressStatus,
     InfoBloxNIOSClient,
+    get_extended_attributes_context,
     get_host_records_command,
     get_ip_command,
     get_network_info_command,
@@ -256,7 +257,7 @@ class TestHelperFunctions:
         assert len(actual) == 1
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual[0]
         assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual[0]
-        assert INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY in actual[0]
+        assert INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY in actual[0]
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual[0]
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in actual[0]
 
@@ -274,7 +275,7 @@ class TestHelperFunctions:
         assert len(actual) == 2
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual[1]
         assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual[1]
-        assert INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY in actual[1]
+        assert INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY in actual[1]
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual[1]
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY in actual[1]
 
@@ -294,6 +295,34 @@ class TestHelperFunctions:
         assert INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY in actual[0]
         assert INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY in actual[0]
         assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual[0]
+
+    def test_get_extended_attributes_context_valid_extattrs(self):
+        """Test get_extended_attributes_context with valid extattrs"""
+
+        input = json.loads((Path(__file__).parent.resolve() / "test_data"
+                            / "TestHostRecordsOperations" / "get_record_extattrs.json").read_text()).get("result")[0].get("extattrs")  # noqa: E501
+
+        actual = get_extended_attributes_context(input)
+        expected = {"IB Discovery Owned": "EMEA", "Site": "Tel-Aviv"}
+
+        assert actual == expected
+
+    def test_get_extended_attributes_context_invalid_extattrs(self):
+        """Test get_extended_attributes_context with invalid extattrs"""
+
+        input = {"invalid": "attribute"}
+
+        actual = get_extended_attributes_context(input)
+        expected = {"invalid": "N/A"}
+
+        assert actual == expected
+
+    def test_get_extended_attributes_context_empty_extattrs(self):
+        """Test get_extended_attributes_context with invalid extattrs"""
+
+        actual = get_extended_attributes_context({})
+
+        assert not actual
 
 
 class TestZonesOperations:
@@ -745,7 +774,9 @@ class TestHostRecordsOperations:
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in first_record
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in first_record
         assert INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY in first_record
+        assert first_record[INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY] == "192.168.10.10"
         assert INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY in first_record
+        assert not first_record[INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY]
         assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in first_record
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in first_record
 
@@ -753,7 +784,9 @@ class TestHostRecordsOperations:
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in second_record
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in second_record
         assert INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY in second_record
+        assert second_record[INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY] == "192.168.100.100"
         assert INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY in second_record
+        assert second_record[INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY]
         assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in second_record
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in second_record
 
@@ -816,7 +849,7 @@ class TestNetworkInfoOperations:
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual_output[0]
-        assert INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in actual_output[0]
 
         assert actual_raw_response == json.loads(mock_response)
@@ -858,7 +891,7 @@ class TestNetworkInfoOperations:
         assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual_output[0]
-        assert INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY not in actual_output[0]
 
         assert actual_raw_response == json.loads(mock_response)
@@ -911,8 +944,8 @@ class TestNetworkInfoOperations:
         assert INTEGRATION_COMMON_NAME_CONTEXT_KEY in actual_output[1]
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY in actual_output[1]
-        assert INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY in actual_output[0]
-        assert INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY in actual_output[1]
+        assert INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY in actual_output[0]
+        assert INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY in actual_output[1]
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY in actual_output[0]
         assert INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY in actual_output[1]
 

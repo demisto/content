@@ -8,6 +8,12 @@
                     "configure_for_dhcp": false,
                     "host": "localhost.test",
                     "ipv4addr": "someip"
+                },
+                {
+                    "_ref": "record:host_ipv4addr/asdafafa:some_ip2/localhost.test/default",
+                    "configure_for_dhcp": false,
+                    "host": "localhost.test",
+                    "ipv4addr": "someip2"
                 }
             ],
             "name": "localhost.test",

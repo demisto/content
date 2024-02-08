@@ -1,4 +1,3 @@
-# TODO update integration readme
 from enum import Enum, unique
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -19,35 +18,83 @@ INTEGRATION_CONTEXT_NAME = 'Infoblox'
 INTEGRATION_HOST_RECORDS_CONTEXT_NAME = "Host"
 INTEGRATION_NETWORK_INFO_CONTEXT_KEY = "NetworkInfo"
 
+# COMMON RAW RESULT KEYS
 INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY = "_ref"
-INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY = "extattrs"
+INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY = "extattrs"
+INTEGRATION_COMMON_RAW_RESULT_NETWORK_KEY = "network"
+INTEGRATION_COMMON_RAW_RESULT_NETWORKVIEW_KEY = "network_view"
 
+# COMMON CONTEXT KEYS
 INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY = "Reference"
 INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY = "ReferenceID"
 INTEGRATION_COMMON_NAME_CONTEXT_KEY = "Name"
 INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY = "ExtendedAttributes"
 INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY = "AdditionalFields"
+INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY = "NetworkView"
 
+# IP RAW RESULT KEYS
+INTEGRATION_IP_RAW_RESULT_MAC_ADDRESS_KEY = "mac_address"
+INTEGRATION_IP_RAW_RESULT_NETWORK = "network"
+INTEGRATION_IP_RAW_RESULT_STATUS_KEY = "status"
 INTEGRATION_IP_RAW_RESULT_FQDN_KEY = "fqdn"
 INTEGRATION_IP_RAW_RESULT_RP_ZONE_KEY = "rp_zone"
+INTEGRATION_IP_RAW_RESULT_IS_CONFLICT_KEY = "is_conflict"
+INTEGRATION_IP_RAW_RESULT_OBJECTS_KEY = "objects"
+INTEGRATION_IP_RAW_RESULT_TYPES_KEY = "types"
+INTEGRATION_IP_RAW_RESULT_NAMES_KEY = "names"
+INTEGRATION_IP_RAW_RESULT_IP_ADDRESS_KEY = "ip_address"
+INTEGRATION_IP_RAW_RESULT_USAGE_KEY = "usage"
+
+# IP CONTEXT KEYS
 INTEGRATION_IP_RP_ZONE_CONTEXT_KEY = "Zone"
 INTEGRATION_IP_FQDN_CONTEXT_KEY = "FQDN"
 
+
+IP_MAPPING = {
+    INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY: INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY,
+    INTEGRATION_IP_RAW_RESULT_MAC_ADDRESS_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_MAC_ADDRESS_KEY),
+    INTEGRATION_COMMON_RAW_RESULT_NETWORK_KEY: string_to_context_key(INTEGRATION_COMMON_RAW_RESULT_NETWORK_KEY),
+    INTEGRATION_COMMON_RAW_RESULT_NETWORKVIEW_KEY: string_to_context_key(INTEGRATION_COMMON_RAW_RESULT_NETWORKVIEW_KEY),
+    INTEGRATION_IP_RAW_RESULT_TYPES_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_TYPES_KEY),
+    INTEGRATION_IP_RAW_RESULT_NAMES_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_NAMES_KEY),
+    INTEGRATION_IP_RAW_RESULT_OBJECTS_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_OBJECTS_KEY),
+    INTEGRATION_IP_RAW_RESULT_STATUS_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_STATUS_KEY),
+    INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY: string_to_context_key(INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY),  # noqa: E501
+    INTEGRATION_IP_RAW_RESULT_IP_ADDRESS_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_IP_ADDRESS_KEY),
+    INTEGRATION_IP_RAW_RESULT_USAGE_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_USAGE_KEY),
+    INTEGRATION_IP_RAW_RESULT_IS_CONFLICT_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_IS_CONFLICT_KEY),
+    INTEGRATION_IP_RAW_RESULT_FQDN_KEY: INTEGRATION_IP_FQDN_CONTEXT_KEY,
+    INTEGRATION_IP_RAW_RESULT_RP_ZONE_KEY: INTEGRATION_IP_RP_ZONE_CONTEXT_KEY
+}
+
+# Host info mapping
 INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY = "ipv4addrs"
 INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESS_KEY = "ipv4addr"
-INTEGRATION_HOST_RECORDS_IPV4ADDRESSES_CONTEXT_KEY = "IPv4Addresses"
 INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY = "IPv4Address"
 INTEGRATION_HOST_RECORDS_RAW_RESULT_CONFIGURE_FOR_DHCP_KEY = "configure_for_dhcp"
 INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY = "ConfigureForDHCP"
-INTEGRATION_HOST_RECORDS_RAW_RESULT_HOST_KEY = "host"
 INTEGRATION_HOST_RECORDS_RAW_RESULT_NAME_KEY = "name"
+INTEGRATION_HOST_RECORDS_RAW_RESULT_HOST_KEY = "host"
 INTEGRATION_HOST_RECORDS_RAW_RESULT_VIEW_KEY = "view"
-INTEGRATION_HOST_RECORDS_VIEW_CONTEXT_KEY = "View"
+HOST_INFO_MAPPING: dict[str, str] = {
+    INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY: INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY,
+    INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESS_KEY: INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY,
+    INTEGRATION_HOST_RECORDS_RAW_RESULT_CONFIGURE_FOR_DHCP_KEY: INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY,
+    INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY: INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY,
+    INTEGRATION_HOST_RECORDS_RAW_RESULT_HOST_KEY: INTEGRATION_COMMON_NAME_CONTEXT_KEY
+}
 
-INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORK_KEY = "network"
-INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORKVIEW_KEY = "network_view"
-INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY = "NetworkView"
-INTEGRATION_NETWORK_INFO_ADDITIONAL_FIELDS_CONTEXT_KEY = "AdditionalFields"
+
+# Network info mapping
+
+INTEGRATION_COMMON_RAW_RESULT_NETWORKVIEW_KEY = "network_view"
+INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY = "NetworkView"
+NETWORK_INFO_MAPPING: dict[str, str] = {
+    INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY: INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY,
+    INTEGRATION_COMMON_RAW_RESULT_NETWORK_KEY: INTEGRATION_COMMON_NAME_CONTEXT_KEY,
+    INTEGRATION_COMMON_RAW_RESULT_NETWORKVIEW_KEY: INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY,
+    INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY: INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY
+}
 
 INTEGRATION_IPV4_CONTEXT_NAME = "IP"
 INTEGRATION_MAX_RESULTS_DEFAULT = 50
@@ -104,8 +151,6 @@ RPZ_RULES_DICT = {
         }
     }
 }
-
-NETWORK_NOT_FOUND = "A network was not found for this address"
 
 
 @unique
@@ -627,20 +672,11 @@ def transform_network_info_context(network_info: list[dict[str, Any]]) -> list[d
     for network in network_info:
         n: dict[str, Any] = {}
         for k, v in network.items():
-            if k == INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY:
-                n[INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY] = v
-            elif k == INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORK_KEY:
-                n[INTEGRATION_COMMON_NAME_CONTEXT_KEY] = v
-            elif k == INTEGRATION_NETWORK_INFO_RAW_RESULT_NETWORKVIEW_KEY:
-                n[INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY] = v
-            elif k == INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY:
-                if isinstance(v, dict) and bool(v):
-                    ext_attr_value = {}
-                    for ext_attr_key, ext_attr_val in v.items():
-                        ext_attr_value[ext_attr_key] = cast(dict[str, Any], ext_attr_val).get("value")
-                    n[f"{INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY}"] = ext_attr_value
-                else:
-                    n[INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY] = {}
+            if k == INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY:
+                n[NETWORK_INFO_MAPPING[k]] = get_extended_attributes_context(v)
+            elif k in NETWORK_INFO_MAPPING:
+                n[NETWORK_INFO_MAPPING[k]] = v
+            # TODO take this out to a new function as it's used twice
             else:
                 additional_options.append(v)
         if additional_options:
@@ -667,15 +703,7 @@ def transform_ip_context(ip_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for ip in ip_list:
         i: dict[str, Any] = {}
         for k, v in ip.items():
-            if k == INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY:
-                i[INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY] = v
-            elif k == INTEGRATION_IP_RAW_RESULT_FQDN_KEY:
-                i[INTEGRATION_IP_FQDN_CONTEXT_KEY] = v
-            elif k == INTEGRATION_IP_RAW_RESULT_RP_ZONE_KEY:
-                i[INTEGRATION_IP_RP_ZONE_CONTEXT_KEY] = v
-            else:
-                i[string_to_context_key(k)] = v
-
+            i[IP_MAPPING[k]] = v
         output.append(i)
 
     return output
@@ -699,32 +727,33 @@ def transform_host_records_context(records: list[dict[str, Any]]) -> list[dict[s
     for record in records:
         r: dict[str, Any] = {}
         for record_key, record_value in record.items():
+            # We're interested in the ref ID of the first host address
+            ipv4_addresses = record.get(INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY, [])
+
+            # We're not interested in these fields
             if record_key == INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY:
-                continue
-            elif record_key == INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY:
-                if isinstance(record_value, dict) and record_value:
-                    ext_attr_value = {}
-                    for ext_attr_key, ext_attr_val in record_value.items():
-                        ext_attr_value[ext_attr_key] = cast(dict[str, Any], ext_attr_val).get("value")
-                    r[f"{INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY}"] = ext_attr_value
-                else:
-                    r[INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY] = {}
-            elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY:
-                first_address: dict[str, Any] = cast(list, record.get(INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY))[0]
-                for k, v in first_address.items():
-                    if k == INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESS_KEY:
-                        r[INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY] = v
-                    elif k == INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY:
-                        r[INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY] = v
-                    elif k == INTEGRATION_HOST_RECORDS_RAW_RESULT_CONFIGURE_FOR_DHCP_KEY:
-                        r[INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY] = v
-            elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_NAME_KEY:
-                r[INTEGRATION_COMMON_NAME_CONTEXT_KEY] = record_value
-            elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_NAME_KEY:
+
                 continue
             elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_VIEW_KEY:
                 continue
+            elif record_key == INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY:
+                r[NETWORK_INFO_MAPPING[record_key]] = get_extended_attributes_context(record_value)
+            elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY:
+                # We're interested in the first host address
+                ipv4_addresses = record.get(INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY, [])
+
+                if ipv4_addresses:
+                    first_address: dict[str, Any] = ipv4_addresses[0]
+                    try:
+                        for k, v in first_address.items():
+                            r[HOST_INFO_MAPPING[k]] = v
+                    except KeyError as err:
+                        demisto.debug(f"Unable to parse key '{err}' from first host record address {str(record)}: {err}")
+
+            elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_NAME_KEY:
+                r[INTEGRATION_COMMON_NAME_CONTEXT_KEY] = record_value
             else:
+                # TODO take this out to a new function as it's used twice
                 additional_options.append({string_to_context_key(record_key): record_value})
         if additional_options:
             r[INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY] = additional_options
@@ -732,6 +761,52 @@ def transform_host_records_context(records: list[dict[str, Any]]) -> list[dict[s
         output.append(r)
 
     return output
+
+
+def get_extended_attributes_context(v: dict[str, Any]) -> dict:
+    """
+    Helper function to transform extended attributes.
+
+    Extended attributes are returned in the following structure:
+
+    ```json
+    {
+        "EXTATTR_KEY_1": {
+            "value": "EXTATTR_VALUE_1"
+        },
+        "EXTATTR_KEY_2": {
+            "value": "EXTATTR_VALUE_2"
+        }
+    }
+    ```
+
+    This method returns it in the following strucutre:
+
+    ```json
+    {
+        "EXTATTR_KEY_1": "EXTATTR_VALUE_1",
+        "EXTATTR_KEY_2": "EXTATTR_VALUE_2"
+    }
+    ```
+
+    Args:
+    - `v` (``dict[str, Any]``): The extended attributes dict to process.
+
+    Returns:
+    - `dict[str, Any]` Extended attributes in the expected context structure.
+
+    """
+
+    ext_attr_value = {}
+
+    if isinstance(v, dict) and v:
+        for ext_attr_key, ext_attr_val in v.items():
+            if isinstance(ext_attr_val, dict) and ext_attr_val.get("value"):
+                ext_attr_value[ext_attr_key] = cast(dict[str, Any], ext_attr_val).get("value")
+            else:
+                ext_attr_value[ext_attr_key] = "N/A"
+
+    return ext_attr_value
 
 
 ''' COMMANDS '''
@@ -1374,8 +1449,8 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
 
     hostname = args.get("host_name")
     max_results = arg_to_number(args.get("max_results", INTEGRATION_MAX_RESULTS_DEFAULT))
-    additional_return_fields = args.get("additional_return_fields", INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY)
-    extended_attributes = args.get(INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY)
+    additional_return_fields = args.get("additional_return_fields", INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
+    extended_attributes = args.get(INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
 
     raw = client.get_host_records(
         name=hostname,
@@ -1418,8 +1493,8 @@ def get_network_info_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
 
     pattern = args.get("pattern")
     max_results = arg_to_number(args.get("max_results", INTEGRATION_MAX_RESULTS_DEFAULT))
-    additional_return_fields = args.get("additional_return_fields", INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY)
-    extended_attributes = args.get(INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY)
+    additional_return_fields = args.get("additional_return_fields", INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
+    extended_attributes = args.get(INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
 
     raw_response = client.get_network_info(
         pattern,
