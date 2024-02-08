@@ -1248,7 +1248,6 @@ tasks:
       id: 4aaf78e5-6877-4503-82f9-52a25ea07d51
       version: -1
       name: Search, link and close similar incidents?
-      description: Whether to search, link and close incidents similar to this incident.
       type: condition
       iscommand: false
       brand: ""
@@ -1490,24 +1489,13 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Determines whether indicators in this incident should be extracted manually. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise, indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook.
+  description: Determines whether indicators in this incident should be extracted by the playbook. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise, indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook.
   playbookInputQuery:
 - key: AdvancedInvestigation
   value:
     simple: "False"
   required: false
-  description: |+
-    Whether to perform advanced actions in the incident. This overrides the ExtractIndicators input as if it was set to False.
-
-    Possible values are: True, False.
-
-    If set to False, the playbook will still perform major steps such as out-of-band indicator extraction, basic file extraction and calculating severity for the incident.
-
-    If set to True, advanced steps will be executed:
-    - Getting file samples from endpoints.
-    - Searching more endpoints by the extracted file hash.
-    - Detonating files and URLs in sandbox integrations.
-
+  description: "Whether to perform advanced actions in the incident. \n\nWhen both this input and the ExtractIndicators input are set to True, indicator extraction will be performed Inline to ensure the indicators are extracted for the advanced investigation steps.\nAdvanced steps include:\n- Getting file samples from endpoints.\n- Searching more endpoints by the extracted file hash.\n- Detonating files and URLs in sandbox integrations.\n\nIf this input is set to False, indicators will be extracted by the playbook in Out-of-band mode, or not extracted at all, depending on the ExtractIndicators input.\n\nPossible values are: True, False.\n\n\n\n\n\n"
   playbookInputQuery:
 - key: DedupSimilarIncidents
   value:
@@ -1530,9 +1518,6 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-marketplaces:
-- xsoar
 tests:
 - No tests (auto formatted)
 fromversion: 8.2.0
-system: true
