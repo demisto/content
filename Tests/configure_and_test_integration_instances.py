@@ -1963,7 +1963,7 @@ def main():
     build = create_build_object()
     logging.info(f"Build Number: {build.ci_build_number}")
 
-    # build.configure_servers_and_restart()
+    build.configure_servers_and_restart()
     # build.disable_instances()
 
     if build.is_nightly or build.is_sdk_nightly:
