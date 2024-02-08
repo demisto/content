@@ -1,4 +1,4 @@
-from CommonServerPython import *
+# from CommonServerPython import *
 from FindEmailCampaign import *
 import json
 from datetime import datetime
@@ -284,3 +284,18 @@ def test_include_self_flag_on(mocker, include_self):
     # if include_self is true result should be true
     # if include_self is false result should be false
     assert (include_self and result) or (not include_self and not result)
+
+
+def test_return_indicator_entry(mocker):
+    import FindEmailCampaign
+
+    # create dataframe with one incident
+    incidents = pd.DataFrame([{"id": 2}, {"id": 1}])
+    mocker.patch.object(FindEmailCampaign.demisto, "searchIndicators", return_value={
+        "iocs":
+            [{"id": "1", "value": "1", "score": 1, "investigationIDs": [1, 2], "relatedIncCount": 1}], "total": 1},
+    )
+    mocker.patch.object(FindEmailCampaign.demisto, "executeCommand")
+    indicator = FindEmailCampaign.return_indicator_entry(incidents)
+    assert indicator["id"].values[0] == "1"
+    assert indicator["relatedIncCount"].values[0] == 1
