@@ -270,7 +270,7 @@ Requires a Devo OAuth token that has read permission on siem.logtrust.alert.info
 
 #### Time Format for __from__ and __to__ Arguments:
 
-This integration supports the following time formats for the __from__ and __to__ Arguments:
+This integration supports the following time formats for the __from__ and __to__ arguments:
 
 * Date ranges such as "1 day", "30 minutes", etc. If a date range is provided for __from__, the __to__ parameter is not needed and will be ignored.
 * Unix timestamps in milliseconds and seconds.
@@ -336,7 +336,7 @@ A Cortex XSOAR instance configured with the correct OAuth token that has permiss
 
 #### Time Format for __from__ and __to__ Arguments:
 
-This integration supports the following time formats for the __from__ and __to__ Arguments:
+This integration supports the following time formats for the __from__ and __to__ arguments:
 
 * Date ranges such as "1 day", "30 minutes", etc. If a date range is provided for __from__, the __to__ parameter is not needed and will be ignored.
 * Unix timestamps in milliseconds and seconds.
