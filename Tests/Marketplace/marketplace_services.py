@@ -29,7 +29,7 @@ import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import XSOAR_ON_PREM_MP, XSOAR_SAAS_MP, PackFolders, Metadata, GCPConfig, \
     BucketUploadFlow, PACKS_FOLDER, PackTags, PackIgnored, Changelog, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
     XSIAM_MP, XPANSE_MP, TAGS_BY_MP, RN_HEADER_TO_ID_SET_KEYS
-from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
+from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName, PACK_METADATA_REQUIRE_RN_FIELDS
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -67,7 +67,7 @@ class Pack:
     RELEASE_NOTES = "ReleaseNotes"
     INDEX_FILES_TO_UPDATE = [METADATA, CHANGELOG_JSON, README]
 
-    def __init__(self, pack_name, pack_path, is_modified=None):
+    def __init__(self, pack_name, pack_path, is_modified=None, is_metadata_updated=None):
         self._pack_name = pack_name
         self._pack_path = pack_path
         self._zip_path = None  # zip_path will be updated as part of zip_pack
@@ -125,6 +125,7 @@ class Pack:
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_modified = is_modified
+        self._is_metadata_updated = is_metadata_updated
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
         self._is_data_source = False
@@ -381,6 +382,10 @@ class Pack:
         return self._is_modified
 
     @property
+    def is_metadata_updated(self):
+        return self._is_metadata_updated
+
+    @property
     def marketplaces(self):
         return self._marketplaces
 
@@ -389,18 +394,26 @@ class Pack:
         return self._all_levels_dependencies
 
     @property
-    def statistics_metadata(self):
-        return {
+    def update_metadata(self):
+        update_statics_metadata = {
             Metadata.DOWNLOADS: self.downloads_count,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.TAGS: list(self._tags or []),
             Metadata.INTEGRATIONS: self._related_integration_images
         }
 
-    def no_rn_metadata(self):
-        return {
+        update_metadata_fields = {}
+        if self.is_metadata_updated:
+            pack_metadata = self.pack_metadata
+            for field in pack_metadata:
+                if field not in PACK_METADATA_REQUIRE_RN_FIELDS:
+                    update_metadata_fields[field] = pack_metadata.get(field)
+            logging.debug(f"Updating metadata with statistics and metadata changes because {self._pack_name=} {self.is_modified=}")
+        else:
+            logging.debug(f"Updating metadata only with statistics because {self._pack_name=} {self.is_modified=}")
 
-        }
+        return update_statics_metadata | update_metadata_fields
+
     @staticmethod
     def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
                                     pack_dependencies_by_download_count: list):

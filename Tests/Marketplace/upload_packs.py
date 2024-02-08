@@ -12,6 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from zipfile import ZipFile
 from typing import Any
+from demisto_sdk.commands.common.handlers.xsoar_handler import JSONDecodeError
 
 from requests import Response
 
@@ -31,19 +32,34 @@ from Tests.Marketplace.pack_readme_handler import download_markdown_images_from_
 METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
 
-def get_packs_ids_to_upload(packs_to_upload: str) -> set:
-    """Returns a set of pack's names to upload.
+def get_packs_ids_to_upload(packs_to_upload: str) -> tuple[set, set]:
+    """Returns a tuple of sets containing pack's names to upload and update metadata.
 
     Args:
-        packs_to_upload (str): csv list of packs names to upload.
+        packs_to_upload (str): JSON string containing pack names to upload.
 
     Returns:
-        set: unique collection of packs names to upload.
+        tuple: tuple of sets containing packs names to upload and update metadata.
     """
+    logging.debug(f"{packs_to_upload=}")
     if packs_to_upload and isinstance(packs_to_upload, str):
-        packs = {p.strip() for p in packs_to_upload.split(',') if p not in IGNORED_FILES}
-        logging.info(f"Collected {len(packs)} content packs to upload: {list(packs)}")
-        return packs
+        try:
+            packs_json = json.loads(packs_to_upload)
+            packs_to_upload = packs_json.get('packs_to_upload', [])
+            packs_to_update_metadata = packs_json.get('packs_to_update_metadata', [])
+
+            packs_upload = {p.strip() for p in packs_to_upload if p not in IGNORED_FILES}
+            logging.info(f"Collected {len(packs_upload)} content packs to upload: {list(packs_upload)}")
+
+            packs_metadata_update = {p.strip() for p in packs_to_update_metadata if p not in IGNORED_FILES}
+            logging.info(f"Collected {len(packs_metadata_update)} content packs to update metadata: "
+                         f"{list(packs_metadata_update)}")
+
+            return packs_upload, packs_metadata_update
+
+        except JSONDecodeError as e:
+            logging.critical(f"Invalid JSON format. Please check the content of the JSON file, error:\n{e}")
+            sys.exit(1)
     else:
         logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
         sys.exit(1)
@@ -157,8 +173,8 @@ def update_index_folder(index_folder_path: str, pack: Pack, is_private_pack: boo
             logging.debug(f"Created '{pack.name}' pack folder in {GCPConfig.INDEX_NAME}")
 
         if not pack.is_modified and not is_private_pack:
-            logging.debug(f"Updating metadata only with statistics because {pack.name=} {pack.is_modified=}")
-            json_write(os.path.join(index_pack_path, "metadata.json"), pack.statistics_metadata, update=True)
+
+            json_write(os.path.join(index_pack_path, "metadata.json"), pack.update_metadata, update=True)
 
             if os.path.exists(os.path.join(index_pack_path, f"metadata-{pack.current_version}.json")):
                 json_write(os.path.join(index_pack_path, f"metadata-{pack.current_version}.json"), pack.statistics_metadata,
@@ -1158,8 +1174,7 @@ def main():
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
-    pack_ids_to_upload = get_packs_ids_to_upload(option.pack_names or "")
-    # pack_ids_to_update = get_packs_ids_to_update(option.pack_names or "")
+    pack_ids_to_upload, pack_ids_to_update_metadata = get_packs_ids_to_upload(option.pack_names or "")
     upload_specific_pack = option.upload_specific_pack
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
@@ -1202,7 +1217,8 @@ def main():
 
     # list of packs to iterate on over and upload/update them in bucket
     all_packs_objects_list = [Pack(pack_id, os.path.join(extract_destination_path, pack_id),
-                                   is_modified=pack_id in pack_ids_to_upload)
+                                   is_modified=pack_id in pack_ids_to_upload,
+                                   is_metadata_updated=pack_id in pack_ids_to_update_metadata)
                               for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
 
     # if it's not a regular upload-flow, then upload only collected/modified packs
@@ -1276,6 +1292,20 @@ def main():
                 pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
                 pack.cleanup()
                 continue
+
+        elif pack.is_metadata_updated:
+            # pack zip download and update metadata
+            # TODO
+            # use pack.zip_path of the downloaded
+
+            if not pack.sign_and_zip_pack(signature_key, uploaded_packs_dir):
+                continue
+
+            if not pack.upload_to_storage(pack.zip_path, storage_bucket, storage_base_path):
+                pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
+                pack.cleanup()
+                continue
+
         else:
             # Signs and zips non-modified packs for the upload_with_dependencies phase
             if not pack.sign_and_zip_pack(signature_key, uploaded_packs_dir):
@@ -1287,7 +1317,7 @@ def main():
             continue
 
         logging.debug(f"Finished iterating over pack '{pack.name}'")
-        if not pack.is_modified:
+        if not pack.is_modified and not pack.is_metadata_updated:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
             pack.cleanup()
             continue
