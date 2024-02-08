@@ -737,7 +737,8 @@ def test_parse_phone_number():
         Then: Only get the context object when the phpone_number is populated
     """
     good_number = EWSv2.parse_phone_number(PhoneNumber(label='123', phone_number='123123123'))
-    assert good_number.get('label') and good_number.get('phone_number')
+    assert good_number.get('label')
+    assert good_number.get('phone_number')
     assert not EWSv2.parse_phone_number(PhoneNumber(label='123'))
 
 
@@ -750,13 +751,13 @@ def test_switch_hr_headers():
     assert (EWSv2.switch_hr_headers(
         {'willswitch': '1234', 'wontswitch': '111', 'alsoswitch': 5555},
         {'willswitch': 'newkey', 'alsoswitch': 'annothernewkey', 'doesnt_exiest': 'doesnt break'})
-            == {'annothernewkey': 5555, 'newkey': '1234', 'wontswitch': '111'})
+        == {'annothernewkey': 5555, 'newkey': '1234', 'wontswitch': '111'})
 
 
 @pytest.mark.parametrize('input, output', [
     ('John Smith', 'John Smith'),
     ('SomeName', 'SomeName'),
-    ('sip:test@hello.com', 'sip:test@hello.com'),
+    ('sip:test@test.com', 'sip:test@test.com'),
     ('hello@test.com', 'smtp:hello@test.com')
 ])
 def test_format_identifier(input, output):
