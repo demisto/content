@@ -22,9 +22,6 @@ class ComplianceObject(abc.ABC):
         self.output_context_path = f'{INTEGRATION_NAME}.ComplianceTable.{self.capitalized_type}'
         self.output_context_id = output_context_id
 
-    def get_output_context(self, obj: dict):
-        return obj.get(f'{INTEGRATION_NAME}', {}).get('ComplianceTable', {}).get(self.capitalized_type, [])
-
     def get_input_context_id(self, obj: dict):
         try:
             return self._get_input_context_id(obj)
@@ -34,9 +31,6 @@ class ComplianceObject(abc.ABC):
     @abc.abstractmethod
     def _get_input_context_id(self, obj: dict):
         pass
-
-    def get_output_context_id(self, obj: dict):
-        return obj.get(self.output_context_id)
 
     @abc.abstractmethod
     def get_data(self, input_data: dict, identifier: str, issues: list) -> dict:
@@ -187,14 +181,17 @@ def get_output_object_list(compliance_obj: ComplianceObject) -> tuple[list, list
     Returns:
         (List[dict], List[str]): The list of the specified resource, list of their ids.
     """
-    output_objects = compliance_obj.get_output_context(demisto.context())
+    context_data = demisto.context()
+    compliance_table_context = context_data.get(f'{INTEGRATION_NAME}', {}).get('ComplianceTable', {})
+    output_objects = compliance_table_context.get(compliance_obj.capitalized_type, [])
+
     if type(output_objects) is list:
         output_objects_list = output_objects
     else:
         output_objects_list = [output_objects]
 
-    output_id_func = compliance_obj.get_output_context_id
-    return output_objects_list, [output_id_func(output_obj) for output_obj in output_objects_list]
+    output_id = compliance_obj.output_context_id
+    return output_objects_list, [output_obj.get(output_id) for output_obj in output_objects_list]
 
 
 def update_output_obj_with_issues(compliance_obj: ComplianceObject, input_obj_id: str, issues: list):
