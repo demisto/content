@@ -9,7 +9,6 @@ from typing import Any, cast
 from collections.abc import Callable
 
 import urllib3
-import ipaddress
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -107,18 +106,6 @@ RPZ_RULES_DICT = {
 }
 
 NETWORK_NOT_FOUND = "A network was not found for this address"
-
-
-class InvalidIPAddress(ValueError):
-    pass
-
-
-class InvalidNetmask(ValueError):
-    pass
-
-
-class InvalidIPRange(ValueError):
-    pass
 
 
 @unique
@@ -509,34 +496,6 @@ def transform_ext_attrs(ext_attrs: str) -> list:
     return l_ext_attrs
 
 
-def valid_ip(ip: str):
-    """Validate IP address format"""
-
-    try:
-        ipaddress.IPv4Address(ip)
-    except ValueError:
-        raise InvalidIPAddress(f"'{ip}' is not a valid IPv4 address")
-
-
-def valid_netmask(address: str):
-    """Validate netmask format"""
-
-    try:
-        ipaddress.ip_network(address, strict=False)
-    except ValueError:
-        raise InvalidNetmask(f"'{address}' is not a valid netmask")
-
-
-def valid_ip_range(from_ip: str, to_ip: str):
-    """Validate IP range format"""
-    try:
-        from_address = ipaddress.IPv4Address(from_ip)
-        to_address = ipaddress.IPv4Address(to_ip)
-        list(ipaddress.summarize_address_range(from_address, to_address))
-    except ValueError as err:
-        raise InvalidIPRange(f"'{from_ip}' to '{to_ip}' is not a valid IPv4 range: {err}")
-
-
 def transform_ipv4_range(from_ip: str, to_ip: str) -> dict[str, str]:
     """Transform IPv4 range to list of IPs.
 
@@ -722,7 +681,7 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
     # Input validation
 
     # If too many arguments are supplied, return an error
-    if sum(arg is not None for arg in [ip, network, from_ip and to_ip]) > 1:
+    if sum(bool(arg) for arg in [ip, network, from_ip and to_ip]) > 1:
         raise ValueError("Please specify only one of the `ip`, `network` or `from_ip`/`to_ip` arguments")
 
     # If neither ip, network nor from/to_ip were specified, return an error.
@@ -741,18 +700,17 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
     max_results = arg_to_number(args.get('max_results', INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
     client.set_param({InfoBloxNIOSClient.REQUEST_PARAM_MAX_RESULTS_KEY: max_results})
 
-    # Check if the network/IPs supplied are valid.
     if ip:
-        valid_ip(ip)
         status = args.get('status', IPv4AddressStatus.USED.value)
         raw_response = client.get_ipv4_address_from_ip(ip, status=status)
+        mode = f"{ip=}"
     elif network:
-        valid_netmask(network)
         status = args.get('status', IPv4AddressStatus.USED.value)
         raw_response = client.get_ipv4_address_from_netmask(network, status=status)
+        mode = f"{network=}"
     elif from_ip and to_ip:
-        valid_ip_range(from_ip, to_ip)
         raw_response = client.get_ipv4_address_range(from_ip, to_ip)
+        mode = f"{from_ip=} - {to_ip=}"
 
     ip_list = raw_response.get('result')
 
@@ -761,7 +719,7 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
         context = {}
     else:
         output = transform_ip_context(ip_list)
-        title = f'{INTEGRATION_NAME} - IP info (limit {max_results})'
+        title = f'{INTEGRATION_NAME} - {mode}'
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}': output
         }

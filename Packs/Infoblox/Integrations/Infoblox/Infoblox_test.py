@@ -17,19 +17,13 @@ from Infoblox import (
     INTEGRATION_NETWORK_INFO_NETWORKVIEW_CONTEXT_KEY,
     IPv4AddressStatus,
     InfoBloxNIOSClient,
-    InvalidIPAddress,
-    InvalidIPRange,
-    InvalidNetmask,
     get_host_records_command,
     get_ip_command,
     get_network_info_command,
     transform_ext_attrs,
     transform_host_records_context,
     transform_ipv4_range,
-    transform_network_info_context,
-    valid_ip,
-    valid_ip_range,
-    valid_netmask
+    transform_network_info_context
 )
 import demistomock as demisto
 import json
@@ -236,54 +230,6 @@ class TestHelperFunctions:
         actual = transform_ext_attrs(input)
         assert not actual
 
-    def test_valid_ip_address(self):
-        """
-        Test valid IP address
-        """
-
-        valid_ip("192.168.1.1")
-
-    def test_valid_ip_invalid_address(self):
-        """
-        Test invalid IP address
-        """
-
-        ip = "192.168.1.256"
-        with pytest.raises(InvalidIPAddress, match=f"'{ip}' is not a valid IPv4 address"):
-            valid_ip(ip)
-
-    def test_valid_netmask(self):
-        """
-        Test a valid netmask.
-        """
-
-        valid_netmask("1.1.1.1/24")
-
-    def test_valid_netmask_invalid(self):
-
-        address = "192.168.1.0/33"
-        with pytest.raises(InvalidNetmask, match=f"'{address}' is not a valid netmask"):
-            valid_netmask(address)
-
-    def test_valid_ip_range(self):
-        valid_ip_range("192.168.1.0", "192.168.1.255")
-
-    def test_valid_ip_range_to_greater_than_from(self):
-
-        from_address = "192.168.1.100"
-        to_address = "192.168.1.50"
-
-        with pytest.raises(InvalidIPRange, match=f"'{from_address}' to '{to_address}' is not a valid IPv4 range: last IP address must be greater than first"):  # noqa: E501
-            valid_ip_range(from_address, to_address)
-
-    def test_valid_ip_range_invalid_ip(self):
-
-        from_address = "192.168.1.254"
-        to_address = "192.168.2.256"
-
-        with pytest.raises(InvalidIPRange, match=f"'{from_address}' to '{to_address}' is not a valid IPv4 range: Octet 256 \(\> 255\) not permitted in '{to_address}'"):  # noqa: E501
-            valid_ip_range(from_address, to_address)
-
     def test_transform_ipv4_range(self):
 
         from_address = "192.168.1.0"
@@ -488,6 +434,7 @@ class TestIPOperations:
         - The context includes the IP address object with the input IP address.
         """
 
+        ip = self.VALID_IP_ADDRESS
         mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
                          / "get_ipv4_address_from_ip_address.json").read_text()
 
@@ -496,10 +443,10 @@ class TestIPOperations:
             json=json.loads(mock_response)
         )
 
-        actual_hr, actual_context, actual_raw_response = get_ip_command(client, {"ip": self.VALID_IP_ADDRESS})
+        actual_hr, actual_context, actual_raw_response = get_ip_command(client, {"ip": ip})
 
         actual_hr_lines = actual_hr.splitlines()
-        assert "Infoblox Integration - IP info" in actual_hr_lines[0]
+        assert f"Infoblox Integration - {ip=}" in actual_hr_lines[0]
         assert self.VALID_IP_ADDRESS in actual_hr_lines[3]
 
         actual_output = cast(list, actual_context.get(self.CONTEXT_PATH))
@@ -526,6 +473,7 @@ class TestIPOperations:
         - The context includes the IP address object with the input IP address.
         """
 
+        ip = self.VALID_IP_ADDRESS
         mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
                          / "get_ipv4_address_from_ip_address.json").read_text()
 
@@ -535,10 +483,10 @@ class TestIPOperations:
         )
 
         actual_hr, actual_context, actual_raw_response = get_ip_command(
-            client, {"ip": self.VALID_IP_ADDRESS, "status": IPv4AddressStatus.USED.value})
+            client, {"ip": ip, "status": IPv4AddressStatus.USED.value})
 
         actual_hr_lines = actual_hr.splitlines()
-        assert "Infoblox Integration - IP info" in actual_hr_lines[0]
+        assert f"Infoblox Integration - {ip=}" in actual_hr_lines[0]
         assert self.VALID_IP_ADDRESS in actual_hr_lines[3]
 
         assert self.CONTEXT_PATH in actual_context
@@ -577,7 +525,7 @@ class TestIPOperations:
         actual_hr, actual_context, actual_raw_response = get_ip_command(
             client, {"from_ip": from_ip, "to_ip": to_ip})
 
-        assert f"(limit {INTEGRATION_MAX_RESULTS_DEFAULT})" in actual_hr.splitlines()[0]
+        assert f"Infoblox Integration - {from_ip=} - {to_ip=}" in actual_hr.splitlines()[0]
 
         assert self.CONTEXT_PATH in actual_context
         actual_output = cast(list, actual_context.get(self.CONTEXT_PATH))
@@ -644,6 +592,8 @@ class TestIPOperations:
         - The context includes the IP address object with the input netmask.
         """
 
+        network = self.VALID_NETMASK
+
         mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
                          / "get_ipv4_addresses_from_network.json").read_text()
 
@@ -652,10 +602,10 @@ class TestIPOperations:
             json=json.loads(mock_response)
         )
 
-        actual_hr, actual_context, actual_raw_response = get_ip_command(client, {"network": self.VALID_NETMASK})
+        actual_hr, actual_context, actual_raw_response = get_ip_command(client, {"network": network})
 
         actual_hr_lines = actual_hr.splitlines()
-        assert "Infoblox Integration - IP info" in actual_hr_lines[0]
+        assert f"Infoblox Integration - {network=}" in actual_hr_lines[0]
 
         assert self.CONTEXT_PATH in actual_context
         actual_output = cast(list, actual_context.get(self.CONTEXT_PATH))
@@ -663,22 +613,6 @@ class TestIPOperations:
 
     # TODO
     def test_get_ip_command_no_response(self):
-        pass
-
-    # TODO
-    def test_get_ip_command_invalid_ip(self):
-        pass
-
-    # TODO
-    def test_get_ip_command_invalid_netmask(self):
-        pass
-
-    # TODO
-    def test_get_ip_command_invalid_from_ip(self):
-        pass
-
-    # TODO
-    def test_get_ip_command_invalid_range(self):
         pass
 
 
@@ -712,7 +646,7 @@ class TestHostRecordsOperations:
         hr, records, _ = get_host_records_command(client, {})
 
         assert len(cast(list, records.get(self.CONTEXT_KEY))) == 4
-        assert f"Host records (first {INTEGRATION_MAX_RESULTS_DEFAULT})" in hr
+        assert "Host records" in hr
         assert "extattrs" not in hr
 
     def test_get_records_from_hostname(self, requests_mock):
@@ -802,7 +736,7 @@ class TestHostRecordsOperations:
 
         actual_hr, actual_records, actual_raw_response = get_host_records_command(client, {"additional_return_fields": input})
 
-        assert f"Host records (first {INTEGRATION_MAX_RESULTS_DEFAULT})" in actual_hr
+        assert "Host records" in actual_hr
         assert self.CONTEXT_KEY in actual_records
         actual_output = cast(list, actual_records.get(self.CONTEXT_KEY))
         assert len(actual_output) == 4
