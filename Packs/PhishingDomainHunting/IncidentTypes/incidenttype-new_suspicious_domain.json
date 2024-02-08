@@ -1,57 +1,42 @@
 {
-	"id": "New Suspicious Domain",
-	"version": 1,
-	"cacheVersn": 0,
-	"modified": "2023-12-04T15:12:42.372752288Z",
-	"created": "0001-01-01T00:00:00Z",
-	"sizeInBytes": 0,
-	"packID": "",
-	"packName": "",
-	"itemVersion": "",
-	"fromServerVersion": "",
-	"toServerVersion": "",
-	"definitionId": "",
-	"vcShouldIgnore": false,
-	"vcShouldKeepItemLegacyProdMachine": false,
-	"commitMessage": "",
-	"shouldCommit": false,
-	"locked": false,
-	"name": "New Suspicious Domain",
-	"prevName": "New Suspicious Domain",
-	"color": "#F8E7A5",
-	"playbookId": "a40149a9-aee2-4359-85f0-e1bbe899db58",
-	"hours": 0,
-	"days": 0,
-	"weeks": 0,
-	"hoursR": 0,
-	"daysR": 0,
-	"weeksR": 0,
-	"system": false,
-	"readonly": false,
-	"default": false,
-	"autorun": false,
-	"preProcessingScript": "",
-	"closureScript": "",
-	"disabled": false,
-	"reputationCalc": 2,
-	"onChangeRepAlg": 0,
-	"layout": "133c981c-3818-4c4f-8174-81e268bf3809",
-	"detached": false,
-	"extractSettings": {
-		"mode": "Specific",
-		"fieldCliNameToExtractSettings": {
-			"fingerprint": {
-				"extractAsIsIndicatorTypeId": "136fd66a-e220-4241-8c3a-78a1e6a25add",
-				"isExtractingAllIndicatorTypes": false,
-				"extractIndicatorTypesIDs": []
-			},
-			"name": {
-				"extractAsIsIndicatorTypeId": "",
-				"isExtractingAllIndicatorTypes": false,
-				"extractIndicatorTypesIDs": [
-					"domainRepUnified"
-				]
-			}
-		}
-	}
+    "id": "New Suspicious Domain",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "New Suspicious Domain",
+    "prevName": "New Suspicious Domain",
+    "color": "#F8E7A5",
+    "playbookId": "a40149a9-aee2-4359-85f0-e1bbe899db58",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 2,
+    "onChangeRepAlg": 0,
+    "layout": "New Suspicious Domain",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "fingerprint": {
+                "extractAsIsIndicatorTypeId": "136fd66a-e220-4241-8c3a-78a1e6a25add",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "name": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified"
+                ]
+            }
+        }
+    }
 }

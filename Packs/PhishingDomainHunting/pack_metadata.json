@@ -23,75 +23,75 @@
     ],
     "githubUser": [],
     "dependencies": {
-		"AutoFocus": {
-			"mandatory": true,
-			"minVersion": "2.1.17",
-			"name": "AutoFocus by Palo Alto Networks",
-			"certification": "certified",
-			"author": "Cortex XSOAR"
-		},
-		"CommonPlaybooks": {
-			"mandatory": true,
-			"minVersion": "2.4.41",
-			"name": "Common Playbooks",
-			"certification": "certified",
-			"author": "Cortex XSOAR"
-		},
-		"CommonScripts": {
-			"mandatory": true,
-			"minVersion": "1.13.7",
-			"name": "Common Scripts",
-			"certification": "certified",
-			"author": "Cortex XSOAR"
-		},
-		"CommonTypes": {
-			"mandatory": true,
-			"minVersion": "3.3.95",
-			"name": "Common Types",
-			"certification": "certified",
-			"author": "Cortex XSOAR"
-		},
-		"CortexXpanse": {
-			"mandatory": true,
-			"minVersion": "1.0.14",
-			"name": "Cortex Xpanse",
-			"certification": "certified",
-			"author": "Cortex XSOAR"
-		},
-		"EDL": {
-			"mandatory": true,
-			"minVersion": "3.2.13",
-			"name": "Generic Export Indicators Service",
-			"certification": "certified",
-			"author": "Cortex XSOAR"
-		},
-		"PAN-OS": {
-			"mandatory": true,
-			"minVersion": "2.1.15",
-			"name": "PAN-OS by Palo Alto Networks",
-			"certification": "certified",
-			"author": "Cortex XSOAR"
-		},
-		"VirusTotal": {
-			"mandatory": true,
-			"minVersion": "2.6.11",
-			"name": "VirusTotal",
-			"certification": "certified",
-			"author": "VirusTotal"
-		},
-		"Whois": {
-			"mandatory": true,
-			"minVersion": "1.5.6",
-			"name": "Whois",
-			"certification": "certified",
-			"author": "Cortex XSOAR"
-		},
-		"rasterize": {
-			"mandatory": true,
-			"minVersion": "1.2.28",
-			"name": "Rasterize",
-			"certification": "certified",
-			"author": "Cortex XSOAR"
-		}
-	}
+        "AutoFocus": {
+            "mandatory": true,
+            "minVersion": "2.1.17",
+            "name": "AutoFocus by Palo Alto Networks",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "minVersion": "2.4.41",
+            "name": "Common Playbooks",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "minVersion": "1.13.7",
+            "name": "Common Scripts",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "minVersion": "3.3.95",
+            "name": "Common Types",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "CortexXpanse": {
+            "mandatory": true,
+            "minVersion": "1.0.14",
+            "name": "Cortex Xpanse",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "EDL": {
+            "mandatory": true,
+            "minVersion": "3.2.13",
+            "name": "Generic Export Indicators Service",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "PAN-OS": {
+            "mandatory": true,
+            "minVersion": "2.1.15",
+            "name": "PAN-OS by Palo Alto Networks",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "VirusTotal": {
+            "mandatory": true,
+            "minVersion": "2.6.11",
+            "name": "VirusTotal",
+            "certification": "certified",
+            "author": "VirusTotal"
+        },
+        "Whois": {
+            "mandatory": true,
+            "minVersion": "1.5.6",
+            "name": "Whois",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "rasterize": {
+            "mandatory": true,
+            "minVersion": "1.2.28",
+            "name": "Rasterize",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        }
+    }
 }

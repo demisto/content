@@ -1,0 +1,26 @@
+commonfields:
+  id: html_difflab_dynamic
+  version: -1
+name: html_difflab_dynamic
+script: ''
+type: python
+tags:
+- Utility
+- dynamic-section
+enabled: true
+args:
+- name: html1
+  description: First HTML to compare.
+- name: html2
+  description: Second HTML to compare.
+outputs:
+- contextPath: FuzzyHashSimilarity.SimilarityPercentage
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/ssdeep:1.0.0.87329
+runas: DBotWeakRole
+engineinfo: {}
+tests:
+- No tests (auto formatted)
+dockerimage45: demisto/ssdeep:1.0.0.23743

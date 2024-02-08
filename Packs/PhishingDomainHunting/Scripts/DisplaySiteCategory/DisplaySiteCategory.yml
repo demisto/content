@@ -1,0 +1,18 @@
+commonfields:
+  id: displaySiteCategory
+  version: -1
+name: displaySiteCategory
+script: ''
+type: python
+tags:
+- dynamic-section
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.13.87159
+runas: DBotWeakRole
+engineinfo: {}
+tests:
+- No tests (auto formatted)
+dockerimage45: demisto/python3:3.10.13.78960

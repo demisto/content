@@ -1,0 +1,27 @@
+commonfields:
+  id: html_difflib_check
+  version: -1
+name: html_difflib_check
+script: ''
+type: python
+tags:
+- basescript
+enabled: true
+args:
+- name: html1
+  description: First HTML to compare.
+- name: html2
+  description: Second HTML to compare.
+outputs:
+- contextPath: HTMLSimilarity.SimilarityPercentage
+  description: Similarity percentage between 2 html pages.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/ssdeep:1.0.0.87329
+runas: DBotWeakRole
+engineinfo: {}
+comment: ''
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
