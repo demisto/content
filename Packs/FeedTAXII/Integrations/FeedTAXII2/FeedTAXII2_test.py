@@ -325,3 +325,59 @@ class TestHelperFunctions:
             initial_interval = 'initial_mock'
 
             assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time) == initial_interval
+
+    @pytest.mark.parametrize("indicators, last_run, new_indicators", [
+        (
+            [{'value': 'one', 'type': 'IP', "rawJSON": {'id': 'test_one', "modified": '2023-06-14T13:18:21.598591Z'}},
+             {'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
+             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}}],
+            {},
+            [{'value': 'one', 'type': 'IP', "rawJSON": {'id': 'test_one', "modified": '2023-06-14T13:18:21.598591Z'}},
+            {'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
+            {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}}]
+        ),
+        (
+            [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
+             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}}],
+            {"latest_indicators":
+                 [{'value': 'one', 'type': 'IP', "rawJSON": {'id': 'test_one', "modified": '2023-06-14T13:18:21.598591Z'}},
+                  {'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
+                  {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}}
+                  ]},
+            []
+        ),
+        (
+            [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-10-02T05:34:45.339145Z'}},
+             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}},
+             {'value': 'four', 'type': 'Domain', "rawJSON": {'id': 'test_four', "modified": '2023-10-02T05:34:28.339145Z'}}],
+            {"latest_indicators":
+                 [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
+                  {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}}
+                  ]},
+            [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-10-02T05:34:45.339145Z'}},
+             {'value': 'four', 'type': 'Domain', "rawJSON": {'id': 'test_four', "modified": '2023-10-02T05:34:28.339145Z'}}]
+        )
+
+    ])
+    def test_filter_indicators(self, indicators, last_run, new_indicators):
+        """
+        Scenario: Test filtering indicators received from the fetch call before sending indicators to server
+
+        Given:
+        - list of indicators returned from the fetch call
+        - last run object containing a list of indicators fetched in the previous fetch
+
+        When:
+        - running filter_indicators command
+
+        Then:
+        - update last run with the indicators list of the new fetch
+        - return new_indicators list containing only new or modified indicators to be sent to server
+        """
+
+        from FeedTAXII2 import filter_indicators
+
+        result = filter_indicators(indicators, last_run)
+
+        assert result == new_indicators
+        assert last_run.get("latest_indicators") == indicators

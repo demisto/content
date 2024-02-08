@@ -143,7 +143,8 @@ def fetch_indicators_command(
             if client.last_fetched_indicator__modified
             else added_after
         )
-    filter_indicators(indicators, last_run_ctx)
+
+    indicators = filter_indicators(indicators, last_run_ctx)
     demisto.debug(f'{indicators=}')
     demisto.debug(f"returning last run as: {last_run_ctx}")
     return indicators, last_run_ctx
