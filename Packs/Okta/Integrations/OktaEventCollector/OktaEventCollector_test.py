@@ -1,13 +1,27 @@
-from OktaEventCollector import Client, remove_duplicates, get_last_run, get_events_command, main
-import pytest
+import json
 from unittest.mock import MagicMock
+
+import pytest
 from freezegun import freeze_time
+from OktaEventCollector import Client, get_events_command, get_last_run, main, remove_duplicates
+from requests.models import Response
+
 import demistomock as demisto
 
-id1_pub = [[{'uuid': 'a5b57ec5feaa', 'published': '2022-04-17T12:32:36.667'}]]
+
+class MockResponse:
+    def __init__(self, data=None, text='', status_code=200, links={}):
+        self.data = data
+        self.text = str(data) if data else text
+        self.status_code = status_code
+        self.links = links
+
+
+id1_pub = '[{"uuid": "a5b57ec5feaa", "published": "2022-04-17T12:32:36.667"}]'
 id2_pub = [{'uuid': 'a5b57ec5febb', 'published': '2022-04-17T12:32:36.667'}]
 id3_pub = [{'uuid': 'a5b57ec5fecc', 'published': '2022-04-17T12:32:36.667'}]
 id4_pub = [{'uuid': 'a5b57ec5fedd', 'published': '2022-04-17T12:32:36.667'}]
+empty_response = '[]'
 
 id1 = {'uuid': 'a5b57ec5febb'}
 id2 = {'uuid': 'a5b57ec5fecc'}
@@ -46,7 +60,7 @@ def test_remove_duplicates(events, ids, result):
       {'published': '2022-04-17T12:33:36.667',
        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5fccc'}],
      '2022-04-17T11:30:00.000',
-     {'after': '2022-04-17T12:33:36.667000', 'ids': ['1d0844b6-3148-11ec-9027-a5b57ec5fccc']}),
+     {'after': '2022-04-17T12:33:36.667000', 'ids': ['1d0844b6-3148-11ec-9027-a5b57ec5fccc'], 'next_link': ''}),
     ([{'published': '2022-04-17T12:31:36.667',
        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5faaa'},
       {'published': '2022-04-17T12:32:36.667',
@@ -56,12 +70,12 @@ def test_remove_duplicates(events, ids, result):
      '2022-04-17T11:30:00.000',
      {'after': '2022-04-17T12:32:36.667000',
       'ids': ['1d0844b6-3148-11ec-9027-a5b57ec5fccc',
-              '1d0844b6-3148-11ec-9027-a5b57ec5fbbb']}),
+              '1d0844b6-3148-11ec-9027-a5b57ec5fbbb'], 'next_link': ''}),
     ([],
      '2022-04-17T12:31:36.667',
-     {'after': '2022-04-17T12:31:36.667000', 'ids': []})])
+     {'after': '2022-04-17T12:31:36.667000', 'ids': [], 'next_link': ''})])
 def test_get_last_run(events, last_run_after, result):
-    assert get_last_run(events, last_run_after) == result
+    assert get_last_run(events, last_run_after, next_link='') == result
 
 
 def test_get_events_success(dummy_client, mocker):
@@ -69,15 +83,15 @@ def test_get_events_success(dummy_client, mocker):
     mock_remove_duplicates.return_value = [{'id': 1,
                                             'published': '2022-04-17T12:32:36.667'}]
     mocker.patch('OktaEventCollector.remove_duplicates', mock_remove_duplicates)
-    mocker.patch.object(dummy_client, 'get_events', side_effect=id1_pub)
-    events, epoch = get_events_command(dummy_client, 1, 'since', ['id1'])
+    mocker.patch.object(dummy_client, 'get_events', side_effect=[MockResponse(text=id1_pub)])
+    events, epoch, _ = get_events_command(dummy_client, 1, 'since', ['id1'])
     assert len(events) == 1
     assert epoch == 0
 
 
 def test_get_events_no_events(dummy_client, mocker):
-    mocker.patch.object(dummy_client, 'get_events', return_value=None)
-    events, epoch = get_events_command(dummy_client, 1, 'since')
+    mocker.patch.object(dummy_client, 'get_events', side_effect=[MockResponse(text=empty_response)])
+    events, epoch, _ = get_events_command(dummy_client, 1, 'since')
     assert len(events) == 0
     assert epoch == 0
 
