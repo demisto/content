@@ -289,6 +289,7 @@ def fetch_incidents(client: IMAPClient,
         incidents.append(mail.convert_to_incident())
         uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
     next_run = {'last_uid': str(uid_to_fetch_from)} if uid_to_fetch_from != 0 else None
+    demisto.debug(f"{next_run=}")
     if delete_processed:
         client.delete_messages(messages)
     return next_run, incidents
@@ -582,6 +583,7 @@ def main():     # pragma: no cover
     with_headers = params.get('with_headers')
     delete_processed = demisto.params().get("delete_processed") or False
     limit = min(int(demisto.params().get('limit') or 50), 200)
+    demisto.debug(f"{limit=}")
     save_file = params.get('save_file') or False
     first_fetch_time = (demisto.params().get('first_fetch') or '3 days').strip()
     ssl_context = ssl.create_default_context()
