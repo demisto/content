@@ -241,6 +241,7 @@ class TestCreateFile:
         data = self.get_file(TestCreateFile.path)
         expected_data = self.get_file(f'test_data/{out_iocs}.txt')
         assert data == expected_data, f'create_file_sync with {in_iocs} iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
+    
 
     def test_create_file_sync_all_types(self, mocker):
         """
@@ -634,13 +635,15 @@ class TestCommands:
         sync(client)
         assert http_request.call_args.args[0] == 'sync_tim_iocs', 'sync command url changed'
 
-    def test_get_sync_file(self, mocker):
+    @pytest.mark.parametrize("zip_value, expected_file_name", [pytest.param(False, 'xdr-sync-file',id="no zip"),
+                                                               pytest.param(True,"xdr-sync-file-zipped.zip",id="zip")])
+    def test_get_sync_file(self, mocker,zip_value:bool, expected_file_name:str):
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
         return_results_mock = mocker.patch('XDR_iocs.return_results')
-        get_sync_file()
-        assert return_results_mock.call_args[0][0]['File'] == 'xdr-sync-file'
-
+        get_sync_file(zip=zip_value)
+        assert return_results_mock.call_args[0][0]['File'] == expected_file_name
+    
     @pytest.mark.xfail(reason="Until API issue is fixed (XSUP-33235)")
     @freeze_time('2020-06-03T02:00:00Z')
     def test_iocs_to_keep(self, mocker):
