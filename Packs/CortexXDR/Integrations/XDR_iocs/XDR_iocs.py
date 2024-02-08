@@ -325,13 +325,15 @@ def get_temp_file() -> str:
     temp_file = tempfile.mkstemp()
     return temp_file[1]
 
+
 def set_sync_time(timestamp: datetime) -> None:
     value = {
-            "ts": int(timestamp.timestamp()) * 1000,
-            "time": timestamp.strftime(DEMISTO_TIME_FORMAT),
-        }
+        "ts": int(timestamp.timestamp()) * 1000,
+        "time": timestamp.strftime(DEMISTO_TIME_FORMAT),
+    }
     demisto.info(f"setting sync time to integration context: {value}")
-    set_integration_context(get_integration_context() | value) # latter value matters when updating a dict 
+    set_integration_context(get_integration_context() | value)  # latter value matters when updating a dict
+
 
 def sync(client: Client):
     """
@@ -348,7 +350,7 @@ def sync(client: Client):
         client.http_request(path, requests_kwargs)
     finally:
         os.remove(temp_file_path)
-        
+
     set_sync_time(sync_time)
     set_new_iocs_to_keep_time()
     return_outputs("sync with XDR completed.")
@@ -396,11 +398,11 @@ def get_last_iocs(batch_size=200) -> list:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
     last_run: dict = get_integration_context()
     query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
-    demisto.info(f"querying XSOAR's last IOCs with {query=}")
+    demisto.info(f"querying XSOAR's recently-modified IOCs with {query=}")
     iocs: list = list(get_iocs_generator(query=query, size=batch_size))
-    demisto.info(f"querying XSOAR's last IOCs: got {len(iocs)}")
+    demisto.info(f"querying XSOAR's recently-modified: got {len(iocs)}")
     last_run['time'] = current_run
-    demisto.debug(f"querying querying XSOAR's last IOCs: setting last_run['time']={current_run}")
+    demisto.debug(f"querying querying XSOAR's recently-modified IOCs: setting last_run['time']={current_run}")
     set_integration_context(last_run)
     return iocs
 
@@ -435,7 +437,7 @@ def tim_insert_jsons(client: Client):
         demisto.info(f"pushing IOCs to XDR: querying with input {indicators}")
         iocs = get_indicators(indicators)
     else:
-        demisto.info("pushing IOCs to XDR: did not get indicators, will use last IOCs")
+        demisto.info("pushing IOCs to XDR: did not get indicators, will use recently-modified IOCs")
         iocs = get_last_iocs()
 
     validation_errors = []
@@ -674,26 +676,26 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
         return xdr_local
 
 
-def get_sync_file(set_time:bool=False, zip:bool=False) -> None:
+def get_sync_file(set_time: bool = False, zip: bool = False) -> None:
     temp_file_path = get_temp_file()
-    
+
     timestamp = datetime.now(timezone.utc)
     demisto.debug(f"creating sync file with {timestamp=!s}")
     try:
-        create_file_sync(temp_file_path) 
-        
+        create_file_sync(temp_file_path)
+
         if zip:
             with tempfile.NamedTemporaryFile(mode='w+b', suffix=".zip") as temp_zip_file:
-                zipfile.ZipFile(temp_zip_file.name,'w',compression=zipfile.ZIP_DEFLATED).write(temp_file_path, 'xdr-sync-file')
+                zipfile.ZipFile(temp_zip_file.name, 'w', compression=zipfile.ZIP_DEFLATED).write(temp_file_path, 'xdr-sync-file')
                 temp_zip_file.seek(0, os.SEEK_END)
                 demisto.info(f"returning a zip, file size is {temp_zip_file.tell()} bytes")
                 temp_zip_file.seek(0)
                 return_results(fileResult('xdr-sync-file-zipped.zip', temp_zip_file.read()))
         else:
             with open(temp_file_path) as temp_sync_file:
-                # create_file_sync() logs the raw file size
+                # raw file size is logged in create_file_sync
                 return_results(fileResult('xdr-sync-file', temp_sync_file.read()))
-        
+
         if set_time:
             set_sync_time(timestamp)
     finally:
