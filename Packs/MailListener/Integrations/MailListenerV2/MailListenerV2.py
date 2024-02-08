@@ -575,7 +575,7 @@ def main():     # pragma: no cover
     folder = params.get('folder')
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
-    verify_ssl = not params.get('insecure') or False
+    verify_ssl = not params.get('insecure') or True
     tls_connection = params.get('TLS_connection') or True
     include_raw_body = demisto.params().get('Include_raw_body') or False
     permitted_from_addresses = demisto.params().get('permittedFromAdd', '')
