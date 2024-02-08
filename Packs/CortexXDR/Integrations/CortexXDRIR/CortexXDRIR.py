@@ -837,6 +837,37 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
 
+def create_incidents_dictionary(incidents_data: Dict[str, Any]) -> Dict[str, Any]:
+    """creating a dictionary of incidents data  according to the old extra data api format
+    fields in a dictionary format for easy access later
+
+    Args:
+        incidents_data (dict): incidents multiple extra data retrieved by the upgraded api
+
+    Returns:
+        dict: dictionary of incidents data 
+    """
+    result = {}
+    for incident_data in incidents_data.get('reply', {}).get('incidents'):
+        incident_id = incident_data.get('incident', {}).get('incident_id')
+        hosts = incident_data.get('incident', {}).get('hosts')
+        users = incident_data.get('incident', {}).get('users')
+        incident_sources = incident_data.get('incident', {}).get('incident_sources')
+        alerts = incident_data.get('alerts', {}).get('data')
+        file_artifacts = incident_data.get('file_artifacts', []).get('data')
+        network_artifacts = incident_data.get('network_artifacts', []).get('data')
+        result[incident_id] = {
+            'incident': incident_data.get('incident', {}),
+            'hosts': hosts,
+            'users': users,
+            'incident_sources': incident_sources,
+            'alerts': alerts,
+            'file_artifacts': file_artifacts,
+            'network_artifacts': network_artifacts
+        }
+    return result
+
+
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None):
     # Get the last fetch time, if exists
@@ -879,12 +910,10 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         incident_data_dict: dict[str, Any] = {}
         if_upgraded_extra_data = False
         if raw_incidents and (check_using_upgraded_api_incidents_extra_data(client, raw_incidents[0].get('incident_id')[-1])):
-            incident_ids: list[str] = [raw_incident.get('incident_id') for raw_incident in raw_incidents
-                                       if len(incident_ids) < max_fetch]
+            incident_ids = [raw_incident.get('incident_id') for raw_incident in raw_incidents
+                            if len(incident_ids) < max_fetch]
             raw_incidents_data, if_upgraded_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_ids)
-            incident_data_dict = {incident['incident']['incident_id']: incident['incident'] for incident in raw_incidents_data.get
-                                  ('reply', {}).get('incidents')}
-
+            incident_data_dict = create_incidents_dictionary(raw_incidents_data)
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
             incident_data: dict[str, Any] = {}
@@ -894,7 +923,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                 incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
                                                                          "alerts_limit": 1000})[2].get('incident') or {}
 
-            sort_all_list_incident_fields(incident_data)
+            sort_all_list_incident_fields(incident_data)  # adding another option
 
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
                                                                      None)
