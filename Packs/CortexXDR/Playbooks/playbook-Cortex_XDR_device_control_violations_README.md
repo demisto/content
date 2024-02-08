@@ -33,7 +33,7 @@ This playbook does not use any sub-playbooks.
 | TimeStamp | Timestamp in relative date format for query device control events<br/>from Cortex XDR.<br/>For example "1 day", "3 weeks". |  | Optional |
 | EndpointID | Comma-separated list of endpoint IDs to filter results for. |  | Optional |
 | Hostname | Comma-separated list of hostnames to filter results for. |  | Optional |
-| IPAddress | Comma-separated list of endpoints IP Addresses to filter results for. |  | Optional |
+| IPAddress | Comma-separated list of endpoints IP addresses to filter results for. |  | Optional |
 | MessageSubject | The subject of the message for communication with the involved users. | Device control violation | Optional |
 | MessageBody | A body of the message for communication with the involved users. | Hello,<br/>Your user was involved with a device control violation. Please open the following link to fill in the needed information to understand the incident further. | Optional |
 
