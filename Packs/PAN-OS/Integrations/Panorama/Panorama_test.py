@@ -4675,6 +4675,52 @@ class TestPanOSEditNatRule:
         assert mock_request.call_args.kwargs['params']['xpath'] == expected_url_params['xpath']
         assert mock_request.call_args.kwargs['params'] == expected_url_params
 
+    @staticmethod
+    def test_pan_os_edit_nat_rule_command_audit_comment_main_flow(mocker):
+        """
+        Given
+         - panorama integrations parameters.
+         - pan-os-edit-nat-rule command arguments including device_group.
+         - arguments to edit audit comment of a rule
+
+        When -
+            running the pan-os-edit-nat-rule command through the main flow
+
+        Then
+         - make sure the context output is returned as expected.
+         - make sure the device group gets overriden by the command arguments.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "audit-comment",
+                "element_value": "some string",
+                "pre_post": "pre-rulebase",
+                "device-group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-nat-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        assert request_mock.call_args.kwargs['body'] == {
+            'type': 'op',
+            'cmd': "<set><audit-comment><xpath>/config/devices/entry[@name='localhost.localdomain']/device-group"
+                   "/entry[@name='new device group']/pre-rulebase/nat/rules/entry[@name='test']"
+                   "</xpath><comment>some string</comment></audit-comment></set>",
+            'key': 'thisisabogusAPIKEY!'
+        }
+        assert res.call_args.args[0]['Contents'] == TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+
 
 class TestPanOSListVirtualRouters:
 
@@ -5815,7 +5861,6 @@ class TestPanOSEditPBFRule:
         res = mocker.patch('demistomock.results')
         main()
 
-        # make sure that device group is getting overriden by the device-group from command arguments.
         assert request_mock.call_args.kwargs['body'] == {
             'type': 'op',
             'cmd': "<set><audit-comment><xpath>/config/devices/entry[@name='localhost.localdomain']/device-group"
