@@ -73,6 +73,8 @@ def filter_indicators(indicators: list, last_run: dict) -> list:
             # the indicator is stored in latest_indicators, but got modified -> add to new_indicators
             if indicator.get("rawJSON", {}).get("modified", "") > modified_date:
                 new_indicators.append(indicator)
+            else:
+                demisto.debug(f"indicator {indicator_id} was already ingested in the previous fetch...skipping.")
 
         # the indicator is not stored in latest_indicators -> add to new_indicators
         else:
