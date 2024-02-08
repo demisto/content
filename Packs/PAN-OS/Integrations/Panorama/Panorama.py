@@ -12388,7 +12388,7 @@ def pan_os_edit_nat_rule(
     if element_to_change == 'audit-comment':
         # to update audit-comment of a nat rule, it is required to build a 'cmd' parameter
         params = build_audit_comment_params(
-            rule_name, pre_post='rulebase' if VSYS else pre_post, audit_comment=element_value
+            rule_name, pre_post='rulebase' if VSYS else pre_post, audit_comment=element_value, policy_type='nat'
         )
     else:
         params = {
@@ -12472,7 +12472,8 @@ def pan_os_edit_nat_rule_command(args):
             'dynamic-destination-translation/distribution', 'distribution', False
         ),
         'destination_translation_port': ('destination-translation/translated-port', 'translated-port', False),
-        'destination_translation_ip': ('destination-translation/translated-address', 'translated-address', False)
+        'destination_translation_ip': ('destination-translation/translated-address', 'translated-address', False),
+        'audit-comment': ('audit-comment', '', False)
     }
 
     element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
@@ -13085,7 +13086,7 @@ def pan_os_edit_pbf_rule(
     if element_to_change == 'audit-comment':
         # to update audit-comment of a pbf rule, it is required to build a 'cmd' parameter
         params = build_audit_comment_params(
-            rule_name, pre_post='rulebase' if VSYS else pre_post, audit_comment=element_value
+            rule_name, pre_post='rulebase' if VSYS else pre_post, audit_comment=element_value, policy_type='pbf'
         )
     else:
         params = {
@@ -13140,7 +13141,8 @@ def pan_os_edit_pbf_rule_command(args):
         'description': ('description', 'description', False),
         'negate_source': ('negate-source', 'negate-source', False),
         'negate_destination': ('negate-destination', 'negate-destination', False),
-        'disabled': ('disabled', 'disabled', False)
+        'disabled': ('disabled', 'disabled', False),
+        'audit-comment': ('audit-comment', '', False)
     }
 
     if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
