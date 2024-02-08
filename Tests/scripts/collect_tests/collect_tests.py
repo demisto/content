@@ -13,7 +13,7 @@ from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
-    DEFAULT_MARKETPLACE_WHEN_MISSING, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
+    DEFAULT_MARKETPLACES_WHEN_MISSING, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK, ONLY_UPLOAD_PACK_FILE_TYPES,
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
     ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES, XSIAM_COMPONENT_FILES,
@@ -24,14 +24,14 @@ from Tests.scripts.collect_tests.exceptions import (
     NoTestsConfiguredException, NothingToCollectException,
     NotUnderPackException, PrivateTestException, SkippedPackException,
     SkippedTestException, TestMissingFromIdSetException,
-    NonNightlyPackInNightlyBuildException)
+    NonNightlyPackInNightlyBuildException, IncompatibleTestMarketplaceException)
 from Tests.scripts.collect_tests.id_set import Graph, IdSet, IdSetItem
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.test_conf import TestConf
 from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                PackManager, find_pack_folder,
-                                               find_yml_content_type, to_tuple, hotfix_detect_old_script_yml,
+                                               find_yml_content_type, hotfix_detect_old_script_yml,
                                                FilesToCollect)
 from Tests.scripts.collect_tests.version_range import VersionRange
 
@@ -239,13 +239,20 @@ class CollectionResult:
                     raise ValueError(f'{test} has no path')
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
                     raise SkippedTestException(test, skip_place='.pack_ignore')
-                for integration in test_playbook.implementing_integrations:
+                test_integrations = conf.tests_to_integrations.get(test) or ()  # type: ignore[union-attr]
+                # test_playbook.implementing_integrations is from id set (always empty), test_integrations is from conf.json
+                for integration in test_playbook.implementing_integrations + test_integrations:
                     if reason := conf.skipped_integrations.get(integration):  # type: ignore[union-attr, assignment]
                         raise SkippedTestException(
                             test_name=test,
                             skip_place='conf.json (integrations)',
                             skip_reason=f'{test=} uses {integration=}, which is skipped ({reason=})'
                         )
+                test_marketplaces = conf.tests_to_marketplace_set[test]  # type: ignore[union-attr]
+                if test_marketplaces and (conf.marketplace not in test_marketplaces):  # type: ignore[union-attr]
+                    raise IncompatibleTestMarketplaceException(test_name=test,
+                                                               test_marketplaces=test_marketplaces,
+                                                               expected_marketplace=conf.marketplace)  # type: ignore[union-attr]
 
             if skip_reason := conf.skipped_tests.get(test):  # type: ignore[union-attr]
                 raise SkippedTestException(test, skip_place='conf.json (skipped_tests)', skip_reason=skip_reason)
@@ -302,7 +309,7 @@ class TestCollector(ABC):
             self.id_set = Graph(marketplace)
         else:
             self.id_set = IdSet(marketplace, PATHS.id_set_path)
-        self.conf = TestConf(PATHS.conf_path)
+        self.conf = TestConf(PATHS.conf_path, marketplace)
         self.trigger_sanity_tests = False
 
     @property
@@ -743,8 +750,8 @@ class TestCollector(ABC):
         # intended to only be called from __validate_compatibility
         if not content_item_marketplaces:
             logger.debug(f'{content_item_path} has no marketplaces set, '
-                         f'using default={DEFAULT_MARKETPLACE_WHEN_MISSING}')
-            content_item_marketplaces = to_tuple(DEFAULT_MARKETPLACE_WHEN_MISSING)
+                         f'using default={DEFAULT_MARKETPLACES_WHEN_MISSING}')
+            content_item_marketplaces = DEFAULT_MARKETPLACES_WHEN_MISSING
 
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
@@ -755,10 +762,10 @@ class TestCollector(ABC):
                 # _collect_xsiam_and_modeling_pack function.
                 if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
                         (MarketplaceVersions.XSOAR in content_item_marketplaces):
-                    raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
+                    raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
             case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE | MarketplaceVersions.XSOAR_SAAS:
                 if self.marketplace not in content_item_marketplaces:
-                    raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
+                    raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
             case _:
                 raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
 
@@ -1117,7 +1124,7 @@ class BranchTestCollector(TestCollector):
             logger.info('bucket upload: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
             if self.branch_name == 'master':
-                current_commit = 'origin/master'
+                current_commit = os.getenv("CI_COMMIT_SHA", "")
 
         elif self.branch_name == 'master':
             current_commit, previous_commit = tuple(repo.iter_commits(max_count=2))
@@ -1407,7 +1414,24 @@ class XsoarSaasE2ETestCollector(E2ETestCollector):
 
 class SDKNightlyTestCollector(TestCollector):
 
+    @property
+    def sanity_tests(self) -> CollectionResult:
+        return CollectionResult(
+            test="Sanity Test - Playbook with no integration",
+            modeling_rule_to_test=None,
+            pack="HelloWorld",
+            reason=CollectionReason.SANITY_TESTS,
+            version_range=None,
+            reason_description='Demisto-SDK Sanity Test for test-content command',
+            conf=self.conf,
+            id_set=self.id_set,
+            is_sanity=True,
+            only_to_install=True,
+        )
+
     def _collect(self) -> CollectionResult | None:
+        if self.marketplace == MarketplaceVersions.XPANSE:
+            return None
         return self.sanity_tests
 
 
@@ -1458,7 +1482,7 @@ class XPANSENightlyTestCollector(NightlyTestCollector):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v20230123')
+    logger.info('TestCollector v20241101')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')

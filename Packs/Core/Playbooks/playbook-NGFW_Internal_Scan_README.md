@@ -25,11 +25,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Endpoint Investigation Plan
-* Containment Plan
-* Account Enrichment - Generic v2.1
 * Ticket Management - Generic
+* Containment Plan
+* Endpoint Investigation Plan
 * Endpoint Enrichment - Generic v2.1
+* Account Enrichment - Generic v2.1
 
 ### Integrations
 

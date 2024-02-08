@@ -14,7 +14,7 @@ def _version_header():
     demisto_version = get_demisto_version()
     return f"Palo Alto XSOAR/{demisto_version.get('version')}." \
            f"{demisto_version.get('buildNumber')} " \
-           f"Hatching Triage Pack/{get_pack_version()}"
+           f"Hatching Triage Pack/1.0.16"
 
 
 class Client(BaseClient):
@@ -66,6 +66,7 @@ def map_scores_to_dbot(score):
         return 2
     elif 8 <= score <= 10:
         return 3
+    return None
 
 
 def query_samples(client, **args) -> CommandResults:
@@ -195,9 +196,8 @@ def get_static_report(client: Client, **args) -> CommandResults:
     r = client._http_request("GET", f"samples/{sample_id}/reports/static")
 
     score = 0
-    if 'analysis' in r:
-        if 'score' in r['analysis']:
-            score = map_scores_to_dbot(r['analysis']['score'])
+    if 'analysis' in r and 'score' in r['analysis']:
+        score = map_scores_to_dbot(r['analysis']['score'])
 
     indicator: Any
     if 'sample' in r:
@@ -258,9 +258,8 @@ def get_report_triage(client: Client, **args) -> CommandResults:
     )
     score = 0
     indicator: Any
-    if 'sample' in r:
-        if 'score' in r['sample']:
-            score = map_scores_to_dbot(r['sample']['score'])
+    if 'sample' in r and 'score' in r['sample']:
+        score = map_scores_to_dbot(r['sample']['score'])
 
     target = r['sample']['target']
     if "sha256" not in r['sample']:

@@ -143,17 +143,30 @@ def analysis_to_entry(info, reliability, threshold=THRESHOLD, verbose=VERBOSE):
     for analysis in info:
         ip_ec = {
             "Address": analysis.get("ipAddress"),
-            "Geo": {"Country": analysis.get("countryName") or analysis.get("countryCode")}
+            "Geo": {
+                "Country": analysis.get("countryName"),
+                "CountryCode": analysis.get("countryCode")
+            }
         }
         abuse_ec = {
             "IP": {
                 "Address": analysis.get("ipAddress"),
-                "Geo": {"Country": analysis.get("countryName") or analysis.get("countryCode")},
+                "Geo": {
+                    "Country": analysis.get("countryName"),
+                    "CountryCode": analysis.get("countryCode")
+                },
                 "AbuseConfidenceScore": analysis.get('abuseConfidenceScore'),
-                "TotalReports": analysis.get("totalReports") or analysis.get("numReports") or "0",
+                "TotalReports": analysis.get("totalReports") or analysis.get("numReports") or 0,
                 "ISP": analysis.get("isp"),
                 "UsageType": analysis.get("usageType"),
-                "Domain": analysis.get("domain")
+                "Domain": analysis.get("domain"),
+                "Hostnames": analysis.get("hostnames"),
+                "IpVersion": analysis.get("ipVersion"),
+                "IsPublic": analysis.get("isPublic"),
+                "IsTor": analysis.get("isTor"),
+                "IsWhitelisted": analysis.get("isWhitelisted"),
+                "LastReportedAt": analysis.get("lastReportedAt"),
+                "NumDistinctUsers": analysis.get("numDistinctUsers")
             }
         }
 

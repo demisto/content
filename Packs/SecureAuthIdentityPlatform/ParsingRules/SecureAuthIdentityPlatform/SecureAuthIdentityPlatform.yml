@@ -1,0 +1,6 @@
+id: SecureAuth_IdP_ParsingRule
+name: SecureAuth IdP Parsing Rule
+fromversion: 8.4.0
+tags: []
+rules: ''
+samples: ''

@@ -2,11 +2,11 @@ import json
 import pytest
 from FeedTAXII2 import *
 
-with open('test_data/results.json', 'r') as f:
+with open('test_data/results.json') as f:
     RESULTS_JSON = json.load(f)
-with open('test_data/cortex_indicators_1.json', 'r') as f:
+with open('test_data/cortex_indicators_1.json') as f:
     CORTEX_IOCS_1 = json.load(f)
-with open('test_data/cortex_indicators_1.json', 'r') as f:
+with open('test_data/cortex_indicators_1.json') as f:
     CORTEX_IOCS_2 = json.load(f)
 
 
