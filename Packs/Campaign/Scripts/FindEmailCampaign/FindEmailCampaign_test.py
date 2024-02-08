@@ -16,7 +16,7 @@ def extract_domain(address):
         return ''
     email_address = parseaddr(address)[1]
     ext = no_fetch_extract(email_address)
-    return '{}.{}'.format(ext.domain, ext.suffix)
+    return f'{ext.domain}.{ext.suffix}'
 
 
 EXISTING_INCIDENTS = []
@@ -71,6 +71,8 @@ def executeCommand(command, args=None):
         return [{'Contents': incidents_str, 'Type': 'not error'}]
     if command == 'CloseInvestigationAsDuplicate':
         EXISTING_INCIDENT_ID = args['duplicateId']
+        return None
+    return None
 
 
 def results(arg):
@@ -79,7 +81,7 @@ def results(arg):
 
 
 def mock_summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keywords_weight=1.5):
-    return '{}\n{}'.format(subject, body)
+    return f'{subject}\n{body}'
 
 
 def test_return_campaign_details_entry(mocker):
