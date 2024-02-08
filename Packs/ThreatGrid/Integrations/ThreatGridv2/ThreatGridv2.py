@@ -1007,6 +1007,7 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
         )
 
     if sample_state == "fail":
+        # In case the upload not succeeded raise the error
         raise DemistoException(
             dict_safe_get(
                 command_results.raw_response, ["error"],
