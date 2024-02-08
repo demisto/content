@@ -77,13 +77,13 @@ CONTENT_PACKS_TO_UPLOAD_FILE="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_u
 
 if [ -f "$CONTENT_PACKS_TO_UPLOAD_FILE" ]; then
   CONTENT_PACKS_TO_UPLOAD_JSON=$(cat "${CONTENT_PACKS_TO_UPLOAD_FILE}")
-
-  CONTENT_PACKS_TO_UPDATE_METADATA=$(echo "CONTENT_PACKS_TO_UPLOAD_JSON" | jq -r '.packs_to_update_metadata | @csv')
+  echo "${CONTENT_PACKS_TO_UPLOAD_JSON}"
+  CONTENT_PACKS_TO_UPDATE_METADATA=$(echo "$CONTENT_PACKS_TO_UPLOAD_JSON" | jq -r '.packs_to_update_metadata | @csv')
   if [ -z "${CONTENT_PACKS_TO_UPDATE_METADATA}" ]; then
     echo "Did not get content packs to update metadata in the bucket."
   fi
 
-  CONTENT_PACKS_TO_UPLOAD=$(echo "CONTENT_PACKS_TO_UPLOAD_JSON" | jq -r '.packs_to_upload | @csv')
+  CONTENT_PACKS_TO_UPLOAD=$(echo "$CONTENT_PACKS_TO_UPLOAD_JSON" | jq -r '.packs_to_upload | @csv')
   if [[ -z "${CONTENT_PACKS_TO_UPLOAD}" ]]; then
     echo "Did not get content packs to update in the bucket."
   fi
