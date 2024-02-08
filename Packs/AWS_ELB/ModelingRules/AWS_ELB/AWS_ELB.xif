@@ -74,7 +74,7 @@ alter // initialize util constants
     xdm.network.http.http_header.header = if(arrayindex(field_list,17) != null,"X-Amzn-Trace_Id"),
     xdm.network.tls.server_name = if(arrayindex(field_list,18)= NIL, null, arrayindex(field_list,18)),
     xdm.network.tls.server_certificate.subject = if(arrayindex(field_list,19)=NIL, null, arrayindex(field_list,19)),
-    xdm.network.tls.server_certificate.issuer = if(arrayindex(field_list,19)!= NIL, "ARN"),
+    xdm.network.tls.server_certificate.issuer = if(arrayindex(field_list,19)!= NIL, arrayindex(regextract(arrayindex(field_list,19),"\w+\:\w+\:\w+"),0)),
     xdm.network.rule = arrayindex(field_list,20),
     xdm.observer.action = if(arrayindex(field_list,22) = NIL,null, arrayindex(field_list,22)),
     xdm.target.url = if(arrayindex(field_list,23) = NIL,null,arrayindex(field_list,23)),
