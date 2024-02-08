@@ -365,7 +365,7 @@ def iocs_to_keep(client: Client):
     demisto.info("Skipping iocs_to_keep due to an issue with the XDR API")
     return
 
-    demisto.info("executing iocs_to_keep: this will send non-expired IOCs matching the query from XSOAR to XDR")
+    demisto.info("executing iocs_to_keep: this will send non-expired IOCs matching the query from XSOAR to XDR")  # noqa: suppress vulture on dead code
     if datetime.utcnow().hour not in range(1, 3):
         raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
     temp_file_path: str = get_temp_file()
