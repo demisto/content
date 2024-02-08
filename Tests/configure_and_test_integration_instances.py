@@ -823,11 +823,14 @@ class CloudBuild(Build):
     def get_cloud_configuration(cloud_machine, cloud_servers_path, cloud_servers_api_keys_path):
         logging.info('getting cloud configuration')
 
-        cloud_servers = get_json_file(cloud_servers_path)
-        conf = cloud_servers.get(cloud_machine)
-        cloud_servers_api_keys = get_json_file(cloud_servers_api_keys_path)
-        api_key = cloud_servers_api_keys.get(cloud_machine)
-        return api_key, conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
+        # cloud_servers = get_json_file(cloud_servers_path)
+        # conf = cloud_servers.get(cloud_machine)
+        # cloud_servers_api_keys = get_json_file(cloud_servers_api_keys_path)
+        # api_key = cloud_servers_api_keys.get(cloud_machine)
+        api_key=os.getenv('DEMISTO_API_KEY_8')
+        base_url=os.getenv('TEST_VAR_XSOAR8_API')
+        logging.info(f"{api_key} + {base_url}")
+        return api_key, '8.4.0', base_url, '1'
 
     @property
     def marketplace_name(self) -> str:
@@ -1799,7 +1802,7 @@ def create_build_object() -> Build:
     options = options_handler()
     logging.info(f'Server type: {options.server_type}')
     if options.server_type == XSOAR_SERVER_TYPE:
-        return XSOARBuild(options)
+        return CloudBuild(options)
     elif options.server_type in [XSIAM_SERVER_TYPE, XSOAR_SASS_SERVER_TYPE]:
         return CloudBuild(options)
     else:
@@ -1958,7 +1961,6 @@ def main():
     """
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
     build = create_build_object()
-    logging.info(f"servers: {build.servers[0]}")
     logging.info(f"Build Number: {build.ci_build_number}")
 
     # build.configure_servers_and_restart()
