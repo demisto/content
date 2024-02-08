@@ -574,16 +574,16 @@ def main():     # pragma: no cover
     folder = params.get('folder')
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
-    verify_ssl = not params.get('insecure', False)
-    tls_connection = params.get('TLS_connection', True)
-    include_raw_body = demisto.params().get('Include_raw_body', False)
+    verify_ssl = not params.get('insecure') or False
+    tls_connection = params.get('TLS_connection') or True
+    include_raw_body = demisto.params().get('Include_raw_body') or False
     permitted_from_addresses = demisto.params().get('permittedFromAdd', '')
     permitted_from_domains = demisto.params().get('permittedFromDomain', '')
     with_headers = params.get('with_headers')
-    delete_processed = demisto.params().get("delete_processed", False)
-    limit = min(int(demisto.params().get('limit', '50')), 200)
-    save_file = params.get('save_file', False)
-    first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
+    delete_processed = demisto.params().get("delete_processed") or False
+    limit = min(int(demisto.params().get('limit') or 50), 200)
+    save_file = params.get('save_file') or False
+    first_fetch_time = (demisto.params().get('first_fetch') or '3 days').strip()
     ssl_context = ssl.create_default_context()
 
     args = demisto.args()
