@@ -479,7 +479,10 @@ var fileDeleteCommand = function(EntryID) {
         throw new Error(`File already deleted or not found.`);
     }
     deleteFileRequest(EntryID);
-    return  {HumanReadable: `File ${EntryID} was deleted successfully.`};
+    return  {Type: entryTypes.note,
+        Contents: '',
+        ContentsType: formats.json,
+        HumanReadable: `File ${EntryID} was deleted successfully.`}
 }
 
 
