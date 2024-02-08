@@ -25,8 +25,14 @@ class ComplianceObject(abc.ABC):
     def get_output_context(self, obj: dict):
         return obj.get(f'{INTEGRATION_NAME}', {}).get('ComplianceTable', {}).get(self.capitalized_type, [])
 
-    @abc.abstractmethod
     def get_input_context_id(self, obj: dict):
+        try:
+            return self._get_input_context_id(obj)
+        except AttributeError as err:
+            raise Exception(f'Input context does not match provided type: {self.object_type.value}') from err
+
+    @abc.abstractmethod
+    def _get_input_context_id(self, obj: dict):
         pass
 
     def get_output_context_id(self, obj: dict):
@@ -44,7 +50,7 @@ class Host(ComplianceObject):
                          input_context_path=f'{INTEGRATION_NAME}.ReportHostScan',
                          output_context_id='Hostname')
 
-    def get_input_context_id(self, obj: dict):
+    def _get_input_context_id(self, obj: dict):
         return obj.get('hostname')
 
     def get_data(self, input_data: dict, identifier: str, issues: list) -> dict:
@@ -78,7 +84,7 @@ class Container(ComplianceObject):
                          input_context_path=f'{INTEGRATION_NAME}.ContainersScanResults',
                          output_context_id='ContainerID')
 
-    def get_input_context_id(self, obj: dict):
+    def _get_input_context_id(self, obj: dict):
         return obj.get('info', {}).get('id')
 
     def get_data(self, input_data: dict, identifier: str, issues: list) -> dict:
@@ -117,7 +123,7 @@ class Image(ComplianceObject):
                          input_context_path=f'{INTEGRATION_NAME}.ReportsImagesScan',
                          output_context_id='ImageID')
 
-    def get_input_context_id(self, obj: dict):
+    def _get_input_context_id(self, obj: dict):
         return obj.get('id')
 
     def get_data(self, input_data: dict, identifier: str, issues: list) -> dict:
