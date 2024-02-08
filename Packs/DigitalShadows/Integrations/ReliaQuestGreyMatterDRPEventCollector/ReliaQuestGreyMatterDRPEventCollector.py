@@ -110,7 +110,13 @@ class ReilaQuestClient(BaseClient):
             amount_of_fetched_events += len(events)
             end_index = min(amount_of_fetched_events - limit, limit) if amount_of_fetched_events > limit else MAX_PAGE_SIZE
             events = events[:end_index]
-            event_numbers = [event.get("event-num") for event in events]
+            event_numbers = []
+            for event in events:
+                event_numbers.append(event.get("event-num"))
+                # if event-action = create (its a new event) we enrich the _time with event-created and _ENTRY_STATUS with new
+                if event.get("event-action") == "create" and (event_created := event.get("event-created")):
+                    event["_time"] = event_created
+                    event["_ENTRY_STATUS"] = "new"
             if event_numbers:
                 latest_event = max(event_numbers)
             demisto.debug(f'Fetched {len(events)} events')
@@ -244,7 +250,7 @@ def enrich_events_with_triage_item(
         if item_id in triage_item_ids_to_events:
             for event in triage_item_ids_to_events[item_id]:
                 event["triage-item"] = triaged_item
-                if event.get("event-action") == "update" and (updated := event.get("updated")):
+                if event.get("event-action") == "update" and (updated := triaged_item.get("updated")):
                     event["_time"] = updated
                     event["_ENTRY_STATUS"] = "updated"
 
@@ -324,10 +330,6 @@ def enrich_events_with_incident_or_alert_metadata(
             event["mitre_tactics"] = mitre_tactic_names
             event["mitre_techniques"] = mitre_technique_names
             event["mitre_ids"] = mitre_ids
-            # if event-action = create (its a new event) we enrich the _time with event-created and _ENTRY_STATUS with new
-            if event.get("event-action") == "create" and (event_created := event.get("event-created")):
-                event["_time"] = event_created
-                event["_ENTRY_STATUS"] = "new"
         # enrich the alert/incident with assets
         for asset in alert_incident.get("assets") or []:
             if asset_id := asset.get("id"):
