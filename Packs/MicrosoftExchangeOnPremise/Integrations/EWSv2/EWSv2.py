@@ -1,4 +1,3 @@
-import copy
 import email
 import hashlib
 import subprocess
@@ -2178,10 +2177,9 @@ def format_identifier(identifier):
 
 
 def resolve_name_command(args, protocol):  # pragma: no cover
-    unresolved_entries = [format_identifier(identifier) for identifier in argToList(args['identifier'])]
+    unresolved_entry = format_identifier(args['identifier'])
     full_contact_data = argToBoolean(args.get('full_contact_data', True))
-    demisto.debug(f'{len(unresolved_entries)=}')
-    resolved_names = protocol.resolve_names(unresolved_entries, return_full_contact_data=full_contact_data, search_scope='')
+    resolved_names = protocol.resolve_names([unresolved_entry], return_full_contact_data=full_contact_data, search_scope='')
     demisto.debug(f'{len(resolved_names)=}')
 
     output = []

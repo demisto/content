@@ -626,7 +626,7 @@ script:
       type: unknown
   - arguments:
     - description: 'The text value of this argument is used to resolve names against the following fields: First name, Last name, Display name, Full name, Office, Alias, SMTP address. Eg. `John Doe` or `sip:johndoe@example.com`.'
-      isArray: true
+      isArray: false
       name: identifier
       required: true
     - auto: PREDEFINED
