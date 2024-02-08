@@ -476,9 +476,7 @@ class Taxii2FeedClient:
         return ioc_type
 
     def update_last_modified_indicator_date(self, indicator_modified_str: str):
-        demisto.debug("in update_last_modified_indicator_date now")
         if not indicator_modified_str:
-            demisto.debug("no update")
             return
         if self.last_fetched_indicator__modified is None:
             self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
@@ -491,8 +489,6 @@ class Taxii2FeedClient:
             )
             if indicator_created_datetime > last_datetime:
                 self.last_fetched_indicator__modified = indicator_modified_str
-
-        demisto.debug(f"updated last_fetched_indicator__modified: {self.last_fetched_indicator__modified}")
 
     """ PARSING FUNCTIONS"""
 
@@ -1263,7 +1259,6 @@ class Taxii2FeedClient:
                         continue
                     if result := parse_objects_func[obj_type](obj):
                         indicators.extend(result)
-                        demisto.debug(f"obj modified in {obj.get('modified')}")
                         self.update_last_modified_indicator_date(obj.get("modified"))
 
                     if reached_limit(limit, len(indicators)):
@@ -1274,7 +1269,7 @@ class Taxii2FeedClient:
                 demisto.debug("No Indicator were parsed")
                 raise e
             demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
-        demisto.debug(f"Finished parsing {len(indicators)} objects")
+        demisto.debug("Finished parsing all objects")
         return indicators, relationships_lst
 
     def poll_collection(
