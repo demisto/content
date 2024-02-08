@@ -1000,7 +1000,7 @@ def fetch_incidents(client: Client, last_run: dict, fetch_query: Optional[list],
     return incidents, last_run
 
 
-def main():
+def main():     # pragma: no cover
     params = demisto.params()
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')

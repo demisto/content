@@ -1336,7 +1336,7 @@ script:
     - contextPath: Zimperium.PolicyDeviceInactivity.teamId
       description: The Team ID for the Policy Device Inactivity.
       type: String
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.13.87159
   isfetch: true
   runonce: false
   script: '-'
