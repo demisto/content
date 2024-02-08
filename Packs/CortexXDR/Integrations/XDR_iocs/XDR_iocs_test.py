@@ -733,7 +733,7 @@ def test_file_deleted_for_create_file_sync(mocker):
 
     mocker.patch('XDR_iocs.create_file_sync', new=raise_function)
     with pytest.raises(DemistoException):
-        get_sync_file()
+        get_sync_file(set_time=False, zip=False)
     assert os.path.exists(file_path) is False
 
 

@@ -10,7 +10,7 @@ from datetime import timezone
 from collections.abc import Sequence, Iterable
 from dateparser import parse
 from urllib3 import disable_warnings
-
+import zipfile
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
@@ -178,7 +178,7 @@ def create_file_iocs_to_keep(file_path, batch_size: int = 200):
             ioc_count += 1
 
         if has_iocs:
-            demisto.info(f"created iocs_to_keep file with {ioc_count} IOCs. File size is {_file.tell()}")
+            demisto.info(f"created iocs_to_keep file with {ioc_count} IOCs, file size is {_file.tell()} bytes")
 
         else:
             demisto.info('All IOCs matching the "Sync Query" are expired, only writing a space to the iocs_to_keep file.')
@@ -279,7 +279,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
 
 def demisto_ioc_to_xdr(ioc: dict) -> dict:
     try:
-        demisto.debug(f'Raw outgoing IOC: {ioc}')
+        # demisto.debug(f'Raw outgoing IOC: {ioc}') # uncomment to debug, otherwise spams the log
         xdr_ioc: dict = {
             'indicator': ioc['value'],
             'severity': Client.severity,  # default, may be overwritten, see below
@@ -313,7 +313,7 @@ def demisto_ioc_to_xdr(ioc: dict) -> dict:
 
         xdr_ioc['severity'] = validate_fix_severity_value(xdr_ioc['severity'], ioc['value'])
 
-        demisto.debug(f'Processed outgoing IOC: {xdr_ioc}')
+        # demisto.debug(f'Processed outgoing IOC: {xdr_ioc}') # uncomment to debug, otherwise spams the log
         return xdr_ioc
 
     except KeyError as error:
@@ -325,6 +325,13 @@ def get_temp_file() -> str:
     temp_file = tempfile.mkstemp()
     return temp_file[1]
 
+def set_sync_time(timestamp: datetime) -> None:
+    value = {
+            "ts": int(timestamp.timestamp()) * 1000,
+            "time": timestamp.strftime(DEMISTO_TIME_FORMAT),
+        }
+    demisto.info(f"setting sync time to integration context: {value}")
+    set_integration_context(get_integration_context() | value) # latter value matters when updating a dict 
 
 def sync(client: Client):
     """
@@ -334,18 +341,15 @@ def sync(client: Client):
     demisto.info("executing sync")
     temp_file_path: str = get_temp_file()
     try:
-        create_file_sync(temp_file_path)  # can be empty
+        sync_time = datetime.now(timezone.utc)
+        create_file_sync(temp_file_path)  # may end up empty
         requests_kwargs: dict = get_requests_kwargs(file_path=temp_file_path)
         path: str = 'sync_tim_iocs'
         client.http_request(path, requests_kwargs)
     finally:
         os.remove(temp_file_path)
-    set_integration_context(
-        {
-            "ts": int(datetime.now(timezone.utc).timestamp() * 1000),
-            "time": datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT),
-        }
-    )
+        
+    set_sync_time(sync_time)
     set_new_iocs_to_keep_time()
     return_outputs("sync with XDR completed.")
 
@@ -505,7 +509,7 @@ def list_of_single_to_str(values: Sequence[str]) -> list[str] | str:
 
 
 def xdr_ioc_to_demisto(ioc: dict) -> dict:
-    # demisto.debug(f'Raw incoming IOC: {ioc}') # uncomment to debug, otherwise it spams the log
+    # demisto.debug(f'Raw incoming IOC: {ioc}') # uncomment to debug, otherwise spams the log
     indicator = ioc.get('RULE_INDICATOR', '')
     xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
     score = get_indicator_xdr_score(indicator, xdr_server_score)
@@ -670,12 +674,28 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
         return xdr_local
 
 
-def get_sync_file():
+def get_sync_file(set_time:bool=False, zip:bool=False) -> None:
     temp_file_path = get_temp_file()
+    
+    timestamp = datetime.now(timezone.utc)
+    demisto.debug(f"creating sync file with {timestamp=!s}")
     try:
-        create_file_sync(temp_file_path)
-        with open(temp_file_path) as _tmpfile:
-            return_results(fileResult('xdr-sync-file', _tmpfile.read()))
+        create_file_sync(temp_file_path) 
+        
+        if zip:
+            with tempfile.NamedTemporaryFile(mode='w+b', suffix=".zip") as temp_zip_file:
+                zipfile.ZipFile(temp_zip_file.name,'w',compression=zipfile.ZIP_DEFLATED).write(temp_file_path, 'xdr-sync-file')
+                temp_zip_file.seek(0, os.SEEK_END)
+                demisto.info(f"returning a zip, file size is {temp_zip_file.tell()} bytes")
+                temp_zip_file.seek(0)
+                return_results(fileResult('xdr-sync-file-zipped.zip', temp_zip_file.read()))
+        else:
+            with open(temp_file_path) as temp_sync_file:
+                # create_file_sync() logs the raw file size
+                return_results(fileResult('xdr-sync-file', temp_sync_file.read()))
+        
+        if set_time:
+            set_sync_time(timestamp)
     finally:
         os.remove(temp_file_path)
 
@@ -735,21 +755,21 @@ def main():  # pragma: no cover
         'xdr-iocs-push': tim_insert_jsons,
     }
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
-
+    args = demisto.args()
+    demisto.debug(f'Command being called is {command}, {args=}')
     try:
         if command == "fetch-indicators":
             fetch_indicators(client, params.get("autoSync", False))
         elif command == 'xdr-iocs-set-sync-time':
             return_warning('This command is deprecated and is not relevant anymore.')
         elif command == "xdr-iocs-create-sync-file":
-            get_sync_file()
+            get_sync_file(set_time=argToBoolean(args['set_time']), zip=argToBoolean(args['zip']))
         elif command == 'xdr-iocs-to-keep-file':
             get_iocs_to_keep_file()
         elif command in commands:
             commands[command](client)
         elif command == 'xdr-iocs-sync':
-            xdr_iocs_sync_command(client, demisto.args().get('firstTime') == 'true')
+            xdr_iocs_sync_command(client, args.get('firstTime') == 'true')
         else:
             raise NotImplementedError(command)
     except Exception as error:
