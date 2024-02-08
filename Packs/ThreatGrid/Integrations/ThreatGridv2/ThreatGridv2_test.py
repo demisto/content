@@ -717,7 +717,7 @@ def test_schedule_command_sample_upload_when_state_is_fail(
     When:
         - run schedule_command function
     Then:
-        - Ensure the 
+        - Ensure the
     """
     from ThreatGridv2 import schedule_command
     mocker.patch(
