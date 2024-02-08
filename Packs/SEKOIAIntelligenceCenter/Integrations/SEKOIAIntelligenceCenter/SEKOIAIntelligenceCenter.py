@@ -483,7 +483,9 @@ def extract_indicators(indicator: dict, indicator_context: dict) -> list:
         object_reputation = get_stix_object_reputation(stix_bundle={}, stix_object=stix_object, is_unknown=True)
 
         if object_reputation:
-            object_reputation.readable_output = "No results found."
+            object_reputation.readable_output = tableToMarkdown(name=f'{INTEGRATION_NAME}:',
+                                                                t={indicator["type"]: indicator["value"], 'Result': 'Not found'},
+                                                                headers=[indicator["type"], 'Result'])
 
         return [object_reputation]
 
@@ -668,7 +670,7 @@ def get_indicator_context_command(client: Client, args: dict[str, str]) -> list[
     outputs = {"indicator": indicator, "items": indicator_context.get("items", [])}
 
     if indicator_context["items"] == []:
-        markdown = "No results found."
+        markdown = f"### {indicator['value']} of type {indicator['type']} is an unknown indicator."
     else:
         # Format output
         markdown = indicator_context_to_markdown(indicator_context)
