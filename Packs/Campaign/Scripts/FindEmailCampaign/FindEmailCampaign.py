@@ -419,21 +419,16 @@ def return_no_mututal_indicators_found_entry():
 
 def return_indicator_entry(incidents_df):
     indicators_query = 'investigationIDs:({})'.format(' '.join(f'"{id_}"' for id_ in incidents_df['id']))
-    fields = ['id', 'indicator_type', 'investigationIDs', 'relatedIncCount', 'score', 'value']
+    fields = ['id', 'indicator_type', 'investigationIDs', 'investigationsCount', 'score', 'value']
     search_indicators = IndicatorsSearcher(
         query=indicators_query,
         limit=150,
         size=500,
+        filter_fields=','.join(fields)
     )
     indicators = []
     for res in search_indicators:
-        iocs = res.get("iocs", [])
-        for ioc in iocs:
-            # keep only the fields in the fields list
-            # This is a workaround for the fact that the API doesn't filter correctly the fields
-            # remove this workaround when the API will be fixed and use `filter_fields` argument
-            ioc = {k: v for k, v in ioc.items() if k in fields}
-            indicators.append(ioc)
+        indicators.extend(res.get('iocs', []))
 
     indicators_df = pd.DataFrame(data=indicators)
     if len(indicators_df) == 0:
