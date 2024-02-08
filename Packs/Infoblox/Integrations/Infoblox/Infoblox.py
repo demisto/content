@@ -634,7 +634,7 @@ def transform_ext_attrs(ext_attrs: str) -> list:
             key, value = ext_attr.split("=")
             if key and value:
                 l_ext_attrs.append({f"*{key.strip()}": value.strip()})
-        except ValueError as e:
+        except ValueError:
             raise DemistoException(f"Unable to parse provided {ext_attrs=}. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'")
 
     return l_ext_attrs
@@ -1434,6 +1434,9 @@ def delete_rpz_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str
     title = f'{INTEGRATION_NAME} - A rule with the following id was deleted: \n {rule_reference_id}'
     return title, {}, raw_response
 
+# TODO check why this doesn't return an error
+# !infoblox-list-host-info extattrs="atr" additional_return_fields="none"
+
 
 def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict[str, Any]]:
     """
@@ -1478,6 +1481,9 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
 
     return human_readable, context, raw
 
+# TODO check why this doesn't return an error
+# !infoblox-list-network-info additional_return_fields=alias extattrs="a"
+
 
 def get_network_info_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict[str, Any]]:
     """
@@ -1509,7 +1515,7 @@ def get_network_info_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
         context = {}
     else:
         output = transform_network_info_context(network_info)
-        hr = tableToMarkdown(f"Network information found ({max_results} limit)", output)
+        hr = tableToMarkdown("Network information found", output)
         context = {
             f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_NETWORK_INFO_CONTEXT_KEY}": output
         }

@@ -166,7 +166,10 @@ class TestHelperFunctions:
 
         input = "IB Discovery Owned=EMEA,Site=Tel-Aviv, Yafo"
 
-        with pytest.raises(DemistoException, match=f"Unable to parse provided ext_attrs='{input}'. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'"):
+        with pytest.raises(
+            DemistoException,
+            match=f"Unable to parse provided ext_attrs='{input}'. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'"
+        ):
             transform_ext_attrs(input)
 
     def test_transform_ext_attrs_2_attrs_comma_attr_beginning(self):
@@ -187,7 +190,10 @@ class TestHelperFunctions:
 
         input = "IB Discovery Owned=EMEA,Site=,Tel-Aviv"
 
-        with pytest.raises(DemistoException, match=f"Unable to parse provided ext_attrs='{input}'. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'"):
+        with pytest.raises(
+            DemistoException,
+            match=f"Unable to parse provided ext_attrs='{input}'. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'"
+        ):
             transform_ext_attrs(input)
 
     def test_transform_ext_attrs_no_delimiter(self):
