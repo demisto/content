@@ -739,7 +739,8 @@ def test_file_deleted_for_create_file_sync(mocker):
 
 data_test_test_file_deleted = [
     (sync, 'create_file_sync'),
-    pytest.param(iocs_to_keep, 'create_file_iocs_to_keep',marks=pytest.mark.xfail(reason="Until API issue is fixed (XSUP-33235)"))
+    pytest.param(iocs_to_keep, 'create_file_iocs_to_keep', marks=pytest.mark.xfail(
+        reason="Until API issue is fixed (XSUP-33235)"))
 ]
 
 
