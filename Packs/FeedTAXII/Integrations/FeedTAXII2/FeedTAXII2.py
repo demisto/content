@@ -48,7 +48,7 @@ def module_test_command(client, limit, fetch_full_feed):
         return_error("Could not connect to server")
 
 
-def filter_indicators(indicators, last_run):
+def filter_indicators(indicators: list, last_run: dict) -> list:
     """
     Filter the indicators returned from the taxii server, by taking out indicators that we're ingested in the previous fetch
     call and their modified date was not updated,
