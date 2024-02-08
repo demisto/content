@@ -199,7 +199,7 @@ Please refer to to the Devo documentation for building a query with LINQ
 
 #### Time Format for __from__ and __to__ Arguments:
 
-This integration supports the following time formats for the __from__ and __to__ Arguments:
+This integration supports the following time formats for the __from__ and __to__ arguments:
 
 * Date ranges such as "1 day", "30 minutes", etc. If a date range is provided for __from__, the __to__ parameter is not needed and will be ignored.
 * Unix timestamps in milliseconds and seconds.
