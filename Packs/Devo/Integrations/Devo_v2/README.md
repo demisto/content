@@ -1,7 +1,8 @@
 ## Overview
 ---
 
-The Devo_v2 Integration carries over everyting from the previous and adds pagination support for single table query and multitable query.
+Use the Devo v2 integration to query Devo for alerts, lookup tables, with support of pagination, and to write to lookup tables.
+This integration was integrated and tested with version xx of Devo_v2.
 This integration was integrated and tested with version 6.0+ Devo. Devo is a generic log management
 solution which can also act as an advanced SIEM. Users are able to query petabytes of data in a fraction
 of the time that other traditional time series databases can't.
@@ -67,8 +68,10 @@ of the time that other traditional time series databases can't.
     | Use system proxy settings | False |
     | Fetch Incidents Lookback Time (in seconds). Must be between 3600 (1 hour; default) to 86400 (24 hours). | False |
     | Fetch Incident Time Frame (in seconds) | False |
-    
-    
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+    ### Configuration Details :
     * __Name__: a textual name for the integration instance.
     * __Query Server Endpoint (e.g. `https://apiv2-us.devo.com/search/query`)__
     * __Port (e.g. 443)__
@@ -107,15 +110,16 @@ of the time that other traditional time series databases can't.
     * __Fetch Incident Limit__ If not provided, '50' will be used.
     * __Fetch Incidents Lookback Time (in seconds)__ Must be between 3600 (1 hour) to 86400 (24 hours). Default: 3600.
     * __Fetch Incident Time Frame (in seconds)__.
-4. Click __Test__ to validate the URLs, token, and connection.
-Note: single table query and multi table query can take long hours to complete runing and xsoar only allows commands to run for 5 minutes. To override that follow the below setps:
-- Login to xsoar.
-- Go to settings.
-- Go to about > troubleshooting.
-- In server configurations add the following:
-    - key = <name_of_integration>.devo-run-query.timeout, value = 1440
-    - key = <name_of_integration>.devo-multi-table-query.timeout, value = 1440
-- Click save.
+
+    **Note:** single table query and multi table query can take long hours to complete runing and xsoar only allows commands to run for 5 minutes. To override that follow the below setps:
+    - Login to xsoar.
+    - Go to settings.
+    - Go to about > troubleshooting.
+    - In server configurations add the following:
+        - key = <name_of_integration>.devo-run-query.timeout, value = 1440
+        - key = <name_of_integration>.devo-multi-table-query.timeout, value = 1440
+    - Click save.
+
 ## Fetched Incidents Data
 Fetched incidents data will resemble closely to that of the data you get back from the `devo-get-alerts` command.
 The format is as follows. The keyN in the main body will be the columns that you used to define your alert in Devo.
@@ -158,7 +162,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 5. devo-write-to-lookup-table
 ### 1. devo-run-query
 ---
-Queries Devo based on linq query.
+Queries Devo based on the specified LINQ query.
 
 Please refer to to the Devo documentation for building a query with LINQ
 [HERE](https://docs.devo.com/confluence/ndt/searching-data/building-a-query/build-a-query-using-linq)
@@ -257,8 +261,8 @@ are both given that they must be the same given format.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Devo.AlertsResults | list of dictionaries | List of dictionary alerts in specified time range |
-| Devo.QueryLink | string | Link back to Devo table for executed query |
+| Devo.AlertsResults | list of dictionaries | List of dictionary alerts from the specified time range. |
+| Devo.QueryLink | string | The link to the Devo table for the executed query. |
 
 ##### Command Example
 ```
@@ -299,7 +303,7 @@ Thus querying all columns for the search token and returning a union of the give
 | queryTimeout | Timeout in seconds for this query to run against Devo to override the minute default in the platform. Default is 60. | Optional | 
 | writeToContext | Whether to write results to context. Can be "true" or "false". Default is true. | Optional | 
 | items_per_page | Enter the per page value you want to set. Default is 50. | Optional | 
-| filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional |
+| filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional | 
 
 ##### __from__ and __to__ time note:
 This integration allows for the following formats. Note that when __from__ and __to__ times
@@ -314,7 +318,7 @@ are both given that they must be the same given format.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Devo.MultiResults | list of dictionaries | List of dictionary results |
+| Devo.MultiResults | list of dictionaries | A list of dictionary results. |
 
 
 ##### Command Example
@@ -339,7 +343,7 @@ Devo multi-query results
 
 ### 4. devo-write-to-table
 ---
-Write records to a specified Devo table
+Writes records to a specified Devo table.
 
 The records written to the table should all be of the same JSON format and to the same table. We currently do not support
 writing to multiple tables in a single operation.
@@ -352,20 +356,20 @@ For more information on the way we write to a table please refer to this documen
 `devo-write-to-table`
 ##### Input
 
-| **Argument Name** | **Description**                                                 | **Required** |
-|-------------------|-----------------------------------------------------------------|--------------|
-| tableName         | Table name to write to                                          | Required     |
-| records           | Records to write to given tableName                             | Required     |
-| linqLinkBase      | Overrides the global link base so is able to be set at run time | Optional     |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tableName | The name of the table to write to. | Required | 
+| records | Records to write to the specified table. | Required | 
+| linqLinkBase | Overrides the global Devo base domain for linq linking. | Optional | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Devo.RecordsWritten | int | Count of records written to Devo |
-| Devo.LinqQuery | string | Linq query that is to be used to see your data in Devo |
-| Devo.QueryLink | string | Link back to Devo table for executed query |
+| Devo.RecordsWritten | unknown | Records written to specified Devo table. | 
+| Devo.LinqQuery | unknown | The LINQ query to use to see your data in Devo. | 
+| Devo.QueryLink | unknown | The link to the Devo table for the executed query. | 
 
 
 ##### Command Example
@@ -390,7 +394,7 @@ Link to Devo Query
 
 ### 5. devo-write-to-lookup-table
 ---
-Writes a record to a given lookup table
+Writes lookup table entry records to a specified Devo table.
 
 For more information on lookup tables please refer to documentation found [HERE](https://docs.devo.com/confluence/ndt/searching-data/working-in-the-search-window/data-enrichment).
 We can add extra records with incremental lookup additions. Please refer to our Python SDK for more information on how we are
@@ -404,16 +408,16 @@ adding in extra lookup information found [HERE](https://github.com/DevoInc/pytho
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lookupTableName | Lookup table name you are trying to write to | Required |
-| headers | Headers of records to upload. Order sensitive. | Optional |
-| records | Lookup table records to insert | Required |
+| lookupTableName | The lookup table name to write to. | Required | 
+| headers | Headers for lookup table control. | Required | 
+| records | Records to write to the specified table. | Required |
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Devo.RecordsWritten | int | Count of records written to Devo |
+| Devo.RecordsWritten | int | Lookup records written to the lookup table. |
 
 
 ##### Command Example
