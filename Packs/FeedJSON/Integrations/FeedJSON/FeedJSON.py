@@ -13,14 +13,15 @@ def main():
             'extractor': params.get('extractor'),
             'indicator': params.get('indicator', 'indicator'),
             'rawjson_include_indicator_type': params.get('rawjson_include_indicator_type'),
+            'remove_ports': params.get('remove_ports', False)
         }
     }
     auto_detect = params.get('auto_detect_type')
     indicator_type = params.get('indicator_type')
-    if demisto.command() == 'test-module':  # only fail when doing "Test" to avoid breaking an existing feed
-        if auto_detect and indicator_type:
-            return_error(f'Indicator Type (value: {indicator_type}) should not be set if "Auto detect indicator type" '
-                         'is checked. Either use Auto Detect or set manually the Indicator Type.')
+    if demisto.command() == 'test-module' and auto_detect and indicator_type:
+        # only fail when doing "Test" to avoid breaking an existing feed
+        return_error(f'Indicator Type (value: {indicator_type}) should not be set if "Auto detect indicator type" '
+                     'is checked. Either use Auto Detect or set manually the Indicator Type.')
 
     if not auto_detect:
         if not indicator_type:
