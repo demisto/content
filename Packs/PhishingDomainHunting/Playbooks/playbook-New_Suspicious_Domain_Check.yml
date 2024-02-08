@@ -1,0 +1,1320 @@
+id: New Suspicious Domain Check
+version: -1
+name: New Suspicious Domain Check
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c9f8948a-9548-4916-8ebf-6af09b4cac0f
+    type: start
+    task:
+      id: c9f8948a-9548-4916-8ebf-6af09b4cac0f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "16"
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": -570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 41b5ecc9-6aec-42f6-890e-865765846969
+    type: regular
+    task:
+      id: 41b5ecc9-6aec-42f6-890e-865765846969
+      version: -1
+      name: Check Reputation on the Domain
+      description: Checks the reputation of a domain in AutoFocus.
+      script: '|||domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      domain:
+        complex:
+          root: incident
+          accessor: domain
+          transformers:
+          - operator: uniq
+      extended_data:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": -430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5580ed67-2c8f-430b-8679-d1704e68c6e1
+    type: regular
+    task:
+      id: 5580ed67-2c8f-430b-8679-d1704e68c6e1
+      version: -1
+      name: Rasterize Suspicious Domain
+      description: Converts the contents of a URL to an image file or a PDF file.
+      tags:
+      - Domain_rasterize
+      script: '|||rasterize'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "24"
+      '#none#':
+      - "12"
+    scriptarguments:
+      file_name:
+        simple: suspicious
+      url:
+        complex:
+          root: incident
+          accessor: domain
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 60796d3a-a609-469e-8730-c1dd050ab496
+    type: condition
+    task:
+      id: 60796d3a-a609-469e-8730-c1dd050ab496
+      version: -1
+      name: Check if a malicious Domain was identified
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain(val.Malicious).Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 1225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7a94759c-7a6e-4e4f-8380-58884676f8d1
+    type: title
+    task:
+      id: 7a94759c-7a6e-4e4f-8380-58884676f8d1
+      version: -1
+      name: Handle True Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 86422c26-0d86-4c60-8658-8267719314de
+    type: playbook
+    task:
+      id: 86422c26-0d86-4c60-8658-8267719314de
+      version: -1
+      name: Block Domain - Generic v2
+      playbookName: Block Domain - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      Domain:
+        simple: ${Domain(val.Malicious).Name}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1027.5,
+          "y": 2105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 39ce13c4-962b-4590-8ce6-15d9acf59c45
+    type: regular
+    task:
+      id: 39ce13c4-962b-4590-8ce6-15d9acf59c45
+      version: -1
+      name: Handle manual actions
+      description: "Please validate that this website is remarkable for any company's websites or login pages.\n\n1. Validate that no one has entered this website yet\n2. Add this Domain to be monitored \n3. Start a takedown process by approaching the certificate authority that signed this certificate, or even a 3rd party you're working with."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 2d320a3e-3b50-43cf-8282-d7a197f6e902
+    type: playbook
+    task:
+      id: 2d320a3e-3b50-43cf-8282-d7a197f6e902
+      version: -1
+      name: Threat Hunting - Generic
+      playbookName: Threat Hunting - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      QRadarTimeFrame:
+        simple: LAST 7 DAYS
+      SplunkEarliestTime:
+        simple: -7d@d
+      SplunkLatestTime:
+        simple: now
+      URLDomain:
+        complex:
+          root: Domain(val.Malicious)
+          accessor: Name
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 607.5,
+          "y": 2105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 7e48c0f9-458d-4069-88de-c6c73d9e4835
+    type: regular
+    task:
+      id: 7e48c0f9-458d-4069-88de-c6c73d9e4835
+      version: -1
+      name: Close this Investigation as Malicious
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      closeNotes:
+        simple: This alert was handled as a true positive
+      closeReason:
+        simple: True Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e838a52f-5fc3-42e1-8101-910c81b6858f
+    type: title
+    task:
+      id: e838a52f-5fc3-42e1-8101-910c81b6858f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 2855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8211fb07-f186-4c51-8430-cd8156814eb5
+    type: title
+    task:
+      id: 8211fb07-f186-4c51-8430-cd8156814eb5
+      version: -1
+      name: Compare Image
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 6a9ff302-81c2-4265-88fe-dc883795234b
+    type: title
+    task:
+      id: 6a9ff302-81c2-4265-88fe-dc883795234b
+      version: -1
+      name: Check website content similarity using difflib
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 69cea08e-73bc-4ccb-8de6-d8fd1c38369c
+    type: regular
+    task:
+      id: 69cea08e-73bc-4ccb-8de6-d8fd1c38369c
+      version: -1
+      name: Get the suspicious site page
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "24"
+      '#none#':
+      - "12"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: incident
+          accessor: domain
+          transformers:
+          - operator: uniq
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: https://
+              suffix: {}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 277a5834-296c-4406-83b4-1008edc1705a
+    type: regular
+    task:
+      id: 277a5834-296c-4406-83b4-1008edc1705a
+      version: -1
+      name: Check the Reputation of the URL
+      description: Submits a URL to scan.
+      script: '|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      extended_data:
+        simple: "true"
+      url:
+        complex:
+          root: incident
+          accessor: domain
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 382.5,
+          "y": -430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b4adaa4f-b5ac-460d-809e-8132d10b03ec
+    type: regular
+    task:
+      id: b4adaa4f-b5ac-460d-809e-8132d10b03ec
+      version: -1
+      name: Set the certificate's verdict to malicious
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: incident
+          accessor: certificateindex
+      verdict:
+        simple: Malicious
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1027.5,
+          "y": 2475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 86329e1e-ba21-406e-872d-70593f5a6ef2
+    type: regular
+    task:
+      id: 86329e1e-ba21-406e-872d-70593f5a6ef2
+      version: -1
+      name: Set the certificate's verdict to malicious
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: Domain.Name
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+              right:
+                value:
+                  simple: incident.name
+                iscontext: true
+              ignorecase: true
+          transformers:
+          - operator: uniq
+      verdict:
+        simple: Malicious
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 597.5,
+          "y": 2475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 82135b1e-9c32-4090-8059-d22e4515c4ab
+    type: regular
+    task:
+      id: 82135b1e-9c32-4090-8059-d22e4515c4ab
+      version: -1
+      name: Get the original page
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: incident
+          accessor: userasset
+          transformers:
+          - operator: uniq
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: https://
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 8031ea4c-58f6-425b-8c40-3e339a5dbecb
+    type: regular
+    task:
+      id: 8031ea4c-58f6-425b-8c40-3e339a5dbecb
+      version: -1
+      name: Get difflib Hash Verdict
+      description: ''
+      scriptName: html_difflib_check
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      html1:
+        complex:
+          root: HttpRequest.Response.[0]
+          accessor: Body
+      html2:
+        complex:
+          root: HttpRequest.Response.[1]
+          accessor: Body
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 1e921e00-8c71-455c-8a25-6b18d3371eb9
+    type: regular
+    task:
+      id: 1e921e00-8c71-455c-8a25-6b18d3371eb9
+      version: -1
+      name: Whois - Domain
+      description: Provides data enrichment for domains using free resources. Availability of those services may be limited.
+      script: '|||whois'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      query:
+        complex:
+          root: incident
+          accessor: domain
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": -250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Domain Creation Date
+      output:
+        complex:
+          root: Domain.Whois
+          accessor: CreationDate
+    - incidentfield: Domain Updated Date
+      output:
+        complex:
+          root: Domain.Whois
+          accessor: UpdatedDate
+    - incidentfield: Domain Expiration Date
+      output:
+        complex:
+          root: Domain.Whois
+          accessor: ExpirationDate
+    - incidentfield: Registration Email
+      output:
+        complex:
+          root: Domain.Whois.Registrant.email
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: Domain.Whois.Registrant.email
+                iscontext: true
+              right:
+                value:
+                  simple: '@'
+    - incidentfield: Domain Registrar
+      output:
+        complex:
+          root: Domain.Whois.Registrar
+          accessor: Name
+    - incidentfield: Domain Name
+      output:
+        complex:
+          root: incident
+          accessor: domain
+    - incidentfield: Domain Registrar Abuse Email
+      output:
+        complex:
+          root: Domain.Whois.Registrar.AbuseEmail
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: Domain.Whois.Registrar.AbuseEmail
+                iscontext: true
+              right:
+                value:
+                  simple: '@'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: d6c18512-2c6e-4024-8b31-cfe6a4e246cc
+    type: condition
+    task:
+      id: d6c18512-2c6e-4024-8b31-cfe6a4e246cc
+      version: -1
+      name: Analyst desicion
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Benign:
+      - "30"
+      'Malicious ':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Malicious Domain was identified during the additional checks?
+      body:
+        simple: Malicious Domain was identified during the additional checks?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - 'Malicious '
+      - Benign
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 3ba6b1df-7f30-4587-86fb-1cc29d51888a
+    type: regular
+    task:
+      id: 3ba6b1df-7f30-4587-86fb-1cc29d51888a
+      version: -1
+      name: Close this Investigation as Benign
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      closeNotes:
+        simple: This alert was handled as a false positive
+      closeReason:
+        simple: Benign
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 623246d8-3123-4707-8050-9568b94a3101
+    type: regular
+    task:
+      id: 623246d8-3123-4707-8050-9568b94a3101
+      version: -1
+      name: Compare Images
+      description: ''
+      scriptName: imagecompare
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      org_image:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: InfoFile.Name
+                iscontext: true
+              right:
+                value:
+                  simple: original
+              ignorecase: true
+          accessor: EntryID
+      sec_image:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: InfoFile.Name
+                iscontext: true
+              right:
+                value:
+                  simple: suspicious
+              ignorecase: true
+          accessor: EntryID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: cb7e7b00-96fc-4461-8456-c3b66f3f0fd8
+    type: title
+    task:
+      id: cb7e7b00-96fc-4461-8456-c3b66f3f0fd8
+      version: -1
+      name: Rasterize Domains
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "28"
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 10d993e2-1d3c-47cc-8cea-1b4a14524296
+    type: regular
+    task:
+      id: 10d993e2-1d3c-47cc-8cea-1b4a14524296
+      version: -1
+      name: Rasterize Original Domain
+      description: Converts the contents of a URL to an image file or a PDF file.
+      tags:
+      - Domain_rasterize
+      script: '|||rasterize'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      file_name:
+        simple: original
+      url:
+        complex:
+          root: incident
+          accessor: userasset
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 372.5,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 27d16b99-15ce-4f93-84e9-f77f6afc1b84
+    type: condition
+    task:
+      id: 27d16b99-15ce-4f93-84e9-f77f6afc1b84
+      version: -1
+      name: Is whois Integration Available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "22"
+    scriptarguments:
+      brandname:
+        simple: Whois
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": -430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: fbe4aed7-5138-496a-83eb-6ecca2b96dd5
+    type: title
+    task:
+      id: fbe4aed7-5138-496a-83eb-6ecca2b96dd5
+      version: -1
+      name: Benign
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 1645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: f1ab5ead-ecb2-4b5a-8ecc-13a25e550ddd
+    type: regular
+    task:
+      id: f1ab5ead-ecb2-4b5a-8ecc-13a25e550ddd
+      version: -1
+      name: Set closing reason as Benign
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      key:
+        simple: Verdict
+      value:
+        simple: Benign
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: fc70a187-0255-4f73-854c-42613570d1ce
+    type: regular
+    task:
+      id: fc70a187-0255-4f73-854c-42613570d1ce
+      version: -1
+      name: Set closing reason as Malicious
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: Verdict
+      value:
+        simple: Malicious
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: e87bc2bc-bd19-491b-8a00-6f5ee92ffee4
+    type: title
+    task:
+      id: e87bc2bc-bd19-491b-8a00-6f5ee92ffee4
+      version: -1
+      name: Malicious
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 1645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: cb46f2b3-51bb-472e-8bb1-f2491c169d74
+    type: regular
+    task:
+      id: cb46f2b3-51bb-472e-8bb1-f2491c169d74
+      version: -1
+      name: Expire certificate indicator
+      description: commands.server.cmd.expireIndicators
+      script: Builtin|||expireIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: incident
+          accessor: fingerprint
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 04159b02-a1f5-4e27-8bc0-75ff2746aa48
+    type: condition
+    task:
+      id: 04159b02-a1f5-4e27-8bc0-75ff2746aa48
+      version: -1
+      name: Does the http request body exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.[0]
+                accessor: Body
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.[1]
+                accessor: Body
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_24_#error#": 0.12,
+      "24_30_Benign": 0.49,
+      "29_22_yes": 0.44,
+      "2_24_#error#": 0.24
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3490,
+        "width": 1707.5,
+        "x": 372.5,
+        "y": -570
+      }
+    }
+  }
+inputs:
+- key: contactEmail
+  value:
+    simple: oitzhak@paloaltonetworks.com
+  required: false
+  description: Email address to receive feedback from the domain registrant
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+description: This playbook process "New Suspicious Domain" alerts generated by the CertStream integration.
