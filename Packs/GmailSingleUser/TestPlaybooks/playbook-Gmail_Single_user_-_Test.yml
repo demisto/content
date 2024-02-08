@@ -716,7 +716,8 @@ tasks:
         simple: "yes"
       index: {}
       key: {}
-      keysToKeep: {}
+      keysToKeep:
+        simple: Testmail.Sender
       subplaybook: {}
     separatecontext: false
     continueonerrortype: ""
