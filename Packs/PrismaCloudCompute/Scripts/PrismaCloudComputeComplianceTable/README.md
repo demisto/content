@@ -25,17 +25,17 @@ Iterate over EnrichedComplianceIssue information in the context data and add the
 
 | **Path**                                                            | **Description** | **Type** |
 |---------------------------------------------------------------------| --- | --- |
-| PrismaCloudCompute.ComplianceTable.Host.Hostname                    | Hostname id of the host. | String |
+| PrismaCloudCompute.ComplianceTable.Host.Hostname                    | ID of the host. | String |
 | PrismaCloudCompute.ComplianceTable.Host.ComplianceIssues            | Compliance issue records related to the host. Updated in every iteration. | Array |
 | PrismaCloudCompute.ComplianceTable.Host.ComplianceDistribution      | Compliance distribution of the host. | Dictionary |
 | PrismaCloudCompute.ComplianceTable.Host.CloudMetadata               | Cloud metadata of the host. | Dictionary |
-| PrismaCloudCompute.ComplianceTable.Container.ContainerID            | Container id of the container. | String |
+| PrismaCloudCompute.ComplianceTable.Container.ContainerID            | ID of the container. | String |
 | PrismaCloudCompute.ComplianceTable.Container.ComplianceIssues       | Compliance issue records related to the container. Updated in every iteration. | Array |
 | PrismaCloudCompute.ComplianceTable.Container.ComplianceDistribution | Compliance distribution of the container. | Dictionary |
 | PrismaCloudCompute.ComplianceTable.Container.Hostname               | Hostname of the container. | String |
 | PrismaCloudCompute.ComplianceTable.Container.ImageName              | Image name of the container. | String |
 | PrismaCloudCompute.ComplianceTable.Container.CloudMetadata          | Cloud metadata of the container. | Dictionary |
-| PrismaCloudCompute.ComplianceTable.Image.ImageID                    | Image id of the image. | String |
+| PrismaCloudCompute.ComplianceTable.Image.ImageID                    | ID of the image. | String |
 | PrismaCloudCompute.ComplianceTable.Image.ComplianceIssues           | Compliance issue records related to the image. Updated in every iteration. | Array |
 | PrismaCloudCompute.ComplianceTable.Image.ComplianceDistribution     | Compliance distribution of the image. | Dictionary |
 | PrismaCloudCompute.ComplianceTable.Image.Hosts                      | Hosts of the image. | Array |

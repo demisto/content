@@ -61,7 +61,6 @@ class Host(ComplianceObject):
         compliance_distribution = input_data.get('complianceDistribution')
         cloud_metadata = input_data.get('cloudMetadata')
         cloud_metadata.pop('labels', None) if cloud_metadata else None
-        demisto.debug(f"hostname {identifier}")
 
         host_data = {
             self.output_context_id: identifier,
@@ -77,7 +76,7 @@ class Container(ComplianceObject):
     def __init__(self):
         super().__init__(object_type=ComplianceObj.CONTAINER,
                          input_context_path=f'{INTEGRATION_NAME}.ContainersScanResults',
-                         output_context_id='ContainerId')
+                         output_context_id='ContainerID')
 
     def get_input_context_id(self, obj: dict):
         return obj.get('info', {}).get('id')
@@ -93,7 +92,6 @@ class Container(ComplianceObject):
         Returns:
             (dict) The container data as needed in the table.
         """
-        demisto.debug(f"container_id {identifier} input_container_data {input_data}")
         container_info = input_data.get('info', {})
         compliance_dist = container_info.get('complianceDistribution')
         image_name = container_info.get('imageName')
@@ -117,7 +115,7 @@ class Image(ComplianceObject):
     def __init__(self):
         super().__init__(object_type=ComplianceObj.IMAGE,
                          input_context_path=f'{INTEGRATION_NAME}.ReportsImagesScan',
-                         output_context_id='ImageId')
+                         output_context_id='ImageID')
 
     def get_input_context_id(self, obj: dict):
         return obj.get('id')

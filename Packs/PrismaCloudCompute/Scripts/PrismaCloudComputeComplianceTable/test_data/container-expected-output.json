@@ -11,6 +11,6 @@
                       "medium": 0,
                       "total": 8},
  "ComplianceIssues": ["1337 (high | custom) - title"],
- "ContainerId": "some_container_id",
+ "ContainerID": "some_container_id",
  "Hostname": "some_hostname",
  "ImageName": "some_docker_image_name"}

@@ -63,11 +63,11 @@ CONTAINER_OUTPUT_UPDATED = copy.deepcopy(CONTAINER_OUTPUT)
 CONTAINER_OUTPUT_UPDATED.update({'ComplianceIssues': ['1337 (high | custom) - title', '13372 (high | custom) - title']})
 
 SECOND_CONTAINER_OUTPUT = copy.deepcopy(CONTAINER_OUTPUT)
-SECOND_CONTAINER_OUTPUT['ContainerId'] = 'some_container_id2'
+SECOND_CONTAINER_OUTPUT['ContainerID'] = 'some_container_id2'
 SECOND_CONTAINER_OUTPUT['ComplianceIssues'] = ['13372 (high | custom) - title']
 
 TWO_CONTAINER_OUTPUT = [copy.deepcopy(CONTAINER_OUTPUT), copy.deepcopy(CONTAINER_OUTPUT)]
-TWO_CONTAINER_OUTPUT[1]['ContainerId'] = 'some_container_id2'
+TWO_CONTAINER_OUTPUT[1]['ContainerID'] = 'some_container_id2'
 
 '''--------- Image input context data ---------'''
 IMAGE_INPUT = util_load_json('test_data/image-scan-results.json')
@@ -92,11 +92,11 @@ IMAGE_OUTPUT_UPDATED = copy.deepcopy(IMAGE_OUTPUT)
 IMAGE_OUTPUT_UPDATED.update({'ComplianceIssues': ['1337 (high | custom) - title', '13372 (high | custom) - title']})
 
 SECOND_IMAGE_OUTPUT = copy.deepcopy(IMAGE_OUTPUT)
-SECOND_IMAGE_OUTPUT['ImageId'] = 'some_image_id2'
+SECOND_IMAGE_OUTPUT['ImageID'] = 'some_image_id2'
 SECOND_IMAGE_OUTPUT['ComplianceIssues'] = ['13372 (high | custom) - title']
 
 TWO_IMAGE_OUTPUT = [copy.deepcopy(IMAGE_OUTPUT), copy.deepcopy(IMAGE_OUTPUT)]
-TWO_IMAGE_OUTPUT[1]['ImageId'] = 'some_image_id2'
+TWO_IMAGE_OUTPUT[1]['ImageID'] = 'some_image_id2'
 
 
 @pytest.mark.parametrize('input_context, object_type, expected_context, expected_context_path', [
@@ -154,17 +154,17 @@ def merge_input_and_output_context(input_context, output_context, object_type):
                            'PrismaCloudCompute.ComplianceTable.Host(val.Hostname == obj.Hostname)'),
                           (CONTAINER_UPDATE_INPUT, CONTAINER_UPDATE_INPUT['PrismaCloudCompute']['ContainersScanResults'],
                            'Container', [CONTAINER_OUTPUT], CONTAINER_OUTPUT_UPDATED,
-                           'PrismaCloudCompute.ComplianceTable.Container(val.ContainerId == obj.ContainerId)'),
+                           'PrismaCloudCompute.ComplianceTable.Container(val.ContainerID == obj.ContainerID)'),
                           (TWO_CONTAINER_UPDATE_INPUT,
                            TWO_CONTAINER_UPDATE_INPUT['PrismaCloudCompute']['ContainersScanResults'],
                            'Container', TWO_CONTAINER_OUTPUT, CONTAINER_OUTPUT_UPDATED,
-                           'PrismaCloudCompute.ComplianceTable.Container(val.ContainerId == obj.ContainerId)'),
+                           'PrismaCloudCompute.ComplianceTable.Container(val.ContainerID == obj.ContainerID)'),
                           (IMAGE_UPDATE_INPUT, IMAGE_UPDATE_INPUT['PrismaCloudCompute']['ReportsImagesScan'],
                            'Image', [IMAGE_OUTPUT], IMAGE_OUTPUT_UPDATED,
-                           'PrismaCloudCompute.ComplianceTable.Image(val.ImageId == obj.ImageId)'),
+                           'PrismaCloudCompute.ComplianceTable.Image(val.ImageID == obj.ImageID)'),
                           (TWO_IMAGE_UPDATE_INPUT, TWO_IMAGE_UPDATE_INPUT['PrismaCloudCompute']['ReportsImagesScan'],
                            'Image', TWO_IMAGE_OUTPUT, IMAGE_OUTPUT_UPDATED,
-                           'PrismaCloudCompute.ComplianceTable.Image(val.ImageId == obj.ImageId)')],
+                           'PrismaCloudCompute.ComplianceTable.Image(val.ImageID == obj.ImageID)')],
                          ids=['Host', 'TwoHosts', 'Container', 'TwoContainers', 'Image', 'TwoImages'])
 def test_update_outputs(mocker, input_context, input_context_in_path, object_type, already_present_output, expected_context,
                         expected_context_path):
@@ -238,11 +238,11 @@ def test_update_existing_outputs(mocker, input_context, input_context_in_path, o
                              (TWO_CONTAINER_UPDATE_INPUT,
                               TWO_CONTAINER_UPDATE_INPUT['PrismaCloudCompute']['ContainersScanResults'],
                               'Container', [CONTAINER_OUTPUT], CONTAINER_OUTPUT_UPDATED,
-                              'PrismaCloudCompute.ComplianceTable.Container(val.ContainerId == obj.ContainerId)',
+                              'PrismaCloudCompute.ComplianceTable.Container(val.ContainerID == obj.ContainerID)',
                               [SECOND_CONTAINER_OUTPUT], 'PrismaCloudCompute.ComplianceTable.Container'),
                              (TWO_IMAGE_UPDATE_INPUT, TWO_IMAGE_UPDATE_INPUT['PrismaCloudCompute']['ReportsImagesScan'],
                               'Image', [IMAGE_OUTPUT], IMAGE_OUTPUT_UPDATED,
-                              'PrismaCloudCompute.ComplianceTable.Image(val.ImageId == obj.ImageId)',
+                              'PrismaCloudCompute.ComplianceTable.Image(val.ImageID == obj.ImageID)',
                               [SECOND_IMAGE_OUTPUT], 'PrismaCloudCompute.ComplianceTable.Image'),
                          ], ids=['Hosts', 'Containers', 'Images'])
 def test_create_and_update_outputs(mocker, input_context, input_context_in_path, object_type, already_present_output,

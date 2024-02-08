@@ -13,7 +13,7 @@
    "ComplianceIssues": ["1337 (high | custom) - title"],
    "Hosts": ["some_ip_1",
              "some_ip_2"],
-   "ImageId": "some_other_id",
+   "ImageID": "some_other_id",
    "ImageInstances": ["some_image_1",
                       "some_image_2",
                       "some_image_3"]
