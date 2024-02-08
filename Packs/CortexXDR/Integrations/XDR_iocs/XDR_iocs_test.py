@@ -641,7 +641,7 @@ class TestCommands:
         get_sync_file()
         assert return_results_mock.call_args[0][0]['File'] == 'xdr-sync-file'
 
-    @pytest.mark.skip(reason="Fixed until the API issue is fixed (XSUP-33235)")
+    @pytest.mark.xfail(reason="Until API issue is fixed (XSUP-33235)")
     @freeze_time('2020-06-03T02:00:00Z')
     def test_iocs_to_keep(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
@@ -739,7 +739,7 @@ def test_file_deleted_for_create_file_sync(mocker):
 
 data_test_test_file_deleted = [
     (sync, 'create_file_sync'),
-    (iocs_to_keep, 'create_file_iocs_to_keep'),
+    pytest.param(iocs_to_keep, 'create_file_iocs_to_keep',marks=pytest.mark.xfail(reason="Until API issue is fixed (XSUP-33235)"))
 ]
 
 
