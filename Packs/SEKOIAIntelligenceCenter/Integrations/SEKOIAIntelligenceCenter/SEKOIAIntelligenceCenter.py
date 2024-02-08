@@ -224,7 +224,7 @@ def get_tlp(object_marking_refs: list[str], stix_bundle: dict) -> str:
     return "red"
 
 
-def get_stix_object_reputation(stix_bundle: dict, stix_object: dict) -> Optional[CommandResults]:
+def get_stix_object_reputation(stix_bundle: dict, stix_object: dict, is_unknown: bool) -> Optional[CommandResults]:
     """ "
     Transform a STIX object into a Cortex XSOAR indicator
     """
@@ -232,18 +232,16 @@ def get_stix_object_reputation(stix_bundle: dict, stix_object: dict) -> Optional
     reputation_score: int = get_reputation_score(stix_object.get("indicator_types", []))
     reliability_score: str = get_reliability_score(int(stix_object.get("confidence", -1)))
     tlp: str = get_tlp(stix_object.get("object_marking_refs", []), stix_bundle)
-
     if "ipv4-addr" in stix_object["x_ic_observable_types"] or "ipv6-addr" in stix_object["x_ic_observable_types"]:
-        return get_ip_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
+        return get_ip_indicator_reputation(stix_object, reputation_score, reliability_score, tlp, is_unknown)
     if "file" in stix_object["x_ic_observable_types"]:
-        return get_file_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
+        return get_file_indicator_reputation(stix_object, reputation_score, reliability_score, tlp, is_unknown)
     if "domain-name" in stix_object["x_ic_observable_types"]:
-        return get_domain_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
+        return get_domain_indicator_reputation(stix_object, reputation_score, reliability_score, tlp, is_unknown)
     if "url" in stix_object["x_ic_observable_types"]:
-        return get_url_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
+        return get_url_indicator_reputation(stix_object, reputation_score, reliability_score, tlp, is_unknown)
     if "email-addr" in stix_object["x_ic_observable_types"]:
-        return get_email_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
-
+        return get_email_indicator_reputation(stix_object, reputation_score, reliability_score, tlp, is_unknown)
     return None
 
 
@@ -252,6 +250,7 @@ def get_ip_indicator_reputation(
     reputation_score: int,
     reliability_score: str,
     tlp: str,
+    is_unknown: bool
 ) -> CommandResults:
     """
     Return stix_object of type IP as indicator
@@ -262,6 +261,7 @@ def get_ip_indicator_reputation(
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
+        message='No results found.' if is_unknown else None
     )
 
     indicator_value: str = extract_indicator_from_pattern(stix_object)
@@ -274,12 +274,13 @@ def get_ip_indicator_reputation(
     return CommandResults(
         outputs_prefix="SEKOIAIntelligenceCenter.IP",
         outputs_key_field="name",
-        outputs=stix_object,
+        outputs=None if is_unknown else stix_object,
         indicator=ip,
     )
 
 
-def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
+def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str,
+                                  tlp: str, is_unknown: bool) -> CommandResults:
     """
     Return stix_object of type file as indicator
     """
@@ -291,6 +292,7 @@ def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reli
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
+        message='No results found.' if is_unknown else None
     )
 
     file = Common.File(
@@ -305,12 +307,13 @@ def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reli
     return CommandResults(
         outputs_prefix="SEKOIAIntelligenceCenter.File",
         outputs_key_field="name",
-        outputs=stix_object,
-        indicator=file,
+        outputs=None if is_unknown else stix_object,
+        indicator=file
     )
 
 
-def get_domain_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
+def get_domain_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str,
+                                    tlp: str, is_unknown: bool) -> CommandResults:
     """
     Return stix_object of type domain as indicator
     """
@@ -321,6 +324,7 @@ def get_domain_indicator_reputation(stix_object: dict, reputation_score: int, re
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
+        message='No results found.' if is_unknown else None
     )
 
     domain_name = extract_indicator_from_pattern(stix_object)
@@ -333,12 +337,14 @@ def get_domain_indicator_reputation(stix_object: dict, reputation_score: int, re
     return CommandResults(
         outputs_prefix="SEKOIAIntelligenceCenter.Domain",
         outputs_key_field="name",
-        outputs=stix_object,
+        outputs=None if is_unknown else stix_object,
         indicator=domain,
     )
 
 
-def get_url_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
+def get_url_indicator_reputation(stix_object: dict, reputation_score: int,
+                                 reliability_score: str, tlp: str,
+                                 is_unknown: bool) -> CommandResults:
     """
     Return stix_object of type url as indicator
     """
@@ -349,6 +355,7 @@ def get_url_indicator_reputation(stix_object: dict, reputation_score: int, relia
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
+        message='No results found.' if is_unknown else None
     )
 
     url_addr = extract_indicator_from_pattern(stix_object)
@@ -361,24 +368,25 @@ def get_url_indicator_reputation(stix_object: dict, reputation_score: int, relia
     return CommandResults(
         outputs_prefix="SEKOIAIntelligenceCenter.URL",
         outputs_key_field="name",
-        outputs=stix_object,
+        outputs=None if is_unknown else stix_object,
         indicator=url,
     )
 
 
 def get_email_indicator_reputation(
-    stix_object: dict, reputation_score: int, reliability_score: str, tlp: str
+    stix_object: dict, reputation_score: int, reliability_score: str,
+    tlp: str, is_unknown: bool
 ) -> CommandResults | None:
     """
     Return stix_object of type email as indicator
     """
-
     dbot_score = Common.DBotScore(
         indicator=stix_object["name"],
         indicator_type=DBotScoreType.EMAIL,
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
+        message='No results found.' if is_unknown else None
     )
 
     email_addr = extract_indicator_from_pattern(stix_object)
@@ -395,7 +403,7 @@ def get_email_indicator_reputation(
     return CommandResults(
         outputs_prefix="SEKOIAIntelligenceCenter.EMAIL",
         outputs_key_field="name",
-        outputs=stix_object,
+        outputs=None if is_unknown else stix_object,
         indicator=email,
     )
 
@@ -472,7 +480,7 @@ def extract_indicators(indicator: dict, indicator_context: dict) -> list:
             "x_ic_observable_types": [indicator["type"]],
         }
 
-        object_reputation = get_stix_object_reputation(stix_bundle={}, stix_object=stix_object)
+        object_reputation = get_stix_object_reputation(stix_bundle={}, stix_object=stix_object, is_unknown=True)
 
         if object_reputation:
             object_reputation.readable_output = "No results found."
@@ -484,7 +492,7 @@ def extract_indicators(indicator: dict, indicator_context: dict) -> list:
     for stix_bundle in indicator_context["items"]:
         for stix_object in stix_bundle["objects"]:
             if stix_object["type"] == "indicator":
-                object_reputation = get_stix_object_reputation(stix_bundle, stix_object)
+                object_reputation = get_stix_object_reputation(stix_bundle, stix_object, is_unknown=False)
                 if object_reputation:
                     command_results_list.append(object_reputation)
 
