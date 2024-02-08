@@ -7,8 +7,8 @@ import logging
 
 import dateparser
 import pytest
-from exchangelib import Message, Mailbox, Contact
-from EWSv2 import fetch_last_emails
+from exchangelib import Message, Mailbox, Contact, HTMLBody, Body
+from EWSv2 import fetch_last_emails, get_message_for_body_type
 from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
 from exchangelib import EWSDateTime, EWSTimeZone
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
@@ -766,3 +766,48 @@ def test_format_identifier(input, output):
            Then: Only mails without a prefix have smtp appended
        """
     assert EWSv2.format_identifier(input) == output
+
+
+def test_get_message_for_body_type_no_body_type_with_html_body():
+    body = "This is a plain text body"
+    html_body = "<p>This is an HTML body</p>"
+    result = get_message_for_body_type(body, None, html_body)
+    assert isinstance(result, HTMLBody)
+    assert result == HTMLBody(html_body)
+
+
+def test_get_message_for_body_type_no_body_type_with_no_html_body():
+    body = "This is a plain text body"
+    result = get_message_for_body_type(body, None, None)
+    assert isinstance(result, Body)
+    assert result == Body(body)
+
+
+def test_get_message_for_body_type_html_body_type_with_html_body():
+    body = "This is a plain text body"
+    html_body = "<p>This is an HTML body</p>"
+    result = get_message_for_body_type(body, 'html', html_body)
+    assert isinstance(result, HTMLBody)
+    assert result == HTMLBody(html_body)
+
+
+def test_get_message_for_body_type_text_body_type_with_html_body():
+    body = "This is a plain text body"
+    html_body = "<p>This is an HTML body</p>"
+    result = get_message_for_body_type(body, 'text', html_body)
+    assert isinstance(result, Body)
+    assert result == Body(body)
+
+
+def test_get_message_for_body_type_html_body_type_with_no_html_body():
+    body = "This is a plain text body"
+    result = get_message_for_body_type(body, 'html', None)
+    assert isinstance(result, Body)
+    assert result == Body(body)
+
+
+def test_get_message_for_body_type_text_body_type_with_no_html_body():
+    body = "This is a plain text body"
+    result = get_message_for_body_type(body, 'text', None)
+    assert isinstance(result, Body)
+    assert result == Body(body)
