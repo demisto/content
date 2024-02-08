@@ -1248,6 +1248,7 @@ tasks:
       id: 4aaf78e5-6877-4503-82f9-52a25ea07d51
       version: -1
       name: Search, link and close similar incidents?
+      description: Whether to search for incidents similar to the current incident, link them to this incident and close them.
       type: condition
       iscommand: false
       brand: ""
