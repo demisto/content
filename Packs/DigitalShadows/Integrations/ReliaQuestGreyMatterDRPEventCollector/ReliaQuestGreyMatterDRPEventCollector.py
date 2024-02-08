@@ -191,8 +191,9 @@ def test_module(client: ReilaQuestClient) -> str:
     Args:
         client: the relia quest client
     """
-    client.list_triage_item_events(limit=1)
-    return "ok"
+    for _, _ in client.list_triage_item_events(limit=1):
+        # no exception means api is valid
+        return "ok"
 
 
 def get_triage_item_ids_to_events(events: list[dict]) -> tuple[dict[str, list[dict]], int | None]:
