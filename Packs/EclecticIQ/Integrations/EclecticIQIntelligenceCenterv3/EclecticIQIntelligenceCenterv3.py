@@ -1124,22 +1124,15 @@ class EclecticIQ_api:
 
                 if self.eiq_api_version == "v1":
                     relation["relation_title"] = i["meta"].get("title")
-                    relation["entity_type"] = related_entity_parsed_response["data"][
-                        "type"
-                    ]
+                    relation["entity_type"] = related_entity_parsed_response["data"]["type"]
                 elif self.eiq_api_version == "v2":
                     relation["relation_title"] = i["data"].get("key")
-                    relation["entity_type"] = related_entity_parsed_response["data"][
-                        "data"
-                    ]["type"]
+                    relation["entity_type"] = related_entity_parsed_response["data"]["data"]["type"]
 
-                relation["entity_title"] = related_entity_parsed_response["data"][
-                    "data"
-                ]["title"]
+                relation["entity_title"] = related_entity_parsed_response["data"]["data"]["title"]
                 relation["entity_id"] = related_entity_parsed_response["data"]["id"]
-                relation["observables_count"] = len(
-                    related_entity_parsed_response["data"]["observables"]
-                )
+                relation["observables_count"] = len(related_entity_parsed_response["data"]["observables"])
+                
                 result.append(relation)
         return result
 
