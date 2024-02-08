@@ -148,9 +148,6 @@ class InfoBloxNIOSClient(BaseClient):
         except DemistoException as error:
             raise parse_demisto_exception(error, 'text')
 
-    def set_param(self, p: dict[str, Any]):
-        self.params.update(p)
-
     def test_module(self) -> dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication
         is successful.
@@ -172,51 +169,102 @@ class InfoBloxNIOSClient(BaseClient):
         request_params.update(self.REQUEST_PARAM_ZONE)
         return self._http_request('GET', suffix, params=request_params)
 
-    def get_ipv4_address_from_ip(self, ip: str, status: str) -> dict:
+    def get_ipv4_address_from_ip(
+        self,
+        ip: str,
+        status: str,
+        extended_attributes: Optional[str],
+        max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+    ) -> dict:
         """
         Get IPv4 information based on an IP address.
         Args:
         - `ip` (``str``): ip to retrieve.
         - `status` (``str``): status of the IP address.
+        - `extended_attributes` (``str``): comma-separated list of extended attributes to return.
+        - `max_results` (``int``): maximum number of results to return.
 
         Returns:
             Response JSON
         """
 
         # Dictionary of params for the request
-        request_params = assign_params(ip_address=ip, status=status)
+        request_params = assign_params(ip_address=ip, status=status, _max_results=max_results)
+
+        # Add extended attributes param if provided
+        if extended_attributes:
+            request_params.update(self.REQUEST_PARAM_EXTRA_ATTRIBUTES)
+            extended_attributes_params = transform_ext_attrs(extended_attributes)
+
+            for e in extended_attributes_params:
+                request_params.update(e)
 
         return self._get_ipv4_addresses(params=request_params)
 
-    def get_ipv4_address_from_netmask(self, network: str, status: str) -> dict:
+    def get_ipv4_address_from_netmask(
+        self,
+        network: str,
+        status: str,
+        extended_attributes: Optional[str],
+        max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+    ) -> dict:
         """
         Get IPv4 network information based on a netmask.
 
         Args:
         - `network` (``str``): Netmask to retrieve the IPv4 for.
         - `status` (``str``): Status of the network.
+        - `extended_attributes` (``str``): comma-separated list of extended attributes to return.
+        - `max_results` (``int``): maximum number of results to return.
 
         Returns:
         - `dict` with response.
         """
 
-        request_params = assign_params(network=network, status=status)
+        request_params = assign_params(network=network, status=status, _max_results=max_results)
+
+        # Add extended attributes param if provided
+        if extended_attributes:
+            request_params.update(self.REQUEST_PARAM_EXTRA_ATTRIBUTES)
+            extended_attributes_params = transform_ext_attrs(extended_attributes)
+
+            for e in extended_attributes_params:
+                request_params.update(e)
 
         return self._get_ipv4_addresses(params=request_params)
 
-    def get_ipv4_address_range(self, start_ip: str, end_ip: str) -> dict:
+    def get_ipv4_address_range(
+        self,
+        start_ip: str,
+        end_ip: str,
+        extended_attributes: Optional[str],
+        max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+    ) -> dict:
         """
         Get IPv4 address range information based on a start and end IP.
 
         Args:
         - `start_ip` (``str``): Start IP of the range.
         - `end_ip` (``str``): End IP of the range.
+        - `extended_attributes` (``str``): comma-separated list of extended attributes to return.
+        - `max_results` (``int``): maximum number of results to return.
 
         Returns:
         - `dict` with response.
         """
 
-        return self._get_ipv4_addresses(params=transform_ipv4_range(start_ip, end_ip))
+        request_params = assign_params(_max_results=max_results)
+        request_params.update(transform_ipv4_range(start_ip, end_ip))
+
+        # Add extended attributes param if provided
+        if extended_attributes:
+            request_params.update(self.REQUEST_PARAM_EXTRA_ATTRIBUTES)
+            extended_attributes_params = transform_ext_attrs(extended_attributes)
+
+            for e in extended_attributes_params:
+                request_params.update(e)
+
+        return self._get_ipv4_addresses(params=request_params)
 
     def _get_ipv4_addresses(self, params: dict[str, Any]) -> dict:
         return self._http_request('GET', "ipv4address", params=params)
@@ -404,34 +452,85 @@ class InfoBloxNIOSClient(BaseClient):
         suffix = reference_id
         return self._http_request('DELETE', suffix)
 
-    def get_host_records(self, name: str | None) -> dict:
+    def get_host_records(
+        self,
+        name: str | None,
+        additional_return_fields: Optional[str],
+        extended_attributes: Optional[str],
+        max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+    ) -> dict:
         """
         Get the host records.
 
         Args:
         - `name` (``str``): Name of the host record to search for.
+        - `additional_return_fields` (``Optional[str]``): Comma-separated list of additional fields to return.
+        - `extended_attributes` (``str``): comma-separated list of extended attributes to return.
+        - `max_results` (``int``): maximum number of results to return.
 
         Returns:
         - Response JSON
         """
 
-        params = assign_params(name=name)
-        return self._http_request('GET', "record:host", params=params)
+        request_params = assign_params(name=name, _max_results=max_results)
 
-    def get_network_info(self, pattern: str | None) -> dict:
+        if additional_return_fields:
+            request_params.update(
+                {
+                    f"{self.REQUEST_PARAM_RETURN_FIELDS_KEY}": additional_return_fields
+                }
+            )
+
+        # Add extended attributes param if provided
+        if extended_attributes:
+            request_params.update(self.REQUEST_PARAM_EXTRA_ATTRIBUTES)
+            extended_attributes_params = transform_ext_attrs(extended_attributes)
+
+            for e in extended_attributes_params:
+                request_params.update(e)
+
+        return self._http_request('GET', "record:host", params=request_params)
+
+    def get_network_info(
+        self,
+        pattern: str | None,
+        additional_return_fields: Optional[str],
+        extended_attributes: Optional[str],
+        max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+    ) -> dict:
         """
         Get the network information.
 
         Args:
-        - `host_name` (``str | None``): The hostname to retrieve network information for.
         - `pattern` (``str | None``): Filter networks by pattern, e.g. '.0/24' for netmask, '192.168' for subnet.
+        - `additional_return_fields` (``Optional[str]``): Comma-separated list of additional fields to return.
+        - `extended_attributes` (``str``): comma-separated list of extended attributes to return.
+        - `max_results` (``int``): maximum number of results to return.
 
         Returns:
         - Response JSON
         """
 
-        params = {"network~": pattern} if pattern else None
-        return self._http_request("GET", "network", params=params)
+        request_params = assign_params(_max_results=max_results)
+
+        if pattern:
+            request_params["network~"] = pattern
+
+        if additional_return_fields:
+            request_params.update(
+                {
+                    f"{self.REQUEST_PARAM_RETURN_FIELDS_KEY}": additional_return_fields
+                }
+            )
+
+        if extended_attributes:
+            request_params.update(self.REQUEST_PARAM_EXTRA_ATTRIBUTES)
+            extended_attributes_params = transform_ext_attrs(extended_attributes)
+
+            for e in extended_attributes_params:
+                request_params.update(e)
+
+        return self._http_request("GET", "network", params=request_params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -677,6 +776,7 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
     network = args.get('network')
     from_ip = args.get('from_ip')
     to_ip = args.get('to_ip')
+    max_results = arg_to_number(args.get('max_results', INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
 
     # Input validation
 
@@ -689,27 +789,32 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
         raise ValueError("Please specify either the `ip`, `network` or `from_ip`/`to_ip` argument")
 
     extended_attributes = args.get("extended_attrs")
-    if extended_attributes:
-        client.set_param(client.REQUEST_PARAM_EXTRA_ATTRIBUTES)
-
-        extended_attributes_params = transform_ext_attrs(extended_attributes)
-
-        for e in extended_attributes_params:
-            client.set_param(e)
-
-    max_results = arg_to_number(args.get('max_results', INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
-    client.set_param({InfoBloxNIOSClient.REQUEST_PARAM_MAX_RESULTS_KEY: max_results})
 
     if ip:
         status = args.get('status', IPv4AddressStatus.USED.value)
-        raw_response = client.get_ipv4_address_from_ip(ip, status=status)
+        raw_response = client.get_ipv4_address_from_ip(
+            ip,
+            status=status,
+            max_results=max_results,
+            extended_attributes=extended_attributes
+        )
         mode = f"{ip=}"
     elif network:
         status = args.get('status', IPv4AddressStatus.USED.value)
-        raw_response = client.get_ipv4_address_from_netmask(network, status=status)
+        raw_response = client.get_ipv4_address_from_netmask(
+            network,
+            status=status,
+            max_results=max_results,
+            extended_attributes=extended_attributes
+        )
         mode = f"{network=}"
     elif from_ip and to_ip:
-        raw_response = client.get_ipv4_address_range(from_ip, to_ip)
+        raw_response = client.get_ipv4_address_range(
+            from_ip,
+            to_ip,
+            max_results=max_results,
+            extended_attributes=extended_attributes
+        )
         mode = f"{from_ip=} - {to_ip=}"
 
     ip_list = raw_response.get('result')
@@ -1289,28 +1394,16 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
     """
 
     hostname = args.get("host_name")
-
     max_results = arg_to_number(args.get("max_results", INTEGRATION_MAX_RESULTS_DEFAULT))
-    additional_return_fields = transform_return_fields(
-        args.get("additional_return_fields", INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY))
-
+    additional_return_fields = args.get("additional_return_fields", INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY)
     extended_attributes = args.get(INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY)
-    if (
-        extended_attributes
-        and additional_return_fields
-        and INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY in cast(str, additional_return_fields.get(client.REQUEST_PARAM_RETURN_FIELDS_KEY))  # noqa: E501
-    ):
-        client.set_param(client.REQUEST_PARAM_EXTRA_ATTRIBUTES)
 
-        extended_attributes_params = transform_ext_attrs(extended_attributes)
-
-        for e in extended_attributes_params:
-            client.set_param(e)
-
-    client.set_param({InfoBloxNIOSClient.REQUEST_PARAM_MAX_RESULTS_KEY: max_results})
-    client.set_param(additional_return_fields)
-
-    raw = client.get_host_records(name=hostname)
+    raw = client.get_host_records(
+        name=hostname,
+        additional_return_fields=additional_return_fields,
+        extended_attributes=extended_attributes,
+        max_results=max_results
+    )
     records = raw.get("result", [])
 
     demisto.debug(f"Found {len(records)} host records")
@@ -1346,26 +1439,15 @@ def get_network_info_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
 
     pattern = args.get("pattern")
     max_results = arg_to_number(args.get("max_results", INTEGRATION_MAX_RESULTS_DEFAULT))
-    additional_return_fields = transform_return_fields(
-        args.get("additional_return_fields", INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY))
-
+    additional_return_fields = args.get("additional_return_fields", INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY)
     extended_attributes = args.get(INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY)
-    if (
-        extended_attributes
-        and additional_return_fields
-        and INTEGRATION_COMMON_RAW_EXTENSION_ATTRIBUTES_KEY in cast(str, additional_return_fields.get(client.REQUEST_PARAM_RETURN_FIELDS_KEY))  # noqa: E501
-    ):
-        client.set_param(client.REQUEST_PARAM_EXTRA_ATTRIBUTES)
 
-        extended_attributes_params = transform_ext_attrs(extended_attributes)
-
-        for e in extended_attributes_params:
-            client.set_param(e)
-
-    client.set_param({InfoBloxNIOSClient.REQUEST_PARAM_MAX_RESULTS_KEY: max_results})
-    client.set_param(additional_return_fields)
-
-    raw_response = client.get_network_info(pattern)
+    raw_response = client.get_network_info(
+        pattern,
+        additional_return_fields=additional_return_fields,
+        extended_attributes=extended_attributes,
+        max_results=max_results
+    )
     network_info = raw_response.get("result")
 
     if not network_info:
