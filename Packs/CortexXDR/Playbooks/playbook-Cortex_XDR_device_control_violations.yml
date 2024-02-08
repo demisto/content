@@ -505,7 +505,7 @@ tasks:
     task:
       id: 1a497783-b55d-4aec-8764-2722b3d3216d
       version: -1
-      name: Is the email retrieved?
+      name: Is the user's email retrieved?
       type: condition
       iscommand: false
       brand: ""
