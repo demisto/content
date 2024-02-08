@@ -247,6 +247,7 @@ entryTypes = {
     'entryInfoFile': 9,
     'warning': 11,
     'map': 15,
+    'debug': 16,
     'widget': 17
 }
 
@@ -2017,22 +2018,28 @@ def url_to_clickable_markdown(data, url_keys):
     return data
 
 
-def create_clickable_url(url):
+def create_clickable_url(url, text=None):
     """
     Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
 
     :type url: ``Union[List[str], str]``
     :param url: the url of interest or a list of urls
 
-    :return: markdown format for clickable url
-    :rtype: ``str``
+    :type text: ``Union[List[str], str, None]``
+    :param text: the text of the url or a list of texts of urls.
+
+    :return: Markdown format for clickable url
+    :rtype: ``Union[List[str], str]``
 
     """
     if not url:
         return None
     elif isinstance(url, list):
+        if isinstance(text, list):
+            assert len(url) == len(text), 'The URL list and the text list must be the same length.'
+            return ['[{}]({})'.format(text, item) for text, item in zip(text, url)]
         return ['[{}]({})'.format(item, item) for item in url]
-    return '[{}]({})'.format(url, url)
+    return '[{}]({})'.format(text or url, url)
 
 
 class JsonTransformer:
@@ -7711,8 +7718,7 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
             return res
         else:
             return True, res
-
-    contents = [entry.get('Contents', {}) for entry in res]
+    contents = [entry.get('Contents', {}) for entry in res if entry['Type'] != entryTypes['debug']]
     contents = contents[0] if len(contents) == 1 else contents
 
     if fail_on_error:

@@ -4,8 +4,15 @@ import demistomock as demisto
 import json
 import pytest
 
+MS_TEAMS_ASK_MESSAGE_KEYS = {'message_text', 'options', 'entitlement', 'investigation_id',
+                             'task_id', 'form_type'}  # must be synced with ones in MicrosoftTeams.py
+
 
 def execute_command(name, args=None):
+    """
+    if assert MS_TEAMS_ASK_MESSAGE_KEYS == json_message.keys() test fails, update the MS_TEAMS_ASK_MESSAGE_KEYS constant
+     to have the same keys as the message keys in the MsTeamsAsk script and the test.
+    """
     if name == 'addEntitlement':
         return [
             {
@@ -14,14 +21,16 @@ def execute_command(name, args=None):
             }
         ]
     elif name == 'send-notification':
-        expected_message: str = json.dumps({
+        json_message = {
             'message_text': 'How are you today?',
             'options': ['Great', 'Wonderful', 'SSDD', 'Wooah'],
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8',
             'investigation_id': '32',
             'task_id': '44',
-            'form_type': 'predefined-options',
-        })
+            'form_type': 'predefined-options'}
+
+        expected_message: str = json.dumps(json_message)
+        assert json_message.keys() == MS_TEAMS_ASK_MESSAGE_KEYS
         expected_script_arguments: dict = {
             'message': expected_message,
             'using-brand': 'Microsoft Teams'
@@ -33,8 +42,9 @@ def execute_command(name, args=None):
             if 'team' in args:
                 expected_script_arguments['team'] = 'TestTeam'
         assert args == expected_script_arguments
+        return None
     else:
-        raise ValueError('Unimplemented command called: {}'.format(name))
+        raise ValueError(f'Unimplemented command called: {name}')
 
 
 def test_microsoft_teams_ask(mocker):
