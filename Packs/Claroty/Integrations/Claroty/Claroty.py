@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 """ IMPORTS """
 from distutils.util import strtobool
-from typing import List, Tuple, Dict, Any, Union
+from typing import Any
 import json
 import requests
 import dateparser
@@ -147,7 +147,7 @@ class Client(BaseClient):
         url_suffix = self._add_extra_params_to_url('ranger/alerts', fields, sort_by, filters, limit, page_number)
         return self._request_with_token(url_suffix, 'GET')
 
-    def get_alert(self, rid: str) -> Union[Dict, str, requests.Response]:
+    def get_alert(self, rid: str) -> dict | str | requests.Response:
         return self._request_with_token(f'ranger/alerts/{rid}', 'GET')
 
     def get_ranger_table_filters(self, table: str) -> dict:
@@ -172,7 +172,7 @@ class Client(BaseClient):
         )
 
     @staticmethod
-    def _add_extra_params_to_url(url_suffix: str, fields: list, sort_by: dict, filters: List[Filter], limit: int = 10,
+    def _add_extra_params_to_url(url_suffix: str, fields: list, sort_by: dict, filters: list[Filter], limit: int = 10,
                                  page_number: int = 1) -> str:
         url_suffix += "?fields=" + ',;$'.join(fields)
         url_suffix += f"&page={page_number}&per_page={limit}"
@@ -206,7 +206,7 @@ def test_module(client: Client):
     return 'ok'
 
 
-def get_assets_command(client: Client, args: dict) -> Tuple:
+def get_assets_command(client: Client, args: dict) -> tuple:
     relevant_fields, sort_by, limit = _init_request_values("asset", "id", "asset_limit", args)
     filters = []
 
@@ -252,7 +252,7 @@ def get_assets_command(client: Client, args: dict) -> Tuple:
     )
 
 
-def resolve_alert_command(client: Client, args: dict) -> Tuple:
+def resolve_alert_command(client: Client, args: dict) -> tuple:
     bad_input = False
     selected_alerts_arg = args.get("selected_alerts", [])
     selected_alert_list = selected_alerts_arg.split(",") \
@@ -288,7 +288,7 @@ def resolve_alert_command(client: Client, args: dict) -> Tuple:
     )
 
 
-def get_single_alert_command(client: Client, args: dict) -> Tuple:
+def get_single_alert_command(client: Client, args: dict) -> tuple:
     relevant_fields = get_fields("alert", args.get("fields", "").split(","))
     alert_rid = args.get("alert_rid", None)
     result = client.get_alert(alert_rid)
@@ -305,7 +305,7 @@ def get_single_alert_command(client: Client, args: dict) -> Tuple:
     )
 
 
-def query_alerts_command(client: Client, args: dict) -> Tuple:
+def query_alerts_command(client: Client, args: dict) -> tuple:
     relevant_fields, sort_by, limit = _init_request_values("alert", "timestamp", "alert_limit", args, True)
     filters = []
 
@@ -353,7 +353,7 @@ def query_alerts_command(client: Client, args: dict) -> Tuple:
     )
 
 
-def _add_exclude_resolved_alerts_filters(filters: List[Filter]):
+def _add_exclude_resolved_alerts_filters(filters: list[Filter]):
     if not filters:
         return [Filter("resolved", "false", "exact")]
 
@@ -362,7 +362,7 @@ def _add_exclude_resolved_alerts_filters(filters: List[Filter]):
 
 
 def _init_request_values(obj_name: str, sort_by_default_value: str, limit_arg: str, args: dict,
-                         get_sort_order_arg: bool = False) -> Tuple[List, Dict, int]:
+                         get_sort_order_arg: bool = False) -> tuple[list, dict, int]:
     relevant_fields = get_fields(obj_name, args.get("fields", "").split(","))
 
     sort_order = False
@@ -380,7 +380,7 @@ def _init_request_values(obj_name: str, sort_by_default_value: str, limit_arg: s
     return relevant_fields, sort_by, limit
 
 
-def _parse_alerts_result(alert_result: dict, fields: list) -> List[dict]:
+def _parse_alerts_result(alert_result: dict, fields: list) -> list[dict]:
     if 'objects' not in alert_result:
         return []
     obj = alert_result.get('objects', [])
@@ -433,7 +433,7 @@ def _parse_single_alert(alert_obj, fields: list):
     return parsed_alert_result
 
 
-def _parse_assets_result(assets_result: dict, fields: list) -> Tuple:
+def _parse_assets_result(assets_result: dict, fields: list) -> tuple:
     if 'objects' not in assets_result:
         return [], []
     obj = assets_result.get('objects', [])
@@ -491,10 +491,10 @@ def get_sort(field_to_sort_by: str, order_by_desc: bool = False) -> dict:
 
 
 def get_sort_order(sort_order: str) -> bool:
-    return False if sort_order == "asc" else True
+    return sort_order != "asc"
 
 
-def get_fields(obj_name: str, fields: List[str]) -> list:
+def get_fields(obj_name: str, fields: list[str]) -> list:
     if obj_name == "alert":
         fields.append("resource_id")
         if "all" in fields:
@@ -533,7 +533,7 @@ def transform_filters_labels_to_values(table_filters, filter_name: str, filter_v
 
 def get_severity_filter(severity: str) -> str:
     severity_values = []
-    for severity_key, severity_value in CTD_TO_DEMISTO_SEVERITY.items():
+    for _severity_key, severity_value in CTD_TO_DEMISTO_SEVERITY.items():
         if severity_value >= CTD_TO_DEMISTO_SEVERITY.get(severity, 0):
             severity_values.append(str(severity_value))
     return ",;$".join(severity_values)
@@ -601,22 +601,23 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
         page_to_query = 1
 
     for item in items:
-        # Make datetime object unaware of timezone for comparison
-        parsed_date = dateparser.parse(item['Timestamp'])
-        assert parsed_date is not None, f"failed parsing {item['Timestamp']}"
-        incident_created_time = parsed_date.replace(tzinfo=None)
-
         # Don't add duplicated incidents
-        # if item["ResourceID"] not in last_run_rids:
-        incident = {
-            'name': item.get('Description', None),
-            'occurred': incident_created_time.strftime(DATE_FORMAT),
-            'severity': CTD_TO_DEMISTO_SEVERITY.get(item.get('Severity', None), None),
-            'rawJSON': json.dumps(item)
-        }
+        rid = item["ResourceID"]
+        if rid not in last_run_rids:
+            # Make datetime object unaware of timezone for comparison
+            parsed_date = dateparser.parse(item['Timestamp'])
+            assert parsed_date is not None, f"failed parsing {item['Timestamp']}"
+            incident_created_time = parsed_date.replace(tzinfo=None)
 
-        incidents.append(incident)
-        current_rids.append(item["ResourceID"])
+            incident = {
+                'name': item.get('Description', None),
+                'occurred': incident_created_time.strftime(DATE_FORMAT),
+                'severity': CTD_TO_DEMISTO_SEVERITY.get(item.get('Severity', None), None),
+                'rawJSON': json.dumps(item)
+            }
+
+            incidents.append(incident)
+            current_rids.append(rid)
 
     # If there were no items queried, latest_created_time is the same as last run
     if latest_created_time is None:
