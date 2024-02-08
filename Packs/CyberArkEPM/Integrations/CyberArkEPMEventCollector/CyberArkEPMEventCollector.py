@@ -400,7 +400,7 @@ def main():  # pragma: no cover
             return_results(command_result)
 
         elif command == 'cyberarkepm-get-events':
-            events, command_result = get_events_command(client, 'detailed_evens', last_run, max_limit)  # type: ignore
+            events, command_result = get_events_command(client, 'detailed_events', last_run, max_limit)  # type: ignore
             if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)

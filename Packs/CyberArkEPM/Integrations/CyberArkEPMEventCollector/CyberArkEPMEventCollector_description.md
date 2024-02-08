@@ -6,19 +6,19 @@ Every method needs different parameters as show in the following:
 
 * EPM authentication
     - url: `https://<EPM_server>`
-    - username: `admin`
-    - password: `123456`
-    - [application ID](https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID): `1111`
-    - set name: `admin, jhon`
+    - username
+    - password
+    - [application ID](https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID)
+    - set name (comma separated value)
 
 
-* SAML authentication
+* SAML authentication (advanced settings)
     - url: `https://login.epm.cyberark.com/SAML/Logon`
-    - username: `admin`
-    - password: `123456`
-    - authentication URL [Okta example](https://developer.okta.com/docs/reference/api/authn/#authentication-operations): `https://paloaltonetworks.okta.com/api/v1/authn`
-    - application URL: `https://paloaltonetworks.okta.com/home/[APP_NAME]/[APP_ID]`
-    - set name: `admin, jhon`
+    - username
+    - password
+    - authentication URL [Okta example](https://developer.okta.com/docs/reference/api/authn/#authentication-operations): `https://[COMPANY_NAME].okta.com/api/v1/authn`
+    - application URL: `https://[COMPANY_NAME].okta.com/home/[APP_NAME]/[APP_ID]`
+    - set name (comma separated value)
 
 ### Fetch Information
 
