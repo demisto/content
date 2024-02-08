@@ -701,9 +701,8 @@ def test_validate_url_template(url):
 @pytest.mark.parametrize(
     "mock_raw_response, expected_exception",
     [
-        ({"error": "test", "state": "fail"}, ""),
-        ({"state": "fail"}, "Uploading test to ThreatGrid failed\n{'state': 'fail'}")
-    ]
+        ({"state": "fail"}, "Uploading test to ThreatGrid failed"),
+    ],
 )
 def test_schedule_command_sample_upload_when_state_is_fail(
     mocker,
@@ -717,7 +716,7 @@ def test_schedule_command_sample_upload_when_state_is_fail(
     When:
         - run schedule_command function
     Then:
-        - Ensure the
+        - Ensure that when returned from the api the state is fail, an error is raised.
     """
     from ThreatGridv2 import schedule_command
     mocker.patch(
