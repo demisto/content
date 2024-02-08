@@ -340,9 +340,9 @@ class TestHelperFunctions:
             [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
              {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}}],
             {"latest_indicators":
-             [{'value': 'one', 'type': 'IP', "rawJSON": {'id': 'test_one', "modified": '2023-06-14T13:18:21.598591Z'}},
-              {'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
-              {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}}
+             [{'test_one': '2023-06-14T13:18:21.598591Z'},
+              {'test_two': '2023-07-06T08:59:57.339606Z'},
+              {'test_three': '2023-07-06T08:59:57.339606Z'}
               ]},
             []
         ),
@@ -351,8 +351,8 @@ class TestHelperFunctions:
              {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}},
              {'value': 'four', 'type': 'Domain', "rawJSON": {'id': 'test_four', "modified": '2023-10-02T05:34:28.339145Z'}}],
             {"latest_indicators":
-             [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
-              {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}}
+             [{'test_two': '2023-07-06T08:59:57.339606Z'},
+              {'test_three': '2023-07-06T08:59:57.339606Z'}
               ]},
             [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-10-02T05:34:45.339145Z'}},
              {'value': 'four', 'type': 'Domain', "rawJSON": {'id': 'test_four', "modified": '2023-10-02T05:34:28.339145Z'}}]
@@ -380,4 +380,4 @@ class TestHelperFunctions:
         result = filter_indicators(indicators, last_run)
 
         assert result == new_indicators
-        assert last_run.get("latest_indicators") == indicators
+        assert last_run.get("latest_indicators") == [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("id")} for obj in indicators]
