@@ -8,7 +8,7 @@ def check_for_phishing_indicators(html_content):
     indicators = {
         "login_forms": bool(re.search(r'<input[^>]*type=["\']?password["\']?', html_content, re.IGNORECASE)),
         "suspicious_links": bool(re.search(r'href=["\'](.*?(login|signin|account).*?)["\']', html_content, re.IGNORECASE)),
-        "pop-up_forms": bool(re.search(r'<input[^>]*type=["\']?text["\']?.*?name=["\'](.*?(username|email).*?)["\']?', html_content, re.IGNORECASE)),
+        "pop-up_forms": bool(re.search(r'<input[^>]*type=["\']?text["\']?.*?name=["\'](.*?(username|email).*?)["\']?', html_content, re.IGNORECASE)),  # noqa: E501
         # Additional checks
         "meta_tags_phishing_keywords": bool(re.search(  \
             r'<meta[^>]*name=["\']?(keywords|description)["\']?[^>]*content=["\']?(phishing|login|password)["\']?',     \

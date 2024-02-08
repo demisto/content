@@ -60,7 +60,7 @@ def generate_html_for_context_keys(context_keys):
     full_html_content = f"""<table class="center" style="background-color: #e6f7ff; padding: 5px; border-radius: 2px; width: 100%;">
                 {table_header}
                 {html_content}
-            </table>"""
+            </table>"""  # noqa: E501
     return full_html_content
 
 
