@@ -607,7 +607,8 @@ def transform_ext_attrs(ext_attrs: str) -> list:
 
     Returns:
     - `list[dict]` or `None`: A `list[dict]` representing the extension attributes.
-    Returns `None` in case there were no delimiters present.
+    Returns `None` in case there were no delimiters present. If the attributes
+    cannot be parsed, an exception is raised.
 
     For example:
 
@@ -633,9 +634,8 @@ def transform_ext_attrs(ext_attrs: str) -> list:
             key, value = ext_attr.split("=")
             if key and value:
                 l_ext_attrs.append({f"*{key.strip()}": value.strip()})
-        except ValueError:
-            demisto.error(f"Unable to parse ext_attrs: {ext_attrs}")
-            continue
+        except ValueError as e:
+            raise DemistoException(f"Unable to parse provided {ext_attrs=}. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'")
 
     return l_ext_attrs
 
