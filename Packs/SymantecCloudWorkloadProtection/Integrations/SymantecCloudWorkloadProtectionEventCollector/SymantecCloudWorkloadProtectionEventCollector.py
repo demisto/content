@@ -179,24 +179,12 @@ def main() -> None:  # pragma: no cover
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy)
+            proxy=proxy
+        )
 
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
             result = test_module(client, params, first_fetch_time)
             return_results(result)
-
-        elif command == 'hello-world-get-events':
-            should_push_events = argToBoolean(args.pop('should_push_events'))
-            events, results = get_events(client, alert_status, demisto.args())
-            return_results(results)
-            if should_push_events:
-                add_time_to_events(events)
-                send_events_to_xsiam(
-                    events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
@@ -216,9 +204,8 @@ def main() -> None:  # pragma: no cover
             )
             demisto.setLastRun(next_run)
 
-    # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{e}')
 
 
 ''' ENTRY POINT '''
