@@ -594,7 +594,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
 
 def xdr_iocs_sync_command(client: Client, first_time: bool = False):
     if first_time or not get_integration_context():
-        demisto.debug("first time, runniny sync")
+        demisto.debug("first time, running sync")
         # the sync is the large operation including the data and the get_integration_context is fill in the sync
         sync(client)
     else:
