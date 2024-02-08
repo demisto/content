@@ -9,7 +9,7 @@ import traceback
 
 def is_port_in_range(port_range: str, port: str) -> bool:
     """
-    Breaks a string port range (i.e. '20-25') into integers for comapirson
+    Breaks a string port range (i.e. '20-25') into integers for comparison
     Args:
         port_range (str): string based port range from the GCP firewall rule.
         port (str): port supplied in script args.
@@ -17,15 +17,13 @@ def is_port_in_range(port_range: str, port: str) -> bool:
     Returns:
         bool: whether there was a match between the supplied port in args and the supplied range.
     """
-    split_range = port_range.split('-')
-    if int(port) >= int(split_range[0]) and int(port) <= int(split_range[1]):
-        return True
-    return False
+    start, end = port_range.split('-')
+    return int(start) <= int(port) <= int(end)
 
 
 def is_there_traffic_match(port: str, protocol: str, rule: dict, network_tags: list) -> bool:
     """
-    Breaks a string port range (i.e. '20-25') into integers for comapirson
+    Breaks a string port range (i.e. '20-25') into integers for comparison
     Args:
         port (str): port supplied in script args.
         protocol (str): protocol supplied in script args.
@@ -37,28 +35,34 @@ def is_there_traffic_match(port: str, protocol: str, rule: dict, network_tags: l
         and possible target tag combination and the GCP firewall rule.
     """
     # Match rule needs to be direction ingress, source from internet (0.0.0.0/0), enabled and an allow rule.
-    if rule.get('direction') == 'INGRESS' and '0.0.0.0/0' in rule.get('sourceRanges', []) \
-       and rule.get('disabled') is False and 'allowed' in rule:
-        # Test if targetTags are relevant or not (if show up in keys or tag match)
-        target_tags_verdict = ('targetTags' not in rule.keys() or len(set(rule.get('targetTags', [])) & set(network_tags)) > 0)
-        for entry in rule.get('allowed', []):
-            # Match is all protocol AND either no target tags OR target tags match
-            if entry.get('IPProtocol') == 'all' and target_tags_verdict:
-                return True
-            # Complicated because just {'IPProtocol': 'udp'} means all udp ports
-            # therefore if protocol match but no ports, this is a match
-            elif entry.get('IPProtocol') == protocol.lower() and 'ports' not in entry:
-                return True
-            # Else need to go through all ports to see if range or not
-            elif entry.get('IPProtocol') == protocol.lower() and 'ports' in entry:
-                for port_entry in entry.get('ports', []):
-                    if "-" in port_entry:
-                        res = is_port_in_range(port_entry, port)
-                        if res and target_tags_verdict:
-                            return True
-                    else:
-                        if port == port_entry and target_tags_verdict:
-                            return True
+    if (
+        rule.get("direction") != "INGRESS"
+        or "0.0.0.0/0" not in rule.get("sourceRanges", [])
+        or rule.get("disabled") is True
+        or "allowed" not in rule
+    ):
+        return False
+
+    # Test if targetTags are relevant or not (if show up in keys or tag match)
+    target_tags_verdict = ('targetTags' not in rule or len(set(rule.get('targetTags', [])) & set(network_tags)) > 0)
+    for entry in rule['allowed']:
+        # Match is all protocol AND either no target tags OR target tags match
+        if entry.get('IPProtocol') == 'all' and target_tags_verdict:
+            return True
+        # Complicated because just {'IPProtocol': 'udp'} means all udp ports
+        # therefore if protocol match but no ports, this is a match
+        elif entry.get('IPProtocol') == protocol.lower() and 'ports' not in entry:
+            return True
+        # Else need to go through all ports to see if range or not
+        elif entry.get('IPProtocol') == protocol.lower() and 'ports' in entry:
+            for port_entry in entry['ports']:
+                if "-" in port_entry:
+                    res = is_port_in_range(port_entry, port)
+                    if res and target_tags_verdict:
+                        return True
+                else:
+                    if port == port_entry and target_tags_verdict:
+                        return True
     return False
 
 
@@ -72,7 +76,7 @@ def gcp_offending_firewall_rule(args: dict[str, Any]) -> CommandResults:
         args (dict): Command arguments from XSOAR.
 
     Returns:
-        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
 
@@ -94,13 +98,13 @@ def gcp_offending_firewall_rule(args: dict[str, Any]) -> CommandResults:
         if (not isError(instance) and instance.get("Contents", {}).get("id"))
     ]
     if not fw_rules_returned:
-        return CommandResults(readable_output="Could not find specified firewall info")
+        return CommandResults(readable_output="Could not find specified firewall info.")
     final_match_list = []
-    for rule in fw_rules_returned[0].get('Contents', {}).get('items'):
+    for rule in fw_rules_returned[0].get('Contents', {}).get('items', []):
         if is_there_traffic_match(port, protocol, rule, network_tags):
             final_match_list.append(rule['name'])
     if not final_match_list:
-        return CommandResults(readable_output="Could not find any potential offending firewall rules")
+        return CommandResults(readable_output="Could not find any potential offending firewall rules.")
 
     return CommandResults(
         outputs={'GCPOffendingFirewallRule': final_match_list},

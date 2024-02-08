@@ -1,9 +1,10 @@
+from pytest_mock import MockerFixture
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import CommandResults
 import pytest
 
 
-def test_is_port_in_range_func(mocker):
+def test_is_port_in_range_func():
     """Tests is_port_in_range helper function.
 
     Given:
@@ -16,10 +17,12 @@ def test_is_port_in_range_func(mocker):
     from GCPOffendingFirewallRule import is_port_in_range
 
     assert is_port_in_range("20-25", "22")
+    assert is_port_in_range('80-80', '80')
     assert not is_port_in_range("20-21", "22")
+    assert not is_port_in_range('80-80', '81')
 
 
-def test_is_there_traffic_match_func(mocker):
+def test_is_there_traffic_match_func():
     """Tests is_there_traffic_match helper function.
 
     Given:
@@ -141,7 +144,7 @@ def test_is_there_traffic_match_func(mocker):
     ],
 )
 def test_gcp_offending_firewall_rule_command(
-    scenario, command_return, command_result, mocker
+    mocker: MockerFixture, scenario: str, command_return: list, command_result: str
 ):
     """Tests gcp_offending_firewall_rule function.
 
