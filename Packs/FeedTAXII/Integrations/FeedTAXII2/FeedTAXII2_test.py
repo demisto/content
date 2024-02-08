@@ -330,11 +330,13 @@ class TestHelperFunctions:
         (
             [{'value': 'one', 'type': 'IP', "rawJSON": {'id': 'test_one', "modified": '2023-06-14T13:18:21.598591Z'}},
              {'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
-             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}}],
+             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}},
+             {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}],
             {},
             [{'value': 'one', 'type': 'IP', "rawJSON": {'id': 'test_one', "modified": '2023-06-14T13:18:21.598591Z'}},
              {'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
-             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}}]
+             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}},
+             {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}]
         ),
         (
             [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
@@ -349,13 +351,16 @@ class TestHelperFunctions:
         (
             [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-10-02T05:34:45.339145Z'}},
              {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}},
-             {'value': 'four', 'type': 'Domain', "rawJSON": {'id': 'test_four', "modified": '2023-10-02T05:34:28.339145Z'}}],
+             {'value': 'four', 'type': 'Domain', "rawJSON": {'id': 'test_four', "modified": '2023-10-02T05:34:28.339145Z'}},
+             {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}],
             {"latest_indicators":
              [{'test_two': '2023-07-06T08:59:57.339606Z'},
-              {'test_three': '2023-07-06T08:59:57.339606Z'}
+              {'test_three': '2023-07-06T08:59:57.339606Z'},
+              {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}
               ]},
             [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-10-02T05:34:45.339145Z'}},
-             {'value': 'four', 'type': 'Domain', "rawJSON": {'id': 'test_four', "modified": '2023-10-02T05:34:28.339145Z'}}]
+             {'value': 'four', 'type': 'Domain', "rawJSON": {'id': 'test_four', "modified": '2023-10-02T05:34:28.339145Z'}},
+             {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}]
         )
 
     ])
@@ -377,7 +382,11 @@ class TestHelperFunctions:
 
         from FeedTAXII2 import filter_indicators
 
+        next_latest_indicators = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("modified")}
+                                  if obj.get("value") != "$$DummyIndicator$$" else obj
+                                  for obj in indicators]
+
         result = filter_indicators(indicators, last_run)
 
         assert result == new_indicators
-        assert last_run.get("latest_indicators") == [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("id")} for obj in indicators]
+        assert last_run.get("latest_indicators") == next_latest_indicators

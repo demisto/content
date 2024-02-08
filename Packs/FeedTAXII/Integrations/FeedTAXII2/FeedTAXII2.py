@@ -56,21 +56,19 @@ def filter_indicators(indicators: list, last_run: dict) -> list:
     last_indicators = last_run.get("latest_indicators")  # indicators from prev fetch
     new_indicators = []
     if not last_indicators:    # first fetch
-        last_run["latest_indicators"] = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("id")} for obj in
-                                         indicators]
-        # last_run["latest_indicators"] = indicators
+        last_run["latest_indicators"] = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("modified")}
+                                         if obj.get("value") != "$$DummyIndicator$$" else obj
+                                         for obj in indicators]
         return indicators
     for indicator in indicators:
         indicator_id = indicator.get("rawJSON", {}).get('id', "")
 
         # check if the indicator is stored in latest_indicators
         saved_indicator = list(filter(lambda ind: indicator_id in ind.keys(), last_indicators))
-        # saved_indicator = list(filter(lambda ind: ind.get("rawJSON", {}).get('id', "") == indicator_id, last_indicators))
 
-        # if the indicator is stored in latest_indicators and it's not a dummy indicator -> check if it was modified
-        if saved_indicator and indicator.get("value") != "$$DummyIndicator$$":
+        # if the indicator is stored in latest_indicators -> check if it was modified
+        if saved_indicator:
             modified_date = saved_indicator[0].get(indicator_id)
-            # modified_date = saved_indicator[0].get("rawJSON", {}).get("modified", "")
 
             # the indicator is stored in latest_indicators, but got modified -> add to new_indicators
             if indicator.get("rawJSON", {}).get("modified", "") > modified_date:
@@ -83,8 +81,10 @@ def filter_indicators(indicators: list, last_run: dict) -> list:
     demisto.debug(f"found {len(new_indicators)} new indicators from {len(indicators)} fetched indicators")
 
     # updated lastrun with the indicators fetched in the current round
-    last_run["latest_indicators"] = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("id")} for obj in indicators]
-    # last_run["latest_indicators"] = indicators
+    last_run["latest_indicators"] = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("modified")}
+                                     if obj.get("value") != "$$DummyIndicator$$" else obj
+                                     for obj in indicators]
+
     return new_indicators
 
 
