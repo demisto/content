@@ -325,6 +325,7 @@ class PackManager:
     def get_current_version(self, pack_id: str) -> str | None:
         return self.get_pack_metadata(pack_id).get('currentVersion', '')
 
+
 def to_tuple(value: str | int | MarketplaceVersions | list) -> tuple:
     if value is None:
         return ()

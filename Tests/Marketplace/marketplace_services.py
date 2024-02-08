@@ -29,9 +29,26 @@ import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import XSOAR_ON_PREM_MP, XSOAR_SAAS_MP, PackFolders, Metadata, GCPConfig, \
     BucketUploadFlow, PACKS_FOLDER, PackTags, PackIgnored, Changelog, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
     XSIAM_MP, XPANSE_MP, TAGS_BY_MP, RN_HEADER_TO_ID_SET_KEYS
-from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName, PACK_METADATA_REQUIRE_RN_FIELDS
+from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName, MARKETPLACE_KEY_PACK_METADATA, PACK_METADATA_SUPPORT, PACK_METADATA_DEPENDENCIES, PACK_METADATA_NAME, PACK_METADATA_PRICE  # , PACK_METADATA_REQUIRE_RN_FIELDS todo
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
+
+# TODO
+PACK_METADATA_SERVER_MIN_VERSION: str = "serverMinVersion"
+PACK_METADATA_EXCLUDED_DEPENDENCIES: str = "excludedDependencies"
+
+PACK_METADATA_REQUIRE_RN_FIELDS: set = (
+    {  # TODO - to change to PACK_METADATA_NOT_REQUIRE_RN_FIELDS
+        PACK_METADATA_SUPPORT,
+        PACK_METADATA_DEPENDENCIES,
+        PACK_METADATA_NAME,
+        PACK_METADATA_PRICE,
+        MARKETPLACE_KEY_PACK_METADATA,
+        PACK_METADATA_SERVER_MIN_VERSION,
+        PACK_METADATA_EXCLUDED_DEPENDENCIES,
+    }
+)
+# TODO
 
 PULL_REQUEST_PATTERN = '\(#(\d+)\)'
 TAGS_SECTION_PATTERN = '(.|\s)+?'
@@ -408,7 +425,8 @@ class Pack:
             for field in pack_metadata:
                 if field not in PACK_METADATA_REQUIRE_RN_FIELDS:
                     update_metadata_fields[field] = pack_metadata.get(field)
-            logging.debug(f"Updating metadata with statistics and metadata changes because {self._pack_name=} {self.is_modified=}")
+            logging.debug(
+                f"Updating metadata with statistics and metadata changes because {self._pack_name=} {self.is_modified=}")
         else:
             logging.debug(f"Updating metadata only with statistics because {self._pack_name=} {self.is_modified=}")
 
