@@ -200,8 +200,8 @@ script:
       required: true
       description: The name of the table to write to.
     - name: records
-      required: true
       description: Records to write to the specified table.
+      required: true
       isArray: true
     - name: linqLinkBase
       description: Overrides the global Devo base domain for linq linking.
@@ -233,7 +233,7 @@ script:
       type: unknown
     description: Writes lookup table entry records to a specified Devo table.
     execution: true
-  dockerimage: demisto/devo:1.0.0.86778
+  dockerimage: demisto/devo:1.0.0.87277
   isfetch: true
   subtype: python3
 tests:

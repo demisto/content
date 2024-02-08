@@ -33,6 +33,7 @@ FETCH_INCIDENTS_WINDOW = demisto.params().get("fetch_incidents_window")
 TIMEOUT = demisto.params().get("timeout", "60")
 PORT = arg_to_number(demisto.params().get("port", "443") or "443")
 ITEMS_PER_PAGE = 50
+LIMIT = 100
 HEALTHCHECK_WRITER_RECORD = [{"hello": "world", "from": "demisto-integration"}]
 HEALTHCHECK_WRITER_TABLE = "test.keep.free"
 RANGE_PATTERN = re.compile("^[0-9]+ [a-zA-Z]+")
@@ -749,9 +750,6 @@ def get_alerts_command(offset, items):
 
 
 def multi_table_query_command(offset, items):
-    # Check if items is negative
-    if items < 0:
-        raise ValueError("The 'limit' parameter cannot be negative.")
     tables_to_query = check_type(demisto.args()["tables"], list)
     search_token = demisto.args()["searchToken"]
     timestamp_from = demisto.args()["from"]
@@ -827,7 +825,13 @@ def multi_table_query_command(offset, items):
 
 
 def convert_to_str(value):
-    if isinstance(value, list | dict):
+    if isinstance(value, list) and len(value) == 0:
+        print("Warning: Empty list encountered.")
+        return '[]'
+    elif isinstance(value, dict) and not value:
+        print("Warning: Empty dictionary encountered.")
+        return '{}'
+    elif isinstance(value, (list, dict)):
         return json.dumps(value)
     return str(value)
 
@@ -850,6 +854,10 @@ def write_to_table_command():
     if not isinstance(records, list):
         return_error("The 'records' parameter must be a list.")
 
+    # Check if all records are empty
+    if all(not record for record in records):
+        return_error("All records are empty.")
+
     creds = get_writer_creds()
     linq = f"from {tableName}"
 
@@ -869,6 +877,10 @@ def write_to_table_command():
         # Convert each record to a JSON string or string
         formatted_record = convert_to_str(r)
 
+        # If the record is empty, skip sending it
+        if not formatted_record.strip():
+            continue
+
         # Send each record to Devo with the specified tag
         sender.send(tag=final_tag, msg=formatted_record)
 
@@ -876,11 +888,15 @@ def write_to_table_command():
         total_events += 1
         total_bytes_sent += len(formatted_record.encode("utf-8"))
 
+    current_ts = int(time.time())
+    start_ts = (current_ts - 30) * 1000
+    end_ts = (current_ts + 30) * 1000
+
     querylink = {
         "DevoTableLink": build_link(
             linq,
-            int(1000 * time.time()) - 3600000,
-            int(1000 * time.time()),
+            start_ts,
+            end_ts,
             linq_base=linq_base,
         )
     }
@@ -1019,14 +1035,17 @@ def main():
             OFFSET = 0
             items_per_page = int(demisto.args().get("items_per_page", ITEMS_PER_PAGE))
             if items_per_page <= 0:
-                raise ValueError("items_per_page should be a positive non-zero value.")
+                raise ValueError("The items_per_page should be a positive non-zero value.")
+            limit = int(demisto.args().get("limit", LIMIT))
+            if limit <= 0:
+                raise ValueError("The 'limit' parameter should be a positive non-zero value.")
             total = 0
-            demisto.results(multi_table_query_command(OFFSET, items_per_page))
+            demisto.results(multi_table_query_command(OFFSET, limit))
             total = total + COUNT_MULTI_TABLE
-            while items_per_page * 2 == COUNT_MULTI_TABLE:
-                OFFSET = OFFSET + items_per_page
+            while limit * 2 == COUNT_MULTI_TABLE:
+                OFFSET = OFFSET + limit
                 total = total + COUNT_MULTI_TABLE
-                demisto.results(multi_table_query_command(OFFSET, items_per_page))
+                demisto.results(multi_table_query_command(OFFSET, limit))
         elif demisto.command() == "devo-write-to-table":
             demisto.results(write_to_table_command())
         elif demisto.command() == "devo-write-to-lookup-table":
