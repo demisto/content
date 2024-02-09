@@ -1,0 +1,131 @@
+category: Analytics & SIEM
+commonfields:
+  id: Stellar_Cyber_Incidents
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  section: Collect
+  type: 8
+- defaultvalue: example.stellarcyber.cloud
+  display: Stellar Cyber URL (e.g. example.stellarcyber.cloud)
+  name: stellar_dp
+  required: true
+  section: Connect
+  type: 0
+- defaultvalue: "443"
+  display: API Port
+  name: incident_api_port
+  required: true
+  section: Connect
+  type: 0
+- display: API User (Email Address)
+  displaypassword: API Key
+  name: credentials
+  required: true
+  section: Connect
+  type: 9
+- additionalinfo: Restrict incidents and alerts to a single tenant
+  display: Optional - Tenant ID
+  name: tenantid
+  required: false
+  section: Collect
+  type: 0
+- defaultvalue: Incidents
+  display: Incidents or Cases
+  name: incidents_or_cases
+  options:
+  - Incidents
+  - Cases
+  required: true
+  section: Collect
+  type: 15
+- defaultvalue: "5"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 0
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 1 day
+  display: First Fetch Time
+  name: first_fetch
+  required: false
+  type: 0
+description: Fetches incidents/cases and their associated security alerts from Stellar Cyber. Also provides commands to update and close incidents.
+display: Stellar Cyber Incidents
+name: Stellar_Cyber_Incidents
+script:
+  commands:
+  - arguments: []
+    description: Retrieve Incidents from Stellar Cyber
+    name: fetch-incidents
+  - arguments:
+    - description: The ID of the alert to retrieve
+      name: alert_id
+      required: true
+    description: Retrieve an alert from Stellar Cyber
+    name: stellar-get-event
+  - arguments:
+    - description: The ID of the incident to close
+      name: stellar_incident_id
+      required: true
+    - description: The reason for closing the incident
+      name: stellar_close_reason
+      required: true
+    description: Close an incident in Stellar Cyber
+    name: stellar-close-incident
+  - arguments:
+    - description: The ID of the incident to update
+      name: stellar_incident_id
+      required: true
+    - auto: PREDEFINED
+      description: The severity to set the incident to in Stellar Cyber
+      name: stellar_incident_severity
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+    - auto: PREDEFINED
+      description: The status to set the incident to
+      name: stellar_incident_status
+      predefined:
+      - New
+      - In Progress
+      - Resolved
+      - Cancelled
+    - description: The email or username in to assign to incident in Stellar Cyber
+      name: stellar_incident_assignee
+    - description: Tags to add to incident in Stellar Cyber
+      isArray: true
+      name: stellar_incident_tags_add
+    - description: Tags to remove from incident in Stellar Cyber
+      isArray: true
+      name: stellar_incident_tags_remove
+    description: Update the severity, status, assignee, or tags of an incident in Stellar Cyber
+    name: stellar-incident-update
+  dockerimage: demisto/python3:3.10.13.87159
+  isfetch: true
+  isremotesyncin: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
