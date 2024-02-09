@@ -249,7 +249,7 @@ def test_get_indicator_context_unknown_indicator(client, requests_mock, indicato
 
     args = {"value": indicator_value, "type": indicator_type}
     results = SEKOIAIntelligenceCenter.get_indicator_context_command(client=client, args=args)
-    assert results[0].outputs == {"name": "1.1.1.1", "x_ic_observable_types": ["ipv4-addr"]}
+    assert results[0].outputs is None
     assert results[0].outputs_prefix == "SEKOIAIntelligenceCenter.IP"
     assert results[0].outputs_key_field == "name"
     assert results[0].indicator.dbot_score.score == Common.DBotScore.NONE
@@ -422,11 +422,15 @@ def test_reputation_command_unknown_indicator(
     # The first (command_results[0]) is the one containing the reputation output
     assert command_results[0].indicator.dbot_score.score == Common.DBotScore.NONE
     assert command_results[0].indicator.dbot_score.indicator_type == expected_dbot_type
-    assert command_results[0].readable_output == "No results found."
+    assert command_results[0].readable_output == f"""### SEKOIAIntelligenceCenter:
+|{expected_stix_type}|Result|
+|---|---|
+| {input_indicator} | Not found |
+"""
 
     # The second (command_results[1]) is the one containing the command output
     assert command_results[1].outputs_prefix == "SEKOIAIntelligenceCenter.IndicatorContext"
-    assert command_results[1].readable_output == "No results found."
+    assert command_results[1].readable_output == f"### {input_indicator} of type {expected_stix_type} is an unknown indicator."
     assert command_results[1].outputs["items"] == []
     assert command_results[1].outputs == {"indicator": {"value": input_indicator, "type": expected_stix_type}, "items": []}
     assert command_results[1].raw_response == mock_response
