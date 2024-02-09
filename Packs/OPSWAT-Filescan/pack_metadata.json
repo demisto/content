@@ -1,7 +1,8 @@
 {
-    "name": "OPSWAT Filescan Sandbox",
-    "description": "Unique adaptive threat analysis technology",
+    "name": "OPSWAT Filescan Sandbox (Deprecated)",
+    "description": "Deprecated. Use MetaDefender Sandbox instead.",
     "support": "partner",
+    "hidden": true,
     "currentVersion": "1.0.2",
     "author": "OPSWAT",
     "url": "https://docs.opswat.com/filescan",
