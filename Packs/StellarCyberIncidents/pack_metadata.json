@@ -1,0 +1,21 @@
+{
+    "name": "Stellar Cyber Incidents",
+    "description": "Fetches incidents/cases and their associated security alerts from Stellar Cyber. Also provides commands to update and close incidents.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Will Fales",
+    "url": "",
+    "email": "",
+    "created": "2024-02-09T15:01:48Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "wfales"
+    ]
+}
