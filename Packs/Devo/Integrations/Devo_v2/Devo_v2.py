@@ -825,15 +825,16 @@ def multi_table_query_command(offset, items):
 
 
 def convert_to_str(value):
+    warnings = []
     if isinstance(value, list) and len(value) == 0:
-        print("Warning: Empty list encountered.")
-        return '[]'
+        warnings.append("Empty list encountered.")
+        return '[]', warnings
     elif isinstance(value, dict) and not value:
-        print("Warning: Empty dictionary encountered.")
-        return '{}'
-    elif isinstance(value, (list, dict)):
-        return json.dumps(value)
-    return str(value)
+        warnings.append("Empty dictionary encountered.")
+        return '{}', warnings
+    elif isinstance(value, list | dict):
+        return json.dumps(value), warnings
+    return str(value), warnings
 
 
 def write_to_table_command():
@@ -878,7 +879,7 @@ def write_to_table_command():
         formatted_record = convert_to_str(r)
 
         # If the record is empty, skip sending it
-        if not formatted_record.strip():
+        if not len(formatted_record):
             continue
 
         # Send each record to Devo with the specified tag
@@ -886,7 +887,7 @@ def write_to_table_command():
 
         # Update totals
         total_events += 1
-        total_bytes_sent += len(formatted_record.encode("utf-8"))
+        total_bytes_sent += len(formatted_record)
 
     current_ts = int(time.time())
     start_ts = (current_ts - 30) * 1000
@@ -957,14 +958,25 @@ def write_to_lookup_table_command():
     total_events = 0
     total_bytes = 0
 
+    # Validate headers
+    if not isinstance(headers, dict) or "headers" not in headers or not isinstance(headers["headers"], list):
+        raise ValueError("Invalid headers format. 'headers' must be a list.")
+
+    columns = headers["headers"]
+
+    # Validate key_index
+    key_index = int(headers.get("key_index", 0))  # Ensure it's casted to integer
+    if key_index < 0:
+        raise ValueError("key_index must be a non-negative integer value.")
+
+    # Validate action
+    action = headers.get("action", "")
+    if action not in {"INC", "FULL"}:
+        raise ValueError("action must be either 'INC' or 'FULL'.")
     try:
         con = Sender(config=engine_config, timeout=60)
         lookup = Lookup(name=lookup_table_name, con=con)
 
-        # Prepare headers for sending
-        columns = headers.get("headers", [])
-        key_index = headers.get("key_index", 0)
-        action = headers.get("action", "")
         lookup.send_headers(headers=columns, key_index=key_index, event="START", action=action)
 
         # Send data lines
