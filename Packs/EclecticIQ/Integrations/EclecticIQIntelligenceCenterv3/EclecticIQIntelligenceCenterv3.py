@@ -505,7 +505,6 @@ class EclecticIQ_api:
         result = (json.loads(r.text))["data"]
         return result
 
-
     def create_outgoing_feed(
         self,
         content_type,
@@ -1132,7 +1131,6 @@ class EclecticIQ_api:
                 relation["entity_title"] = related_entity_parsed_response["data"]["data"]["title"]
                 relation["entity_id"] = related_entity_parsed_response["data"]["id"]
                 relation["observables_count"] = len(related_entity_parsed_response["data"]["observables"])
-                
                 result.append(relation)
         return result
 
@@ -2424,12 +2422,10 @@ def fetch_indicators(eiq_api):
                 context[item["id"]]["last_ingested"] = block
                 demisto.setLastRun(context)
 
-            for b in batch(indicators_to_add, batch_size=2000):
-                demisto.createIndicators(b)
-
             demisto.info(
                 "Feed id={} was fully ingested/updated.".format(str(item["id"]))
             )
+            return indicators_to_add
     else:
         demisto.error("Fetching enabled but Feed IDs not configured.")
 
@@ -2593,7 +2589,11 @@ def main():
 
         LOG(f"Command being called is {demisto.command()}")
         command_func = COMMANDS.get(demisto.command())
-        if command_func is not None:
+
+        if command_func == "fetch-indicators":
+            for b in batch(fetch_indicators(eiq), batch_size=2000):
+                demisto.createIndicators(b)
+        elif command_func is not None:
             command_func(eiq)
 
     except Exception as e:
