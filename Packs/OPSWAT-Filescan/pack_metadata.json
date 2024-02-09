@@ -3,7 +3,7 @@
     "description": "Deprecated. Use MetaDefender Sandbox instead.",
     "support": "partner",
     "hidden": true,
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "OPSWAT",
     "url": "https://docs.opswat.com/filescan",
     "email": "threatintel@opswat.com",
