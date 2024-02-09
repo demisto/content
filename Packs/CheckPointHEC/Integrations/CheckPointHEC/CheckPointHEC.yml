@@ -6,7 +6,6 @@ configuration:
 - section: Connect
   display: Smart API URL (e.g. https://smart-api-dev-1-us.avanan-dev.net)
   name: url
-  defaultvalue: ""
   type: 0
   required: true
 - section: Collect
@@ -340,10 +339,10 @@ script:
       type: Boolean
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.13.87159
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)

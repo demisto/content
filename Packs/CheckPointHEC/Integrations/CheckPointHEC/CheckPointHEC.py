@@ -1,10 +1,23 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import hashlib
 import uuid
 from urllib.parse import urlencode
-
+import time
 import urllib3
+import requests
+from typing import List
+from uuid import uuid4
+from time import time
 
-from CommonServerPython import *
+"""
+ HOSTS:
+
+    - EU: cloudinfra-gw.portal.checkpoint.com
+    - US: cloudinfra-gw-us.portal.checkpoint.com
+    - AU: cloudinfra-gw.ap.portal.checkpoint.com
+"""
 
 urllib3.disable_warnings()
 
@@ -15,59 +28,70 @@ SAAS_NAMES = ['office365_emails']
 class Client(BaseClient):
     def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-
-        self.api_version = 'v1.0'
         self.client_id = client_id
         self.client_secret = client_secret
         self.token = None
+        self.token_expiry = None
+        self.base_url = base_url
+        self.api_version = 'v1.0'
 
-    def _generate_signature(self, request_id: str, timestamp: str, request_string: str = None) -> str:
-        if request_string:
-            signature_string = f'{request_id}{self.client_id}{timestamp}{request_string}{self.client_secret}'
-        else:
-            signature_string = f'{request_id}{self.client_id}{timestamp}{self.client_secret}'
-        signature_bytes = signature_string.encode('utf-8')
-        signature_base64_bytes = base64.b64encode(signature_bytes)
-        signature_hash = hashlib.sha256(signature_base64_bytes).hexdigest()
-        return signature_hash
+    def _should_refresh_token(self):
+        return not self.token or time() >= self.token_expiry
 
-    def _get_headers(self, request_string: str = None, auth: bool = False) -> dict[str, str]:
-        request_id = str(uuid.uuid4())
-        timestamp = datetime.utcnow().isoformat()
+    def _generate_authorization_token(self):
+        """
+        Perform authentication and returns access token
+        """
+        if self._should_refresh_token():
+            payload = {
+                "clientId": self.client_id,
+                "accessKey": self.client_secret
+            }
+            timestamp = time()
+            res = requests.post(f'https://{self.base_url}/auth/external', json=payload)
+            res.raise_for_status()
+            res_data = res.json()['data']
+            self.token = res_data['token']
+            self.token_expiry = timestamp + res_data['expiresIn']
+
+        return self.token
+
+    def _get_headers(self):
+        """
+        Generate request mandatory headers
+        """
+        token = self._generate_authorization_token()
+        request_id = str(uuid4())
         headers = {
-            'x-av-req-id': request_id,
-            'x-av-app-id': self.client_id,
-            'x-av-date': timestamp,
-            'x-av-sig': self._generate_signature(request_id, timestamp, request_string)
+            'Authorization': f'Bearer {token}',
+            'x-av-req-id': request_id
         }
-        if not auth:
-            headers['x-av-token'] = self._get_token()
         return headers
 
-    def _get_token(self) -> str:
-        if self.token:
-            return self.token
+    def _call_api(self, method: str, url_suffix: str, params: dict = None, json_data: dict = None):
+        """
+        Perform call to the Harmony Email & Collaboration Smart API
 
-        self.token = self._http_request(
-            'GET',
-            url_suffix=f'{self.api_version}/auth',
-            headers=self._get_headers(auth=True),
-            resp_type='text',
-        )
-        return self.token or ''
+        :param: method: HTTP method - post, get
+        :param: endpoint: API Endpoint (Choose from the list above according to your region)
+        :param: params: GET parameters
+        :param: body: JSON Body
+        :return: Response JSON
+        """
+        res = requests.request(method, f'https://{self.base_url}/app/hec-api/{self.api_version}/{url_suffix}',
+                               headers=self._get_headers(), params=params, json=json_data)
+        try:
+            res.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            print(f'request exception: status_code[{e.response.status_code}] response[{e.response.content}]')
+            raise e
+        return res.json()
 
-    def _call_api(self, method: str, url_suffix: str, params: dict = None, json_data: dict = None) -> dict[str, Any]:
-        path = '/'.join([self.api_version, url_suffix])
-        request_string = f'/{path}'
-        if params:
-            request_string += f'?{urlencode(params)}'
-        return self._http_request(
-            method,
-            url_suffix=path,
-            headers=self._get_headers(request_string),
-            params=params,
-            json_data=json_data
-        )
+    @staticmethod
+    def strip_none(payload: dict):
+        for key, value in dict(payload).items():
+            if value is None:
+                del payload[key]
 
     def test_api(self) -> dict[str, bool]:
         return self._call_api(
@@ -98,7 +122,7 @@ class Client(BaseClient):
     def get_email(self, entity: str) -> dict[str, Any]:
         return self._call_api(
             'GET',
-            url_suffix=f'soar/entity/{entity}'
+            url_suffix=f'search/entity/{entity}'
         )
 
     def search_emails(self, start_date: str, sender: str = None, subject: str = None):
