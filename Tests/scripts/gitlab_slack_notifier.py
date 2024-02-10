@@ -25,7 +25,7 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.common import get_pipelines_and_commits, is_pivot, get_commit_by_sha, get_pipeline_by_commit, \
-    create_shame_message, slack_link, was_message_already_sent, get_nearest_commit_with_pipeline
+    create_shame_message, slack_link, was_message_already_sent, get_nearest_newer_commit_with_pipeline, get_nearest_older_commit_with_pipeline
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -580,8 +580,8 @@ def main():
                 current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
 
                 # looking backwards until we find a commit with a pipeline to compare with
-                previous_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(
-                    list_of_pipelines, list_of_commits, current_commit_index, direction="older")
+                previous_pipeline, suspicious_commits = get_nearest_older_commit_with_pipeline(
+                    list_of_pipelines, list_of_commits, current_commit_index)
                 if previous_pipeline and suspicious_commits:
                     pipeline_changed_status = is_pivot(current_pipeline=current_pipeline, pipeline_to_compare=previous_pipeline)
 
@@ -592,8 +592,8 @@ def main():
 
                     if pipeline_changed_status is None and current_commit_index > 0:
                         # looking_forward until we find a commit with a pipeline to compare with
-                        next_pipeline, suspicious_commits = get_nearest_commit_with_pipeline(
-                            list_of_pipelines, list_of_commits, current_commit_index, direction="newer")
+                        next_pipeline, suspicious_commits = get_nearest_newer_commit_with_pipeline(
+                            list_of_pipelines, list_of_commits, current_commit_index)
 
                         if next_pipeline and suspicious_commits:
                             pipeline_changed_status = is_pivot(current_pipeline=next_pipeline,

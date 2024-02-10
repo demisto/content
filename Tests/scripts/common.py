@@ -451,33 +451,43 @@ def was_message_already_sent(commit_index: int, list_of_commits: list, list_of_p
     return False
 
 
-def get_nearest_commit_with_pipeline(list_of_pipelines: list[ProjectPipeline], list_of_commits: list[ProjectCommit],
-                                     current_commit_index: int,
-                                     direction: str) -> tuple[ProjectPipeline, list] | tuple[None, None]:
+def get_nearest_newer_commit_with_pipeline(list_of_pipelines: list[ProjectPipeline], list_of_commits: list[ProjectCommit],
+                                           current_commit_index: int) -> tuple[ProjectPipeline, list] | tuple[None, None]:
     """
-    Get the nearest commit with a pipeline in the direction specified.
+     Get the nearest newer commit that has a pipeline.
     Args:
         list_of_pipelines: A list of pipelines.
         list_of_commits: A list of commits.
         current_commit_index: The index of the current commit.
-        direction: The direction to look for the nearest commit with a pipeline.
     Returns:
-        A tuple of the nearest pipeline and a list of suspicious commits.
+        A tuple of the nearest pipeline and a list of suspicious commits that have no pipelines.
     """
     suspicious_commits = []
-    if direction == "newer":
-        # since the list of commits is in ascending order, to get the next commit we need to go backwards
-        for index in reversed(range(0, current_commit_index - 1)):
-            next_commit = list_of_commits[index]
-            suspicious_commits.append(list_of_commits[index + 1])
-            next_pipeline = get_pipeline_by_commit(next_commit, list_of_pipelines)
-            if next_pipeline:
-                return next_pipeline, suspicious_commits
-    elif direction == "older":
-        for index in range(current_commit_index, len(list_of_commits) - 1):
-            previous_commit = list_of_commits[index + 1]
-            suspicious_commits.append(list_of_commits[index])
-            previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
-            if previous_pipeline:
-                return previous_pipeline, suspicious_commits
+    for index in reversed(range(0, current_commit_index - 1)):
+        next_commit = list_of_commits[index]
+        suspicious_commits.append(list_of_commits[index + 1])
+        next_pipeline = get_pipeline_by_commit(next_commit, list_of_pipelines)
+        if next_pipeline:
+            return next_pipeline, suspicious_commits
+    return None, None
+
+
+def get_nearest_older_commit_with_pipeline(list_of_pipelines: list[ProjectPipeline], list_of_commits: list[ProjectCommit],
+                                           current_commit_index: int) -> tuple[ProjectPipeline, list] | tuple[None, None]:
+    """
+     Get the nearest oldest commit that has a pipeline.
+    Args:
+        list_of_pipelines: A list of pipelines.
+        list_of_commits: A list of commits.
+        current_commit_index: The index of the current commit.
+    Returns:
+        A tuple of the nearest pipeline and a list of suspicious commits that have no pipelines.
+    """
+    suspicious_commits = []
+    for index in range(current_commit_index, len(list_of_commits) - 1):
+        previous_commit = list_of_commits[index + 1]
+        suspicious_commits.append(list_of_commits[index])
+        previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
+        if previous_pipeline:
+            return previous_pipeline, suspicious_commits
     return None, None

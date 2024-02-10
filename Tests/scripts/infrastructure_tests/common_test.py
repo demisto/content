@@ -1,6 +1,6 @@
 from pathlib import Path
 from Tests.scripts.common import get_reviewer, get_person_in_charge, are_pipelines_in_order, is_pivot, get_slack_user_name, \
-    was_message_already_sent, get_nearest_commit_with_pipeline
+    was_message_already_sent, get_nearest_newer_commit_with_pipeline, get_nearest_older_commit_with_pipeline
 from requests_mock import MockerCore
 
 
@@ -367,7 +367,7 @@ def test_was_message_already_sent__was_not_sent_no_pipeline(mocker, commits=COMM
     assert was_message_already_sent(2, commits, pipelines) is False
 
 
-def test_get_nearest_commit_with_pipeline__newer(mocker, commits=COMMITS, pipelines=PIPLINES):
+def test_get_nearest_newer_commit__with_pipeline(mocker, commits=COMMITS, pipelines=PIPLINES):
     """
     Given:
         A list of commits and pipelines, but only the first commit has a pipeline
@@ -380,41 +380,55 @@ def test_get_nearest_commit_with_pipeline__newer(mocker, commits=COMMITS, pipeli
     """
     mocker.patch('Tests.scripts.common.get_pipeline_by_commit', side_effect=lambda commit,
                  pipelines: commit if commit == 'commit1' else None)
-    pipeline, suspicious_commits = get_nearest_commit_with_pipeline(pipelines, commits, 3, "newer")
+    pipeline, suspicious_commits =get_nearest_newer_commit_with_pipeline(pipelines, commits, 3)
     assert pipeline == 'commit1'
     assert suspicious_commits == ['commit3', 'commit2']
 
 
-def test_get_nearest_commit_with_pipeline__older(mocker, commits=COMMITS, pipelines=PIPLINES):
+def test_get_nearest_older_commit__with_pipeline(mocker, commits=COMMITS, pipelines=PIPLINES):
     """
     Given:
         A list of commits and pipelines, but only the last commit has a pipeline
     When:
-        The function get_nearest_commit_with_pipeline is called with the list of commits,
-        the index of current commit and "older" as the direction
+        The function get_nearest_older_commit_with_pipeline is called with the list of commits,
     Then:
         It should return the last commit since he is the closest with a pipeline,
         and a list of all commits between the last commit and the current one that are suspicious
     """
     mocker.patch('Tests.scripts.common.get_pipeline_by_commit', side_effect=lambda commit,
                  pipelines: commit if commit == 'commit5' else None)
-    pipeline, suspicious_commits = get_nearest_commit_with_pipeline(pipelines, commits, 1, "older")
+    pipeline, suspicious_commits = get_nearest_older_commit_with_pipeline(pipelines, commits, 1)
     assert pipeline == 'commit5'
     assert suspicious_commits == ['commit2', 'commit3', 'commit4']
 
 
-def test_get_nearest_commit_with_pipeline__no_pipelines(mocker, commits=COMMITS, pipelines=PIPLINES):
+def test_get_nearest_newer_commit_with_pipeline__no_pipelines(mocker, commits=COMMITS, pipelines=PIPLINES):
     """
     Given:
         A list of commits and pipelines, but no commit has a pipeline
     When:
-        The function get_nearest_commit_with_pipeline is called with the list of commits,
-        the index of current commit and "newer" as the direction
+        The function get_nearest_newer_commit_with_pipeline is called with the list of commits,
     Then:
         It should return None since no commit has a pipeline.
     """
     mocker.patch('Tests.scripts.common.get_pipeline_by_commit', return_value='pipeline_for_commit')
     mocker.patch('Tests.scripts.common.get_pipeline_by_commit', return_value=None)
-    pipeline, suspicious_commits = get_nearest_commit_with_pipeline(pipelines, commits, 2, "newer")
+    pipeline, suspicious_commits = get_nearest_newer_commit_with_pipeline(pipelines, commits, 2)
+    assert pipeline is None
+    assert suspicious_commits is None
+    
+
+def test_get_nearest_older_commit_with_pipeline__no_pipelines(mocker, commits=COMMITS, pipelines=PIPLINES):
+    """
+    Given:
+        A list of commits and pipelines, but no commit has a pipeline
+    When:
+        The function get_nearest_older_commit_with_pipeline is called with the list of commits,
+    Then:
+        It should return None since no commit has a pipeline.
+    """
+    mocker.patch('Tests.scripts.common.get_pipeline_by_commit', return_value='pipeline_for_commit')
+    mocker.patch('Tests.scripts.common.get_pipeline_by_commit', return_value=None)
+    pipeline, suspicious_commits = get_nearest_older_commit_with_pipeline(pipelines, commits, 2)
     assert pipeline is None
     assert suspicious_commits is None
