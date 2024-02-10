@@ -12,6 +12,8 @@ from junitparser import TestSuite, JUnitXml
 from Tests.scripts.utils import logging_wrapper as logging
 from gitlab.v4.objects.pipelines import ProjectPipeline
 from gitlab.v4.objects.commits import ProjectCommit
+from itertools import pairwise
+
 
 
 CONTENT_NIGHTLY = 'Content Nightly'
@@ -278,19 +280,19 @@ def get_person_in_charge(commit: ProjectCommit) -> tuple[str, str, str] | tuple[
         return None, None, None
 
 
-def are_pipelines_in_order(pipeline_A: ProjectPipeline, pipeline_B: ProjectPipeline) -> bool:
+def are_pipelines_in_order(pipeline_a: ProjectPipeline, pipeline_b: ProjectPipeline) -> bool:
     """
     Check if the pipelines are in the same order of their commits.
     Args:
-        pipeline_A: The first pipeline object.
-        pipeline_B: The second pipeline object.
+        pipeline_a: The first pipeline object.
+        pipeline_b: The second pipeline object.
     Returns:
         bool
     """
 
-    pipeline_A_timestamp = parser.parse(pipeline_A.created_at)
-    pipeline_B_timestamp = parser.parse(pipeline_B.created_at)
-    return pipeline_A_timestamp > pipeline_B_timestamp
+    pipeline_a_timestamp = parser.parse(pipeline_a.created_at)
+    pipeline_b_timestamp = parser.parse(pipeline_b.created_at)
+    return pipeline_a_timestamp > pipeline_b_timestamp
 
 
 def is_pivot(current_pipeline: ProjectPipeline, pipeline_to_compare: ProjectPipeline) -> bool | None:
@@ -305,7 +307,7 @@ def is_pivot(current_pipeline: ProjectPipeline, pipeline_to_compare: ProjectPipe
         None if the status didn't change or the pipelines are not in order of commits
     """
 
-    in_order = are_pipelines_in_order(pipeline_A=current_pipeline, pipeline_B=pipeline_to_compare)
+    in_order = are_pipelines_in_order(pipeline_a=current_pipeline, pipeline_b=pipeline_to_compare)
     if in_order:
         if pipeline_to_compare.status == 'success' and current_pipeline.status == 'failed':
             return True
@@ -440,10 +442,7 @@ def was_message_already_sent(commit_index: int, list_of_commits: list, list_of_p
     Returns:
 
     """
-    for index in reversed(range(1, commit_index)):
-        # the list of commits in in ascending order, newer commits are first
-        current_commit = list_of_commits[index - 1]
-        previous_commit = list_of_commits[index]
+    for previous_commit, current_commit in pairwise(reversed(list_of_commits[:commit_index])):
         current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
         previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
         # in rare cases some commits have no pipeline
