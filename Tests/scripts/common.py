@@ -15,7 +15,6 @@ from gitlab.v4.objects.commits import ProjectCommit
 from itertools import pairwise
 
 
-
 CONTENT_NIGHTLY = 'Content Nightly'
 CONTENT_PR = 'Content PR'
 CONTENT_MERGE = 'Content Merge'

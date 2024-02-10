@@ -380,7 +380,7 @@ def test_get_nearest_newer_commit__with_pipeline(mocker, commits=COMMITS, pipeli
     """
     mocker.patch('Tests.scripts.common.get_pipeline_by_commit', side_effect=lambda commit,
                  pipelines: commit if commit == 'commit1' else None)
-    pipeline, suspicious_commits =get_nearest_newer_commit_with_pipeline(pipelines, commits, 3)
+    pipeline, suspicious_commits = get_nearest_newer_commit_with_pipeline(pipelines, commits, 3)
     assert pipeline == 'commit1'
     assert suspicious_commits == ['commit3', 'commit2']
 
@@ -416,7 +416,7 @@ def test_get_nearest_newer_commit_with_pipeline__no_pipelines(mocker, commits=CO
     pipeline, suspicious_commits = get_nearest_newer_commit_with_pipeline(pipelines, commits, 2)
     assert pipeline is None
     assert suspicious_commits is None
-    
+
 
 def test_get_nearest_older_commit_with_pipeline__no_pipelines(mocker, commits=COMMITS, pipelines=PIPLINES):
     """
