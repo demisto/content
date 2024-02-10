@@ -2378,7 +2378,7 @@ def sectionsToMarkdown(root):
     return mdResult
 
 
-def fileResult(filename, data, file_type=None):
+def fileResult(filename, data, file_type=None, investigation_id=None, comment=None):
     """
        Creates a file from the given data
 
@@ -2391,6 +2391,13 @@ def fileResult(filename, data, file_type=None):
        :type file_type: ``str``
        :param file_type: one of the entryTypes file or entryInfoFile (optional)
 
+       :type investigation_id: ``str``
+       :param investigation_id: the investigation ID, should be provided when running in long-running container as the
+            investigation-id is not part of the context.
+
+       :type comment: ``str``
+       :param comment: any additional comment to add when sending the file to the war-room.
+
        :return: A Demisto war room entry
        :rtype: ``dict``
     """
@@ -2401,7 +2408,17 @@ def fileResult(filename, data, file_type=None):
     if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore # noqa: F821
         data = data.encode('utf-8')
     # pylint: enable=undefined-variable
-    with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
+    if not investigation_id:
+        try:
+            investigation_id = demisto.investigation()["id"]
+        except Exception:
+            if is_integration_command_execution() and demisto.command() == "long-running-execution":
+                raise ValueError(
+                    "Cannot retrieve investigation ID when executing in long-running container, provide the investigation ID"
+                )
+            raise
+
+    with open(investigation_id + '_' + temp, 'wb') as f:
         f.write(data)
 
     # when there is ../ in the filename, xsoar thinks that path of the file is in the previous folder(s) and because of that
@@ -2416,7 +2433,14 @@ def fileResult(filename, data, file_type=None):
                 )
             )
 
-    return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
+    return {
+        'Contents': '',
+        'ContentsFormat': formats['text'],
+        'Type': file_type,
+        'File': filename,
+        'FileID': temp,
+        'comment': comment
+    }
 
 
 def hash_djb2(s, seed=5381):

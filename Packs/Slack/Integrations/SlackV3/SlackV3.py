@@ -1,3 +1,4 @@
+import json
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -1398,14 +1399,10 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse, f
                 data = await get_file(file.get("url_private"))
                 file_name = file.get("name")
                 demisto.info(f'got file {file_name} data')
-                file_entry = fileResult(file_name, data)
-                if text:
-                    file_entry["HumanReadable"] = text
-                demisto.info(f'{file_entry=}')
-                demisto.info(f'{user=}')
-                await handle_file(investigation_id, json.dumps(file_entry), user)
-            else:
-                await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
+                file_entry = fileResult(file_name, data, investigation_id=investigation_id, comment=text)
+                await handle_file(investigation_id, file_entry, user)
+        else:
+            await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
 
 
 def fetch_context(force_refresh: bool = False) -> dict:
@@ -1624,15 +1621,14 @@ async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, 
                          )
 
 
-async def handle_file(investigation_id: str, file_content: str, user: dict):
+async def handle_file(investigation_id: str, file_content: dict, user: dict):
     demisto.addEntry(
         id=investigation_id,
-        entry=file_content,
+        entry=json.dumps(file_content),
         username=user.get('name', ''),
         email=user.get('profile', {}).get('email', ''),
-        footer=MESSAGE_FOOTER
+        footer=MESSAGE_FOOTER,
     )
-
 
 
 async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> str:
