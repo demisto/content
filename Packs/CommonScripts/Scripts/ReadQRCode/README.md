@@ -1,5 +1,5 @@
 
-This script uses the open-source library OpenCV to extract text from QR codes.
+Extract text from QR codes.
 The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
 
 ## Script Data
