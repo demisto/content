@@ -18,9 +18,9 @@ description: This rule detects more than 100 edited files during an hour by the 
 drilldown_query_timeframe: QUERY
 execution_mode: SCHEDULED
 global_rule_id: 6de99f56-dfbf-40e0-bffd-bffe0a543cf5
-investigation_query_link: 'datamodel
+investigation_query_link: 'datamodel dataset = dropbox_dropbox_raw
 
-  | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type = "file_edit" and xdm.observer.product = "dropbox" and xdm.observer.vendor = "dropbox"
+  | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type = "file_edit"
 
   | alter user = coalesce(xdm.source.user.username, xdm.target.user.username)
 
@@ -39,9 +39,9 @@ suppression_enabled: true
 suppression_fields:
 user_defined_category:
 user_defined_severity:
-xql_query: 'datamodel
+xql_query: 'datamodel dataset = dropbox_dropbox_raw
 
-  | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type = "file_edit" and xdm.observer.product = "dropbox" and xdm.observer.vendor = "dropbox"
+  | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type = "file_edit"
 
   | alter user = coalesce(xdm.source.user.username, xdm.target.user.username)
 
