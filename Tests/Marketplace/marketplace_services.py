@@ -973,7 +973,7 @@ class Pack:
                 - The full path to the extracted pack directory if the download and extraction were successful.
                 - False if the pack was not found in the bucket.
         """
-        logging.debug('Start of download_and_extract_pack')
+        logging.debug(f'Start of download_and_extract_pack, {self._pack_name} pack of version {pack_version}')
         pack_path = os.path.join(storage_base_path, self._pack_name, pack_version, f"{self._pack_name}.zip")
         pack = storage_bucket.blob(pack_path)
         if pack.exists():

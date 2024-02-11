@@ -133,21 +133,20 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
         sys.exit(1)
 
 
-def update_pack_folder_metadata(pack: Pack, extract_destination_path: str):
+def update_pack_folder_metadata(pack: Pack):
     """
-    Updates the metadata of a pack and saves it to a JSON file in the extract_destination_path.
+    Updates the metadata of a pack and saves it to a JSON file in the pack path.
 
     Args:
         pack (Pack): The Pack object representing the pack whose metadata is to be updated.
-        extract_destination_path (str): The full path to the directory where the metadata JSON file will be saved.
 
     Returns:
         bool: Indicates whether the operation of updating metadata succeeded (True) or failed (False).
     """
     task_status = False
     try:
-        logging.debug(f"Starting update metadata for pack '{pack.name}' in {extract_destination_path=}.")
-        json_write(os.path.join(extract_destination_path, "metadata.json"), pack.update_metadata, update=True)
+        logging.debug(f"Starting update metadata for pack '{pack.name}'")
+        json_write(os.path.join(pack.path, "metadata.json"), pack.update_metadata, update=True)
         task_status = True
     except Exception as e:
         logging.exception(f"Failed in updating {pack.name} pack metadata.\n{str(e)}")
@@ -1314,25 +1313,17 @@ def main():
                 pack.cleanup()
                 continue
 
-        elif pack.is_metadata_updated:  # TODO if we didnt manage to update index zip or pack zip what do we want to do
-            logging.info(f"{pack.current_version=}")
-            pack_zip_folder = pack.download_and_extract_pack(
-                pack.current_version, storage_bucket, extract_destination_path, storage_base_path)
-            if not pack_zip_folder:
-                pack.status = PackStatus.FAILED_DOWNLOADING_PACK.name  # type: ignore[misc]
+        elif pack.is_metadata_updated:  # TODO What should we do if we failed to update the index zip or pack zip
+            if not pack.download_and_extract_pack(pack.current_version, storage_bucket, extract_destination_path, storage_base_path):
+                pack.status = PackStatus.FAILED_DOWNLOADING_PACK_FOLDER.name  # type: ignore[misc]
                 pack.cleanup()
                 continue
 
-            if not update_pack_folder_metadata(pack=pack, extract_destination_path=pack_zip_folder):
+            if not update_pack_folder_metadata(pack=pack):
                 pack.status = PackStatus.FAILED_UPDATING_PACK_FOLDER_METADATA.name  # type: ignore[misc]
                 pack.cleanup()
                 continue
 
-            # TODO use pack.zip_path of the downloaded
-            pack_path = pack.path
-            logging.info(f"1 {pack.path=}")
-            pack._pack_path = pack_zip_folder
-            logging.info(f"2 {pack.path=}")
             if not pack.sign_and_zip_pack(signature_key, uploaded_packs_dir):
                 continue
 
@@ -1340,9 +1331,6 @@ def main():
                 pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
                 pack.cleanup()
                 continue
-
-            pack._pack_path = pack_path
-            logging.info(f"3 {pack.path=}")
 
         else:
             # Signs and zips non-modified packs for the upload_with_dependencies phase
