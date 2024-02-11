@@ -1,6 +1,6 @@
 import datetime
 
-from exchangelib.indexed_properties import PhoneNumber
+from exchangelib.indexed_properties import PhoneNumber, PhysicalAddress
 
 import EWSv2
 import logging
@@ -8,7 +8,7 @@ import logging
 import dateparser
 import pytest
 from exchangelib import Message, Mailbox, Contact, HTMLBody, Body
-from EWSv2 import fetch_last_emails, get_message_for_body_type
+from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_physical_address
 from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
 from exchangelib import EWSDateTime, EWSTimeZone
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
@@ -751,7 +751,7 @@ def test_switch_hr_headers():
     assert (EWSv2.switch_hr_headers(
         {'willswitch': '1234', 'wontswitch': '111', 'alsoswitch': 5555},
         {'willswitch': 'newkey', 'alsoswitch': 'annothernewkey', 'doesnt_exiest': 'doesnt break'})
-        == {'annothernewkey': 5555, 'newkey': '1234', 'wontswitch': '111'})
+            == {'annothernewkey': 5555, 'newkey': '1234', 'wontswitch': '111'})
 
 
 @pytest.mark.parametrize('input, output', [
@@ -812,3 +812,17 @@ def test_get_message_for_body_type_text_body_type_with_no_html_body():
     result = get_message_for_body_type(body, 'text', None)
     assert isinstance(result, Body)
     assert result == Body(body)
+
+
+def test_parse_physical_address():
+    assert parse_physical_address(PhysicalAddress(city='New York',
+                                                  country='USA',
+                                                  label='SomeLabel',
+                                                  state='NY',
+                                                  street='Broadway Ave.',
+                                                  zipcode=10001)) == {'city': 'New York',
+                                                                      'country': 'USA',
+                                                                      'label': 'SomeLabel',
+                                                                      'state': 'NY',
+                                                                      'street': 'Broadway Ave.',
+                                                                      'zipcode': 10001}
