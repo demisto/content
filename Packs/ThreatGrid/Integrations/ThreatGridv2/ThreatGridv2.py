@@ -1006,6 +1006,10 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
             continue_to_poll=False,
         )
 
+    if sample_state == "fail":
+        # In case the upload not succeeded raise the error
+        raise DemistoException(f"Uploading {args['sample_id']} to ThreatGrid failed")
+
     return PollResult(
         response=command_results,
         continue_to_poll=True,
