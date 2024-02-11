@@ -334,7 +334,7 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
     return msg if msg else 'ok', {}, []
 
 
-def pre_process_result_query(client: Client, result: list[dict], headers: list[str]) -> list[dict]:
+def result_to_list_of_dicts(client: Client, result: list[dict], headers: list[str]) -> list[dict]:
     """
     This function pre-processes the query's result to a list of dictionaries.
     """
@@ -368,7 +368,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit)
 
-        table = pre_process_result_query(client=client, result=result, headers=headers)
+        table = result_to_list_of_dicts(client, result, headers)
         table = table[skip:skip + limit]
 
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers,
