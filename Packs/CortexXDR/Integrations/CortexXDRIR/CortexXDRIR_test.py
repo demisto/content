@@ -435,7 +435,7 @@ def test_get_mapping_fields_command():
         - the result fits the expected mapping.
     """
     from CortexXDRIR import get_mapping_fields_command
-    expected_mapping = {"Cortex XDR Incident": {
+    expected_mapping = {"Cortex XDR Incident Schema": {
         "status": "Current status of the incident: \"new\",\"under_"
                   "investigation\",\"resolved_known_issue\","
                   "\"resolved_duplicate\",\"resolved_false_positive\","
@@ -444,7 +444,8 @@ def test_get_mapping_fields_command():
         "assigned_user_pretty_name": "Full name of the user assigned to the incident.",
         "resolve_comment": "Comments entered by the user when the incident was resolved.",
         "manual_severity": "Incident severity assigned by the user. This does not "
-                           "affect the calculated severity low medium high"
+                           "affect the calculated severity low medium high",
+        "close_reason": "The close reason of the XSOAR incident"
     }}
     res = get_mapping_fields_command()
     assert expected_mapping == res.extract_mapping()
