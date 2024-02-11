@@ -18,9 +18,22 @@ It provides both content inspection and contextual analysis of data sent via mes
 This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
-DLP supports two methods for generating Syslog events: "Syslog Response Rule" notifications and "Syslog Server Alerts".
+**Note:**
+<br>
+If you configure both **Syslog Server Alerts** and **Syslog Response Rule**, make sure to configure the: 
+- port
+- protocol 
+- host 
 
-### Configure a Log to a Syslog Server action
+of the syslog server the same.
+
+If you want to configure them differently, make sure to configure 2 different syslog data source on XSIAM as well, by repeating the **broker vm configuration** steps for each one.
+
+<br>
+
+### Syslog Response Rule
+
+#### Configure a Log to a Syslog Server action
 In order to send logs via syslog, you will need to create a response rule with a "Log to a Syslog Server" action.
 1. In the Enforce Console, navigate to **Manage** &rarr; **Policies** &rarr; **Response Rules**.
 2. Click on **Add Response Rule**.
@@ -42,7 +55,7 @@ In order to send logs via syslog, you will need to create a response rule with a
 10. Select the **Informational** Level from the **Level** dropdown list.
 11. Click **Save**.
     
-### Assign a response rule to a policy
+#### Assign a response rule to a policy
 After creating the response rule with the "Log to a Syslog Server" action, you will have to assign it to a policy in order for it to apply.
 1. In the Enforce Console, navigate to **Manage** &rarr; **Policies** &rarr; **Policy List**.
 2. Select the policy you want to collect logs from using syslog.
@@ -50,6 +63,22 @@ After creating the response rule with the "Log to a Syslog Server" action, you w
 4. Click **Add Response Rule** to add the response rule to the policy.
 5. Click **Save**
 6. Repeat steps 2-5 for any additional policies you want to collect logs from and send to Cortex XSIAM via syslog.
+
+###  Syslog Server Alerts
+To enable sending server events to syslog follow the below steps:
+1. Go to the \Program Files\Symantec\DataLossPrevention\EnforceServer\15.8.00000\Protect\config directory on Windows or the /opt/Symantec/DataLossPrevention/EnforceServer/15.8.00000/Protect/config directory on Linux.
+2. Open the Manager.properties file.
+3. Uncomment the #systemevent.syslog.protocol = line by removing the # symbol from the beginning of the line, and enter [ udp | tcp | tls ] to secure communications sent from the Enforce Server to the syslog server.
+4. Uncomment the #systemevent.syslog.host= line by removing the # symbol from the beginning of the line, and enter the hostname or IP address of the syslog server.
+5. Uncomment the #systemevent.syslog.port= line by removing the # symbol from the beginning of the line. Enter the port number that should accept connections from the Enforce Server. The default is 514.
+6. Uncomment the #systemevent.syslog.format= [{0}] {1} - {2} line by removing the # symbol from the beginning of the line.
+   Then define the system event message format to be sent to the syslog server:
+   If the line is uncommented without any changes, the notification messages are sent in the format: [server name] summary - details. 
+   The format variables are:
+   {0} - the name of the server on which the event occurred
+   {1} - the event summary
+   {2} - the event detail
+   
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
