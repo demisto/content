@@ -105,6 +105,7 @@ wait-for-content-private-nightly:
     expire_in: 48 hrs
     paths:
       - ${CI_PROJECT_DIR}/artifacts/*
+  timeout: 6 hours
   variables:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
     GITHUB_TOKEN: $GITHUB_TOKEN
@@ -125,6 +126,7 @@ wait-for-content-internal-dist-nightly:
     expire_in: 48 hrs
     paths:
       - ${CI_PROJECT_DIR}/artifacts/*
+  timeout: 6 hours
   variables:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
   script:
@@ -145,6 +147,7 @@ wait-for-demisto-sdk-nightly:
     expire_in: 48 hrs
     paths:
       - ${CI_PROJECT_DIR}/artifacts/*
+  timeout: 6 hours
   variables:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
   script:
@@ -163,6 +166,7 @@ slack-notify:
     - wait-for-demisto-sdk-nightly
     - wait-for-content-private-nightly
     - wait-for-content-internal-dist-nightly
+  timeout: 6 hours
   variables:
     REVIEWER: $REVIEWER
     SLACK_CHANNEL: $SLACK_CHANNEL
@@ -200,6 +204,7 @@ deploy-sdk-to-pypi:
   needs:
     - create-release-pull-request
   when: manual
+  timeout: 6 hours
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
     GITHUB_TOKEN: $GITHUB_TOKEN
@@ -221,6 +226,7 @@ wait-for-prs:
     - .default-job-settings
   needs:
     - deploy-sdk-to-pypi
+  timeout: 6 hours
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
     GITHUB_TOKEN: $GITHUB_TOKEN
