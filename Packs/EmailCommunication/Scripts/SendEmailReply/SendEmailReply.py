@@ -981,7 +981,7 @@ def multi_thread_reply(new_email_body, body_type, incident_id, email_selected_th
 
 def main():
     try:
-        demisto.debug(f"Starting SendEmailReply script")
+        demisto.debug("Starting SendEmailReply script")
         args = demisto.args()
         incident = demisto.incident()
         incident_id = incident.get('id')
