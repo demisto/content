@@ -1937,7 +1937,8 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    # Validate that no more args are sent when the issue_json arg is used 
+
+    # Validate that no more args are sent when the issue_json arg is used
     if "issue_json" in args and len(args) > 1:
         raise DemistoException(
             "When using the argument `issue_json`, additional arguments cannot be used.ֿֿֿ\n see issue_json description"
