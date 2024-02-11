@@ -54,7 +54,7 @@ configuration:
   name: queue_name
   type: 0
   required: false
-description: Integration with ActiveMQ queue
+description: Integration with ActiveMQ queue.
 display: ActiveMQ
 name: ActiveMQ
 script:
@@ -66,7 +66,7 @@ script:
     - description: The content of the message to send.
       name: body
       required: true
-    - description: 'The customer headers for the message, in the format: {XCorrelationId: uid, nosotros generamos XReplyTo demisto:es:connectors, XType com.elevenpaths.sandas.ra.connector.CreateTicketConnectorRequest, XVersion : "3.0", persistent : True}'
+    - description: 'The customer headers for the message, in the format: {XCorrelationId: uid, nosotros generamos XReplyTo demisto:es:connectors, XType com.elevenpaths.sandas.ra.connector.CreateTicketConnectorRequest, XVersion : "3.0", persistent : True}.'
       name: headers
     description: Sends a message to the specified destination.
     name: activemq-send
