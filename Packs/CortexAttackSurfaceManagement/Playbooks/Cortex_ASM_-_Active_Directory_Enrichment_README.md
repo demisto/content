@@ -1,4 +1,4 @@
-Playbook to enriches Service owner in Azure directory.
+Playbook to enriches Service ownership info in Azure and On-Prem Active Directory.
 
 ## Dependencies
 
@@ -11,14 +11,17 @@ This playbook does not use any sub-playbooks.
 ### Integrations
 
 * Microsoft Graph User
+* Active Directory Query v2
 
 ### Scripts
 
+* Set
 * GridFieldSetup
 
 ### Commands
 
 * msgraph-user-get
+* ad-get-user
 
 ## Playbook Inputs
 
