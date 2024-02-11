@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: FortiGate - fix
+  id: FortiGate
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -27,8 +27,8 @@ configuration:
   required: false
   defaultvalue: 'false'
 description: 'FortiGate provides flawless convergence that can scale to any location: remote office, branch, campus, data center, and cloud. FortiGate always delivered on the concept of hybrid mesh firewalls with FortiManager for unified management and consistent security across complex hybrid environments. The Fortinet FortiOS operating system provides deep visibility and security across a variety of form factors.'
-display: FortiGate - fix
-name: FortiGate - fix
+display: FortiGate
+name: FortiGate
 script:
   commands:
   - arguments:
@@ -2249,7 +2249,7 @@ script:
       description: Comma-separated list of IPs to unban. Both IPv4 and IPv6 addresses are supported. IPs can be retrieved with the command `fortigate-list-banned-ips`.
       required: true
       isArray: true
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.86272
   runonce: false
   script: '-'
   subtype: python3
