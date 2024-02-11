@@ -646,7 +646,7 @@ This operation verifies aliases and matches display names to the correct mailbox
 | EWS.ResolvedNames.FullContactInfo.culture | String | Represents the culture for a given item in a mailbox. | 
 | EWS.ResolvedNames.FullContactInfo.displayName | String | The display name of a contact. | 
 | EWS.ResolvedNames.FullContactInfo.ItemId | String | Contains the unique identifier and change key of an item in the Exchange store. | 
-| EWS.ResolvedNames.FullContactInfo.emailAddresses | String | Represents a collection of e-mail addresses for a contact. | 
+| EWS.ResolvedNames.FullContactInfo.emailAddresses | String | Represents a collection of email addresses for a contact. | 
 | EWS.ResolvedNames.FullContactInfo.givenName | String | Contains a contact's given name. | 
 | EWS.ResolvedNames.FullContactInfo.importance | String | Describes the importance of an item. | 
 | EWS.ResolvedNames.FullContactInfo.initials | String | Represents the initials of a contact. | 
