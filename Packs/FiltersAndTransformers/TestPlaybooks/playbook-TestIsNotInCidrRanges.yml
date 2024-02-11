@@ -1,6 +1,5 @@
 id: TestIsNotInCidrRanges
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: TestIsNotInCidrRanges
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -84,6 +84,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -108,8 +109,7 @@ tasks:
       id: a5ec4291-79c3-4671-8265-6e06ceb23c9e
       version: -1
       name: Run IsINotnCidrRanges
-      description: Checks whether an IPv4 address is not contained in one or more
-        comma-delimited CIDR ranges.
+      description: Checks whether an IPv4 address is not contained in one or more comma-delimited CIDR ranges.
       scriptName: IsNotInCidrRanges
       type: regular
       iscommand: false
@@ -269,3 +269,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.10.0
+description: ''
