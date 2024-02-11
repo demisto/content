@@ -1,4 +1,3 @@
-from demisto_sdk.commands.common.git_util import GitUtil
 import json
 import os
 import sys
@@ -11,6 +10,7 @@ from collections.abc import Iterable, Sequence
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
 from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
+from demisto_sdk.commands.common.git_util import GitUtil
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
