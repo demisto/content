@@ -773,7 +773,7 @@ class TestJiraEditIssueCommand:
         args = {"issue_json": '{"fields": {"customfield_10037":"field_value"}}'} | another_args
         assert edit_issue_command(client=client, args=args)
 
-     
+
 class TestJiraCreateIssueCommand:
     def test_create_issue_command(self, mocker):
         """
