@@ -849,13 +849,12 @@ def handle_proxy_for_long_running(proxy_param_name='proxy', checkbox_default_val
         :rtype: ``Tuple[dict, boolean]``
     """
     proxies = {}
-    CRTX_HTTP_PROXY = os.environ.get('CRTX_HTTP_PROXY', None)
-    use_ssl = not demisto.params().get('insecure', False)
-    if CRTX_HTTP_PROXY:
-        demisto.error('Setting proxies according to CRTX_HTTP_PROXY: {}'.format(CRTX_HTTP_PROXY))
+    crtx_http_proxy = os.environ.get('CRTX_HTTP_PROXY', None)
+    if crtx_http_proxy:
+        demisto.error('Setting proxies according to CRTX_HTTP_PROXY: {}'.format(crtx_http_proxy))
         proxies = {
-            'http': CRTX_HTTP_PROXY,
-            'https': CRTX_HTTP_PROXY
+            'http': crtx_http_proxy,
+            'https': crtx_http_proxy
         }
         use_ssl = True
         return proxies, use_ssl

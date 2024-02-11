@@ -25,15 +25,13 @@ PROXIES, USE_SSL = handle_proxy_for_long_running()
 
 
 class AWS_SNS_CLIENT(BaseClient):
-    def __init__(self, base_url):
-        is_proxy = False
+    def __init__(self, base_url=None):
         if PROXIES:
             self.proxies = PROXIES
-            is_proxy = True
         elif PARAMS.get('proxy'):
             self.proxies = handle_proxy()
         headers = {'Accept': 'application/json'}
-        super().__init__(base_url=base_url, proxy=is_proxy, verify=USE_SSL, headers=headers)
+        super().__init__(base_url=base_url, proxy=bool(PROXIES), verify=USE_SSL, headers=headers)
 
     def get(self, full_url, resp_type='json'):
         return self._http_request(method='GET', full_url=full_url, proxies=PROXIES, resp_type=resp_type)
