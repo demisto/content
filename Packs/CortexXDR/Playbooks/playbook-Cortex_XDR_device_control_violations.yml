@@ -163,7 +163,7 @@ tasks:
       {
         "position": {
           "x": 447.5,
-          "y": 1065
+          "y": 1265
         }
       }
     note: false
@@ -243,7 +243,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "12"
     scriptarguments:
       attributes: {}
       custom-field-data: {}
@@ -315,7 +315,7 @@ tasks:
       {
         "position": {
           "x": 447.5,
-          "y": 1210
+          "y": 1430
         }
       }
     note: false
@@ -342,8 +342,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 580,
-          "y": 1460
+          "x": 700,
+          "y": 1600
         }
       }
     note: false
@@ -368,7 +368,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1660
+          "y": 1770
         }
       }
     note: false
@@ -496,6 +496,51 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 1a497783-b55d-4aec-8764-2722b3d3216d
+    type: condition
+    task:
+      id: 1a497783-b55d-4aec-8764-2722b3d3216d
+      version: -1
+      name: Is the user's email retrieved?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Email
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 447.5,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -506,8 +551,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1675,
-        "width": 910,
+        "height": 1785,
+        "width": 1030,
         "x": 50,
         "y": 50
       }
