@@ -426,9 +426,9 @@ class Pack:
                 if field not in PACK_METADATA_REQUIRE_RN_FIELDS:
                     update_metadata_fields[field] = pack_metadata.get(field)
             logging.debug(
-                f"Updating metadata with statistics and metadata changes because {self._pack_name=} {self.is_modified=}")
+                f"Updating metadata with statistics and metadata changes because {self._pack_name=} {self.is_modified=} {self.is_metadata_updated=}")
         else:
-            logging.debug(f"Updating metadata only with statistics because {self._pack_name=} {self.is_modified=}")
+            logging.debug(f"Updating metadata only with statistics because {self._pack_name=} {self.is_modified=} {self.is_metadata_updated=}")
 
         return update_statics_metadata | update_metadata_fields
 
@@ -915,7 +915,7 @@ class Pack:
         Returns:
             bool: whether the operation succeeded.
         """
-
+        logging.debug(f"{zip_pack_path=}")
         task_status = True
         try:
             if with_dependencies_path:
@@ -946,11 +946,23 @@ class Pack:
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status
 
-    def download_and_extract_pack(self, pack_version,  storage_bucket: Any, extract_destination_path: str, storage_base_path: str):
+    def download_and_extract_pack(self, pack_version,  storage_bucket: Any, extract_destination_path: str, storage_base_path: str) \
+        -> str | bool:
         """
-        Downloads and extracts the pack with version zip from the bucket
-        TODO - Edge cases of hidden, private,.. packs
+        Downloads and extracts a pack with a specific version from a storage bucket.
+
+        Args:
+            pack_version (str): The version of the pack to download and extract.
+            storage_bucket (Any): The storage bucket object from which to download the pack.
+            extract_destination_path (str): The full path to the directory where the pack will be extracted.
+            storage_base_path (str): The base path in the storage bucket where packs are stored.
+
+        Returns:
+            str or bool:
+                - The full path to the extracted pack directory if the download and extraction were successful.
+                - False if the pack was not found in the bucket.
         """
+        logging.debug('Start of download_and_extract_pack')
         pack_path = os.path.join(storage_base_path, self._pack_name, pack_version, f"{self._pack_name}.zip")
         pack = storage_bucket.blob(pack_path)
         if pack.exists():

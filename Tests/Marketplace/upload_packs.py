@@ -133,10 +133,19 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
         sys.exit(1)
 
 def update_pack_folder_metadata(pack: Pack, extract_destination_path: str):
+    """
+    Updates the metadata of a pack and saves it to a JSON file in the extract_destination_path.
 
+    Args:
+        pack (Pack): The Pack object representing the pack whose metadata is to be updated.
+        extract_destination_path (str): The full path to the directory where the metadata JSON file will be saved.
+
+    Returns:
+        bool: Indicates whether the operation of updating metadata succeeded (True) or failed (False).
+    """
     task_status = False
     try:
-        logging.debug(f"Starting update metadata for pack '{pack.name}'")
+        logging.debug(f"Starting update metadata for pack '{pack.name}' in {extract_destination_path=}.")
         json_write(os.path.join(extract_destination_path, "metadata.json"), pack.update_metadata, update=True)
         task_status = True
     except Exception as e:
@@ -1316,9 +1325,7 @@ def main():
                 pack.cleanup()
                 continue
 
-            # pack zip download and update metadata
-            # TODO
-            # use pack.zip_path of the downloaded
+            # TODO use pack.zip_path of the downloaded
             pack_path = pack.path
             pack._pack_path = pack_zip_folder
             if not pack.sign_and_zip_pack(signature_key, uploaded_packs_dir):
