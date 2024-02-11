@@ -651,7 +651,7 @@ This operation verifies aliases and matches display names to the correct mailbox
 | EWS.ResolvedNames.FullContactInfo.importance | String | Describes the importance of an item. | 
 | EWS.ResolvedNames.FullContactInfo.initials | String | Represents the initials of a contact. | 
 | EWS.ResolvedNames.FullContactInfo.phoneNumbers.label | String | The following are the possible values for this attribute: AssistantPhone, BusinessFax, BusinessPhone, BusinessPhone2, Callback, CarPhone, CompanyMainPhone, HomeFax, HomePhone, HomePhone2, Isdn, MobilePhone, OtherFax, OtherTelephone, Pager, PrimaryPhone, RadioPhone, Telex, TtyTddPhone | 
-| EWS.ResolvedNames.FullContactInfo.phoneNumbers.phoneNumber | String | The Phone number of the contact | 
+| EWS.ResolvedNames.FullContactInfo.phoneNumbers.phoneNumber | String | The phone number of the contact | 
 | EWS.ResolvedNames.FullContactInfo.physicalAddresses.city | String | The physicalAddresses city assosciated with the contact. | 
 | EWS.ResolvedNames.FullContactInfo.physicalAddresses.country | String | The physicalAddresses country assosciated with the contact. | 
 | EWS.ResolvedNames.FullContactInfo.physicalAddresses.label | String | The physicalAddresses label assosciated with the contact. | 
