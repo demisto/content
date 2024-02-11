@@ -813,10 +813,7 @@ def test_check_using_upgraded_api_incidents_extra_data_success(mocker):
                                                                                          "2021-12-15T12:00:00Z"}]}}
     mocker.patch.object(client, '_http_request', return_value=http_response)
 
-    raw_incident, use_get_incident_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_id)
-
-    assert raw_incident == [{"id": "1", "created_time":
-                            "2021-12-15T12:00:00Z"}]
+    use_get_incident_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_id)
     assert use_get_incident_extra_data
 
 
@@ -844,7 +841,7 @@ def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock, mo
         message="The server encountered an internal error", res=MockException(500)
     ))
     result = check_using_upgraded_api_incidents_extra_data(client, '1')
-    assert result == ({}, False)
+    assert not result
 
 
 @freeze_time("1997-10-05 15:00:00 GMT")
@@ -872,6 +869,7 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
     mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=raw_multiple_extra_data)
     mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
     mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
+    mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
     next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance')
     assert len(incidents) == 2
     assert incidents[0]['name'] == 'XDR Incident 1 - desc1'

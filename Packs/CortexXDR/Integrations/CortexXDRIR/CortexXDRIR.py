@@ -478,12 +478,12 @@ def get_incident_extra_data_command(client, args):
 
     incident = raw_incident.get('incident', {})
     incident_id = incident.get('incident_id')
-    raw_alerts = raw_incident.get('alerts', {}).get('data')
+    raw_alerts = raw_incident.get('alerts', {}).get('data') #
     context_alerts = clear_trailing_whitespace(raw_alerts)
     for alert in context_alerts:
         alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
-    file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
-    network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
+    file_artifacts = raw_incident.get('file_artifacts', {}).get('data') #
+    network_artifacts = raw_incident.get('network_artifacts', {}).get('data') #
 
     readable_output = [tableToMarkdown(f'Incident {incident_id}', incident)]
 
@@ -848,7 +848,7 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
 
-def create_incidents_dictionary(incidents_data: Dict[str, Any]) -> Dict[str, Any]:
+def create_incidents_dictionary(incidents_data: List[Dict[str, Any]]) -> Dict[str, Any]:
     """creating a dictionary of incidents data  according to the old extra data api format
     fields in a dictionary format for easy access later
 
@@ -859,7 +859,7 @@ def create_incidents_dictionary(incidents_data: Dict[str, Any]) -> Dict[str, Any
         dict: dictionary of incidents data 
     """
     result = {}
-    for incident_data in incidents_data.get('reply', {}).get('incidents'):
+    for incident_data in incidents_data:
         incident_id = incident_data.get('incident', {}).get('incident_id')
         hosts = incident_data.get('incident', {}).get('hosts')
         users = incident_data.get('incident', {}).get('users')
@@ -928,12 +928,13 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             list_incidents_ids = [raw_incident.get('incident_id') for raw_incident in raw_incidents
                                   if len(list_incidents_ids) < max_fetch]
             raw_incidents_data = client.get_multiple_incidents_extra_data(list_incidents_ids)
-            incident_data_dict = create_incidents_dictionary(raw_incidents_data)
+            incident_data_dict = create_incidents_dictionary(raw_incidents_data.get('reply', {}).get('incidents'))
 
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
             incident_data: dict[str, Any] = {}
-            if UPGRADED_GET_EXTRA_DATA and incident_data_dict.get(incident_id, {}).get('alert_count') < ALERTS_LIMIT_PER_INCIDENTS:
+            if UPGRADED_GET_EXTRA_DATA and int(incident_data_dict.get\
+                (incident_id, {}).get('incident', {}).get('alerts_count', 0)) < ALERTS_LIMIT_PER_INCIDENTS:
                 incident_data = incident_data_dict.get(incident_id, {})
             else:
                 incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
