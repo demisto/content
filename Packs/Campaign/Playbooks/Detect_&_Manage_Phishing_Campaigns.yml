@@ -1560,7 +1560,7 @@ inputs:
   playbookInputQuery:
 - key: fieldsToDisplay
   value:
-    simple: id,name,similarity,emailfrom,recipients,severity,status,occurred
+    simple: id,name,similarity,emailfrom,recipients,severity,status,occurred,added_manually_to_campaign
   required: false
   description: |-
     A comma-separated list of fields to display. For example, "emailclassification,closereason". If a list of fields is provided, and a campaign is detected, these incidents fields will be displayed.
