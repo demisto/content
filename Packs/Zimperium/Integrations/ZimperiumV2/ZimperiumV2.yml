@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://mtduat.zimperium.com
-  display: Server URL (e.g. https://mtduat.zimperium.com)
+  display: Server URL (e.g., https://mtduat.zimperium.com)
   name: url
   required: true
   type: 0
@@ -20,7 +20,7 @@ configuration:
   type: 8
   required: false
 - display: Search Params (e.g, severityName=CRITICAL,teamId=myId)
-  additionalinfo: Comma-separated list of search parameters and it's values. Same as for "zimperium-threat-search" command.
+  additionalinfo: Comma-separated list of search parameters and its values. Same as for the "zimperium-threat-search" command.
   name: fetch_query
   type: 0
   required: false
