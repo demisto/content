@@ -726,7 +726,7 @@ class TestJiraEditIssueCommand:
             match=(
                 "When using the `issue_json` argument, additional arguments cannot be used "
                 "except `status`, `transition`, and `action` arguments.ֿֿֿ"
-                "\n see issue_json description"
+                "\n see the argument description"
             )
         ):
             edit_issue_command(
@@ -735,7 +735,7 @@ class TestJiraEditIssueCommand:
             )
 
     @pytest.mark.parametrize(
-        "another_args",
+        "extra_args",
         [
             {"action": "test"},
             {"status": "test"},
@@ -745,7 +745,7 @@ class TestJiraEditIssueCommand:
         ]
     )
     def test_edit_issue_command_with_issue_json_and_another_arg_no_error(
-        self, mocker: MockerFixture, another_args: dict
+        self, mocker: MockerFixture, extra_args: dict
     ):
         """
         Given:
@@ -770,7 +770,7 @@ class TestJiraEditIssueCommand:
         mocker.patch("JiraV3.create_issue_fields", return_value={})
         mocker.patch("JiraV3.create_issue_fields_for_appending", return_value={})
         mocker.patch("JiraV3.get_issue_id_or_key", return_value="test")
-        args = {"issue_json": '{"fields": {"customfield_10037":"field_value"}}'} | another_args
+        args = {"issue_json": '{"fields": {"customfield_10037":"field_value"}}'} | extra_args
         assert edit_issue_command(client=client, args=args)
 
 
@@ -825,7 +825,7 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         with pytest.raises(
             DemistoException,
-            match="When using the argument `issue_json`, additional arguments cannot be used.ֿֿֿ\n see issue_json description"
+            match="When using the argument `issue_json`, additional arguments cannot be used.ֿֿֿ\n see the argument description"
         ):
             create_issue_command(
                 client=client,

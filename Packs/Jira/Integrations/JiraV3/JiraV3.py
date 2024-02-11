@@ -1941,7 +1941,7 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     # Validate that no more args are sent when the issue_json arg is used
     if "issue_json" in args and len(args) > 1:
         raise DemistoException(
-            "When using the argument `issue_json`, additional arguments cannot be used.ֿֿֿ\n see issue_json description"
+            "When using the argument `issue_json`, additional arguments cannot be used.ֿֿֿ\n see the argument description"
         )
 
     args_for_api = deepcopy(args)
@@ -1981,19 +1981,16 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     """
     if (
         "issue_json" in args
-        and len(
-            [
+        and [
                 k
                 for k in args
-                if k not in ("status", "transition", "action", "issue_id", "issue_key")
+                if k not in ("status", "transition", "action", "issue_id", "issue_key", "issue_json")
             ]
-        )
-        > 1
     ):
         raise DemistoException(
             "When using the `issue_json` argument, additional arguments cannot be used "
             "except `status`, `transition`, and `action` arguments.ֿֿֿ"
-            "\n see issue_json description"
+            "\n see the argument description"
         )
 
     issue_id_or_key = get_issue_id_or_key(
