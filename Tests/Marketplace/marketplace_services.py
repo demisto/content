@@ -29,16 +29,16 @@ import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import XSOAR_ON_PREM_MP, XSOAR_SAAS_MP, PackFolders, Metadata, GCPConfig, \
     BucketUploadFlow, PACKS_FOLDER, PackTags, PackIgnored, Changelog, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
     XSIAM_MP, XPANSE_MP, TAGS_BY_MP, RN_HEADER_TO_ID_SET_KEYS
-from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName, MARKETPLACE_KEY_PACK_METADATA, PACK_METADATA_SUPPORT, PACK_METADATA_DEPENDENCIES, PACK_METADATA_NAME, PACK_METADATA_PRICE  # , PACK_METADATA_REQUIRE_RN_FIELDS todo
+from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName, MARKETPLACE_KEY_PACK_METADATA, PACK_METADATA_SUPPORT, PACK_METADATA_DEPENDENCIES, PACK_METADATA_NAME, PACK_METADATA_PRICE  # , PACK_METADATA_REQUIRE_RN_FIELDS todo - from sdk PR
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
-# TODO
+# TODO from sdk PR
 PACK_METADATA_SERVER_MIN_VERSION: str = "serverMinVersion"
 PACK_METADATA_EXCLUDED_DEPENDENCIES: str = "excludedDependencies"
 
 PACK_METADATA_REQUIRE_RN_FIELDS: set = (
-    {  # TODO - to change to PACK_METADATA_NOT_REQUIRE_RN_FIELDS
+    {
         PACK_METADATA_SUPPORT,
         PACK_METADATA_DEPENDENCIES,
         PACK_METADATA_NAME,
@@ -48,7 +48,7 @@ PACK_METADATA_REQUIRE_RN_FIELDS: set = (
         PACK_METADATA_EXCLUDED_DEPENDENCIES,
     }
 )
-# TODO
+# TODO from sdk PR
 
 PULL_REQUEST_PATTERN = '\(#(\d+)\)'
 TAGS_SECTION_PATTERN = '(.|\s)+?'
@@ -412,7 +412,14 @@ class Pack:
 
     @property
     def update_metadata(self):
-        update_statics_metadata = {
+        """
+        Returns a dictionary containing updated metadata fields.
+        This function updates the statistics_metadata fields (downloads, searchRank, tags, and integrations).
+        If is_metadata_updated is True, it also updates the fields that are not listed in PACK_METADATA_REQUIRE_RN_FIELDS.
+        Returns:
+            dict: Updated metadata fields.
+        """
+        update_statistics_metadata = {
             Metadata.DOWNLOADS: self.downloads_count,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.TAGS: list(self._tags or []),
@@ -424,14 +431,17 @@ class Pack:
             pack_metadata = self.pack_metadata
             for field in pack_metadata:
                 if field not in PACK_METADATA_REQUIRE_RN_FIELDS:
-                    update_metadata_fields[field] = pack_metadata.get(field)
+                    update_metadata_fields[field] = pack_metadata.get(field) # todo - there are override fields - maybe we should use them
             logging.debug(
                 f"Updating metadata with statistics and metadata changes because {self._pack_name=} {self.is_modified=} {self.is_metadata_updated=}")
         else:
             logging.debug(
                 f"Updating metadata only with statistics because {self._pack_name=} {self.is_modified=} {self.is_metadata_updated=}")
 
-        return update_statics_metadata | update_metadata_fields
+        updated_metadata = update_metadata_fields | update_statistics_metadata
+        logging.debug(f"Updating the following metadata fields: {updated_metadata.keys()}")
+        return updated_metadata
+
 
     @staticmethod
     def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
@@ -916,7 +926,7 @@ class Pack:
         Returns:
             bool: whether the operation succeeded.
         """
-        logging.debug(f"{zip_pack_path=}")
+
         task_status = True
         try:
             if with_dependencies_path:

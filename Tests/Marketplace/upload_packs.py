@@ -1330,7 +1330,9 @@ def main():
 
             # TODO use pack.zip_path of the downloaded
             pack_path = pack.path
+            logging.info(f"1 {pack.path=}")
             pack._pack_path = pack_zip_folder
+            logging.info(f"2 {pack.path=}")
             if not pack.sign_and_zip_pack(signature_key, uploaded_packs_dir):
                 continue
 
@@ -1340,6 +1342,7 @@ def main():
                 continue
 
             pack._pack_path = pack_path
+            logging.info(f"3 {pack.path=}")
 
         else:
             # Signs and zips non-modified packs for the upload_with_dependencies phase
