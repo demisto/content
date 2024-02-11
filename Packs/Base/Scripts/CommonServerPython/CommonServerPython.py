@@ -825,6 +825,43 @@ def add_http_prefix_if_missing(address=''):
     return 'http://' + address
 
 
+def handle_proxy_for_long_running(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
+                                  insecure_param_name=None):
+    """
+        Handle logic for long running integration routing traffic through the system proxy.
+        Should usually be called at the beginning of the integration, depending on proxy checkbox state.
+        Long running integrations on hosted tenants XSOAR8 and XSIAM has a dedicated env. var.: CRTX_HTTP_PROXY.
+        Fallback call to handle_proxy in cases long running integration on engine or XSOAR6
+
+        :type proxy_param_name: ``string``
+        :param proxy_param_name: name of the "use system proxy" integration parameter
+
+        :type checkbox_default_value: ``bool``
+        :param checkbox_default_value: Default value of the proxy param checkbox
+
+        :type handle_insecure: ``bool``
+        :param handle_insecure: Whether to check the insecure param and unset env variables
+
+        :type insecure_param_name: ``string``
+        :param insecure_param_name: Name of insecure param. If None will search insecure and unsecure
+
+        :return: proxies dict for the 'proxies' parameter of 'requests' functions and use_ssl boolean
+        :rtype: ``Tuple[dict, boolean]``
+    """
+    proxies = {}
+    CRTX_HTTP_PROXY = os.environ.get('CRTX_HTTP_PROXY', None)
+    use_ssl = not demisto.params().get('insecure', False)
+    if CRTX_HTTP_PROXY:
+        demisto.error('Setting proxies according to CRTX_HTTP_PROXY: {}'.format(CRTX_HTTP_PROXY))
+        proxies = {
+            'http': CRTX_HTTP_PROXY,
+            'https': CRTX_HTTP_PROXY
+        }
+        use_ssl = True
+        return proxies, use_ssl
+    return handle_proxy(proxy_param_name, checkbox_default_value, handle_insecure, insecure_param_name), use_ssl
+
+
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
                  insecure_param_name=None):
     """

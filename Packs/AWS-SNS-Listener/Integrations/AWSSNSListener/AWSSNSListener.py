@@ -9,7 +9,6 @@ from fastapi import Depends, FastAPI, Request, Response, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKeyHeader
 from fastapi.openapi.models import APIKey
-import requests
 import base64
 from M2Crypto import X509
 
@@ -22,23 +21,25 @@ basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 
 
-def handle_proxy_and_ssl():
-    proxies = None
-    use_ssl = not PARAMS.get('insecure', False)
-    if not is_demisto_version_ge('8.0.0'):
-        return proxies, use_ssl
-    CRTX_HTTP_PROXY = os.environ.get('CRTX_HTTP_PROXY', None)
-    demisto.debug(f"CRTX_HTTP_PROXY: {CRTX_HTTP_PROXY}")
-    if CRTX_HTTP_PROXY:
-        proxies = {
-            "http": CRTX_HTTP_PROXY,
-            "https": CRTX_HTTP_PROXY
-        }
-        use_ssl = True
-    return proxies, use_ssl
+PROXIES, USE_SSL = handle_proxy_for_long_running()
 
 
-PROXIES, USE_SSL = handle_proxy_and_ssl()
+class AWS_SNS_CLIENT(BaseClient):
+    def __init__(self, base_url):
+        is_proxy = False
+        if PROXIES:
+            self.proxies = PROXIES
+            is_proxy = True
+        elif PARAMS.get('proxy'):
+            self.proxies = handle_proxy()
+        headers = {'Accept': 'application/json'}
+        super().__init__(base_url=base_url, proxy=is_proxy, verify=USE_SSL, headers=headers)
+
+    def get(self, full_url, resp_type='json'):
+        return self._http_request(method='GET', full_url=full_url, proxies=PROXIES, resp_type=resp_type)
+
+
+client = AWS_SNS_CLIENT(base_url=None)
 
 
 def is_valid_sns_message(sns_payload):
@@ -53,6 +54,7 @@ def is_valid_sns_message(sns_payload):
     """
     # taken from https://github.com/boto/boto3/issues/2508
     # Can only be one of these types.
+    demisto.debug('In is_valid_sns_message')
     if sns_payload["Type"] not in ["SubscriptionConfirmation", "Notification", "UnsubscribeConfirmation"]:
         demisto.error('Not a valid SNS message')
         return False
@@ -77,9 +79,9 @@ def is_valid_sns_message(sns_payload):
     # Verify the signature
     decoded_signature = base64.b64decode(sns_payload["Signature"])
     try:
-        resp = requests.get(sns_payload["SigningCertURL"], verify=USE_SSL, proxies=PROXIES)
-        resp.raise_for_status()
-        certificate = X509.load_cert_string(resp.text)
+        response = client.get(full_url=sns_payload["SigningCertURL"], resp_type='response')
+        response.raise_for_status()
+        certificate = X509.load_cert_string(response.text)
     except Exception as e:
         demisto.error(f'Exception validating sign cert url: {e}')
         return False
@@ -124,7 +126,6 @@ async def handle_post(request: Request,
     request_headers = dict(request.headers)
 
     credentials_param = PARAMS.get('credentials')
-
     if credentials_param and (username := credentials_param.get('identifier')):
         password = credentials_param.get('password', '')
         auth_failed = False
@@ -160,7 +161,8 @@ async def handle_post(request: Request,
         demisto.debug('SubscriptionConfirmation request')
         subscribe_url = payload['SubscribeURL']
         try:
-            response = requests.get(subscribe_url, verify=USE_SSL, proxies=PROXIES)
+            response = client.get(subscribe_url)
+            response.raise_for_status()
         except Exception as e:
             demisto.error(f'Failed handling SubscriptionConfirmation: {e}')
             return 'Failed handling SubscriptionConfirmation'
