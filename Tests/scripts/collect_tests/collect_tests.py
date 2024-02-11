@@ -1449,7 +1449,7 @@ def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[set, set]:  # TODO
     git_util = GitUtil()
     changed_files = git_util._get_all_changed_files()
     for pack_id in packs_to_upload:
-        current_version = PACK_MANAGER.get_current_version(pack_id, "")
+        current_version = PACK_MANAGER.get_current_version(pack_id) or ""
         rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
         pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
 
