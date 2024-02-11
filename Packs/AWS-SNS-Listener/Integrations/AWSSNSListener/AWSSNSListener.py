@@ -103,7 +103,67 @@ def is_valid_sns_message(sns_payload):
     return True
 
 
-@app.post('/')
+def is_valid_integration_credentials(credentials, request_headers, token):
+    credentials_param = PARAMS.get('credentials')
+    auth_failed = False
+    header_name = None
+    if credentials_param and (username := credentials_param.get('identifier')):
+        password = credentials_param.get('password', '')
+        if username.startswith('_header'):
+            header_name = username.split(':')[1]
+            token_auth.model.name = header_name
+            if not token or not compare_digest(token, password):
+                auth_failed = True
+        elif (not credentials) or (not (compare_digest(credentials.username, username)
+                                   and compare_digest(credentials.password, password))):
+            auth_failed = True
+        if auth_failed:
+            secret_header = (header_name or 'Authorization').lower()
+            if secret_header in request_headers:
+                request_headers[secret_header] = '***'
+            demisto.debug(f'Authorization failed - request headers {request_headers}')
+    if auth_failed:  # auth failed not valid credentials
+        return False, header_name
+    else:
+        return True, header_name
+
+
+def handle_subscription_confirmation(subscribe_url) -> Response:
+    demisto.debug('SubscriptionConfirmation request')
+    try:
+        return client.get(full_url=subscribe_url)
+    except Exception as e:
+        demisto.error(f'Failed handling SubscriptionConfirmation: {e}')
+        return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        content=f'Failed handling SubscriptionConfirmation: {e}')
+
+
+def handle_notification(payload, raw_jason):
+    message = payload['Message']
+    demisto.debug(f'Notification request msg: {message}')
+    return {
+        'name': payload['Subject'],
+        'labels': [],
+        'rawJSON': raw_jason,
+        'occurred': payload['Timestamp'],
+        'details': f'ExternalID:{payload["MessageId"]} TopicArn:{payload["TopicArn"]} Message:{message}',
+        'type': 'AWS-SNS Notification'
+    }
+
+
+def store_samples(incident):
+    try:
+        sample_events_to_store.append(incident)
+        integration_context = get_integration_context()
+        sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
+        sample_events += sample_events_to_store
+        integration_context['sample_events'] = list(sample_events)
+        set_to_integration_context_with_retries(integration_context)
+    except Exception as e:
+        demisto.error(f'Failed storing sample events - {e}')
+
+
+@app.post(f'/{PARAMS.get("endpoint","")}')
 async def handle_post(request: Request,
                       credentials: HTTPBasicCredentials = Depends(basic_auth),
                       token: APIKey = Depends(token_auth)):
@@ -120,27 +180,11 @@ async def handle_post(request: Request,
         Union[Response, str]: Response data or error message.
     """
     data = ''
-    header_name = None
     request_headers = dict(request.headers)
 
-    credentials_param = PARAMS.get('credentials')
-    if credentials_param and (username := credentials_param.get('identifier')):
-        password = credentials_param.get('password', '')
-        auth_failed = False
-        if username.startswith('_header'):
-            header_name = username.split(':')[1]
-            token_auth.model.name = header_name
-            if not token or not compare_digest(token, password):
-                auth_failed = True
-        elif (not credentials) or (not (compare_digest(credentials.username, username)
-                                   and compare_digest(credentials.password, password))):
-            auth_failed = True
-        if auth_failed:
-            secret_header = (header_name or 'Authorization').lower()
-            if secret_header in request_headers:
-                request_headers[secret_header] = '***'
-            demisto.debug(f'Authorization failed - request headers {request_headers}')
-            return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
+    is_valid_credentials, header_name = is_valid_integration_credentials(credentials, request_headers, token)
+    if not is_valid_credentials:
+        return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
 
     secret_header = (header_name or 'Authorization').lower()
     request_headers.pop(secret_header, None)
@@ -159,7 +203,7 @@ async def handle_post(request: Request,
         demisto.debug('SubscriptionConfirmation request')
         subscribe_url = payload['SubscribeURL']
         try:
-            response = client.get(subscribe_url)
+            response = handle_subscription_confirmation(subscribe_url=subscribe_url)
             response.raise_for_status()
         except Exception as e:
             demisto.error(f'Failed handling SubscriptionConfirmation: {e}')
@@ -167,28 +211,11 @@ async def handle_post(request: Request,
         demisto.debug(f'Response from subscribe url: {response}')
         return response
     elif type == 'Notification':
-        message = payload['Message']
-        demisto.debug(f'Notification request msg: {message}')
-        incident = {
-            'name': payload['Subject'],
-            'labels': [],
-            'rawJSON': raw_jason,
-            'occurred': payload['Timestamp'],
-            'details': f'ExternalID:{payload["MessageId"]} TopicArn:{payload["TopicArn"]} Message:{message}',
-            'type': 'AWS-SNS Notification'
-        }
-        demisto.debug(f'demisto.createIncidents with:{incident}')
-        if PARAMS.get('store_samples'):
-            try:
-                sample_events_to_store.append(incident)
-                integration_context = get_integration_context()
-                sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
-                sample_events += sample_events_to_store
-                integration_context['sample_events'] = list(sample_events)
-                set_to_integration_context_with_retries(integration_context)
-            except Exception as e:
-                demisto.error(f'Failed storing sample events - {e}')
+        incident = handle_notification(payload, raw_jason)
         data = demisto.createIncidents(incidents=[incident])
+        demisto.debug(f'Created incident: {incident}')
+        if PARAMS.get('store_samples'):
+            store_samples(incident)
         if not data:
             demisto.error('Failed creating incident')
             data = 'Failed creating incident'
@@ -200,6 +227,15 @@ async def handle_post(request: Request,
     else:
         demisto.error(f'Failed handling AWS SNS request, unknown type: {payload["Type"]}')
         return f'Failed handling AWS SNS request, unknown type: {payload["Type"]}'
+
+
+def unlink_certificate(certificate_path, private_key_path):
+    if certificate_path:
+        os.unlink(certificate_path)
+    if private_key_path:
+        os.unlink(private_key_path)
+    time.sleep(5)
+
 
 ''' MAIN FUNCTION '''
 
@@ -250,11 +286,7 @@ def main():
                     demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
                     demisto.updateModuleHealth(f'An error occurred: {str(e)}')
                 finally:
-                    if certificate_path:
-                        os.unlink(certificate_path)
-                    if private_key_path:
-                        os.unlink(private_key_path)
-                    time.sleep(5)
+                    unlink_certificate(certificate_path, private_key_path)
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented.')
     except Exception as e:
