@@ -33,7 +33,7 @@ And the following eradication actions:
 
 External resources:
 
-[Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
+[Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow).
 
 ## Dependencies
 
@@ -104,6 +104,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
 | addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. |  | Optional |
 | CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
+| agentID | The agent ID's of the endpoints in the alert | alert.agentid | Optional |
 
 ## Playbook Outputs
 

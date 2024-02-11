@@ -58,6 +58,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      fromdate:
+        simple: 14 days ago
       query:
         complex:
           root: inputs.query
