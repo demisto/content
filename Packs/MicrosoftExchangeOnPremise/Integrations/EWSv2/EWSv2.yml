@@ -640,19 +640,19 @@ script:
     name: ews-resolve-name
     outputs:
     - contextPath: EWS.ResolvedNames.FullContactInfo.contactSource
-      description: 'Whether the contact is located in the Exchange store or Active Directory Domain Services (AD DS).'
+      description: Whether the contact is located in the Exchange store or Active Directory Domain Services (AD DS).
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.culture
-      description: 'Represents the culture for a given item in a mailbox.'
+      description: Represents the culture for a given item in a mailbox.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.displayName
-      description: 'The display name of a contact.'
+      description: The display name of a contact.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.ItemId
-      description: 'Contains the unique identifier and change key of an item in the Exchange store.'
+      description: Contains the unique identifier and change key of an item in the Exchange store.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.emailAddresses
-      description: 'Represents a collection of e-mail addresses for a contact.'
+      description: Represents a collection of email addresses for a contact.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.givenName
       description: Contains a contact's given name.
