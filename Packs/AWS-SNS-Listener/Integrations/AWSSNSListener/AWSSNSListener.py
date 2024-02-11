@@ -275,7 +275,7 @@ def setup_server():
     log_config['handlers']['default']['stream'] = integration_logger
     log_config['handlers']['access']['stream'] = integration_logger
     return ServerConfig(log_config=log_config, ssl_args=ssl_args,
-                         certificate_path=certificate_path, private_key_path=private_key_path)
+                        certificate_path=certificate_path, private_key_path=private_key_path)
 
 
 ''' MAIN FUNCTION '''
