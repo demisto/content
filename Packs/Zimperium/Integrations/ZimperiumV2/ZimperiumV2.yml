@@ -66,14 +66,13 @@ script:
   - arguments:
     - description: The ID of the user to search.
       name: user_id
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+    - description: Maximum number of results to retrieve in each page. If a limit is not provided, default is 50.
       name: page_size
     - defaultValue: '0'
       description: Page number.
       name: page
     - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+      description: Number of total results to return.
       name: limit
     - description: Used to filter the user data by the Team the user belongs to.
       name: team_id
@@ -134,14 +133,13 @@ script:
   - arguments:
     - description: The ID of the device to search for.
       name: device_id
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+    - description: Maximum number of results to retrieve in each page. If a limit is not provided, default is 50.
       name: page_size
     - defaultValue: '0'
       description: Page number.
       name: page
     - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+      description: Number of total results to return.
       name: limit
     description: Search devices.
     name: zimperium-devices-search
@@ -388,14 +386,13 @@ script:
       - CRITICAL
       description: The severity of the threat.
       name: severity
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+    - description: Maximum number of results to retrieve in each page. If a limit is not provided, default is 50.
       name: page_size
     - defaultValue: '0'
       description: Page number.
       name: page
     - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+      description: Number of total results to return.
       name: limit
     description: Search threats.
     name: zimperium-threat-search
@@ -616,14 +613,13 @@ script:
   - arguments:
     - description: The bundle ID of the app for which to get its app version.
       name: bundle_id
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+    - description: Maximum number of results to retrieve in each page. If a limit is not provided, default is 50.
       name: page_size
     - defaultValue: '0'
       description: Page number.
       name: page
     - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+      description: Number of total results to return.
       name: limit
     description: List the app versions.
     name: zimperium-app-version-list
@@ -707,14 +703,13 @@ script:
       name: before
     - description: Used to filter the user data by the team the user belongs to.
       name: team_id
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+    - description: Maximum number of results to retrieve in each page. If a limit is not provided, default is 50.
       name: page_size
     - defaultValue: '0'
       description: Page number.
       name: page
     - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+      description: Number of total results to return.
       name: limit
     description: Gets a devices associated with a specific CVE.
     name: zimperium-devices-cve-get
@@ -776,14 +771,13 @@ script:
       name: before
     - description: This is used to filter the data to their respective teams.
       name: team_id
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+    - description: Maximum number of results to retrieve in each page. If a limit is not provided, default is 50.
       name: page_size
     - defaultValue: '0'
       description: Page number.
       name: page
     - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+      description: Number of total results to return.
       name: limit
     description: Gets devices associated with a specific operating system version.
     name: zimperium-devices-os-version
@@ -831,14 +825,13 @@ script:
     - description: The device ID to get CVEs for.
       name: device_id
       required: true
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+    - description: Maximum number of results to retrieve in each page. If a limit is not provided, default is 50.
       name: page_size
     - defaultValue: '0'
       description: Page number.
       name: page
     - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+      description: Number of total results to return.
       name: limit
     description: Gets the CVEs associated with a specific device.
     name: zimperium-cve-devices-get
@@ -862,14 +855,13 @@ script:
       description: The URL of the CVE.
       type: String
   - arguments:
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+    - description: Maximum number of results to retrieve in each page. If a limit is not provided, default is 50.
       name: page_size
     - defaultValue: '0'
       description: Page number.
       name: page
     - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+      description: Number of total results to return.
       name: limit
     description: Gets the vulnerabilities.
     name: zimperium-vulnerability-get
@@ -1249,14 +1241,13 @@ script:
       description: The ID of the team to which the policy belongs.
       type: Unknown
   - arguments:
-    - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+    - description: Maximum number of results to retrieve in each page. If a limit is not provided, default is 50.
       name: page_size
     - defaultValue: '0'
       description: Page number.
       name: page
     - defaultValue: '50'
-      description: Maximum number of results to retrieve in each page.
+      description: Number of total results to return.
       name: limit
     - description: Used to filter the data by the team the user belongs to. If you provide this the query returns matching entries plus the policies without a team.
       name: team_id

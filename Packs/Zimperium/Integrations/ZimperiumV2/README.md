@@ -45,9 +45,9 @@ Search users. Only a user created as a "Team admin" is authorized to perform thi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | The ID of the user to search. | Optional | 
-| page_size | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| page_size | Maximum number of results to retrieve in each page. If a limit is not provided, default is 50. | Optional | 
 | page | Page number. Default is 0. | Optional | 
-| limit | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| limit | Number of total results to return. Default is 50. | Optional | 
 | team_id | Used to filter the user data by the team the user belongs to. | Optional | 
 
 #### Context Output
@@ -129,9 +129,9 @@ Search devices.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | The ID of the device to search for. | Optional | 
-| page_size | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| page_size | Maximum number of results to retrieve in each page. If a limit is not provided, default is 50. | Optional | 
 | page | Page number. Default is 0. | Optional | 
-| limit | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| limit | Number of total results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -428,9 +428,9 @@ Gets a report.
 | team_id | Used to filter the user data by the team the user belongs to. | Optional | 
 | os | Used to filter by the operating system. Possible values are: ios, android. | Optional | 
 | severity | The severity of the threat. Possible values are: LOW, NORMAL, ELEVATED, CRITICAL. | Optional | 
-| page_size | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| page_size | Maximum number of results to retrieve in each page. If a limit is not provided, default is 50. | Optional | 
 | page | Page number. Default is 0. | Optional | 
-| limit | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| limit | Number of total results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -642,9 +642,9 @@ List the app versions.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | bundle_id | The bundle ID of the app for which to get its app version. | Optional | 
-| page_size | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| page_size | Maximum number of results to retrieve in each page. If a limit is not provided, default is 50. | Optional | 
 | page | Page number. Default is 0. | Optional | 
-| limit | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| limit | Number of total results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -757,9 +757,9 @@ Gets a devices associated with a specific CVE.
 | after | The date in the criteria after which the threat occurred. | Optional | 
 | before | The date in the criteria before which the threat occurred. | Optional | 
 | team_id | Used to filter the user data by the team the user belongs to. | Optional | 
-| page_size | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| page_size | Maximum number of results to retrieve in each page. If a limit is not provided, default is 50. | Optional | 
 | page | Page number. Default is 0. | Optional | 
-| limit | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| limit | Number of total results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -834,9 +834,9 @@ Gets devices associated with a specific operating system version.
 | after | The date in the criteria after which the threat occurred. | Optional | 
 | before | The date in the criteria before which the threat occurred. | Optional | 
 | team_id | This is used to filter the data to their respective teams. | Optional | 
-| page_size | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| page_size | Maximum number of results to retrieve in each page. If a limit is not provided, default is 50. | Optional | 
 | page | Page number. Default is 0. | Optional | 
-| limit | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| limit | Number of total results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -905,9 +905,9 @@ Gets the CVEs associated with a specific device.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | The device ID to get CVEs for. | Required | 
-| page_size | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| page_size | Maximum number of results to retrieve in each page. If a limit is not provided, default is 50. | Optional | 
 | page | Page number. Default is 0. | Optional | 
-| limit | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| limit | Number of total results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -974,9 +974,9 @@ Gets the vulnerabilities.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| page_size | Maximum number of results to retrieve in each page. If a limit is not provided, default is 50. | Optional | 
 | page | Page number. Default is 0. | Optional | 
-| limit | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| limit | Number of total results to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -1586,9 +1586,9 @@ Get the policy device inactivity list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| page_size | Maximum number of results to retrieve in each page. If a limit is not provided, default is 50. | Optional | 
 | page | Page number. Default is 0. | Optional | 
-| limit | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
+| limit | Number of total results to return. Default is 50. | Optional | 
 | team_id | Used to filter the data by the team the user belongs to. If you provide this the query returns matching entries plus the policies without a team. | Optional | 
 
 #### Context Output
