@@ -37,7 +37,15 @@ class AWS_SNS_CLIENT(BaseClient):
         return self._http_request(method='GET', full_url=full_url, proxies=PROXIES, resp_type=resp_type)
 
 
-client = AWS_SNS_CLIENT(base_url=None)
+client = AWS_SNS_CLIENT()
+
+
+class ServerConfig():
+    def __init__(self, certificate_path, private_key_path, log_config, ssl_args):
+        self.certificate_path = certificate_path
+        self.private_key_path = private_key_path
+        self.log_config = log_config
+        self.ssl_args = ssl_args
 
 
 def is_valid_sns_message(sns_payload):
@@ -135,7 +143,7 @@ def handle_subscription_confirmation(subscribe_url) -> Response:
     except Exception as e:
         demisto.error(f'Failed handling SubscriptionConfirmation: {e}')
         return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        content=f'Failed handling SubscriptionConfirmation: {e}')
+                        content='Failed handling SubscriptionConfirmation')
 
 
 def handle_notification(payload, raw_jason):
@@ -237,6 +245,39 @@ def unlink_certificate(certificate_path, private_key_path):
     time.sleep(5)
 
 
+def setup_server():
+    certificate = PARAMS.get('certificate', '')
+    private_key = PARAMS.get('key', '')
+
+    certificate_path = ''
+    private_key_path = ''
+    ssl_args = {}
+    if certificate and private_key:
+        certificate_file = NamedTemporaryFile(delete=False)
+        certificate_path = certificate_file.name
+        certificate_file.write(bytes(certificate, 'utf-8'))
+        certificate_file.close()
+        ssl_args['ssl_certfile'] = certificate_path
+
+        private_key_file = NamedTemporaryFile(delete=False)
+        private_key_path = private_key_file.name
+        private_key_file.write(bytes(private_key, 'utf-8'))
+        private_key_file.close()
+        ssl_args['ssl_keyfile'] = private_key_path
+
+        demisto.debug('Starting HTTPS Server')
+    else:
+        demisto.debug('Starting HTTP Server')
+
+    integration_logger = IntegrationLogger()
+    integration_logger.buffering = False
+    log_config = dict(uvicorn.config.LOGGING_CONFIG)
+    log_config['handlers']['default']['stream'] = integration_logger
+    log_config['handlers']['access']['stream'] = integration_logger
+    return ServerConfig(log_config=log_config, ssl_args=ssl_args,
+                         certificate_path=certificate_path, private_key_path=private_key_path)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -252,41 +293,16 @@ def main():
         elif demisto.command() == 'long-running-execution':
             demisto.debug('Started long-running-execution.')
             while True:
-                certificate = PARAMS.get('certificate', '')
-                private_key = PARAMS.get('key', '')
-
-                certificate_path = ''
-                private_key_path = ''
+                server_config = setup_server()
+                if not server_config:
+                    raise DemistoException('Failed to configure server.')
                 try:
-                    ssl_args = {}
-                    if certificate and private_key:
-                        certificate_file = NamedTemporaryFile(delete=False)
-                        certificate_path = certificate_file.name
-                        certificate_file.write(bytes(certificate, 'utf-8'))
-                        certificate_file.close()
-                        ssl_args['ssl_certfile'] = certificate_path
-
-                        private_key_file = NamedTemporaryFile(delete=False)
-                        private_key_path = private_key_file.name
-                        private_key_file.write(bytes(private_key, 'utf-8'))
-                        private_key_file.close()
-                        ssl_args['ssl_keyfile'] = private_key_path
-
-                        demisto.debug('Starting HTTPS Server')
-                    else:
-                        demisto.debug('Starting HTTP Server')
-
-                    integration_logger = IntegrationLogger()
-                    integration_logger.buffering = False
-                    log_config = dict(uvicorn.config.LOGGING_CONFIG)
-                    log_config['handlers']['default']['stream'] = integration_logger
-                    log_config['handlers']['access']['stream'] = integration_logger
-                    uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
+                    uvicorn.run(app, host='0.0.0.0', port=port, log_config=server_config.log_config, **server_config.ssl_args)
                 except Exception as e:
                     demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
                     demisto.updateModuleHealth(f'An error occurred: {str(e)}')
                 finally:
-                    unlink_certificate(certificate_path, private_key_path)
+                    unlink_certificate(server_config.certificate_path, server_config.private_key_path)
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented.')
     except Exception as e:
