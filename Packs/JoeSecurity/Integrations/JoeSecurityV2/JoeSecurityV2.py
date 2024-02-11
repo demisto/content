@@ -4,6 +4,7 @@ import jbxapi
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import urllib3
+from pathlib import Path
 
 urllib3.disable_warnings()
 
@@ -455,7 +456,7 @@ def build_submission_params(args: Dict[str, Any]) -> Dict[str, Any]:
          Returns:
              result: (Dict[str, Any]): The submission parameters.
      """
-    params = {'comments': args.get('comment', None), 'systems': argToList(args.get('systems')),
+    params = {'comments': args.get('comments', None), 'systems': argToList(args.get('systems')),
               'tags': argToList(args.get('tags')), 'internet-access': argToBoolean(args.get('internet_access', True)),
               'archive-no-unpack': argToBoolean(args.get('archive_no_unpack', False)),
               'ssl-inspection': argToBoolean(args.get('ssl_inspection', False)),
@@ -500,8 +501,11 @@ def file_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any]
              result: (PollResult): The parsed PollResult object.
      """
     file_path = demisto.getFilePath(file)
+    name = Path(file_path['path']).name
+    demisto.debug(f"Trying to upload file {name=} from entry= {file_path['path']}")
+
     with open(file_path['path'], 'rb') as f:
-        res = client.submit_sample(sample=f, params=params, cookbook=args.get('cookbook'))
+        res = client.submit_sample(sample=(name,f), params=params, cookbook=args.get('cookbook'))
         exe_metrics.success += 1
         partial_res = CommandResults(
             readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...')
