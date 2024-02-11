@@ -1,5 +1,6 @@
 import json
 import pytest
+from pytest_mock import MockerFixture
 import demistomock as demisto
 from unittest.mock import patch
 from JiraV3 import (JiraBaseClient, JiraCloudClient, JiraOnPremClient)
@@ -733,8 +734,45 @@ class TestJiraEditIssueCommand:
                 args={"summary": "test", "issue_json": '{"fields": {"customfield_10037":"field_value"}}'}
             )
 
-    def test_edit_issue_command_with_issue_json_and_another_arg_no_error(self):
-        
+    @pytest.mark.parametrize(
+        "another_args",
+        [
+            {"action": "test"},
+            {"status": "test"},
+            {"transition": "test"},
+            {},
+        ]
+    )
+    def test_edit_issue_command_with_issue_json_and_another_arg_no_error(
+        self, mocker: MockerFixture, another_args: dict
+    ):
+        """
+        Given:
+            - The `issue_json` arg and one more arg allowed for use with `issue_json`
+        When:
+            - run edit_issue_command function
+        Then:
+            - Ensure that the validation process,
+              which ensures that no additional arguments are present alongside the 'issue_json' argument,
+              does not result in an error in cases where the additional arguments are one of:
+              `action`, `status`, `transition`.
+
+        """
+        from JiraV3 import edit_issue_command
+
+        client = jira_base_client_mock()
+        mocker.patch("JiraV3.apply_issue_status")
+        mocker.patch("JiraV3.apply_issue_transition")
+        mocker.patch.object(client, "edit_issue")
+        mocker.patch.object(client, "get_issue", return_value={})
+        mocker.patch("JiraV3.create_issue_md_and_outputs_dict", return_value=({}, {}))
+        mocker.patch("JiraV3.create_issue_fields", return_value={})
+        mocker.patch("JiraV3.create_issue_fields_for_appending", return_value={})
+        mocker.patch("JiraV3.get_issue_id_or_key", return_value="test")
+        args = {"issue_json": '{"fields": {"customfield_10037":"field_value"}}'} | another_args
+        assert edit_issue_command(client=client, args=args)
+
+     
 class TestJiraCreateIssueCommand:
     def test_create_issue_command(self, mocker):
         """
