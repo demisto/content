@@ -433,7 +433,7 @@ XSOAR_SAAS_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR_SAAS, None)
          None, XSIAM_BRANCH_ARGS,
          ('Packs/bothMarketplacesPack/pack_metadata.json',
           'Packs/bothMarketplacesPackOnlyXSIAMIntegration/Integrations/onlyXSIAMIntegration/onlyXSIAMIntegration.yml'),
-         (), ('bothMarketplacesPackOnlyXSIAMIntegration',)),
+         (), ('bothMarketplacesPackOnlyXSIAMIntegration', 'bothMarketplacesPack')),
 
         # (28) Only packs with changes in XSOAR items will be collected to install and to upload.
         (MockerCases.R, None, ('bothMarketplacesPack',), None, None, XSOAR_BRANCH_ARGS,
