@@ -32,7 +32,7 @@ class Client(BaseClient):
 
 
 def get_events_command(client: Client, total_events_to_fetch, since,
-                       last_object_ids: list[str] = [], next_link: str = '') -> tuple[list[dict], int, str]:  # pragma: no cover
+                       last_object_ids: list[str] = [], next_link: str = '') -> tuple[list[dict], int, str]:
     """
     Fetches events from the okta api until the total_events_to_fetch is reached or no more events are available.
     if 429:TOO_MANY_REQUESTS is returned, will return the stored_events so far and the x-rate-limit-reset
