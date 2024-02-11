@@ -1,9 +1,9 @@
 {
-    "name": "BitSight",
-    "description": "Bitsight Integration will allow you visibility into BitSight findings for remediation in your security program.",
+    "name": "Bitsight",
+    "description": "Bitsight Integration will allow you visibility into Bitsight findings for remediation in your security program.",
     "support": "partner",
-    "currentVersion": "1.1.20",
-    "author": "BitSight",
+    "currentVersion": "1.1.21",
+    "author": "Bitsight",
     "url": "https://service.bitsighttech.com/",
     "email": "support@bitsight.com",
     "categories": [
