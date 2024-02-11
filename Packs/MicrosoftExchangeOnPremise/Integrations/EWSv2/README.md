@@ -279,6 +279,7 @@ There are no input arguments for this command.
 ***
 Searches over multiple mailboxes or all Exchange mailboxes. Use either the mailbox-search-scope command or the email-addresses command to search specific mailboxes. This command requires eDiscovery permissions to the Exchange Server. For more information, see the EWS v2 integration documentation.
 
+The number of mailboxes to search in may be limited by Microsoft Exchange. See [here](https://learn.microsoft.com/en-us/exchange/new-features/new-features?view=exchserver-2019#improved-performance-and-scalability) for more information. 
 
 #### Base Command
 
