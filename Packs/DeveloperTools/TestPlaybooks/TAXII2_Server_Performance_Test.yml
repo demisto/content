@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cd603bed-c6f9-4f27-8b43-83026bb7f831
+    taskid: 10a8f291-1202-41ba-87a4-80951e0a3dd8
     type: start
     task:
-      id: cd603bed-c6f9-4f27-8b43-83026bb7f831
+      id: 10a8f291-1202-41ba-87a4-80951e0a3dd8
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 2f5059c6-115d-40db-8df1-ab2039258f2e
+    taskid: d55c325b-1b64-436f-8c22-9f6363c3bccf
     type: regular
     task:
-      id: 2f5059c6-115d-40db-8df1-ab2039258f2e
+      id: d55c325b-1b64-436f-8c22-9f6363c3bccf
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -71,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 1f0b540e-cef5-4c30-8faa-c74a85418241
+    taskid: 351bf73b-b5f6-4f09-8d11-f744d0a18725
     type: title
     task:
-      id: 1f0b540e-cef5-4c30-8faa-c74a85418241
+      id: 351bf73b-b5f6-4f09-8d11-f744d0a18725
       version: -1
       name: 10,000 Indicators
       type: title
@@ -101,10 +101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 427f4a6f-a7d5-44b6-8a67-7e32c4c3be3e
+    taskid: dc1037e1-f468-46af-8336-e0993e4ca2c5
     type: playbook
     task:
-      id: 427f4a6f-a7d5-44b6-8a67-7e32c4c3be3e
+      id: dc1037e1-f468-46af-8336-e0993e4ca2c5
       version: -1
       name: TAXII2 Performance Test - Concurrency
       playbookName: TAXII2 Performance Test - Concurrency
@@ -165,10 +165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 9136f288-916e-4b86-8fa5-ed592a5f87f1
+    taskid: 7c7b4b4d-4afc-4fdb-892c-1d4512108fdb
     type: playbook
     task:
-      id: 9136f288-916e-4b86-8fa5-ed592a5f87f1
+      id: 7c7b4b4d-4afc-4fdb-892c-1d4512108fdb
       version: -1
       name: TAXII2 Performance Test - Concurrency
       playbookName: TAXII2 Performance Test - Concurrency
@@ -225,10 +225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 0ebc5090-e80b-489e-8495-7b653356b281
+    taskid: 99ef3b24-e33d-4308-828a-75378d71e185
     type: title
     task:
-      id: 0ebc5090-e80b-489e-8495-7b653356b281
+      id: 99ef3b24-e33d-4308-828a-75378d71e185
       version: -1
       name: 50,000 Indicators
       type: title
@@ -255,10 +255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 4cb3dee5-788a-42dd-8299-1128ab1a079d
+    taskid: 1b4e0302-6ea3-4f32-84b1-cc36acd70605
     type: title
     task:
-      id: 4cb3dee5-788a-42dd-8299-1128ab1a079d
+      id: 1b4e0302-6ea3-4f32-84b1-cc36acd70605
       version: -1
       name: 100,000 Indicators
       type: title
@@ -285,10 +285,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 0bbe286d-228e-47b9-8fd4-5047604e4b0e
+    taskid: a9cc9ed5-1066-47f5-86ed-b637131baba3
     type: playbook
     task:
-      id: 0bbe286d-228e-47b9-8fd4-5047604e4b0e
+      id: a9cc9ed5-1066-47f5-86ed-b637131baba3
       version: -1
       name: TAXII2 Performance Test - Concurrency
       playbookName: TAXII2 Performance Test - Concurrency
@@ -345,10 +345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: e343a521-be81-4c7a-8012-cb1c3b8b496d
+    taskid: 0e950d47-330a-4510-8abe-15ea5bc57e7f
     type: regular
     task:
-      id: e343a521-be81-4c7a-8012-cb1c3b8b496d
+      id: 0e950d47-330a-4510-8abe-15ea5bc57e7f
       version: -1
       name: Set Small Outputs
       description: Set a value in context under the key you entered.
@@ -383,10 +383,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: ba6d1029-39fb-49b5-89f0-c654866d4e3b
+    taskid: 1c4566d1-d3a5-478a-8935-b19345676098
     type: regular
     task:
-      id: ba6d1029-39fb-49b5-89f0-c654866d4e3b
+      id: 1c4566d1-d3a5-478a-8935-b19345676098
       version: -1
       name: Clear HeyConcurrency Context
       description: Delete field from context
@@ -421,10 +421,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 3615c5ac-22e6-4fb5-829e-89a408e3cc9c
+    taskid: f9186e8b-2481-49f9-8e6a-d4b286b7e8bf
     type: regular
     task:
-      id: 3615c5ac-22e6-4fb5-829e-89a408e3cc9c
+      id: f9186e8b-2481-49f9-8e6a-d4b286b7e8bf
       version: -1
       name: Set Medium Outputs
       description: Set a value in context under the key you entered.
@@ -458,10 +458,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 1f4e4943-44e4-4d44-860b-7b12f8de05c9
+    taskid: 0dc80701-44ac-48a2-8976-d9c6ad3a7632
     type: regular
     task:
-      id: 1f4e4943-44e4-4d44-860b-7b12f8de05c9
+      id: 0dc80701-44ac-48a2-8976-d9c6ad3a7632
       version: -1
       name: Clear HeyConcurrency Context
       description: Delete field from context
@@ -496,10 +496,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 1123495a-200f-4f67-8fc7-885b502e6aa5
+    taskid: 4d9f2119-502c-4adc-8035-1e6aa38e89ef
     type: regular
     task:
-      id: 1123495a-200f-4f67-8fc7-885b502e6aa5
+      id: 4d9f2119-502c-4adc-8035-1e6aa38e89ef
       version: -1
       name: Set Large Outputs
       description: Set a value in context under the key you entered.
@@ -533,10 +533,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 3fae1920-4bfc-49e2-870a-68b4162d6de8
+    taskid: 8bcca068-9b99-4689-8d18-6f41bb3eb28a
     type: regular
     task:
-      id: 3fae1920-4bfc-49e2-870a-68b4162d6de8
+      id: 8bcca068-9b99-4689-8d18-6f41bb3eb28a
       version: -1
       name: Check IP Is Ready
       description: Returns, whether there're, are enough indicators in the system.
@@ -570,10 +570,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 4ce02c35-7a88-4dce-8861-eb753b530390
+    taskid: c7c97983-df2e-4f9e-800b-082d7fb2904a
     type: condition
     task:
-      id: 4ce02c35-7a88-4dce-8861-eb753b530390
+      id: c7c97983-df2e-4f9e-800b-082d7fb2904a
       version: -1
       name: Verify IP Is Ready
       type: condition
@@ -610,10 +610,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: ccca8790-864e-45d7-89af-28116b9d5669
+    taskid: 55eb5bef-d1cb-41a6-8b0f-0ece7db26254
     type: regular
     task:
-      id: ccca8790-864e-45d7-89af-28116b9d5669
+      id: 55eb5bef-d1cb-41a6-8b0f-0ece7db26254
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -646,10 +646,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: a7838c25-73b5-46d7-83fc-d8c65be0c97a
+    taskid: c00e4604-863b-4b74-8cdb-dd4be0b30827
     type: playbook
     task:
-      id: a7838c25-73b5-46d7-83fc-d8c65be0c97a
+      id: c00e4604-863b-4b74-8cdb-dd4be0b30827
       version: -1
       name: GenericPolling
       description: |-
@@ -707,10 +707,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: c2efbff9-21e8-4387-8110-2c2723329f10
+    taskid: c1d9e083-a019-40f7-8cb5-ff4d2e79a1f2
     type: regular
     task:
-      id: c2efbff9-21e8-4387-8110-2c2723329f10
+      id: c1d9e083-a019-40f7-8cb5-ff4d2e79a1f2
       version: -1
       name: Check Domain Is Ready
       description: Returns, whether there're, are enough indicators in the system.
@@ -744,10 +744,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 98947149-2db3-4d22-8e63-df4e6b0cc662
+    taskid: 86c8d4b1-3698-410e-8d7f-73fc896f1807
     type: condition
     task:
-      id: 98947149-2db3-4d22-8e63-df4e6b0cc662
+      id: 86c8d4b1-3698-410e-8d7f-73fc896f1807
       version: -1
       name: Verify Domain Is Ready
       type: condition
@@ -784,10 +784,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 837122db-ac7f-45e7-863c-04ae627675de
+    taskid: 504a8375-03d7-4ebf-8789-a7afe0ba8540
     type: regular
     task:
-      id: 837122db-ac7f-45e7-863c-04ae627675de
+      id: 504a8375-03d7-4ebf-8789-a7afe0ba8540
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -820,10 +820,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 81e4b5ed-6cdf-4715-89af-cc3facda9c17
+    taskid: 2afe22be-30c2-41e0-8b7b-f6d263391fd0
     type: playbook
     task:
-      id: 81e4b5ed-6cdf-4715-89af-cc3facda9c17
+      id: 2afe22be-30c2-41e0-8b7b-f6d263391fd0
       version: -1
       name: GenericPolling
       description: |-
@@ -881,10 +881,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: d2180ff0-aa03-45a1-85a6-0fa982e24794
+    taskid: a7ab93b5-9871-4ebe-8c80-fd8bf39f4651
     type: regular
     task:
-      id: d2180ff0-aa03-45a1-85a6-0fa982e24794
+      id: a7ab93b5-9871-4ebe-8c80-fd8bf39f4651
       version: -1
       name: Check URL Is Ready
       description: Returns, whether there're, are enough indicators in the system.
@@ -918,10 +918,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b81cafbb-5b5c-4ad8-8d40-7748f2886daf
+    taskid: 2df9e2a7-31a2-4c2f-853f-a17818d7ab39
     type: regular
     task:
-      id: b81cafbb-5b5c-4ad8-8d40-7748f2886daf
+      id: 2df9e2a7-31a2-4c2f-853f-a17818d7ab39
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -954,10 +954,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 350b4390-92d7-496c-823a-67d5985ba800
+    taskid: e9b01148-577b-4c51-88b0-8af828523f3f
     type: condition
     task:
-      id: 350b4390-92d7-496c-823a-67d5985ba800
+      id: e9b01148-577b-4c51-88b0-8af828523f3f
       version: -1
       name: Verify URL Is Ready
       type: condition
@@ -994,10 +994,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 282f5177-8cf2-4ed6-8a34-c17e009f4850
+    taskid: 7cdac826-a4eb-4113-817b-5e12f74b14e1
     type: playbook
     task:
-      id: 282f5177-8cf2-4ed6-8a34-c17e009f4850
+      id: 7cdac826-a4eb-4113-817b-5e12f74b14e1
       version: -1
       name: GenericPolling
       description: |-
@@ -1055,10 +1055,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: cdd30184-abc9-47b2-8a5a-07ed7d7aaa1e
+    taskid: c4f4dcb0-ef1a-45ee-8bf0-13b7e8de143c
     type: regular
     task:
-      id: cdd30184-abc9-47b2-8a5a-07ed7d7aaa1e
+      id: c4f4dcb0-ef1a-45ee-8bf0-13b7e8de143c
       version: -1
       name: Set URL
       description: Set a value in context under the key you entered.
@@ -1101,10 +1101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 38277ffb-60a7-4bfe-88d6-b8356b3c86d7
+    taskid: 42e9f6b3-7fce-4e6e-8be8-4a0602a04ef5
     type: regular
     task:
-      id: 38277ffb-60a7-4bfe-88d6-b8356b3c86d7
+      id: 42e9f6b3-7fce-4e6e-8be8-4a0602a04ef5
       version: -1
       name: Get Server URL
       description: Get the Server URL.
@@ -1133,10 +1133,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: dc963372-3942-43f0-87e2-2d88f8d314a2
+    taskid: c3350175-17c4-414a-8f67-c625e4157d62
     type: regular
     task:
-      id: dc963372-3942-43f0-87e2-2d88f8d314a2
+      id: c3350175-17c4-414a-8f67-c625e4157d62
       version: -1
       name: Send URL Query
       description: Sends http request. Returns the response as json.
@@ -1146,7 +1146,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "33"
     scriptarguments:
       headers:
         simple: Accept:application/taxii+json
@@ -1193,18 +1193,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 3ca965c9-be26-4736-83b2-e8191d00c7fd
+    taskid: 8460dc41-4b9a-46c2-81c9-8631295cf2db
     type: condition
     task:
-      id: 3ca965c9-be26-4736-83b2-e8191d00c7fd
+      id: 8460dc41-4b9a-46c2-81c9-8631295cf2db
       version: -1
       name: Assert Search Time OK
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "33"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1238,10 +1235,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 018015db-908c-4087-885c-3769ea9b0483
+    taskid: 01a5f418-ba46-4885-8173-8b03abfb96f2
     type: regular
     task:
-      id: 018015db-908c-4087-885c-3769ea9b0483
+      id: 01a5f418-ba46-4885-8173-8b03abfb96f2
       version: -1
       name: Send IP Query
       description: Sends http request. Returns the response as json.
@@ -1251,7 +1248,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "32"
+      - "34"
     scriptarguments:
       headers:
         simple: Accept:application/taxii+json
@@ -1298,18 +1295,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 25ee9bf6-f687-4bb4-8795-03c238818fec
+    taskid: 22f716ac-ea21-4c17-8b2a-55c826dc4049
     type: condition
     task:
-      id: 25ee9bf6-f687-4bb4-8795-03c238818fec
+      id: 22f716ac-ea21-4c17-8b2a-55c826dc4049
       version: -1
       name: Assert Search Time OK
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1343,10 +1337,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 1d1f55f2-c1c6-4712-8484-4f0efd3f23b7
+    taskid: 16cb55a5-45ca-4c21-841c-b3bde393f2fd
     type: regular
     task:
-      id: 1d1f55f2-c1c6-4712-8484-4f0efd3f23b7
+      id: 16cb55a5-45ca-4c21-841c-b3bde393f2fd
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1381,10 +1375,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 6373a0d1-85be-4905-8f51-945b607d867c
+    taskid: db9c492e-d905-478d-810b-aa8b73967765
     type: regular
     task:
-      id: 6373a0d1-85be-4905-8f51-945b607d867c
+      id: db9c492e-d905-478d-810b-aa8b73967765
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1419,10 +1413,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: b09015ed-04fe-4df3-878c-74c3d3dd5520
+    taskid: a6f651d5-816c-476a-8a6a-d0a5a38d5843
     type: regular
     task:
-      id: b09015ed-04fe-4df3-878c-74c3d3dd5520
+      id: a6f651d5-816c-476a-8a6a-d0a5a38d5843
       version: -1
       name: Send Domain Query
       description: Sends http request. Returns the response as json.
@@ -1432,7 +1426,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "36"
+      - "57"
     scriptarguments:
       headers:
         simple: Accept:application/taxii+json
@@ -1479,18 +1473,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 0200298b-dff9-47b0-8a9f-e2b51790f6cb
+    taskid: 3ea3d2fc-8f59-4210-87fd-d58285d8bae2
     type: condition
     task:
-      id: 0200298b-dff9-47b0-8a9f-e2b51790f6cb
+      id: 3ea3d2fc-8f59-4210-87fd-d58285d8bae2
       version: -1
       name: Assert Search Time OK
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "57"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1524,10 +1515,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 85d84ae2-94c1-4533-8081-e6e722f2fd9e
+    taskid: 98db4b3c-ccf3-475b-8ef6-8aac7d9da66b
     type: regular
     task:
-      id: 85d84ae2-94c1-4533-8081-e6e722f2fd9e
+      id: 98db4b3c-ccf3-475b-8ef6-8aac7d9da66b
       version: -1
       name: Send URL Query
       description: Sends http request. Returns the response as json.
@@ -1537,7 +1528,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "40"
     scriptarguments:
       headers:
         simple: Accept:application/taxii+json
@@ -1584,18 +1575,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: cc030986-2d75-4e05-8b19-82d8c9513ae8
+    taskid: 6beada52-48dd-4c1c-8ff7-bffff6f0d737
     type: condition
     task:
-      id: cc030986-2d75-4e05-8b19-82d8c9513ae8
+      id: 6beada52-48dd-4c1c-8ff7-bffff6f0d737
       version: -1
       name: Assert Search Time OK
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "40"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1629,10 +1617,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: e3c51ee0-c14b-46c6-825e-0b1046b2693a
+    taskid: bec1eac3-ffc7-48f1-896f-5f37bcb7b2d5
     type: regular
     task:
-      id: e3c51ee0-c14b-46c6-825e-0b1046b2693a
+      id: bec1eac3-ffc7-48f1-896f-5f37bcb7b2d5
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1667,10 +1655,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 4e75f5f2-67be-4e7b-8c04-76e2bade989d
+    taskid: 4940dc96-a774-476a-81a2-a2ec417f7565
     type: regular
     task:
-      id: 4e75f5f2-67be-4e7b-8c04-76e2bade989d
+      id: 4940dc96-a774-476a-81a2-a2ec417f7565
       version: -1
       name: Send IP Query
       description: Sends http request. Returns the response as json.
@@ -1680,7 +1668,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+      - "43"
     scriptarguments:
       headers:
         simple: Accept:application/taxii+json
@@ -1727,18 +1715,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 7bc7a0a0-df72-465f-8df8-d3029412eeb9
+    taskid: 0555587c-4731-43bc-8ad6-000d1e0c85b9
     type: condition
     task:
-      id: 7bc7a0a0-df72-465f-8df8-d3029412eeb9
+      id: 0555587c-4731-43bc-8ad6-000d1e0c85b9
       version: -1
       name: Assert Search Time OK
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "43"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1772,10 +1757,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 72389367-a574-4e80-8ec9-220623b5c990
+    taskid: e30d62e3-6023-45a3-8952-c6979676401b
     type: regular
     task:
-      id: 72389367-a574-4e80-8ec9-220623b5c990
+      id: e30d62e3-6023-45a3-8952-c6979676401b
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1810,10 +1795,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 029df56c-f3ed-4996-869e-dbfb55d41a26
+    taskid: 8113abee-6d0f-4e6a-8623-558ccc4627d5
     type: regular
     task:
-      id: 029df56c-f3ed-4996-869e-dbfb55d41a26
+      id: 8113abee-6d0f-4e6a-8623-558ccc4627d5
       version: -1
       name: Send Domain Query
       description: Sends http request. Returns the response as json.
@@ -1823,7 +1808,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "45"
+      - "58"
     scriptarguments:
       headers:
         simple: Accept:application/taxii+json
@@ -1870,18 +1855,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 279a25d8-679b-4c68-8f93-57b0f87f3f73
+    taskid: 4e68f1dd-c099-4d7e-8bb9-dc57f247bfbf
     type: condition
     task:
-      id: 279a25d8-679b-4c68-8f93-57b0f87f3f73
+      id: 4e68f1dd-c099-4d7e-8bb9-dc57f247bfbf
       version: -1
       name: Assert Search Time OK
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "58"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1915,10 +1897,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 5885567d-48a4-421c-8052-53c0bd9c845a
+    taskid: b88477a6-df15-499b-8508-ff0fc37e5f51
     type: regular
     task:
-      id: 5885567d-48a4-421c-8052-53c0bd9c845a
+      id: b88477a6-df15-499b-8508-ff0fc37e5f51
       version: -1
       name: Send URL Query
       description: Sends http request. Returns the response as json.
@@ -1928,7 +1910,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "49"
+      - "50"
     scriptarguments:
       headers:
         simple: Accept:application/taxii+json
@@ -1975,18 +1957,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: da32e3ed-c0c9-4256-89df-bcc6df50cdeb
+    taskid: 88fda396-ad2a-4a50-8bdf-830739fcbd69
     type: condition
     task:
-      id: da32e3ed-c0c9-4256-89df-bcc6df50cdeb
+      id: 88fda396-ad2a-4a50-8bdf-830739fcbd69
       version: -1
       name: Assert Search Time OK
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "50"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2020,10 +1999,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 50d7ffef-fb81-4664-8dc3-f877387ef07b
+    taskid: 172af781-4862-4556-807f-f59fb78f8065
     type: regular
     task:
-      id: 50d7ffef-fb81-4664-8dc3-f877387ef07b
+      id: 172af781-4862-4556-807f-f59fb78f8065
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -2058,10 +2037,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 2d344e33-4e0a-4554-8f60-71314311144d
+    taskid: 4dd56c37-1168-4e3a-84b4-70faec6b7a6a
     type: regular
     task:
-      id: 2d344e33-4e0a-4554-8f60-71314311144d
+      id: 4dd56c37-1168-4e3a-84b4-70faec6b7a6a
       version: -1
       name: Send IP Query
       description: Sends http request. Returns the response as json.
@@ -2071,7 +2050,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "52"
+      - "53"
     scriptarguments:
       headers:
         simple: Accept:application/taxii+json
@@ -2118,18 +2097,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 8f00d7af-273c-40b2-88a3-ab1b2dd360ca
+    taskid: 21db0d06-666c-4ff2-8013-08162c98b071
     type: condition
     task:
-      id: 8f00d7af-273c-40b2-88a3-ab1b2dd360ca
+      id: 21db0d06-666c-4ff2-8013-08162c98b071
       version: -1
       name: Assert Search Time OK
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "53"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2163,10 +2139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: b655cfc8-b2e0-4df4-8c83-ea060dd2d746
+    taskid: f3b861ab-3c37-4ed3-8ac1-e27664ae13e2
     type: regular
     task:
-      id: b655cfc8-b2e0-4df4-8c83-ea060dd2d746
+      id: f3b861ab-3c37-4ed3-8ac1-e27664ae13e2
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -2201,10 +2177,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 3ae9690c-2a6d-4607-80dc-e9bf58490de6
+    taskid: dc0b07c7-39b8-4c7a-80bd-01a0ad37d3e9
     type: regular
     task:
-      id: 3ae9690c-2a6d-4607-80dc-e9bf58490de6
+      id: dc0b07c7-39b8-4c7a-80bd-01a0ad37d3e9
       version: -1
       name: Send Domain Query
       description: Sends http request. Returns the response as json.
@@ -2214,7 +2190,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "55"
+      - "59"
     scriptarguments:
       headers:
         simple: Accept:application/taxii+json
@@ -2261,18 +2237,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 475203a0-79ab-401b-8cef-0daf9efeb1b2
+    taskid: 9e2dbf87-188e-4e49-8f7b-3e5b054c69dd
     type: condition
     task:
-      id: 475203a0-79ab-401b-8cef-0daf9efeb1b2
+      id: 9e2dbf87-188e-4e49-8f7b-3e5b054c69dd
       version: -1
       name: Assert Search Time OK
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "59"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2306,10 +2279,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 7d45d389-de47-4680-8351-349e59da125b
+    taskid: 518d8a07-4344-4542-831e-eb01916017fd
     type: title
     task:
-      id: 7d45d389-de47-4680-8351-349e59da125b
+      id: 518d8a07-4344-4542-831e-eb01916017fd
       version: -1
       name: Done
       type: title
@@ -2333,10 +2306,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 974eb66b-f3ee-438b-8150-8196d5204687
+    taskid: d0a436a9-cfe0-4c64-8f8c-eba924337853
     type: regular
     task:
-      id: 974eb66b-f3ee-438b-8150-8196d5204687
+      id: d0a436a9-cfe0-4c64-8f8c-eba924337853
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -2371,10 +2344,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: bb1fe041-3e69-4bed-8787-26eabe40ad0b
+    taskid: ca3b1b35-f909-4212-8ee7-e7dfabf21e6a
     type: regular
     task:
-      id: bb1fe041-3e69-4bed-8787-26eabe40ad0b
+      id: ca3b1b35-f909-4212-8ee7-e7dfabf21e6a
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -2409,10 +2382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 45327fbd-6f64-4877-8462-ce3d744f2674
+    taskid: 71ca989b-0181-45ee-81d1-c2d22d5f512a
     type: regular
     task:
-      id: 45327fbd-6f64-4877-8462-ce3d744f2674
+      id: 71ca989b-0181-45ee-81d1-c2d22d5f512a
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -2447,10 +2420,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 4f088905-a0bd-490c-8d32-5ebd6a7f2c78
+    taskid: f5b860eb-86c0-4b8a-8c20-8cfef06453d1
     type: regular
     task:
-      id: 4f088905-a0bd-490c-8d32-5ebd6a7f2c78
+      id: f5b860eb-86c0-4b8a-8c20-8cfef06453d1
       version: -1
       name: Clear HeyConcurrency Context
       description: Delete field from context
@@ -2485,10 +2458,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: c22b6109-8027-4413-833c-957ce796e110
+    taskid: df5cfd7d-e8e1-48a1-824b-752ec8820e23
     type: regular
     task:
-      id: c22b6109-8027-4413-833c-957ce796e110
+      id: df5cfd7d-e8e1-48a1-824b-752ec8820e23
       version: -1
       name: taxii-server-list-collections
       description: Returns all the collections.
@@ -2551,5 +2524,3 @@ inputs:
   description: Expected number of indicators in the system.
   playbookInputQuery: null
 outputs: []
-fromversion: 6.1.0
-description: ''
