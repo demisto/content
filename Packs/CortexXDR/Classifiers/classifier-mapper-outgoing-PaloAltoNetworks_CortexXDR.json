@@ -15,9 +15,6 @@
 					"complex": null,
 					"simple": "xdrassigneduserprettyname"
 				},
-				"close_reason": {
-					"simple": "closeReason"
-				},
 				"manual_severity": {
 					"complex": {
 						"accessor": "",
