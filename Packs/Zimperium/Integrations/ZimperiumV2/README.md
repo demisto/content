@@ -48,7 +48,7 @@ Search users. Only a user created as a "Team admin" is authorized to perform thi
 | page_size | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
 | page | Page number. Default is 0. | Optional | 
 | limit | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
-| team_id | Used to filter the user data by the Team the user belongs to. | Optional | 
+| team_id | Used to filter the user data by the team the user belongs to. | Optional | 
 
 #### Context Output
 
@@ -128,7 +128,7 @@ Search devices.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The ID of the device to search. | Optional | 
+| device_id | The ID of the device to search for. | Optional | 
 | page_size | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
 | page | Page number. Default is 0. | Optional | 
 | limit | Maximum number of results to retrieve in each page. Default is 50. | Optional | 
@@ -983,7 +983,7 @@ Gets the vulnerabilities.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Zimperium.Vulnerability.id | String | The ID of the vulnerability. | 
-| Zimperium.Vulnerability.blueBorneVulnerable | Boolean | Whether the operating system is blue borne vulnerable. | 
+| Zimperium.Vulnerability.blueBorneVulnerable | Boolean | Whether the operating system is blue born vulnerable. | 
 | Zimperium.Vulnerability.cveCount | Number | Number of CVEs on the operating system. | 
 | Zimperium.Vulnerability.lastCveSync | Date | The date of the last CVE sync. | 
 | Zimperium.Vulnerability.os | Number | The vulnerability operating system. | 
