@@ -253,11 +253,11 @@ def test_teradata_connection(mocker, use_ldap: bool, expected_url: str):
     Then
     - Ensure the engine url is generated correctly according to use_ldap
     """
-    mocker.patch.object(Client, '_create_engine_and_connect', return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
-    client = Client(dialect='Teradata', host='host', username='username', password='password', port='', connect_parameters='',
+
+    mock_create_engine = mocker.patch.object(sqlalchemy, 'create_engine')
+    Client(dialect='Teradata', host='host', username='username', password='password', port='', connect_parameters='',
                     database='', ssl_connect=False, use_ldap=use_ldap)
-    engine_url = client._create_engine_url_for_teradata()
-    assert expected_url == engine_url
+    assert mock_create_engine.mock_calls[0][1][0] == expected_url
 
 
 @pytest.mark.parametrize('dialect, expected_port', [
