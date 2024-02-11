@@ -1977,8 +1977,6 @@ def main():
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
     build = create_build_object()
     logging.info(f"Build Number: {build.ci_build_number}")
-    for server in build.servers:
-        server.add_server_configuration()
     build.configure_servers_and_restart()
     # build.disable_instances()
 
