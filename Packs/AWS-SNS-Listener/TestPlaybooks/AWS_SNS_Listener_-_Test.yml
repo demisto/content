@@ -68,7 +68,7 @@ tasks:
       method:
         simple: POST
       url:
-        simple: http://localhost:9000/incident/aws/sns
+        simple: http://localhost:9000/incident/aws/
     separatecontext: false
     continueonerrortype: ""
     view: |-
