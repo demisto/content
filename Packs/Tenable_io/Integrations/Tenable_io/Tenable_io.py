@@ -670,6 +670,8 @@ def get_vulnerabilities_chunks(client: Client, export_uuid: str):
     if status == 'FINISHED':
         for chunk_id in chunks_available:
             vulnerabilities.extend(client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
+    for vuln in vulnerabilities:
+        vuln['_time'] = vuln.get('received') or vuln.get('indexed')
     return vulnerabilities, status
 
 
