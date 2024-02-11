@@ -25,6 +25,10 @@
             "mandatory": true,
             "display_name": "Common Scripts"
         },
+        "CommonReports": {
+            "mandatory": true,
+            "display_name": "Common Reports"
+        },
         "GenericSQL": {
             "mandatory": true,
             "display_name": "GenericSQL"
