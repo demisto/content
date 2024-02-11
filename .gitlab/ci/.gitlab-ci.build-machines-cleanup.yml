@@ -19,7 +19,7 @@ build-machines-cleanup:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - if [[ -n "$LOCK_MACHINE_NAME" ]]; then
-    -   echo "Check if lock file already exist"
+    -   echo "Check if lock file already exist "
     -   gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - |
         for _ in {1..3}; do
