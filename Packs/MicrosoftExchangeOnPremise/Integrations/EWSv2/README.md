@@ -652,12 +652,12 @@ This operation verifies aliases and matches display names to the correct mailbox
 | EWS.ResolvedNames.FullContactInfo.initials | String | Represents the initials of a contact. | 
 | EWS.ResolvedNames.FullContactInfo.phoneNumbers.label | String | The following are the possible values for this attribute: AssistantPhone, BusinessFax, BusinessPhone, BusinessPhone2, Callback, CarPhone, CompanyMainPhone, HomeFax, HomePhone, HomePhone2, Isdn, MobilePhone, OtherFax, OtherTelephone, Pager, PrimaryPhone, RadioPhone, Telex, TtyTddPhone | 
 | EWS.ResolvedNames.FullContactInfo.phoneNumbers.phoneNumber | String | The phone number of the contact | 
-| EWS.ResolvedNames.FullContactInfo.physicalAddresses.city | String | The physicalAddresses city assosciated with the contact. | 
-| EWS.ResolvedNames.FullContactInfo.physicalAddresses.country | String | The physicalAddresses country assosciated with the contact. | 
-| EWS.ResolvedNames.FullContactInfo.physicalAddresses.label | String | The physicalAddresses label assosciated with the contact. | 
-| EWS.ResolvedNames.FullContactInfo.physicalAddresses.state | String | The physicalAddresses state assosciated with the contact. | 
-| EWS.ResolvedNames.FullContactInfo.physicalAddresses.street | String | The physicalAddresses street assosciated with the contact. | 
-| EWS.ResolvedNames.FullContactInfo.physicalAddresses.zipcode | String | The physicalAddresses zipcode assosciated with the contact. | 
+| EWS.ResolvedNames.FullContactInfo.physicalAddresses.city | String | The physical addresses city associated with the contact. | 
+| EWS.ResolvedNames.FullContactInfo.physicalAddresses.country | String | The physical addresses country associated with the contact. | 
+| EWS.ResolvedNames.FullContactInfo.physicalAddresses.label | String | The physical addresses label associated with the contact. | 
+| EWS.ResolvedNames.FullContactInfo.physicalAddresses.state | String | The physical addresses state associated with the contact. | 
+| EWS.ResolvedNames.FullContactInfo.physicalAddresses.street | String | The physical addresses street associated with the contact. | 
+| EWS.ResolvedNames.FullContactInfo.physicalAddresses.zipcode | String | The physical addresses zipcode associated with the contact. | 
 | EWS.ResolvedNames.FullContactInfo.postalAddressIndex | String | Represents the display types for physical addresses. | 
 | EWS.ResolvedNames.FullContactInfo.sensitivity | String | Indicates the sensitivity level of an item. | 
 | EWS.ResolvedNames.email_address | String | The primary SMTP address of a mailbox user. | 
