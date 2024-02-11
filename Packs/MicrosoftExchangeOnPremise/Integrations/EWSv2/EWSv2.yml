@@ -658,52 +658,52 @@ script:
       description: Contains a contact's given name.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.importance
-      description: 'Describes the importance of an item.'
+      description: Describes the importance of an item.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.initials
-      description: 'Represents the initials of a contact.'
+      description: Represents the initials of a contact.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.phoneNumbers.label
       description: 'The following are the possible values for this attribute: AssistantPhone, BusinessFax, BusinessPhone, BusinessPhone2, Callback, CarPhone, CompanyMainPhone, HomeFax, HomePhone, HomePhone2, Isdn, MobilePhone, OtherFax, OtherTelephone, Pager, PrimaryPhone, RadioPhone, Telex, TtyTddPhone.'
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.phoneNumbers.phoneNumber
-      description: 'The Phone number of the contact.'
+      description: The phone number of the contact.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.city
-      description: 'The physicalAddresses city assosciated with the contact.'
+      description: The physical addresses city associated with the contact.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.country
-      description: 'The physicalAddresses country assosciated with the contact.'
+      description: The physical addresses country associated with the contact.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.label
-      description: 'The physicalAddresses label assosciated with the contact.'
+      description: The physical addresses label associated with the contact.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.state
-      description: 'The physicalAddresses state assosciated with the contact.'
+      description: The physical addresses state associated with the contact.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.street
-      description: 'The physicalAddresses street assosciated with the contact.'
+      description: The physical addresses street associated with the contact.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.zipcode
-      description: 'The physicalAddresses zipcode assosciated with the contact.'
+      description: The physical addresses zipcode associated with the contact.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.postalAddressIndex
-      description: 'Represents the display types for physical addresses.'
+      description: Represents the display types for physical addresses.
       type: String
     - contextPath: EWS.ResolvedNames.FullContactInfo.sensitivity
-      description: 'Indicates the sensitivity level of an item.'
+      description: Indicates the sensitivity level of an item.
       type: String
     - contextPath: EWS.ResolvedNames.email_address
-      description: 'The primary SMTP address of a mailbox user.'
+      description: The primary SMTP address of a mailbox user.
       type: String
     - contextPath: EWS.ResolvedNames.mailbox_type
-      description: 'The type of mailbox that is represented by the e-mail address.'
+      description: The type of mailbox that is represented by the email address.
       type: String
     - contextPath: EWS.ResolvedNames.name
-      description: 'The name of a mailbox user.'
+      description: The name of a mailbox user.
       type: String
     - contextPath: EWS.ResolvedNames.routing_type
-      description: 'The address type for the mailbox.'
+      description: The address type for the mailbox.
       type: String
   - arguments:
     - description: A CSV list if item IDs.
