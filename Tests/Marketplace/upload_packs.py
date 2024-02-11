@@ -132,6 +132,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
         logging.critical(f"Failed to download {GCPConfig.INDEX_NAME}.zip file from cloud storage.")
         sys.exit(1)
 
+
 def update_pack_folder_metadata(pack: Pack, extract_destination_path: str):
     """
     Updates the metadata of a pack and saves it to a JSON file in the extract_destination_path.
@@ -152,6 +153,7 @@ def update_pack_folder_metadata(pack: Pack, extract_destination_path: str):
         logging.exception(f"Failed in updating {pack.name} pack metadata.\n{str(e)}")
     finally:
         return task_status
+
 
 def update_index_folder(index_folder_path: str, pack: Pack, is_private_pack: bool = False,
                         pack_versions_to_keep: list = None) -> bool:
@@ -1312,9 +1314,10 @@ def main():
                 pack.cleanup()
                 continue
 
-        elif pack.is_metadata_updated: # TODO if we didnt manage to update index zip or pack zip what do we want to do
+        elif pack.is_metadata_updated:  # TODO if we didnt manage to update index zip or pack zip what do we want to do
             logging.info(f"{pack.current_version=}")
-            pack_zip_folder = pack.download_and_extract_pack(pack.current_version, storage_bucket, extract_destination_path, storage_base_path)
+            pack_zip_folder = pack.download_and_extract_pack(
+                pack.current_version, storage_bucket, extract_destination_path, storage_base_path)
             if not pack_zip_folder:
                 pack.status = PackStatus.FAILED_DOWNLOADING_PACK.name  # type: ignore[misc]
                 pack.cleanup()

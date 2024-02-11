@@ -428,7 +428,8 @@ class Pack:
             logging.debug(
                 f"Updating metadata with statistics and metadata changes because {self._pack_name=} {self.is_modified=} {self.is_metadata_updated=}")
         else:
-            logging.debug(f"Updating metadata only with statistics because {self._pack_name=} {self.is_modified=} {self.is_metadata_updated=}")
+            logging.debug(
+                f"Updating metadata only with statistics because {self._pack_name=} {self.is_modified=} {self.is_metadata_updated=}")
 
         return update_statics_metadata | update_metadata_fields
 
@@ -946,8 +947,8 @@ class Pack:
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status
 
-    def download_and_extract_pack(self, pack_version,  storage_bucket: Any, extract_destination_path: str, storage_base_path: str) \
-        -> str | bool:
+    def download_and_extract_pack(self, pack_version, storage_bucket: Any, extract_destination_path: str, storage_base_path: str) \
+            -> str | bool:
         """
         Downloads and extracts a pack with a specific version from a storage bucket.
 
