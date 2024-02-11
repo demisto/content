@@ -17,6 +17,10 @@ API_KEY_LENGTH = 128
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
 INTEGRATION_NAME = 'Cortex XDR - IR'
+UPGRADED_GET_EXTRA_DATA_ = False
+IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET = False
+ALERTS_LIMIT_PER_INCIDENTS = -1
+
 
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
@@ -308,16 +312,16 @@ class Client(CoreClient):
         )
         return reply.get('reply', {})
 
-    def get_multiple_incidents_extra_data(self, incident_id):
+    def get_multiple_incidents_extra_data(self, incident_id_list):
         """
         Returns incident by id
-        :param incident_id: The id of incident
+        :param incident_id_list: The list ids of incidents
         :return:
         Maximum number alerts to get in Maximum number alerts to get in "get_multiple_incidents_extra_data" is 50, not sorted
         """
+        demisto.debug('beginning get_multiple_incidents_extra_data')
         request_data = {
-            'incident_id': incident_id,
-            "request_data": {"fields_to_exclude": ["network_artifacts"]}
+            "filters": [{"field": "incident_id_list", "operator": "in", "value": [incident_id_list]}]
         }
 
         reply = self._http_request(
@@ -328,6 +332,7 @@ class Client(CoreClient):
             timeout=self.timeout,
 
         )
+        demisto.debug(f"Reply from get_multiple_incidents_extra_data API: {reply}")
         return reply
 
 
@@ -422,7 +427,7 @@ def get_last_mirrored_in_time(args):
     return last_mirrored_in_timestamp
 
 
-def check_using_upgraded_api_incidents_extra_data(client, incident_id: str | List):
+def check_using_upgraded_api_incidents_extra_data(client, incident_id: str):
     """Checks if the new XDR version is installed (otherwise we will get internal error 500)
         and get_multiple_incidents_extra_data returns at least number_in_config indicators.
 
@@ -434,19 +439,23 @@ def check_using_upgraded_api_incidents_extra_data(client, incident_id: str | Lis
         bool: True if the additional incident data retrieval was successful, False otherwise.
         Dict: if the call sus
     """
+    global ALERTS_LIMIT_PER_INCIDENTS
+    demisto.debug(f"Using for check get_multiple_incidents_extra_data API for incident {incident_id}.")
     try:
         raw_incident: dict = client.get_multiple_incidents_extra_data(incident_id)
-        indicators_limit_number_in_config_map = int(raw_incident.get('replay', {}).get('number_in_config'))
+        ALERTS_LIMIT_PER_INCIDENTS = int(raw_incident.get('replay', {}).get('number_in_config'))
         fetch_alert_count = int(raw_incident.get('replay', {}).get('alert_count'))
-        use_get_incident_extra_data = fetch_alert_count <= indicators_limit_number_in_config_map
-        return raw_incident.get('replay', {}).get('incidents', {}), use_get_incident_extra_data
+        use_get_incident_extra_data = fetch_alert_count < ALERTS_LIMIT_PER_INCIDENTS
+        return use_get_incident_extra_data
     except Exception as err:
         if err.res.status_code == 500:  # type: ignore
-            return {}, False
-    return {}, True
+            return False
+    return True
 
 
 def get_incident_extra_data_command(client, args):
+    global IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET, UPGRADED_GET_EXTRA_DATA
+    list_incidents_ids = args.get('list_incidents_ids')
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
@@ -460,10 +469,12 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-    raw_incident, use_get_incident_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_id)
-    if not use_get_incident_extra_data:
-        demisto.debug('Using the original API to retrieve incident extra data')
-        raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
+    if not IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET:
+        demisto.debug('IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET')
+        UPGRADED_GET_EXTRA_DATA = check_using_upgraded_api_incidents_extra_data(client, incident_id)
+        IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET = True
+    raw_incident = client.get_multiple_incidents_extra_data(list_incidents_ids).get('replay', {}).get('incidents', {}) \
+        if UPGRADED_GET_EXTRA_DATA else client.get_incident_extra_data(incident_id, alerts_limit)
 
     incident = raw_incident.get('incident', {})
     incident_id = incident.get('incident_id')
@@ -870,6 +881,7 @@ def create_incidents_dictionary(incidents_data: Dict[str, Any]) -> Dict[str, Any
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None):
+    global IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET, UPGRADED_GET_EXTRA_DATA, ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
@@ -906,24 +918,28 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     try:
         # The count of incidents, so as not to pass the limit
         count_incidents = 0
-        incident_ids: list[str] = []
+        list_incidents_ids: list[str] = []
         incident_data_dict: dict[str, Any] = {}
-        if_upgraded_extra_data = False
-        if raw_incidents and (check_using_upgraded_api_incidents_extra_data(client, raw_incidents[0].get('incident_id')[-1])):
-            incident_ids = [raw_incident.get('incident_id') for raw_incident in raw_incidents
-                            if len(incident_ids) < max_fetch]
-            raw_incidents_data, if_upgraded_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_ids)
+        if not IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET and raw_incidents:
+            UPGRADED_GET_EXTRA_DATA = check_using_upgraded_api_incidents_extra_data(
+                client, raw_incidents[0].get('incident_id')[-1])
+            IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET = True
+        if UPGRADED_GET_EXTRA_DATA:
+            list_incidents_ids = [raw_incident.get('incident_id') for raw_incident in raw_incidents
+                                  if len(list_incidents_ids) < max_fetch]
+            raw_incidents_data = client.get_multiple_incidents_extra_data(list_incidents_ids)
             incident_data_dict = create_incidents_dictionary(raw_incidents_data)
+
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
             incident_data: dict[str, Any] = {}
-            if if_upgraded_extra_data:
+            if UPGRADED_GET_EXTRA_DATA and incident_data_dict.get(incident_id, {}).get('alert_count') < ALERTS_LIMIT_PER_INCIDENTS:
                 incident_data = incident_data_dict.get(incident_id, {})
             else:
                 incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
                                                                          "alerts_limit": 1000})[2].get('incident') or {}
 
-            sort_all_list_incident_fields(incident_data)  # adding another option
+            sort_all_list_incident_fields(incident_data)
 
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
                                                                      None)
@@ -1075,7 +1091,7 @@ def main():  # pragma: no cover
     """
     Executes an integration command
     """
-    command = "fetch-incidents"  # demisto.command()
+    command = demisto.command()
     params = demisto.params()
     LOG(f'Command being called is {command}')
 

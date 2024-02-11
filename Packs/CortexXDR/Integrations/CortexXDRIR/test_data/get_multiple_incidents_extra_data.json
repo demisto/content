@@ -1,7 +1,8 @@
 {
     "reply": {
-        "total_count": 358,
-        "result_count": 100,
+        "total_count": 2,
+        "result_count": 2,
+        "alerts_limit_per_incident": 50,
         "incidents": [
             {
                 "incident": {
