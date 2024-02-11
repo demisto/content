@@ -480,10 +480,9 @@ var fileDeleteCommand = function(EntryID) {
     }
     deleteFileRequest(EntryID);
     return  {Type: entryTypes.note,
-            Contents: '',
-            ContentsType: formats.json,
-            EntryContext: invContext,
-            HumanReadable: `File ${EntryID} was deleted successfully.`};
+        Contents: '',
+        ContentsType: formats.json,
+        HumanReadable: `File ${EntryID} was deleted successfully.`}
 }
 
 

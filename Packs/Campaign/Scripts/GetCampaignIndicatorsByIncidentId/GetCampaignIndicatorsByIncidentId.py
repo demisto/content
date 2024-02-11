@@ -27,12 +27,17 @@ def get_indicators_from_incidents(incident_ids: list):
         List of the campaign indicators.
     """
     indicators_query = f"""investigationIDs:({' '.join(f'"{id_}"' for id_ in incident_ids)})"""
-    fields = ['id', 'indicator_type', 'investigationIDs', 'relatedIncCount', 'score', 'value']
-    indicators_args = {'query': indicators_query, 'limit': '150', 'populateFields': ','.join(fields)}
-    res = execute_command('GetIndicatorsByQuery', args=indicators_args)
-    if is_error(res):
-        return_error(f'Error in GetIndicatorsByQuery. {get_error(res)}')
-    return res
+    fields = ['id', 'indicator_type', 'investigationIDs', 'investigationsCount', 'score', 'value']
+    search_indicators = IndicatorsSearcher(
+        query=indicators_query,
+        limit=150,
+        size=500,
+        filter_fields=','.join(fields)
+    )
+    indicators: list[dict] = []
+    for ioc_res in search_indicators:
+        indicators.extend(ioc_res.get('iocs') or [])
+    return indicators
 
 
 def format_results(indicators: list, incident_ids: list) -> str:
