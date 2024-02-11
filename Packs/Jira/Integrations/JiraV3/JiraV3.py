@@ -1937,10 +1937,17 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
+
+    # Validate that no more args are sent when the issue_json arg is used 
+    if "issue_json" in args and len(args) > 1:
+        raise DemistoException(
+            "When using the argument `issue_json`, additional arguments cannot be used.ֿֿֿ\n see issue_json description"
+        )
+
     args_for_api = deepcopy(args)
     if project_name := args_for_api.get('project_name'):
         args_for_api['project_id'] = get_project_id_from_name(client=client, project_name=project_name)
-
+    
     issue_fields = create_issue_fields(client=client, issue_args=args_for_api,
                                        issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
     if "summary" not in issue_fields.get("fields", {}):
@@ -1972,6 +1979,12 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
+    if "issue_json" in args and len([k for k in args if k not in ("status", "transition", "action")]) > 1:
+        raise DemistoException(
+            "When using the `issue_json` argument, additional arguments cannot be used "
+            "except `status`, `transition`, and `action` arguments.ֿֿֿ"
+            "\n see issue_json description"
+        )
     issue_id_or_key = get_issue_id_or_key(
         issue_id=args.get("issue_id", ""), issue_key=args.get("issue_key", "")
     )

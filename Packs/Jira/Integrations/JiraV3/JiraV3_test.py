@@ -717,7 +717,24 @@ class TestJiraEditIssueCommand:
         edit_issue_command(client=client, args=args)
         assert expected_issue_fields == edit_issue_mocker.call_args[1].get('json_data')
 
+    def test_edit_issue_command_with_issue_json_and_another_arg_error(self):
+        from JiraV3 import edit_issue_command
+        client = jira_base_client_mock()
+        with pytest.raises(
+            DemistoException,
+            match=(
+                "When using the `issue_json` argument, additional arguments cannot be used "
+                "except `status`, `transition`, and `action` arguments.ֿֿֿ"
+                "\n see issue_json description"
+            )
+        ):
+            edit_issue_command(
+                client=client,
+                args={"summary": "test", "issue_json": '{"fields": {"customfield_10037":"field_value"}}'}
+            )
 
+    def test_edit_issue_command_with_issue_json_and_another_arg_no_error(self):
+        
 class TestJiraCreateIssueCommand:
     def test_create_issue_command(self, mocker):
         """
@@ -754,6 +771,27 @@ class TestJiraCreateIssueCommand:
         mocker.patch.object(client, 'create_issue', return_value=raw_response)
         command_result = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'})
         assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': expected_outputs}
+
+    def test_create_issue_command_with_issue_json_and_another_arg(self):
+        """
+        Given:
+            - A Jira client
+            - issue_json and summary args
+        When
+            - Calling the create issue command.
+        Then
+            - Ensure an error is raised with an expected error message.
+        """
+        from JiraV3 import create_issue_command
+        client = jira_base_client_mock()
+        with pytest.raises(
+            DemistoException,
+            match="When using the argument `issue_json`, additional arguments cannot be used.ֿֿֿ\n see issue_json description"
+        ):
+            create_issue_command(
+                client=client,
+                args={"summary": "test", "issue_json": '{"fields": {"customfield_10037":"field_value"}}'}
+            )
 
     def test_create_issue_command_no_summary(self):
         """
