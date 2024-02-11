@@ -141,6 +141,9 @@ class CloudServer(Server):
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
+    def add_server_configuration(self, config_dict, error_msg, restart=False):
+        update_server_configuration(self.client, config_dict, error_msg)
+
 
 class XSOARServer(Server):
 
@@ -837,8 +840,20 @@ class CloudBuild(Build):
         return self.marketplace_tag_name
 
     def configure_servers_and_restart(self):
-        # No need of this step in cloud.
-        pass
+        manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
+        for server in self.servers:
+            configurations = {'content.pack.verify': 'false'}
+            # if is_redhat_instance(server.internal_ip):
+            #     configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
+            #     configurations.update(NO_PROXY_CONFIG)
+            #     configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
+            # else:
+            #     configurations.update(DOCKER_HARDENING_CONFIGURATION)
+            # configure_types = ['docker hardening', 'marketplace']
+            # configurations.update(MARKET_PLACE_CONFIGURATION)
+
+            # error_msg = f"failed to set {' and '.join(configure_types)} configurations"
+            server.add_server_configuration(configurations, error_msg="OPP error", restart=not manual_restart)
 
     def test_integration_with_mock(self, instance: dict, pre_update: bool):
         # No need of this step in CLOUD.
