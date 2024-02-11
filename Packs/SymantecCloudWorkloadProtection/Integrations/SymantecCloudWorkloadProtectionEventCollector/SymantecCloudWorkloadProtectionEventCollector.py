@@ -11,64 +11,71 @@ PRODUCT = 'cwp'
 
 ''' CLIENT CLASS '''
 
+# TODO add token mechanism, 401 = Token expired
+# DESCENDING = Newer first
+
 
 class Client(BaseClient):
-    """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
-    """
+    credentials: dict = {}
+    max_events_per_fetch: int = 0
 
-    def search_events(self, prev_id: int, alert_status: None | str, limit: int, from_date: str | None = None, default_Protocol: str = 'UDP') -> List[Dict]:  # noqa: E501
-        """
-        Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+    def _http_request(
+        self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
+        params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
+        return_empty_response=False, retries=0, status_list_to_retry=None, backoff_factor=5,
+        raise_on_redirect=False, raise_on_status=False, error_handler=None, empty_valid_codes=None,
+        params_parser=None, **kwargs
+    ):
+        res = super()._http_request(
+            method, url_suffix, full_url, headers, auth, json_data, params, data, files, timeout,
+            'response', ok_codes, return_empty_response, retries, status_list_to_retry, backoff_factor,
+            raise_on_redirect, raise_on_status, error_handler, empty_valid_codes, params_parser, **kwargs
+        )
+        if res.status_code == 401:
+            self.get_new_token()
+            res = super()._http_request(
+                method, url_suffix, full_url, headers, auth, json_data, params, data, files, timeout,
+                'response', ok_codes, return_empty_response, retries, status_list_to_retry, backoff_factor,
+                raise_on_redirect, raise_on_status, error_handler, empty_valid_codes, params_parser, **kwargs
+            )
+        return res.json()
+    
+    def get_new_token(self):
+        pass
 
-        Args:
-            prev_id: previous id that was fetched.
-            alert_status:
-            limit: limit.
-            from_date: get events from from_date.
+    @classmethod
+    def from_params(
+        cls, url: str, credentials: dict, customer_id: str,
+        domain_id: str, max_events_per_fetch: str, insecure: bool,
+        proxy: bool, **_
+    ):
+        client = cls(
+            base_url=url,
+            verify=(not insecure),
+            proxy=proxy,
+            headers={
+                'content-type': 'application/json',
+                'Authorization': 'Bearer {token}',
+                'x-epmp-customer-id': customer_id,
+                'x-epmp-domain-id': domain_id,
+            },
+        )
+        client.credentials = {
+            'client_id': credentials['identifier'],
+            'client_secret': credentials['password']
+        }
+        client.max_events_per_fetch = arg_to_number(max_events_per_fetch) or 0
+        return client
 
-        Returns:
-            List[Dict]: the next event
-        """
-        # use limit & from date arguments to query the API
-        return [{
-            'id': prev_id + 1,
-            'created_time': datetime.now().isoformat(),
-            'description': f'This is test description {prev_id + 1}',
-            'alert_status': alert_status,
-            'protocol': default_Protocol,
-            't_port': prev_id + 1,
-            'custom_details': {
-                'triggered_by_name': f'Name for id: {prev_id + 1}',
-                'triggered_by_uuid': str(uuid.uuid4()),
-                'type': 'customType',
-                'requested_limit': limit,
-                'requested_From_date': from_date
-            }
-        }]
+    def search_events(self):
+        ...
+
+    def search_alerts(self):
+        ...
 
 
-def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
-    """
-    Tests API connectivity and authentication
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
-    Raises exceptions if something goes wrong.
-
-    Args:
-        client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
-        first_fetch_time(str): The first fetch time as configured in the integration params.
-
-    Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
-    """
+def test_module(client: Client) -> str:
 
     try:
         alert_status = params.get('alert_status', None)
@@ -158,33 +165,14 @@ def main() -> None:  # pragma: no cover
     main function, parses params and runs command functions
     """
 
-    params = demisto.params()
     command = demisto.command()
-    api_key = params.get('apikey', {}).get('password')
-    base_url = urljoin(params.get('url'), '/api/v1')
-    verify_certificate = not params.get('insecure', False)
-
-    # How much time before the first fetch to retrieve events
-    first_fetch_time = datetime.now().isoformat()
-    proxy = params.get('proxy', False)
-    alert_status = params.get('alert_status')
-    max_events_per_fetch = params.get('max_events_per_fetch', 1000)
-
     demisto.debug(f'Command being called is {command}')
+
     try:
-        headers = {
-            'Authorization': f'Bearer {api_key}'
-        }
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy
-        )
+        client = Client.from_params(**demisto.params())
 
         if command == 'test-module':
-            result = test_module(client, params, first_fetch_time)
-            return_results(result)
+            return_results(test_module(client))
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
