@@ -661,7 +661,7 @@ This operation verifies aliases and matches display names to the correct mailbox
 | EWS.ResolvedNames.FullContactInfo.postalAddressIndex | String | Represents the display types for physical addresses. | 
 | EWS.ResolvedNames.FullContactInfo.sensitivity | String | Indicates the sensitivity level of an item. | 
 | EWS.ResolvedNames.email_address | String | The primary SMTP address of a mailbox user. | 
-| EWS.ResolvedNames.mailbox_type | String | The type of mailbox that is represented by the e-mail address. | 
+| EWS.ResolvedNames.mailbox_type | String | The type of mailbox that is represented by the email address. | 
 | EWS.ResolvedNames.name | String | The name of a mailbox user. | 
 | EWS.ResolvedNames.routing_type | String | The address type for the mailbox | 
 
