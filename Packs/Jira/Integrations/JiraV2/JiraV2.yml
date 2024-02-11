@@ -31,7 +31,7 @@ configuration:
 - display: Access Token
   additionalinfo: This token is used for both OAuth 1.0 and personal access token authentication methods.
   name: accessToken
-  type: 4
+  type: 0
   required: false
 - display: Private key (PKCS8 format)
   name: privateKey
