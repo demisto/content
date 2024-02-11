@@ -45,9 +45,9 @@ class Client:
 
     def __init__(self, dialect: str, host: str, username: str, password: str, port: str,
                  database: str, connect_parameters: str, ssl_connect: bool, use_pool=False, verify_certificate=True,
-                 pool_ttl=DEFAULT_POOL_TTL, is_ldap=False):
-        if is_ldap and dialect != TERADATA:
-            raise ValueError(f"is_ldap is only supported with {TERADATA}")
+                 pool_ttl: int = DEFAULT_POOL_TTL, use_ldap: bool = False):
+        if use_ldap and dialect != TERADATA:
+            raise ValueError(f"use_ldap is only supported with {TERADATA}")
         self.dialect = dialect
         self.host = host
         self.username = username
@@ -58,7 +58,7 @@ class Client:
         self.ssl_connect = ssl_connect
         self.use_pool = use_pool
         self.pool_ttl = pool_ttl
-        self.is_ldap = is_ldap
+        self.use_ldap = use_ldap
         self.connection = self._create_engine_and_connect()
 
     @staticmethod
@@ -150,10 +150,10 @@ class Client:
                 cache[cache_key] = engine
         # Teradata has a unique connection, unlike the others with URL object
         elif self.dialect == TERADATA:
-            if self.is_ldap:
+            if self.use_ldap:
                 engine_url = f'teradatasql://{self.username}:{self.password}@{self.host}:{self.port}/?logmech=LDAP'
-            else:   
-                engine_url =  f'teradatasql://{self.host}:{self.port}/?user={self.username}&password={self.password}'
+            else:
+                engine_url = f'teradatasql://{self.host}:{self.port}/?user={self.username}&password={self.password}'
             demisto.debug('Initializing engine using the Teradata dialect')
             engine = sqlalchemy.create_engine(engine_url)
         else:
@@ -260,7 +260,8 @@ def generate_bind_vars(bind_variables_names: str, bind_variables_values: str, qu
         raise Exception(
             "Bind variables length must match the variable count."
             f"Got {len(bind_variables_names_list)} variables and {len(bind_variables_values_list)} values"
-            )
+        )
+
 
 def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
     """
@@ -611,7 +612,7 @@ def main():
         ssl_connect = params.get('ssl_connect')
         connect_parameters = params.get('connect_parameters')
         use_pool = params.get('use_pool', False)
-        is_ldap = params.get('is_ldap', False)
+        use_ldap = params.get('use_ldap', False)
         verify_certificate: bool = not params.get('insecure', False)
         pool_ttl = int(params.get('pool_ttl') or DEFAULT_POOL_TTL)
         if pool_ttl <= 0:
@@ -621,7 +622,7 @@ def main():
         client = Client(dialect=dialect, host=host, username=user, password=password,
                         port=port, database=database, connect_parameters=connect_parameters,
                         ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,
-                        pool_ttl=pool_ttl, is_ldap=is_ldap)
+                        pool_ttl=pool_ttl, use_ldap=use_ldap)
         commands: dict[str, Callable[[Client, dict[str, str], str], tuple[str, dict[Any, Any], list[Any]]]] = {
             'test-module': test_module,
             'query': sql_query_execute,

@@ -239,23 +239,23 @@ def test_sql_queries(command, args, response, expected_result, header, mocker):
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
 
 
-@pytest.mark.parametrize('is_ldap, expected_url', [
+@pytest.mark.parametrize('use_ldap, expected_url', [
     pytest.param(True, "teradatasql://username:password@host:/?logmech=LDAP", id="LDAP"),
     pytest.param(False, "teradatasql://host:/?user=username&password=password", id="Username & Password"),
 ])
-def test_teradata_connection(mocker, is_ldap: bool, expected_url: str):
+def test_teradata_connection(mocker, use_ldap: bool, expected_url: str):
     """
     Given
     - All required arguments for the client
-    - The is_ldap argument decides how to connect
+    - The use_ldap parameter
     When
     - Executing _create_engine_url_for_teradata client's method
     Then
-    - Ensure the engine url is generated correctly according to is_ldap
+    - Ensure the engine url is generated correctly according to use_ldap
     """
     mocker.patch.object(Client, '_create_engine_and_connect', return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
     client = Client(dialect='Teradata', host='host', username='username', password='password', port='', connect_parameters='',
-                    database='', ssl_connect=False, is_ldap=is_ldap)
+                    database='', ssl_connect=False, use_ldap=use_ldap)
     engine_url = client._create_engine_url_for_teradata()
     assert expected_url == engine_url
 

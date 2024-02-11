@@ -90,7 +90,7 @@ configuration:
   type: 8
   required: false
 - display: Use LDAP (Teradata only)
-  name: is_ldap
+  name: use_ldap
   type: 8
   required: false
 - display: Connection Pool Time to Live (seconds)
