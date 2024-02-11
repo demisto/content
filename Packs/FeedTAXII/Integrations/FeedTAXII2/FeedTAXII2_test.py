@@ -72,6 +72,7 @@ class TestFetchIndicators:
         mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
 
         mock_client.collection_to_fetch = mock_client.collections[0]
+        last_run = {mock_client.collections[1]: 'test'}
         result = RESULTS_JSON.get("Contents")
         mocker.patch.object(mock_client, 'build_iterator', return_value=result)
         indicators, last_run = fetch_indicators_command(mock_client, '1 day', -1, last_run)
