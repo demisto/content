@@ -127,10 +127,6 @@
       source "$BASH_ENV"
     fi
   - source .circleci/content_release_vars.sh
-  - section_end "Source BASH Environment"
-  - section_start "Granting execute permissions on files" --collapsed
-  - chmod +x ./Tests/scripts/*
-  - chmod +x ./Tests/Marketplace/*
   # DEMISTO_SDK_GRAPH_FORCE_CREATE set to true to create graph from scratch on last upload commit
   - |
     echo "set DEMISTO_SDK_GRAPH_FORCE_CREATE"
@@ -139,6 +135,10 @@
       echo "DEMISTO_SDK_GRAPH_FORCE_CREATE was set to true to create graph from scratch on last upload commit"
       echo $DEMISTO_SDK_GRAPH_FORCE_CREATE
     fi
+  - section_end "Source BASH Environment"
+  - section_start "Granting execute permissions on files" --collapsed
+  - chmod +x ./Tests/scripts/*
+  - chmod +x ./Tests/Marketplace/*
   - section_end "Granting execute permissions on files"
 
 .get_contribution_pack: &get_contribution_pack
