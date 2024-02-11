@@ -4712,7 +4712,7 @@ class TestPanOSEditNatRule:
         res = mocker.patch('demistomock.results')
         main()
 
-        assert request_mock.call_args.kwargs['body'] == {
+        assert request_mock.call_args.kwargs['params'] == {
             'type': 'op',
             'cmd': "<set><audit-comment><xpath>/config/devices/entry[@name='localhost.localdomain']/device-group"
                    "/entry[@name='new device group']/pre-rulebase/nat/rules/entry[@name='test']"
@@ -5861,7 +5861,7 @@ class TestPanOSEditPBFRule:
         res = mocker.patch('demistomock.results')
         main()
 
-        assert request_mock.call_args.kwargs['body'] == {
+        assert request_mock.call_args.kwargs['params'] == {
             'type': 'op',
             'cmd': "<set><audit-comment><xpath>/config/devices/entry[@name='localhost.localdomain']/device-group"
                    "/entry[@name='new device group']/pre-rulebase/pbf/rules/entry[@name='test']"
