@@ -131,12 +131,15 @@
   - section_start "Granting execute permissions on files" --collapsed
   - chmod +x ./Tests/scripts/*
   - chmod +x ./Tests/Marketplace/*
-  - section_end "Granting execute permissions on files"
   # DEMISTO_SDK_GRAPH_FORCE_CREATE set to true to create graph from scratch on last upload commit
   - |
+    echo "set DEMISTO_SDK_GRAPH_FORCE_CREATE"
     if [[ $NIGHTLY ]]; then
       export DEMISTO_SDK_GRAPH_FORCE_CREATE=true
+      echo "DEMISTO_SDK_GRAPH_FORCE_CREATE was set to true to create graph from scratch on last upload commit"
+      echo $DEMISTO_SDK_GRAPH_FORCE_CREATE
     fi
+  - section_end "Granting execute permissions on files"
 
 .get_contribution_pack: &get_contribution_pack
   - section_start "getting contrib packs" --collapsed
