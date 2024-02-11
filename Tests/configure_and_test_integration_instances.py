@@ -621,18 +621,18 @@ class XSOARBuild(Build):
     def configure_servers_and_restart(self):
         manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
         for server in self.servers:
-            configurations = {}
-            if is_redhat_instance(server.internal_ip):
-                configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
-                configurations.update(NO_PROXY_CONFIG)
-                configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
-            else:
-                configurations.update(DOCKER_HARDENING_CONFIGURATION)
-            configure_types = ['docker hardening', 'marketplace']
-            configurations.update(MARKET_PLACE_CONFIGURATION)
+            configurations = {'content.pack.verify': 'false'}
+            # if is_redhat_instance(server.internal_ip):
+            #     configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
+            #     configurations.update(NO_PROXY_CONFIG)
+            #     configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
+            # else:
+            #     configurations.update(DOCKER_HARDENING_CONFIGURATION)
+            # configure_types = ['docker hardening', 'marketplace']
+            # configurations.update(MARKET_PLACE_CONFIGURATION)
 
-            error_msg = f"failed to set {' and '.join(configure_types)} configurations"
-            server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
+            # error_msg = f"failed to set {' and '.join(configure_types)} configurations"
+            server.add_server_configuration(configurations, error_msg="OPP error", restart=not manual_restart)
 
         if manual_restart:
             input('restart your server and then press enter.')
@@ -1962,7 +1962,8 @@ def main():
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
     build = create_build_object()
     logging.info(f"Build Number: {build.ci_build_number}")
-
+    for server in build.servers:
+        server.add_server_configuration()
     build.configure_servers_and_restart()
     # build.disable_instances()
 
