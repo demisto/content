@@ -29,7 +29,10 @@ import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import XSOAR_ON_PREM_MP, XSOAR_SAAS_MP, PackFolders, Metadata, GCPConfig, \
     BucketUploadFlow, PACKS_FOLDER, PackTags, PackIgnored, Changelog, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
     XSIAM_MP, XPANSE_MP, TAGS_BY_MP, RN_HEADER_TO_ID_SET_KEYS
-from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName, MARKETPLACE_KEY_PACK_METADATA, PACK_METADATA_SUPPORT, PACK_METADATA_DEPENDENCIES, PACK_METADATA_NAME, PACK_METADATA_PRICE  # , PACK_METADATA_REQUIRE_RN_FIELDS todo - from sdk PR
+# , PACK_METADATA_REQUIRE_RN_FIELDS todo - from sdk PR
+from demisto_sdk.commands.common.constants import (MarketplaceVersions, MarketplaceVersionToMarketplaceName,
+                                                   MARKETPLACE_KEY_PACK_METADATA, PACK_METADATA_SUPPORT,
+                                                   PACK_METADATA_DEPENDENCIES, PACK_METADATA_NAME, PACK_METADATA_PRICE)
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -431,17 +434,19 @@ class Pack:
             pack_metadata = self.pack_metadata
             for field in pack_metadata:
                 if field not in PACK_METADATA_REQUIRE_RN_FIELDS:
-                    update_metadata_fields[field] = pack_metadata.get(field) # todo - there are override fields - maybe we should use them
+                    # todo - there are override fields - maybe we should use them
+                    update_metadata_fields[field] = pack_metadata.get(field)
             logging.debug(
-                f"Updating metadata with statistics and metadata changes because {self._pack_name=} {self.is_modified=} {self.is_metadata_updated=}")
+                f"Updating metadata with statistics and metadata changes because {self._pack_name=} "
+                f"{self.is_modified=} {self.is_metadata_updated=}")
         else:
             logging.debug(
-                f"Updating metadata only with statistics because {self._pack_name=} {self.is_modified=} {self.is_metadata_updated=}")
+                f"Updating metadata only with statistics because {self._pack_name=} {self.is_modified=} "
+                f"{self.is_metadata_updated=}")
 
         updated_metadata = update_metadata_fields | update_statistics_metadata
         logging.debug(f"Updating the following metadata fields: {updated_metadata.keys()}")
         return updated_metadata
-
 
     @staticmethod
     def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
@@ -957,10 +962,11 @@ class Pack:
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status
 
-    def download_and_extract_pack(self, pack_version, storage_bucket: Any, extract_destination_path: str, storage_base_path: str) \
-            -> str | bool:
+    def download_and_extract_pack(self, pack_version, storage_bucket: Any,
+                                  extract_destination_path: str,
+                                  storage_base_path: str) -> str | bool:
         """
-        Downloads and extracts a pack with a specific version from a storage bucket.
+        Downloads and extracts the pack.zip folder of the current pack version from the storage bucket.
 
         Args:
             pack_version (str): The version of the pack to download and extract.
@@ -969,9 +975,7 @@ class Pack:
             storage_base_path (str): The base path in the storage bucket where packs are stored.
 
         Returns:
-            str or bool:
-                - The full path to the extracted pack directory if the download and extraction were successful.
-                - False if the pack was not found in the bucket.
+            bool: False if the pack was not found in the bucket, otherwise true.
         """
         logging.debug(f'Start of download_and_extract_pack, {self._pack_name} pack of version {pack_version}')
         pack_path = os.path.join(storage_base_path, self._pack_name, pack_version, f"{self._pack_name}.zip")
@@ -980,9 +984,9 @@ class Pack:
             download_pack_path = os.path.join(extract_destination_path, f"{self._pack_name}.zip")
             pack.download_to_filename(download_pack_path)
             with ZipFile(download_pack_path, 'r') as pack_zip:
-                pack_zip.extractall(os.path.join(extract_destination_path, self._pack_name))
+                pack_zip.extractall(self.path)
 
-            return os.path.join(extract_destination_path, self._pack_name)
+            return True
         else:
             logging.warning(f'{self._pack_name} pack of version {pack_version} was not found in the bucket. {pack_path=}')
             return False

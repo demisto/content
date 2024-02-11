@@ -1314,7 +1314,8 @@ def main():
                 continue
 
         elif pack.is_metadata_updated:  # TODO What should we do if we failed to update the index zip or pack zip
-            if not pack.download_and_extract_pack(pack.current_version, storage_bucket, extract_destination_path, storage_base_path):
+            if not pack.download_and_extract_pack(pack.current_version, storage_bucket,
+                                                  extract_destination_path, storage_base_path):
                 pack.status = PackStatus.FAILED_DOWNLOADING_PACK_FOLDER.name  # type: ignore[misc]
                 pack.cleanup()
                 continue

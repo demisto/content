@@ -1442,13 +1442,14 @@ def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[set, set]:  # TODO
     :return:
      Tuple[set, set]:
         packs_to_upload: Set of packs to upload (hard upload - changed files with RN and version bump)
-        packs_to_update_metadata: Set of packs to update (soft upload - changed only to packmetadata file without RN and version bump)
+        packs_to_update_metadata: Set of packs to update
+         (soft upload - changed only to packmetadata file without RN and version bump)
     """
     packs_to_update_metadata = set()
     git_util = GitUtil()
     changed_files = git_util._get_all_changed_files()
     for pack_id in packs_to_upload:
-        current_version = PACK_MANAGER.get_current_version(pack_id)
+        current_version = PACK_MANAGER.get_current_version(pack_id, "")
         rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
         pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
 
