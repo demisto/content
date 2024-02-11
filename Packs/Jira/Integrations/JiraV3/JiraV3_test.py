@@ -740,7 +740,8 @@ class TestJiraEditIssueCommand:
             {"action": "test"},
             {"status": "test"},
             {"transition": "test"},
-            {},
+            {"issue_key": "test"},
+            {"issue_id": "test"},
         ]
     )
     def test_edit_issue_command_with_issue_json_and_another_arg_no_error(
