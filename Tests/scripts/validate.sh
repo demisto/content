@@ -16,6 +16,8 @@ if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_
         else
             PREV_VER="origin/master"
         fi
+        echo "DEMISTO_SDK_GRAPH_FORCE_CREATE was set to true to create graph from scratch"
+        echo $DEMISTO_SDK_GRAPH_FORCE_CREATE
         python3 -m demisto_sdk validate -a --graph --skip-pack-dependencies --prev-ver $PREV_VER
     fi
 elif [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
