@@ -35,7 +35,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: Whether to return vulnerabilities that Kenna deems a top priority to fix. Can be "true" or "false".
+      description: Whether to return vulnerabilities that Kenna deems a top priority to fix.
       isArray: true
       name: top-priority
       predefined:
@@ -44,7 +44,7 @@ script:
     - description: The minimum vulnerability score for which to return vulnerabilities.
       name: min-score
     - auto: PREDEFINED
-      description: The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive".
+      description: The status of the vulnerability.
       isArray: true
       name: status
       predefined:
@@ -53,12 +53,12 @@ script:
       - risk_accepted
       - false_positive
     - defaultValue: '500'
-      description: The maximum number of vulnerabilities to return. The default value is 500.
+      description: The maximum number of vulnerabilities to return.
       name: limit
     - auto: PREDEFINED
       default: true
       defaultValue: 'True'
-      description: Whether to flush to context. Can be "True" or "False". The default value is "True".
+      description: Whether to flush to context.
       name: to_context
       predefined:
       - 'True'
@@ -144,7 +144,7 @@ script:
       isArray: true
       name: id
     - auto: PREDEFINED
-      description: Whether to return vulnerabilities that Kenna deems a top priority to fix. Can be "true" or "false".
+      description: Whether to return vulnerabilities that Kenna deems a top priority to fix.
       isArray: true
       name: top-priority
       predefined:
@@ -153,7 +153,7 @@ script:
     - description: The minimum vulnerability score for which to return vulnerabilities.
       name: min-score
     - auto: PREDEFINED
-      description: The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive".
+      description: The status of the vulnerability.
       isArray: true
       name: status
       predefined:
@@ -162,11 +162,11 @@ script:
       - risk_accepted
       - false_positive
     - defaultValue: '500'
-      description: The maximum number of vulnerabilities to return. The default value is 500.
+      description: The maximum number of vulnerabilities to return.
       name: limit
     - auto: PREDEFINED
       defaultValue: 'True'
-      description: Whether to flush to context. Can be "True" or "False". The default value is "True".
+      description: Whether to flush to context.
       name: to_context
       predefined:
       - 'True'
@@ -223,6 +223,12 @@ script:
     - description: Notes about the asset.
       name: notes
       required: true
+    - auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      name: inactive
+      description: Whether to deactivate the asset.
     description: Updates the attributes of a single asset.
     name: kenna-update-asset
   - arguments:
@@ -230,7 +236,7 @@ script:
       name: id
       required: true
     - auto: PREDEFINED
-      description: The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive".
+      description: The status of the vulnerability.
       name: status
       predefined:
       - open
@@ -269,11 +275,11 @@ script:
       isArray: true
       name: tags
     - defaultValue: '500'
-      description: The maximum number of vulnerabilities to return. The default value is 500.
+      description: The maximum number of vulnerabilities to return.
       name: limit
     - auto: PREDEFINED
       defaultValue: 'True'
-      description: Whether to print output to context. Can be "True" or "False". The default value is "True".
+      description: Whether to print output to context.
       name: to_context
       predefined:
       - 'True'
@@ -284,6 +290,9 @@ script:
     - contextPath: Kenna.Assets.ID
       description: The asset ID.
       type: Number
+    - contextPath: Kenna.Assets.ExternalID
+      description: The asset external ID.
+      type: String
     - contextPath: Kenna.Assets.Hostname
       description: The hostname of the asset.
       type: String
@@ -318,7 +327,7 @@ script:
       description: Notes of current asset.
       type: String
     - contextPath: Kenna.Assets.OperatingSystem
-      description: Operating system of asset
+      description: Operating system of the asset.
       type: String
   - arguments:
     - description: The asset ID for which to get vulnerabilities.
@@ -326,11 +335,11 @@ script:
       name: id
       required: true
     - defaultValue: '500'
-      description: The maximum number of vulnerabilities to return. The default value is 500.
+      description: The maximum number of vulnerabilities to return.
       name: limit
     - auto: PREDEFINED
       defaultValue: 'True'
-      description: Whether to print output to context. Can be "True" or "False". The default value is "True".
+      description: Whether to print output to context.
       name: to_context
       predefined:
       - 'True'
@@ -342,29 +351,29 @@ script:
       description: The ID of the asset that this vulnerability is associated with.
       type: Number
     - contextPath: Kenna.VulnerabilitiesOfAsset.CveID
-      description: 'The CVE ID of the vulnerability associated with the asset. '
+      description: The CVE ID of the vulnerability associated with the asset.
       type: String
     - contextPath: Kenna.VulnerabilitiesOfAsset.ID
-      description: 'The ID of the vulnerability associated withe the asset '
+      description: The ID of the vulnerability associated withe the asset.
       type: Number
     - contextPath: Kenna.VulnerabilitiesOfAsset.Patch
-      description: 'Whether there is a patch for the vulnerability associated with the asset. '
+      description: Whether there is a patch for the vulnerability associated with the asset.
       type: Boolean
     - contextPath: Kenna.VulnerabilitiesOfAsset.Status
-      description: 'The status of the vulnerability associated with the asset. '
+      description: The status of the vulnerability associated with the asset.
       type: String
     - contextPath: Kenna.VulnerabilitiesOfAsset.TopPriority
-      description: 'Whether the vulnerability associated with the asset is a top priority. '
+      description: Whether the vulnerability associated with the asset is a top priority.
       type: Boolean
     - contextPath: Kenna.VulnerabilitiesOfAsset.Score
-      description: 'The score of the vulnerability associated with the asset. '
+      description: The score of the vulnerability associated with the asset.
       type: Number
   - arguments:
     - description: A comma-separated list of tags to add to the asset.
       isArray: true
       name: tag
       required: true
-    - description: 'The asset ID to which to add the tag. '
+    - description: The asset ID to which to add the tag.
       name: id
       required: true
     description: Adds a tag to the specified asset.
@@ -372,8 +381,6 @@ script:
   - arguments:
     - description: The asset ID from which to delete the tag.
       name: id
-      predefined:
-      - ''
       required: true
     - description: The tag to delete.
       name: tag
@@ -441,9 +448,49 @@ script:
     - contextPath: Kenna.ConnectorRunsList.ReopenedVulnerabilities
       description: Amount of re-opened vulnerabilities.
       type: Number
-  dockerimage: demisto/python3:3.10.12.68714
+  - name: kenna-search-assets-by-external-id
+    arguments:
+    - name: external_id
+      required: true
+      description: The external ID of the asset.
+    - name: to_context
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to put data in context.
+      defaultValue: "false"
+    - name: limit
+      description: The maximum number of assets to return.
+      defaultValue: "500"
+    outputs:
+    - contextPath: Kenna.Assets.ID
+      description: The asset ID.
+      type: Number
+    - contextPath: Kenna.Assets.Notes
+      description: Notes of current asset.
+      type: String
+    - contextPath: Kenna.Assets.VulnerabilitiesCount
+      description: Count of vulnerabilities of current asset.
+      type: Number
+    - contextPath: Kenna.Assets.Hostname
+      description: Hostname of current asset.
+      type: String
+    - contextPath: Kenna.Assets.Score
+      description: Score of current asset.
+      type: Number
+    - contextPath: Kenna.Assets.IpAddress
+      description: IP of current asset.
+      type: String
+    - contextPath: Kenna.Assets.OperatingSystem
+      description: Operating system of current asset.
+      type: String
+    description: Search assets by external ID.
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

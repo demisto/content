@@ -584,12 +584,6 @@ view: |-
     }
   }
 inputs:
-- key: AutoRemediateComputeEngine
-  value:
-    simple: "no"
-  required: false
-  description: Execute GCP Compute Engine remediation automatically?
-  playbookInputQuery:
 - key: policyId
   value:
     complex:
@@ -605,6 +599,25 @@ inputs:
   required: false
   description: Grab the Prima Cloud policy ID.
   playbookInputQuery:
+- key: AutoRemediateComputeEngine
+  value:
+    simple: "no"
+  required: false
+  description: Execute GCP Compute Engine remediation automatically?
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - policyId
+  name: Incident Data
+  description: Relevant data regarding the incident.
+- inputs:
+  - AutoRemediateComputeEngine
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)

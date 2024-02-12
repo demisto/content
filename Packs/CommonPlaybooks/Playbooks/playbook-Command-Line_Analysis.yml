@@ -1107,12 +1107,12 @@ tasks:
         complex:
           root: commandline
           transformers:
-          - operator: append
+          - operator: RemoveEmpty
             args:
-              item:
+              empty_values: { }
+              remove_keys:
                 value:
-                  simple: inputs.Commandline
-                iscontext: true
+                  simple: "true"
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
@@ -1452,6 +1452,13 @@ tasks:
       value:
         complex:
           root: inputs.Commandline
+          transformers:
+            - operator: RemoveEmpty
+              args:
+                empty_values: { }
+                remove_keys:
+                  value:
+                    simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-

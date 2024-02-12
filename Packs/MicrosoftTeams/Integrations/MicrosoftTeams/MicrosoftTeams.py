@@ -103,6 +103,9 @@ MAX_SAMPLES = 10
 TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, }  # See: https://login.microsoftonline.com/error?code=
 REGEX_SEARCH_ERROR_DESC = r"^[^:]*:\s(?P<desc>.*?\.)"
 
+# must be synced with ones in TeamsAsk
+MS_TEAMS_ASK_MESSAGE_KEYS = {'message_text', 'options', 'entitlement', 'investigation_id', 'task_id', 'form_type'}
+
 
 class Handler:
     @staticmethod
@@ -502,6 +505,14 @@ def process_mirror_or_unknown_message(message: str) -> dict:
     return create_adaptive_card(body)
 
 
+def is_teams_ask_message(msg: str) -> bool:
+    try:
+        message: dict = json.loads(msg)
+        return message.keys() == MS_TEAMS_ASK_MESSAGE_KEYS
+    except json.decoder.JSONDecodeError:
+        return False
+
+
 def process_ask_user(message: str) -> dict:
     """
     Processes ask user message and creates adaptive card
@@ -647,7 +658,7 @@ def get_graph_access_token() -> str:
     if access_token and valid_until and epoch_seconds() < valid_until:
         demisto.debug('Using access token from integration context')
         return access_token
-    tenant_id: str = integration_context.get('tenant_id') or demisto.params().get("tenant_id")
+    tenant_id = integration_context.get('tenant_id')
     if not tenant_id:
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
@@ -2062,7 +2073,7 @@ def send_message():
 
     if message:
         entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
-        if entitlement_match:
+        if entitlement_match and is_teams_ask_message(message):
             # In TeamsAsk process
             adaptive_card = process_ask_user(message)
             conversation = {
