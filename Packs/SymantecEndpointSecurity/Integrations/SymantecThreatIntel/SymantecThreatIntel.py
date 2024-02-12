@@ -23,13 +23,21 @@ INTEGRATION_NAME = 'SymantecThreatIntel'
 INSIGHT_CONTEXT_PREFIX = 'Symantec.Insight'
 PROTECTION_CONTEXT_PREFIX = 'Symantec.Protection'
 OUTPUT_KEY = 'indicator'
+DEFAULT_RELIABILITY = DBotScoreReliability.B
 MALICIOUS_CATEGORIES = ['Malicious Outbound Data/Botnets', 'Malicious Sources/Malnets', 'Phishing', 'Proxy Avoidance']
 SUSPICIOUS_CATEGORIES = ['Compromised Sites', 'Dynamic DNS Host', 'Hacking', 'Placeholders', 'Potentially Unwanted Software',
                          'Remote Access', 'Spam', 'Suspicious'
                          'Violence/Intolerance', 'Child Pornography', 'Gore/Extreme', 'Nudity', 'Pornography'
                          ]
 
-ThreatLevel = {
+insight_context_prefix = {
+    'url': 'Symantec.Insight.URL',
+    'ip': 'Symantec.Insight.IP',
+    'domain': 'Symantec.Insight.Domain'
+}
+
+
+threat_level = {
     0: 'Customer Override',
     1: 'Very Safe',
     2: 'Safe',
@@ -53,6 +61,7 @@ class Client(BaseClient):
     _session_token = None
     ignored_domains: list[str] = []
     ignore_private_ips: bool = True
+    reliability = DEFAULT_RELIABILITY
 
     def authenticate(self, oauth_token: str) -> bool:
         headers = {
@@ -120,6 +129,17 @@ def has_intersection(a: list, b: list) -> bool:
     return len(intersect(a, b)) > 0
 
 
+def get_indicator_by_type(type: str, indicator: str, dbot_score: Common.DBotScore) -> Common.Indicator | None:
+    if type == DBotScoreType.IP:
+        return Common.IP(ip=indicator, dbot_score=dbot_score)
+    elif type == DBotScoreType.URL:
+        return Common.URL(url=indicator, dbot_score=dbot_score)
+    elif type == DBotScoreType.DOMAIN:
+        return Common.Domain(domain=indicator, dbot_score=dbot_score)
+    else:
+        return None
+
+
 def calculate_file_severity(result: dict) -> tuple[int, str | None]:
     reputation = result.get('reputation', 'UNKNOWN')
     if reputation == 'BAD':
@@ -138,7 +158,7 @@ def calculate_network_severity(result: dict) -> tuple[int, str | None]:
 
     score = Common.DBotScore.GOOD if risk_level <= 5 else Common.DBotScore.BAD if risk_level >= 8 else Common.DBotScore.SUSPICIOUS
     if score == Common.DBotScore.BAD:
-        malicious_description = f'{ThreatLevel[risk_level]}'
+        malicious_description = f'{threat_level[risk_level]}'
 
     reputation_score = Common.DBotScore.NONE
     if reputation == 'BAD' or has_intersection(MALICIOUS_CATEGORIES, categories):
@@ -188,13 +208,45 @@ def parse_file_insight_response(response: dict) -> dict:
     return response
 
 
-def execute_network_command(client: Client, args: list[str]) -> list[dict]:
+def build_network_insight_result(severity: tuple[int, str | None], arg_type: str,
+                                 raw_result: dict, reliability: str) -> CommandResults:
+    dbot_score = Common.DBotScore(indicator=raw_result['indicator'],
+                                  indicator_type=arg_type,
+                                  integration_name=INTEGRATION_NAME,
+                                  score=severity[0],
+                                  reliability=reliability,
+                                  malicious_description=severity[1])
+
+    indicator = get_indicator_by_type(type=arg_type, indicator=raw_result['indicator'], dbot_score=dbot_score)
+    command_result = CommandResults(outputs_prefix=insight_context_prefix[arg_type],
+                                    outputs_key_field=OUTPUT_KEY,
+                                    outputs=raw_result,
+                                    indicator=indicator  # type: ignore
+                                    )
+    return command_result
+
+
+def execute_network_command(client: Client, args: list[str], arg_type: str) -> list[CommandResults]:
     results = []
     for arg in args:
-        response = client.broadcom_network_insight(arg)
+        response = {'network': arg}
+        if arg_type == DBotScoreType.IP:
+            ip = ip_address(arg)
+            if not (ip.is_private or ip.is_loopback) or not client.ignore_private_ips:
+                response = client.broadcom_network_insight(arg)
+
+        elif not is_filtered(arg, client.ignored_domains):
+            response = client.broadcom_network_insight(arg)
+
         result = parse_insight_response(response)
-        if result:
-            results.append(result)
+        if not result:
+            continue
+
+        severity = calculate_network_severity(result)
+        command_result = build_network_insight_result(severity=severity, arg_type=arg_type,
+                                                      raw_result=result, reliability=client.reliability)
+
+        results.append(command_result)
 
     return results
 
@@ -238,84 +290,22 @@ def test_module(client: Client, oauth: str) -> str:
 def ip_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, 'ip')
 
-    results = execute_network_command(client, values)
-    command_results = []
-    for result in results:
-        severity: tuple[int, str | None] = (Common.DBotScore.NONE, None)
-        ip = ip_address(result['indicator'])
-        if not client.ignore_private_ips or (not ip.is_private and not ip.is_loopback):
-            severity = calculate_network_severity(result)
-
-        dbot_score = Common.DBotScore(indicator=result['indicator'],
-                                      indicator_type=DBotScoreType.IP,
-                                      integration_name=INTEGRATION_NAME,
-                                      score=severity[0],
-                                      reliability=reliability,
-                                      malicious_description=severity[1]
-                                      )
-
-        ip = Common.IP(ip=result['indicator'], dbot_score=dbot_score)
-        command_result = CommandResults(outputs_prefix=f'{INSIGHT_CONTEXT_PREFIX}.IP',
-                                        outputs_key_field=OUTPUT_KEY,
-                                        outputs=result,
-                                        indicator=ip)
-        command_results.append(command_result)
-
-    return command_results
+    results = execute_network_command(client, values, DBotScoreType.IP)
+    return results
 
 
 def url_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, 'url')
-    results = execute_network_command(client, values)
-    command_results = []
-    for result in results:
-        severity: tuple[int, str | None] = (Common.DBotScore.NONE, None)
-        if not is_filtered(result['indicator'], client.ignored_domains):
-            severity = calculate_network_severity(result)
+    results = execute_network_command(client, values, DBotScoreType.URL)
 
-        dbot_score = Common.DBotScore(indicator=result['indicator'],
-                                      indicator_type=DBotScoreType.URL,
-                                      integration_name=INTEGRATION_NAME,
-                                      score=severity[0],
-                                      reliability=reliability,
-                                      malicious_description=severity[1]
-                                      )
-
-        url = Common.URL(url=result['indicator'], dbot_score=dbot_score)
-        command_result = CommandResults(outputs_prefix=f'{INSIGHT_CONTEXT_PREFIX}.URL',
-                                        outputs_key_field=OUTPUT_KEY,
-                                        outputs=result,
-                                        indicator=url)
-        command_results.append(command_result)
-
-    return command_results
+    return results
 
 
 def domain_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, 'domain')
-    results = execute_network_command(client, values)
-    command_results = []
-    for result in results:
-        severity: tuple[int, str | None] = (Common.DBotScore.NONE, None)
-        if not is_filtered(result['indicator'], client.ignored_domains):
-            severity = calculate_network_severity(result)
+    results = execute_network_command(client, values, DBotScoreType.DOMAIN)
 
-        dbot_score = Common.DBotScore(indicator=result['indicator'],
-                                      indicator_type=DBotScoreType.DOMAIN,
-                                      integration_name=INTEGRATION_NAME,
-                                      score=severity[0],
-                                      reliability=reliability,
-                                      malicious_description=severity[1]
-                                      )
-
-        domain = Common.Domain(domain=result['indicator'], dbot_score=dbot_score)
-        command_result = CommandResults(outputs_prefix=f'{INSIGHT_CONTEXT_PREFIX}.Domain',
-                                        outputs_key_field=OUTPUT_KEY,
-                                        outputs=result,
-                                        indicator=domain)
-        command_results.append(command_result)
-
-    return command_results
+    return results
 
 
 def file_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
@@ -416,7 +406,7 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
 
     oauth = demisto.params().get('credentials', {}).get('password')
-    reliability = demisto.params().get('integration_reliability', DBotScoreReliability.B)
+    reliability = demisto.params().get('integration_reliability', DEFAULT_RELIABILITY)
     ignored_domains = argToList(demisto.params().get('ignored_domains'))
     ignore_private_ips = argToBoolean(demisto.params().get('ignore_private_ip', True))
 
@@ -429,6 +419,7 @@ def main() -> None:
 
         client.ignored_domains = ignored_domains
         client.ignore_private_ips = ignore_private_ips
+        client.reliability = reliability
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
