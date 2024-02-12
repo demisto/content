@@ -230,3 +230,19 @@ Indexes a document into an Elasticsearch index.
 >|ID|Index name|Version|Result|
 >|---|---|---|---|
 >| 1234 | test-xsoar | 1 | created | 
+
+
+### es-integration-health-check
+***
+Returns the health status of the integration. This commmand should be used for debugging purposes.
+
+#### Base Command
+
+`es-integration-health-check`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

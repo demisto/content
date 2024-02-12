@@ -2,7 +2,7 @@ Use the Microsoft Teams integration to send messages and notifications to your t
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
 **Note:** 
-- Currently, this integration does not work with Cortex XSOAR 8.2 and up without using an engine.
+- This integration is supported in Cortex XSOAR 8 and up without using an engine.
 - The integration has the ability to run built-in Cortex XSOAR commands, through a mirrored channel. Make sure to pass the command in the chat exactly as typed in the CORTEX XSOAR CLI. For example: `!DeleteContext all=yes`. Use the command `mirror-investigation` to mirror/create a mirrored channel.
 - For use cases where it is only needed to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
 
@@ -1109,7 +1109,7 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
     This probably means that there is a connection issue, and the web server does not intercept the HTTPS queries from Microsoft Teams.
 
     To troubleshoot:
-   1. first verify the Docker container is up and running and publish the configured port to the outside world (currently not supported in XSOAR 8):
+   1. first verify the Docker container is up and running and publish the configured port to the outside world:
 
        From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
 

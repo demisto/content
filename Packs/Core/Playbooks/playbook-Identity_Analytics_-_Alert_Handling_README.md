@@ -21,29 +21,29 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cloud Credentials Rotation - Azure
-* Containment Plan
-* Okta - User Investigation
 * Azure - User Investigation
-* Get entity alerts by MITRE tactics
+* Okta - User Investigation
 * Cloud IAM Enrichment - Generic
+* Containment Plan
 * Account Enrichment - Generic v2.1
+* Cloud Credentials Rotation - Azure
+* Get entity alerts by MITRE tactics
 
 ### Integrations
 
-* CoreIOCs
 * CortexCoreIR
+* CoreIOCs
 
 ### Scripts
 
-* SetAndHandleEmpty
 * Set
+* SetAndHandleEmpty
 
 ### Commands
 
 * core-get-cloud-original-alerts
-* closeInvestigation
 * ip
+* closeInvestigation
 
 ## Playbook Inputs
 
@@ -51,7 +51,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RelatedAlertsThreshold | This is the minimum threshold for XSIAM related alerts of medium severity or higher, based on MITRE tactics used to identify malicious activity by the user in the last 1 day.<br/>Example: If this input is set to '5' and it detects '6' XSIAM related alerts, it will classify this check as indicating malicious activity.<br/>The default value is '5'. | 5 | Optional |
+| RelatedAlertsThreshold | This is the minimum threshold for XSIAM related alerts, based on MITRE tactics used to identify malicious activity by the user in the last 1 day.<br/>Example: If this input is set to '5' and it detects '6' XSIAM related alerts, it will classify this check as indicating malicious activity.<br/>The default value is '5'. | 5 | Optional |
 | FailedLogonThreshold | This is the minimum threshold for user login failures within the last 1 day.<br/>example: If this input is set to '30', and the 'Okta - User Investigation' or the 'Azure - User Investigation' sub-playbooks have found 31 failed login attempts - It will classify this behavior as malicious activity.<br/>The default value is '30'. | 30 | Optional |
 | OktaSuspiciousEventsThreshold | This is the minimum threshold for suspicious Okta activity events by the user in the last 1 day.<br/>example: If this input is set to '5', and the 'Okta - User Investigation' sub-playbooks have found 6 events of suspicious activity by the user - It will classify this behavior as malicious activity.<br/>The default value is '5'. | 5 | Optional |
 | AzureMfaFailedLogonThreshold | This is the minimum threshold for MFA failed logins by the user in the last 1 day. Required to determine how many MFA failed logon events count as malicious events. | 10 | Optional |
