@@ -533,7 +533,7 @@ script:
     - description: Role of user. It may be one of admin, user or the name of a custom role you've created.
       name: role
       required: true
-    description: Invite a user to OpsGenie
+    description: Invite a user to OpsGenie.
     name: opsgenie-invite-user
     outputs:
     - contextPath: OpsGenie.User.Id
@@ -1166,7 +1166,7 @@ script:
 
     polling: true
   - name: opsgenie-get-teams
-    description: Get teams
+    description: Get teams.
     arguments:
     - name: team_id
       description: The ID of the team from Opsgenie.
@@ -1188,7 +1188,7 @@ script:
       type: String
   - name: opsgenie-get-request
     polling: true
-    description: Get a request in Opsgenie
+    description: Get a request in Opsgenie.
     arguments:
     - name: output_prefix
       deprecated: true
@@ -1392,7 +1392,7 @@ script:
     - contextPath: OpsGenie.AddAlertDetails.success
       description: Whether the request was successful.
       type: Boolean
-  dockerimage: demisto/python3:3.10.13.81631
+  dockerimage: demisto/python3:3.10.13.86272
   isfetch: true
   script: '-'
   type: python
