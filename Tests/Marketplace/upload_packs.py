@@ -12,7 +12,6 @@ from datetime import datetime
 from pathlib import Path
 from zipfile import ZipFile
 from typing import Any
-from demisto_sdk.commands.common.handlers.xsoar_handler import JSONDecodeError
 
 from requests import Response
 
@@ -31,8 +30,24 @@ from Tests.Marketplace.pack_readme_handler import download_markdown_images_from_
 
 METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
+def get_packs_ids_to_upload(packs_to_upload: str) -> set:
+    """Returns a set of pack's names to upload.
 
-def get_packs_ids_to_upload(packs_to_upload: str) -> tuple[set, set]:
+    Args:
+        packs_to_upload (str): csv list of packs names to upload.
+
+    Returns:
+        set: unique collection of packs names to upload.
+    """
+    if packs_to_upload and isinstance(packs_to_upload, str):
+        packs = {p.strip() for p in packs_to_upload.split(',') if p not in IGNORED_FILES}
+        logging.info(f"Collected {len(packs)} content packs to upload: {list(packs)}")
+        return packs
+    else:
+        logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
+        sys.exit(1)
+
+def get_packs_ids_to_upload_and_update(packs_to_upload: str) -> tuple[set, set]:
     """Returns a tuple of sets containing pack's names to upload and update metadata.
 
     Args:
@@ -56,7 +71,7 @@ def get_packs_ids_to_upload(packs_to_upload: str) -> tuple[set, set]:
 
             return packs_upload, packs_metadata_update
 
-        except JSONDecodeError as e:
+        except json.decoder.JSONDecodeError as e:
             logging.critical(f"Invalid JSON format. Please check the content of the JSON file, error:\n{e}")
             sys.exit(1)
     else:
@@ -1194,7 +1209,7 @@ def main():
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
-    pack_ids_to_upload, pack_ids_to_update_metadata = get_packs_ids_to_upload(option.pack_names or "")
+    pack_ids_to_upload, pack_ids_to_update_metadata = get_packs_ids_to_upload_and_update(option.pack_names or "")
     upload_specific_pack = option.upload_specific_pack
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
@@ -1313,7 +1328,7 @@ def main():
                 pack.cleanup()
                 continue
 
-        elif pack.is_metadata_updated:  # TODO What should we do if we failed to update the index zip or pack zip
+        elif pack.is_metadata_updated:
             if not pack.download_and_extract_pack(pack.current_version, storage_bucket,
                                                   extract_destination_path, storage_base_path):
                 pack.status = PackStatus.FAILED_DOWNLOADING_PACK_FOLDER.name  # type: ignore[misc]

@@ -789,7 +789,7 @@ def test_sort_packs_to_upload(mocker):
     from demisto_sdk.commands.common.git_util import GitUtil
     from Tests.scripts.collect_tests.collect_tests import PACK_MANAGER
 
-    input_files = {Path( "Packs/myPack/pack_metadata.json"),
+    input_files = {Path("Packs/myPack/pack_metadata.json"),
                    Path("Packs/myPack2/ReleaseNotes/1_0_0.md"),
                    Path("Packs/myPack2/pack_metadata.json")}
 

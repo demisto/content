@@ -434,7 +434,6 @@ class Pack:
             pack_metadata = self.pack_metadata
             for field in pack_metadata:
                 if field not in PACK_METADATA_REQUIRE_RN_FIELDS:
-                    # todo - there are override fields - maybe we should use them
                     update_metadata_fields[field] = pack_metadata.get(field)
             logging.debug(
                 f"Updating metadata with statistics and metadata changes because {self._pack_name=} "
