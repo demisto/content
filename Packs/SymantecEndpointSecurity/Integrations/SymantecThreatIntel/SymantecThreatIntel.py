@@ -94,19 +94,14 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def filter_ignored_domains(entries: list[str], filters: list[str]) -> list[str]:
+def is_filtered(value: str, filters: list[str]) -> bool:
     if not filters:
-        return entries
+        return False
 
-    filtered_list = []
     filter_pattern = re.escape('|'.join(filters)).replace('\\|', '|')
-    for entry in entries:
-        if not re.match(pattern=f'(http(s)?:\\/\\/)?([a-z0-9-]*\\.)*{filter_pattern}($|\\/.*)',
-                        string=entry,
-                        flags=re.I):
-            filtered_list.append(entry)
-
-    return filtered_list
+    return re.match(pattern=f'(http(s)?:\\/\\/)?([a-z0-9-]*\\.)*{filter_pattern}($|\\/.*)',
+                    string=value,
+                    flags=re.I) is not None
 
 
 def ensure_argument(args: dict[str, Any], arg_name: str) -> list[str]:
@@ -242,13 +237,14 @@ def test_module(client: Client, oauth: str) -> str:
 
 def ip_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, 'ip')
-    if client.ignore_private_ips:
-        values = [ip for ip in values if not ip_address(ip).is_private]
 
     results = execute_network_command(client, values)
     command_results = []
     for result in results:
-        severity = calculate_network_severity(result)
+        severity: tuple[int, str | None] = (Common.DBotScore.NONE, None)
+        if not client.ignore_private_ips or not ip_address(result['indicator']).is_private:
+            severity = calculate_network_severity(result)
+
         dbot_score = Common.DBotScore(indicator=result['indicator'],
                                       indicator_type=DBotScoreType.IP,
                                       integration_name=INTEGRATION_NAME,
@@ -269,11 +265,13 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], reliability: str
 
 def url_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, 'url')
-    values = filter_ignored_domains(values, client.ignored_domains)
     results = execute_network_command(client, values)
     command_results = []
     for result in results:
-        severity = calculate_network_severity(result)
+        severity: tuple[int, str | None] = (Common.DBotScore.NONE, None)
+        if not is_filtered(result['indicator'], client.ignored_domains):
+            severity = calculate_network_severity(result)
+
         dbot_score = Common.DBotScore(indicator=result['indicator'],
                                       indicator_type=DBotScoreType.URL,
                                       integration_name=INTEGRATION_NAME,
@@ -294,11 +292,13 @@ def url_reputation_command(client: Client, args: Dict[str, Any], reliability: st
 
 def domain_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, 'domain')
-    values = filter_ignored_domains(values, client.ignored_domains)
     results = execute_network_command(client, values)
     command_results = []
     for result in results:
-        severity = calculate_network_severity(result)
+        severity: tuple[int, str | None] = (Common.DBotScore.NONE, None)
+        if not is_filtered(result['indicator'], client.ignored_domains):
+            severity = calculate_network_severity(result)
+
         dbot_score = Common.DBotScore(indicator=result['indicator'],
                                       indicator_type=DBotScoreType.DOMAIN,
                                       integration_name=INTEGRATION_NAME,
