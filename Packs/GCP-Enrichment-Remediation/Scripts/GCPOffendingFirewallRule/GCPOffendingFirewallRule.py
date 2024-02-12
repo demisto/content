@@ -23,7 +23,7 @@ def is_port_in_range(port_range: str, port: str) -> bool:
 
 def is_there_traffic_match(port: str, protocol: str, rule: dict, network_tags: list) -> bool:
     """
-    Determines if there's a match between the supplied port, protocol, and possible target tag combination 
+    Determines if there's a match between the supplied port, protocol, and possible target tag combination
     and the GCP firewall rule.
     The function checks:
     if the rule is an ingress rule,
