@@ -394,6 +394,30 @@ def test_reputation_command(client, input, command, requests_mock):
 
 
 @pytest.mark.parametrize(
+    "input, expected_dbot_type",
+    [
+        ("a" * 128, "sha512"),
+        ("a" * 64, "sha256"),
+        ("a" * 40, "sha1"),
+        ("a" * 32, "md5"),
+    ],
+)
+def test_reputation_command_file(client, input, expected_dbot_type, requests_mock):
+    mock_response = util_load_json("test_data/indicator_unknown.json")
+    requests_mock.get(
+        MOCK_URL + "/v2/inthreat/indicators/context",
+        json=mock_response,
+    )
+    args = {"file": input}
+    command_results = SEKOIAIntelligenceCenter.reputation_command(client=client, args=args, indicator_type="file")
+    assert command_results[0].indicator.dbot_score.score == Common.DBotScore.NONE
+    assert command_results[0].indicator.dbot_score.indicator_type == "file"
+
+    # check that for example indicator.md5 equals to md5_value
+    assert getattr(command_results[0].indicator, expected_dbot_type) == input
+
+
+@pytest.mark.parametrize(
     "input_indicator, input_type, expected_stix_type, expected_dbot_type",
     [
         ("1.1.1.1", "ip", "ipv4-addr", DBotScoreType.IP),
