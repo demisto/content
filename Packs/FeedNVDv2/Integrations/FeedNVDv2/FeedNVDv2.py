@@ -23,23 +23,23 @@ class Client(BaseClient):
     """Client class to interact with the service API
     """
 
-    def __init__(self, base_url: str, verify: bool, proxy: bool,
-                 api_key: str, tlp_color: str, has_kev: bool, start_date: str,
+    def __init__(self, base_url: str, proxy: bool,
+                 api_key: str, tlp_color: str, has_kev: bool, first_fetch: str,
                  feed_tags: list[str]):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url=base_url, proxy=proxy)
         self._base_url = base_url
         self.tlp_color = tlp_color
-        self.verify = verify
         self.proxy = proxy
         self.api_key = api_key
         self.has_kev = has_kev
         self.feed_tags = feed_tags
-        self.start_date = start_date
+        self.first_fetch = first_fetch
 
-    def http_get(self, path: str, params: dict):  # pragma: no cover
+    def get_cves(self, path: str, params: dict):  # pragma: no cover
         """
         Perform a basic HTTP call using specified headers and parameters
         """
+        resp = ""
 
         headers = {
             'apiKey': self.api_key
@@ -53,7 +53,6 @@ class Client(BaseClient):
             demisto.debug(e)
 
         return resp
-
 
 def build_indicators(client: Client, raw_cves: List):
     """
@@ -70,36 +69,35 @@ def build_indicators(client: Client, raw_cves: List):
 
     indicators = []
 
-    for raw_cve in raw_cves:
+    for raw_cve in raw_cves.get('cve'):
         indicator: dict[Any, Any] = {}
         cvss_metric = ""
         metrics: List = []
         cpes: List = []
         refs: List = []
+        indicator = {"value": raw_cve.get('id')}
 
-        indicator = {"value": raw_cve.get('cve').get('id')}
-
-        fields = {"description": raw_cve.get('cve').get('descriptions')[0].get('value')}
-        fields["cvemodified"] = raw_cve.get('cve').get('lastModified')
-        fields["published"] = raw_cve.get('cve').get('published')
-        fields["updateddate"] = raw_cve.get('cve').get('lastModified')
-        fields["vulnerabilities"] = raw_cve.get('cve').get('weaknesses')
+        fields = {"description": raw_cve.get('descriptions')[0].get('value')}
+        fields["cvemodified"] = raw_cve.get('lastModified')
+        fields["published"] = raw_cve.get('published')
+        fields["updateddate"] = raw_cve.get('lastModified')
+        fields["vulnerabilities"] = raw_cve.get('weaknesses')
 
         # Process references
-        if len(raw_cve.get('cve').get('references')) > 1:
-            for ref in raw_cve.get('cve').get('references'):
+        if len(raw_cve.get('references')) > 1:
+            for ref in raw_cve.get('references'):
                 url = ref.get('url')
                 source = ref.get('source')
                 refs.append({'title': indicator['value'], 'source': source, 'link': url})
-        elif len(raw_cve.get('cve').get('references')) == 1:
-            url = raw_cve.get('cve').get('references')[0].get('url')
-            source = raw_cve.get('cve').get('references')[0].get('source')
+        elif len(raw_cve.get('references')) == 1:
+            url = raw_cve.get('references')[0].get('url')
+            source = raw_cve.get('references')[0].get('source')
             refs.append({'title': indicator['value'], 'source': source, 'link': url})
         fields["publications"] = refs
 
         # Process CPEs
-        if "configurations" in raw_cve.get('cve'):
-            for conf in raw_cve.get('cve').get('configurations'):
+        if "configurations" in raw_cve:
+            for conf in raw_cve.get('configurations'):
                 for node in conf['nodes']:
                     if "cpeMatch" in node:
                         cpes.extend({"CPE": cpe['criteria']} for cpe in node['cpeMatch'])
@@ -107,27 +105,27 @@ def build_indicators(client: Client, raw_cves: List):
 
         # Check for which CVSS Metric scoring data is available in the CVE response
         # Use the newest CVSS standard to set the CVSS Version, vector, severity, and score
-        if "cvssMetricV2" in raw_cve.get('cve').get('metrics'):
+        if "cvssMetricV2" in raw_cve.get('metrics'):
             cvss_metric = 'cvssMetricV2'
             fields["cvssversion"] = "2"
-        elif "cvssMetricV30" in raw_cve.get('cve').get('metrics'):
+        elif "cvssMetricV30" in raw_cve.get('metrics'):
             cvss_metric = 'cvssMetricV30'
             fields["cvssversion"] = "3"
-        elif "cvssMetricV31" in raw_cve.get('cve').get('metrics'):
+        elif "cvssMetricV31" in raw_cve.get('metrics'):
             cvss_metric = 'cvssMetricV31'
             fields["cvssversion"] = "3.1"
 
         if cvss_metric:
-            fields["cvssscore"] = raw_cve.get('cve').get('metrics').get(cvss_metric)[0]\
+            fields["cvssscore"] = raw_cve.get('metrics').get(cvss_metric)[0]\
                 .get('impactScore')
-            fields["cvssvector"] = raw_cve.get('cve').get('metrics').get(cvss_metric)[0]\
+            fields["cvssvector"] = raw_cve.get('metrics').get(cvss_metric)[0]\
                 .get('cvssData').get('vectorString')
-            fields["sourceoriginalseverity"] = raw_cve.get('cve').get('metrics').get(cvss_metric)[0]\
+            fields["sourceoriginalseverity"] = raw_cve.get('metrics').get(cvss_metric)[0]\
                 .get('impactScore')
 
-            for key, value in raw_cve.get('cve').get('metrics').get(cvss_metric)[0].items():
+            for key, value in raw_cve.get('metrics').get(cvss_metric)[0].items():
                 if key == "cvssData":
-                    cvss = raw_cve.get('cve').get('metrics').get(cvss_metric)[0]['cvssData']
+                    cvss = raw_cve.get('metrics').get(cvss_metric)[0]['cvssData']
                     for new_item in cvss:
                         metrics.append({"metrics": str(new_item), "value": cvss[new_item]})
                 else:
@@ -136,7 +134,7 @@ def build_indicators(client: Client, raw_cves: List):
             fields["cvsstable"] = metrics
 
         if cpes:
-            tags, relationships = parse_cpe_command([d['CPE'] for d in cpes], raw_cve.get('cve').get('id'))
+            tags, relationships = parse_cpe_command([d['CPE'] for d in cpes], raw_cve.get('id'))
             if client.feed_tags:
                 tags.append(str(client.feed_tags))
 
@@ -212,9 +210,64 @@ def parse_cpe_command(cpes: list[str], cve_id: str) -> tuple[list[str], list[Ent
     return list(vendors | products | parts), relationships
 
 
+def cves_to_war_room(raw_cves):
+    """
+    Output CVEs to war room based on nvd-get-indicators
+
+    Args:
+        raw_cves: List of CVEs
+
+    Returns:
+        Outputs to war room
+
+    ID, Description, Score, Published, Modified
+    """
+
+    fields = {}
+    war_room_entries = {}
+
+    for cve in raw_cves.get('cve'):
+        fields = {"description": cve.get('descriptions')[0].get('value')}
+        fields["modified"] = cve.get('lastModified')
+        fields["published"] = cve.get('published')
+        fields["id"] = {"value": cve.get('id')}
+
+        # Check for which CVSS Metric scoring data is available in the CVE response
+        # Use the newest CVSS standard to set the CVSS Version, vector, severity, and score
+        if "cvssMetricV2" in cve.get('metrics'):
+            cvss_metric = 'cvssMetricV2'
+            fields["cvssversion"] = "2"
+        elif "cvssMetricV30" in cve.get('metrics'):
+            cvss_metric = 'cvssMetricV30'
+            fields["cvssversion"] = "3"
+        elif "cvssMetricV31" in cve.get('metrics'):
+            cvss_metric = 'cvssMetricV31'
+            fields["cvssversion"] = "3.1"
+
+        if cvss_metric:
+            fields["score"] = cve.get('metrics').get(cvss_metric)[0]\
+                .get('impactScore')
+
+        war_room_entries.update(fields)
+
+    results = CommandResults(
+        outputs_prefix="NistNVD",
+        outputs_key_field="id",
+        outputs = {
+            "id": war_room_entries['id'],
+            "description": war_room_entries['description'],
+            "score": war_room_entries['score'],
+            "published_date": war_room_entries['published'],
+            "modified_date": war_room_entries['modified']
+        },
+        readable_output=war_room_entries
+    )
+
+    return_results(results)
+
 def test_module(client: Client):
     """
-    Performs a simple API call to NVD for CVE-2021-44228 using the provided API key
+    Performs a simple API call to the NVD endpoint
 
     Args:
         client: An instance of the BaseClient connection class
@@ -225,7 +278,7 @@ def test_module(client: Client):
 
     """
     try:
-        client.http_get("/rest/json/cves/2.0/?noRejected", {})
+        client.get_cves("/rest/json/cves/2.0/?noRejected", {})
         return_results('ok')
 
     except Exception as e:  # pylint: disable=broad-except
@@ -233,7 +286,7 @@ def test_module(client: Client):
                      + "\nError Message: " + str(e))
 
 
-def retrieve_cves(client, start_date: Any, end_date: Any, test_run: bool):
+def retrieve_cves(client, first_fetch: Any, end_date: Any, test_run: bool):
     """
     Iteratively retrieves CVEs from NVD from the specified modification date
     through the date the fetch-indicators or nvd-get-indicators command is 
@@ -246,23 +299,22 @@ def retrieve_cves(client, start_date: Any, end_date: Any, test_run: bool):
         Total number of CVE indicators fetched
 
     """
-    url = "/rest/json/cves/2.0/?noRejected"
+    url_suffix = "/rest/json/cves/2.0/?noRejected"
     param = {}
-    start_index = 0
+    param['start_index'] = 0
     results_per_page = 2000
     raw_cves = []  # type: ignore
 
-    start_date = datetime.fromisoformat(str(start_date))
+    first_fetch = datetime.fromisoformat(str(first_fetch))
     end_date = datetime.fromisoformat(str(end_date))
 
-    param['lastModStartDate'] = start_date.strftime(DATE_FORMAT)  # type: ignore
-    param['lastModEndDate'] = end_date.strftime(DATE_FORMAT)  # type: ignore
+    param['lastModStartDate'] = first_fetch.strftime(DATE_FORMAT)
+    param['lastModEndDate'] = end_date.strftime(DATE_FORMAT)
 
     if client.has_kev:
-        url += '&hasKev'
+        url_suffix += '&hasKev'
 
-    param['startIndex'] = int(start_index)  # type: ignore
-    param['resultsPerPage'] = results_per_page  # type: ignore
+    param['resultsPerPage'] = results_per_page
 
     more_to_process = True
 
@@ -270,7 +322,7 @@ def retrieve_cves(client, start_date: Any, end_date: Any, test_run: bool):
     while more_to_process:
         try:
             if not test_run:
-                res = client.http_get(url, param)
+                res = client.get_cves(url_suffix, param)
             else:
                 with open('./Packs/FeedNVDv2/Integrations/FeedNVDv2/test_data/test_cve_data.json', encoding='utf-8') as f:
                     res = json.loads(f.read())
@@ -282,7 +334,7 @@ def retrieve_cves(client, start_date: Any, end_date: Any, test_run: bool):
             if total_results:
                 raw_cves += res.get('vulnerabilities')
 
-                param['startIndex'] = str(int(param['startIndex']) + results_per_page)
+                param['startIndex'] += results_per_page
 
             if (int(param['startIndex']) >= total_results):
                 more_to_process = False
@@ -297,7 +349,7 @@ def retrieve_cves(client, start_date: Any, end_date: Any, test_run: bool):
 
 def fetch_indicators_command(client: Client, test_run: bool):
     """
-    Initiates the CVE retrieval process while tracking the total run time and indicator fetch count
+    Fetch CVEs from NVD API and create indicators in XSOAR
 
     Args:
         client: An instance of the BaseClient connection class
@@ -307,42 +359,46 @@ def fetch_indicators_command(client: Client, test_run: bool):
 
     """
 
-    parsed_cves: list = []
+    total_results = 0
     temp_cves: list = []
     exceeds_span = True
     iteration = 0
     command = demisto.command()
 
-    s_date = client.start_date
+    s_date = client.first_fetch
     try:
         date.fromisoformat(s_date)
     except ValueError:
         return_error("Incorrect date format specified. Should be in the format of YYYY-MM-DD")
-    start_date = datetime.strptime(s_date, "%Y-%m-%d")
+    first_fetch = datetime.strptime(s_date, "%Y-%m-%d")
 
     last_run_data = demisto.getLastRun()
 
     if last_run_data:
         last_run = parse(last_run_data.get("lastRun"))
+    elif "lastRun" not in last_run_data or test_run:
+        last_run = first_fetch
+    else:
+        last_run = parse(last_run_data.get("lastRun"))
 
     if command == 'nvd-get-indicators':
         history = demisto.getArg('history')
+
+        current_date = datetime.now()
+
+        delta = timedelta(days=history)
+
+        last_run = current_date - delta
+
         demisto.debug(f'Retrieving last {history} days of CVEs using nvd-get-indicators')
-        last_run = (datetime.now() - timedelta(days=int(history)))
-    # First run of the integration
-    elif "lastRun" not in last_run_data or test_run:
-        last_run = start_date
-    # last_run is present so parse last date
-    else:
-        last_run = parse(last_run_data.get("lastRun"))
 
     last_mod_start_date = last_run
     last_mod_end_date = datetime.now()  # type: ignore[attr-defined]
 
     while exceeds_span and last_mod_end_date and last_mod_start_date:
-        delta = (last_mod_end_date - last_mod_start_date).days  # type: ignore[TypeError]
+        delta = (last_mod_end_date - last_mod_start_date).days
         if delta > 120:
-            last_mod_end_date = last_mod_start_date + timedelta(days=120)  # type: ignore
+            last_mod_end_date = last_mod_start_date + timedelta(days=120)
         else:
             exceeds_span = False
 
@@ -350,25 +406,32 @@ def fetch_indicators_command(client: Client, test_run: bool):
 
         raw_cves = retrieve_cves(client, last_mod_start_date, last_mod_end_date, False)
 
-        demisto.debug(print(f'\n\nlastModStartDate: {last_mod_start_date.strftime(DATE_FORMAT)}'  # noqa: T201
+        demisto.debug(print(f'\n\nlastModStartDate: {last_mod_start_date.strftime(DATE_FORMAT)}' # noqa: T201
                             + f'\nlastModEndDate: {last_mod_end_date.strftime(DATE_FORMAT)}'
                             + f'\nFetch Iteration: {str(iteration)}' + '\nCurrent Total Fetched Indicator Count: '
-                            + f'{str(len(parsed_cves))}\n\n'))
+                            + f'{total_results}\n\n'))
 
-        if raw_cves:
+        if raw_cves and command != "nvd-get-indicators":
             temp_cves = build_indicators(client, raw_cves)
             demisto.createIndicators(temp_cves)
 
-            parsed_cves += temp_cves
-            temp_cves.clear()
+            total_results += len(temp_cves)
+            del temp_cves
+            del raw_cves
 
-        raw_cves.clear()
+            temp_cves: list = []  # type: ignore[no-redef]
+            raw_cves: list = []  # type: ignore[no-redef]
+            raw_cves.clear()
 
         last_mod_start_date = last_mod_end_date
         last_mod_end_date = datetime.now()
 
-    demisto.setLastRun({"lastRun": datetime.now
-                        (timezone.utc).isoformat()})
+    if command != "nvd-get-indicators":
+        demisto.setLastRun({"lastRun": datetime.now
+                            (timezone.utc).isoformat()})
+        return "ok"
+    else:
+        return raw_cves
 
 
 def main() -> None:
@@ -386,35 +449,36 @@ def main() -> None:
 
     params = demisto.params()
     base_url: str = "https://services.nvd.nist.gov"  # disable-secrets-detection
-    verify_cert = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     api_key = params.get('apiKey').get('password')
     tlp_color = params.get('tlp_color')
     has_kev = params.get('hasKev')
-    start_date = params.get('start_date')
+    first_fetch = params.get('first_fetch')
     feed_tags = params.get('feedTags')
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
             base_url=base_url,
-            verify=verify_cert,
             proxy=proxy,
             api_key=api_key,
             tlp_color=tlp_color,
             has_kev=has_kev,
-            start_date=start_date,
+            first_fetch=first_fetch,
             feed_tags=feed_tags
         )
 
-        if command != "test-module":
+        if command == "fetch-indicators":
             fetch_indicators_command(client, test_run=False)
+        elif command == "nvd-get-indicators":
+            raw_cves = fetch_indicators_command(client, False)
+            
+            cves_to_war_room(raw_cves)
         else:
             test_module(client)
 
     except Exception as e:  # pylint: disable=broad-except
-        demisto.error(traceback.format_exc())  # demisto.info the traceback
-        return_error(f'Failed to execute {command} command.\nError: {str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError: \n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
