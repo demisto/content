@@ -101,7 +101,7 @@ Utils/trigger_nightly_sdk_build.sh @dorschw
 .pre-commit-config_template.yaml @dorschw @ilaner
 
 # XDR Related
-/Packs/CortexXDR/Integrations/ @dansterenson
+/Packs/CortexXDR/Integrations/ @maimorag
 /Packs/Core/Integrations/ @dansterenson
 /Packs/ApiModules/Scripts/CoreIRApiModule/* @dansterenson
 
