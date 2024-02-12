@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install dos2unix git python2 curl -y \
 # This is a workaround for VSCode devcontainer features in self signed certificate
 RUN UID="1000" GID="1000" bash /features/src/common-utils/install.sh
 RUN VERSION="os-provided" bash /features/src/git/install.sh
-RUN VERSION="latest" USE_MOBY=false bash /features/src/docker-in-docker/install.sh
+RUN VERSION="lts" bash /features/src/docker-in-docker/install.sh
 RUN VERSION="lts" bash /features/src/node/install.sh
 RUN bash /features/src/sshd/install.sh
 RUN bash /features/src/github-cli/install.sh
