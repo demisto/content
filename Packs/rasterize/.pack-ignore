@@ -1,6 +1,8 @@
 [known_words]
 WebDriver
 rasterization
+pychrome
 
 [tests_require_network]
 Rasterize
+Rasterize v2 Pre-Release
