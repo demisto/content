@@ -12,7 +12,7 @@ enabled: true
 args:
 - name: left
   required: true
-  description: The IPv4 address (or comma-delimited addresses) to check.
+  description: A comma-separated list of IPv4 addresses to check.
   isArray: true
 - name: right
   required: true
