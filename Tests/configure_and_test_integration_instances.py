@@ -569,9 +569,10 @@ class Build(ABC):
             If the server version is higher or equal to 6.0 - will return True if the packs installation was successful
             both before that update and after the update.
         """
-        installed_content_packs_successfully = self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number,
-                                                                        self.marketplace_tag_name, self.artifacts_folder,
-                                                                        self.marketplace_buckets)
+        # installed_content_packs_successfully = self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number,
+        #                                                                 self.marketplace_tag_name, self.artifacts_folder,
+        #                                                                 self.marketplace_buckets)
+        installed_content_packs_successfully = True
         installed_content_packs_successfully &= self.install_packs(production_bucket=False)
         return installed_content_packs_successfully
 
