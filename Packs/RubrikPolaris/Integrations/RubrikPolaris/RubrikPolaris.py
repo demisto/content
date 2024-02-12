@@ -1,11 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """Main file for RubrikPolaris Integration."""
-from typing import Tuple
-
+from copy import deepcopy
 
 from rubrik_polaris.rubrik_polaris import PolarisClient
 from rubrik_polaris.exceptions import ProxyException
+import math
 import urllib3
 import traceback
 from datetime import date
@@ -18,6 +18,7 @@ urllib3.disable_warnings()
 
 INTEGRATION_NAME = "Rubrik Radar"
 DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+HR_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 HUMAN_READABLE_DATE_TIME_FORMAT = "%b %d, %Y at %I:%M:%S %p"
 
 DEFAULT_IS_FETCH = False
@@ -26,6 +27,12 @@ MAX_FETCH_MAX = 200
 DEFAULT_MAX_FETCH = 20
 DEFAULT_LIMIT = 50
 DEFAULT_SORT_BY = 'ID'
+DEFAULT_USER_ACCESS_SORT_BY = 'RISK_LEVEL'
+DEFAULT_FILE_CONTEXT_SORT_BY = 'HITS'
+ASCENDING_SORT_ORDER = 'ASC'
+DESCENDING_SORT_ORDER = 'DESC'
+DEFAULT_USER_ACCESS_SORT_ORDER = DESCENDING_SORT_ORDER
+DEFAULT_FILE_CONTEXT_SORT_ORDER = DESCENDING_SORT_ORDER
 DEFAULT_SORT_ORDER = 'ASC'
 DEFAULT_CLUSTER_CONNECTED = True
 DEFAULT_SNAPSHOT_GROUP_BY = "Day"
@@ -35,10 +42,13 @@ DEFAULT_EVENT_SORT_ORDER = "DESC"
 DEFAULT_SHOW_CLUSTER_SLA_ONLY = "True"
 DEFAULT_SORT_BY_SLA_DOMAIN = "NAME"
 DEFAULT_CLUSTER_SORT_BY = "ClusterName"
-DEFAULT_REQUEST_NAME = "PAXSOAR-1.1.0"
+DEFAULT_REQUEST_NAME = f"PAXSOAR-{get_pack_version(pack_name='Rubrik Polaris') or '1.2.0'}"
+DEFAULT_PRINCIPAL_SUMMARY_CATEGORY = "USERS_WITH_SENSITIVE_ACCESS"
 SCAN_ID = "Scan ID"
 SNAPSHOT_ID = "Snapshot ID"
 START_TIME = "Start Time"
+LAST_ACCESS_TIME = "Last Access Time"
+LAST_MODIFIED_TIME = "Last Modified Time"
 CLUSTER_ID = "Cluster ID"
 ACTIVITY_SERIES_ID = "Activity Series ID"
 FREE_SPACE = "Free Space"
@@ -50,14 +60,43 @@ SNAPPABLE_ID = "Snappable ID"
 SLA_DOMAIN = "SLA Domain"
 OBJECT_NAME = "Object Name"
 OBJECT_ID = "Object ID"
+FILE_NAME = "File Name"
+FILE_SIZE = "File Size in Bytes"
+FILE_PATH = "File Path"
+ACCESS_TYPE = "Access Type"
+USER_ID = "User ID"
+USER_FULL_NAME = "User Full Name"
+USER_PRINCIPAL_NAME = "User Principal Name"
+GROUPS = "Groups"
+ACCESS_RISK_REASONS = "Access Risk Reason(s)"
+INSECURE_REASONS = "Insecure Reason(s)"
+RISK_LEVEL = "Risk Level"
+TOTAL_SENSITIVE_FILES = "Total Sensitive Files"
+TOTAL_SENSITIVE_HITS = "Total Sensitive Hits"
+SENSITIVE_HITS_DELTA = "Sensitive Hits Delta"
+TOTAL_SENSITIVE_OBJECTS = "Total Sensitive Objects"
+HIGH_RISK_HITS = "High Risk Hits"
+MEDIUM_RISK_HITS = "Medium Risk Hits"
+LOW_RISK_HITS = "Low Risk Hits"
+POLICY_NAME = "Policy Name"
+
+DAILY_HITS_CHANGE = "Daily Hits Change"
+START_CURSOR = "Start Cursor"
+END_CURSOR = "End Cursor"
+HAS_NEXT_PAGE = "Has Next Page"
+HAS_PREVIOUS_PAGE = "Has Previous Page"
 DEFAULT_FIRST_FETCH = "3 days"
 MAX_MATCHES_PER_OBJECT = 100
 MAXIMUM_FILE_SIZE = 5000000
+MAXIMUM_PAGINATION_LIMIT = 1000
 
 MESSAGES = {
     'NO_RECORDS_FOUND': "No {} were found for the given argument(s).",
     'NEXT_RECORD': "Note: To retrieve the next set of results use, \"next_page_token\" =",
-    'NO_RESPONSE': "No response was returned for the given argument(s)"
+    'NEXT_PAGE_TOKEN': ('Note: To retrieve the next set of results, use **next_page_token** = "{}".'
+                        '\nIf **next_page_token** is provided, then it will reset the record numbers. '
+                        'For the initial use of **next_page_token**, please avoid specifying the **page_number**.'),
+    'NO_RESPONSE': "No response was returned for the given argument(s)."
 }
 
 OUTPUT_PREFIX = {
@@ -90,7 +129,11 @@ OUTPUT_PREFIX = {
     "RADAR_IOC_SCAN": "RubrikPolaris.RadarIOCScan",
     "GPS_ASYNC_RESULT": "RubrikPolaris.GPSAsyncResult",
     "GPS_CLUSTER": "RubrikPolaris.GPSCluster",
-    "GPS_VM_RECOVER_FILES": "RubrikPolaris.GPSVMRecoverFiles"
+    "GPS_VM_RECOVER_FILES": "RubrikPolaris.GPSVMRecoverFiles",
+    "USER_ACCESS": "RubrikPolaris.UserAccess",
+    "PAGE_TOKEN_USER_ACCESS": "RubrikPolaris.PageToken.UserAccess",
+    "FILE_CONTEXT": "RubrikPolaris.FileContext",
+    "PAGE_TOKEN_FILE_CONTEXT": "RubrikPolaris.PageToken.FileContext",
 }
 
 ERROR_MESSAGES = {
@@ -102,13 +145,15 @@ ERROR_MESSAGES = {
                               f"integration {INTEGRATION_NAME}, please un-check it and try again. ",
     "MISSING_REQUIRED_FIELD": "'{}' field is required. Please provide correct input.",
     "NO_CREDENTIALS_PROVIDED": "Please provide either 'Service Account JSON' or "
-                               "'Polaris Account'-'Email'-'Password' for authentication.",
+                               "'Rubrik Account'-'Email'-'Password' for authentication.",
     "SA_JSON_DECODE_ERR": "Unable to read 'Service Account JSON', please verify it's correctness.",
     "KEY_NOT_FOUND_IN_SA_JSON": "{} was not found in 'Service Account JSON', please verify it's correctness.",
     "INVALID_LIMIT": "'{}' is an invalid value for 'limit'. Value must be between 1 and 1000.",
+    "INVALID_PAGE": "'{}' is an invalid value for 'page_number'. Value must be greater than zero.",
     "JSON_DECODE": "Failed to parse '{}' JSON string, "
                    "please check it's format in the argument's help-text.",
     "INVALID_BOOLEAN": "'{}' is an invalid value for '{}'. Value must be in ['true', 'false'].",
+    "INVALID_SORT_ORDER": "'{}' is an invalid value for 'sort_order'. Value must be 'ASC' or 'DESC'.",
     "INVALID_SELECT": "'{}' is an invalid value for '{}'. Value must be in {}.",
     "MISSING_EXPORT_DESTINATION": "host_id or host_compute_cluster_id must be provided.",
     "LEN_SNAPSHOT_NE_LEN_OBJECT": "'snapshot_id' for each 'snappable_id' "
@@ -124,6 +169,361 @@ TOKEN_EXPIRY_BUFFER_TIME = 30
 
 IOC_TYPE_ENUM = ["INDICATOR_OF_COMPROMISE_TYPE_HASH", "INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE",
                  "INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME"]
+
+USER_ACCESS_QUERY = """query UserAccessPrincipalListQuery(
+    $filter: PrincipalSummariesFilterInput,
+    $timelineDate: String!,
+    $sort: ListPrincipalsSummarySortInput,
+    $first: Int, $after: String,
+    $includeWhitelistedResults: Boolean) {
+  principalSummaries(
+    filter: $filter
+    timelineDate: $timelineDate
+    sort: $sort
+    first: $first
+    after: $after
+    includeWhitelistedResults: $includeWhitelistedResults
+  ) {
+    edges {
+      cursor
+      node {
+        principalId
+        fullName
+        upn
+        riskLevel
+        sensitiveFiles {
+          ...SensitiveFilesTableCellFragment
+          __typename
+        }
+        totalSensitiveHits {
+          ...SummaryHitsFragment
+          __typename
+        }
+        sensitiveObjectCount {
+          ...SummaryCountFragment
+          __typename
+        }
+        numDescendants
+        domainName
+        __typename
+      }
+      __typename
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment SensitiveFilesTableCellFragment on SensitiveFiles {
+  highRiskFileCount {
+    ...SummaryCountFragment
+    __typename
+  }
+  mediumRiskFileCount {
+    ...SummaryCountFragment
+    __typename
+  }
+  lowRiskFileCount {
+    ...SummaryCountFragment
+    __typename
+  }
+  __typename
+}
+
+fragment SummaryCountFragment on SummaryCount {
+  totalCount
+  violatedCount
+  __typename
+}
+
+fragment SummaryHitsFragment on SummaryHits {
+  totalHits
+  violatedHits
+  __typename
+}"""
+
+USER_ACCESS_DETAIL_QUERY = """query UserAccessUserDetailsQuery(
+    $sid: String!,
+    $timelineDate: String!,
+    $includeWhitelistedResults: Boolean) {
+    principalDetails(
+        sid: $sid
+        timelineDate: $timelineDate
+        includeWhitelistedResults: $includeWhitelistedResults
+    ) {
+        ...UserAccessUserSummaryFragment
+        __typename
+    }
+}
+
+fragment UserAccessUserSummaryFragment on PrincipalDetails {
+    principalSummary {
+        principalId
+        fullName
+        upn
+        riskLevel
+        riskReasons {
+            accessRiskReasons
+            insecureReasons
+            __typename
+        }
+        sensitiveFiles {
+            ...SensitiveFilesTableCellFragment
+            __typename
+        }
+        totalSensitiveHits {
+            ...SummaryHitsFragment
+            __typename
+        }
+        sensitiveObjectCount {
+            ...SummaryCountFragment
+            __typename
+        }
+        numDescendants
+        domainName
+        __typename
+    }
+    directGroups {
+        name
+        sid
+        __typename
+    }
+    __typename
+}
+
+fragment SensitiveFilesTableCellFragment on SensitiveFiles {
+  highRiskFileCount {
+    ...SummaryCountFragment
+    __typename
+  }
+  mediumRiskFileCount {
+    ...SummaryCountFragment
+    __typename
+  }
+  lowRiskFileCount {
+    ...SummaryCountFragment
+    __typename
+  }
+  __typename
+}
+
+fragment SummaryCountFragment on SummaryCount {
+  totalCount
+  violatedCount
+  __typename
+}
+
+fragment SummaryHitsFragment on SummaryHits {
+  totalHits
+  violatedHits
+  __typename
+}"""
+
+POLICY_HITS_SUMMARY_CHART_QEURY = """query PrincipalPolicyHitsSummaryChartQuery(
+    $sids: [String!]!,
+    $day: String!,
+    $historicalDeltaDays: Int!,
+    $includeWhitelistedResults: Boolean) {
+  sidsPolicyHitsSummary(
+    sids: $sids
+    day: $day
+    historicalDeltaDays: $historicalDeltaDays
+    includeWhitelistedResults: $includeWhitelistedResults
+  ) {
+    sidSummaries {
+      principal
+      summary {
+        policyId
+        policyName
+        sidSensitiveFiles {
+          totalFileCount {
+            totalCount
+            violatedCount
+            __typename
+          }
+          __typename
+        }
+        sidAnalyzerHits {
+          ...PrincipalSensitiveHitsFragment
+          __typename
+        }
+        sidDeltaAnalyzerHits {
+          ...PrincipalSensitiveHitsFragment
+          __typename
+        }
+        sidRiskHits {
+          ...PrincipalSensitiveHitsFragment
+          __typename
+        }
+        sidDeltaRiskHits {
+          ...PrincipalSensitiveHitsFragment
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment PrincipalSensitiveHitsFragment on SensitiveHits {
+  highRiskHits {
+    ...SummaryHitsFragment
+    __typename
+  }
+  mediumRiskHits {
+    ...SummaryHitsFragment
+    __typename
+  }
+  lowRiskHits {
+    ...SummaryHitsFragment
+    __typename
+  }
+  totalHits {
+    ...SummaryHitsFragment
+    __typename
+  }
+  __typename
+}
+
+fragment SummaryHitsFragment on SummaryHits {
+  totalHits
+  violatedHits
+  __typename
+}"""
+
+FILE_CONTEXT_QUERY = """query CrawlsFileListQuery(
+    $snappableFid: String!,
+    $snapshotFid: String!,
+    $first: Int!,
+    $after: String,
+    $filters: ListFileResultFiltersInput,
+    $sort: FileResultSortInput,
+    $timezone: String!) {
+  policyObj(snappableFid: $snappableFid, snapshotFid: $snapshotFid) {
+    id: snapshotFid
+    fileResultConnection(first: $first, after: $after, filter: $filters, sort: $sort, timezone: $timezone) {
+      edges {
+        cursor
+        node {
+          ...DiscoveryFileFragment
+          __typename
+        }
+        __typename
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment DiscoveryFileFragment on FileResult {
+  nativePath
+  stdPath
+  filename
+  mode
+  size
+  lastAccessTime
+  lastModifiedTime
+  directory
+  numDescendantFiles
+  numDescendantErrorFiles
+  numDescendantSkippedExtFiles
+  numDescendantSkippedSizeFiles
+  errorCode
+  hits {
+    totalHits
+    violations
+    violationsDelta
+    totalHitsDelta
+    __typename
+  }
+  filesWithHits {
+    totalHits
+    violations
+    __typename
+  }
+  openAccessFilesWithHits {
+    totalHits
+    violations
+    __typename
+  }
+  staleFilesWithHits {
+    totalHits
+    violations
+    __typename
+  }
+  analyzerGroupResults {
+    ...AnalyzerGroupResultFragment
+    __typename
+  }
+  sensitiveFiles {
+    highRiskFileCount {
+      totalCount
+      violatedCount
+      __typename
+    }
+    mediumRiskFileCount {
+      totalCount
+      violatedCount
+      __typename
+    }
+    lowRiskFileCount {
+      totalCount
+      violatedCount
+      __typename
+    }
+    __typename
+  }
+  openAccessType
+  stalenessType
+  numActivities
+  numActivitiesDelta
+  __typename
+}
+
+fragment AnalyzerGroupResultFragment on AnalyzerGroupResult {
+  analyzerGroup {
+    groupType
+    id
+    name
+    __typename
+  }
+  analyzerResults {
+    hits {
+      totalHits
+      violations
+      __typename
+    }
+    analyzer {
+      id
+      name
+      analyzerType
+      __typename
+    }
+    __typename
+  }
+  hits {
+    totalHits
+    violations
+    violationsDelta
+    totalHitsDelta
+    __typename
+  }
+  __typename
+}"""
 
 
 class MyClient(PolarisClient):
@@ -246,6 +646,21 @@ def process_activity_nodes(activity_nodes: list, processed_incident):
                 demisto.info("Error Parsing Radar Anomaly File Change attributes")
 
     return processed_incident
+
+
+def calc_pages(total_count: int, per_page_count: int) -> int:
+    """
+    Calculates the number of pages required to display all the items,
+    considering the number of items to be displayed per page
+
+    Args:
+        total_count (int): The total number of items.
+        per_page_count (int): The count of items per page.
+
+    Returns:
+        int: The total number of pages.
+    """
+    return math.ceil(total_count / per_page_count)
 
 
 def prepare_context_hr_object_search(response: dict):
@@ -436,6 +851,7 @@ def convert_bytes(bytes_val: int):
             return f"{bytes_val / (10 ** 3)} KB"
         else:
             return f"{bytes_val} B"
+    return None
 
 
 def prepare_context_hr_sonar_ondemand_scan_status(nodes: list, crawl_id: str):
@@ -629,6 +1045,32 @@ def validate_vm_export_args(args: Dict[str, Any]):
     }
 
     return remove_empty_elements(config), object_id
+
+
+def validate_user_access_list_command_args(limit: int, sort_order: str, page_number: Optional[int] = 1):
+    """
+    To validate arguments of rubrik-sonar-user-access-list.
+
+    :type limit: ``int``
+    :param limit: Number of records to return.
+
+    :type sort_order: ``str``
+    :param sort_order: Sort order argument.
+
+    :type page_number: ``Optional[int]``
+    :param page_number: Page number argument.
+    """
+    # Validate limit argument.
+    if not limit or not 0 <= limit <= MAXIMUM_PAGINATION_LIMIT:
+        raise ValueError(ERROR_MESSAGES['INVALID_LIMIT'].format(limit))
+
+    # Validate sort_order argument.
+    if sort_order not in (ASCENDING_SORT_ORDER, DESCENDING_SORT_ORDER):
+        raise ValueError(ERROR_MESSAGES['INVALID_SORT_ORDER'].format(sort_order))
+
+    # Validate page number if supplied.
+    if isinstance(page_number, int) and page_number < 1:
+        raise ValueError(ERROR_MESSAGES['INVALID_PAGE'].format(page_number))
 
 
 def prepare_context_hr_user_downloads(nodes: list):
@@ -1219,6 +1661,230 @@ def prepare_context_hr_ioc_scan_list(data: list):
     return data, hr
 
 
+def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results: bool, user_email: str,
+                                        page_number: int = 1, limit: int = DEFAULT_LIMIT
+                                        ) -> tuple[list[dict], str, int, set[str]]:
+    """
+    Prepare context output and human-readable response for rubrik-sonar-user-access-list command.
+
+    :type edges: ``list``
+    :param edges: Edges from the response received from the API.
+
+    :type include_whitelisted_results: ``bool``
+    :param include_whitelisted_results: Include whitelisted results in the API response.
+
+    :type user_email: ``str``
+    :param user_email: User email or user principal name.
+
+    :type page_number: ``int``
+    :param page_number: The current page number.
+
+    :type limit: ``int``
+    :param limit: Limit the records for the output.
+
+    :return: Context output, human-readable, the total pages and the risk levels for the command.
+    """
+    hr_content = []
+    context: list[dict] = []
+    risk_levels: set[str] = set()
+    upn_match_count = 0
+    for edge in edges:
+        node = edge.get('node')
+        node = remove_empty_elements(node)
+        user_principal_name = node.get('upn')
+        if user_email:
+            if isinstance(user_principal_name, str) and user_email not in user_principal_name:
+                continue
+            # Found the match of the UPN with the user provide mail address.
+            upn_match_count += 1
+            # Skip the records as per the page number.
+            if upn_match_count <= limit * (page_number - 1):
+                continue
+            # Limit the context and the HR output.
+            if len(context) >= limit:
+                continue
+        context.append(node)
+        sensitive_files = node.get('sensitiveFiles') or {}
+        risk_level = node.get('riskLevel')
+        if risk_level:
+            risk_levels.add(risk_level)
+
+        total_sensitive_files = 0
+        # Go for totalHits if include_whitelisted_results is True else go for violatedHits.
+        if include_whitelisted_results:
+            sensitive_hits_key = 'totalHits'
+            sensitive_files_key = 'totalCount'
+        else:
+            sensitive_hits_key = 'violatedHits'
+            sensitive_files_key = 'violatedCount'
+
+        for file_count in sensitive_files.values():
+            if isinstance(file_count, dict):
+                total_sensitive_files += file_count.get(sensitive_files_key) or 0
+
+        hr_content.append({
+            USER_ID: node.get('principalId'),
+            USER_FULL_NAME: node.get('fullName'),
+            USER_PRINCIPAL_NAME: re.escape(node.get('upn') or ''),
+            RISK_LEVEL: node.get('riskLevel'),
+            TOTAL_SENSITIVE_OBJECTS: node.get('sensitiveObjectCount', {}).get(sensitive_files_key, 0),
+            TOTAL_SENSITIVE_FILES: total_sensitive_files,
+            TOTAL_SENSITIVE_HITS: node.get('totalSensitiveHits', {}).get(sensitive_hits_key) or 0,
+        })
+
+    pages = calc_pages(per_page_count=limit, total_count=upn_match_count)  # type: ignore
+    if user_email:
+        record_start = limit * (page_number - 1) + 1
+        record_end = record_start + len(context) - 1
+        total_records = upn_match_count
+    else:
+        record_start = 1
+        record_end = len(context)
+        total_records = record_end
+    hr = tableToMarkdown(
+        f"User Access (Showing Records {record_start}-{record_end} out of {total_records})", hr_content,
+        headers=[USER_ID, USER_FULL_NAME, USER_PRINCIPAL_NAME, RISK_LEVEL, TOTAL_SENSITIVE_OBJECTS,
+                 TOTAL_SENSITIVE_FILES, TOTAL_SENSITIVE_HITS],
+        removeNull=True)
+
+    return context, hr, pages, risk_levels
+
+
+def prepare_context_hr_user_access_get(principal_summary: Dict, policy_hits_context: list,
+                                       include_whitelisted_results: bool) -> tuple[list, str, str]:
+    """
+    Prepare context output and human-readable response for rubrik-sonar-user-access-get command.
+
+    :type principal_summary: ``Dict``
+    :param principal_summary: Edges from the response received from the API.
+
+    :type policy_hits_context: ``list``
+    :param policy_hits_context: Summary of the policy hits for the user.
+
+    :type include_whitelisted_results: ``bool``
+    :param include_whitelisted_results: Include whitelisted results in the API response.
+
+    :return: Context output and human-readable for the command.
+    """
+    access_hr_content = []
+    policy_hits_hr_content: list = []
+    context = []
+    principal_summary = remove_empty_elements(principal_summary)
+    policy_hits_context = remove_empty_elements(policy_hits_context)
+    principal_summary["policy_hits_summary"] = policy_hits_context
+    context.append(principal_summary)
+    sensitive_files = principal_summary.get('sensitiveFiles') or {}
+
+    total_sensitive_files = 0
+    # Go for totalHits if include_whitelisted_results is True else go for violatedHits.
+    if include_whitelisted_results:
+        sensitive_hits_key = 'totalHits'
+        sensitive_files_key = 'totalCount'
+    else:
+        sensitive_hits_key = 'violatedHits'
+        sensitive_files_key = 'violatedCount'
+
+    for file_count in sensitive_files.values():
+        if isinstance(file_count, dict):
+            total_sensitive_files += file_count.get(sensitive_files_key) or 0
+
+    groups = [group.get('name') for group in principal_summary.get('directGroups', [])]
+    access_risk_reasons = principal_summary.get('riskReasons', {}).get('accessRiskReasons', [])
+    insecure_reasons = principal_summary.get('riskReasons', {}).get('insecureReasons', [])
+
+    access_hr_content.append({
+        USER_ID: principal_summary.get('principalId'),
+        USER_FULL_NAME: principal_summary.get('fullName'),
+        USER_PRINCIPAL_NAME: re.escape(principal_summary.get('upn') or ''),
+        RISK_LEVEL: principal_summary.get('riskLevel'),
+        ACCESS_RISK_REASONS: ', '.join(access_risk_reasons),
+        INSECURE_REASONS: ', '.join(insecure_reasons),
+        GROUPS: ', '.join(groups),
+        TOTAL_SENSITIVE_OBJECTS: principal_summary.get('sensitiveObjectCount', {}).get(sensitive_files_key, 0),
+        TOTAL_SENSITIVE_FILES: total_sensitive_files,
+        TOTAL_SENSITIVE_HITS: principal_summary.get('totalSensitiveHits', {}).get(sensitive_hits_key) or 0,
+    })
+
+    access_hr = tableToMarkdown(
+        "User Access", access_hr_content,
+        headers=[USER_ID, USER_FULL_NAME, USER_PRINCIPAL_NAME, RISK_LEVEL, ACCESS_RISK_REASONS, INSECURE_REASONS,
+                 GROUPS, TOTAL_SENSITIVE_OBJECTS, TOTAL_SENSITIVE_FILES, TOTAL_SENSITIVE_HITS],
+        removeNull=True)
+
+    for policy_hits in policy_hits_context:
+        total_file_count_dict = policy_hits.get('sidSensitiveFiles', {}).get('totalFileCount', {})
+        risk_hits_dict = policy_hits.get('sidAnalyzerHits', {})
+        delta_risk_hits_dict = policy_hits.get('sidDeltaAnalyzerHits', {})
+
+        policy_hits_hr_content.append({
+            POLICY_NAME: policy_hits.get('policyName') or '',
+            TOTAL_SENSITIVE_FILES: total_file_count_dict.get(sensitive_files_key) or 0,
+            TOTAL_SENSITIVE_HITS: risk_hits_dict.get('totalHits', {}).get(sensitive_hits_key) or 0,
+            SENSITIVE_HITS_DELTA: delta_risk_hits_dict.get('totalHits', {}).get(sensitive_hits_key) or 0,
+            HIGH_RISK_HITS: risk_hits_dict.get('highRiskHits', {}).get(sensitive_hits_key) or 0,
+            MEDIUM_RISK_HITS: risk_hits_dict.get('mediumRiskHits', {}).get(sensitive_hits_key) or 0,
+            LOW_RISK_HITS: risk_hits_dict.get('lowRiskHits', {}).get(sensitive_hits_key) or 0,
+        })
+
+    policy_hits_hr = tableToMarkdown(
+        "Sensitive Hits", policy_hits_hr_content,
+        headers=[POLICY_NAME, TOTAL_SENSITIVE_FILES, TOTAL_SENSITIVE_HITS, SENSITIVE_HITS_DELTA,
+                 HIGH_RISK_HITS, MEDIUM_RISK_HITS, LOW_RISK_HITS],
+        removeNull=True)
+
+    return context, access_hr, policy_hits_hr
+
+
+def prepare_context_hr_file_context_list(edges: list, include_whitelisted_results: bool) -> tuple[list, str]:
+    """
+    Prepare context output and human-readable response for rubrik-sonar-file-context-list command.
+
+    :type edges: ``list``
+    :param edges: Edges from the response received from the API.
+
+    :type include_whitelisted_results: ``bool``
+    :param include_whitelisted_results: Include whitelisted results in the API response.
+
+    :return: Context output and human-readable for the command.
+    """
+    hr_content = []
+    context = []
+    for edge in edges:
+        node = edge.get('node')
+        node = remove_empty_elements(node)
+        context.append(node)
+        last_access_time = node.get('lastAccessTime')
+        last_modified_time = node.get('lastModifiedTime')
+
+        # Go for totalHits if include_whitelisted_results is True else go for violatedHits.
+        if include_whitelisted_results:
+            total_sensitive_hits = node.get('hits', {}).get('totalHits') or 0
+            daily_hits_change = node.get('hits', {}).get('totalHitsDelta') or 0
+        else:
+            total_sensitive_hits = node.get('hits', {}).get('violations') or 0
+            daily_hits_change = node.get('hits', {}).get('violationsDelta') or 0
+
+        hr_content.append({
+            FILE_NAME: node.get('filename'),
+            FILE_SIZE: node.get('size'),
+            TOTAL_SENSITIVE_HITS: total_sensitive_hits,
+            DAILY_HITS_CHANGE: daily_hits_change,
+            FILE_PATH: node.get('stdPath'),
+            ACCESS_TYPE: node.get('openAccessType'),
+            LAST_ACCESS_TIME: datetime.fromtimestamp(last_access_time, tz=timezone.utc).strftime(HR_DATE_TIME_FORMAT),
+            LAST_MODIFIED_TIME: datetime.fromtimestamp(last_modified_time, tz=timezone.utc).strftime(
+                HR_DATE_TIME_FORMAT),
+        })
+
+    hr = tableToMarkdown(
+        "File Context", hr_content,
+        headers=[FILE_NAME, FILE_SIZE, TOTAL_SENSITIVE_HITS, DAILY_HITS_CHANGE, FILE_PATH,
+                 ACCESS_TYPE, LAST_ACCESS_TIME, LAST_MODIFIED_TIME],
+        removeNull=True)
+
+    return context, hr
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -1247,7 +1913,7 @@ def test_module(client: PolarisClient, params: Dict[str, Any]) -> str:
     return "ok"
 
 
-def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> Tuple[dict, list]:
+def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tuple[dict, list]:
     """
     Fetch Rubrik Anomaly incidents.
 
@@ -1514,8 +2180,8 @@ def rubrik_polaris_object_search_command(client: PolarisClient, args: Dict[str, 
         "has_next_page": page_cursor.get('hasNextPage', '')
     }
     if next_page_context.get('has_next_page'):
-        readable_output = f"""{tableToMarkdown(table_name, hr, header, removeNull=True)}\n {
-                               MESSAGES['NEXT_RECORD']} {page_cursor.get('endCursor')}"""
+        readable_output = f"{tableToMarkdown(table_name, hr, header, removeNull=True)}\n " \
+                          f"{MESSAGES['NEXT_RECORD']} {page_cursor.get('endCursor')}"""
     else:
         readable_output = tableToMarkdown(table_name, hr, header, removeNull=True)
 
@@ -1716,8 +2382,8 @@ def rubrik_polaris_vm_objects_list_command(client: PolarisClient, args: Dict[str
         "has_next_page": page_cursor.get('hasNextPage', '')
     }
     if next_page_context.get('has_next_page'):
-        readable_output = f"""{tableToMarkdown(table_name, hr, header, removeNull=True)}\n {
-                               MESSAGES['NEXT_RECORD']} {page_cursor.get('endCursor')}"""
+        readable_output = f"{tableToMarkdown(table_name, hr, header, removeNull=True)}\n " \
+                          f"{MESSAGES['NEXT_RECORD']} {page_cursor.get('endCursor')}"""
     else:
         readable_output = tableToMarkdown(table_name, hr, header, removeNull=True)
 
@@ -2818,6 +3484,247 @@ def rubrik_gps_vm_recover_files(client: PolarisClient, args: Dict[str, Any]) -> 
                           readable_output=hr)
 
 
+def rubrik_sonar_user_access_list_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the list of user access, based on the provided filters.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``dict``
+    :param args: Arguments for the command.
+
+    :return: CommandResult object.
+    """
+    user_name = args.get("user_name", "")
+    user_email = args.get("user_email", "")
+    search_time_period: datetime = arg_to_datetime(args.get("search_time_period", "7 days"),  # type: ignore
+                                                   arg_name="search_time_period")
+    if search_time_period.tzinfo is None:
+        search_time_period = search_time_period.replace(tzinfo=timezone.utc)
+    search_time_period_iso = search_time_period.replace(microsecond=0).isoformat()
+    risk_levels = argToList(args.get("risk_levels", []))
+    group_id = args.get("group_id", "")
+    include_whitelisted_results = argToBoolean(args.get("include_whitelisted_results", False))
+    principal_summary_category = args.get("principal_summary_category", DEFAULT_PRINCIPAL_SUMMARY_CATEGORY)
+    page_number = arg_to_number(args.get('page_number', 1), 'page_number')
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT), 'limit')
+    sort_by = args.get('sort_by', DEFAULT_USER_ACCESS_SORT_BY)
+    sort_order = str(args.get('sort_order', DEFAULT_USER_ACCESS_SORT_ORDER)).upper()
+    next_page_token = args.get('next_page_token')
+
+    validate_user_access_list_command_args(limit, sort_order, page_number)  # type: ignore
+
+    # Prepare filter.
+    filters = {
+        "filter": {
+            "principalType": "USER",
+            "policyIds": [],
+            "riskLevel": risk_levels,
+            "principalName": user_name,
+            "groupId": group_id,
+            "principalSummaryCategory": principal_summary_category
+        },
+        "timelineDate": search_time_period_iso,
+        "sort": {
+            "sortBy": sort_by,
+            "sortOrder": sort_order
+        },
+        "includeWhitelistedResults": include_whitelisted_results,
+        "first": limit if not user_email else MAXIMUM_PAGINATION_LIMIT,
+    }
+    if next_page_token:
+        filters["after"] = next_page_token
+
+    response = client._query_raw(raw_query=USER_ACCESS_QUERY, operation_name="UserAccessPrincipalListQuery",
+                                 variables=filters, timeout=60)
+
+    response["xsoar_risk_levels"] = []
+    data = response.get('data', {}).get('principalSummaries', {})
+    edges = data.get('edges', [])
+    page_cursor = remove_empty_elements(data.get('pageInfo', {}))
+    page_cursor.pop("__typename", None)
+    page_cursor.update({"name": "rubrik-sonar-user-access-list"})
+    record_hr = ""
+    if page_cursor.get('hasNextPage'):
+        record_hr = f"\n{MESSAGES['NEXT_PAGE_TOKEN'].format(page_cursor.get('endCursor'))}"
+    outputs = {
+        f"{OUTPUT_PREFIX['PAGE_TOKEN_USER_ACCESS']}(val.name == obj.name)": page_cursor
+    }
+    if not edges:
+        page_cursor.update({"has_next_upn_page": False, "next_upn_page_number": 1})
+        return CommandResults(outputs=outputs, raw_response=response,
+                              readable_output=MESSAGES["NO_RECORDS_FOUND"].format("user accesses"))
+
+    context, hr, pages, risk_levels = prepare_context_hr_user_access_list(
+        edges, include_whitelisted_results, user_email, page_number, limit)  # type: ignore
+
+    response["xsoar_risk_levels"] = list(risk_levels)
+
+    if context:
+        outputs[f"{OUTPUT_PREFIX['USER_ACCESS']}(val.principalId == obj.principalId)"] = context
+        next_upn_page_number = 1
+        has_next_upn_page = False
+        if user_email:
+            if page_number < pages:  # type: ignore
+                next_upn_page_number = page_number + 1  # type: ignore
+                has_next_upn_page = True
+            else:
+                next_upn_page_number = pages or 1
+                hr = hr + record_hr
+        elif record_hr:
+            hr = hr + record_hr
+        page_cursor.update(
+            {"has_next_upn_page": has_next_upn_page, "next_upn_page_number": next_upn_page_number})
+    else:
+        hr = MESSAGES["NO_RECORDS_FOUND"].format("user accesses")
+        if record_hr:
+            hr += f'\n{record_hr}'
+        page_cursor.update({"has_next_upn_page": False, "next_upn_page_number": pages or 1})
+
+    return CommandResults(outputs=outputs, raw_response=response, readable_output=hr)
+
+
+def rubrik_sonar_user_access_get_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the of user access for the provided user_id.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``dict``
+    :param args: Arguments for the command.
+
+    :return: CommandResult object.
+    """
+    user_id = validate_required_arg("user_id", args.get("user_id"))
+    search_time_period: datetime = arg_to_datetime(args.get("search_time_period", "7 days"),  # type: ignore
+                                                   arg_name="search_time_period")
+    if search_time_period.tzinfo is None:
+        search_time_period = search_time_period.replace(tzinfo=timezone.utc)
+    search_time_period_iso = search_time_period.replace(microsecond=0).isoformat()
+    historical_delta_days = arg_to_number(args.get("historical_delta_days", '7'), arg_name="historical_delta_days",
+                                          required=True)
+    include_whitelisted_results = argToBoolean(args.get("include_whitelisted_results", False))
+
+    # Prepare filter for user access query.
+    access_filters = {
+        "sid": user_id,
+        "timelineDate": search_time_period_iso,
+        "includeWhitelistedResults": include_whitelisted_results
+    }
+
+    access_response = client._query_raw(raw_query=USER_ACCESS_DETAIL_QUERY, operation_name="UserAccessUserDetailsQuery",
+                                        variables=access_filters, timeout=60)
+    principal_details = access_response.get('data', {}).get('principalDetails', {})
+    principal_summary = deepcopy(principal_details.get('principalSummary', {}))
+    if not principal_summary.get('principalId'):
+        return CommandResults(readable_output=MESSAGES["NO_RESPONSE"])
+
+    principal_summary['directGroups'] = principal_details.get('directGroups', [])
+
+    # Prepare filter for policy hits query.
+    policy_hits_filters = {
+        "sids": [user_id],
+        "day": (search_time_period_iso.split("T")[0] + "T00:00:00+00:00"),
+        "historicalDeltaDays": historical_delta_days,
+        "includeWhitelistedResults": include_whitelisted_results
+    }
+    policy_hits_response = client._query_raw(raw_query=POLICY_HITS_SUMMARY_CHART_QEURY,
+                                             operation_name="PrincipalPolicyHitsSummaryChartQuery",
+                                             variables=policy_hits_filters, timeout=60)
+    policy_hits_summaries = policy_hits_response.get(
+        'data', {}).get('sidsPolicyHitsSummary', {}).get('sidSummaries', [])
+
+    if not isinstance(policy_hits_summaries, list) or not policy_hits_summaries:
+        policy_hits_context: list = []
+    else:
+        policy_hits_context: list = deepcopy(policy_hits_summaries[0].get('summary') or [])  # type: ignore
+
+    access_context, access_hr, policy_hr = prepare_context_hr_user_access_get(principal_summary, policy_hits_context,
+                                                                              include_whitelisted_results)
+    outputs = {f"{OUTPUT_PREFIX['USER_ACCESS']}(val.principalId == obj.principalId)": access_context}
+
+    return CommandResults(outputs=outputs, raw_response=access_response, readable_output=f'{access_hr}\n\n{policy_hr}')
+
+
+def rubrik_sonar_file_context_list_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the list of file context, based on the provided filters.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``dict``
+    :param args: Arguments for the command.
+
+    :return: CommandResult object.
+    """
+    object_id = validate_required_arg("object_id", args.get("object_id"))
+    snapshot_id = validate_required_arg("snapshot_id", args.get("snapshot_id"))
+    file_name = args.get("file_name", "")
+    file_path = args.get("file_path", "")
+    user_id = args.get("user_id")
+    user_ids = []
+    if user_id:
+        user_ids.append(user_id)
+    include_whitelisted_results = argToBoolean(args.get("include_whitelisted_results", False))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT), 'limit')
+    sort_by = args.get('sort_by', DEFAULT_FILE_CONTEXT_SORT_BY)
+    sort_order = str(args.get('sort_order', DEFAULT_FILE_CONTEXT_SORT_ORDER)).upper()
+    next_page_token = args.get('next_page_token')
+
+    validate_user_access_list_command_args(limit, sort_order)  # type: ignore
+
+    # Prepare filter.
+    filters = {
+        "snappableFid": object_id,
+        "snapshotFid": snapshot_id,
+        "filters": {
+            "sids": user_ids,
+            "fileType": "HITS",
+            "searchText": file_name,
+            "snappablePaths": [
+                {
+                    "snappableFid": object_id,
+                    "stdPath": file_path
+                }
+            ],
+            "whitelistEnabled": not include_whitelisted_results
+        },
+        "sort": {
+            "sortBy": sort_by,
+            "sortOrder": sort_order
+        },
+        "timezone": "UTC",
+        "first": limit,
+    }
+    if next_page_token:
+        filters["after"] = next_page_token
+
+    response = client._query_raw(raw_query=FILE_CONTEXT_QUERY, operation_name="CrawlsFileListQuery",
+                                 variables=filters, timeout=60)
+    data = response.get('data', {}).get('policyObj', {}).get('fileResultConnection', {})
+    edges = data.get('edges', [])
+    if not edges:
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("file contexts"))
+
+    context, hr = prepare_context_hr_file_context_list(edges, include_whitelisted_results)
+
+    page_cursor = remove_empty_elements(data.get('pageInfo', {}))
+    page_cursor.pop("__typename", None)
+    page_cursor.update({"name": "rubrik-sonar-file-context-list"})
+    if page_cursor.get('hasNextPage'):
+        hr += f"\n{MESSAGES['NEXT_RECORD']} {page_cursor.get('endCursor')}"
+
+    outputs = {
+        f"{OUTPUT_PREFIX['FILE_CONTEXT']}(val.stdPath == obj.stdPath)": context,
+        f"{OUTPUT_PREFIX['PAGE_TOKEN_FILE_CONTEXT']}(val.name == obj.name)": page_cursor
+    }
+
+    return CommandResults(outputs=outputs, raw_response=response, readable_output=hr)
+
+
 def trim_spaces_from_args(args):
     """
     Trim spaces from values of the args dict.
@@ -2941,7 +3848,10 @@ def main() -> None:
                 "rubrik-radar-ioc-scan-list": rubrik_radar_ioc_scan_list_command,
                 "rubrik-gps-async-result": rubrik_gps_async_result_command,
                 "rubrik-gps-cluster-list": rubrik_gps_cluster_list_command,
-                "rubrik-gps-vm-recover-files": rubrik_gps_vm_recover_files
+                "rubrik-gps-vm-recover-files": rubrik_gps_vm_recover_files,
+                "rubrik-sonar-user-access-list": rubrik_sonar_user_access_list_command,
+                "rubrik-sonar-user-access-get": rubrik_sonar_user_access_get_command,
+                "rubrik-sonar-file-context-list": rubrik_sonar_file_context_list_command,
             }
             if COMMAND_TO_FUNCTION.get(demisto.command()):
                 args = demisto.args()
