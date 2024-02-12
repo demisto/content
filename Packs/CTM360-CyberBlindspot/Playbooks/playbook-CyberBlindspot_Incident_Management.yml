@@ -1,0 +1,875 @@
+id: CyberBlindspot Incident Management
+version: -1
+fromversion: "6.10.0"
+name: CyberBlindspot Incident Management
+description: This playbook runs the incidents through indicator enrichment, then based on the mirroring settings, it can communicate with the remote server to assist the user in the next course of action (Whether it be closing the incident, initiating the takedown of an online asset or simply waiting for a process on the remote server to end) to take on the incident if any.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 03c440d0-0050-48de-894c-50a6eb17ea3b
+    type: start
+    task:
+      id: 03c440d0-0050-48de-894c-50a6eb17ea3b
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b9ce406d-7ed1-44bb-86d3-92b1cee13895
+    type: regular
+    task:
+      id: b9ce406d-7ed1-44bb-86d3-92b1cee13895
+      version: -1
+      name: Get Incident Remote Status
+      description: Get the current status of the incident from the remote server.
+      script: CTM360_CyberBlindspot|||ctm360-cbs-incident-details
+      type: regular
+      iscommand: true
+      brand: CTM360_CyberBlindspot
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id:
+        simple: ${incident.dbotMirrorId}
+      retry-count:
+        simple: "3"
+      ticketId:
+        simple: ${incident.dbotMirrorId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9b47070a-067c-47b6-8ef0-048dd26fb30d
+    type: title
+    task:
+      id: 9b47070a-067c-47b6-8ef0-048dd26fb30d
+      version: -1
+      name: Check Remote Status
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c9aa32fb-5e62-4d56-81f7-659a37c44646
+    type: condition
+    task:
+      id: c9aa32fb-5e62-4d56-81f7-659a37c44646
+      version: -1
+      name: Check if CyberBlindspot Closed The Incident
+      description: Check whether or not the incident had been closed on the remote
+        server.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: CyberBlindspot.RemoteIncident.status
+            iscontext: true
+          right:
+            value:
+              simple: Closed
+        - operator: isEqualString
+          left:
+            value:
+              simple: CyberBlindspot.RemoteIncident.status
+            iscontext: true
+          right:
+            value:
+              simple: Resolved
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 42dba807-70c3-492e-86cc-9a2ed760aa42
+    type: regular
+    task:
+      id: 42dba807-70c3-492e-86cc-9a2ed760aa42
+      version: -1
+      name: Close Incident Locally
+      description: Close the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      closeReason:
+        simple: Incident closed by DBot via playbook
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ef1f69d8-1ee2-43e0-862f-38bc9dfe9fdf
+    type: condition
+    task:
+      id: ef1f69d8-1ee2-43e0-862f-38bc9dfe9fdf
+      version: -1
+      name: Check if User can Take Action(s)
+      description: If the incident is not yet closed on the remote server, check if
+        any action is required/permitted on the user's side.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      WIP:
+      - "24"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CyberBlindspot.RemoteIncident.status
+            iscontext: true
+          right:
+            value:
+              simple: Member Feedback
+      - - operator: inList
+          left:
+            value:
+              simple: incident.dbotMirrorDirection
+            iscontext: true
+          right:
+            value:
+              simple: Out,Both
+    - label: WIP
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CyberBlindspot.RemoteIncident.status
+            iscontext: true
+          right:
+            value:
+              simple: WIP
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 31302a4e-748e-4c49-8a8f-e5deb8be1ce9
+    type: regular
+    task:
+      id: 31302a4e-748e-4c49-8a8f-e5deb8be1ce9
+      version: -1
+      name: Initiate Takedown
+      description: Request a takedown of the asset where the incident was found.
+      script: CTM360_CyberBlindspot|||ctm360-cbs-incident-request-takedown
+      type: regular
+      iscommand: true
+      brand: CTM360_CyberBlindspot
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      ticketId:
+        simple: ${incident.dbotMirrorId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 23e67aa9-9e84-4cd4-8158-d29dcb1866c7
+    type: condition
+    task:
+      id: 23e67aa9-9e84-4cd4-8158-d29dcb1866c7
+      version: -1
+      name: Check Allowed Action(s)
+      description: If action is required/permitted on the user's side, check the possible
+        actions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      Close and Takedown Allowed:
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: Close and Takedown Allowed
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: CyberBlindspot.RemoteIncident.coa
+            iscontext: true
+          right:
+            value:
+              simple: Member Side Action
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1175,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d90fb9b5-4f5e-4063-8cd9-8b86a3734e45
+    type: condition
+    task:
+      id: d90fb9b5-4f5e-4063-8cd9-8b86a3734e45
+      version: -1
+      name: Prompt User to Close Incident
+      description: Ask the user whether or not they'd like to close the incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Close Incident:
+      - "4"
+      No Action:
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: CyberBlindspot Incident ${incident.dbotMirrorId} waiting for user
+          input
+      body:
+        simple: The CyberBlindspot incident is waiting for your input to close the
+          incident.
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Close Incident
+      - No Action
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 3f4c64e7-e484-48f5-8212-06adee06a5bc
+    type: title
+    task:
+      id: 3f4c64e7-e484-48f5-8212-06adee06a5bc
+      version: -1
+      name: End of Playbook
+      description: "The end of the playbook."
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1175,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: d3c33d4f-17b9-4ec3-8b20-d0843ce9eef1
+    type: title
+    task:
+      id: d3c33d4f-17b9-4ec3-8b20-d0843ce9eef1
+      version: -1
+      name: End of Playbook
+      description: "The end of the playbook."
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 6911c0d6-6ecb-4365-8c9d-65149c4edd85
+    type: title
+    task:
+      id: 6911c0d6-6ecb-4365-8c9d-65149c4edd85
+      version: -1
+      name: Shortcut to Close Incident
+      description: "Shortcut to the task of closing an incident."
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 49cc70bf-8eb8-40ab-80b6-709b4958f95d
+    type: title
+    task:
+      id: 49cc70bf-8eb8-40ab-80b6-709b4958f95d
+      version: -1
+      name: Assign Analyst
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b2cb6967-aaa8-4704-8f99-df40031bf2e3
+    type: regular
+    task:
+      id: b2cb6967-aaa8-4704-8f99-df40031bf2e3
+      version: -1
+      name: Assign Analyst
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      assignBy:
+        simple: less-busy-user
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 3a9ad2a9-96f5-4b7d-81fb-fd359fcfc97d
+    type: condition
+    task:
+      id: 3a9ad2a9-96f5-4b7d-81fb-fd359fcfc97d
+      version: -1
+      name: Prompt User to Close Incident or Request Takedown of Asset
+      description: Ask the user whether the user wants to close the incident or request
+        a take-down of the related asset/subject.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Close Incident:
+      - "4"
+      Initiate Takedown of Asset:
+      - "8"
+      No Action:
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1472.5,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: CyberBlindspot Incident ${incident.dbotMirrorId} waiting for user
+          input
+      body:
+        simple: The CyberBlindspot incident is waiting for your input to either takedown
+          the asset or close the incident.
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Close Incident
+      - Initiate Takedown of Asset
+      - No Action
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: b92cd2a5-2caf-4c22-8805-6cf5d5def247
+    type: playbook
+    task:
+      id: b92cd2a5-2caf-4c22-8805-6cf5d5def247
+      version: -1
+      name: Entity Enrichment - Generic v3
+      description: "Add more value to indicators that were extracted"
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      URLSSLVerification:
+        simple: "False"
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 02de3a00-205e-4100-8ffd-32499fabebc3
+    type: title
+    task:
+      id: 02de3a00-205e-4100-8ffd-32499fabebc3
+      version: -1
+      name: Check Mirroring
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: aa3a2940-f023-4c06-85ae-7690ef91785d
+    type: condition
+    task:
+      id: aa3a2940-f023-4c06-85ae-7690ef91785d
+      version: -1
+      name: Check if Incoming Mirroring is Enabled
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: incident.dbotMirrorDirection
+            iscontext: true
+          right:
+            value:
+              simple: In,Both
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: bdebc0c9-d285-425e-8526-6d40c96844f3
+    type: title
+    task:
+      id: bdebc0c9-d285-425e-8526-6d40c96844f3
+      version: -1
+      name: End of Playbook
+      description: "The end of the playbook."
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: db34ea88-946a-4d78-8e14-28c564da52db
+    type: regular
+    task:
+      id: db34ea88-946a-4d78-8e14-28c564da52db
+      version: -1
+      name: Inform User Regarding Incident Status On Remote
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      value:
+        simple: Playbook determined that the incident is undergoing a process on CyberBlindspot.
+          Actions will be unavailable until processing is done.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_4_Close Incident": 0.45,
+      "6_14_#default#": 0.43
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2220,
+        "width": 1802.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: CyberBlindspot Incident Management
+quiet: true
