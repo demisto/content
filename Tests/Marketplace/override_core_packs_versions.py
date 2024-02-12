@@ -119,7 +119,7 @@ def option_handler():
 
    
 def main():
-    install_logging('Prepare_Content_Packs_For_Testing.log', logger=logging)
+    install_logging('Override_core_packs.log', logger=logging)
     logging.info("here")
     options = option_handler()
     packs_artifacts_path = options.packs_artifacts_path
