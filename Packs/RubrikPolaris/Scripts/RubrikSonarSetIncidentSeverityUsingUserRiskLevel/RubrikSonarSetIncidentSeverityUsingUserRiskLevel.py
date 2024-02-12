@@ -1,4 +1,3 @@
-from typing import Dict
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -15,7 +14,7 @@ INCIDENT_SEVERITY_INT_TO_NAME = {
 ''' COMMAND FUNCTION '''
 
 
-def set_incident_severity_using_risk_level_command(args: Dict[str, Any]) -> CommandResults:
+def set_incident_severity_using_risk_level_command(args: dict[str, Any]) -> CommandResults:
     """Set the incident severity using the provided risk levels.
 
     :type args: ``Dict[str, Any]``

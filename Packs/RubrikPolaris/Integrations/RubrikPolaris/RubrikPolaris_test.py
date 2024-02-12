@@ -1,6 +1,5 @@
 """Test File for RubrikPolaris Integration."""
 import json
-import io
 import time
 
 import pytest
@@ -43,7 +42,7 @@ SDK_ERROR_MESSAGES = {
 
 def util_load_json(path):
     """Load file in JSON format."""
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -341,7 +340,7 @@ def test_object_search_success(client, requests_mock):
     object_search_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                          "test_data/object_search_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/object_search_hr1.md"), 'r') as f:
+                           "test_data/object_search_hr1.md")) as f:
         object_search_response_hr = f.read()
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -375,7 +374,7 @@ def test_object_search_with_token_hr_success(client, requests_mock):
     object_search_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                          "test_data/object_search_response2.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/object_search_hr2.md"), 'r') as f:
+                           "test_data/object_search_hr2.md")) as f:
         object_search_response_hr = f.read()
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -440,7 +439,7 @@ def test_sonar_policies_list_success(client, requests_mock):
                                                'test_data/sonar_policies_list_success_response.json'))
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/sonar_policies_list_success_hr.md"), 'r') as f:
+                           "test_data/sonar_policies_list_success_hr.md")) as f:
         sonar_policies_list_hr = f.read()
 
     sonar_policies_list_outputs = util_load_json(os.path.join(os.path.dirname(__file__),
@@ -479,7 +478,7 @@ def test_sonar_policy_analyzer_groups_list_success(client, requests_mock):
                                                'test_data/sonar_policy_analyzer_groups_list_success_response.json'))
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/sonar_policy_analyzer_groups_list_success_hr.md"), 'r') as f:
+                           "test_data/sonar_policy_analyzer_groups_list_success_hr.md")) as f:
         sonar_policy_analyzer_groups_list_hr = f.read()
 
     sonar_policy_analyzer_groups_list_outputs = util_load_json(os.path.join(
@@ -513,7 +512,7 @@ def test_vm_object_metadata_when_valid_response_is_returned(client, requests_moc
         assert object_response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("vm object metadata")
     else:
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                               "test_data/vm_object_metadata_get.md"), 'r') as f:
+                               "test_data/vm_object_metadata_get.md")) as f:
             object_response_hr = f.read()
 
         assert object_response.raw_response == data.get('raw_response')
@@ -544,7 +543,7 @@ def test_vm_objects_list_success(client, requests_mock):
     objects_list_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                         "test_data/objects_list_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/objects_list_hr.md"), 'r') as f:
+                           "test_data/objects_list_hr.md")) as f:
         objects_list_response_hr = f.read()
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -599,7 +598,7 @@ def test_sonar_on_demand_scan_when_success_response(client, requests_mock):
                                                f'{sonar_on_demand_file_path}'))
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/sonar_ondemand_scan_success_hr.md"), 'r') as f:
+                           "test_data/sonar_ondemand_scan_success_hr.md")) as f:
         sonar_ondemand_scan_hr = f.read()
 
     sonar_on_demand_scan_outputs = util_load_json(os.path.join(
@@ -685,7 +684,7 @@ def test_sonar_on_demand_scan_status_when_success_response(client, requests_mock
                                                f'_{file_suffix}_response.json'))
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           f"test_data/sonar_ondemand_scan_status_success_{file_suffix}_hr.md"), 'r') as f:
+                           f"test_data/sonar_ondemand_scan_status_success_{file_suffix}_hr.md")) as f:
         sonar_ondemand_scan_status_hr = f.read()
 
     sonar_on_demand_scan_status_outputs = util_load_json(os.path.join(
@@ -801,7 +800,7 @@ def test_sonar_on_demand_scan_result_when_success_response(client, requests_mock
                                                'test_data/sonar_ondemand_scan_result_success_response.json'))
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/sonar_ondemand_scan_result_success_hr.md"), 'r') as f:
+                           "test_data/sonar_ondemand_scan_result_success_hr.md")) as f:
         sonar_ondemand_scan_hr = f.read()
 
     sonar_on_demand_scan_outputs = util_load_json(os.path.join(
@@ -835,7 +834,7 @@ def test_vm_object_snapshot_get_success(client, requests_mock, empty_response):
     object_snapshot_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                            "test_data/vm_object_snapshot_get_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/vm_object_snapshot_get_hr.md"), 'r') as f:
+                           "test_data/vm_object_snapshot_get_hr.md")) as f:
         object_snapshot_response_hr = f.read()
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -905,7 +904,7 @@ def test_radar_anomaly_csv_analysis_success(client, requests_mock, empty_respons
     radar_anomaly_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                          "test_data/radar_anomaly_csv_analysis_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/radar_anomaly_csv_analysis_hr.md"), 'r') as f:
+                           "test_data/radar_anomaly_csv_analysis_hr.md")) as f:
         radar_anomaly_hr = f.read()
 
     args = {"object_id": "dummy", "cluster_id": "dummy", "snapshot_id": "dummy"}
@@ -951,7 +950,7 @@ def test_sonar_csv_download_success(client, requests_mock, empty_response):
     sonar_csv_download_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                               "test_data/sonar_csv_download_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/sonar_csv_download_hr.md"), 'r') as f:
+                           "test_data/sonar_csv_download_hr.md")) as f:
         sonar_csv_download_hr = f.read()
 
     args = {"object_id": "dummy", "snapshot_id": "dummy"}
@@ -991,7 +990,7 @@ def test_snapshot_files_list_success(client, requests_mock):
                                                'test_data/snapshot_files_list_success_response.json'))
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/snapshot_files_list_success_hr.md"), 'r') as f:
+                           "test_data/snapshot_files_list_success_hr.md")) as f:
         snapshot_files_list_hr = f.read()
 
     snapshot_files_list_outputs = util_load_json(os.path.join(
@@ -1051,7 +1050,7 @@ def test_gps_vm_export_success(client, requests_mock, empty_response):
 
     vm_export_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                      "test_data/gps_vm_export_success.json"))
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_export_hr.md"), 'r') as f:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_export_hr.md")) as f:
         vm_export_response_hr = f.read()
 
     args = {
@@ -1174,7 +1173,7 @@ def test_gps_sla_domain_list_when_success_response(client, requests_mock):
                                                'test_data/gps_sla_domain_list_success_response.json'))
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/gps_sla_domain_list_success_hr.md"), 'r') as f:
+                           "test_data/gps_sla_domain_list_success_hr.md")) as f:
         gps_sla_domain_list_hr = f.read()
 
     gps_sla_domain_list_outputs = util_load_json(os.path.join(
@@ -1216,7 +1215,7 @@ def test_user_downloads_list_success(client, requests_mock, empty_response):
     user_downloads_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                           "test_data/user_downloads_get_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/user_downloads_get_hr.md"), 'r') as f:
+                           "test_data/user_downloads_get_hr.md")) as f:
         user_downloads_hr = f.read()
 
     args = {"object_id": "dummy", "cluster_id": "dummy", "snapshot_id": "dummy"}
@@ -1245,7 +1244,7 @@ def test_sonar_csv_result_download_success(client, requests_mock, empty_response
     sonar_csv_download_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                               "test_data/sonar_csv_result_download_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/sonar_csv_result_download_hr.md"), 'r') as f:
+                           "test_data/sonar_csv_result_download_hr.md")) as f:
         sonar_csv_download_hr = f.read()
 
     args = {"download_id": 1}
@@ -1315,7 +1314,7 @@ def test_gps_vm_snapshot_create_when_success_response(client, requests_mock):
                                                'test_data/gps_vm_snapshot_create_success_response.json'))
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/gps_vm_snapshot_create_success_hr.md"), 'r') as f:
+                           "test_data/gps_vm_snapshot_create_success_hr.md")) as f:
         gps_vm_snapshot_create_scan_hr = f.read()
 
     gps_vm_snapshot_create_outputs = util_load_json(os.path.join(
@@ -1343,7 +1342,7 @@ def test_gps_snapshot_file_download_success(client, requests_mock, empty_respons
                                                                       "test_data/gps_snapshot_file_download_response"
                                                                       ".json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/gps_snapshot_file_download_hr.md"), 'r') as f:
+                           "test_data/gps_snapshot_file_download_hr.md")) as f:
         gps_snapshot_file_download_hr = f.read()
 
     args = {"snapshot_id": 1, "file_path": "a"}
@@ -1429,7 +1428,7 @@ def test_gps_vm_livemount_list_when_success_response(client, requests_mock):
                                                'test_data/gps_vm_livemount_success_response.json'))
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/gps_vm_livemount_success_hr.md"), 'r') as f:
+                           "test_data/gps_vm_livemount_success_hr.md")) as f:
         gps_vm_livemount_hr = f.read()
 
     gps_vm_livemount_outputs = util_load_json(os.path.join(
@@ -1453,7 +1452,7 @@ def test_gps_vm_host_list_success(client, requests_mock, empty_response):
 
     vm_host_list_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                         "test_data/gps_vm_host_list_response.json"))
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_host_list_hr.md"), 'r') as f:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_host_list_hr.md")) as f:
         vm_host_list_response_hr = f.read()
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -1498,8 +1497,7 @@ def test_gps_vm_datastore_list_success(client, requests_mock, empty_response):
 
     vm_datastore_list_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                              "test_data/gps_vm_datastore_list_response.json"))
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_datastore_list_hr.md"),
-              'r') as f:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/gps_vm_datastore_list_hr.md")) as f:
         vm_datastore_list_response_hr = f.read()
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -1549,7 +1547,7 @@ def test_cdm_cluster_connection_state_command_success(client, requests_mock, emp
                                                                         "test_data/cdm_cluster_connection_state_"
                                                                         "response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/cdm_cluster_connection_state_hr.md"), 'r') as f:
+                           "test_data/cdm_cluster_connection_state_hr.md")) as f:
         cdm_cluster_connection_state_hr = f.read()
 
     args = {"clusterId": "dummy"}
@@ -1591,7 +1589,7 @@ def test_cdm_cluster_location_command_command_success(client, requests_mock, emp
                                                                 "test_data/cdm_cluster_location_response.json"))
 
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/cdm_cluster_location_hr.md"), 'r') as f:
+                           "test_data/cdm_cluster_location_hr.md")) as f:
         cdm_cluster_location_hr = f.read()
 
     args = {"clusterId": "dummy"}
@@ -1643,7 +1641,7 @@ def test_radar_analysis_status_command_success(client, requests_mock, empty_resp
     radar_analysis_status_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                                  "test_data/radar_analysis_status_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/radar_analysis_status_hr.md"), 'r') as f:
+                           "test_data/radar_analysis_status_hr.md")) as f:
         radar_analysis_status_hr = f.read()
 
     args = {"activitySeriesId": "dummy", "clusterId": "dummy"}
@@ -1684,8 +1682,7 @@ def test_event_list_success(client, requests_mock, empty_response):
 
     event_list_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                       "test_data/event_list_response.json"))
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/event_list_response_hr.md"),
-              'r') as f:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/event_list_response_hr.md")) as f:
         event_list_response_hr = f.read()
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -1743,7 +1740,7 @@ def test_sonar_sensitive_hits_success(client, requests_mock):
     sonar_sensitive_hits_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                                 "test_data/sonar_sensitive_hits_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/sonar_sensitive_hits_response_hr.md"), 'r') as f:
+                           "test_data/sonar_sensitive_hits_response_hr.md")) as f:
         sonar_sensitive_hits_response_hr = f.read()
     responses = [
         {'json': sonar_sensitive_hits_response.get('raw_response_list')},
@@ -1818,8 +1815,7 @@ def test_object_list_success(client, requests_mock, empty_response):
 
     object_list_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                        "test_data/object_list_response.json"))
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/object_list_response_hr.md"),
-              'r') as f:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/object_list_response_hr.md")) as f:
         object_list_response_hr = f.read()
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -1888,8 +1884,7 @@ def test_polaris_object_snapshot_list_success(client, requests_mock, empty_respo
     object_snapshot_list_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                                 "test_data/object_snapshot_list_response.json"))
     with open(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/object_snapshot_list_response_hr.md"),
-            'r') as f:
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/object_snapshot_list_response_hr.md")) as f:
         object_snapshot_list_response_hr = f.read()
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -2038,7 +2033,7 @@ def test_radar_ioc_scan_when_success(client, requests_mock, empty_response):
     from RubrikPolaris import rubrik_radar_ioc_scan_command
     ioc_scan_response = util_load_json(
         os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_response.json"))
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_response_hr.md"), 'r') as f:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_response_hr.md")) as f:
         ioc_scan_response_hr = f.read()
     args = {"cluster_id": "dummy-cluster-id", "object_id": "dummy-object-id-1",
             "ioc_type": "INDICATOR_OF_COMPROMISE_TYPE_HASH", "ioc_value": ""}
@@ -2089,8 +2084,7 @@ def test_radar_ioc_scan_list_when_success(client, requests_mock, empty_response)
     from RubrikPolaris import rubrik_radar_ioc_scan_list_command
     ioc_scan_list_response = util_load_json(
         os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_list_response.json"))
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_list_response_hr.md"),
-              'r') as f:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/ioc_scan_list_response_hr.md")) as f:
         ioc_scan_list_response_hr = f.read()
 
     args = {"cluster_id": "dummy-cluster-id"}
@@ -2145,8 +2139,7 @@ def test_radar_ioc_scan_results_success(client, requests_mock, empty_response):
     ioc_scan_results_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                             "test_data/radar_ioc_scan_results_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/radar_ioc_scan_results_response_hr.md"),
-              'r') as f:
+                           "test_data/radar_ioc_scan_results_response_hr.md")) as f:
         ioc_scan_results_response_hr = f.read()
 
     args = {"scan_id": "dummy-scan-id", "cluster_id": "dummy-cluster-id"}
@@ -2180,7 +2173,7 @@ def test_gps_async_result_command_success(client, requests_mock, empty_response)
     gps_async_result_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                             "test_data/gps_async_result_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/gps_async_result_response_hr.md"), 'r') as f:
+                           "test_data/gps_async_result_response_hr.md")) as f:
         gps_async_result_hr = f.read()
 
     args = {"request_id": "dummy", "cluster_id": "dummy"}
@@ -2237,7 +2230,7 @@ def test_gps_cluster_list_command_success(client, requests_mock, empty_response)
     gps_cluster_list_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                             "test_data/gps_cluster_list_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/gps_cluster_list_response_hr.md"), 'r') as f:
+                           "test_data/gps_cluster_list_response_hr.md")) as f:
         gps_cluster_list_hr = f.read()
 
     enum_values = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -2332,7 +2325,7 @@ def test_gps_vm_recover_files_command_success(client, requests_mock, empty_respo
     gps_vm_recover_files_response = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                                 "test_data/gps_vm_recover_files_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/gps_vm_recover_files_response_hr.md"), 'r') as f:
+                           "test_data/gps_vm_recover_files_response_hr.md")) as f:
         gps_vm_recover_files_hr = f.read()
 
     args = {"snapshot_id": "dummy-snapshot-id", "cluster_id": "dummy-cluster-id", "paths_to_recover": "/etc,/home",
@@ -2390,7 +2383,7 @@ def test_rubrik_sonar_user_access_list_command_success(client, requests_mock, li
     response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                 "test_data/sonar_user_access_list_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           f"test_data/sonar_user_access_list_response_hr_{limit}_{page_number}.md"), 'r') as f:
+                           f"test_data/sonar_user_access_list_response_hr_{limit}_{page_number}.md")) as f:
         hr_data = f.read()
 
     args = {"sort_order": "ASC", "limit": limit, "page_number": page_number, "include_whitelisted_results": True,
@@ -2451,7 +2444,7 @@ def test_rubrik_sonar_user_access_list_command_success_with_not_whitelisted(clie
     response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                 "test_data/sonar_user_access_list_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/sonar_user_access_list_response_hr_2_1.md"), 'r') as f:
+                           "test_data/sonar_user_access_list_response_hr_2_1.md")) as f:
         hr_data = f.read()
 
     args = {"sort_order": "Asc", "limit": "2", "include_whitelisted_results": False}
@@ -2527,7 +2520,7 @@ def test_rubrik_sonar_user_access_get_command_success(client, requests_mock):
     response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                 "test_data/sonar_user_access_get_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/sonar_user_access_get_response_hr.md"), 'r') as f:
+                           "test_data/sonar_user_access_get_response_hr.md")) as f:
         hr_data = f.read()
 
     args = {"user_id": "S-1-0-01-0000000000-0000000000-000000000-0001", "include_whitelisted_results": True}
@@ -2556,7 +2549,7 @@ def test_rubrik_sonar_user_access_get_command_success_when_not_whitelisted(clien
     response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                 "test_data/sonar_user_access_get_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/sonar_user_access_get_response_hr.md"), 'r') as f:
+                           "test_data/sonar_user_access_get_response_hr.md")) as f:
         hr_data = f.read()
 
     args = {"user_id": "S-1-0-01-0000000000-0000000000-000000000-0001", "include_whitelisted_results": False}
@@ -2629,7 +2622,7 @@ def test_rubrik_sonar_file_context_list_command_success(client, requests_mock):
     response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                 "test_data/sonar_file_context_list_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/sonar_file_context_list_response_hr.md"), 'r') as f:
+                           "test_data/sonar_file_context_list_response_hr.md")) as f:
         hr_data = f.read()
 
     args = {"object_id": "1", "snapshot_id": "1",
@@ -2661,7 +2654,7 @@ def test_rubrik_sonar_file_context_list_command_success_when_not_whitelisted(cli
     response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                 "test_data/sonar_file_context_list_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/sonar_file_context_list_response_hr.md"), 'r') as f:
+                           "test_data/sonar_file_context_list_response_hr.md")) as f:
         hr_data = f.read()
 
     args = {"object_id": "1", "snapshot_id": "1", "user_id": "1", "next_page_token": "cursor_0",

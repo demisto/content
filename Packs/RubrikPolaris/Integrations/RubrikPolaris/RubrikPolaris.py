@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """Main file for RubrikPolaris Integration."""
 from copy import deepcopy
-from typing import Tuple
 
 from rubrik_polaris.rubrik_polaris import PolarisClient
 from rubrik_polaris.exceptions import ProxyException
@@ -852,6 +851,7 @@ def convert_bytes(bytes_val: int):
             return f"{bytes_val / (10 ** 3)} KB"
         else:
             return f"{bytes_val} B"
+    return None
 
 
 def prepare_context_hr_sonar_ondemand_scan_status(nodes: list, crawl_id: str):
@@ -1663,7 +1663,7 @@ def prepare_context_hr_ioc_scan_list(data: list):
 
 def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results: bool, user_email: str,
                                         page_number: int = 1, limit: int = DEFAULT_LIMIT
-                                        ) -> Tuple[list[dict], str, int, set[str]]:
+                                        ) -> tuple[list[dict], str, int, set[str]]:
     """
     Prepare context output and human-readable response for rubrik-sonar-user-access-list command.
 
@@ -1751,7 +1751,7 @@ def prepare_context_hr_user_access_list(edges: list, include_whitelisted_results
 
 
 def prepare_context_hr_user_access_get(principal_summary: Dict, policy_hits_context: list,
-                                       include_whitelisted_results: bool) -> Tuple[list, str, str]:
+                                       include_whitelisted_results: bool) -> tuple[list, str, str]:
     """
     Prepare context output and human-readable response for rubrik-sonar-user-access-get command.
 
@@ -1835,7 +1835,7 @@ def prepare_context_hr_user_access_get(principal_summary: Dict, policy_hits_cont
     return context, access_hr, policy_hits_hr
 
 
-def prepare_context_hr_file_context_list(edges: list, include_whitelisted_results: bool) -> Tuple[list, str]:
+def prepare_context_hr_file_context_list(edges: list, include_whitelisted_results: bool) -> tuple[list, str]:
     """
     Prepare context output and human-readable response for rubrik-sonar-file-context-list command.
 
@@ -1913,7 +1913,7 @@ def test_module(client: PolarisClient, params: Dict[str, Any]) -> str:
     return "ok"
 
 
-def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> Tuple[dict, list]:
+def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tuple[dict, list]:
     """
     Fetch Rubrik Anomaly incidents.
 
