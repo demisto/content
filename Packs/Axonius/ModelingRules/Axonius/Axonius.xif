@@ -1,0 +1,7 @@
+[MODEL: dataset="axonius_asm_raw"]
+alter
+    action = split(trim(json_extract(event,"$['action']"),"\""),"."),
+    category = split(trim(json_extract(event,"$['category']"),"\""),"."),
+    params = json_extract(event,"$['params']"),
+    type = trim(json_extract(event,"$['type']"),"\""),
+    user = trim(json_extract(event,"$['user']"),"\"")

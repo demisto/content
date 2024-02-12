@@ -1,0 +1,6 @@
+fromversion: 8.4.0  # Will be updated with XSIAM version updates
+id: axonius_asm_ModelingRule
+name: Axonius ASM Modeling Rule
+rules: ''
+schema: ''
+tags: ''

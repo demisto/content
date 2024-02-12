@@ -1,0 +1,8 @@
+{
+    "axonius_asm_raw": {        
+        "event": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
