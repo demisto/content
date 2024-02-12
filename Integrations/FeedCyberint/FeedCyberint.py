@@ -24,8 +24,8 @@ class Client(BaseClient):
     ):
         self._cookies = {"access_token": access_token}
         self._headers = {
-            "x-integration-type": "XSOAR",
-            "x-integration-instance-name": f"{demisto.integrationInstance()}",
+            "X-Integration-Type": "XSOAR",
+            "X-Integration-Instance-Name": f"{demisto.integrationInstance()}",
         }
         super().__init__(base_url, verify=verify, proxy=proxy)
 
