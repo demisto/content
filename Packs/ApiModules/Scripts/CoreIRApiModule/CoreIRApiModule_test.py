@@ -858,7 +858,8 @@ def test_handle_outgoing_issue_closure(mocker):
     """
     from CoreIRApiModule import handle_outgoing_issue_closure
     from CommonServerPython import UpdateRemoteSystemArgs
-    remote_args = UpdateRemoteSystemArgs({'delta': {'assigned_user_mail': 'None', 'closeReason': 'Resolved - Security Testing'}, 'status': 2, 'inc_status': 2, 'closeNotes': 'yayy', 'data': {'status': 'other'}})
+    remote_args = UpdateRemoteSystemArgs({'delta': {'assigned_user_mail': 'None', 'closeReason': 'Resolved - Security Testing'},
+                                          'status': 2, 'inc_status': 2, 'data': {'status': 'other'}})
     request_data_log = mocker.patch.object(demisto, 'debug')
     handle_outgoing_issue_closure(remote_args)
     
