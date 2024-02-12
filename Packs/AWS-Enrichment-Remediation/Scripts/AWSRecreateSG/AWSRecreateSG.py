@@ -105,7 +105,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
                 if (
                     rule['FromPort'] == port
                     and port == rule['ToPort']
-                    and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0"
+                    and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
                     and rule['IpProtocol'] == protocol
                 ):
                     change = True
@@ -118,7 +118,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
                     change = True
                 elif (
                     rule['FromPort'] <= port and port <= rule['ToPort']
-                    and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0"
+                    and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
                     and rule['IpProtocol'] == protocol
                 ):  # noqa: E127
                     fixed = split_rule(rule, port, protocol)
@@ -129,7 +129,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
                 else:
                     new_rule = (str([rule])).replace("'", "\"")
                     recreate_list.append(new_rule)
-            elif rule.get('IpRanges') and rule['IpRanges'][0].get('CidrIp') == "0.0.0.0/0":
+            elif rule.get('IpRanges') and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"]):
                 fixed = split_rule(rule, port, protocol)
                 change = True
                 for rule_fix in fixed:

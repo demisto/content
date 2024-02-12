@@ -49,9 +49,9 @@ jobs:
       run: |
         poetry add --group dev demisto-sdk@${{inputs.release_version}}
         poetry lock --no-update
-        git add .
         source .venv/bin/activate
-        demisto-sdk pre-commit --no-validate --no-secrets --no-unit-test
+        demisto-sdk pre-commit --no-validate --no-secrets
+        git add .
 
     - name: Create pull request
       run: |

@@ -1,5 +1,7 @@
 import re
 
+from pytest_mock import MockerFixture
+from requests_mock import MockerCore
 import pytest
 import json
 from datetime import datetime, timedelta
@@ -51,6 +53,52 @@ from urllib.parse import urlencode
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def test_force_default_url_arg(mocker: MockerFixture, requests_mock: MockerCore):
+    """Unit test
+    Given
+        - The argument force_default_url=true
+    When
+        - Calling the command servicenow-create-co-from-template
+    Then
+        - Validate that the api version configured as a parameter was not used in the API request
+    """
+    url = 'https://test.service-now.com'
+    api_endpoint = '/api/sn_chg_rest/change/standard/dummy_template'
+    api_version = '2'
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'isFetch': True,
+            'url': url,
+            'credentials': {
+                'identifier': 'identifier',
+                'password': 'password',
+            },
+            'api_version': api_version,  # << We test overriding this value
+            'incident_name': None,
+            'file_tag_from_service_now': 'FromServiceNow',
+            'file_tag_to_service_now': 'ToServiceNow',
+            'comment_tag': 'comments',
+            'comment_tag_from_servicenow': 'CommentFromServiceNow',
+            'work_notes_tag': 'work_notes',
+            'work_notes_tag_from_servicenow': 'WorkNoteFromServiceNow'
+        }
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'template': 'dummy_template',
+            'force_default_url': 'true'
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='servicenow-create-co-from-template')
+    requests_mock.post(f'{url}{api_endpoint}', json=util_load_json('test_data/create_co_from_template_result.json'))
+    main()
+    assert requests_mock.request_history[0].path == api_endpoint
 
 
 def test_get_server_url():
