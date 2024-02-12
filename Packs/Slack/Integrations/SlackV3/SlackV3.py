@@ -1396,13 +1396,19 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse, f
                                                         OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
         investigation_id = mirror['investigation_id']
-        demisto.info(f'{files=}, {text=}')
+        demisto.info(f'Received {files=}, {text=}, {mirror=}')
         if files:
             for file in files:
                 file_content = await get_file(file.get("url_private"))
                 file_name = file.get("name")
-                demisto.info(f'got file {file_name} data')
+                demisto.debug(f'Received file {file_name} data successfully from slack')
                 await handle_file(investigation_id, file_name=file_name, file_content=file_content, text=text)
+                if not mirror.get("files") or []:
+                    mirror["mirrored_files"] = []
+                mirror["mirrored_files"].append(file_name)
+                demisto.debug(f'Successfully sent file {file_name} to investigation {investigation_id}')
+                set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+
         else:
             await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
 
@@ -1847,8 +1853,16 @@ def slack_send():
             return
 
         if entry:
+            file = demisto.getFilePath(entry)
+            file_name = file["name"]
+            mirror = find_mirror_by_investigation()
+            if file_name in mirror.get("files", []):
+                demisto.debug(f'file {file_name} was mirrored from slack to XSOAR, skipping mirroring it back to xsoar')
+                return
             demisto.debug(f'file {entry} has been uploaded to a mirrored incident, uploading the file to {original_channel=}')
             slack_send_file(original_channel, channel_id, entry, message)
+            mirror["files"].pop(file_name)
+
             return
 
     if (to and group) or (to and original_channel) or (to and original_channel and group):
