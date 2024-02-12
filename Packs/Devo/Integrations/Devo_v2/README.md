@@ -408,10 +408,13 @@ Total Records Sent: 3.
 Total Bytes Sent: 125.
 
 ##### Entries to load into Devo
-
+The headers of headers array is written into the my.lookup.control table.
+|Data|
 |lookup123|FULL|START|[{"foo":{"type":"str","key":true}},{"bar":{"type":"str"}},{"baz":{"type":"str"}}]|
 |lookup123|FULL|END|[{"foo":{"type":"str","key":true}},{"bar":{"type":"str"}},{"baz":{"type":"str"}}]|
 
+The fields of records array is written into the my.lookup.data table.
+|Data|
 |lookup123|null|"foo1", "bar1", "baz1"|
 |lookup123|null|"foo2", "bar2", "baz2"|
 |lookup123|null|"foo3", "bar3", "baz3"|
