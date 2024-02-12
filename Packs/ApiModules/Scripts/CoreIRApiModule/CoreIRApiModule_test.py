@@ -849,12 +849,12 @@ def test_get_update_args_unassgning_user(mocker):
 def test_handle_outgoing_issue_closure(mocker):
     """
     Given:
-        -  a dict indicating changed fields (delta) with assigned_user_mail set to "None"
-        - the incident status - set to 1 == Active
+        -  a dict indicating changed fields (delta)
+        - the incident status - set to set to 2 == Closed
     When
-        - running get_update_args
+        - running handle_outgoing_issue_closure
     Then
-        - update_args have assigned_user_mail and assigned_user_pretty_name set to None and unassign_user set to 'true'
+        - Closing the issue with the resolved_security_testing status
     """
     from CoreIRApiModule import handle_outgoing_issue_closure
     from CommonServerPython import UpdateRemoteSystemArgs
