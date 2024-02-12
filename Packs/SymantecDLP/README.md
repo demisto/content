@@ -103,7 +103,7 @@ You can configure the specific vendor and product for this instance.
     | :---          | :---                    
     | `Protocol`    | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in step 8 under "Configure a Log to a Syslog Server action")  
     | `Port`        | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Symantec DLP.
-    | `Vendor`      | Enter ****. 
-    | `Product`     | Enter ****. 
+    | `Vendor`      | Enter symantec. 
+    | `Product`     | Enter dlp. 
 
 </~XSIAM>
