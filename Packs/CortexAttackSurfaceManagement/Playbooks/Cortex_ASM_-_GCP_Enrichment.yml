@@ -2318,7 +2318,7 @@ tasks:
       keys:
         simple: type,id,link
       val1:
-        simple: GCP-Offending-FW-Rule
+        simple: FIREWALL-RULE-NAME
       val2:
         simple: ${GCPOffendingFirewallRule}
       val3:
