@@ -11,6 +11,7 @@ from dateutil.parser import parse
 from requests.utils import requote_uri
 from werkzeug.exceptions import RequestedRangeNotSatisfiable
 
+
 ''' GLOBAL VARIABLES '''
 HTTP_200_OK = 200
 HTTP_400_BAD_REQUEST = 400
