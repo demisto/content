@@ -4,37 +4,33 @@ from GetCampaignIndicatorsByIncidentId import get_indicators_from_incidents, for
 import demistomock as demisto
 
 INCIDENT_IDS = ['1', '2', '3']
-INDICATORS = [
-    {
+INDICATORS = {
+    "iocs":
+    [{
+        "id": "23",
+        "indicator_type": "URL",
+        "investigationIDs": [
+            "1"
+        ],
+        "relatedIncCount": 5,
+        "score": 1,
+        "value": "http://www.example.com",
         'Type': 0,
-        "Contents": [
-            {
-                "id": "23",
-                "indicator_type": "URL",
-                "investigationIDs": [
-                    "1"
-                ],
-                "relatedIncCount": 5,
-                "score": 1,
-                "value": "http://www.example.com",
-                'Type': 0,
-            },
-            {
-                "id": "24",
-                "indicator_type": "URL",
-                "investigationIDs": [
-                    "1",
-                    "2"
-                ],
-                "relatedIncCount": 5,
-                "score": 1,
-                "value": "http://www.example.com",
-                'Type': 0,
-            }
-        ]
+    },
+        {
+        "id": "24",
+        "indicator_type": "URL",
+        "investigationIDs": [
+            "1",
+            "2"
+        ],
+        "relatedIncCount": 5,
+        "score": 1,
+        "value": "http://www.example.com",
+        'Type': 0,
+    }],
+    "total": 2}
 
-    }
-]
 
 NO_INDICATORS_FOUND = 'No mutual indicators were found.'
 MD_INDICATORS_RESULT = ('|Id|Value|Type|Reputation|Involved Incidents Count|\n'
@@ -44,10 +40,10 @@ MD_INDICATORS_RESULT = ('|Id|Value|Type|Reputation|Involved Incidents Count|\n'
 
 @pytest.mark.parametrize('incident_ids, indicators, expected_result', [
     (INCIDENT_IDS, INDICATORS, MD_INDICATORS_RESULT),
-    (INCIDENT_IDS, [{"Contents": [], 'Type': 0}], NO_INDICATORS_FOUND),
-    (INCIDENT_IDS, [{"Contents": [], 'Type': 0}], NO_INDICATORS_FOUND)
+    (INCIDENT_IDS, {"iocs": [], "total": 0}, NO_INDICATORS_FOUND),
+    (INCIDENT_IDS, {"iocs": [], 'total': 0}, NO_INDICATORS_FOUND)
 ])
-def test_get_indicators_by_incident_id(mocker: MockerFixture, incident_ids: list, indicators: list, expected_result: str) -> None:
+def test_get_indicators_by_incident_id(mocker: MockerFixture, incident_ids: list, indicators: dict, expected_result: str) -> None:
     """
     Given:
         - Campaign indicators by incident ids.
@@ -58,7 +54,7 @@ def test_get_indicators_by_incident_id(mocker: MockerFixture, incident_ids: list
     Then:
         - Ensure the returned MD value as expected.
     """
-    mocker.patch.object(demisto, 'executeCommand', return_value=indicators)
+    mocker.patch.object(demisto, 'searchIndicators', return_value=indicators)
 
     indicators_res = get_indicators_from_incidents(incident_ids)
     result = format_results(indicators_res, incident_ids)

@@ -2,7 +2,7 @@ from CommonServerPython import *
 from ReversingLabs.SDK.a1000 import A1000
 
 
-VERSION = "v2.3.0"
+VERSION = "v2.3.2"
 USER_AGENT = f"ReversingLabs XSOAR A1000 {VERSION}"
 HOST = demisto.getParam('host')
 TOKEN = demisto.getParam('token')
@@ -310,9 +310,10 @@ def list_extracted_files(a1000):
     Get the list of extracted files for a given sample
     """
     hash_value = demisto.getArg('hash')
+    max_results = int(demisto.getArg("max_results"))
 
     try:
-        response = a1000.list_extracted_files_v2_aggregated(hash_value)
+        response = a1000.list_extracted_files_v2_aggregated(sample_hash=hash_value, max_results=max_results)
     except Exception as e:
         return_error(str(e))
 

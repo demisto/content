@@ -2,7 +2,7 @@
     "name": "Cisco ESA IronPort Email API (Deprecated)",
     "description": "Deprecated. Use CiscoESA instead.",
     "support": "community",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "OsamaShenoda",
     "url": "",
     "email": "",

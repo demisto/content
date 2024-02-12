@@ -435,4 +435,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
-description: This playbook uses "BitSight for Security Performance Management" integration and tests all commands of the integration.
+description: This playbook uses "Bitsight for Security Performance Management" integration and tests all commands of the integration.
