@@ -1,5 +1,3 @@
-import json
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import asyncio
@@ -17,7 +15,6 @@ from slack_sdk.socket_mode.response import SocketModeResponse
 from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-
 
 ''' CONSTANTS '''
 
@@ -65,7 +62,6 @@ PROXY_URL: Optional[str]
 PROXIES: dict
 DEDICATED_CHANNEL: str
 ASYNC_CLIENT: slack_sdk.web.async_client.AsyncWebClient
-DEMISTO_API_CLIENT: BaseClient
 CLIENT: slack_sdk.WebClient
 USER_CLIENT: slack_sdk.WebClient
 ALLOW_INCIDENTS: bool
@@ -91,7 +87,6 @@ CACHE_EXPIRY: float
 MIRRORING_ENABLED: bool
 LONG_RUNNING_ENABLED: bool
 DEMISTO_API_KEY: str
-DEMISTO_AUTH_ID: str
 DEMISTO_URL: str
 IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
@@ -1354,7 +1349,7 @@ def is_dm(channel: str) -> bool:
     return bool(channel and channel[0] == 'D' and ENABLE_DM)
 
 
-async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse, files: list[dict]):
+async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
     """
     Process messages which have been identified as possible mirrored messages. If so, we grab the context (cached), and
     check for a match of the channel_id in the cached mirrors. If we find one, we will update the mirror object and send
@@ -1396,21 +1391,7 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse, f
                                                         OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
         investigation_id = mirror['investigation_id']
-        demisto.info(f'Received {files=}, {text=}, {mirror=}')
-        if files:
-            for file in files:
-                file_content = await get_file(file.get("url_private"))
-                file_name = file.get("name")
-                demisto.debug(f'Received file {file_name} data successfully from slack')
-                await handle_file(investigation_id, file_name=file_name, file_content=file_content, text=text)
-                if not mirror.get("files") or []:
-                    mirror["mirrored_files"] = []
-                mirror["mirrored_files"].append(file_name)
-                demisto.debug(f'Successfully sent file {file_name} to investigation {investigation_id}')
-                set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-
-        else:
-            await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
+        await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
 
 
 def fetch_context(force_refresh: bool = False) -> dict:
@@ -1463,13 +1444,6 @@ def reset_listener_health():
     demisto.info("SlackV3 - Event handled successfully.")
 
 
-async def get_file(url_private: str):
-    demisto.debug(f'download url is {url_private=}')
-    res = requests.get(url_private, headers={'Authorization': f'Bearer {ASYNC_CLIENT.token}'}, verify=VERIFY_CERT)  # TODO: verify from params.
-    demisto.debug(f'{url_private} {res.status_code=}')
-    return res.content
-
-
 async def listen(client: SocketModeClient, req: SocketModeRequest):
     """
     This is the main listener which is attached to the open socket connection. When a SocketModeRequest has been received
@@ -1503,7 +1477,6 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
     try:
         data: dict = req.payload
         event: dict = data.get('event', {})
-        demisto.info(f'Received event: {event} in listen')
         text = event.get('text', '')
         user_id = data.get('user', {}).get('id', '')
         if not user_id:
@@ -1565,10 +1538,9 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         if event.get('subtype') == 'message_changed':
             return
 
-        user = await get_user_details(user_id=user_id)
-
         # Check if the message is being sent directly to our bot.
         if is_dm(channel):
+            user = await get_user_details(user_id=user_id)
             await handle_dm(user, text, ASYNC_CLIENT)  # type: ignore
             reset_listener_health()
             return
@@ -1576,6 +1548,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         # If a thread_id is found in the payload, we will check if it is a reply to a SlackAsk task. Currently threads
         # are not mirrored
         if thread:
+            user = await get_user_details(user_id=user_id)
             entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
             if entitlement_reply:
                 await process_entitlement_reply(entitlement_reply, user_id, action_text, channel=channel,
@@ -1583,11 +1556,10 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 reset_listener_health()
                 return
 
-        demisto.info(f'before mirroring enabled, {event=}')
-
         # If a message has made it here, we need to check if the message is being mirrored. If not, we will ignore it.
         if MIRRORING_ENABLED:
-            await process_mirror(channel, text, user, event.get("files") or [])
+            user = await get_user_details(user_id=user_id)
+            await process_mirror(channel, text, user)
         reset_listener_health()
         return
     except Exception as e:
@@ -1627,16 +1599,6 @@ async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, 
                          email=user.get('profile', {}).get('email', ''),
                          footer=MESSAGE_FOOTER
                          )
-
-
-async def handle_file(investigation_id: str, file_name: str, file_content: bytes, text: str):
-    DEMISTO_API_CLIENT._http_request(
-        "POST",
-        url_suffix=f"/entry/upload/{investigation_id}",
-        files={
-            "file": (file_name, file_content, 'application/octet-stream')
-        }
-    )
 
 
 async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> str:
@@ -1812,25 +1774,18 @@ def slack_send():
 
     args = demisto.args()
     message = args.get('message', '')
-    demisto.debug(f'message:{message}')
     to = args.get('to')
     original_channel = args.get('channel')
     channel_id = demisto.args().get('channel_id', '')
-    demisto.debug(f'channel_id:{channel_id}')
     group = args.get('group')
     message_type = args.get('messageType', '')  # From server
-    demisto.debug(f'message_type:{message_type}')
     original_message = args.get('originalMessage', '')  # From server
-    demisto.debug(f'original_message:{original_message}')
     entry = args.get('entry')
-    demisto.debug(f'entry:{entry}')
     ignore_add_url = args.get('ignoreAddURL', False) or args.get('IgnoreAddURL', False)
     thread_id = args.get('threadID', '')
-    demisto.debug(f'thread_id:{thread_id}')
     severity = args.get('severity')  # From server
     blocks = args.get('blocks')
     entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
-    demisto.debug(f'entryObject:{entry_object}')
     entitlement = ''
 
     if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES) and message_type != MIRROR_TYPE:
@@ -1853,16 +1808,8 @@ def slack_send():
             return
 
         if entry:
-            file = demisto.getFilePath(entry)
-            file_name = file["name"]
-            mirror = find_mirror_by_investigation()
-            if file_name in mirror.get("files", []):
-                demisto.debug(f'file {file_name} was mirrored from slack to XSOAR, skipping mirroring it back to xsoar')
-                return
             demisto.debug(f'file {entry} has been uploaded to a mirrored incident, uploading the file to {original_channel=}')
             slack_send_file(original_channel, channel_id, entry, message)
-            mirror["files"].pop(file_name)
-
             return
 
     if (to and group) or (to and original_channel) or (to and original_channel and group):
@@ -2809,8 +2756,7 @@ def init_globals(command_name: str = ''):
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
-    global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED
-    global DEMISTO_API_KEY, DEMISTO_AUTH_ID, DEMISTO_URL, DEMISTO_API_CLIENT
+    global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED, DEMISTO_API_KEY, DEMISTO_URL
     global IGNORE_RETRIES, EXTENSIVE_LOGGING
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
@@ -2845,15 +2791,8 @@ def init_globals(command_name: str = ''):
     MIRRORING_ENABLED = demisto.params().get('mirroring', True)
     LONG_RUNNING_ENABLED = demisto.params().get('longRunning', True)
     DEMISTO_API_KEY = demisto.params().get('demisto_api_key', {}).get('password', '')
-    DEMISTO_AUTH_ID = demisto.params().get("demisto_auth_id")
     demisto_urls = demisto.demistoUrls()
     DEMISTO_URL = demisto_urls.get('server')
-    demisto_headers = {'Authorization': DEMISTO_API_KEY}
-    if DEMISTO_AUTH_ID:
-        demisto_headers["xdr-auth-id"] = DEMISTO_AUTH_ID
-
-    DEMISTO_API_CLIENT = BaseClient(DEMISTO_URL, headers=demisto_headers, verify=VERIFY_CERT)
-
     IGNORE_RETRIES = demisto.params().get('ignore_event_retries', True)
     EXTENSIVE_LOGGING = demisto.params().get('extensive_logging', False)
     common_channels = demisto.params().get('common_channels', None)
