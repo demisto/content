@@ -119,6 +119,7 @@ def option_handler():
 
    
 def main():
+    print('heteererere')
     install_logging('Override_core_packs.log', logger=logging)
     logging.info("here")
     options = option_handler()
