@@ -43,7 +43,6 @@ def get_packs_ids_to_upload(packs_to_upload: str) -> tuple[set, set]:
     """
     if packs_to_upload and isinstance(packs_to_upload, str):
         try:
-            logging.debug(f"test {packs_to_upload=}")
             packs_json = json.loads(packs_to_upload)
             packs_to_upload = packs_json.get('packs_to_upload', [])
             packs_to_update_metadata = packs_json.get('packs_to_update_metadata', [])
@@ -54,8 +53,6 @@ def get_packs_ids_to_upload(packs_to_upload: str) -> tuple[set, set]:
             packs_metadata_update = {p.strip() for p in packs_to_update_metadata if p not in IGNORED_FILES}
             logging.info(f"Collected {len(packs_metadata_update)} content packs to update metadata: "
                          f"{list(packs_metadata_update)}")
-
-            logging.debug(f"test {packs_upload=}, {packs_metadata_update=}")
 
             return packs_upload, packs_metadata_update
 

@@ -16,8 +16,10 @@ from Tests.Marketplace.marketplace_constants import Metadata
 
 class TestModifiedPacks:
     @pytest.mark.parametrize("packs_names_input, expected_result", [
-        ("pack1,pack2,pack1", {"pack1", "pack2"}),
-        ("pack1, pack2,  pack3", {"pack1", "pack2", "pack3"})
+        ('{"packs_to_upload": ["pack1", "pack2"], "packs_to_update_metadata": ["pack3"]}',
+         ({'pack1', 'pack2'}, {'pack3'})),
+        ('{"packs_to_upload": ["pack1", "pack2", "pack2"], "packs_to_update_metadata": ["pack3"]}',
+         ({'pack1', 'pack2'}, {'pack3'}))
     ])
     def test_get_packs_names_specific(self, packs_names_input, expected_result):
         modified_packs = get_packs_ids_to_upload(packs_names_input)
