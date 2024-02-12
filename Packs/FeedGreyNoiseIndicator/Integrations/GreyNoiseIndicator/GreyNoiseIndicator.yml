@@ -13,7 +13,7 @@ configuration:
   type: 9
   required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
-  defaultvalue: Suspicious
+  defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
   options:
