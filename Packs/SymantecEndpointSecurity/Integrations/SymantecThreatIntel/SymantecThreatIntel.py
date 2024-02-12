@@ -242,7 +242,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], reliability: str
     command_results = []
     for result in results:
         severity: tuple[int, str | None] = (Common.DBotScore.NONE, None)
-        if not client.ignore_private_ips or not ip_address(result['indicator']).is_private:
+        ip = ip_address(result['indicator'])
+        if not client.ignore_private_ips or (not ip.is_private and not ip.is_loopback):
             severity = calculate_network_severity(result)
 
         dbot_score = Common.DBotScore(indicator=result['indicator'],
