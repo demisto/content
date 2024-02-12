@@ -7,7 +7,6 @@ from CommonServerUserPython import *
 import xml
 import tempfile
 import contextlib
-import OpenSSL.crypto  # type: ignore[import]
 from cryptography.hazmat.primitives.serialization import pkcs12
 from cryptography.hazmat.primitives import serialization
 
