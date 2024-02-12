@@ -1,5 +1,6 @@
 import io
 from pathlib import Path
+from typing import List
 
 import click
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
@@ -10,11 +11,31 @@ from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
 
 import json
 
+from demisto_sdk.commands.content_graph.objects.base_playbook import TaskConfig
+
 playbook_converer_app = typer.Typer(name="Playbook-Converter")
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
+def generate_prompt(data: TaskConfig, type: str, options: List[str]=None) -> str:
+    if options is None:
+        options = ['Core', 'Alert']
+    mapping = {}
+    options_str = ""
+    for i, option in enumerate(options):
+        options_str += f"\n[{i}] {option}"
+        mapping[str(i)] = option
+    answer = ""
+    while answer not in mapping:
+        task_name = ""
+        if data.task and data.task.name:
+            task_name = data.task.name
+        answer = typer.prompt(f"'PaloAltoNetworksXDR' was found in task ({data.id}: '{task_name}') in the script {type}.\n"
+                              f"To what value would you like to change it to?\n{options_str}")
+
+    return mapping[answer]
 
 @click.group(
     invoke_without_command=True,
@@ -48,8 +69,6 @@ def convert_playbook(
     if playbook_display_name := playbook.display_name:
         playbook.display_name = f'{playbook_display_name} Converted'
     for id, data in playbook.tasks.items():
-
-
         if data.conditions:
             for condition_config in data.conditions:
                 if condition_config.condition:
@@ -57,30 +76,16 @@ def convert_playbook(
                         for condition_data in condition:
                             filters =condition_data.get('left', {}).get('value', {}).get('complex', {}).get('filters', [])
                             root = condition_data.get('left', {}).get('value', {}).get('complex', {}).get('root')
-                            if root:
-                                if 'PaloAltoNetworksXDR' in root:
-                                    answer = ""
-                                    while answer not in ['Core', 'Alert']:
-                                        answer = typer.prompt(
-                                            f"'PaloAltoNetworksXDR' was found in task {data.id} in the condition.\n"
-                                            f"would you like to change it to 'Core' or 'Alert'?:")
-
-                                    condition_data['left']['value']['complex']['root'] = root.replace('PaloAltoNetworksXDR', answer)
-
+                            if root and 'PaloAltoNetworksXDR' in root:
+                                answer = generate_prompt(data, "conditions:root")
+                                condition_data['left']['value']['complex']['root'] = root.replace('PaloAltoNetworksXDR', answer)
                             for filter_config in filters:
                                 for filter in filter_config:
                                     simple = filter.get('left', {}).get('value', {}).get('simple')
                                     if 'PaloAltoNetworksXDR' in simple:
-                                        answer = ""
-                                        while answer not in ['Core', 'Alert']:
-                                            answer = typer.prompt(
-                                                f"'PaloAltoNetworksXDR' was found in task {data.id} in the condition filters.\n"
-                                                f"would you like to change it to 'Core' or 'Alert'?:")
+                                        answer = generate_prompt(data, "conditions:filter")
 
                                         filter['left']['value']['simple'] = root.replace('PaloAltoNetworksXDR',answer)
-
-
-
 
         if data.scriptarguments:
             if root := data.scriptarguments.get('value', {}).get('complex', {}).get('root'):
@@ -89,10 +94,7 @@ def convert_playbook(
             for arg, arg_data in data.scriptarguments.items():
                 if root := arg_data.get('complex', {}).get('root'):
                     if "PaloAltoNetworksXDR" in root:
-                        answer = ""
-                        while answer not in ['Core', 'Alert']:
-                            answer = typer.prompt(f"'PaloAltoNetworksXDR' was found in task {data.id} in the script argument {arg}.\n"
-                                              f"would you like to change it to 'Core' or 'Alert'?:")
+                        answer = generate_prompt(data, "scriptarguments:root")
                         data.scriptarguments[arg]['complex']['root'] = root.replace("PaloAltoNetworksXDR", answer)
 
                 if filters := arg_data.get('complex', {}).get('filters'):
@@ -100,24 +102,16 @@ def convert_playbook(
                         for elem in filter:
                             if simple := elem.get('left', {}).get('value', {}).get('simple'):
                                 if 'PaloAltoNetworksXDR' in simple:
-                                    answer = ""
-                                    while answer not in ['Core', 'Alert']:
-                                        answer = typer.prompt(
-                                            f"'PaloAltoNetworksXDR' was found in task {data.id} in the script argument {arg} filters left.\n"
-                                            f"would you like to change it to 'Core' or 'Alert'?:")
+                                    answer = generate_prompt(data, "scriptarguments:filters")
                                     elem['left']['value']['simple'] = simple.replace("PaloAltoNetworksXDR", answer)
                                 if simple := elem.get('right', {}).get('value', {}).get('simple'):
                                     if 'PaloAltoNetworksXDR' in simple:
-                                        answer = ""
-                                        while answer not in ['Core', 'Alert']:
-                                            answer = typer.prompt(
-                                                f"'PaloAltoNetworksXDR' was found in task {data.id} in the script argument {arg} filters right.\n"
-                                                f"would you like to change it to 'Core' or 'Alert'?:")
+                                        answer = generate_prompt(data, "scriptarguments:filters")
                                         elem['right']['value']['simple'] = simple.replace("PaloAltoNetworksXDR", answer)
-
 
             if simple := data.scriptarguments.get('key', {}).get('simple'):
                 data.scriptarguments['key']['simple'] = simple.replace('PaloAltoNetworksXDR', 'Core')
+
         if (task_script_name := data.task.script) and (coammnd_name := task_script_name.replace('|','')) in mapping:
             if convert_to := mapping[coammnd_name]:
                 data.task.script = f'|||{convert_to}'
@@ -131,8 +125,9 @@ def convert_playbook(
     playbook.save(output_path)
     commands_replaced_str = f"Converted the following commands from {src} to {dst}:\n"
     commands_replaced_str += "\n".join(f'{k} --> {v}' for k,v in commands_replaced.items())
-    commands_not_replaced_str = f"\nDid not manage to Convert the following commands from {src} to {dst} (please change them manually:\n"
-    commands_not_replaced_str += "\n".join(commands_not_replaced)
+    if commands_not_replaced:
+        commands_not_replaced_str = f"\nDid not manage to Convert the following commands from {src} to {dst} (please change them manually):\n"
+        commands_not_replaced_str += "\n".join(commands_not_replaced)
     logger.warning(commands_replaced_str)
     logger.warning(commands_not_replaced_str)
 
