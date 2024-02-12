@@ -1,10 +1,12 @@
 from pathlib import Path
 from typing import cast
 import pytest
+from requests_mock import Adapter
 from Infoblox import (
     INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY,
     INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY,
     INTEGRATION_COMMON_NAME_CONTEXT_KEY,
+    INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY,
     INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY,
     INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY,
     INTEGRATION_CONTEXT_NAME,
@@ -811,6 +813,106 @@ class TestHostRecordsOperations:
 
         assert actual_raw_response == json.loads(mock_response)
 
+    def test_get_host_records_command_non_existing_additional_return_fields(self, requests_mock):
+        """
+        Test running `get_host_records_command` with a non-existing return field.
+
+        Given:
+        - An `additional_return_fields` is specified.
+
+        When:
+        - The `additional_return_fields` doesn't exist.
+
+        Then:
+        - A `DemistoException` is raised.
+        """
+
+        additional_return_fields = "none"
+        mock_response = (Path(__file__).parent.resolve() / "test_data"
+                         / self.__class__.__name__ / "unknown_argument.json").read_text()
+
+        requests_mock.get(
+            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={additional_return_fields}",
+            json=json.loads(mock_response)
+        )
+
+        with pytest.raises(DemistoException, match="Unknown argument/field: 'none'"):
+            get_host_records_command(
+                client,
+                {
+                    "additional_return_fields": additional_return_fields
+                }
+            )
+
+    def test_get_host_records_command_no_additional_fields(self, requests_mock):
+        """
+        Given:
+        - Running `get_host_records_command`.
+        
+        When:
+        - No `additional_fields` are provided.
+
+        Then:
+        - The `extattrs` should appended and returned.
+        """
+
+        mock_response = (Path(__file__).parent.resolve() / "test_data"
+                         / self.__class__.__name__ / "get_records_extattrs.json").read_text()
+
+        requests_mock.get(
+            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}",
+            json=json.loads(mock_response)
+        )
+
+        actual_hr, actual_context, actual_raw_response = get_host_records_command(
+            client,
+            {}
+        )
+
+        assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_hr.splitlines()[1]
+
+        assert self.CONTEXT_KEY in actual_context
+        actual_output = actual_context.get(self.CONTEXT_KEY)
+
+        for o in actual_output:
+            assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in o
+
+    def test_get_host_records_command_extattrs_set_additional_fields(self, requests_mock):
+        """
+        Given:
+        - Running `get_host_records_command`.
+        
+        When:
+        - `additional_fields` is set to `extattrs`.
+
+        Then:
+        - The `extattrs` should appended and returned.
+        """
+
+        mock_response = (Path(__file__).parent.resolve() / "test_data"
+                         / self.__class__.__name__ / "get_records_extattrs.json").read_text()
+
+        requests_mock.get(
+            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}&*Site=ciac-5843",
+            json=json.loads(mock_response)
+        )
+
+        actual_hr, actual_context, actual_raw_response = get_host_records_command(
+            client,
+            {
+                "additional_return_fields": INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY,
+                INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY: "Site=ciac-5843"
+            }
+        )
+
+        assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in actual_hr.splitlines()[1]
+
+        assert self.CONTEXT_KEY in actual_context
+        actual_output = actual_context.get(self.CONTEXT_KEY)
+
+        for o in actual_output:
+            assert INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY in o
+
 
 class TestNetworkInfoOperations:
 
@@ -844,8 +946,8 @@ class TestNetworkInfoOperations:
 
         actual_hr, actual_context, actual_raw_response = get_network_info_command(client, {})
 
-        assert f"({INTEGRATION_MAX_RESULTS_DEFAULT} limit)" in actual_hr
-
+        
+        assert "Network information found" in actual_hr
         assert self.CONTEXT_KEY in actual_context
         actual_output = cast(list, actual_context.get(self.CONTEXT_KEY))
         assert len(actual_output) == 2
@@ -886,7 +988,7 @@ class TestNetworkInfoOperations:
 
         actual_hr, actual_context, actual_raw_response = get_network_info_command(client, {"pattern": pattern})
 
-        assert f"({INTEGRATION_MAX_RESULTS_DEFAULT} limit)" in actual_hr
+        assert "Network information found" in actual_hr
 
         assert self.CONTEXT_KEY in actual_context
         actual_output = cast(list, actual_context.get(self.CONTEXT_KEY))
@@ -936,7 +1038,7 @@ class TestNetworkInfoOperations:
             }
         )
 
-        assert f"({limit} limit)" in actual_hr
+        assert "Network information found" in actual_hr
 
         assert self.CONTEXT_KEY in actual_context
         actual_output = cast(list, actual_context.get(self.CONTEXT_KEY))

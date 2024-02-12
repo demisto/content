@@ -166,7 +166,7 @@ class InfoBloxNIOSClient(BaseClient):
     REQUEST_PARAMS_RETURN_AS_OBJECT_KEY = '_return_as_object'
     REQUEST_PARAM_RETURN_FIELDS_KEY = '_return_fields+'
 
-    REQUEST_PARAM_EXTRA_ATTRIBUTES = {REQUEST_PARAM_RETURN_FIELDS_KEY: 'extattrs'}
+    REQUEST_PARAM_EXTRA_ATTRIBUTES = {REQUEST_PARAM_RETURN_FIELDS_KEY: INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}
     REQUEST_PARAM_ZONE = {
         REQUEST_PARAM_RETURN_FIELDS_KEY: 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'
     }
@@ -500,7 +500,7 @@ class InfoBloxNIOSClient(BaseClient):
     def get_host_records(
         self,
         name: str | None,
-        additional_return_fields: Optional[str],
+        additional_return_fields: str,
         extended_attributes: Optional[str],
         max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
     ) -> dict:
@@ -518,17 +518,15 @@ class InfoBloxNIOSClient(BaseClient):
         """
 
         request_params = assign_params(name=name, _max_results=max_results)
-
-        if additional_return_fields:
-            request_params.update(
-                {
-                    f"{self.REQUEST_PARAM_RETURN_FIELDS_KEY}": additional_return_fields
-                }
-            )
+        request_params.update({self.REQUEST_PARAM_RETURN_FIELDS_KEY: additional_return_fields})
 
         # Add extended attributes param if provided
         if extended_attributes:
-            request_params.update(self.REQUEST_PARAM_EXTRA_ATTRIBUTES)
+
+            # If the extended attributes return field is not specified
+            # add it.
+            if INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY not in request_params.get(self.REQUEST_PARAM_RETURN_FIELDS_KEY):
+                request_params[self.REQUEST_PARAM_RETURN_FIELDS_KEY] += f",{INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}"
             extended_attributes_params = transform_ext_attrs(extended_attributes)
 
             for e in extended_attributes_params:
@@ -561,15 +559,14 @@ class InfoBloxNIOSClient(BaseClient):
         if pattern:
             request_params["network~"] = pattern
 
-        if additional_return_fields:
-            request_params.update(
-                {
-                    f"{self.REQUEST_PARAM_RETURN_FIELDS_KEY}": additional_return_fields
-                }
-            )
+        request_params.update({self.REQUEST_PARAM_RETURN_FIELDS_KEY: additional_return_fields})
 
+        # Add extended attributes param if provided
         if extended_attributes:
-            request_params.update(self.REQUEST_PARAM_EXTRA_ATTRIBUTES)
+            # If the extended attributes return field is not specified
+            # add it.
+            if INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY not in request_params.get(self.REQUEST_PARAM_RETURN_FIELDS_KEY):
+                request_params[self.REQUEST_PARAM_RETURN_FIELDS_KEY] += f",{INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}"
             extended_attributes_params = transform_ext_attrs(extended_attributes)
 
             for e in extended_attributes_params:
@@ -732,7 +729,6 @@ def transform_host_records_context(records: list[dict[str, Any]]) -> list[dict[s
 
             # We're not interested in these fields
             if record_key == INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY:
-
                 continue
             elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_VIEW_KEY:
                 continue
@@ -1461,6 +1457,11 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
         extended_attributes=extended_attributes,
         max_results=max_results
     )
+
+    if 'Error' in raw:
+        msg = raw.get("text")
+        raise DemistoException(f"Error retrieving host records: {msg}", res=raw)
+
     records = raw.get("result", [])
 
     demisto.debug(f"Found {len(records)} host records")
@@ -1508,6 +1509,11 @@ def get_network_info_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
         extended_attributes=extended_attributes,
         max_results=max_results
     )
+
+    if 'Error' in raw_response:
+        msg = raw_response.get("text")
+        raise DemistoException(f"Error retrieving host records: {msg}", res=raw_response)
+
     network_info = raw_response.get("result")
 
     if not network_info:

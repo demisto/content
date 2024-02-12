@@ -5,3 +5,5 @@
 !infoblox-list-host-info additional_return_fields=extattrs,aliases
 !infoblox-list-network-info
 !infoblox-list-network-info pattern=255.255 extattrs="Region=EMEA"
+!infoblox-list-host-info additional_return_fields=aliases extattrs="Site=ciac-5843"
+
