@@ -170,7 +170,7 @@ def extract_file_indicator_hashes(stix_object: str | None) -> dict:
     """
     Extract hashes composing the STIX indicator pattern
     """
-    hashes = {"sha512": "", "sha256": "", "sha1": "", "md5": ""}
+    hashes = {"sha512": None, "sha256": None, "sha1": None, "md5": None}
     pattern_str = stix_object.get('pattern')
     if not pattern_str:
         indicator_value = stix_object['name']
@@ -281,7 +281,6 @@ def get_ip_indicator_reputation(
         indicator=ip,
     )
 
-
 def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str,
                                   tlp: str, is_unknown: bool) -> CommandResults:
     """
@@ -289,8 +288,9 @@ def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reli
     """
 
     hashes = extract_file_indicator_hashes(stix_object)
+    indicator = [v for _,v in hashes.items() if v is not None] or stix_object['name']
     dbot_score = Common.DBotScore(
-        indicator=hashes["md5"],
+        indicator=indicator,
         indicator_type=DBotScoreType.FILE,
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
