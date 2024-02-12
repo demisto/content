@@ -136,7 +136,7 @@ class Client(BaseClient):
             return incremental_level_fetch(self)
         # this is the "first level fetch" logic. Every fetch returns at most PAGE_SIZE indicators from the feed.
         for tag in tags:
-            if is_get_command and limit and len(results) >= limit:
+            if is_get_command and limit > 0 and len(results) >= limit:
                 return results
             public_tag_name = tag.get('public_tag_name', '')
             tag_details_response = self.get_tag_details(public_tag_name)
