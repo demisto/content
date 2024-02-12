@@ -54,6 +54,7 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
 
     return True
 
+
 def override_locked_corepacks_file(build_number: str, artifacts_dir: str, marketplace: str):
     """
     Override an existing corepacks-X.X.X.json file, where X.X.X is the server version that was specified in the
@@ -116,6 +117,7 @@ def option_handler():
     # disable-secrets-detection-end
     return parser.parse_args()
 
+   
 def main():
     install_logging('Override_core_packs.log', logger=logging)
     logging.info("here")
@@ -135,3 +137,7 @@ def main():
     
     # upload server versions metadata to bucket
     upload_server_versions_metadata(os.path.dirname(packs_artifacts_path))
+
+
+if __name__ == '__main__':
+    main()
