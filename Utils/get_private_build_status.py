@@ -86,7 +86,7 @@ def main():
 
     workflow_id_file = PRIVATE_REPO_WORKFLOW_ID_FILE
     if artifacts_folder:
-        workflow_id_file = Path(artifacts_folder, PRIVATE_REPO_WORKFLOW_ID_FILE)
+        workflow_id_file = str(Path(artifacts_folder, PRIVATE_REPO_WORKFLOW_ID_FILE))
 
     # get the workflow id from file
     if not os.path.isfile(workflow_id_file):
