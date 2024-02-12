@@ -28,7 +28,7 @@ def test_get_person_in_charge__multiple_IDs(mocker):
     When:
         The function get_person_in_charge is called with that commit
     Then:
-        It should return the a tuple with the author name and the pull request URL, with only the last ID in the URL, 
+        It should return the a tuple with the author name and the pull request URL, with only the last ID in the URL,
         and the title beginning (up to 20 characters)
     """
     commit = mocker.Mock()
@@ -46,7 +46,7 @@ def test_get_person_in_charge__no_parenthesis(mocker):
     When:
         The function get_person_in_charge is called with the commit
     Then:
-        It should return the author name and the pull request URL (even if the ID was not in parenthesis) 
+        It should return the author name and the pull request URL (even if the ID was not in parenthesis)
         and the title beginning (up to 20 characters)
     """
     commit = mocker.Mock()

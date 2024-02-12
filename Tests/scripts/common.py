@@ -419,7 +419,7 @@ def create_shame_message(suspicious_commits: list[ProjectCommit],
 
 
 def slack_link(url: str, text: str) -> str:
-    """ 
+    """
     Create a slack link.
     Args:
         url: The URL to link to.
