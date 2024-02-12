@@ -1238,7 +1238,6 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
     # Handle first time fetch
     last_fetch = first_fetch_time if last_fetch is None else int(last_fetch)
     latest_created_time = cast(int, last_fetch)
-    latest_created_time = latest_created_time
 
     demisto.debug(f"CortexXpanse - last fetched alert timestamp: {str(last_fetch)}")
 
@@ -1366,6 +1365,7 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
+        # To debug integratin instance configuration.
         integration_context = demisto.getIntegrationContext()
         if 'xpanse_integration_severity' in integration_context:
             xpanse_integration_severity = integration_context.get('xpanse_integration_severity')
