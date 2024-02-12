@@ -1,0 +1,6 @@
+[INGEST:vendor="fortinet", product="fortimail", target_dataset="fortinet_fortimail_raw", no_hit=keep]
+alter
+    tmp_unite_date_time = concat(Date, " ", Time)
+| alter
+    _time = parse_timestamp("%Y-%m-%d %k:%M:%S", tmp_unite_date_time)
+| fields -tmp_unite_date_time;
