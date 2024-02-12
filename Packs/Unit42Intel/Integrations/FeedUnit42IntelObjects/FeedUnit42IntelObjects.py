@@ -168,7 +168,7 @@ def incremental_level_fetch(client: Client) -> list:
     integration_context = get_integration_context()
     # This field saves tags that have been updated since the last fetch time and need to be updated in demisto
     list_of_all_updated_tags = argToList(integration_context.get('tags_need_to_be_fetched', ''))
-    time_from_last_update = integration_context.get('time_of_first_fetch')
+    time_from_last_update = integration_context.get('time_of_first_fetch', 0)
     index_to_delete = 0
     for tag in list_of_all_updated_tags:  # pragma: no cover
         # if there are such tags, we first get all of them, so we wont miss any tags
@@ -215,8 +215,8 @@ def get_all_updated_tags_since_last_fetch(client: Client,
     adds them to list_of_all_updated_tags and returns it.
     Args:
         client: Client object
-        list_of_all_updated_tags:
-        time_from_last_update:
+        list_of_all_updated_tags: updated tags
+        time_from_last_update: 0 if it's the first update
 
     Returns:
         List of all tags that has been updated and need to be fetched.
