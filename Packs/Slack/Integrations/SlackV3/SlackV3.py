@@ -2838,7 +2838,7 @@ def init_globals(command_name: str = ''):
     if DEMISTO_AUTH_ID:
         demisto_headers["xdr-auth-id"] = DEMISTO_AUTH_ID
 
-    DEMISTO_API_CLIENT = BaseClient(DEMISTO_URL, headers=demisto_headers)
+    DEMISTO_API_CLIENT = BaseClient(DEMISTO_URL, headers=demisto_headers, verify=VERIFY_CERT)
 
     IGNORE_RETRIES = demisto.params().get('ignore_event_retries', True)
     EXTENSIVE_LOGGING = demisto.params().get('extensive_logging', False)

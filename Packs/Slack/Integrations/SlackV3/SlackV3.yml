@@ -157,21 +157,13 @@ configuration:
   displaypassword: XSOAR API Key
   hiddenusername: true
   additionalinfo: Fill in the api key of XSOAR if file-mirroring is needed for incidents.
-  hidden:
-  - marketplacev2
-  - xsoar
-- display: ''
+- display: 'XSOAR Auth ID'
   name: demisto_auth_id
   type: 0
   section: Connect
   advanced: true
   required: false
-  displaypassword: XSOAR Auth ID
-  hiddenusername: true
   additionalinfo: Fill in the auth ID of XSOAR if file-mirroring is needed for incidents. Relevant only for xsoar8.
-  hidden:
-  - marketplacev2
-  - xsoar
 - display: Enable DMs to the bot
   name: enable_dm
   type: 8
