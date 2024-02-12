@@ -114,7 +114,6 @@ script:
     name: stellar-incident-update
   dockerimage: demisto/python3:3.10.13.87159
   isfetch: true
-  isremotesyncin: true
   runonce: false
   script: ''
   subtype: python3
