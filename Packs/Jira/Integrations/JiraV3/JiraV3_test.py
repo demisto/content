@@ -725,7 +725,7 @@ class TestJiraEditIssueCommand:
             DemistoException,
             match=(
                 "When using the `issue_json` argument, additional arguments cannot be used "
-                "except `status`, `transition`, and `action` arguments.ֿֿֿ"
+                "except `issue_id`, `issue_key`, `status`, `transition`, and `action` arguments.ֿֿֿ"
                 "\n see the argument description"
             )
         ):

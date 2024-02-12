@@ -1979,17 +1979,15 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    if (
-        "issue_json" in args
-        and [
-                k
-                for k in args
-                if k not in ("status", "transition", "action", "issue_id", "issue_key", "issue_json")
-            ]
-    ):
+    if "issue_json" in args and [
+        k
+        for k in args
+        if k
+        not in ("status", "transition", "action", "issue_id", "issue_key", "issue_json")
+    ]:
         raise DemistoException(
             "When using the `issue_json` argument, additional arguments cannot be used "
-            "except `status`, `transition`, and `action` arguments.ֿֿֿ"
+            "except `issue_id`, `issue_key`, `status`, `transition`, and `action` arguments.ֿֿֿ"
             "\n see the argument description"
         )
 
