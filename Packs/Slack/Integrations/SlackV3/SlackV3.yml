@@ -174,7 +174,7 @@ configuration:
   - xsoar
 - display: Enable DMs to the bot
   name: enable_dm
-  type: 0
+  type: 8
   defaultvalue: 'false'
   section: Collect
   advanced: true
