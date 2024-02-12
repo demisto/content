@@ -342,16 +342,25 @@ For more information on the way we write to a table please refer to this documen
 
 ##### Command Example
 ```
-!devo-write-to-table tableName="my.app.test.test" records='[{"hello": "world"}, {"hello": "world"}]'
+!devo-write-to-table tableName="my.app.test.test" records=`[ "This is my first event", "This is my second log", {"hello": "world"}, {"hello": "friend"}, ["a", "b", "c"], ["1", "2", "3"], 1234, true ]`
 ```
 
 ##### Human Readable Output
-Entries to load into Devo
+Total Records Sent: 8.
+Total Bytes Sent: 196.
 
-|hello|
+##### Entries to load into Devo
+
+|Data|
 |---|
-|world|
-|world||
+|This is my first event|
+|This is my second log|
+|{"hello": "world"}|
+|{"hello": "friend"}|
+|["a", "b", "c"]|
+|["1", "2", "3"]|
+|1234|
+|true|
 
 Link to Devo Query
 
@@ -377,7 +386,7 @@ adding in extra lookup information found [HERE](https://github.com/DevoInc/pytho
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | lookupTableName | Lookup table name you are trying to write to | Required |
-| headers | Headers of records to upload. Order sensitive. | Optional |
+| headers | Headers of records to upload. Order sensitive. | Required |
 | records | Lookup table records to insert | Required |
 
 
@@ -390,12 +399,22 @@ adding in extra lookup information found [HERE](https://github.com/DevoInc/pytho
 
 ##### Command Example
 ```
-!devo-write-to-lookup-table lookupTableName="lookup123" headers='["foo", "bar", "baz"]' records='[{"key": "foo1", "values": ["foo1", "bar1", "baz1"]}]'
+!devo-write-to-lookup-table lookupTableName="lookup123" headers=`{"headers": ["foo", "bar", "baz"], "key_index": 0, "action": "FULL"}` records=`[{"fields": ["foo1", "bar1", "baz1"], "delete": false}, {"fields": ["foo2", "bar2", "baz2"]}, {"fields": ["foo3", "bar3", "baz3"]}]`
 ```
 
 ##### Human Readable Output
-N/A
+Lookup Table Name: lookup123.
+Total Records Sent: 3.
+Total Bytes Sent: 125.
 
+##### Entries to load into Devo
+
+|lookup123|FULL|START|[{"foo":{"type":"str","key":true}},{"bar":{"type":"str"}},{"baz":{"type":"str"}}]|
+|lookup123|FULL|END|[{"foo":{"type":"str","key":true}},{"bar":{"type":"str"}},{"baz":{"type":"str"}}]|
+
+|lookup123|null|"foo1", "bar1", "baz1"|
+|lookup123|null|"foo2", "bar2", "baz2"|
+|lookup123|null|"foo3", "bar3", "baz3"|
 
 #### Youtube Video Demo (Click Image, Will redirect to youtube)
 [(https://raw.githubusercontent.com/demisto/content/98ead849e9e32921f64f7ac07fda2bff1b5f7c0b/Packs/Devo/doc_files/devo_video.jpg)](https://www.youtube.com/watch?v=jyUqEcWOXfU)

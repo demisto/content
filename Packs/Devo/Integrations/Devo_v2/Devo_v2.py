@@ -825,16 +825,15 @@ def multi_table_query_command(offset, items):
 
 
 def convert_to_str(value):
-    warnings = []
     if isinstance(value, list) and len(value) == 0:
-        warnings.append("Empty list encountered.")
-        return '[]', warnings
+        print("Warning: Empty list encountered.")
+        return '[]'
     elif isinstance(value, dict) and not value:
-        warnings.append("Empty dictionary encountered.")
-        return '{}', warnings
-    elif isinstance(value, list | dict):
-        return json.dumps(value), warnings
-    return str(value), warnings
+        print("Warning: Empty dictionary encountered.")
+        return '{}'
+    elif isinstance(value, (list, dict)):
+        return json.dumps(value)
+    return str(value)
 
 
 def write_to_table_command():
@@ -879,7 +878,7 @@ def write_to_table_command():
         formatted_record = convert_to_str(r)
 
         # If the record is empty, skip sending it
-        if not len(formatted_record):
+        if not formatted_record.strip():
             continue
 
         # Send each record to Devo with the specified tag
@@ -887,7 +886,7 @@ def write_to_table_command():
 
         # Update totals
         total_events += 1
-        total_bytes_sent += len(formatted_record)
+        total_bytes_sent += len(formatted_record.encode("utf-8"))
 
     current_ts = int(time.time())
     start_ts = (current_ts - 30) * 1000
@@ -966,13 +965,13 @@ def write_to_lookup_table_command():
 
     # Validate key_index
     key_index = int(headers.get("key_index", 0))  # Ensure it's casted to integer
-    if key_index < 0:
-        raise ValueError("key_index must be a non-negative integer value.")
+    ## if key_index < 0:
+    ##    raise ValueError("key_index must be a non-negative integer value.")
 
     # Validate action
     action = headers.get("action", "")
-    if action not in {"INC", "FULL"}:
-        raise ValueError("action must be either 'INC' or 'FULL'.")
+    ## if action not in {"INC", "FULL"}:
+    ##    raise ValueError("action must be either 'INC' or 'FULL'.")
     try:
         con = Sender(config=engine_config, timeout=60)
         lookup = Lookup(name=lookup_table_name, con=con)
