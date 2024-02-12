@@ -2867,7 +2867,6 @@ def test_slack_send_with_mirrored_file(mocker):
     assert demisto_results.call_args_list[0][0][0] == 'File sent to Slack successfully.'
 
 
-
 def test_send_request_with_entitlement_blocks(mocker):
     import SlackV3
 
