@@ -255,7 +255,7 @@
    "query": {
     "type": "incident",
     "filter": {
-     "query": "",
+     "query": "-status:closed",
      "period": {
       "byFrom": "days",
       "fromValue": null,
@@ -265,9 +265,9 @@
      "toDate": null
     }
    },
-   "data": "# **Total incidents: {0}**",
+   "data": "# **Total open incidents: {0}**",
    "type": "placeholder",
-   "title": "dailyIncidentReport Total Incidents"
+   "title": "dailyIncidentReport Total Open Incidents"
   },
   {
    "layout": {
@@ -649,11 +649,11 @@
      "size": 0,
      "dataType": "incidents",
      "params": {
-      "text": "# **Total incidents: {0}**"
+      "text": "# **Total open incidents: {0}**"
      },
-     "query": "",
+     "query": "-status:closed",
      "modified": "2018-01-25T10:00:07.077147676Z",
-     "name": "dailyIncidentReport Total Incidents",
+     "name": "dailyIncidentReport Total Open Incidents",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
