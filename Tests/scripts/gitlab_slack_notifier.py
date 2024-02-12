@@ -584,7 +584,8 @@ def main():
                 previous_pipeline, suspicious_commits = get_nearest_older_commit_with_pipeline(
                     list_of_pipelines, list_of_commits, current_commit_index)
                 if previous_pipeline and suspicious_commits:
-                    pipeline_changed_status = is_pivot(current_pipeline=current_pipeline, pipeline_to_compare=previous_pipeline)    # type: ignore
+                    pipeline_changed_status = is_pivot(current_pipeline=current_pipeline,
+                                                       pipeline_to_compare=previous_pipeline)    # type: ignore
 
                     logging.info(
                         f"Checking pipeline id: {current_pipeline.id}, of commit: {current_commit.title}, "  # type: ignore
