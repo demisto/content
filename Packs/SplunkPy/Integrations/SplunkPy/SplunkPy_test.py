@@ -573,6 +573,7 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     expected_output = f'{START_OUTPUT}{expected_output}'
     assert output == expected_output
 
+
 class TestFetchRemovingIrrelevantIncidents:
 
     notable1 = {'status': '5', 'event_id': '3'}
@@ -593,12 +594,12 @@ class TestFetchRemovingIrrelevantIncidents:
 
         mocker.patch.object(demisto, 'setLastRun')
         mock_last_run = {'time': '2024-02-12T10:00:00', 'latest_time': '2024-02-19T10:00:00',
-                            'found_incidents_ids': {'1': 1700497516}}
+                         'found_incidents_ids': {'1': 1700497516}}
         mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
         mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
         mocker.patch('demistomock.params', return_value=mock_params)
         mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
-                                                                            self.notable2])
+                                                                          self.notable2])
         service = self.Service()
         set_last_run_mocker = mocker.patch('demistomock.setLastRun')
         mapper = UserMappingObject(service, False)
@@ -613,13 +614,13 @@ class TestFetchRemovingIrrelevantIncidents:
 
         mocker.patch.object(demisto, 'setLastRun')
         mock_last_run = {'time': '2024-02-12T10:00:00', 'latest_time': '2024-02-19T10:00:00',
-                            'found_incidents_ids': {'1': {'occurred_time': '2024-02-12T09:59:59'},
-                                                    '2': {'occurred_time': '2024-02-12T10:00:00'}}}
+                         'found_incidents_ids': {'1': {'occurred_time': '2024-02-12T09:59:59'},
+                                                 '2': {'occurred_time': '2024-02-12T10:00:00'}}}
         mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
         mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
         mocker.patch('demistomock.params', return_value=mock_params)
         mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
-                                                                            self.notable2])
+                                                                          self.notable2])
         service = self.Service()
         set_last_run_mocker = mocker.patch('demistomock.setLastRun')
         mapper = UserMappingObject(service, False)
@@ -628,6 +629,7 @@ class TestFetchRemovingIrrelevantIncidents:
         assert last_fetched_ids == {'2': {'occurred_time': '2024-02-12T10:00:00'},
                                     '3': {'occurred_time': '2024-02-12T10:00:00'},
                                     '4': {'occurred_time': '2024-02-12T10:00:00'}}
+
 
 class TestFetchForLateIndexedEvents:
     notable1 = {'status': '5', 'event_id': 'id_1'}
