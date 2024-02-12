@@ -1,17 +1,15 @@
 id: Rubrik Anomaly Incident Response - Rubrik Polaris
 version: -1
 name: Rubrik Anomaly Incident Response - Rubrik Polaris
-description: This playbook will investigate an anomaly incident ingested by the integration
-  "RubrikPolaris", enrich its data, and perform a remediation according to the incident's
-  object type.
+description: This playbook will investigate an anomaly incident ingested by the integration "RubrikPolaris", enrich its data, and perform a remediation according to the incident's object type.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6e83477d-884a-4319-84de-0a06d3a76d8d
+    taskid: c4766b0c-7a3c-40d7-8554-2a86fde5afa3
     type: start
     task:
-      id: 6e83477d-884a-4319-84de-0a06d3a76d8d
+      id: c4766b0c-7a3c-40d7-8554-2a86fde5afa3
       version: -1
       name: ""
       iscommand: false
@@ -22,6 +20,7 @@ tasks:
       - "10"
       - "11"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -38,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: ae181591-9cc9-4f70-8801-0ccb5f7284da
+    taskid: 314f7c65-3e8f-41d5-8b9b-a0d7446f6ffe
     type: playbook
     task:
-      id: ae181591-9cc9-4f70-8801-0ccb5f7284da
+      id: 314f7c65-3e8f-41d5-8b9b-a0d7446f6ffe
       version: -1
       name: Rubrik Data Object Discovery - Rubrik Polaris
       description: Data discovery of the object available in the incident.
@@ -62,6 +61,7 @@ tasks:
           root: incident
           accessor: rubrikpolarisobjectname
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -70,7 +70,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": -580,
           "y": 1215
         }
       }
@@ -83,10 +83,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 33ec3e9e-0cf1-4ebe-829a-f41f256c8758
+    taskid: 685a16c1-9f16-4a81-8f4c-f4eddf906402
     type: title
     task:
-      id: 33ec3e9e-0cf1-4ebe-829a-f41f256c8758
+      id: 685a16c1-9f16-4a81-8f4c-f4eddf906402
       version: -1
       name: Done
       type: title
@@ -94,6 +94,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -110,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 6ed6c952-09c6-47e9-81dc-96ee9b0a2911
+    taskid: 159881ae-a620-4a11-86d1-7383bfef8d9f
     type: collection
     task:
-      id: 6ed6c952-09c6-47e9-81dc-96ee9b0a2911
+      id: 159881ae-a620-4a11-86d1-7383bfef8d9f
       version: -1
       name: Collect ransomware discovery and recovery data
       description: Collects data to initiate ransomware discovery and recovery.
@@ -124,6 +125,7 @@ tasks:
       '#none#':
       - "13"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -147,6 +149,8 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
       replyOptions:
       - "Yes"
       - "No"
@@ -167,14 +171,10 @@ tasks:
         - simple: No Recovery
         fieldassociated: ""
         placeholder: ""
-        tooltip: Select "Rubrik Ransomware Discovery and VM Recovery" to initiate
-          IOC scan and recovery using live-mount or export, or select "Rubrik Ransomware
-          Discovery and File Recovery" to initiate IOC scan and recovery of specified
-          files.
+        tooltip: Select "Rubrik Ransomware Discovery and VM Recovery" to initiate IOC scan and recovery using live-mount or export, or select "Rubrik Ransomware Discovery and File Recovery" to initiate IOC scan and recovery of specified files.
         readonly: false
       title: Ransomware Discovery and Recovery Data
-      description: Please provide input values to initiate ransomware discovery and
-        recovery.
+      description: Please provide input values to initiate ransomware discovery and recovery.
       sender: ""
       expired: false
       totalanswers: 0
@@ -184,10 +184,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 86a116d8-4753-4ff7-82d5-6ab8f528970b
+    taskid: 15140984-ce45-42b7-857e-ae7a200f4f01
     type: condition
     task:
-      id: 86a116d8-4753-4ff7-82d5-6ab8f528970b
+      id: 15140984-ce45-42b7-857e-ae7a200f4f01
       version: -1
       name: Is object type Fileset?
       description: Checks whether the object type contains fileset.
@@ -214,6 +214,7 @@ tasks:
             value:
               simple: Fileset
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -230,14 +231,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 9c82e9e5-b0cc-4837-8a48-bfdc5b6b47c1
+    taskid: da63afb2-4c50-491e-86c6-214aba80ff39
     type: playbook
     task:
-      id: 9c82e9e5-b0cc-4837-8a48-bfdc5b6b47c1
+      id: da63afb2-4c50-491e-86c6-214aba80ff39
       version: -1
       name: Rubrik Polaris - Anomaly Analysis
-      description: Monitor the progress of a Rubrik Radar anomaly event and use Rubrik
-        Sonar to check for data classification hits.
+      description: Monitor the progress of a Rubrik Radar anomaly event and use Rubrik Sonar to check for data classification hits.
       playbookName: Rubrik Polaris - Anomaly Analysis
       type: playbook
       iscommand: false
@@ -246,6 +246,7 @@ tasks:
       '#none#':
       - "5"
     separatecontext: false
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -254,7 +255,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": -180,
           "y": 1215
         }
       }
@@ -267,10 +268,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 2c00f718-1514-4f2d-8f22-c862f116f3b7
+    taskid: 81511496-106a-4b4a-805c-325e9ee27a35
     type: condition
     task:
-      id: 2c00f718-1514-4f2d-8f22-c862f116f3b7
+      id: 81511496-106a-4b4a-805c-325e9ee27a35
       version: -1
       name: Is object type VM?
       description: Checks whether the object type contains VM.
@@ -297,6 +298,7 @@ tasks:
             value:
               simple: Vm
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -313,10 +315,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: ff93b617-fafb-4199-8166-21be9de5449b
+    taskid: 8d04047d-a98f-42b4-8a6a-d5abd66a68c6
     type: title
     task:
-      id: ff93b617-fafb-4199-8166-21be9de5449b
+      id: 8d04047d-a98f-42b4-8a6a-d5abd66a68c6
       version: -1
       name: Enrich object
       type: title
@@ -327,12 +329,15 @@ tasks:
       '#none#':
       - "4"
       - "8"
+      - "20"
+      - "21"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1055
+          "x": 220,
+          "y": 895
         }
       }
     note: false
@@ -344,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 5cc61c51-4589-488d-840e-ffd1fc5be0a3
+    taskid: 9af3346b-4b29-4863-885b-3eff9e77bcf0
     type: title
     task:
-      id: 5cc61c51-4589-488d-840e-ffd1fc5be0a3
+      id: 9af3346b-4b29-4863-885b-3eff9e77bcf0
       version: -1
       name: Perform appropriate object ransomware discovery and recovery
       type: title
@@ -358,6 +363,7 @@ tasks:
       '#none#':
       - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -374,10 +380,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 09e99e82-b47d-401a-8f8a-9072fcbef3d8
+    taskid: a589af10-8a13-4a53-80af-40c026a94dc1
     type: condition
     task:
-      id: 09e99e82-b47d-401a-8f8a-9072fcbef3d8
+      id: a589af10-8a13-4a53-80af-40c026a94dc1
       version: -1
       name: Shall recovery be performed?
       description: Checks whether recovery to be performed.
@@ -403,6 +409,7 @@ tasks:
           right:
             value:
               simple: No Recovery
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -419,10 +426,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 77e5d28b-5c15-48ab-8b7e-4c28eec4a837
+    taskid: 10a401f0-af89-4a0d-8ef3-d8281b4f29e9
     type: condition
     task:
-      id: 77e5d28b-5c15-48ab-8b7e-4c28eec4a837
+      id: 10a401f0-af89-4a0d-8ef3-d8281b4f29e9
       version: -1
       name: Is file recovery selected?
       description: Checks whether recovery is to be done using File Recovery Playbook.
@@ -448,6 +455,7 @@ tasks:
           right:
             value:
               simple: Rubrik Ransomware Discovery and File Recovery
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -464,17 +472,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 820476b4-f54b-44c1-8407-dceabf9633f2
+    taskid: 7935fae1-f325-4586-8bad-c164fcdaed96
     type: playbook
     task:
-      id: 820476b4-f54b-44c1-8407-dceabf9633f2
+      id: 7935fae1-f325-4586-8bad-c164fcdaed96
       version: -1
       name: Rubrik Ransomware Discovery and File Recovery - Rubrik Polaris
-      description: "This playbook performs an IOC Scan based on the provided inputs,
-        search the recoverable snapshot and performs recovery on the searched recoverable
-        snapshot. This playbook also creates tickets on ServiceNow using \"ServiceNow
-        v2\" integration. \nSupported integrations: \n- RubrikPolaris\n- ServiceNow
-        v2\n"
+      description: "This playbook performs an IOC Scan based on the provided inputs, search the recoverable snapshot and performs recovery on the searched recoverable snapshot. This playbook also creates tickets on ServiceNow using \"ServiceNow v2\" integration. \nSupported integrations: \n- RubrikPolaris\n- ServiceNow v2\n"
       playbookName: Rubrik Ransomware Discovery and File Recovery - Rubrik Polaris
       type: playbook
       iscommand: false
@@ -492,6 +496,7 @@ tasks:
           root: incident
           accessor: rubrikpolarisfid
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -513,10 +518,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 55fe3cfc-ece8-4222-8ed4-15fa97c23305
+    taskid: 0e2a6f42-015e-405e-8ef5-dd0f4bd472ae
     type: playbook
     task:
-      id: 55fe3cfc-ece8-4222-8ed4-15fa97c23305
+      id: 0e2a6f42-015e-405e-8ef5-dd0f4bd472ae
       version: -1
       name: Rubrik Fileset Ransomware Discovery - Rubrik Polaris
       description: |-
@@ -541,6 +546,7 @@ tasks:
           root: incident
           accessor: rubrikpolarisfid
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -562,10 +568,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 8cb0d0bf-eaf9-4ad5-8cc2-e6f9b4040b3e
+    taskid: 2f1de22a-7b9a-4b8c-8e1d-b85d24387ead
     type: playbook
     task:
-      id: 8cb0d0bf-eaf9-4ad5-8cc2-e6f9b4040b3e
+      id: 2f1de22a-7b9a-4b8c-8e1d-b85d24387ead
       version: -1
       name: Rubrik Ransomware Discovery and VM Recovery - Rubrik Polaris
       description: |-
@@ -590,6 +596,7 @@ tasks:
           root: incident
           accessor: rubrikpolarisfid
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -609,14 +616,78 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: b390567d-c101-4234-84a1-dbca81ad1a9d
+    type: playbook
+    task:
+      id: b390567d-c101-4234-84a1-dbca81ad1a9d
+      version: -1
+      name: Rubrik Object Context Analysis - Rubrik Polaris
+      playbookName: Rubrik Object Context Analysis - Rubrik Polaris
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c86ad2d7-dd6f-47aa-89dc-13d5fa4cedd3
+    type: playbook
+    task:
+      id: c86ad2d7-dd6f-47aa-89dc-13d5fa4cedd3
+      version: -1
+      name: Rubrik User Access Analysis - Rubrik Polaris
+      playbookName: Rubrik User Access Analysis - Rubrik Polaris
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1405,
-        "width": 2242.5,
-        "x": 50,
+        "width": 2872.5,
+        "x": -580,
         "y": 50
       }
     }
