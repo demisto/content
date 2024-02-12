@@ -18,6 +18,7 @@ from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
 
+
 ''' CONSTANTS '''
 
 SEVERITY_DICT = {
@@ -64,6 +65,7 @@ PROXY_URL: Optional[str]
 PROXIES: dict
 DEDICATED_CHANNEL: str
 ASYNC_CLIENT: slack_sdk.web.async_client.AsyncWebClient
+DEMISTO_API_CLIENT: BaseClient
 CLIENT: slack_sdk.WebClient
 USER_CLIENT: slack_sdk.WebClient
 ALLOW_INCIDENTS: bool
@@ -89,6 +91,7 @@ CACHE_EXPIRY: float
 MIRRORING_ENABLED: bool
 LONG_RUNNING_ENABLED: bool
 DEMISTO_API_KEY: str
+DEMISTO_AUTH_ID: str
 DEMISTO_URL: str
 IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
@@ -1396,11 +1399,10 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse, f
         demisto.info(f'{files=}, {text=}')
         if files:
             for file in files:
-                data = await get_file(file.get("url_private"))
+                file_content = await get_file(file.get("url_private"))
                 file_name = file.get("name")
                 demisto.info(f'got file {file_name} data')
-                file_entry = fileResult(file_name, data, investigation_id=investigation_id, comment=text)
-                await handle_file(investigation_id, file_entry, user)
+                await handle_file(investigation_id, file_name=file_name, file_content=file_content, text=text)
         else:
             await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
 
@@ -1621,13 +1623,13 @@ async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, 
                          )
 
 
-async def handle_file(investigation_id: str, file_content: dict, user: dict):
-    demisto.addEntry(
-        id=investigation_id,
-        entry=json.dumps(file_content),
-        username=user.get('name', ''),
-        email=user.get('profile', {}).get('email', ''),
-        footer=MESSAGE_FOOTER,
+async def handle_file(investigation_id: str, file_name: str, file_content: bytes, text: str):
+    DEMISTO_API_CLIENT._http_request(
+        "POST",
+        url_suffix=f"/entry/upload/{investigation_id}",
+        files={
+            "file": (file_name, file_content, 'application/octet-stream')
+        }
     )
 
 
@@ -2793,7 +2795,8 @@ def init_globals(command_name: str = ''):
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
-    global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED, DEMISTO_API_KEY, DEMISTO_URL
+    global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED
+    global DEMISTO_API_KEY, DEMISTO_AUTH_ID, DEMISTO_URL, DEMISTO_API_CLIENT
     global IGNORE_RETRIES, EXTENSIVE_LOGGING
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
@@ -2828,8 +2831,15 @@ def init_globals(command_name: str = ''):
     MIRRORING_ENABLED = demisto.params().get('mirroring', True)
     LONG_RUNNING_ENABLED = demisto.params().get('longRunning', True)
     DEMISTO_API_KEY = demisto.params().get('demisto_api_key', {}).get('password', '')
+    DEMISTO_AUTH_ID = demisto.params().get("demisto_auth_id")
     demisto_urls = demisto.demistoUrls()
     DEMISTO_URL = demisto_urls.get('server')
+    demisto_headers = {'Authorization': DEMISTO_API_KEY}
+    if DEMISTO_AUTH_ID:
+        demisto_headers["xdr-auth-id"] = DEMISTO_AUTH_ID
+
+    DEMISTO_API_CLIENT = BaseClient(DEMISTO_URL, headers=demisto_headers)
+
     IGNORE_RETRIES = demisto.params().get('ignore_event_retries', True)
     EXTENSIVE_LOGGING = demisto.params().get('extensive_logging', False)
     common_channels = demisto.params().get('common_channels', None)

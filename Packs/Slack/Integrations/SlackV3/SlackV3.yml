@@ -156,13 +156,25 @@ configuration:
   required: false
   displaypassword: XSOAR API Key
   hiddenusername: true
-  additionalinfo: Adding an API key will enable the integration to handle blocks that contain a state and is necessary for the SlackBlockBuilder script.
+  additionalinfo: Fill in the api key of XSOAR if file-mirroring is needed for incidents.
+  hidden:
+  - marketplacev2
+  - xsoar
+- display: ''
+  name: demisto_auth_id
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  displaypassword: XSOAR Auth ID
+  hiddenusername: true
+  additionalinfo: Fill in the auth ID of XSOAR if file-mirroring is needed for incidents. Relevant only for xsoar8.
   hidden:
   - marketplacev2
   - xsoar
 - display: Enable DMs to the bot
   name: enable_dm
-  type: 8
+  type: 0
   defaultvalue: 'false'
   section: Collect
   advanced: true
