@@ -64,8 +64,12 @@ After creating the response rule with the "Log to a Syslog Server" action, you w
 5. Click **Save**
 6. Repeat steps 2-5 for any additional policies you want to collect logs from and send to Cortex XSIAM via syslog.
 
+<br>
+
+See [Configuring the Log to a Syslog Server action](https://techdocs.broadcom.com/us/en/symantec-security-software/information-security/data-loss-prevention/15-8/about-response-rules-v40462357-d339e11/configuring-the-log-to-a-syslog-server-action-v27591174-d339e4495.html) for additional details.
+
 ###  Syslog Server Alerts
-To enable sending server events to syslog follow the below steps:
+To enable sending server events to the syslog server, follow the below steps:
 1. Go to the \Program Files\Symantec\DataLossPrevention\EnforceServer\15.8.00000\Protect\config directory on Windows or the /opt/Symantec/DataLossPrevention/EnforceServer/15.8.00000/Protect/config directory on Linux.
 2. Open the Manager.properties file.
 3. Uncomment the #systemevent.syslog.protocol = line by removing the # symbol from the beginning of the line, and enter [ udp | tcp | tls ] to secure communications sent from the Enforce Server to the syslog server.
@@ -78,7 +82,10 @@ To enable sending server events to syslog follow the below steps:
    {0} - the name of the server on which the event occurred
    {1} - the event summary
    {2} - the event detail
-   
+
+<br>
+
+See [Enabling a syslog server](https://techdocs.broadcom.com/us/en/symantec-security-software/information-security/data-loss-prevention/15-8/maintaining-the-system/Using-system-event-reports-and-alerts/about-system-events-id-sf990320181-d297e6821/enabling-a-syslog-server-v15259482-d297e7937.html) for additional details.
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
