@@ -1034,8 +1034,8 @@ def main():
 
         elif new_thread == 'false':
             # This case is run when using the 'Email Threads' layout to reply to an existing email thread
-            multi_thread_reply(new_email_body, body_type, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
-                               add_bcc, service_mail, mail_sender_instance, new_attachment_names,
+            multi_thread_reply(new_email_body, body_type, incident_id, email_selected_thread, new_email_attachments, files,
+                               add_cc, add_bcc, service_mail, mail_sender_instance, new_attachment_names,
                                subject_include_incident_id)
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
