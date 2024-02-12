@@ -2954,7 +2954,7 @@ def main() -> None:
         if EXTENSIVE_LOGGING:
             os.environ['PYTHONASYNCIODEBUG'] = "1"
         support_multithreading()
-        command_func()  # type: ignore[operator]
+        command_func()  # type: ignore
     except Exception as e:
         demisto.debug(e)
         return_error(str(e))
