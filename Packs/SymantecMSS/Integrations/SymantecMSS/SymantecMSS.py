@@ -81,7 +81,7 @@ def load_severities():
 
 SERVER_URL = load_server_url()
 CERTIFICATE, CERTIFICATE_PASSPHRASE = load_certificate()
-# FETCH_SEVERITIES = load_severities()
+FETCH_SEVERITIES = load_severities()
 DST = 1 if time.daylight else 0
 
 ''' HELPER FUNCTIONS '''
