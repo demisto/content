@@ -35,8 +35,8 @@ Open the Fortimail interface, and follow these instructions [Documentation](http
 * To verify logging connectivity, from the FortiMail unit, trigger a log message that matches the types and severity levels that you have chosen to store on the remote host. Then, on the remote host, confirm that it has received that log message.
 
 **Pay Attention**:
-Timestamp ingestion is only available in UTC timezone (00:00) for the **Date** (YYYY-MM-DD) and **Time** (HH:MM:SS) fields.
-In order to change Fortimail time zone use the commands-
+Timestamp ingestion is only available in UTC timezone (00:00) for the **Date** (%Y-%m-%d) and **Time** (%k:%M:%S) fields.
+In order to change Fortimail's system time zone use the commands-
 ```text
     config system time manual
     set daylight-saving-time {disable | enable}
