@@ -2,7 +2,7 @@ echo "Starting calculate override core packs"
 echo "${PACK_ARTIFACTS}"
 echo "${CI_PIPELINE_ID}"
 echo "${MARKETPLACE_VERSION}"
-python3 ./override_core_packs_versions.py -pa "${PACK_ARTIFACTS}" -n "${CI_PIPELINE_ID}" -mp "${MARKETPLACE_VERSION}"
+python3 ./Tests/Marketplace/override_core_packs_versions.py -pa "${PACK_ARTIFACTS}" -n "${CI_PIPELINE_ID}" -mp "${MARKETPLACE_VERSION}"
 echo "Finished calculate override core packs"
 
 if [ "${BUCKET_UPLOAD}" ] || [ "${FORCE_BUCKET_UPLOAD}" ]; then
