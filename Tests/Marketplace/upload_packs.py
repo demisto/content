@@ -30,6 +30,7 @@ from Tests.Marketplace.pack_readme_handler import download_markdown_images_from_
 
 METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
+
 def get_packs_ids_to_upload(packs_to_upload: str) -> set:
     """Returns a set of pack's names to upload.
 
@@ -46,6 +47,7 @@ def get_packs_ids_to_upload(packs_to_upload: str) -> set:
     else:
         logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
         sys.exit(1)
+
 
 def get_packs_ids_to_upload_and_update(packs_to_upload: str) -> tuple[set, set]:
     """Returns a tuple of sets containing pack's names to upload and update metadata.

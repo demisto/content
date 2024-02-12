@@ -17,7 +17,8 @@
         "Endpoint"
     ],
     "tags": [
-        "Palo Alto Networks Products"
+        "Palo Alto Networks Products",
+        "michal"
     ],
     "useCases": [
         "Malware"
