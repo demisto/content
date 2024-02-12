@@ -9,6 +9,25 @@ from typing import Any
 ''' STANDALONE FUNCTION '''
 
 
+def get_playbook_tasks(tasks: list) -> list:
+    """Get the tasks of a playbook recursively
+
+    Args:
+        tasks (list): the tasks of the playbook
+
+    Returns:
+        list: the tasks fo the playbook including all sub-playbook tasks
+    """
+    ready_tasks = []
+    for task in tasks:
+        if task.get('type') == 'playbook' and task.get('subPlaybook'):
+            sub_playbook_tasks = task.get("subPlaybook", {}).get("tasks", {}).values()
+            ready_tasks.extend(get_playbook_tasks(list(sub_playbook_tasks)))
+        ready_tasks.append(task)
+
+    return ready_tasks
+
+
 def get_ask_tasks(inc_id: str) -> List[dict]:
     """_summary_
 
@@ -24,6 +43,9 @@ def get_ask_tasks(inc_id: str) -> List[dict]:
     if isError(res[0]):
         raise DemistoException(f"Error occurred while fetching work plan for incident with id: {inc_id}. Error: {res}")
     tasks: list = list(dict_safe_get(res[0], ['Contents', 'response', 'invPlaybook', 'tasks'], {}).values())
+    if tasks:
+        tasks = get_playbook_tasks(tasks)
+
     ask_tasks = []
     for task in tasks:
         if task.get('type') == 'condition':
