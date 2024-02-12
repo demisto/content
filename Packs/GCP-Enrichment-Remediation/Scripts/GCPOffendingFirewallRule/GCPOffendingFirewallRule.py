@@ -23,46 +23,53 @@ def is_port_in_range(port_range: str, port: str) -> bool:
 
 def is_there_traffic_match(port: str, protocol: str, rule: dict, network_tags: list) -> bool:
     """
-    Breaks a string port range (i.e. '20-25') into integers for comparison
+    Determines if there's a match between the supplied port, protocol, and possible target tag combination 
+    and the GCP firewall rule.
+    The function checks:
+    if the rule is an ingress rule,
+    if the source is from the internet (0.0.0.0/0),
+    if the rule is enabled, and if it's an allow rule.
+    It also checks if the target tags are relevant (if they show up in keys or tag match), and if the protocol and ports match
+    the supplied protocol and port.
+
     Args:
-        port (str): port supplied in script args.
-        protocol (str): protocol supplied in script args.
-        rule (Dict): GCP firewall rule pulled from integration command.
-        network_tags (list): list of network tags (can be empty).
+        port (str): The port supplied in script args.
+        protocol (str): The protocol supplied in script args. This should be a string representing a
+                        network protocol (e.g., 'tcp', 'udp', 'icmp').
+        rule (dict): A dictionary representing a GCP firewall rule. This is pulled from the integration command.
+        network_tags (list): A list of network tags. This can be empty.
 
     Returns:
-        bool: whether there was a match between the supplied port, protocol
-        and possible target tag combination and the GCP firewall rule.
+        bool: True if there's a match between the supplied port, protocol, and possible target tag combination
+              and the GCP firewall rule. False otherwise.
     """
     # Match rule needs to be direction ingress, source from internet (0.0.0.0/0), enabled and an allow rule.
     if (
-        rule.get("direction") != "INGRESS"
-        or "0.0.0.0/0" not in rule.get("sourceRanges", [])
-        or rule.get("disabled") is True
-        or "allowed" not in rule
+        rule.get('direction') == 'INGRESS'
+        and '0.0.0.0/0' in rule.get('sourceRanges', [])
+        and rule.get('disabled') is False
+        and 'allowed' in rule
     ):
-        return False
-
-    # Test if targetTags are relevant or not (if show up in keys or tag match)
-    target_tags_verdict = ('targetTags' not in rule or len(set(rule.get('targetTags', [])) & set(network_tags)) > 0)
-    for entry in rule['allowed']:
-        # Match is all protocol AND either no target tags OR target tags match
-        if entry.get('IPProtocol') == 'all' and target_tags_verdict:
-            return True
-        # Complicated because just {'IPProtocol': 'udp'} means all udp ports
-        # therefore if protocol match but no ports, this is a match
-        elif entry.get('IPProtocol') == protocol.lower() and 'ports' not in entry:
-            return True
-        # Else need to go through all ports to see if range or not
-        elif entry.get('IPProtocol') == protocol.lower() and 'ports' in entry:
-            for port_entry in entry['ports']:
-                if "-" in port_entry:
-                    res = is_port_in_range(port_entry, port)
-                    if res and target_tags_verdict:
-                        return True
-                else:
-                    if port == port_entry and target_tags_verdict:
-                        return True
+        # Test if targetTags are relevant or not (if show up in keys or tag match)
+        target_tags_verdict = ('targetTags' not in rule.keys() or len(set(rule.get('targetTags', [])) & set(network_tags)) > 0)
+        for entry in rule['allowed']:
+            # Match is all protocol AND either no target tags OR target tags match
+            if entry.get('IPProtocol') == 'all' and target_tags_verdict:
+                return True
+            # Complicated because just {'IPProtocol': 'udp'} means all udp ports
+            # therefore if protocol match but no ports, this is a match
+            elif entry.get('IPProtocol') == protocol.lower() and 'ports' not in entry:
+                return True
+            # Else need to go through all ports to see if range or not
+            elif entry.get('IPProtocol') == protocol.lower() and 'ports' in entry:
+                for port_entry in entry.get('ports', []):
+                    if "-" in port_entry:
+                        res = is_port_in_range(port_entry, port)
+                        if res and target_tags_verdict:
+                            return True
+                    else:
+                        if port == port_entry and target_tags_verdict:
+                            return True
     return False
 
 
