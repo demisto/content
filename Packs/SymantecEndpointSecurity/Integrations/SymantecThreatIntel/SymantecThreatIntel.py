@@ -9,6 +9,8 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 from typing import Any
+import re
+from ipaddress import ip_address
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -49,6 +51,8 @@ class Client(BaseClient):
     """Client class to interact with the service API
     """
     _session_token = None
+    ignored_domains: list[str] = []
+    ignore_private_ips: bool = True
 
     def authenticate(self, oauth_token: str) -> bool:
         headers = {
@@ -88,6 +92,21 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def filter_ignored_domains(entries: list[str], filters: list[str]) -> list[str]:
+    if not filters:
+        return entries
+
+    filtered_list = []
+    filter_pattern = re.escape('|'.join(filters)).replace('\\|', '|')
+    for entry in entries:
+        if not re.match(pattern=f'(http(s)?:\\/\\/)?([a-z0-9-]*\\.)*{filter_pattern}($|\\/.*)',
+                        string=entry,
+                        flags=re.I):
+            filtered_list.append(entry)
+
+    return filtered_list
 
 
 def ensure_argument(args: dict[str, Any], arg_name: str) -> list[str]:
@@ -223,6 +242,9 @@ def test_module(client: Client, oauth: str) -> str:
 
 def ip_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, 'ip')
+    if client.ignore_private_ips:
+        values = [ip for ip in values if not ip_address(ip).is_private]
+
     results = execute_network_command(client, values)
     command_results = []
     for result in results:
@@ -247,6 +269,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], reliability: str
 
 def url_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, 'url')
+    values = filter_ignored_domains(values, client.ignored_domains)
     results = execute_network_command(client, values)
     command_results = []
     for result in results:
@@ -271,6 +294,7 @@ def url_reputation_command(client: Client, args: Dict[str, Any], reliability: st
 
 def domain_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, 'domain')
+    values = filter_ignored_domains(values, client.ignored_domains)
     results = execute_network_command(client, values)
     command_results = []
     for result in results:
@@ -392,6 +416,8 @@ def main() -> None:
 
     oauth = demisto.params().get('credentials', {}).get('password')
     reliability = demisto.params().get('integration_reliability', DBotScoreReliability.B)
+    ignored_domains = argToList(demisto.params().get('ignored_domains'))
+    ignore_private_ips = argToBoolean(demisto.params().get('ignore_private_ip', True))
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -399,6 +425,9 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy)
+
+        client.ignored_domains = ignored_domains
+        client.ignore_private_ips = ignore_private_ips
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

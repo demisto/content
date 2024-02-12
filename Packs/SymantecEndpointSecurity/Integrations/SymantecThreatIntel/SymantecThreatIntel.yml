@@ -14,6 +14,18 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
+- display: Ignore Domains (e.g. domain.local)
+  additionalinfo: Comma-separated list of domains that shall be ignored for Urls and (Sub-)Domains reputation lookup
+  name: ignored_domains
+  required: false
+  section: Ignored
+  type: 0
+- display: Ignore Private IPs (e.g. 192.168.0.1)
+  name: ignore_private_ip
+  required: false
+  section: Ignored
+  type: 8
+  defaultvalue: 'true'
 - name: integration_reliability
   display: Source Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
@@ -206,7 +218,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.13.87159
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
