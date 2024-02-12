@@ -62,9 +62,9 @@ def build_link_to_message(response: SlackResponse) -> str:
 
 
 def main():
-    install_logging('SlackNotifier.log')
+    install_logging('gitlab_basic_slack_notifier.log')
     options = options_handler()
-    computed_slack_channel = options.slack_channel
+    slack_channel = options.slack_channel
     slack_token = options.slack_token
     text = options.message_text
     text_file = options.file
@@ -88,7 +88,7 @@ def main():
 
     slack_client = WebClient(token=slack_token)
 
-    logging.info(f"Sending Slack message to slack channel:{computed_slack_channel}, "
+    logging.info(f"Sending Slack message to slack channel:{slack_channel}, "
                  f"allowing failure:{options.allow_failure}")
 
     if github_username:
@@ -97,15 +97,15 @@ def main():
 
     try:
         response = slack_client.chat_postMessage(
-            channel=computed_slack_channel, text=text, username=SLACK_USERNAME, link_names=True
+            channel=slack_channel, text=text, username=SLACK_USERNAME, link_names=True
         )
         link = build_link_to_message(response)
-        logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
+        logging.info(f'Successfully sent Slack message to channel {slack_channel} link: {link}')
     except Exception:
         if strtobool(options.allow_failure):
-            logging.warning(f'Failed to send Slack message to channel {computed_slack_channel} not failing build')
+            logging.warning(f'Failed to send Slack message to channel {slack_channel} not failing build')
         else:
-            logging.exception(f'Failed to send Slack message to channel {computed_slack_channel}')
+            logging.exception(f'Failed to send Slack message to channel {slack_channel}')
             sys.exit(1)
 
 

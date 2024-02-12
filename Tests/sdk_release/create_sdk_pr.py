@@ -136,7 +136,8 @@ def main():
 
     logging.success(f'{release_owner} added as reviewer to the release pull request')
 
-    # trigger SDK changelog workflow
+    # trigger SDK changelog workflow, The reference can be found here:
+    # https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#create-a-workflow-dispatch-event
     logging.info('Triggering SDK changelog workflow')
     inputs = {
         'branch_name': release_branch_name,
@@ -151,12 +152,13 @@ def main():
     url = f'{API_SUFFIX}/actions/workflows/sdk-release.yml/dispatches'
     response = requests.request('POST', url, data=json.dumps(data), headers=headers, verify=False)
 
-    if response.status_code != 204:
+    if response.status_code != requests.codes.no_content:
         logging.error('Failed to trigger SDK changelog workflow')
         logging.error(response.text)
         sys.exit(1)
     logging.info('SDK changelog workflow triggered, waiting for it to be finished')
-    # wait 10 seconds before checking the workflows
+    # there is no content in the response therefore we wait 10 seconds before checking
+    # the workflows to find the workflow that triggered
     time.sleep(10)
 
     # get all the workflows for sdk-release.yml in the release branch
@@ -167,7 +169,7 @@ def main():
         logging.error(response.text)
         sys.exit(1)
 
-    # get the latest workflow id
+    # to get the workflow id, we get from the response the latest workflow id
     workflow_runs = response.json().get('workflow_runs', [])
     workflow_id = max(
         workflow_runs,
@@ -185,6 +187,7 @@ def main():
 
     # wait to the workflow to finished
     while status != 'completed' and elapsed < TIMEOUT:
+        time.sleep(10)
         response = requests.request('GET', url, headers=headers, verify=False)
         if response.status_code != requests.codes.ok:
             logging.error('Failed to retrieve SDK changelog workflow status')
@@ -193,8 +196,7 @@ def main():
 
         job_data = response.json().get('jobs', [])[0]
         status = job_data.get('status')
-        logging.info('waiting to SDK changelog workflow to finish')
-        time.sleep(10)
+        logging.info(f'waiting to SDK changelog workflow to finish, current status: {status}')
 
         elapsed = time.time() - start
 

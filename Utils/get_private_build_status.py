@@ -3,7 +3,7 @@ import sys
 import json
 import time
 import argparse
-
+from pathlib import Path
 import requests
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -86,7 +86,7 @@ def main():
 
     workflow_id_file = PRIVATE_REPO_WORKFLOW_ID_FILE
     if artifacts_folder:
-        workflow_id_file = os.path.join(artifacts_folder, PRIVATE_REPO_WORKFLOW_ID_FILE)
+        workflow_id_file = Path(artifacts_folder, PRIVATE_REPO_WORKFLOW_ID_FILE)
 
     # get the workflow id from file
     if not os.path.isfile(workflow_id_file):

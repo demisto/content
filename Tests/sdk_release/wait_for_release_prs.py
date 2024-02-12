@@ -45,6 +45,7 @@ def main():
     options = options_handler()
     access_token = options.access_token
     artifacts_folder = options.artifacts_folder
+    errors = []
 
     # get the content pr id from the file
     try:
@@ -87,17 +88,18 @@ def main():
         elapsed = time.time() - start
 
     if elapsed >= TIMEOUT:
-        logging.critical('Timeout reached while waiting for SDK and content pull requests to be merged')
-        sys.exit(1)
+        errors.append('Timeout reached while waiting for SDK and content pull requests to be merged')
 
     # check that content pr is merged
     if not content_pr.get('merged'):
-        logging.error(f'content pull request not merged yet {content_pr.get("html_url")}')
-        sys.exit(1)
+        errors.append(f'content pull request not merged yet {content_pr.get("html_url")}')
 
     # check that sdk pr is merged
     if not sdk_pr.get('merged'):
-        logging.error(f'demisto-sdk pull request not merged yet {sdk_pr.get("html_url")}')
+        errors.append(f'demisto-sdk pull request not merged yet {sdk_pr.get("html_url")}')
+
+    if errors:
+        logging.error('\n'.join(errors))
         sys.exit(1)
 
     logging.success('SDK and content pull requests merged successfully!')

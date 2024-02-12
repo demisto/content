@@ -33,15 +33,15 @@ def get_changelog_text(release_branch_name, text_format='markdown'):
     for change in release_changes:
         try:
             # Ignoring the mypy error because the regex must match
-            change_parts = CHANGELOG_REGEX.match(change).groups()  # type: ignore[union-attr]
+            description, pr_number, url = CHANGELOG_REGEX.match(change).groups()  # type: ignore[union-attr]
 
             if text_format == 'markdown':
                 releases.append(
-                    f"{change_parts[0]} [{change_parts[1]}]({change_parts[2]})"
+                    f"{description} [{pr_number}]({url})"
                 )
             elif text_format == 'slack':
                 releases.append(
-                    f"{change_parts[0]} <{change_parts[2]}|{change_parts[1]}>"
+                    f"{description} <{url}|{pr_number}>"
                 )
             else:
                 logging.error(f'The format {text_format} is not supported')
@@ -70,16 +70,15 @@ def main():
     options = options_handler()
     release_branch_name = options.release_branch_name
     access_token = options.access_token
-    is_draft = options.is_draft
+    is_draft = bool(strtobool(options.is_draft))
 
-    if is_draft and bool(strtobool(is_draft)):
-        is_draft = True
+    if is_draft:
         logging.info(f"Preparing to create draft release for Demisto SDK version {release_branch_name}")
     else:
-        is_draft = False
         logging.info(f"Preparing to release Demisto SDK version {release_branch_name}")
 
     # release the sdk version
+    # The reference can be found here https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28#create-a-release
     url = 'https://api.github.com/repos/demisto/demisto-sdk/releases'
     data = json.dumps({
         'tag_name': f'v{release_branch_name}',
@@ -94,7 +93,7 @@ def main():
         'Authorization': f'Bearer {access_token}'
     }
     response = requests.request("POST", url, headers=headers, data=data, verify=False)
-    if response.status_code != 201:
+    if response.status_code != requests.codes.created:
         logging.error(f'Failed to create release {release_branch_name} for demisto SDK')
         logging.error(response.text)
         sys.exit(1)

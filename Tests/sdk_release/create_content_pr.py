@@ -66,20 +66,18 @@ def main():
     access_token = options.access_token
     reviewer = options.reviewer
     artifacts_folder = options.artifacts_folder
-    is_draft = options.is_draft
+    is_draft = bool(strtobool(options.is_draft))
 
-    if is_draft and bool(strtobool(is_draft)):
-        is_draft = True
+    if is_draft:
         logging.info('preparing to trigger update-demisto-sdk-version workflow with draft pull request')
     else:
-        is_draft = False
         logging.info('preparing to trigger update-demisto-sdk-version workflow')
 
     # prepare the inputs for trigger update-demisto-sdk-version workflow
     inputs = {
         'reviewer': reviewer,
         'release_version': release_branch_name,
-        # 'is_draft': is_draft,
+        'is_draft': is_draft,
         'release_changes': get_changelog_text(release_branch_name)
     }
 
@@ -112,12 +110,12 @@ def main():
     content_pr: dict = {}
     # wait to content pr to create
     while not content_pr and elapsed < TIMEOUT:
+        time.sleep(60)
         content_pr = get_pr_from_branch('content', release_branch_name, access_token)
 
         if not content_pr:
             logging.info('content pull request not created yet')
 
-        time.sleep(60)
         elapsed = time.time() - start
 
     if elapsed >= TIMEOUT:

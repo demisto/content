@@ -131,7 +131,7 @@ wait-for-content-internal-dist-nightly:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
   script:
     - section_start "Wait for content-internal-dist nightly build" --collapsed
-    - GOLD_PIPELINE_ID=$(head -n 1 "${ARTIFACTS_FOLDER}"/GOLD_PIPELINE_ID.txt)
+    - GOLD_PIPELINE_ID=$(head -n 1 "${ARTIFACTS_FOLDER}/GOLD_PIPELINE_ID.txt")
     - python3 ./Tests/sdk_release/wait_for_pipeline.py -g "${GITLAB_API_TOKEN}" -p "${GOLD_PIPELINE_ID}" -pid "${GOLD_PROJECT_ID}"
     - section_end "Wait for content-internal-dist nightly build"
 
@@ -152,7 +152,7 @@ wait-for-demisto-sdk-nightly:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
   script:
     - section_start "Wait for SDK nightly build" --collapsed
-    - SDK_PIPELINE_ID=$(head -n 1 "${ARTIFACTS_FOLDER}"/SDK_PIPELINE_ID.txt)
+    - SDK_PIPELINE_ID=$(head -n 1 "${ARTIFACTS_FOLDER}/SDK_PIPELINE_ID.txt")
     - python3 ./Tests/sdk_release/wait_for_pipeline.py -g "${GITLAB_API_TOKEN}" -p "${SDK_PIPELINE_ID}" -pid "${CI_PROJECT_ID}"
     - section_end "Wait for SDK nightly build"
 
@@ -193,7 +193,7 @@ create-release-pull-request:
   script:
     - section_start "Create sdk release pr" --collapsed
     - python3 ./Tests/sdk_release/create_sdk_pr.py -t "${GITHUB_TOKEN}" -b "${RELEASE_VERSION}" -d "${IS_DRAFT}" -ro "${REVIEWER}" --artifacts-folder "${ARTIFACTS_FOLDER}"
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt "${GITLAB_API_TOKEN}" -gu "${REVIEWER}" -ch "${SLACK_CHANNEL}" -f "${ARTIFACTS_FOLDER}"/SDK_PR_READY.txt
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt "${GITLAB_API_TOKEN}" -gu "${REVIEWER}" -ch "${SLACK_CHANNEL}" -f "${ARTIFACTS_FOLDER}/SDK_PR_READY.txt"
     - section_end "Create sdk release pr"
 
 deploy-sdk-to-pypi:
@@ -216,7 +216,7 @@ deploy-sdk-to-pypi:
     - python3 ./Tests/sdk_release/create_release.py -t "${GITHUB_TOKEN}" -b "${RELEASE_VERSION}" -d "${IS_DRAFT}"
     - python3 ./Tests/sdk_release/wait_for_release.py -b "${RELEASE_VERSION}"
     - python3 ./Tests/sdk_release/create_content_pr.py -t "${GITHUB_TOKEN}" -b "${RELEASE_VERSION}" -r "${REVIEWER}" --artifacts-folder "${ARTIFACTS_FOLDER}" -d "${IS_DRAFT}"
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -f "${ARTIFACTS_FOLDER}"/SLACK_MERGE_PRS_REQUEST.txt --allow-failure "${SLACK_ALLOW_FAILURE}" -ch "${SLACK_CHANNEL}" -gu "${REVIEWER}" -gt "${GITLAB_API_TOKEN}"
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -f "${ARTIFACTS_FOLDER}/SLACK_MERGE_PRS_REQUEST.txt" --allow-failure "${SLACK_ALLOW_FAILURE}" -ch "${SLACK_CHANNEL}" -gu "${REVIEWER}" -gt "${GITLAB_API_TOKEN}"
     - section_end "Deploy SDK release"
 
 wait-for-prs:
@@ -236,5 +236,5 @@ wait-for-prs:
   script:
     - section_start "Wait for prs to be merged" --collapsed
     - python3 ./Tests/sdk_release/wait_for_release_prs.py -t "${GITHUB_TOKEN}" -b "${RELEASE_VERSION}" --artifacts-folder "${ARTIFACTS_FOLDER}"
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -f "${ARTIFACTS_FOLDER}"/CHANGELOG_SLACK.txt --allow-failure "${SLACK_ALLOW_FAILURE}" -ch "${SLACK_CHANNEL}"
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -f "${ARTIFACTS_FOLDER}/CHANGELOG_SLACK.txt" --allow-failure "${SLACK_ALLOW_FAILURE}" -ch "${SLACK_CHANNEL}"
     - section_end "Wait for prs to be merged"
