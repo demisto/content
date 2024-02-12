@@ -210,6 +210,7 @@ class Client(BaseClient):
                 method="POST",
                 full_url=urljoin(self.server, login_disclaimer),
                 data={"confirm": "1"},
+                resp_type="response",
                 error_handler=Client._error_handler,
             )
 

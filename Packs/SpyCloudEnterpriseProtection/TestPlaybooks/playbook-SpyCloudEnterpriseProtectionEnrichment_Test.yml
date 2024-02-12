@@ -1,0 +1,3752 @@
+id: SpyCloudEnterpriseProtectionEnrichment_Test
+name: SpyCloudEnterpriseProtectionEnrichment_Test
+version: -1
+fromversion: 6.10.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '5c2c5c89-2077-40ed-a7a0-4550c336fdb0'
+    type: start
+    task:
+      id: '5c2c5c89-2077-40ed-a7a0-4550c336fdb0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '11fe4ead-6796-45d2-8182-cd0b7f99f419'
+    type: regular
+    task:
+      id: '11fe4ead-6796-45d2-8182-cd0b7f99f419'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '5b54a838-175c-4125-8575-1597f209b298'
+    type: regular
+    task:
+      id: '5b54a838-175c-4125-8575-1597f209b298'
+      version: -1
+      name: spycloud-list-breaches
+      description: ''
+      script: spycloud-list-breaches
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: 'fc49c761-16d2-4163-83d5-46268db21d49'
+    type: condition
+    task:
+      id: 'fc49c761-16d2-4163-83d5-46268db21d49'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.site
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.site
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.confidence
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.acquisition_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.acquisition_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.uuid
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.uuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.num_records
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.num_records
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.title
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.spycloud_publish_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.spycloud_publish_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.description
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.site_description
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.site_description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.phone
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.phone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.gender
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.gender
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.company_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.company_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.user_agent
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.user_agent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.country
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.social_telegram
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.social_telegram
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.social_skype
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.social_skype
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.state
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.account_login_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.account_login_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.ip_addresses
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.ip_addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.postal_code
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.postal_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.dob
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.dob
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.account_signup_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.account_signup_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.homepage
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.homepage
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.first_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.first_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.country_code
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.country_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.account_modification_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.account_modification_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.full_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.full_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.address_1
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.address_1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.last_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.last_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.city
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.password
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.password
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachList.assets.username
+            iscontext: true
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: 'bb4aac91-48fa-4acb-8195-0da074256877'
+    type: regular
+    task:
+      id: 'bb4aac91-48fa-4acb-8195-0da074256877'
+      version: -1
+      name: spycloud-get-breach-data
+      description: ''
+      script: spycloud-get-breach-data
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      id:
+        simple: '39897'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: 'f5edd7ef-18a7-4aad-98e6-49d738c65928'
+    type: condition
+    task:
+      id: 'f5edd7ef-18a7-4aad-98e6-49d738c65928'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.site
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.site
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.confidence
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.acquisition_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.acquisition_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.uuid
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.uuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.num_records
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.num_records
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.title
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.spycloud_publish_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.spycloud_publish_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.description
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.site_description
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.site_description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.phone
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.phone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.gender
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.gender
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.company_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.company_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.user_agent
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.user_agent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.country
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.social_telegram
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.social_telegram
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.social_skype
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.social_skype
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.state
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.account_login_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.account_login_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.ip_addresses
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.ip_addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.postal_code
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.postal_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.dob
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.dob
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.account_signup_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.account_signup_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.homepage
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.homepage
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.first_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.first_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.country_code
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.country_code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.account_modification_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.account_modification_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.full_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.full_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.address_1
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.address_1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.last_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.last_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.city
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.password
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.password
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.BreachData.assets.username
+            iscontext: true
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '7cce6978-aa76-47c5-bede-1a42940b40b4'
+    type: regular
+    task:
+      id: '7cce6978-aa76-47c5-bede-1a42940b40b4'
+      version: -1
+      name: spycloud-domain-data
+      description: ''
+      script: spycloud-domain-data
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      domain:
+        simple: loginsoft.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '2e29bada-a2e2-4ce3-90b8-180cb85a07fe'
+    type: condition
+    task:
+      id: '2e29bada-a2e2-4ce3-90b8-180cb85a07fe'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.password
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.password
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.password_plaintext
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.password_plaintext
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.password_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.password_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.target_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.target_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.user_browser
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.user_browser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.ip_addresses
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.ip_addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.infected_machine_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.infected_machine_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.infected_path
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.infected_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.infected_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.infected_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.user_sys_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.user_sys_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.user_hostname
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.user_hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.user_os
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.user_os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.user_sys_registered_owner
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.user_sys_registered_owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.source_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.source_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.spycloud_publish_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.spycloud_publish_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.target_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.target_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.target_subdomain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.target_subdomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.severity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.document_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.document_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.email_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.email_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.email_username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.email_username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Domain.domain
+            iscontext: true
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '051ce53b-7ca6-424a-8eea-0b63dcdaf531'
+    type: regular
+    task:
+      id: '051ce53b-7ca6-424a-8eea-0b63dcdaf531'
+      version: -1
+      name: spycloud-username-data
+      description: ''
+      script: spycloud-username-data
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      username:
+        simple: abc
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: 'ac571857-72dd-495c-a479-3798674423f7'
+    type: condition
+    task:
+      id: 'ac571857-72dd-495c-a479-3798674423f7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.password
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.password
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.password_plaintext
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.password_plaintext
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.password_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.password_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.target_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.target_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.user_browser
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.user_browser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.ip_addresses
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.ip_addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.infected_machine_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.infected_machine_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.infected_path
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.infected_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.infected_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.infected_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.user_sys_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.user_sys_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.user_hostname
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.user_hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.user_os
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.user_os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.user_sys_registered_owner
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.user_sys_registered_owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.source_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.source_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.spycloud_publish_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.spycloud_publish_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.target_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.target_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.target_subdomain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.target_subdomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.severity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.document_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.document_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.email_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.email_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.email_username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.email_username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Username.domain
+            iscontext: true
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: 'bba3ca80-fa39-45ef-80a3-db66a8be4a41'
+    type: regular
+    task:
+      id: 'bba3ca80-fa39-45ef-80a3-db66a8be4a41'
+      version: -1
+      name: spycloud-ip-address-data
+      description: ''
+      script: spycloud-ip-address-data
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      ip:
+        simple: 182.76.175.118
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: 'c340670f-95ad-4d62-9fba-7d2cd83aee04'
+    type: condition
+    task:
+      id: 'c340670f-95ad-4d62-9fba-7d2cd83aee04'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.password
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.password
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.password_plaintext
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.password_plaintext
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.password_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.password_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.target_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.target_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.user_browser
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.user_browser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.ip_addresses
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.ip_addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.infected_machine_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.infected_machine_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.infected_path
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.infected_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.infected_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.infected_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.user_sys_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.user_sys_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.user_hostname
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.user_hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.user_os
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.user_os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.user_sys_registered_owner
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.user_sys_registered_owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.source_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.source_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.spycloud_publish_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.spycloud_publish_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.target_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.target_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.target_subdomain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.target_subdomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.severity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.document_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.document_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.email_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.email_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.email_username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.email_username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.IPAddress.domain
+            iscontext: true
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '95d890f7-cee9-4bcd-94b3-ea5e8d9ceb16'
+    type: regular
+    task:
+      id: '95d890f7-cee9-4bcd-94b3-ea5e8d9ceb16'
+      version: -1
+      name: spycloud-email-data
+      description: ''
+      script: spycloud-email-data
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      email:
+        simple: smoolagiri@loginsoft.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '5c2d4164-accd-44a1-aded-2273a95aa5d0'
+    type: condition
+    task:
+      id: '5c2d4164-accd-44a1-aded-2273a95aa5d0'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.password
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.password
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.password_plaintext
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.password_plaintext
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.password_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.password_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.target_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.target_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.user_browser
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.user_browser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.ip_addresses
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.ip_addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.infected_machine_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.infected_machine_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.infected_path
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.infected_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.infected_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.infected_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.user_sys_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.user_sys_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.user_hostname
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.user_hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.user_os
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.user_os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.user_sys_registered_owner
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.user_sys_registered_owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.source_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.source_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.spycloud_publish_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.spycloud_publish_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.target_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.target_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.target_subdomain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.target_subdomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.severity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.document_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.document_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.email_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.email_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.email_username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.email_username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.EmailAddress.domain
+            iscontext: true
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: 'fb1b39e6-e042-4e40-8a04-462ba963d534'
+    type: regular
+    task:
+      id: 'fb1b39e6-e042-4e40-8a04-462ba963d534'
+      version: -1
+      name: spycloud-password-data
+      description: ''
+      script: spycloud-password-data
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      password:
+        simple: welcome@123
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '5a2a4045-1c9c-4d29-8418-b5b702a9d40c'
+    type: condition
+    task:
+      id: '5a2a4045-1c9c-4d29-8418-b5b702a9d40c'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.password
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.password
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.password_plaintext
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.password_plaintext
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.password_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.password_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.target_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.target_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.user_browser
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.user_browser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.ip_addresses
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.ip_addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.infected_machine_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.infected_machine_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.infected_path
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.infected_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.infected_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.infected_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.user_sys_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.user_sys_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.user_hostname
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.user_hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.user_os
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.user_os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.user_sys_registered_owner
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.user_sys_registered_owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.source_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.source_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.spycloud_publish_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.spycloud_publish_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.target_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.target_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.target_subdomain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.target_subdomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.severity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.document_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.document_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.email_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.email_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.email_username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.email_username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Password.domain
+            iscontext: true
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '0e40da3b-c112-49ec-94a8-1559dc4e9578'
+    type: regular
+    task:
+      id: '0e40da3b-c112-49ec-94a8-1559dc4e9578'
+      version: -1
+      name: spycloud-watchlist-data
+      description: ''
+      script: spycloud-watchlist-data
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: 'e3655082-9fc6-4dd0-b7d4-52355030daf6'
+    type: condition
+    task:
+      id: 'e3655082-9fc6-4dd0-b7d4-52355030daf6'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.password
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.password
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.password_plaintext
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.password_plaintext
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.password_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.password_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.target_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.target_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.user_browser
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.user_browser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.ip_addresses
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.ip_addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.infected_machine_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.infected_machine_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.infected_path
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.infected_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.infected_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.infected_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.user_sys_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.user_sys_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.user_hostname
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.user_hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.user_os
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.user_os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.user_sys_registered_owner
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.user_sys_registered_owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.source_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.source_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.spycloud_publish_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.spycloud_publish_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.target_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.target_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.target_subdomain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.target_subdomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.severity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.document_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.document_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.email_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.email_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.email_username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.email_username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.Watchlist.domain
+            iscontext: true
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: 'c2981d36-3aec-47ed-a93c-3084ed70f56f'
+    type: regular
+    task:
+      id: 'c2981d36-3aec-47ed-a93c-3084ed70f56f'
+      version: -1
+      name: spycloud-compass-device-data
+      description: ''
+      script: spycloud-compass-device-data
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      infected_machine_id:
+        simple: 72aaaec1-afa1-4d9e-838f-abfcbbf3ff82
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: 'c2c36055-3d98-4942-9aec-4f6fff043e34'
+    type: condition
+    task:
+      id: 'c2c36055-3d98-4942-9aec-4f6fff043e34'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.password
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.password
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.password_plaintext
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.password_plaintext
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.password_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.password_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.target_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.target_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.user_browser
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.user_browser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.ip_addresses
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.ip_addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.infected_machine_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.infected_machine_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.infected_path
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.infected_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.infected_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.infected_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.user_sys_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.user_sys_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.user_hostname
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.user_hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.user_os
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.user_os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.user_sys_registered_owner
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.user_sys_registered_owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.source_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.source_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.spycloud_publish_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.spycloud_publish_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.target_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.target_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.target_subdomain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.target_subdomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.severity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.document_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.document_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.email_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.email_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.email_username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.email_username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceData.domain
+            iscontext: true
+    view: '{"position":{"x":50,"y":3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '3abaa48d-ad99-4385-bc10-509d09164ab0'
+    type: regular
+    task:
+      id: '3abaa48d-ad99-4385-bc10-509d09164ab0'
+      version: -1
+      name: spycloud-compass-data-list
+      description: ''
+      script: spycloud-compass-data-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: '21'
+    taskid: '6e24fc7b-72f1-427a-bda3-5c9b091bf3a3'
+    type: condition
+    task:
+      id: '6e24fc7b-72f1-427a-bda3-5c9b091bf3a3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.password
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.password
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.password_plaintext
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.password_plaintext
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.password_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.password_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.target_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.target_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.user_browser
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.user_browser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.ip_addresses
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.ip_addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.infected_machine_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.infected_machine_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.infected_path
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.infected_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.infected_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.infected_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.user_sys_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.user_sys_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.user_hostname
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.user_hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.user_os
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.user_os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.user_sys_registered_owner
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.user_sys_registered_owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.source_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.source_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.spycloud_publish_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.spycloud_publish_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.target_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.target_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.target_subdomain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.target_subdomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.severity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.document_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.document_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.email_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.email_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.email_username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.email_username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDataList.domain
+            iscontext: true
+    view: '{"position":{"x":50,"y":4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: 'c422d5f1-a98f-4da7-acf0-abe5ceecebe7'
+    type: regular
+    task:
+      id: 'c422d5f1-a98f-4da7-acf0-abe5ceecebe7'
+      version: -1
+      name: spycloud-compass-device-list
+      description: ''
+      script: spycloud-compass-device-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: '23'
+    taskid: 'b5f0b92a-f481-4db5-a024-71c44ddfbc4a'
+    type: condition
+    task:
+      id: 'b5f0b92a-f481-4db5-a024-71c44ddfbc4a'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.password
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.password
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.password_plaintext
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.password_plaintext
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.password_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.password_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.target_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.target_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.user_browser
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.user_browser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.ip_addresses
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.ip_addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.infected_machine_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.infected_machine_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.infected_path
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.infected_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.infected_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.infected_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.user_sys_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.user_sys_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.user_hostname
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.user_hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.user_os
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.user_os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.user_sys_registered_owner
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.user_sys_registered_owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.source_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.source_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.spycloud_publish_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.spycloud_publish_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.target_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.target_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.target_subdomain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.target_subdomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.severity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.document_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.document_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.email_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.email_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.email_username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.email_username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassDeviceList.domain
+            iscontext: true
+    view: '{"position":{"x":50,"y":4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: 'b71f58f7-25dc-45f2-b05c-51b576eb5265'
+    type: regular
+    task:
+      id: 'b71f58f7-25dc-45f2-b05c-51b576eb5265'
+      version: -1
+      name: spycloud-compass-application-data
+      description: ''
+      script: spycloud-compass-application-data
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      target_application:
+        simple: loginsoft.greythr.com
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: '25'
+    taskid: '64f18e0c-be40-4ac0-9d84-59a7b9275845'
+    type: condition
+    task:
+      id: '64f18e0c-be40-4ac0-9d84-59a7b9275845'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.password
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.password
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.password_plaintext
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.password_plaintext
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.password_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.password_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.target_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.target_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.user_browser
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.user_browser
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.ip_addresses
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.ip_addresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.infected_machine_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.infected_machine_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.infected_path
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.infected_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.infected_time
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.infected_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.user_sys_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.user_sys_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.user_hostname
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.user_hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.user_os
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.user_os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.user_sys_registered_owner
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.user_sys_registered_owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.source_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.source_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.spycloud_publish_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.spycloud_publish_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.target_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.target_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.target_subdomain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.target_subdomain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.severity
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.document_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.document_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.email_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.email_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.email_username
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.email_username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: SpyCloud.CompassApplicationData.domain
+            iscontext: true
+    view: '{"position":{"x":50,"y":5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: '26'
+    taskid: 'ebfa1d45-72ef-4022-91e9-fda1be8eced8'
+    type: title
+    task:
+      id: 'ebfa1d45-72ef-4022-91e9-fda1be8eced8'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []
+description: ''
