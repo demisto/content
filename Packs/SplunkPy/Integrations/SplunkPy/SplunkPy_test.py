@@ -590,6 +590,16 @@ class TestFetchRemovingIrrelevantIncidents:
             self.jobs = TestFetchForLateIndexedEvents.Jobs()
 
     def test_backwards_compatible(self, mocker: MockerFixture):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round with the epoch time of their occurrence
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that the last fetched IDs now hold the start of the fetch window, and not the epoch time
+        """
         from SplunkPy import UserMappingObject
 
         mocker.patch.object(demisto, 'setLastRun')
@@ -610,6 +620,16 @@ class TestFetchRemovingIrrelevantIncidents:
                                     '4': {'occurred_time': '2024-02-12T10:00:00'}}
 
     def test_remove_irrelevant_fetched_incident_ids(self, mocker: MockerFixture):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that the fetched IDs that are no longer in the fetch window are removed
+        """
         from SplunkPy import UserMappingObject
 
         mocker.patch.object(demisto, 'setLastRun')
