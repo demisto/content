@@ -1,0 +1,544 @@
+[
+    {
+        "ModuleName": "Core REST API_instance_1",
+        "Brand": "Core REST API",
+        "Category": "Utilities",
+        "ID": "",
+        "Version": 0,
+        "Type": 1,
+        "Contents": {
+            "response": {
+                "cacheVersn": 0,
+                "category": "",
+                "childs": null,
+                "closed": "0001-01-01T00:00:00Z",
+                "created": "2024-01-26T08:04:28.598971726+01:00",
+                "creatingUserId": "admin",
+                "dbotCreatedBy": "admin",
+                "details": "",
+                "entries": [
+                    {
+                        "IndicatorTimeline": [],
+                        "InstanceID": "ScriptServicesModule",
+                        "Relationships": null,
+                        "brand": "Scripts",
+                        "cacheVersn": 0,
+                        "category": "artifact",
+                        "contents": "This is a simple Playbook with a Ask Task",
+                        "contentsSize": 41,
+                        "created": "2024-01-26T08:04:28.693796705+01:00",
+                        "cronView": false,
+                        "dbotCreatedBy": "admin",
+                        "endingDate": "0001-01-01T00:00:00Z",
+                        "entryTask": {
+                            "playbookName": "SimpleTaskPlaybook",
+                            "quiet": false,
+                            "taskId": "1",
+                            "taskName": "Print Message",
+                            "taskStatus": "result"
+                        },
+                        "errorSource": "",
+                        "file": "",
+                        "fileID": "",
+                        "fileMetadata": null,
+                        "format": "markdown",
+                        "id": "4@1",
+                        "incidentCreationTime": "0001-01-01T00:00:00Z",
+                        "instance": "Scripts",
+                        "investigationId": "1",
+                        "isTodo": false,
+                        "mirrored": false,
+                        "modified": "2024-01-26T08:04:28.6939553+01:00",
+                        "note": false,
+                        "parentContent": "!Print value=\"This is a simple Playbook with a Ask Task\"",
+                        "parentEntryTruncated": false,
+                        "parentId": "3@1",
+                        "pinned": false,
+                        "playbookId": "7aecbf64-d9ff-4329-830e-1cb2ef11d15a",
+                        "recurrent": false,
+                        "reputationSize": 0,
+                        "reputations": null,
+                        "retryTime": "0001-01-01T00:00:00Z",
+                        "scheduled": false,
+                        "sizeInBytes": 0,
+                        "startDate": "0001-01-01T00:00:00Z",
+                        "system": "",
+                        "tags": [
+                            "Automation"
+                        ],
+                        "tagsRaw": [
+                            "Automation"
+                        ],
+                        "taskId": "1",
+                        "times": 0,
+                        "timezoneOffset": 0,
+                        "type": 1,
+                        "user": "",
+                        "version": 1
+                    }
+                ],
+                "entryUsers": null,
+                "highPriority": false,
+                "id": "1",
+                "invContext": null,
+                "invPlaybook": {
+                    "Dirty": true,
+                    "UpdatedOperatorIDs": true,
+                    "cacheVersn": 5,
+                    "created": "0001-01-01T00:00:00Z",
+                    "dbotCreatedBy": "admin",
+                    "id": "1",
+                    "incidentCreateDate": "2024-01-26T08:04:28.570528338+01:00",
+                    "investigationId": "1",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "name": "SimpleTaskPlaybook",
+                    "playbookId": "7aecbf64-d9ff-4329-830e-1cb2ef11d15a",
+                    "sizeInBytes": 0,
+                    "startDate": "2024-01-26T08:04:28.643475861+01:00",
+                    "startTaskId": "0",
+                    "state": "inprogress",
+                    "tasks": {
+                        "0": {
+                            "Reopen": false,
+                            "completedBy": "DBot",
+                            "completedCount": 1,
+                            "completedDate": "2024-01-26T08:04:28.643468112+01:00",
+                            "continueOnErrorType": "",
+                            "doNotSaveTaskHistory": true,
+                            "dueDate": "0001-01-01T00:00:00Z",
+                            "evidenceData": {},
+                            "hasErrorEntries": false,
+                            "id": "0",
+                            "nextTasks": {
+                                "#none#": [
+                                    "1"
+                                ]
+                            },
+                            "quietMode": 2,
+                            "startDate": "0001-01-01T00:00:00Z",
+                            "state": "Completed",
+                            "task": {
+                                "cacheVersn": 0,
+                                "created": "2024-01-26T07:40:20.612264073+01:00",
+                                "id": "8c914575-21cc-49f3-86bf-4cee07ae5bb5",
+                                "modified": "2024-01-26T07:40:20.612677059+01:00",
+                                "sizeInBytes": 0,
+                                "version": 1
+                            },
+                            "taskId": "8c914575-21cc-49f3-86bf-4cee07ae5bb5",
+                            "taskSize": 37,
+                            "type": "start",
+                            "view": {
+                                "position": {
+                                    "x": 265,
+                                    "y": 50
+                                }
+                            }
+                        },
+                        "1": {
+                            "Reopen": false,
+                            "arguments": {
+                                "value": "This is a simple Playbook with a Ask Task"
+                            },
+                            "completedBy": "DBot",
+                            "completedDate": "2024-01-26T08:04:28.698310079+01:00",
+                            "continueOnErrorType": "",
+                            "doNotSaveTaskHistory": true,
+                            "dueDate": "0001-01-01T00:00:00Z",
+                            "entries": [
+                                "4@1"
+                            ],
+                            "evidenceData": {},
+                            "hasErrorEntries": false,
+                            "id": "1",
+                            "nextTasks": {
+                                "#none#": [
+                                    "7"
+                                ]
+                            },
+                            "previousTasks": {
+                                "#none#": [
+                                    "0"
+                                ]
+                            },
+                            "quietMode": 2,
+                            "scriptArguments": {
+                                "value": {
+                                    "simple": "This is a simple Playbook with a Ask Task"
+                                }
+                            },
+                            "startDate": "2024-01-26T08:04:28.665436385+01:00",
+                            "state": "Completed",
+                            "task": {
+                                "cacheVersn": 0,
+                                "created": "2024-01-26T07:45:48.281461073+01:00",
+                                "description": "Prints text to war room (Markdown supported)",
+                                "id": "0f9379c0-7d1d-48b9-8e92-569e6ef61bc0",
+                                "modified": "2024-01-26T07:45:48.28170235+01:00",
+                                "name": "Print Message",
+                                "scriptId": "Print",
+                                "sizeInBytes": 0,
+                                "type": "regular",
+                                "version": 1
+                            },
+                            "taskId": "0f9379c0-7d1d-48b9-8e92-569e6ef61bc0",
+                            "taskSize": 86,
+                            "type": "regular",
+                            "view": {
+                                "position": {
+                                    "x": 265,
+                                    "y": 195
+                                }
+                            }
+                        },
+                        "2": {
+                            "Reopen": false,
+                            "completedDate": "0001-01-01T00:00:00Z",
+                            "continueOnErrorType": "",
+                            "doNotSaveTaskHistory": true,
+                            "dueDate": "0001-01-01T00:00:00Z",
+                            "evidenceData": {},
+                            "hasErrorEntries": false,
+                            "id": "2",
+                            "message": {
+                                "body": {
+                                    "simple": "Is the sky blue?"
+                                },
+                                "methods": [],
+                                "replyOptions": [
+                                    "Yes",
+                                    "No"
+                                ],
+                                "timings": {
+                                    "completeAfterReplies": 1,
+                                    "completeAfterV2": true,
+                                    "retriesCount": 2,
+                                    "retriesInterval": 360
+                                }
+                            },
+                            "nextTasks": {
+                                "No": [
+                                    "4"
+                                ],
+                                "Yes": [
+                                    "3"
+                                ]
+                            },
+                            "previousTasks": {
+                                "#none#": [
+                                    "7"
+                                ]
+                            },
+                            "quietMode": 2,
+                            "startDate": "0001-01-01T00:00:00Z",
+                            "task": {
+                                "cacheVersn": 0,
+                                "created": "2024-01-26T07:45:48.320942192+01:00",
+                                "id": "ca0a69c8-5a22-420c-85ac-36a63c190173",
+                                "modified": "2024-01-26T07:45:48.321187687+01:00",
+                                "name": "Ask Question",
+                                "sizeInBytes": 0,
+                                "type": "condition",
+                                "version": 1
+                            },
+                            "taskId": "ca0a69c8-5a22-420c-85ac-36a63c190173",
+                            "type": "condition",
+                            "view": {
+                                "position": {
+                                    "x": 265,
+                                    "y": 545
+                                }
+                            }
+                        },
+                        "3": {
+                            "Reopen": false,
+                            "completedDate": "0001-01-01T00:00:00Z",
+                            "continueOnErrorType": "",
+                            "doNotSaveTaskHistory": true,
+                            "dueDate": "0001-01-01T00:00:00Z",
+                            "evidenceData": {},
+                            "hasErrorEntries": false,
+                            "id": "3",
+                            "nextTasks": {
+                                "#none#": [
+                                    "6"
+                                ]
+                            },
+                            "previousTasks": {
+                                "Yes": [
+                                    "2"
+                                ]
+                            },
+                            "quietMode": 2,
+                            "scriptArguments": {
+                                "value": {
+                                    "simple": "Yes"
+                                }
+                            },
+                            "startDate": "0001-01-01T00:00:00Z",
+                            "task": {
+                                "cacheVersn": 0,
+                                "created": "2024-01-26T08:03:55.605101382+01:00",
+                                "description": "Prints text to war room (Markdown supported)",
+                                "id": "06439e6d-63d5-422c-80a7-da3ba3c335ba",
+                                "modified": "2024-01-26T08:03:55.605436173+01:00",
+                                "name": "Print Yes",
+                                "scriptId": "Print",
+                                "sizeInBytes": 0,
+                                "type": "regular",
+                                "version": 1
+                            },
+                            "taskId": "06439e6d-63d5-422c-80a7-da3ba3c335ba",
+                            "type": "regular",
+                            "view": {
+                                "position": {
+                                    "x": 480,
+                                    "y": 720
+                                }
+                            }
+                        },
+                        "4": {
+                            "Reopen": false,
+                            "completedDate": "0001-01-01T00:00:00Z",
+                            "continueOnErrorType": "",
+                            "doNotSaveTaskHistory": true,
+                            "dueDate": "0001-01-01T00:00:00Z",
+                            "evidenceData": {},
+                            "hasErrorEntries": false,
+                            "id": "4",
+                            "nextTasks": {
+                                "#none#": [
+                                    "6"
+                                ]
+                            },
+                            "previousTasks": {
+                                "No": [
+                                    "2"
+                                ]
+                            },
+                            "quietMode": 2,
+                            "scriptArguments": {
+                                "value": {
+                                    "simple": "No"
+                                }
+                            },
+                            "startDate": "0001-01-01T00:00:00Z",
+                            "task": {
+                                "cacheVersn": 0,
+                                "created": "2024-01-26T08:03:55.668006625+01:00",
+                                "description": "Prints text to war room (Markdown supported)",
+                                "id": "c210c41a-3bfc-4bd0-8206-df0bf8d54932",
+                                "modified": "2024-01-26T08:03:55.66827441+01:00",
+                                "name": "Print No",
+                                "scriptId": "Print",
+                                "sizeInBytes": 0,
+                                "type": "regular",
+                                "version": 1
+                            },
+                            "taskId": "c210c41a-3bfc-4bd0-8206-df0bf8d54932",
+                            "type": "regular",
+                            "view": {
+                                "position": {
+                                    "x": 50,
+                                    "y": 720
+                                }
+                            }
+                        },
+                        "6": {
+                            "Reopen": false,
+                            "completedDate": "0001-01-01T00:00:00Z",
+                            "continueOnErrorType": "",
+                            "doNotSaveTaskHistory": true,
+                            "dueDate": "0001-01-01T00:00:00Z",
+                            "evidenceData": {},
+                            "hasErrorEntries": false,
+                            "id": "6",
+                            "previousTasks": {
+                                "#none#": [
+                                    "3",
+                                    "4"
+                                ]
+                            },
+                            "quietMode": 2,
+                            "startDate": "0001-01-01T00:00:00Z",
+                            "task": {
+                                "cacheVersn": 0,
+                                "created": "2024-01-26T07:45:48.480673065+01:00",
+                                "id": "313e03a6-095c-4762-8004-b10a3361baef",
+                                "isTitleTask": true,
+                                "modified": "2024-01-26T07:45:48.480902546+01:00",
+                                "name": "Done",
+                                "sizeInBytes": 0,
+                                "type": "title",
+                                "version": 1
+                            },
+                            "taskId": "313e03a6-095c-4762-8004-b10a3361baef",
+                            "type": "title",
+                            "view": {
+                                "position": {
+                                    "x": 265,
+                                    "y": 895
+                                }
+                            }
+                        },
+                        "7": {
+                            "Reopen": false,
+                            "completedDate": "0001-01-01T00:00:00Z",
+                            "continueOnErrorType": "",
+                            "doNotSaveTaskHistory": true,
+                            "dueDate": "0001-01-01T00:00:00Z",
+                            "evidenceData": {},
+                            "hasErrorEntries": false,
+                            "id": "7",
+                            "nextTasks": {
+                                "#none#": [
+                                    "2"
+                                ]
+                            },
+                            "previousTasks": {
+                                "#none#": [
+                                    "1"
+                                ]
+                            },
+                            "quietMode": 2,
+                            "scriptArguments": {
+                                "task_name": {
+                                    "simple": "Ask Question"
+                                }
+                            },
+                            "startDate": "2024-01-26T08:04:28.703574793+01:00",
+                            "state": "inprogress",
+                            "task": {
+                                "cacheVersn": 0,
+                                "created": "2024-01-26T07:57:10.598197666+01:00",
+                                "description": "Creates external ask links for the given options.",
+                                "id": "13544f30-00b5-4e30-87d1-e68b215b1fcb",
+                                "modified": "2024-01-26T07:57:10.598544364+01:00",
+                                "name": "Generate Links",
+                                "scriptId": "GenerateAskLink",
+                                "sizeInBytes": 0,
+                                "type": "regular",
+                                "version": 1
+                            },
+                            "taskId": "13544f30-00b5-4e30-87d1-e68b215b1fcb",
+                            "type": "regular",
+                            "view": {
+                                "position": {
+                                    "x": 265,
+                                    "y": 370
+                                }
+                            }
+                        }
+                    },
+                    "version": 0,
+                    "view": {
+                        "linkLabelsPosition": {
+                            "2_3_Yes": 0.47
+                        },
+                        "paper": {
+                            "dimensions": {
+                                "height": 910,
+                                "width": 810,
+                                "x": 50,
+                                "y": 50
+                            }
+                        }
+                    }
+                },
+                "isDebug": false,
+                "lastOpen": "0001-01-01T00:00:00Z",
+                "mirrorAutoClose": null,
+                "mirrorTypes": null,
+                "modified": "2024-01-26T08:04:28.691801806+01:00",
+                "name": "Simple Incidnet",
+                "rawCategory": "",
+                "reason": null,
+                "runStatus": "running",
+                "sizeInBytes": 0,
+                "slackMirrorAutoClose": false,
+                "slackMirrorType": "",
+                "status": 0,
+                "systems": null,
+                "tags": [
+                    "Automation"
+                ],
+                "totalEntries": 0,
+                "type": 0,
+                "users": [
+                    "admin"
+                ],
+                "version": 3
+            }
+        },
+        "HumanReadable": null,
+        "ImportantEntryContext": null,
+        "EntryContext": null,
+        "IgnoreAutoExtract": false,
+        "ReadableContentsFormat": "",
+        "ContentsFormat": "json",
+        "File": "",
+        "FileID": "",
+        "FileMetadata": null,
+        "System": "",
+        "Note": false,
+        "Evidence": false,
+        "EvidenceID": "",
+        "Tags": null,
+        "Metadata": {
+            "id": "",
+            "version": 0,
+            "cacheVersn": 0,
+            "modified": "0001-01-01T00:00:00Z",
+            "created": "2024-01-26T08:04:29.080641077+01:00",
+            "sizeInBytes": 0,
+            "type": 1,
+            "incidentCreationTime": "0001-01-01T00:00:00Z",
+            "retryTime": "0001-01-01T00:00:00Z",
+            "user": "",
+            "errorSource": "",
+            "contents": "",
+            "format": "json",
+            "investigationId": "1",
+            "file": "",
+            "fileID": "",
+            "parentId": "5@1",
+            "pinned": false,
+            "fileMetadata": null,
+            "parentContent": "!core-api-get uri=\"/investigation/1/workplan\"",
+            "parentEntryTruncated": false,
+            "system": "",
+            "reputations": null,
+            "category": "",
+            "note": false,
+            "isTodo": false,
+            "tags": null,
+            "tagsRaw": null,
+            "startDate": "0001-01-01T00:00:00Z",
+            "times": 0,
+            "recurrent": false,
+            "endingDate": "0001-01-01T00:00:00Z",
+            "timezoneOffset": 0,
+            "cronView": false,
+            "scheduled": false,
+            "entryTask": null,
+            "taskId": "",
+            "playbookId": "",
+            "reputationSize": 0,
+            "contentsSize": 0,
+            "brand": "Core REST API",
+            "instance": "Core REST API_instance_1",
+            "InstanceID": "b818c5e5-892f-461e-8d4c-4e4ddf78ea79",
+            "IndicatorTimeline": null,
+            "Relationships": null,
+            "mirrored": false
+        },
+        "IndicatorTimeline": null,
+        "NextRun": "",
+        "Timeout": "",
+        "PollingCommand": "",
+        "PollingArgs": null,
+        "PollingItemsRemaining": 0,
+        "Relationships": null,
+        "APIExecutionMetrics": null
+    }
+]
