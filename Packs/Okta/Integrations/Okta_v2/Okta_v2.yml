@@ -340,13 +340,13 @@ script:
   - arguments:
     - description: "The cursor in which to retrive the results from and on. if the query didn't reach the end of results, the tag can be obtained from the bottom of the grid in the readable output, or in the context path Okta.User.tag."
       name: after
-    - description: The maximum number of results to return, the default is 200.
+    - description: The maximum number of results to return.
       name: limit
       default: true
       defaultValue: '200'
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to return extended user information. Can be "true" or "false". The default is "false".
+      description: Whether to return extended user information.
       name: verbose
       predefined:
       - 'true'
@@ -1417,16 +1417,16 @@ script:
     name: okta-create-group
     outputs:
     - contextPath: OktaGroup.ID
-      description: Group ID in Okta,.
+      description: Group ID in Okta.
       type: Unknown
     - contextPath: OktaGroup.Name
-      description: Group name in Okta,.
+      description: Group name in Okta.
       type: Unknown
     - contextPath: OktaGroup.Description
-      description: Group description in Okta,.
+      description: Group description in Okta.
       type: Unknown
     - contextPath: OktaGroup.Type
-      description: Group type in Okta,.
+      description: Group type in Okta.
       type: Unknown
   - arguments:
     - description: Name of the group to assign to the app.
