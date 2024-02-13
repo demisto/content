@@ -571,21 +571,21 @@ def load_client_cert_and_key(ssl_context: ssl.SSLContext, params: dict[str, Any]
 def main():     # pragma: no cover
     params = demisto.params()
     mail_server_url = params.get('MailServerURL')
-    port = int(params.get('port'))
+    port = arg_to_number(params.get('port'))
     folder = params.get('folder')
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
+    username = params.get('credentials').get('identifier')
+    password = params.get('credentials').get('password')
     verify_ssl = not params.get('insecure', False)
     tls_connection = params.get('TLS_connection', True)
-    include_raw_body = demisto.params().get('Include_raw_body', False)
-    permitted_from_addresses = demisto.params().get('permittedFromAdd', '')
-    permitted_from_domains = demisto.params().get('permittedFromDomain', '')
+    include_raw_body = params.get('Include_raw_body', False)
+    permitted_from_addresses = params.get('permittedFromAdd', '')
+    permitted_from_domains = params.get('permittedFromDomain', '')
     with_headers = params.get('with_headers')
-    delete_processed = demisto.params().get("delete_processed") or False
-    limit = min(int(demisto.params().get('limit') or 50), 200)
+    delete_processed = params.get("delete_processed") or False
+    limit = arg_to_number(params.get('limit')) or 50
     demisto.debug(f"{limit=}")
     save_file = params.get('save_file') or False
-    first_fetch_time = (demisto.params().get('first_fetch') or '3 days').strip()
+    first_fetch_time = (params.get('first_fetch') or '3 days').strip()
     ssl_context = ssl.create_default_context()
 
     args = demisto.args()
@@ -626,7 +626,8 @@ def main():     # pragma: no cover
                                                       save_file=save_file)
                 demisto.debug(f"{next_run=}")
                 # if next_run is None, we will not update last_run
-                demisto.setLastRun(next_run) if next_run else None
+                if next_run:
+                    demisto.setLastRun(next_run)
                 demisto.incidents(incidents)
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
