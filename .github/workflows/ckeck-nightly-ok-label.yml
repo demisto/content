@@ -1,4 +1,4 @@
-name: Prevent Merge Without Label
+name: Prevent Merge Without nightly-ok Label
 
 on:
   pull_request:
