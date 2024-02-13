@@ -66,7 +66,7 @@ def test_report_get_command(client, requests_mock):
         Given: The app version id.
         Then: validate the command result returned.
         """
-    args = {'app_version_id': '6'}
+    args = {'app_version_id': '6', 'importance': 'All'}
     mock_response_report_get = util_load_json(
         './test_data/report_get.json')
 
@@ -132,9 +132,8 @@ def test_get_devices_by_cve_command(client, requests_mock):
     requests_mock.get(f'{SERVER_URL}/devices/public/v2/devices/data-cve-filter', json=mock_response_app_version_list)
     results = get_devices_by_cve_command(client=client, args=args)
 
-    assert results.outputs_prefix == 'Zimperium.DeviceByCVE'
-    assert results.outputs[0].get('id') == mock_response_app_version_list.get('content', [''])[0].get('id')
-    assert results.outputs_key_field == 'id'
+    assert results.outputs.get('Zimperium.DeviceByCVE(val.id == obj.id && val.cveId == obj.cveId)')[0].get('id') == \
+        mock_response_app_version_list.get('content', [''])[0].get('id')
     assert 'Devices Associated with' in results.readable_output
     assert results.raw_response == mock_response_app_version_list
 

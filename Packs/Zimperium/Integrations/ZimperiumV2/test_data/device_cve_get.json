@@ -2,6 +2,7 @@
     "content": [
         {
             "id": "62",
+            "cveId": "cve_1",
             "zdeviceId": "59",
             "teamId": "33",
             "os": {
@@ -19,6 +20,7 @@
         },
         {
             "id": "2a",
+            "cveId": "cve_1",
             "zdeviceId": "a8",
             "teamId": "33d",
             "os": {
