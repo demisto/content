@@ -150,27 +150,6 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
         sys.exit(1)
 
 
-def update_pack_folder_metadata(pack: Pack):
-    """
-    Updates the metadata of a pack and saves it to a JSON file in the pack path.
-
-    Args:
-        pack (Pack): The Pack object representing the pack whose metadata is to be updated.
-
-    Returns:
-        bool: Indicates whether the operation of updating metadata succeeded (True) or failed (False).
-    """
-    task_status = False
-    try:
-        logging.debug(f"Starting update metadata for pack '{pack.name}'")
-        json_write(os.path.join(pack.path, "metadata.json"), pack.update_metadata, update=True)
-        task_status = True
-    except Exception as e:
-        logging.exception(f"Failed in updating {pack.name} pack metadata.\n{str(e)}")
-    finally:
-        return task_status
-
-
 def update_index_folder(index_folder_path: str, pack: Pack, is_private_pack: bool = False,
                         pack_versions_to_keep: list = None) -> bool:
     """
@@ -1337,7 +1316,7 @@ def main():
                 pack.cleanup()
                 continue
 
-            if not update_pack_folder_metadata(pack=pack):
+            if not pack.format_metadata():
                 pack.status = PackStatus.FAILED_UPDATING_PACK_FOLDER_METADATA.name  # type: ignore[misc]
                 pack.cleanup()
                 continue

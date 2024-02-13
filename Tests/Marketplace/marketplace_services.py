@@ -423,10 +423,12 @@ class Pack:
             dict: Updated metadata fields.
         """
         update_statistics_metadata = {
-            Metadata.DOWNLOADS: self.downloads_count,
-            Metadata.SEARCH_RANK: self._search_rank,
+            Metadata.CREATED: self._create_date,
+            Metadata.UPDATED: self._update_date,
+            Metadata.DOWNLOADS: self._downloads_count,
             Metadata.TAGS: list(self._tags or []),
-            Metadata.INTEGRATIONS: self._related_integration_images
+            Metadata.SEARCH_RANK: self._search_rank,
+            Metadata.INTEGRATIONS: self._related_integration_images,
         }
 
         update_metadata_fields = {}
@@ -535,14 +537,7 @@ class Pack:
         Returns:
             dict: parsed pack metadata.
         """
-        pack_metadata = {
-            Metadata.CREATED: self._create_date,
-            Metadata.UPDATED: self._update_date,
-            Metadata.DOWNLOADS: self._downloads_count,
-            Metadata.TAGS: list(self._tags or []),
-            Metadata.SEARCH_RANK: self._search_rank,
-            Metadata.INTEGRATIONS: self._related_integration_images,
-        }
+        pack_metadata = self.update_metadata
 
         if parse_dependencies:
             pack_metadata[Metadata.DEPENDENCIES] = self._dependencies
