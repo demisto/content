@@ -4,7 +4,7 @@ commonfields:
 name: BmcITSM
 display: BMC Helix ITSM
 category: Utilities
-description: BMC Helix ITSM integration enables customers to manage service request, incident, change request, task, problem investigation and known error tickets.
+description: BMC Helix ITSM integration enables customers to manage service request, incident, change request, task, problem investigation, known error and work order tickets.
 configuration:
 - name: url
   display: Server URL
@@ -43,6 +43,7 @@ configuration:
   - change request
   - problem investigation
   - known error
+  - work order
   - All
   required: false
 - name: ticket_status
@@ -341,6 +342,7 @@ script:
       - change request
       - problem investigation
       - known error
+      - work order
     - name: query
       description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
       defaultValue: ""
@@ -362,7 +364,7 @@ script:
       predefined:
       - ""
     - name: ticket_ids
-      description: A comma-separated list of ticket request IDs. Used as a filtering argument.
+      description: A comma-separated list of ticket request IDs. Used as a filtering argument. Use Display ID for work order type.
       isArray: true
       defaultValue: ""
       predefined:
@@ -883,6 +885,7 @@ script:
       - change request
       - problem investigation
       - known error
+      - work order
     outputs: []
   - name: bmc-itsm-incident-create
     description: "Creates a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service."
@@ -1340,7 +1343,7 @@ script:
       - ""
     outputs: []
   - name: bmc-itsm-task-create
-    description: "Creates a new task ticket. By splitting cases into individual tasks (assignments), you can focus on one assignment at a time to resolve cases more efficiently. Task ticket type can be attached only to the following ticket types: change request, incident, problem investigation, and known error."
+    description: "Creates a new task ticket. By splitting cases into individual tasks (assignments), you can focus on one assignment at a time to resolve cases more efficiently. Task ticket type can be attached only to the following ticket types: change request, incident, problem investigation, known error and work order."
     arguments:
     - name: template_id
       description: The instance ID of the template to use. The ID can be retrieved by executing the bmc-itsm-task-template-list command.
@@ -1369,8 +1372,9 @@ script:
       - incident
       - problem investigation
       - known error
+      - work order
     - name: root_request_id
-      description: "The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command."
+      description: "The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command. Use Display ID for work orders."
       required: true
       defaultValue: ""
       predefined:
@@ -2324,6 +2328,366 @@ script:
       name: lastUpdate
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
     name: get-modified-remote-data
+  - name: bmc-itsm-support-group-list
+    description: Lists all support groups. Useful for getting possible (Company, Support Organization, Support Group) triplets.
+    arguments:
+    - name: limit
+      description: The maximum number of records to retrieve.
+      type: String
+      defaultValue: "50"
+      predefined:
+      - ""
+    - name: page_size
+      description: The maximum number of records to retrieve per page.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: page
+      description: The page number of the results to retrieve.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: company
+      description: Company name. Used as a filtering argument.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: support_organization
+      description: Support organization name. Used as a filtering argument.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: support_group
+      description: Support group name. Used as a filtering argument.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""    
+    outputs:
+    - type: String
+      contextPath: BmcITSM.SupportGroup.Support Group ID
+      description: The support group ID.
+    - type: String
+      contextPath: BmcITSM.SupportGroup.Company
+      description: The support company.
+    - type: String
+      contextPath: BmcITSM.SupportGroup.Support Organization
+      description: The support organization.
+    - type: String
+      contextPath: BmcITSM.SupportGroup.Support Group
+      description: The support group.
+  - name: bmc-itsm-work-order-template-list
+    description: Lists all work order templates. Useful for creating work orders. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
+    arguments:
+    - name: query
+      description: The query to search by. For example, query="Company like \"BMCOpsMonitoring\"". 
+        The query is used in addition to the existing arguments. See the BMC documentation for [building search 
+        qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: limit
+      description: The maximum number of records to retrieve.
+      type: String
+      defaultValue: "50"
+      predefined:
+      - ""
+    - name: page_size
+      description: The maximum number of records to retrieve per page.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: page
+      description: The page number of the results to retrieve.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: template_ids
+      description: A comma-separated list of work order template GUIDs. Used as a filtering argument.
+      type: String
+      defaultValue: ""
+      isArray: true
+      predefined:
+      - ""
+    - name: template_name
+      description: The work order template name. Used as a filtering argument.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""    
+    outputs:
+    - type: String
+      contextPath: BmcITSM.WorkOrderTemplate.Id
+      description: The work order template ID.
+    - type: String
+      contextPath: BmcITSM.WorkOrderTemplate.Name
+      description: The work order template name.
+    - type: String
+      contextPath: BmcITSM.WorkOrderTemplate.GUID
+      description: The work order template GUID.
+  - name: bmc-itsm-work-order-create
+    description: "Creates a new work order ticket."
+    arguments:
+    - name: template_guid
+      description: The instance GUID of the template to use. The GUID can be retrieved by executing the bmc-itsm-work-order-template-list command.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: first_name
+      description: Requester first name.
+      type: String
+      required: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: last_name
+      description: Requester last name.
+      type: String
+      required: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: customer_first_name
+      description: "Customer first name."
+      type: String
+      required: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: customer_last_name
+      description: Customer last name.
+      type: String
+      required: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: customer_company
+      description: Customer company.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+      required: true
+    - name: customer_person_id
+      description: Customer person ID. Use it when customer first and last name pair is not unique.
+      type: String
+      required: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: summary
+      description: The work order summary.
+      type: String
+      required: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: detailed_description
+      description: The work order ticket detailed description.
+      type: String
+      required: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: status
+      description: The work order status.
+      required: true
+      defaultValue: ""
+      predefined:
+      - Assigned
+      - Pending
+      - Waiting Approval
+      - Planning
+      - In Progress
+      - Completed
+      - Rejected
+      - Cancelled
+      - Closed
+      auto: PREDEFINED
+    - name: additional_fields
+      description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Example: additional_fields="Support Company=Calbro Services;Support Organization=IT Support;Support Group Name=Service Desk;Request Assignee=Scully Agent".'
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: priority
+      description: The work order ticket priority.
+      required: true
+      defaultValue: ""
+      predefined:
+      - Critical
+      - High
+      - Medium
+      - Low
+      auto: PREDEFINED
+    - name: work_order_type
+      description: "The work order ticket type."
+      defaultValue: ""
+      predefined:
+      - General
+      - Project
+      auto: PREDEFINED
+    - name: location_company
+      description: The company associated with the task process.
+      type: String
+      required: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: scedulded_start_date
+      description: The work order ticket scheduled future start date. For example, in 12 hours, in 7 days.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: scedulded_end_date
+      description: The work order ticket scheduled future end date. For example, in 12 hours, in 7 days.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    outputs:
+    - contextPath: BmcITSM.WorkOrder.RequestID
+      description: The work order ticket unique Request ID.
+      type: String
+    - contextPath: BmcITSM.WorkOrder.DisplayID
+      description: The work order ticket unique Display ID.
+      type: String
+    - contextPath: BmcITSM.WorkOrder.CreateDate
+      description: The work order ticket creation date time in UTC.
+      type: Date
+  - name: bmc-itsm-work-order-update
+    description: "Updates the work order ticket."
+    arguments:
+    - name: request_id
+      description: The ID of the work order ticket to update.
+      type: String
+      required: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: summary
+      description: The work order ticket summary.
+      type: String
+      predefined:
+      - ""
+    - name: detailed_description
+      description: "The work order ticket detailed description."
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: priority
+      description: The work order ticket priority.
+      defaultValue: ""
+      predefined:
+      - Critical
+      - High
+      - Medium
+      - Low
+      auto: PREDEFINED
+    - name: status
+      description: The work order ticket status.
+      defaultValue: ""
+      auto: PREDEFINED
+      predefined:
+      - Assigned
+      - Pending
+      - Waiting Approval
+      - Planning
+      - In Progress
+      - Completed
+      - Rejected
+      - Cancelled
+      - Closed
+    - name: status_reason
+      description: "The reason for changing the ticket status."
+      defaultValue: ""
+      auto: PREDEFINED
+      predefined:
+      - Initial Status
+      - Awaiting Request Assignee
+      - Client Hold
+      - Client Additional Information Requested
+      - Client Action Required
+      - Support Contact Hold
+      - Local Site Action Required
+      - Purchase Order Approval
+      - Supplier Delivery
+      - Third Party Vendor Action Required
+      - Infrastructure Change
+      - Work not started
+      - Successful
+      - Successful with Issues
+      - Cancelled by Requester
+      - Cancelled by Support
+      - Customer Close
+      - System Close
+      - System Close with Issues
+    - name: company
+      description: The company associated with the requester. By default it is determined by the logged in user.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: location_company
+      description: The company associated with the work order process.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: assignee
+      description: The full name of the employee the work order is assigned to. It can be retrieved by using the bmc-itsm-user-list command.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: support_organization
+      description: The organization for the problem assignee's support organization. It makes up the second tier of the problem assignee's support organization data structure. The arguments support_organization, support_group should be provided together. It can be retrieved by using the bmc-itsm-support-group-list command.
+      type: String
+      defaultValue:
+      predefined:
+      - ""
+    - name: support_group
+      description: The group for the problem assignee's support group.  It makes up the third tier of the problem assignee's support organization data structure. The arguments support_organization, support_group should be provided together. It can be retrieved by using the bmc-itsm-support-group-list command.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: work_order_type
+      description: "The work order ticket type."
+      defaultValue: ""
+      predefined:
+      - General
+      - Project
+      auto: PREDEFINED
+    - name: additional_fields
+      description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Example: additional_fields="Support Company=Calbro Services;Support Organization=IT Support;Support Group Name=Service Desk;Request Assignee=Scully Agent"'
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: scedulded_start_date
+      description: The work order ticket scheduled future start date. For example, in 12 hours, in 7 days.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: scedulded_end_date
+      description: The work order ticket scheduled future end date. For example, in 12 hours, in 7 days.
+      type: String
+      defaultValue: ""
+      predefined:
+      - ""
+    outputs: []  
   isfetch: true
   ismappable: true
   isremotesyncin: true
