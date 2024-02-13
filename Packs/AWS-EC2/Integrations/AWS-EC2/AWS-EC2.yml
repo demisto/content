@@ -27,7 +27,7 @@ configuration:
   type: 15
   section: Connect
   advanced: true
-  required: false
+  required: true
 - display: Role Arn
   name: roleArn
   type: 0
@@ -4050,7 +4050,7 @@ script:
       type: string
     description: Gets the public IP addresses that have been discovered by IPAM.
     name: aws-ec2-get-ipam-discovered-public-addresses
-  dockerimage: demisto/boto3py3:1.0.0.84358
+  dockerimage: demisto/boto3py3:1.0.0.87088
   runonce: false
   script: '-'
   subtype: python3
