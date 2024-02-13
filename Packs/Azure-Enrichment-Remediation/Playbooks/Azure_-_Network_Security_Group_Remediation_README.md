@@ -7,37 +7,52 @@ Conditions and limitations:
 - Adds rules to NSGs associated to NICs.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-Azure Network Security Groups
+
+* Azure Network Security Groups
 
 ### Scripts
-* Set
+
 * AzureFindAvailableNSGPriorities
+* Set
 
 ### Commands
+
+* azure-nsg-security-rule-create
 * azure-nsg-security-rules-list
 * azure-nsg-security-rule-update
-* azure-nsg-security-rule-create
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | AzureSecurityGroup | The Azure Network Security Group that will have new rules created or updated. |  | Required |
-| RemotePort | The remote port that is publicly exposed. |  | Required |
-| RemoteProtocol | The remote protocol that is publicly exposed. |  | Required |
 | AzureVMPrivateIP | The private IP of the Azure Virtual Machine. |  | Required |
+| RemoteProtocol | The remote protocol that is publicly exposed. |  | Required |
+| RemotePort | The remote port that is publicly exposed. |  | Required |
+| SubscriptionID | This is the Azure Subscription ID \(optional\). |  | Optional |
+| ResourceGroup | This is the Azure ResourceGroup \(optional\). |  | Optional |
 
 ## Playbook Outputs
+
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| remediatedFlag | Output key to determine if remediation was successfully done. | boolean |
+| remediatedReason | Reason remediation was done or not done. | string |
 
 ## Playbook Image
+
 ---
+
 ![Azure - Network Security Group Remediation](../doc_files/Azure_-_Network_Security_Group_Remediation.png)
