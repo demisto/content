@@ -27,6 +27,7 @@ from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
+from functools import wraps
 from inspect import currentframe
 
 import demistomock as demisto
@@ -40,7 +41,7 @@ def __line__():
 
 # 43 - The line offset from the beginning of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 44, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -247,6 +248,7 @@ entryTypes = {
     'entryInfoFile': 9,
     'warning': 11,
     'map': 15,
+    'debug': 16,
     'widget': 17
 }
 
@@ -2017,22 +2019,28 @@ def url_to_clickable_markdown(data, url_keys):
     return data
 
 
-def create_clickable_url(url):
+def create_clickable_url(url, text=None):
     """
     Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
 
     :type url: ``Union[List[str], str]``
     :param url: the url of interest or a list of urls
 
-    :return: markdown format for clickable url
-    :rtype: ``str``
+    :type text: ``Union[List[str], str, None]``
+    :param text: the text of the url or a list of texts of urls.
+
+    :return: Markdown format for clickable url
+    :rtype: ``Union[List[str], str]``
 
     """
     if not url:
         return None
     elif isinstance(url, list):
+        if isinstance(text, list):
+            assert len(url) == len(text), 'The URL list and the text list must be the same length.'
+            return ['[{}]({})'.format(text, item) for text, item in zip(text, url)]
         return ['[{}]({})'.format(item, item) for item in url]
-    return '[{}]({})'.format(url, url)
+    return '[{}]({})'.format(text or url, url)
 
 
 class JsonTransformer:
@@ -7711,8 +7719,7 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
             return res
         else:
             return True, res
-
-    contents = [entry.get('Contents', {}) for entry in res]
+    contents = [entry.get('Contents', {}) for entry in res if entry['Type'] != entryTypes['debug']]
     contents = contents[0] if len(contents) == 1 else contents
 
     if fail_on_error:
@@ -11274,7 +11281,7 @@ def split_data_to_chunks(data, target_chunk_size):
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE):
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11302,10 +11309,23 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type chunk_size: ``int``
     :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
 
+    :type should_update_health_module: ``bool``
+    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
+
     :return: None
     :rtype: ``None``
     """
-    send_data_to_xsiam(events, vendor, product, data_format, url_key, num_of_attempts, chunk_size, data_type="events")
+    send_data_to_xsiam(
+        events,
+        vendor,
+        product,
+        data_format,
+        url_key,
+        num_of_attempts,
+        chunk_size,
+        data_type="events",
+        should_update_health_module=should_update_health_module
+    )
 
 
 def is_scheduled_command_retry():
@@ -11320,6 +11340,51 @@ def is_scheduled_command_retry():
     calling_context = demisto.callingContext.get('context', {})
     sm = get_schedule_metadata(context=calling_context)
     return True if sm.get('is_polling', False) else False
+
+
+def retry(
+    times=3,
+    delay=1,
+    exceptions=Exception,
+):
+    """
+    retries to execute a function until an exception isn't raised anymore.
+
+    :type times: ``int``
+    :param times: The number of times to trigger the retry mechanism.
+
+    :type delay: ``int``
+    :param delay: The time in seconds to sleep between each time
+
+    :type exceptions: ``Exception``
+    :param exceptions: The exceptions that should be caught when executing
+        the function (Union[tuple[type[Exception], ...], type[Exception]])
+
+    :return: Any
+    :rtype: ``Any``
+    """
+    def _retry(func):
+        func_name = func.__name__
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for i in range(1, times + 1):
+                demisto.debug("Running func {func_name} for the {time} time".format(func_name=func_name, time=i))
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as error:
+                    demisto.debug(
+                        "Error when executing func {func_name}, error: {error}, time {time}".format(
+                            func_name=func_name, error=error, time=i
+                        )
+                    )
+                    if i == times:
+                        raise
+                    time.sleep(delay)  # pylint: disable=sleep-exists
+
+        return wrapper
+
+    return _retry
 
 
 def replace_spaces_in_credential(credential):
@@ -11370,7 +11435,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS):
+                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11400,6 +11465,10 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     :type data_type: ``str``
     :param data_type: Type of data to send to Xsiam, events or assets.
+
+    :type should_update_health_module: ``bool``
+    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
+        This can be useful when using send_data_to_xsiam in batches for the same fetch.
 
     :return: None
     :rtype: ``None``
@@ -11495,7 +11564,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True)
 
-    demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+    if should_update_health_module:
+        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
 
 ###########################################

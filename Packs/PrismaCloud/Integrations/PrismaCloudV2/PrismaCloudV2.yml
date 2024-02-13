@@ -112,7 +112,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.85667
+  dockerimage: demisto/python3:3.10.13.86272
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
@@ -543,6 +543,20 @@ script:
       - cloudAccount
       - cloudRegion
       - stateId
+    - description: 'Whether to include the resource JSON or not. Default is "true". "false" will not return the resource JSON, "true" will return the resource JSON. Note that if the value is "true", some of the keys, which contain large data objects, are still omitted by default and in order to retrieve them, set the "include_additional_resource_fields" argument to "true". Doing so can increase the context size dramatically.'
+      name: include_resource_json
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'Whether to retrieve all of the resource JSON, including keys with large objects such as: "disks.shieldedInstanceInitialState" and "configure-sh" key under metadata. Default is "false".'
+      name: include_additional_resource_fields
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
     name: prisma-cloud-config-search
     outputs:
@@ -652,7 +666,7 @@ script:
       predefined:
       - asc
       - desc
-    description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times.
+    description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to reduce the returned data, set the "include_resource_json" argument to "false".
     name: prisma-cloud-event-search
     outputs:
     - contextPath: PrismaCloud.Event.subject

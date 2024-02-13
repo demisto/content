@@ -605,7 +605,7 @@ class TestCommands:
             enable_ioc = mocker.patch('XDR_iocs.prepare_enable_iocs', side_effect=prepare_enable_iocs)
             iocs_command(client)
             output = outputs.call_args.args[0]
-            assert output == 'indicators 11.11.11.11 enabled.', f'enable command\n\tprints:  {output}\n\tinstead: indicators 11.11.11.11 enabled.'    # noqa: E501
+            assert output == "IOCs command: enabled indicators='11.11.11.11'", f"enable command\n\tprints:  {output}\n\tinstead: IOCs command: enabled indicators='11.11.11.11'."    # noqa: E501
             assert enable_ioc.call_count == 1, 'enable command not called'
 
         def test_iocs_command_with_disable(self, mocker):
@@ -623,7 +623,7 @@ class TestCommands:
             disable_ioc = mocker.patch('XDR_iocs.prepare_disable_iocs', side_effect=prepare_disable_iocs)
             iocs_command(client)
             output = outputs.call_args.args[0]
-            assert output == 'indicators 11.11.11.11 disabled.', f'disable command\n\tprints:  {output}\n\tinstead: indicators 11.11.11.11 disabled.'    # noqa: E501
+            assert output == "IOCs command: disabled indicators='11.11.11.11'", f"enable command\n\tprints:  {output}\n\tinstead: IOCs command: disabled indicators='11.11.11.11'."    # noqa: E501
             assert disable_ioc.call_count == 1, 'disable command not called'
 
     def test_sync(self, mocker):
@@ -634,13 +634,16 @@ class TestCommands:
         sync(client)
         assert http_request.call_args.args[0] == 'sync_tim_iocs', 'sync command url changed'
 
-    def test_get_sync_file(self, mocker):
+    @pytest.mark.parametrize("zip_value, expected_file_name", [pytest.param(False, 'xdr-sync-file', id="no zip"),
+                                                               pytest.param(True, "xdr-sync-file-zipped.zip", id="zip")])
+    def test_get_sync_file(self, mocker, zip_value: bool, expected_file_name: str):
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
         return_results_mock = mocker.patch('XDR_iocs.return_results')
-        get_sync_file()
-        assert return_results_mock.call_args[0][0]['File'] == 'xdr-sync-file'
+        get_sync_file(zip=zip_value)
+        assert return_results_mock.call_args[0][0]['File'] == expected_file_name
 
+    @pytest.mark.xfail(reason="Until API issue is fixed (XSUP-33235)")
     @freeze_time('2020-06-03T02:00:00Z')
     def test_iocs_to_keep(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
@@ -732,13 +735,14 @@ def test_file_deleted_for_create_file_sync(mocker):
 
     mocker.patch('XDR_iocs.create_file_sync', new=raise_function)
     with pytest.raises(DemistoException):
-        get_sync_file()
+        get_sync_file(set_time=False, zip=False)
     assert os.path.exists(file_path) is False
 
 
 data_test_test_file_deleted = [
     (sync, 'create_file_sync'),
-    (iocs_to_keep, 'create_file_iocs_to_keep'),
+    pytest.param(iocs_to_keep, 'create_file_iocs_to_keep', marks=pytest.mark.xfail(
+        reason="Until API issue is fixed (XSUP-33235)"))
 ]
 
 
