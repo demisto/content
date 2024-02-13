@@ -99,6 +99,8 @@ class Client:
             module = "oracle"
         elif dialect in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
             module = "mssql+pyodbc"
+        elif dialect == "SAP HANA":
+            module = "hana"
         else:
             module = str(dialect)
         return module

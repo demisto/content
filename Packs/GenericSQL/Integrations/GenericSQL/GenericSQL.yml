@@ -12,6 +12,7 @@ configuration:
   - Microsoft SQL Server
   - Microsoft SQL Server - MS ODBC Driver
   - Oracle
+  - SAP HANA
   required: true
   type: 15
 - display: Database host
