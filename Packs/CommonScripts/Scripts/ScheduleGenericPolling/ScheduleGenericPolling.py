@@ -8,6 +8,10 @@ import uuid
 MINIMUM_XSOAR_VERSION = '8.2.0'
 MINIMUM_BUILD_NUMBER_XSOAR = 309463
 
+SANITIZED_ARG_NAMES = ['pollingCommand', 'pollingCommandArgName',
+                'additionalPollingCommandArgNames', 'additionalPollingCommandArgValues',
+                ]
+
 
 # Returns a comma-separated string representation of a list
 # Possible inputs: null, int, str, bytes, ["","",...], [int, int], 'a,b,...', '"a","b",...', '["","",...]'
@@ -51,10 +55,7 @@ def calculate_end_time(timeout):
 
 
 def is_value_sanitized(value):
-    arg_names = ['pollingCommand', 'pollingCommandArgName',
-                 'additionalPollingCommandArgNames', 'additionalPollingCommandArgValues',
-                 ]
-    return all(current_arg_name not in value for current_arg_name in arg_names)
+    return all(current_arg_name not in value for current_arg_name in SANITIZED_ARG_NAMES)
 
 
 def main():  # pragma: no cover
@@ -93,6 +94,11 @@ def main():  # pragma: no cover
                                                                          pollingCommandArgName, playbookId,
                                                                          dt.replace('"', r'\"'), interval, timeout,
                                                                          tag, args_names, args_values)
+
+    for current_sanitized_arg_name in SANITIZED_ARG_NAMES:
+        if command_string.count(current_sanitized_arg_name) > 1:
+            return_error(f"The value of {current_sanitized_arg_name} is malformed.")
+
     schedule_command_args = {
         'command': command_string,
         'cron': f'*/{interval} * * * *',
