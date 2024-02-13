@@ -121,7 +121,7 @@ def option_handler():
 
    
 def main():
-    install_logging('Override_core_packs.log', logger=logging)
+    install_logging('override_core_packs.log', logger=logging)
     logging.info("here")
     options = option_handler()
     packs_artifacts_path = options.packs_artifacts_path

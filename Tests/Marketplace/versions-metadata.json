@@ -5,7 +5,7 @@
             "core_packs_file_is_locked": true,
             "file_version": {
                 "xsoar": "1",
-                "xsoar_sass": "1",
+                "xsoar_saas": "1",
                 "marketplacev2": "1",
                 "xpanse": "1"
             }
@@ -15,7 +15,7 @@
             "core_packs_file_is_locked": true,
             "file_version": {
                 "xsoar": "1",
-                "xsoar_sass": "2",
+                "xsoar_saas": "2",
                 "marketplacev2": "1",
                 "xpanse": "1"
             }
@@ -25,7 +25,7 @@
             "core_packs_file_is_locked": true,
             "file_version": {
                 "xsoar": "1",
-                "xsoar_sass": "1",
+                "xsoar_saas": "1",
                 "marketplacev2": "1",
                 "xpanse": "1"
             }
@@ -35,7 +35,7 @@
             "core_packs_file_is_locked": false,
             "file_version": {
                 "xsoar": "1",
-                "xsoar_sass": "1",
+                "xsoar_saas": "1",
                 "marketplacev2": "1",
                 "xpanse": "1"
             }
