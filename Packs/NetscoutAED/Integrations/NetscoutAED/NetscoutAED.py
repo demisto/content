@@ -324,8 +324,7 @@ def deserialize_protection_groups(list_of_protection_groups: list) -> None:
         active = item.get('active')
         if active is None:
             continue
-        print("TEST2")
-        time.sleep(5)
+
         item['active'] = True if active == 1 else False
         protection_level = item.get('protectionLevel')
         if protection_level:
@@ -335,8 +334,6 @@ def deserialize_protection_groups(list_of_protection_groups: list) -> None:
                 item['protectionLevel'] = 'medium'
             elif protection_level == 3:
                 item['protectionLevel'] = 'high'
-
-        exit(2)
 
 
 def serialize_protection_groups(protection_group: dict) -> None:
