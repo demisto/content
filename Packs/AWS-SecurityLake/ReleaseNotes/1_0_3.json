@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Fixed an issue where the context data in the yml and in the documentation was wrong."
+    "breakingChangesNotes": "Fixed an issue where the context path of command outputs was incorrect."
 }
