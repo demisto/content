@@ -107,10 +107,19 @@ class Client(BaseClient):
             if res.get('total') < page_size:
                 break
         return events
-    
-    def _manage_duplicates(self, events: list[dict], last_synchronous_ids):
-        ...
-        
+
+    def _manage_duplicates(self, objects: list[dict], last_synchronous_ids: list) -> tuple[list, list]:
+        ids = set(last_synchronous_ids)
+        objects = list(filter((lambda x: x['uuid'] not in ids), objects))
+        last_synchronous_ids = [i['uuid'] for i in objects if i['time'] == objects[-1]['time']]
+        return objects, last_synchronous_ids
+
+    def _fetch_objects(self, request_func: Callable, last_date: str | None, last_synchronous_ids: list):
+        last_date = last_date or (datetime.now() - timedelta(minutes=1)).strftime(DATE_FORMAT)
+        objects = self._pagination_fetch(request_func, last_date)
+        objects, last_synchronous_ids = self._manage_duplicates(objects, last_synchronous_ids)
+        last_date = dict_safe_get(objects, (0, 'time'))  # type: ignore
+        return objects, last_date, last_synchronous_ids  # TODO
 
     def _event_request(self, data: dict):
         return self._http_request(
@@ -127,18 +136,10 @@ class Client(BaseClient):
         )
 
     def fetch_events(self, last_date: str | None = None, last_synchronous_ids: list = []):
-        last_date = last_date or (datetime.now() - timedelta(minutes=1)).strftime(DATE_FORMAT)
-        events = self._pagination_fetch(self._event_request, last_date)
-        last_synchronous_ids = self._manage_duplicates(events, last_synchronous_ids)
-        last_date = events[-1]['time']
-        return events, last_date, last_synchronous_ids  # TODO
+        self._fetch_objects(self._event_request, last_date, last_synchronous_ids)
 
     def fetch_alerts(self, last_date: str | None = None, last_synchronous_ids: list = []):
-        last_date = last_date or (datetime.now() - timedelta(minutes=1)).strftime(DATE_FORMAT)
-        alerts = self._pagination_fetch(self._alert_request, last_date)
-        last_synchronous_ids = self._manage_duplicates(alerts, last_synchronous_ids)
-        last_date = alerts[-1]['time']
-        return alerts, last_date, last_synchronous_ids  # TODO
+        self._fetch_objects(self._alert_request, last_date, last_synchronous_ids)
 
 
 # --------------
