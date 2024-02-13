@@ -1,13 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
 from collections.abc import Callable
+from math import ceil
 
 # Disable insecure warnings
 
 ''' CONSTANTS '''
 
 API_LIMIT = 10_000
-AUTH_CONTEXT_KEY = 'Auth'
+AUTH_CONTEXT_KEY = 'API_Auth'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 VENDOR = 'symantec'
 PRODUCT = 'cwp'
@@ -31,21 +32,35 @@ class Client(BaseClient):
         raise_on_redirect=False, raise_on_status=False, error_handler=None, empty_valid_codes=None,
         params_parser=None, **kwargs
     ):
-        res = super()._http_request(
+        res: requests.Response = super()._http_request(
             method, url_suffix, full_url, headers, auth, json_data, params, data, files, timeout,
-            'response', (ok_codes or ()) + (401,), return_empty_response, retries, status_list_to_retry, backoff_factor,
+            'response', (ok_codes or (200,)) + (401,), return_empty_response, retries, status_list_to_retry, backoff_factor,
             raise_on_redirect, raise_on_status, error_handler, empty_valid_codes, params_parser, **kwargs
         )
         if res.status_code == 401:
             self.get_new_token()
-            res = super()._http_request(
+            res: requests.Response = super()._http_request(
                 method, url_suffix, full_url, headers, auth, json_data, params, data, files, timeout,
                 'response', ok_codes, return_empty_response, retries, status_list_to_retry, backoff_factor,
                 raise_on_redirect, raise_on_status, error_handler, empty_valid_codes, params_parser, **kwargs
             )
-        return res.json()
+        try:
+            match resp_type:
+                case 'json':
+                    return res.json()
+                case 'text':
+                    return res.text
+                case 'content':
+                    return res.content
+                case 'response':
+                    return res
+            return res
+        except requests.JSONDecodeError as e:
+            raise DemistoException(f'Failed to parse {resp_type} object from response: {res.content}', e, res)
 
     def update_authorization(self, auth: str):
+        if not self._headers:
+            self._headers = {}
         self._headers['Authorization'] = auth
 
     def get_new_token(self) -> str:
@@ -54,12 +69,12 @@ class Client(BaseClient):
             '/dcs-service/dcscloud/v1/oauth/tokens',
             data=self.credentials
         )
-        auth = f'{res["token_type"]} {res["access_token"]}'
+        auth = f'{res["token_type"]} {res["access_token"]}'  # type: ignore
         demisto.setIntegrationContext(
             demisto.getIntegrationContext()
             | {AUTH_CONTEXT_KEY: auth}
         )
-        demisto.debug(f'New access token generated: {auth[:-250]}...')
+        demisto.debug(f'New access token generated: {auth[:-200]}...')
         return auth
 
     @classmethod
@@ -91,8 +106,8 @@ class Client(BaseClient):
 
     def _pagination_fetch(self, request_func: Callable, last_date: str) -> list[dict]:
         events = []
-        page_size = int(self.max_fetch / API_LIMIT)  # TODO get the exact amount needed
-        end_date = datetime.now().strftime(DATE_FORMAT)  # TODO
+        end_date = datetime.now().strftime(DATE_FORMAT)
+        page_size = ceil(self.max_fetch / API_LIMIT)
         for page in range(int(self.max_fetch / page_size)):  # TODO what to do in the case "self.max_fetch < API_LIMIT"
             res = request_func(
                 {
@@ -140,49 +155,6 @@ class Client(BaseClient):
 
     def fetch_alerts(self, last_date: str | None = None, last_synchronous_ids: list = []):
         self._fetch_objects(self._alert_request, last_date, last_synchronous_ids)
-
-
-# --------------
-events = []
-max_fetch = 0
-api_limit = 0
-fetch = lambda x: []
-
-for i in max_fetch / api_limit:
-    events += fetch({
-        'pageSize': 'TBD',
-        'pageNumber': i,
-        'startDate': demisto.getLastRun(),
-        'endDate': datetime.now(),
-        'order': 'ASCENDING',
-    })
-
-# 1. split fetches into pages of 1000, check last times of each page with it's predecessor.
-# 2. add page size as parameter.
-# 4. ask meital about first fetch
-
-# set_last run
-same_events = []
-last_time = events[0]['time']
-for event in events:
-    if event['time'] == last_time:
-        same_events.append(event['id'])
-    else:
-        break
-
-demisto.setLastRun({same_events, last_time})
-
-
-# get last run
-same_events, last_time = demisto.getLastRun()
-
-for event in events[::-1]:
-    if event['time'] == last_time:
-        if event['id'] in same_events:
-            events.remove(event)
-    else:
-        break
-# ----------------
 
 
 def test_module(client: Client) -> str:
@@ -255,7 +227,7 @@ def fetch_events(client: Client, last_run: dict[str, int],
 ''' MAIN FUNCTION '''
 
 
-def add_time_to_events(events: List[Dict] | None):
+def add_time_to_events(events: list[dict]):
     """
     Adds the _time key to the events.
     Args:
@@ -263,10 +235,8 @@ def add_time_to_events(events: List[Dict] | None):
     Returns:
         list: The events with the _time key.
     """
-    if events:
-        for event in events:
-            create_time = arg_to_datetime(arg=event.get('created_time'))
-            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+    for event in events:
+        event['_time'] = event.get('time')
 
 
 def main() -> None:  # pragma: no cover
@@ -284,10 +254,8 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
 
         elif command == 'fetch-events':
-            last_run = demisto.getLastRun() or {
-                'events': {},
-                'alerts': {}
-            }
+
+            last_run = demisto.getLastRun() or {'events': {}, 'alerts': {}}
 
             client.fetch_events(**last_run['events'])  # type: ignore
             client.fetch_alerts(**last_run['alerts'])  # type: ignore
