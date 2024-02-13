@@ -9,8 +9,8 @@ MINIMUM_XSOAR_VERSION = '8.2.0'
 MINIMUM_BUILD_NUMBER_XSOAR = 309463
 
 SANITIZED_ARG_NAMES = ['pollingCommand', 'pollingCommandArgName',
-                'additionalPollingCommandArgNames', 'additionalPollingCommandArgValues',
-                ]
+                       'additionalPollingCommandArgNames', 'additionalPollingCommandArgValues',
+                       ]
 
 
 # Returns a comma-separated string representation of a list
