@@ -298,8 +298,9 @@ Gets a report.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| **Argument Name** | **Description**                                                                                                                                                  | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| importance | The importance of the threat. Possible values are: Low, Medium, High, All. Default is High.                                                                      | Optional |
 | app_version_id | The ID of the app version for which to get a JSON report. Can be retrieved using the zimperium-app-version-list command, in the field "Zimperium.AppVersion.id". | Required | 
 
 #### Context Output
@@ -323,7 +324,7 @@ Gets a report.
 | Zimperium.Report.result | Number | The Zimperium report result. | 
 
 #### Command example
-```!zimperium-report-get app_version_id="61"```
+```!zimperium-report-get app_version_id="61" importance="Low"```
 #### Context Example
 ```json
 {

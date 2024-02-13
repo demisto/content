@@ -313,6 +313,15 @@ script:
     - description:  The ID of the app version for which to get a JSON report. Can be retrieved using the zimperium-app-version-list command, in the field "Zimperium.AppVersion.id".
       name: app_version_id
       required: true
+    - defaultValue: 'High'
+      auto: PREDEFINED
+      predefined:
+        - Low
+        - Medium
+        - High
+        - All
+      description: The importance of the threat.
+      name: importance
     description: Gets a report.
     name: zimperium-report-get
     outputs:

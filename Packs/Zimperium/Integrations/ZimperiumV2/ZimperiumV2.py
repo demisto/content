@@ -462,10 +462,15 @@ def report_get_command(client: Client, args: dict) -> CommandResults:
         Outputs.
     """
     app_version_id = args.get('app_version_id')
+    importance = args.get('importance', 'High')
 
     response = client.report_get(app_version_id=app_version_id)
 
-    hr = tableToMarkdown(name='Report', t=response.get('report', {}).get('scanDetails'),
+    scan_details = response.get('report', {}).get('scanDetails')
+    if importance != 'All':
+        scan_details[:] = [entry for entry in scan_details if entry["importance"] == importance]
+
+    hr = tableToMarkdown(name='Report', t=scan_details,
                          headers=["riskType", "kind", "description", "location", "importance"],
                          headerTransform=pascalToSpace)
 
