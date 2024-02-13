@@ -1,6 +1,6 @@
 [MODEL: dataset = symantec_dlp_raw]
 filter _raw_log ~= "{.*\"APPLICATION_NAME\":"
-| alter json_content = replex(arrayindex(regextract(_raw_log ,"(\{.*\})"),0), "\\+", "\\\\") /* Taking only the JSON part from the syslog */
+| alter json_content = replex(arrayindex(regextract(_raw_log ,"(\{.*\})"),0), "\\+", "\\\\")
 | alter
         DESTINATION_IP = json_extract_scalar(json_content, "$.DESTINATION_IP"),
         ENDPOINT_USERNAME = json_extract_scalar(json_content, "$.ENDPOINT_USERNAME"),
