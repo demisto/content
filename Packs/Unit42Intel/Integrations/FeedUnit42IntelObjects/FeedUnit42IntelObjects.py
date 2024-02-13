@@ -169,7 +169,7 @@ def incremental_level_fetch(client: Client) -> list:
     time_from_last_update = integration_context.get('time_of_first_fetch')
     if time_from_last_update is None:
         demisto.info("time_from_last_update is None during incremental_level_fetch. "
-                     "Using current time instead instead of fetching tags")
+                     "Using current time instead.")
         time_from_last_update = date_to_timestamp(datetime.now(), DATE_FORMAT)
 
     index_to_delete = 0
