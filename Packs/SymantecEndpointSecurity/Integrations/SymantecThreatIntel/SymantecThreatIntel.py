@@ -108,9 +108,11 @@ def is_filtered(value: str, filters: list[str]) -> bool:
         return False
 
     filter_pattern = re.escape('|'.join(filters)).replace('\\|', '|')
-    return re.match(pattern=f'(http(s)?:\\/\\/)?([a-z0-9-]*\\.)*{filter_pattern}($|\\/.*)',
-                    string=value,
-                    flags=re.I) is not None
+
+    match = re.match(pattern=f'(http(s)?:\\/\\/)?([a-z0-9-]*\\.)*({filter_pattern})($|\\/.*)',
+                     string=value,
+                     flags=re.I)
+    return match is not None
 
 
 def ensure_argument(args: dict[str, Any], arg_name: str) -> list[str]:
