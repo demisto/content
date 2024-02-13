@@ -241,7 +241,7 @@
       fi
       # Update gitignore to ignore all files except the Packs folder
       echo "\n/*\n\!/Packs" >> .gitignore
-      # Grep .gitignore to verify that the "/*" and "\!/Packs" are in there.
+      # Grep .gitignore to verify that the "/*" and "\!/Packs" are there.
       grep -Fx "/*" .gitignore &&  grep -Fx "\!/Packs" .gitignore
       rm -rf ./Packs
       echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/production_packs to ./Packs"
