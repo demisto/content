@@ -979,7 +979,6 @@ class Pack:
             pack.download_to_filename(download_pack_path)
             with ZipFile(download_pack_path, 'r') as pack_zip:
                 pack_zip.extractall(self.path)
-
             return True
         else:
             logging.warning(f'{self._pack_name} pack of version {pack_version} was not found in the bucket. {pack_path=}')
