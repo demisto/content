@@ -17,7 +17,7 @@ API_KEY_LENGTH = 128
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
 INTEGRATION_NAME = 'Cortex XDR - IR'
-UPGRADED_GET_EXTRA_DATA_ = False
+UPGRADED_GET_EXTRA_DATA = False
 IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET = False
 ALERTS_LIMIT_PER_INCIDENTS = -1
 
@@ -321,6 +321,7 @@ class Client(CoreClient):
         """
         demisto.debug('beginning get_multiple_incidents_extra_data')
         request_data = {
+            'incident_id': incident_id_list,
             "filters": [{"field": "incident_id_list", "operator": "in", "value": [incident_id_list]}]
         }
 
@@ -332,7 +333,6 @@ class Client(CoreClient):
             timeout=self.timeout,
 
         )
-        demisto.debug(f"Reply from get_multiple_incidents_extra_data API: {reply}")
         return reply
 
 
@@ -439,18 +439,17 @@ def check_using_upgraded_api_incidents_extra_data(client, incident_id: str):
         bool: True if the additional incident data retrieval was successful, False otherwise.
         Dict: if the call sus
     """
-    global ALERTS_LIMIT_PER_INCIDENTS
+    global ALERTS_LIMIT_PER_INCIDENTS, IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET, UPGRADED_GET_EXTRA_DATA
     demisto.debug(f"Using for check get_multiple_incidents_extra_data API for incident {incident_id}.")
+    IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET = True
     try:
         raw_incident: dict = client.get_multiple_incidents_extra_data(incident_id)
         ALERTS_LIMIT_PER_INCIDENTS = int(raw_incident.get('replay', {}).get('number_in_config'))
         fetch_alert_count = int(raw_incident.get('replay', {}).get('alert_count'))
-        use_get_incident_extra_data = fetch_alert_count < ALERTS_LIMIT_PER_INCIDENTS
-        return use_get_incident_extra_data
+        UPGRADED_GET_EXTRA_DATA = fetch_alert_count < ALERTS_LIMIT_PER_INCIDENTS
     except Exception as err:
         if err.res.status_code == 500:  # type: ignore
-            return False
-    return True
+            UPGRADED_GET_EXTRA_DATA = False
 
 
 def get_incident_extra_data_command(client, args):
@@ -471,8 +470,7 @@ def get_incident_extra_data_command(client, args):
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
     if not IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET:
         demisto.debug('IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET')
-        UPGRADED_GET_EXTRA_DATA = check_using_upgraded_api_incidents_extra_data(client, incident_id)
-        IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET = True
+        check_using_upgraded_api_incidents_extra_data(client, incident_id)
     raw_incident = client.get_multiple_incidents_extra_data(list_incidents_ids).get('replay', {}).get('incidents', {}) \
         if UPGRADED_GET_EXTRA_DATA else client.get_incident_extra_data(incident_id, alerts_limit)
 
@@ -921,9 +919,8 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         list_incidents_ids: list[str] = []
         incident_data_dict: dict[str, Any] = {}
         if not IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET and raw_incidents:
-            UPGRADED_GET_EXTRA_DATA = check_using_upgraded_api_incidents_extra_data(
-                client, raw_incidents[0].get('incident_id')[-1])
-            IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET = True
+            check_using_upgraded_api_incidents_extra_data(client, raw_incidents[0].get('incident_id')[-1])
+            
         if UPGRADED_GET_EXTRA_DATA:
             list_incidents_ids = [raw_incident.get('incident_id') for raw_incident in raw_incidents
                                   if len(list_incidents_ids) < max_fetch]
@@ -935,6 +932,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             incident_data: dict[str, Any] = {}
             if UPGRADED_GET_EXTRA_DATA and int(incident_data_dict.get\
                 (incident_id, {}).get('incident', {}).get('alerts_count', 0)) < ALERTS_LIMIT_PER_INCIDENTS:
+                
                 incident_data = incident_data_dict.get(incident_id, {})
             else:
                 incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
