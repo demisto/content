@@ -43,7 +43,7 @@ In order to change Fortimail's system time zone use the commands-
     set zone <zone_int>
     end
 ``` 
-For additional information, please review Fortimail's System Time Manual [documentation](https://docs.fortinet.com/document/fortimail/7.4.1/cli-reference/302323/system-time-manual).
+For additional information, review Fortimail's System Time Manual [documentation](https://docs.fortinet.com/document/fortimail/7.4.1/cli-reference/302323/system-time-manual).
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
