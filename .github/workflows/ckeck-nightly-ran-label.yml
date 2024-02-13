@@ -23,7 +23,7 @@ jobs:
         with:
           script: |
             const labels = context.payload.pull_request.labels.map(label => label.name);
-            const hasLabel = labels.includes('nightly-ran');
+            const hasLabel = labels.includes('nightly-ok');
             if (hasLabel) {
               console.log('PR has the specified label.');
             } else {
