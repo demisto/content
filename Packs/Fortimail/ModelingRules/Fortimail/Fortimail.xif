@@ -93,7 +93,7 @@ alter
     xdm.target.domain = Domain,
     xdm.target.ipv4 = coalesce(tar_ip_v4, tar_ip2_v4),
     xdm.target.ipv6 = coalesce(tar_ip_v6, tar_ip2_v6),
-    xdm.event.id = Log_ID,
+    xdm.event.id = to_string(Log_ID),
     xdm.event.description = Message,
     xdm.alert.description = coalesce(get_dkim_key_des, get_mailevent_stat),
     xdm.event.type = Subtype,
