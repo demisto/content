@@ -814,8 +814,8 @@ tasks:
     task:
       id: 68112887-ab7a-408a-8a74-e245dd055d1f
       version: -1
-      name: zimperium-devices-cve-get
-      script: Zimperium v2|||zimperium-devices-cve-get
+      name: zimperium-get-devices-by-cve
+      script: Zimperium v2|||zimperium-get-devices-by-cve
       type: regular
       iscommand: true
       brand: Zimperium v2
@@ -862,69 +862,76 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.DeviceCVE.id
+              simple: Zimperium.DeviceByCVE.id
             iscontext: true
           right:
             value: {}
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.DeviceCVE.os.id
+              simple: Zimperium.DeviceByCVE.cveId
+            iscontext: true
+          right:
+            value: { }
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Zimperium.DeviceByCVE.os.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.DeviceCVE.os.maxOsPatchDate
+              simple: Zimperium.DeviceByCVE.os.maxOsPatchDate
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.DeviceCVE.os.maxOsVersion
+              simple: Zimperium.DeviceByCVE.os.maxOsVersion
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.DeviceCVE.os.name
+              simple: Zimperium.DeviceByCVE.os.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.DeviceCVE.os.osVersionId
+              simple: Zimperium.DeviceByCVE.os.osVersionId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.DeviceCVE.os.patchDate
+              simple: Zimperium.DeviceByCVE.os.patchDate
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: Zimperium.DeviceCVE.os.policyCompliant
+              simple: Zimperium.DeviceByCVE.os.policyCompliant
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.DeviceCVE.os.type
+              simple: Zimperium.DeviceByCVE.os.type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.DeviceCVE.os.version
+              simple: Zimperium.DeviceByCVE.os.version
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: Zimperium.DeviceCVE.os.versionUpgradeable
+              simple: Zimperium.DeviceByCVE.os.versionUpgradeable
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.DeviceCVE.teamId
+              simple: Zimperium.DeviceByCVE.teamId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.DeviceCVE.zdeviceId
+              simple: Zimperium.DeviceByCVE.zdeviceId
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1080,8 +1087,8 @@ tasks:
     task:
       id: 88483e05-7bf3-4f2e-83fb-77cd0d71780b
       version: -1
-      name: zimperium-cve-devices-get
-      script: Zimperium v2|||zimperium-cve-devices-get
+      name: zimperium-get-cves-by-device
+      script: Zimperium v2|||zimperium-get-cves-by-device
       type: regular
       iscommand: true
       brand: Zimperium v2
@@ -1128,29 +1135,29 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.CVEDevice.id
+              simple: Zimperium.CVEByDevice.id
             iscontext: true
           right:
             value: {}
       - - operator: isExists
           left:
             value:
-              simple: Zimperium.CVEDevice.activeExploit
+              simple: Zimperium.CVEByDevice.activeExploit
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.CVEDevice.severity
+              simple: Zimperium.CVEByDevice.severity
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.CVEDevice.type
+              simple: Zimperium.CVEByDevice.type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Zimperium.CVEDevice.url
+              simple: Zimperium.CVEByDevice.url
             iscontext: true
     continueonerrortype: ""
     view: |-

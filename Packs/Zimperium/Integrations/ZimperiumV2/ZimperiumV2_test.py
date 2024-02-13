@@ -3,8 +3,8 @@ from freezegun import freeze_time
 
 from CommonServerPython import *
 from ZimperiumV2 import Client, users_search_command, devices_search_command, \
-    report_get_command, threat_search_command, app_version_list_command, device_cve_get_command, \
-    devices_os_version_command, cve_devices_get_command, policy_group_list_command, policy_privacy_get_command, \
+    report_get_command, threat_search_command, app_version_list_command, get_devices_by_cve_command, \
+    devices_os_version_command, get_cves_by_device_command, policy_group_list_command, policy_privacy_get_command, \
     policy_threat_get_command, policy_phishing_get_command, policy_app_settings_get_command, \
     policy_device_inactivity_list_command, policy_device_inactivity_get_command, fetch_incidents, vulnerability_get_command
 
@@ -119,9 +119,9 @@ def test_app_version_list_command(client, requests_mock):
     assert results.raw_response == mock_response_app_version_list
 
 
-def test_device_cve_get_command(client, requests_mock):
+def test_get_devices_by_cve_command(client, requests_mock):
     """
-        When: running zimperium-devices-cve-get
+        When: running zimperium-get-devices-by-cve
         Given: bundle id to filter by.
         Then: validate the command result returned.
         """
@@ -130,9 +130,9 @@ def test_device_cve_get_command(client, requests_mock):
         './test_data/device_cve_get.json')
 
     requests_mock.get(f'{SERVER_URL}/devices/public/v2/devices/data-cve-filter', json=mock_response_app_version_list)
-    results = device_cve_get_command(client=client, args=args)
+    results = get_devices_by_cve_command(client=client, args=args)
 
-    assert results.outputs_prefix == 'Zimperium.DeviceCVE'
+    assert results.outputs_prefix == 'Zimperium.DeviceByCVE'
     assert results.outputs[0].get('id') == mock_response_app_version_list.get('content', [''])[0].get('id')
     assert results.outputs_key_field == 'id'
     assert 'Devices Associated with' in results.readable_output
@@ -159,9 +159,9 @@ def test_devices_os_version_command(client, requests_mock):
     assert results.raw_response == mock_response_devices_os_version
 
 
-def test_cve_devices_get_command(client, requests_mock):
+def test_get_cves_by_device_command(client, requests_mock):
     """
-        When: running zimperium-cve-devices-get command.
+        When: running zimperium-get-cves-by-device command.
         Given: device_id to filter by.
         Then: validate the command result returned.
         """
@@ -171,9 +171,9 @@ def test_cve_devices_get_command(client, requests_mock):
         './test_data/cve_devices_get.json')
 
     requests_mock.get(f'{SERVER_URL}/devices/public/v2/devices/2a/cves', json=mock_response_cve_devices_get)
-    results = cve_devices_get_command(client=client, args=args)
+    results = get_cves_by_device_command(client=client, args=args)
 
-    assert results.outputs_prefix == 'Zimperium.CVEDevice'
+    assert results.outputs_prefix == 'Zimperium.CVEByDevice'
     assert results.outputs[0].get('id') == mock_response_cve_devices_get.get('content', [''])[0].get('id')
     assert results.outputs_key_field == 'id'
     assert 'CVE on Device' in results.readable_output

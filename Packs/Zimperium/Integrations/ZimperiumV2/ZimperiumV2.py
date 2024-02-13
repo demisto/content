@@ -155,9 +155,9 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix='/devices/public/v1/appVersions',
                                   headers=self._headers, params=params)
 
-    def device_cve_get(self, cve_id: Optional[str], size: Optional[int], page: Optional[int],
-                       after: Optional[str] = None, before: Optional[str] = None,
-                       team_id: Optional[str] = None):
+    def device_by_cve_get(self, cve_id: Optional[str], size: Optional[int], page: Optional[int],
+                          after: Optional[str] = None, before: Optional[str] = None,
+                          team_id: Optional[str] = None):
         """Get Devices that has CVE with cve_id  a GET request.
 
         Args:
@@ -560,7 +560,7 @@ def app_version_list_command(client: Client, args: dict) -> CommandResults:
     return command_results
 
 
-def device_cve_get_command(client: Client, args: dict) -> CommandResults:
+def get_devices_by_cve_command(client: Client, args: dict) -> CommandResults:
     """Retrieve the devices associated with a specific CVE
 
     Args:
@@ -583,17 +583,19 @@ def device_cve_get_command(client: Client, args: dict) -> CommandResults:
 
     size = page_size if page_size else limit
 
-    response = client.device_cve_get(cve_id=cve_id, size=size, page=page, after=after_srt,
-                                     before=before_str, team_id=team_id, )
+    response = client.device_by_cve_get(cve_id=cve_id, size=size, page=page, after=after_srt,
+                                        before=before_str, team_id=team_id, )
+
+    for item in response.get('content', []):
+        item['cveId'] = cve_id
 
     hr = tableToMarkdown(name=f'Devices Associated with {cve_id}', t=response.get('content'),
                          headers=['id', 'zdeviceId', 'teamId', 'os'],
                          headerTransform=pascalToSpace)
 
+    contex = {'Zimperium.DeviceByCVE(val.id == obj.id && val.cveId == obj.cveId)': response.get('content')}
     command_results = CommandResults(
-        outputs_prefix='Zimperium.DeviceCVE',
-        outputs=response.get('content'),
-        outputs_key_field='id',
+        outputs=contex,
         readable_output=hr,
         raw_response=response,
     )
@@ -643,7 +645,7 @@ def devices_os_version_command(client: Client, args: dict) -> CommandResults:
     return command_results
 
 
-def cve_devices_get_command(client: Client, args: dict) -> CommandResults:
+def get_cves_by_device_command(client: Client, args: dict) -> CommandResults:
     """Search CVE for specific device.
 
     Args:
@@ -666,7 +668,7 @@ def cve_devices_get_command(client: Client, args: dict) -> CommandResults:
                          headerTransform=pascalToSpace)
 
     command_results = CommandResults(
-        outputs_prefix='Zimperium.CVEDevice',
+        outputs_prefix='Zimperium.CVEByDevice',
         outputs=response.get('content'),
         outputs_key_field='id',
         readable_output=hr,
@@ -1052,14 +1054,14 @@ def main():     # pragma: no cover
         elif command == 'zimperium-app-version-list':
             return_results(app_version_list_command(client, args))
 
-        elif command == 'zimperium-devices-cve-get':
-            return_results(device_cve_get_command(client, args))
+        elif command == 'zimperium-get-devices-by-cve':
+            return_results(get_devices_by_cve_command(client, args))
 
         elif command == 'zimperium-devices-os-version':
             return_results(devices_os_version_command(client, args))
 
-        elif command == 'zimperium-cve-devices-get':
-            return_results(cve_devices_get_command(client, args))
+        elif command == 'zimperium-get-cves-by-device':
+            return_results(get_cves_by_device_command(client, args))
 
         elif command == 'zimperium-vulnerability-get':
             return_results(vulnerability_get_command(client, args))

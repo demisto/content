@@ -740,14 +740,14 @@ List the app versions.
 >| 61 | Name | com.url | 2.12.0 | android | High | Low | LEGIT | TShih | 2023-12-11 14:38:05 | 2023-12-11 15:28:08 |
 
 
-### zimperium-devices-cve-get
+### zimperium-get-devices-by-cve
 
 ***
 Gets a devices associated with a specific CVE.
 
 #### Base Command
 
-`zimperium-devices-cve-get`
+`zimperium-get-devices-by-cve`
 
 #### Input
 
@@ -763,31 +763,33 @@ Gets a devices associated with a specific CVE.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Zimperium.DeviceCVE.id | String | The ID of the device. | 
-| Zimperium.DeviceCVE.os.id | Number | The operating system identifier of the device. | 
-| Zimperium.DeviceCVE.os.maxOsPatchDate | String | The device operating system max patch date. | 
-| Zimperium.DeviceCVE.os.maxOsVersion | String | The device operating system max version. | 
-| Zimperium.DeviceCVE.os.name | String | The operating system name of the device. | 
-| Zimperium.DeviceCVE.os.osVersionId | Number | The operating system version identifier of the device. | 
-| Zimperium.DeviceCVE.os.patchDate | Date | The patch date for of the operating system. | 
-| Zimperium.DeviceCVE.os.policyCompliant | Boolean | Whether the operating system policy is compliant with the device. | 
-| Zimperium.DeviceCVE.os.type | String | The operating system type of the device. | 
-| Zimperium.DeviceCVE.os.version | String | The operating system version of the device. | 
-| Zimperium.DeviceCVE.os.versionUpgradeable | Boolean | Whether the operating system version was upgradeable. | 
-| Zimperium.DeviceCVE.teamId | String | The team ID of the device. | 
-| Zimperium.DeviceCVE.zdeviceId | String | The zdevice ID of the device. | 
+| **Path**                                    | **Type** | **Description**                                                   |
+|---------------------------------------------| --- |-------------------------------------------------------------------|
+| Zimperium.DeviceByCVE.id                    | String | The ID of the device.                                             | 
+| Zimperium.DeviceByCVE.cveId                 | String | The ID of the CVE.                                                | 
+| Zimperium.DeviceByCVE.os.id | Number | The operating system identifier of the device.                    | 
+| Zimperium.DeviceByCVE.os.maxOsPatchDate     | String | The device operating system max patch date.                       | 
+| Zimperium.DeviceByCVE.os.maxOsVersion       | String | The device operating system max version.                          | 
+| Zimperium.DeviceByCVE.os.name               | String | The operating system name of the device.                          | 
+| Zimperium.DeviceByCVE.os.osVersionId        | Number | The operating system version identifier of the device.            | 
+| Zimperium.DeviceByCVE.os.patchDate          | Date | The patch date for of the operating system.                       | 
+| Zimperium.DeviceByCVE.os.policyCompliant    | Boolean | Whether the operating system policy is compliant with the device. | 
+| Zimperium.DeviceByCVE.os.type               | String | The operating system type of the device.                          | 
+| Zimperium.DeviceByCVE.os.version            | String | The operating system version of the device.                       | 
+| Zimperium.DeviceByCVE.os.versionUpgradeable | Boolean | Whether the operating system version was upgradeable.             | 
+| Zimperium.DeviceByCVE.teamId                | String | The team ID of the device.                                        | 
+| Zimperium.DeviceByCVE.zdeviceId             | String | The zdevice ID of the device.                                     | 
 
 
 #### Command example
-```!zimperium-devices-cve-get cve_id="CVE-2021-1886" limit=1```
+```!zimperium-get-devices-by-cve cve_id="CVE-2021-1886" limit=1```
 #### Context Example
 ```json
 {
     "Zimperium": {
         "DeviceCVE": {
             "id": "6",
+            "cveId": "CVE-2021-1886",
             "os": {
                 "id": 1,
                 "maxOsPatchDate": "20200901",
@@ -891,14 +893,14 @@ Gets devices associated with a specific operating system version.
 >| 2a | 1 | id: 1<br/>name: android<br/>type: Android<br/>version: 9<br/>patchDate: 2019-08-05<br/>versionUpgradeable: true<br/>maxOsVersion: 13<br/>maxOsPatchDate: 20230501<br/>osVersionId: 57062<br/>policyCompliant: false |
 
 
-### zimperium-cve-devices-get
+### zimperium-get-cves-by-device
 
 ***
 Gets the CVEs associated with a specific device.
 
 #### Base Command
 
-`zimperium-cve-devices-get`
+`zimperium-get-cves-by-device`
 
 #### Input
 
@@ -913,15 +915,15 @@ Gets the CVEs associated with a specific device.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zimperium.CVEDevice.id | String | The ID of the device. | 
-| Zimperium.CVEDevice.activeExploit | Boolean | Whether the CVE is active or not. | 
-| Zimperium.CVEDevice.exploitPocUrl.exploitPocUrls | Unknown | The exploit POC URLs for the CVE. | 
-| Zimperium.CVEDevice.severity | String | The severity of a CVE on the device. | 
-| Zimperium.CVEDevice.type | String | The CVE type. | 
-| Zimperium.CVEDevice.url | String | The URL of the CVE. | 
+| Zimperium.CVEByDevice.id | String | The ID of the device. | 
+| Zimperium.CVEByDevice.activeExploit | Boolean | Whether the CVE is active or not. | 
+| Zimperium.CVEByDevice.exploitPocUrl.exploitPocUrls | Unknown | The exploit POC URLs for the CVE. | 
+| Zimperium.CVEByDevice.severity | String | The severity of a CVE on the device. | 
+| Zimperium.CVEByDevice.type | String | The CVE type. | 
+| Zimperium.CVEByDevice.url | String | The URL of the CVE. | 
 
 #### Command example
-```!zimperium-cve-devices-get device_id="2a"```
+```!zimperium-get-cves-by-device device_id="2a"```
 #### Context Example
 ```json
 {

@@ -18,7 +18,7 @@
                 "OS": {
                     "simple": "device.os.name"
                 },
-                "Device OS Version": {
+                "OS Version": {
                     "simple": "device.os.version"
                 }
             }
