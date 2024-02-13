@@ -85,6 +85,7 @@ BOT_ID: str
 CACHED_INTEGRATION_CONTEXT: dict
 CACHE_EXPIRY: float
 MIRRORING_ENABLED: bool
+FILE_MIRRORING_ENABLED: bool
 LONG_RUNNING_ENABLED: bool
 DEMISTO_API_KEY: str
 DEMISTO_URL: str
@@ -1767,6 +1768,31 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     return conversation
 
 
+def send_mirrored_file_to_slack(entry: str, message: str, original_channel: str, channel_id: str, comment: Optional[str] = None):
+    """
+    Sends a file from xsoar investigation to a mirrored slack channel
+
+    Args:
+        entry: the entry ID of the file
+        message: the message from the war-room when uploading file
+        original_channel: the channel name to upload the file
+        channel_id: the channel ID to upload the file
+        comment: a comment that was added when uploading the file
+    """
+    file_name = demisto.getFilePath(entry)["name"]
+    if FILE_MIRRORING_ENABLED:
+        demisto.debug(
+            f'file {file_name} has been uploaded to a mirrored incident, '
+            f'uploading the file to slack channel {original_channel}'
+        )
+        if comment:
+            # if a comment was added when uploading the file, add it to the message
+            message = f'{message}\n{comment}'
+        slack_send_file(original_channel, channel_id, entry, message)
+    else:
+        demisto.debug(f'file {file_name} will not be mirrored because file mirroring is not enabled')
+
+
 def slack_send():
     """
     Sends a message to slack
@@ -1808,8 +1834,13 @@ def slack_send():
             return
 
         if entry:
-            demisto.debug(f'file {entry} has been uploaded to a mirrored incident, uploading the file to {original_channel=}')
-            slack_send_file(original_channel, channel_id, entry, message)
+            send_mirrored_file_to_slack(
+                entry,
+                message=message,
+                original_channel=original_channel,
+                channel_id=channel_id,
+                comment=entry_object.get("contents")
+            )
             return
 
     if (to and group) or (to and original_channel) or (to and original_channel and group):
@@ -2752,7 +2783,7 @@ def init_globals(command_name: str = ''):
     """
 
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, USER_CLIENT, \
-        CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED, USER_TOKEN
+        CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED, FILE_MIRRORING_ENABLED, USER_TOKEN
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
@@ -2789,6 +2820,7 @@ def init_globals(command_name: str = ''):
     CUSTOM_PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
     PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
     MIRRORING_ENABLED = demisto.params().get('mirroring', True)
+    FILE_MIRRORING_ENABLED = demisto.params().get('enable_file_mirroring', False)
     LONG_RUNNING_ENABLED = demisto.params().get('longRunning', True)
     DEMISTO_API_KEY = demisto.params().get('demisto_api_key', {}).get('password', '')
     demisto_urls = demisto.demistoUrls()

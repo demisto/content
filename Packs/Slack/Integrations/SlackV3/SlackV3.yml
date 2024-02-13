@@ -105,6 +105,12 @@ configuration:
   type: 8
   section: Collect
   required: false
+- display: Enable File Mirroring
+  name: enable_file_mirroring
+  type: 8
+  section: Connect
+  required: false
+  advanced: true
 - defaultvalue: 'true'
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning

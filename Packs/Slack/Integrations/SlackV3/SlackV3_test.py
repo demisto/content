@@ -2848,8 +2848,14 @@ def test_slack_send_with_mirrored_file(mocker):
     """
     import SlackV3
 
+    mocker.patch.object(demisto, 'params', return_value={'enable_file_mirroring': True})
+
+    SlackV3.init_globals()
+
     mocker.patch.object(
-        demisto, 'args', return_value={
+        demisto,
+        'args',
+        return_value={
             "message": "test",
             "channel_id": "1234",
             "channel": "channel",
