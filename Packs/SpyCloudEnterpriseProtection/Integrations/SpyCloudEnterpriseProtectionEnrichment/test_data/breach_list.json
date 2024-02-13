@@ -1,0 +1,40 @@
+{
+  "cursor": "",
+  "hits": 5,
+  "results": [
+    {
+      "site": "kiyafoods.in",
+      "confidence": 3,
+      "id": 38900,
+      "acquisition_date": "2022-05-20T00:00:00Z",
+      "uuid": "57cd5794-37bd-4f12-a326-155f904db030",
+      "num_records": 3067,
+      "type": "PUBLIC",
+      "title": "Kiya Foods",
+      "spycloud_publish_date": "2023-04-04T00:00:00Z",
+      "description": "On an unknown date, data allegedly belonging to Kiya Foods, a now defunct India-based online food store, was leaked online. The data contains names, email addresses, usernames, passwords, IPs and additional personal information. This leak is being publicly shared on a messaging platform.",
+      "site_description": "Kiya Foods is a now defunct online food store headquartered in Kerala, India.",
+      "assets": {
+        "full_name": 1265,
+        "password": 126,
+        "ip_addresses": 9,
+        "address_1": 768,
+        "ec_phone": 2,
+        "first_name": 11,
+        "username": 82,
+        "social_whatsapp": 1141,
+        "language": 1,
+        "phone": 1210,
+        "city": 195,
+        "country": 11,
+        "last_name": 11,
+        "account_login_time": 4,
+        "account_signup_time": 1,
+        "postal_code": 11,
+        "country_code": 11,
+        "email": 1816,
+        "state": 9
+      }
+    }
+  ]
+}
