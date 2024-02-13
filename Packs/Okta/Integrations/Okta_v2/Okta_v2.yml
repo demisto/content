@@ -37,7 +37,7 @@ configuration:
   required: false
   additionalinfo: Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
 - display: Private Key
-  additionalinfo: Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
+  additionalinfo: In PEM format. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
   name: private_key
   type: 14
   section: Connect
