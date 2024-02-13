@@ -1,17 +1,22 @@
+To use this integration, you need to configure authentication. There are three authentication methods available:  
+- Cortex XSOAR Azure app 
+- Self-Deployed Azure app  
+- Azure Managed Identities Authentication
 
-## Authorize Cortex XSOAR for Azure Active Directory Users (Cortex XSOAR Azure App)
+Note: Depending on the authentication method that you use, the integration parameters might change.
 
+#### Cortex XSOAR Azure App
 You need to grant Cortex XSOAR authorization to access Azure Active Directory Users.
 
 1. Access the [authorization flow](https://oproxy.demisto.ninja/ms-graph-user).
 2. Click the **Start Authorization Process** button and you will be prompted to grant Cortex XSOAR permissions for your Azure Active Directory Users.
 3. Click the **Accept** button and you will receive your ID, token, and key. You will need to enter these when you configure the Azure Active Directory Users integration instance in Cortex XSOAR.
 
-## Authorize Cortex XSOAR for Azure Active Directory Users (Self deployed Azure App)
+#### Self-Deployed Azure App
 
 There are two different authentication methods for self-deployed configuration: 
-- [Client Credentials flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow)
-- [Authorization Code flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
+- [Client Credentials flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#client-credentials-flow)
+- [Authorization Code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorization-code-flow)
 
 We recommend using the Client Credentials flow.
 
@@ -19,12 +24,9 @@ In order to use the ***msgraph-user-change-password*** command, you must use wit
 
 **Note:** When using the Authorization Code flow, make sure the user you authenticate with has the relevant roles in Azure AD in order to execute the operation.
 
-### Self-Deployed configuration
-- [Client Credentials flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
-- [Authorization Code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user)
 
 
-## Azure Managed Identities Authentication
+#### Azure Managed Identities Authentication
 ___
 ##### Note: This option is relevant only if the integration is running on Azure VM.
 Follow one of these steps for authentication based on Azure Managed Identities:

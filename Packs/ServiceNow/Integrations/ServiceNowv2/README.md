@@ -2323,7 +2323,8 @@ Create a change request from a template.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| template | Template for creating a standard change request. | Required | 
+| template | Template for creating a standard change request. | Required |
+| force_default_url | Whether to force-use the default api version (not versioned), ignoring the API version parameter. Default is false | Optional | 
 
 
 #### Context Output

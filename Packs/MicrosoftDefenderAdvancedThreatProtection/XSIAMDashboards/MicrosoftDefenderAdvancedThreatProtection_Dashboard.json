@@ -380,7 +380,7 @@
             "creation_time": 1668088119662,
             "description": "This widget displays column graph of  Top 10 Hosts with multiple events (Last 30 days)",
             "data": {
-                "phrase": "datamodel\r\n|filter xdm.observer.vendor=\"Microsoft 365\" and  xdm.observer.product=\"Defender\"\r\n|filter xdm.alert.category != \"None\"\r\n|comp count (xdm.target.host.fqdn) as TotalCount by xdm.target.host.fqdn\r\n|sort desc TotalCount \r\n|limit 10\n| view graph type = column subtype = grouped layout = horizontal show_callouts = `true` xaxis = xdm.target.host.fqdn yaxis = TotalCount seriescolor(\"TotalCount\",\"#582de6\") ",
+                "phrase": "datamodel dataset = microsoft_365_defender_raw |filter xdm.alert.category != \"None\"\r\n|comp count (xdm.target.host.fqdn) as TotalCount by xdm.target.host.fqdn\r\n|sort desc TotalCount \r\n|limit 10\n| view graph type = column subtype = grouped layout = horizontal show_callouts = `true` xaxis = xdm.target.host.fqdn yaxis = TotalCount seriescolor(\"TotalCount\",\"#582de6\") ",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },
@@ -446,7 +446,7 @@
             "creation_time": 1668088195787,
             "description": "This widget displays line chart of Events per day",
             "data": {
-                "phrase": "datamodel\r\n|filter xdm.observer.vendor=\"Microsoft 365\" and  xdm.observer.product=\"Defender\"\r\n|sort asc _time \r\n|bin _time span = 1D\r\n|comp count(_time) as EventCount by _time\n| view graph type = line header = \"Event Ingestion Count\" xaxis = _time yaxis = EventCount seriescolor(\"EventCount\",\"#1e83f7\") ",
+                "phrase": "datamodel dataset = microsoft_365_defender_raw \r\n|sort asc _time \r\n|bin _time span = 1D\r\n|comp count(_time) as EventCount by _time\n| view graph type = line header = \"Event Ingestion Count\" xaxis = _time yaxis = EventCount seriescolor(\"EventCount\",\"#1e83f7\") ",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },
@@ -498,7 +498,7 @@
             "creation_time": 1668089259803,
             "description": "This widget displays pie chart of all Microsoft Defender for Endpoint  Events by category (Last 30 days)",
             "data": {
-                "phrase": "datamodel\n|filter xdm.observer.vendor=\"Microsoft 365\" and  xdm.observer.product=\"Defender\"\n|comp count (xdm.alert.category ) as TotalAlertsCount by xdm.alert.category\n| view graph type = pie subtype = semi_donut xaxis = xdm.alert.category yaxis = TotalAlertsCount valuecolor(\"Malware\",\"#e70000\") valuecolor(\"None\",\"#4e80c9\") valuecolor(\"SuspiciousActivity\",\"#d18e00\") ",
+                "phrase": "datamodel dataset = microsoft_365_defender_raw \n|comp count (xdm.alert.category ) as TotalAlertsCount by xdm.alert.category\n| view graph type = pie subtype = semi_donut xaxis = xdm.alert.category yaxis = TotalAlertsCount valuecolor(\"Malware\",\"#e70000\") valuecolor(\"None\",\"#4e80c9\") valuecolor(\"SuspiciousActivity\",\"#d18e00\") ",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },
