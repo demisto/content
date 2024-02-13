@@ -538,7 +538,7 @@ script:
       name: limit
     - description: A link that specifies a starting point to use for subsequent calls.
       name: next_link
-    - description: "Number of results to return per page. Maximum page size is 1000.
+    - description: "Number of results to return per page.
 
        Note:  This parameter is intended for pagination purposes and will surpass the specified limit."
       name: page_size
