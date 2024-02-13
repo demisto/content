@@ -199,7 +199,7 @@
    },
    "data": "# **Last day incidents: {0}**",
    "type": "placeholder",
-   "title": "dailyIncidentRepor Headline2"
+   "title": "dailyIncidentReport Headline2"
   },
   {
    "layout": {
@@ -505,7 +505,7 @@
      },
      "query": "-status:closed",
      "modified": "2018-01-24T08:53:22.141025642Z",
-     "name": "dailyIncidentRepor Headline",
+     "name": "dailyIncidentReport Headline",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -540,7 +540,7 @@
      },
      "query": "-status:closed",
      "modified": "2018-01-24T08:57:30.006506045Z",
-     "name": "dailyIncidentRepor Headline2",
+     "name": "dailyIncidentReport Headline2",
      "dateRange": {
       "fromDate": "0001-01-01T00:00:00Z",
       "toDate": "0001-01-01T00:00:00Z",
@@ -674,7 +674,7 @@
    },
    {
     "id": "5ae462c0-01b7-11e8-9918-2d303bb12520",
-    "forceRange": false,
+    "forceRange": true,
     "x": 0,
     "y": 2,
     "i": "5ae462c0-01b7-11e8-9918-2d303bb12520",
@@ -711,7 +711,7 @@
    },
    {
     "id": "5ba40940-01b7-11e8-9918-2d303bb12520",
-    "forceRange": false,
+    "forceRange": true,
     "x": 6,
     "y": 2,
     "i": "5ba40940-01b7-11e8-9918-2d303bb12520",
@@ -748,7 +748,7 @@
    },
    {
     "id": "665f6190-01b7-11e8-9918-2d303bb12520",
-    "forceRange": false,
+    "forceRange": true,
     "x": 0,
     "y": 4,
     "i": "665f6190-01b7-11e8-9918-2d303bb12520",
@@ -785,7 +785,7 @@
    },
    {
     "id": "66e840a0-01b7-11e8-9918-2d303bb12520",
-    "forceRange": false,
+    "forceRange": true,
     "x": 6,
     "y": 4,
     "i": "66e840a0-01b7-11e8-9918-2d303bb12520",
