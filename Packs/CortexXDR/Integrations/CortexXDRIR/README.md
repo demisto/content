@@ -65,6 +65,15 @@ and an analyst is assigned for manual investigation. If chosen, automated remedi
 with Palo Alto Networks FireWall is initiated. After a manual review by the
 SOC analyst, the XDR incident is closed automatically.
 
+To utilize this playbook for handling XDR incidents, the classifier that should be selected is `Cortex XDR - Classifier`.
+The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the selected Mapper (outgoing) should be Cortex `XDR - Outgoing Mapper`.
+
+#### Cortex XDR Lite - Incident Handling
+
+This playbook is a lite default playbook to handle XDR incidents, and it doesn't require additional integrations to run. The playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident. First, the playbook performs enrichment on the incident’s indicators. Then, the playbook performs investigation and analysis on the command line and searches for related Cortex XDR alerts by Mitre tactics to identify malicious activity performed on the endpoint and by the user. Based on the enrichment and the investigation results, the playbooks sets the verdict of the incident. If malicious indicators are found, the playbook takes action to block these indicators and isolate the affected endpoint to prevent further damage or the spread of threats. If the verdict is not determined, it lets the analyst decide whether to continue to the remediation stage or close the investigation as benign. As part of this playbook, you'll receive a comprehensive layout that presents incident details, analysis, investigation findings, and the final verdict. Additionally, the layout offers convenient remediation buttons for quicker manual actions.
+
+To utilize this playbook for handling XDR incidents, the classifier should be empty, and the selected incident type should be `Cortex XDR - Lite`.
+The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the selected Mapper (outgoing) should be Cortex `XDR - Outgoing Mapper`.
 
 ## Use Cases
 
