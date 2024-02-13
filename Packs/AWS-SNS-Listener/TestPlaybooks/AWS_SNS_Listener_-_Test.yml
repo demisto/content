@@ -60,7 +60,7 @@ tasks:
           "Timestamp": "2023-12-11T14:18:37.923Z",
           "SignatureVersion": "1",
           "Signature": "Signature_test",
-          "SigningCertURL": "https://sns.eu-central-1.amazonaws.com/SimpleNotificationService.pem",
+          "SigningCertURL": "https://sns.eu-central-1.amazonaws.com/SimpleNotificationService-01d088a6f77103d0fe307c0069e40ed6.pem",
           "UnsubscribeURL": "https://sns.eu-central-1.amazonaws.com/?Action=Unsubscribe"
           }
       headers:

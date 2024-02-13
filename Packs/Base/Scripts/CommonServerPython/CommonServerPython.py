@@ -857,9 +857,9 @@ def handle_proxy_for_long_running(proxy_param_name='proxy', checkbox_default_val
             'http': crtx_http_proxy,
             'https': crtx_http_proxy
         }
-        use_ssl = True
-        return proxies, use_ssl
-    return handle_proxy(proxy_param_name, checkbox_default_value, handle_insecure, insecure_param_name), use_ssl
+        handle_insecure = True
+        return proxies, handle_insecure
+    return handle_proxy(proxy_param_name, checkbox_default_value, handle_insecure, insecure_param_name), handle_insecure
 
 
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,

@@ -189,8 +189,11 @@ async def handle_post(request: Request,
     """
     data = ''
     request_headers = dict(request.headers)
-
-    is_valid_credentials, header_name = is_valid_integration_credentials(credentials, request_headers, token)
+    is_valid_credentials = False
+    try:
+        is_valid_credentials, header_name = is_valid_integration_credentials(credentials, request_headers, token)
+    except Exception as e:
+        demisto.error(f'Error handling auth failure: {e}')
     if not is_valid_credentials:
         return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
 
@@ -203,7 +206,7 @@ async def handle_post(request: Request,
         raw_jason = json.dumps(payload)
     except Exception as e:
         demisto.error(f'Error in request parsing: {e}')
-        return 'Failed parsing request'
+        return Response(status_code=status.HTTP_400_BAD_REQUEST, content='Failed parsing request.')
     if not is_valid_sns_message(payload):
         return 'Validation of SNS message failed.'
 
