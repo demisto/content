@@ -1,0 +1,32 @@
+name: Prevent Merge Without Label
+
+on:
+  pull_request:
+    types: [opened, synchronize, labeled, unlabeled]
+
+jobs:
+  check_label:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if files under .gitlab directory are changed
+        id: check-changes
+        run: |
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep '^\.gitlab/' || exit 0
+          echo "Files under .gitlab directory are changed."
+        continue-on-error: true
+
+      - name: Check if PR has the specified label
+        if: steps.check-changes.outputs.code == '0'
+        uses: actions/github-script@v5
+        id: check-label
+        with:
+          script: |
+            const labels = context.payload.pull_request.labels.map(label => label.name);
+            const hasLabel = labels.includes('nightly-ran');
+            if (hasLabel) {
+              console.log('PR has the specified label.');
+            } else {
+              console.log('PR does not have the `nightly-ran` label. it is required when changing files under tht `.gitlab` directory.');
+              process.exit(1); // Exit with failure status if label is missing
+            }
