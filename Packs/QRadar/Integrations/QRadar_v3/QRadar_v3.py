@@ -553,7 +553,6 @@ class Client(BaseClient):
         )
 
     def searches_list(self, range_: str, filter_: Optional[str] = None):
-        print("SDSD")
         return self.http_request(
             method='GET',
             url_suffix='/ariel/searches',
