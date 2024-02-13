@@ -234,7 +234,7 @@
 .checkout-upload-commit-content-nightly: &checkout-upload-commit-content-nightly
   - section_start "Checkout upload commit content nightly" --collapsed
   - | 
-    if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
+    if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "ignore-all-files-except-pakcs" ]]; then
       if [[ ! -d "${CI_PROJECT_DIR}/artifacts/production_packs" ]]; then
         echo "content production packs do not exist in ${CI_PROJECT_DIR}/artifacts"
         exit 1
