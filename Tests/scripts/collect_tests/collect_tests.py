@@ -1436,7 +1436,7 @@ class SDKNightlyTestCollector(TestCollector):
         return self.sanity_tests
 
 
-def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[set, set]:  # TODO
+def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[set, set]:
     """
     :param: packs_to_upload: The resultant list of packs to upload
     :return:
