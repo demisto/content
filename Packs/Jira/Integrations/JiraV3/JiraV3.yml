@@ -419,7 +419,7 @@ script:
       name: issue_id
     - description: The issue key (Issue ID or key is required).
       name: issue_key
-    - description: 'The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}.'
+    - description: 'The issue object (in JSON format). This argument is for advanced users, as when utilizing this argument, one cannot use other arguments (it will raise an error) except the `issue_id` `issue_key` `action` `transition` and `status` and must input all required arguments into the issue_json. In addition, when issue_json is used, it is not possible to use the project name but only the project key. For example {"fields":{"customfield_10037":"field_value", "summary": "some summary", "project": {"key": "<project_key>"}}}. For more information about this argument, see https://developer.atlassian.com/server/jira/platform/jira-rest-api-example-create-issue-7897248/.'
       name: issue_json
     - description: Deprecated. Please use issue_json.
       name: issueJson
@@ -556,7 +556,7 @@ script:
       description: The last time the ticket was updated.
       type: Date
   - arguments:
-    - description: 'The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}.'
+    - description: 'The issue object (in JSON format). This argument is for advanced users, as when utilizing this argument, one cannot use other arguments and must input all required arguments into the issue_json. In addition, when issue_json is used, it is not possible to use the project name but only the project key. For example {"fields":{"customfield_10037":"field_value", "summary": "some summary", "project": {"key": "<project_key>"}}}. For more information about this argument, see https://developer.atlassian.com/server/jira/platform/jira-rest-api-example-create-issue-7897248/.'
       name: issue_json
     - description: Deprecated. Please use issue_json.
       name: issueJson
@@ -1462,7 +1462,7 @@ script:
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
     arguments: []
-  dockerimage: demisto/btfl-soup:1.0.1.85862
+  dockerimage: demisto/btfl-soup:1.0.1.87353
   isfetch: true
   ismappable: true
   isremotesyncin: true
