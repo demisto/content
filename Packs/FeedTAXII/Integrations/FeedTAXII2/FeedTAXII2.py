@@ -48,13 +48,14 @@ def module_test_command(client, limit, fetch_full_feed):
         return_error("Could not connect to server")
 
 
-def filter_indicators(indicators: list, last_run: dict) -> list:
+def filter_previously_fetched_indicators(indicators: list, last_run: dict) -> list:
     """
     Filter the indicators returned from the taxii server, by taking out indicators that we're ingested in the previous fetch
     call and their modified date was not updated,
     """
     last_indicators = last_run.get("latest_indicators")  # indicators from prev fetch
-    new_indicators = []
+    new_indicators: list = []
+    skipped_indicators: list = []
     if not last_indicators:    # first fetch
         last_run["latest_indicators"] = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("modified")}
                                          if obj.get("value") != "$$DummyIndicator$$" else obj
@@ -74,11 +75,15 @@ def filter_indicators(indicators: list, last_run: dict) -> list:
             if indicator.get("rawJSON", {}).get("modified", "") > modified_date:
                 new_indicators.append(indicator)
             else:
-                demisto.debug(f"indicator {indicator_id} was already ingested in the previous fetch...skipping.")
+                skipped_indicators.append(indicator_id)
 
         # the indicator is not stored in latest_indicators -> add to new_indicators
         else:
             new_indicators.append(indicator)
+
+    if skipped_indicators:
+        demisto.info(f"{len(skipped_indicators)} indicators were already ingested in the previous fetch...skipping.")
+        demisto.debug(f"Skipped indicators: {skipped_indicators}")
 
     demisto.debug(f"found {len(new_indicators)} new indicators from {len(indicators)} fetched indicators")
 
@@ -148,7 +153,7 @@ def fetch_indicators_command(
             else added_after
         )
 
-    indicators = filter_indicators(indicators, last_run_ctx)
+    indicators = filter_previously_fetched_indicators(indicators, last_run_ctx)
     demisto.debug(f'{indicators=}')
     return indicators, last_run_ctx
 

@@ -366,29 +366,32 @@ class TestHelperFunctions:
         )
 
     ])
-    def test_filter_indicators(self, indicators, last_run, new_indicators):
+    def test_filter_previously_fetched_indicators(self, indicators, last_run, new_indicators):
         """
         Scenario: Test filtering indicators received from the fetch call before sending indicators to server
 
         Given:
-        - list of indicators returned from the fetch call
-        - last run object containing a list of indicators fetched in the previous fetch
+        - list of indicators returned from the fetch call with empty lastrun object.
+        - list of indicators returned from the fetch call with lastrun containing the same indicators (they were fetched
+         in the previous fetch call)
+        - list of indicators returned from the fetch call, and lastrun containing an indicator that was modified in the fetch call
 
         When:
         - running filter_indicators command
 
         Then:
-        - update last run with the indicators list of the new fetch
-        - return new_indicators list containing only new or modified indicators to be sent to server
+        - all fetched indicators are returned, lastrun is updated with all fetched indicators ids and modified date.
+        - non of the fetched indicators returned, lastrun is updated with all fetched indicators ids and modified date.
+        - only the new and modified indicators are returned, lastrun is updated with all fetched indicators ids and modified dates.
         """
 
-        from FeedTAXII2 import filter_indicators
+        from FeedTAXII2 import filter_previously_fetched_indicators
 
         next_latest_indicators = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("modified")}
                                   if obj.get("value") != "$$DummyIndicator$$" else obj
                                   for obj in indicators]
 
-        result = filter_indicators(indicators, last_run)
+        result = filter_previously_fetched_indicators(indicators, last_run)
 
         assert result == new_indicators
         assert last_run.get("latest_indicators") == next_latest_indicators
