@@ -96,7 +96,7 @@ def main():  # pragma: no cover
                                                                          tag, args_names, args_values)
 
     for current_sanitized_arg_name in SANITIZED_ARG_NAMES:
-        if command_string.count(current_sanitized_arg_name) > 1:
+        if command_string.count(f' {current_sanitized_arg_name}') > 1:
             return_error(f"The value of {current_sanitized_arg_name} is malformed.")
 
     schedule_command_args = {
