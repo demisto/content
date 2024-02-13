@@ -1020,4 +1020,7 @@ view: |-
   }
 tests:
 - no test
+marketplaces:
+- xsoar
+- marketplacev2
 fromversion: 6.0.0
