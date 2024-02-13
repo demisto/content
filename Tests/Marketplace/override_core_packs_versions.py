@@ -34,7 +34,7 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
     # override_marketplaces = GCPConfig.corepacks_override_contents.get('marketplaces', [])
     override_corepacks_file_version = GCPConfig.corepacks_override_contents.get('file_version')
     current_corepacks_file_version = GCPConfig.core_packs_file_versions.get(
-        override_corepacks_server_version, {}).get('file_version')
+        override_corepacks_server_version, {}).get('file_version').get(marketplace)
     if not current_corepacks_file_version:
         logging.debug(f'Could not find a matching file version for server version {override_corepacks_server_version} in '
                       f'{GCPConfig.VERSIONS_METADATA_FILE} file. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
@@ -86,7 +86,7 @@ def override_locked_corepacks_file(build_number: str, artifacts_dir: str, market
     logging.debug(f'Bumping file version of server version {override_corepacks_server_version} in versions-metadata.json from'
                   f'{GCPConfig.versions_metadata_contents["version_map"][override_corepacks_server_version]["file_version"]} to'
                   f'{override_corepacks_file_version}')
-    GCPConfig.versions_metadata_contents[marketplace]['version_map'][override_corepacks_server_version]['file_version'] = \
+    GCPConfig.versions_metadata_contents['version_map'][override_corepacks_server_version]['file_version'][marketplace] = \
         override_corepacks_file_version
 
 def upload_server_versions_metadata(artifacts_dir: str):
