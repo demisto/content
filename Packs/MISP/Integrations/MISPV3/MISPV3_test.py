@@ -728,7 +728,7 @@ def test_add_custom_object(mocker):
     When:
     - Running add_custom_object command.
     Then:
-    - Ensure Demisto exception is raised with the correct error.
+    - Ensure that the readable output is valid.
     """
     from MISPV3 import add_custom_object_command
     event_id = 1572
