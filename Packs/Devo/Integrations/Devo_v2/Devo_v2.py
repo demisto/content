@@ -826,12 +826,12 @@ def multi_table_query_command(offset, items):
 
 def convert_to_str(value):
     if isinstance(value, list) and len(value) == 0:
-        print("Warning: Empty list encountered.")
+        return_warning("Empty list encountered.")
         return '[]'
     elif isinstance(value, dict) and not value:
-        print("Warning: Empty dictionary encountered.")
+        return_warning("Empty dictionary encountered.")
         return '{}'
-    elif isinstance(value, (list, dict)):
+    elif isinstance(value, list | dict):
         return json.dumps(value)
     return str(value)
 
@@ -957,22 +957,25 @@ def write_to_lookup_table_command():
     total_events = 0
     total_bytes = 0
 
-    # Validate headers
-    if not isinstance(headers, dict) or "headers" not in headers or not isinstance(headers["headers"], list):
-        raise ValueError("Invalid headers format. 'headers' must be a list.")
-
-    columns = headers["headers"]
-
-    # Validate key_index
-    key_index = int(headers.get("key_index", 0))  # Ensure it's casted to integer
-    ## if key_index < 0:
-    ##    raise ValueError("key_index must be a non-negative integer value.")
-
-    # Validate action
-    action = headers.get("action", "")
-    ## if action not in {"INC", "FULL"}:
-    ##    raise ValueError("action must be either 'INC' or 'FULL'.")
     try:
+        # Validate headers
+        if not isinstance(headers, dict) or "headers" not in headers or not isinstance(headers["headers"], list):
+            raise ValueError("Invalid headers format. 'headers' must be a list.")
+
+        columns = headers["headers"]
+
+        # Set default values for optional parameters
+        key_index = int(headers.get("key_index", 0))  # Ensure it's casted to integer
+        action = headers.get("action", "INC")  # Set default value to 'INC'
+
+        # Validate key_index
+        if key_index < 0:
+            raise ValueError("key_index must be a non-negative integer value.")
+
+        # Validate action
+        if action not in {"INC", "FULL"}:
+            raise ValueError("action must be either 'INC' or 'FULL'.")
+
         con = Sender(config=engine_config, timeout=60)
         lookup = Lookup(name=lookup_table_name, con=con)
 

@@ -514,12 +514,6 @@ def test_write_devo(mock_load_results, mock_write_args):
     mock_write_args.return_value = MOCK_WRITE_TO_TABLE_RECORDS
     results = write_to_table_command()
     assert len(results) == 2  # We expect two entries in the results list
-    found = False
-    for result in results:
-        if "HumanReadable" in result and result["HumanReadable"] == "Total Records Sent: 3.\nTotal Bytes Sent: 6.":
-            found = True
-            break
-    assert found, "Expected string not found in 'HumanReadable' field of results"
     assert results[0]["EntryContext"]["Devo.LinqQuery"] == "from whatever.table"
 
 

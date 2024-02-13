@@ -291,7 +291,7 @@ are both given that they must be the same given format.
 
 ##### Command Example
 ```
-!devo-multi-table-query tables='["siem.logtrust.web.activity", "siem.logtrust.web.navigation"]' searchToken="john@doe.com" from=1576845233.193244 to=1576845293.193244 items_per_page=1000
+!devo-multi-table-query tables="[siem.logtrust.alert.info, siem.logtrust.web.navigation]" searchToken="parag@metronlabs.com" from=1707416980 to=1707805927
 ```
 
 ##### Human Readable Output
@@ -351,16 +351,16 @@ Total Bytes Sent: 196.
 
 ##### Entries to load into Devo
 
-|Data|
-|---|
-|This is my first event|
-|This is my second log|
-|{"hello": "world"}|
-|{"hello": "friend"}|
-|["a", "b", "c"]|
-|["1", "2", "3"]|
-|1234|
-|true|
+|eventdate|format|cluster|instance|message|
+|---|---|---|---|---|
+|2024-02-12 17:51:51.277|test|-|-|This is my first event|
+|2024-02-12 17:51:51.277|test|-|-|This is my second log|
+|2024-02-12 17:51:51.277|test|-|-|{"hello": "world"}|
+|2024-02-12 17:51:51.277|test|-|-|{"hello": "friend"}|
+|2024-02-12 17:51:51.277|test|-|-|["a", "b", "c"]|
+|2024-02-12 17:51:51.277|test|-|-|["1", "2", "3"]|
+|2024-02-12 17:51:51.277|test|-|-|1234|
+|2024-02-12 17:51:51.277|test|-|-|True|
 
 Link to Devo Query
 
@@ -409,15 +409,19 @@ Total Bytes Sent: 125.
 
 ##### Entries to load into Devo
 The headers of headers array is written into the my.lookup.control table.
-|Data|
-|lookup123|FULL|START|[{"foo":{"type":"str","key":true}},{"bar":{"type":"str"}},{"baz":{"type":"str"}}]|
-|lookup123|FULL|END|[{"foo":{"type":"str","key":true}},{"bar":{"type":"str"}},{"baz":{"type":"str"}}]|
+
+|eventdate|lookup|lookupId|lookupOp|type|lookupFields|
+|---|---|---|---|---|---|
+|2024-02-13 10:57:14.238|lookup123|1707802034.0032315_lookup123|FULL|START|[{"foo":{"type":"str","key":true}},{"bar":{"type":"str"}},{"baz":{"type":"str"}}]|
+|2024-02-13 10:57:24.246|lookup123|1707802034.0032315_lookup123|FULL|END|[{"foo":{"type":"str","key":true}},{"bar":{"type":"str"}},{"baz":{"type":"str"}}]|
 
 The fields of records array is written into the my.lookup.data table.
-|Data|
-|lookup123|null|"foo1", "bar1", "baz1"|
-|lookup123|null|"foo2", "bar2", "baz2"|
-|lookup123|null|"foo3", "bar3", "baz3"|
+
+|eventdate|lookup|lookupId|lookupOp|rawData|
+|---|---|---|---|---|
+|2024-02-13 10:57:19.239|lookup123|1707802034.0032315_lookup123|null|"foo1", "bar1", "baz1"|
+|2024-02-13 10:57:19.240|lookup123|1707802034.0032315_lookup123|null|"foo2", "bar2", "baz2"|
+|2024-02-13 10:57:19.240|lookup123|1707802034.0032315_lookup123|null|"foo3", "bar3", "baz3"|
 
 #### Youtube Video Demo (Click Image, Will redirect to youtube)
 [(https://raw.githubusercontent.com/demisto/content/98ead849e9e32921f64f7ac07fda2bff1b5f7c0b/Packs/Devo/doc_files/devo_video.jpg)](https://www.youtube.com/watch?v=jyUqEcWOXfU)
