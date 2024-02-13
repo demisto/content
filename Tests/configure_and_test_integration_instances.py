@@ -141,10 +141,6 @@ class CloudServer(Server):
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
-    def add_server_configuration(self, config_dict, error_msg, restart=False):
-        update_server_configuration(self.client, config_dict, error_msg)
-
-
 class XSOARServer(Server):
 
     def __init__(self, internal_ip, user_name, password, build_number=''):
@@ -1978,8 +1974,8 @@ def main():
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
     build = create_build_object()
     logging.info(f"Build Number: {build.ci_build_number}")
-    # build.configure_servers_and_restart()
-    # build.disable_instances()
+    build.configure_servers_and_restart()
+    build.disable_instances()
 
     if build.is_nightly or build.is_sdk_nightly:
         success = build.install_nightly_pack()

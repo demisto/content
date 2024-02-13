@@ -375,12 +375,14 @@ xpanse-prepare-testing-bucket:
     - .default-job-settings
     - .push-rule
   variables:
-    SERVER_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR SAAS"
     PRODUCT_TYPE: "XSOAR"
+    INSTANCE_ROLE: "XSOAR SAAS"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}/"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
+    CLOUD_API_KEYS: $XSOAR_OPP_API_KEYS
   stage: run-instances
   needs:
     - job: xsoar-prepare-testing-bucket
@@ -416,11 +418,11 @@ xpanse-prepare-testing-bucket:
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     - section_end "Install Packs and run Test-Module"
-    - section_start "Wait Until Server Ready"
-    - echo Going to sleep for 15 minutes to allow server finish indexing
-    - sleep-with-progress 900 30 "Sleeping... " 150
-    - echo "Done sleeping!"
-    - section_end "Wait Until Server Ready"
+#    - section_start "Wait Until Server Ready"
+#    - echo Going to sleep for 15 minutes to allow server finish indexing
+#    - sleep-with-progress 900 30 "Sleeping... " 150
+#    - echo "Done sleeping!"
+#    - section_end "Wait Until Server Ready"
     - !reference [.run_tests]
     - section_start "Cleanup env results from artifacts folder" --collapsed
     - |
@@ -477,6 +479,7 @@ tests_xsoar_8_server:
       when: always
       variables:
         KUBERNETES_CPU_REQUEST: 2000m
+
 
 
 fan-in-nightly:

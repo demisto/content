@@ -57,7 +57,7 @@ if [[ "${SERVER_TYPE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; 
     exit_on_error 1 "No machines were chosen"
   fi
 elif [[ "${SERVER_TYPE}" == "XSOAR" ]]; then
-    python3 ./Tests/configure_and_test_integration_instances.py -u "$DEMISTO_USERNAME_8" -p "$DEMISTO_PASSWORD_8" -c "$CONF_PATH" \
+    python3 ./Tests/configure_and_test_integration_instances.py -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -c "$CONF_PATH" \
       -s "$SECRET_CONF_PATH" --tests_to_run "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt"  \
       --pack_ids_to_install "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_install.txt" -g "$GIT_SHA1" --ami_env "${INSTANCE_ROLE}" \
       --is-nightly "${IS_NIGHTLY}" --branch "$CI_COMMIT_BRANCH" --build-number "$CI_PIPELINE_ID" -sa "$GCS_MARKET_KEY" \
