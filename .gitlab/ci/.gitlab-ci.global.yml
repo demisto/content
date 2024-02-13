@@ -231,13 +231,20 @@
         echo "content production packs do not exist in ${CI_PROJECT_DIR}/artifacts"
         exit 1
       fi
+      # Update gitignore to ignore all files except the Packs folder
+      echo "\n/*\n\!/Packs" >> .gitignore
+      # Grep .gitignore to verify that the "/*" and "\!/Packs" are in there.
+      grep -Fx "/*" .gitignore &&  grep -Fx "\!/Packs" .gitignore
       rm -rf ./Packs
       echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/production_packs to ./Packs"
       cp -r ${CI_PROJECT_DIR}/artifacts/production_packs ./Packs
       git config core.fileMode false  # used to tell git not to identify permission changes on files as changes
       chmod -R 777 ./Packs  # required for the lint, we use the permissions of the file when running pytest within the containers
       echo "the Packs changes between upload commit ${LAST_UPLOAD_COMMIT} to master commit ${CI_COMMIT_SHA} is:"
-      git status -- Packs  # show the differences between the upload commit to the master branch for the Packs folder
+      git status -- Packs  # show the differences between the upload commit to the master branch for the Packs folder before commit
+      git add Packs
+      git commit -m "updated branch to upload commit ${LAST_UPLOAD_COMMIT}"
+      git status -- Packs # show the differences between the upload commit to the master branch for the after commit
       echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
     else
       echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly"
