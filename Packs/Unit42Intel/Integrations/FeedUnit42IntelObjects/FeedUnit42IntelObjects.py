@@ -218,8 +218,8 @@ def get_all_updated_tags_since_last_fetch(client: Client,
     adds them to list_of_all_updated_tags and returns it.
     Args:
         client: Client object
-        list_of_all_updated_tags: updated tags
-        time_from_last_update: 0 if it's the first update
+        list_of_all_updated_tags:
+        time_from_last_update:
 
     Returns:
         List of all tags that has been updated and need to be fetched.
