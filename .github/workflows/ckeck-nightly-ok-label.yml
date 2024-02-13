@@ -14,7 +14,6 @@ jobs:
         run: |
           git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep '^\.gitlab/' || exit 0
           echo "Files under .gitlab directory are changed."
-        continue-on-error: true
 
       - name: Check if PR has the specified label
         if: steps.check-changes.outputs.code == '0'
