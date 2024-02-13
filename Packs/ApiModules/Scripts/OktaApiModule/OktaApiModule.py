@@ -3,7 +3,6 @@ from CommonServerPython import *
 import uuid
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import cast
 
 import jwt
 
@@ -54,9 +53,8 @@ class OktaClient(BaseClient):
 
         missing_required_params = []
 
-        if self.auth_type == AuthType.API_TOKEN:
-            if not api_token:
-                raise ValueError('API token is missing')
+        if self.auth_type == AuthType.API_TOKEN and not api_token:
+            raise ValueError('API token is missing')
 
         if self.auth_type == AuthType.OAUTH:
             if not self.client_id:
