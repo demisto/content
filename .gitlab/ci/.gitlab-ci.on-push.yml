@@ -375,7 +375,7 @@ xpanse-prepare-testing-bucket:
     - .default-job-settings
     - .push-rule
   variables:
-    SERVER_TYPE: "XSOAR SAAS"
+    SERVER_TYPE: "XSOAR"
     PRODUCT_TYPE: "XSOAR"
     INSTANCE_ROLE: "XSOAR SAAS"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}/"
