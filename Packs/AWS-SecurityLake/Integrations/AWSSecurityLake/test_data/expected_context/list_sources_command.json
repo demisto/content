@@ -1,0 +1,21 @@
+{
+    "AWS.SecurityLake.DataLakeSource.DataLakeArn": "test",
+    "AWS.SecurityLake.DataLakeSource.DataLakeSources":[
+            {
+                "account": "test",
+                "eventClasses": [
+                    "test"
+                ],
+                "sourceName": "test",
+                "sourceStatuses": [
+                    {
+                        "resource": "test",
+                        "status": "COLLECTING"
+                    }
+                ]
+            }
+        ]
+,
+    "AWS.SecurityLake(true)": {"DataLakeSourceNextToken": "test"}
+
+}

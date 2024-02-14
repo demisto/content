@@ -313,7 +313,7 @@ Delete the attachment from the incident and from the Cortex XSOAR server.
 ### core-api-file-check
 
 ***
-Check if the file exists in Cortex XSOAR by entry_id.
+Check if the file exists in Cortex XSOAR (Context) by entry_id.
 
 #### Base Command
 

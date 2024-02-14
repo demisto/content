@@ -6704,3 +6704,28 @@ def test_get_incident_behavior_command(mocker):
     assert result.outputs_prefix == 'CrowdStrike.IncidentBehavior'
     assert result.outputs_key_field == 'behavior_id'
     assert result.outputs == api_mock['resources']
+
+
+def test_get_cve_command(mocker):
+    """
+    Given:
+        - Raw response with duplicates
+    When:
+        - Running cve command
+    Then:
+        - Validate that the response doesn't contain duplicates
+    """
+    import CrowdStrikeFalcon
+
+    raw1 = {"id": "CVE-2023-12345", "description": "A1", "published_date": "2023-12-10T10:15:00Z", "base_score": 10,
+            "vector": "A1B2C3D4", "cisa_info": {"due_date": "2023-12-24T00:00:00Z", "is_cisa_kev": True},
+            "actors": ["ALPHA", "BETA", "GAMMA"]}
+    raw2 = {"id": "CVE-2023-12345", "description": "A1", "published_date": "2023-12-10T10:15:00Z", "base_score": 10,
+            "vector": "A1B2C3D4", "cisa_info": {"due_date": "2023-12-24T00:00:00Z", "is_cisa_kev": False},
+            "actors": ["ALPHA", "BETA", "GAMMA"]}
+    http_response = {'resources': [{'cve': raw1}, {'cve': raw1}, {'cve': raw1}, {'cve': raw2}, {'cve': raw1}, {'cve': raw2}]}
+
+    mocker.patch.object(CrowdStrikeFalcon, 'http_request', return_value=http_response)
+
+    results = CrowdStrikeFalcon.get_cve_command(args={'cve': 'CVE-2023-12345'})
+    assert len(results) == 2

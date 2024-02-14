@@ -29,5 +29,5 @@ suppression_enabled: false
 suppression_fields:
 user_defined_category:
 user_defined_severity:
-xql_query: "datamodel \r\n|filter xdm.observer.vendor=\"alibaba\" and  xdm.observer.product=\"action-trail\"\r\n|filter  xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\",\"no permission\",\"The user has no permission\",\"caller has no permission\")\r\n|comp count() as TotalCount by xdm.source.user.username, xdm.source.ipv4, xdm.source.user.user_type\r\n|filter TotalCount > 5"
+xql_query: "datamodel dataset = alibaba_action_trail_raw \r\n|filter xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\",\"no permission\",\"The user has no permission\",\"caller has no permission\")\r\n|comp count() as TotalCount by xdm.source.user.username, xdm.source.ipv4, xdm.source.user.user_type\r\n|filter TotalCount > 5"
 fromversion: 6.10.0
