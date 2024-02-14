@@ -1,0 +1,10 @@
+{
+    "success": {
+        "args": {},
+        "command": "safebreach-get-available-simulator-count"
+    },
+    "fail": {
+        "args": {},
+        "command": "safebreach-get-available-simulator-count"
+    }
+}

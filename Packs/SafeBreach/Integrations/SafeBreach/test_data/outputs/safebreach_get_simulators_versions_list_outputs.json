@@ -1,0 +1,22 @@
+{
+    "outputs": {
+        "success": {
+            "data": {
+                "nodes": [
+                    {
+                        "availableVersions": [
+                            "2024Q1.1 v20231228_145219",
+                            "2024Q1.2 v20240118_180647",
+                            "2024Q1.3 v20240129_083909"
+                        ],
+                        "currentStatus": "pending",
+                        "id": "6faa5e9c-d0b6-43dd-bb6f-bfd32bff78cb",
+                        "lastUpdateDate": "2022-09-19T07:03:24.514Z",
+                        "lastUpdateStatus": "Successful"
+                    }
+                ]
+            }
+        },
+        "fail": {}
+    }
+}
