@@ -43,7 +43,8 @@ In order to send logs via syslog, you will need to create a response rule with a
 4. Enter the following:
 
     - **Rule Name** - "Cortex XSIAM Syslog" 
-    - **Description** - "This response rule sends is configured to send logs via syslog, to the Cortex XSIAM Broker VM.".
+    - **Description** - "This response rule is configured to send logs via syslog to the Cortex XSIAM Broker VM.".
+
 5. Select **Log to a Syslog Server** from the Actions dropdown list and click **Add Action**.
 6. Enter the Host name or IP Address of the syslog server under **Host**.
 7. Edit the Port for the syslog server, if necessary.
