@@ -63,6 +63,13 @@ class Client(BaseClient):
         }
         return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
 
+    def get_reports(self, start_date: str, end_date: str):
+        params = {
+            "start-date": start_date,
+            "end-date": end_date
+        }
+        return self.http_request(method='GET', url_suffix="/api/v2/reports", params=params)
+
     def get_access_token(self) -> str:
         """
        Obtains access and refresh token from server.
@@ -91,7 +98,7 @@ class Client(BaseClient):
             'token_expiration_seconds': token_expiration_seconds,
             'token_initiate_time': time.time()
         }
-        demisto.debug(f'updating access token - {integration_context}')
+        demisto.debug(f'updating access token')
         set_integration_context(context=integration_context)
 
         return access_token
