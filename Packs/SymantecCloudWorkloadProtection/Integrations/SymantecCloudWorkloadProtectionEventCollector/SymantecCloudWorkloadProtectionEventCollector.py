@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
-from collections.abc import Callable
+from collections.abc import Callable, Literal
+from typing import TypedDict
 from math import ceil
 
 # Disable insecure warnings
@@ -14,6 +15,16 @@ VENDOR = 'symantec'
 PRODUCT = 'cwp'
 
 ''' CLIENT CLASS '''
+
+
+class LastRun(TypedDict):
+    last_date: str
+    last_synchronous_ids: list[str]
+
+
+class LastRuns(TypedDict):
+    alerts: LastRun
+    events: LastRun
 
 
 class Client(BaseClient):
@@ -86,6 +97,16 @@ class Client(BaseClient):
         )
         return client
 
+    def test_credentials(self):
+        data = {
+            'pageSize': 1,
+            'pageNumber': 0,
+            'startDate': (datetime.now() - timedelta(days=30)).strftime(DATE_FORMAT),
+            'endDate': datetime.now().strftime(DATE_FORMAT)
+        }
+        self._event_request(data=data)
+        self._alert_request(data=data)
+
     def _pagination_fetch(self, request_func: Callable, last_date: str) -> list[dict]:
         objects = []
         end_date = datetime.now().strftime(DATE_FORMAT)
@@ -101,7 +122,7 @@ class Client(BaseClient):
                     'order': 'ASCENDING',
                 }
             )
-            objects += res.get('result', [])
+            objects += res.get('result') or []
             if res.get('total') < page_size:
                 break
         del objects[:self.max_fetch]
@@ -113,8 +134,11 @@ class Client(BaseClient):
         last_synchronous_ids = [i['uuid'] for i in objects if i['time'] == last_date]
         return objects, last_synchronous_ids
 
-    def _fetch_objects(self, request_func: Callable, last_date: str | None, last_synchronous_ids: list):
+    def _fetch_objects(
+        self, request_func: Callable, last_date: str | None = None, last_synchronous_ids: list | None = None
+    ) -> tuple[list, str, list]:
         last_date = last_date or (datetime.now() - timedelta(minutes=1)).strftime(DATE_FORMAT)
+        last_synchronous_ids = last_synchronous_ids or []
         objects = self._pagination_fetch(request_func, last_date)
         new_last_date: str = dict_safe_get(objects, (-1, 'time'))  # type: ignore
         objects, new_last_synchronous_ids = self._manage_duplicates(objects, last_synchronous_ids, new_last_date)
@@ -135,21 +159,22 @@ class Client(BaseClient):
             data=data
         )
 
-    def fetch_events(self, last_date: str | None = None, last_synchronous_ids: list = []):
-        return self._fetch_objects(self._event_request, last_date, last_synchronous_ids)
+    def fetch_events(self, args: LastRun) -> tuple[list, str, list]:
+        return self._fetch_objects(self._event_request, **args)
 
-    def fetch_alerts(self, last_date: str | None = None, last_synchronous_ids: list = []):
-        return self._fetch_objects(self._alert_request, last_date, last_synchronous_ids)
+    def fetch_alerts(self, args: LastRun) -> tuple[list, str, list]:
+        return self._fetch_objects(self._alert_request, **args)
 
 
 def test_module(client: Client) -> str:
-    return 'ok'  # TODO
+    client.test_credentials()
+    return 'ok'
 
 
 ''' MAIN FUNCTION '''
 
 
-def add_time_to_events(events: list[dict]):
+def add_time_to_objects(objects: list[dict]):
     """
     Adds the _time key to the events.
     Args:
@@ -157,8 +182,30 @@ def add_time_to_events(events: list[dict]):
     Returns:
         list: The events with the _time key.
     """
-    for event in events:
-        event['_time'] = event.get('time')
+    for obj in objects:
+        obj['_time'] = obj.get('time')
+
+
+def _fetch_objects(fetch_func: Callable[[LastRun], tuple[list, str, list]], args: LastRun) -> LastRun:
+    objects, last_date, last_synchronous_ids = fetch_func(args)
+    add_time_to_objects(objects)
+    send_events_to_xsiam(
+        objects,
+        vendor=VENDOR,
+        product=PRODUCT
+    )
+    return LastRun(
+        last_date=last_date,
+        last_synchronous_ids=last_synchronous_ids
+    )
+
+
+def fetch_events(client: Client, args: LastRun) -> LastRun:
+    return _fetch_objects(client.fetch_events, args)
+
+
+def fetch_alerts(client: Client, args: LastRun) -> LastRun:
+    return _fetch_objects(client.fetch_alerts, args)
 
 
 def main() -> None:  # pragma: no cover
@@ -177,33 +224,11 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'fetch-events':
 
-            last_run = demisto.getLastRun() or {'events': {}, 'alerts': {}}
-            next_run = {}
-
-            events, last_date, last_synchronous_ids = client.fetch_events(**last_run['events'])  # type: ignore
-            add_time_to_events(events)
-            send_events_to_xsiam(
-                events,
-                vendor=VENDOR,
-                product=PRODUCT
+            last_run: LastRuns = demisto.getLastRun() or {'events': {}, 'alerts': {}}  # type: ignore
+            next_run = LastRuns(
+                events=fetch_events(client, last_run['events']),
+                alerts=fetch_alerts(client, last_run['alerts'])
             )
-            next_run['events'] = {
-                'last_date': last_date,
-                'last_synchronous_ids': last_synchronous_ids
-            }
-
-            alerts, last_date, last_synchronous_ids = client.fetch_alerts(**last_run['alerts'])  # type: ignore
-            add_time_to_events(alerts)
-            send_events_to_xsiam(
-                alerts,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
-            next_run['alerts'] = {
-                'last_date': last_date,
-                'last_synchronous_ids': last_synchronous_ids
-            }
-
             demisto.setLastRun(next_run)
 
     except Exception as e:
