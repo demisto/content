@@ -1,0 +1,130 @@
+commonfields:
+  id: Redmine
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Redmine
+display: Redmine
+category: Utilities
+description: 'A project management and issue tracking system that provides a web-based
+  platform for managing projects, tracking tasks, and handling various types of project-related
+  activities. '
+configuration:
+- section: Connect
+  display: Server URL (e.g. https://1.1.1.1)
+  name: url
+  defaultvalue: https://1.1.1.1
+  type: 0
+  required: true
+- section: Connect
+  display: ""
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- display: Project id
+  name: Project id
+  type: 0
+
+  required: false
+script: 
+  type: python
+  commands:
+  - name: redmine-issue-create
+    description: Create an issue
+    arguments:
+    - name: project_id
+      description: Add a project id for this issue
+      type: textArea
+    - name: tracker_id
+      description: Add a tracker id for this issue
+    - name: status_id
+      required: true
+      description: Add a status id for this issue
+    - name: priority_id
+      required: true
+      description: Add a priority id for this issue
+    - name: subject
+      required: true
+      description: Add a subject for this issue
+    - name: description
+      description: Add a description for this issue
+    - name: category_id
+      description: Add a category id for this issue
+    - name: fixed_version_id
+      description: Add a target version id for this issue
+    - name: assigned_to_id
+      description: Add an ID of the user to assign the issue to
+    - name: parent_issue_id
+      description: Add the ID of the parent issue
+    - name: custom_fields
+      auto: PREDEFINED
+      predefined:
+      - '["key":"value"'
+      - '...]'
+      description: Add an array of Key:value pairs as custom fields for this issue
+      isArray: true
+    - name: watchers_user_ids
+      description: Add an array with watchers user ids for this issue
+      isArray: true
+    - name: is_private
+      description: Is the issue private? (True/False)
+      defaultValue: "True"
+    - name: estimated_hours
+      description: Add number of hours estimated for this issue
+    - name: file_entry_id
+      description: Add the entry ID of the file to upload
+    - name: file_name
+      description: Add the name of the file to attach
+    - name: file_description
+      description: Add the description of the file you attached
+    outputs:
+      - contextPath: Redmine.issue
+        description: kmsjnak
+  - name: redmine-issues-list
+    description: Show list of issues
+    arguments:
+    - name: page
+      description: Add a page number
+      type: textArea
+    - name: page_size
+      description: Add page size (default is 50)
+    - name: limit
+      description: Add the number of issues to show in the response
+      type: textArea
+    - name: sort
+      description: Add a field to sort according to. Append :decs to invert the order
+      type: textArea
+    - name: include
+      description: Add an array of fields to fetch
+      isArray: true
+    - name: issue_id
+      description: Add an array of issues' id to show
+      isArray: true
+    - name: project_id
+      description: Add a project id to show issues of this project
+      type: textArea
+    - name: subproject_id
+      description: Add a subproject id to show issues of this subproject_id
+      type: textArea
+    - name: tracker_id
+      description: Add a tracker id to show issues of this tracker id
+      type: textArea
+    - name: status_id
+      description: Add a status id to show issues of this status id
+      type: textArea
+    - name: assigned_to_id
+      description: Add a assigned-to id to show issues which are assigned to this user id
+      type: textArea
+    - name: parent_id
+      description: Add a parent id to show issues which are under to this parent id
+      type: textArea
+    - name: cf_x
+      description: Add this field to get issues with the given value for a custom field with an id of x
+      type: textArea
+    outputs:
+      - contextPath: Redmine.issue
+        description: kmsjnak
+  dockerimage: demisto/python3:3.10.9.42476
+  runonce: false
+  subtype: python3
