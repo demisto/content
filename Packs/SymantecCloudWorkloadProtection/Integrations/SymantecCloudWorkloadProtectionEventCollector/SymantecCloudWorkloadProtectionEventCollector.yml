@@ -37,7 +37,7 @@ configuration:
   - CLOSED
   required: false
   type: 15
-- defaultvalue: '50000' 
+- defaultvalue: '50000'
   section: Collect
   display: Max number of events per fetch
   name: max_events_per_fetch
@@ -58,41 +58,11 @@ display: SymantecCloudWorkloadProtectionEventCollector
 name: SymantecCloudWorkloadProtectionEventCollector
 script:
   commands:
-  - arguments:
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: If true, the command will create events, otherwise it will only display them.
-      isArray: false
-      name: should_push_events
-      predefined:
-      - 'true'
-      - 'false'
-      required: true
-    - auto: PREDEFINED
-      default: false
-      description: Filter by alert status.
-      isArray: false
-      name: status
-      predefined:
-      - ACTIVE
-      - CLOSED
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results to return.
-      isArray: false
-      name: limit
-      required: true
-      secret: false
-    - default: false
-      description: Date from which to get events.
-      name: from_date
-      required: false
-    deprecated: false
-    description: Gets events from Hello World.
-    execution: false
-    name: hello-world-get-events
-  dockerimage: demisto/python3:3.10.13.84405
+  - arguments: []
+    description: Fetch alerts for Cortex XSIAM.
+    name: fetch-events
+    outputs: []
+  dockerimage: demisto/python3:3.10.13.87159
   isfetchevents: true
   runonce: false
   script: '-'

@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from collections.abc import Callable, Literal
+from collections.abc import Callable
 from typing import TypedDict
 from math import ceil
 
@@ -14,7 +14,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 VENDOR = 'symantec'
 PRODUCT = 'cwp'
 
-''' CLIENT CLASS '''
+''' TYPING '''
 
 
 class LastRun(TypedDict):
@@ -22,9 +22,12 @@ class LastRun(TypedDict):
     last_synchronous_ids: list[str]
 
 
-class LastRuns(TypedDict):
+class LastRunTypes(TypedDict):
     alerts: LastRun
     events: LastRun
+
+
+''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
@@ -176,11 +179,9 @@ def test_module(client: Client) -> str:
 
 def add_time_to_objects(objects: list[dict]):
     """
-    Adds the _time key to the events.
+    Adds the _time key to the objects (events/alerts).
     Args:
-        events: list[dict] - list of events to add the _time key to.
-    Returns:
-        list: The events with the _time key.
+        objects: list[dict] - list of objects to add the "_time" key to.
     """
     for obj in objects:
         obj['_time'] = obj.get('time')
@@ -224,8 +225,8 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'fetch-events':
 
-            last_run: LastRuns = demisto.getLastRun() or {'events': {}, 'alerts': {}}  # type: ignore
-            next_run = LastRuns(
+            last_run: LastRunTypes = demisto.getLastRun() or {'events': {}, 'alerts': {}}  # type: ignore
+            next_run = LastRunTypes(
                 events=fetch_events(client, last_run['events']),
                 alerts=fetch_alerts(client, last_run['alerts'])
             )
