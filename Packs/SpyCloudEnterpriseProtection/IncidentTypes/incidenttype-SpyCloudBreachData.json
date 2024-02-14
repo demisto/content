@@ -1,0 +1,56 @@
+{
+    "id": "SpyCloud Breach Data",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "SpyCloud Breach Data",
+    "prevName": "SpyCloud Breach Data",
+    "color": "#E3FF88",
+    "playbookId": "SpyCloud - Breach Investigation",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "SpyCloud Breach Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "sourceip": {
+                "extractAsIsIndicatorTypeId": "ipRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "spyclouddomain": {
+                "extractAsIsIndicatorTypeId": "domainRepUnified",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "spycloudemail": {
+                "extractAsIsIndicatorTypeId": "emailRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "spycloudtargetdomain": {
+                "extractAsIsIndicatorTypeId": "domainRepUnified",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "spycloudtargetsubdomain": {
+                "extractAsIsIndicatorTypeId": "domainRepUnified",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    },
+    "fromVersion": "6.10.0"
+}
