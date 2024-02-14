@@ -529,13 +529,22 @@ def extract_namespace(response_items: List[Dict[str, Any]]):
                 break
 
 
-def remove_additional_resource_fields(input_dict, keys):
-    if isinstance(input_dict, dict):
-        return {k: remove_additional_resource_fields(v, keys) for k, v in input_dict.items() if k not in keys}
-    elif isinstance(input_dict, list):
-        return [remove_additional_resource_fields(element, keys) for element in input_dict]
-    else:
-        return input_dict
+def remove_additional_resource_fields(input_dict):
+    items = demisto.get(input_dict, 'data.items')
+    if items:
+        for current_item in list(items):
+            data = current_item.get('data', {})
+
+            disks = data.get('disks', [])
+            for current_disk in disks:
+                if 'shieldedInstanceInitialState' in current_disk:
+                    del current_disk['shieldedInstanceInitialState']
+
+            metadata = data.get('metadata', {})
+            metadata_items = metadata.get('items', [])
+            for current_metadata_item in list(metadata_items):
+                if 'key' in current_metadata_item and current_metadata_item['key'] == 'configure-sh':
+                    metadata_items.remove(current_metadata_item)
 
 
 ''' FETCH AND MIRRORING HELPER FUNCTIONS '''
@@ -1493,13 +1502,11 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     include_additional_resource_fields = argToBoolean(args.get('include_additional_resource_fields', 'false'))
 
     demisto.debug(f'Searching for config with the following params: {query=}, {limit=}, {time_filter=}, {include_resource_json=},'
-                  ' {include_additional_resource_fields=}')
+                  f' {include_additional_resource_fields=}')
     response = client.config_search_request(time_filter, str(query), limit, search_id, sort_direction, sort_field,
                                             include_resource_json,)
     if not include_additional_resource_fields:
-        keys_to_remove = ['shieldedInstanceInitialState', 'configure-sh']
-        demisto.debug(f'{include_additional_resource_fields=}, removing the fields {keys_to_remove}')
-        response = remove_additional_resource_fields(response, keys_to_remove)
+        remove_additional_resource_fields(response)
 
     response_items = response.get('data', {}).get('items', [])
     for response_item in response_items:
