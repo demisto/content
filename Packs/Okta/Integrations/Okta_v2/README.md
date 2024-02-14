@@ -2,7 +2,7 @@ Integration with Okta's cloud-based identity management service.
 
 ## Configure Okta v2 on Cortex XSOAR
 ### API Token Authentication Prerequisites
-1. Sign in to your Okta organization as a user **with administrator privileges**.
+1. Sign in to your Okta organization as a user with administrator privileges.
 2. On the **Admin Console**, select **Security** > **API** from the menu, and then select the **Tokens** tab.
 3. Click **Create Token**.
 4. Name your token and click **Create Token**.
@@ -31,19 +31,19 @@ The following scopes are required for the Okta v2 integration to work properly:
 2. In the Admin Console, go to **Applications** > **Applications**.
 3. Click **Create App Integration**.
 4. Select **API Services** as the sign-in method, and click **Next**.
-5. Enter the desired name for the created app (e.g. "Cortex XSOAR"), and click **Save**.
-6. On the app configuration page, under the **General** tab and the **Client Credentials** section, select **Public key / Private key** for the **Client authentication** option.
-7. Under the newly added **PUBLIC KEYS** section, click the **Add Key** button.
-8. In the **Add Public Key** dialog box, click **Generate new key**. Make sure to keep the generated private key (in PEM format) somewhere safe, and click **Save**.
-9. Under **General Settings** section:
+5. Enter the desired name for the created app (e.g., "Cortex XSOAR"), and click **Save**.
+6. In the app configuration page, under the **General** tab and the **Client Credentials** section, select **Public key / Private key** for the **Client authentication** option.
+7. Under the newly added **PUBLIC KEYS** section, click **Add Key**.
+8. In the **Add Public Key** dialog box, click **Generate new key**. Make sure to copy the generated private key (in PEM format) to somewhere safe, and click **Save**.
+9. Under the **General Settings** section:
    1. Next to the **Proof of possession** label, uncheck the **Require Demonstrating Proof of Possession (DPoP) header in token requests** option if it's selected.
    2. Next to the **Grant type** label, make sure the **Client Credentials** option is selected, and that the **Token Exchange** option is not selected.
    3. Click **Save**.
 10. Under the **Okta API Scopes** tab, grant the required scopes mentioned above for the app.
 11. Under the **Admin roles** tab:
-    1. click on the **Edit assignments** button.
-    2. On the dropdown list under "Role", select **Super Administrator**.
-    3. click **Save changes** at the top.
+    1. Click **Edit assignments**.
+    2. In the dropdown list under "Role", select **Super Administrator**.
+    3. Click **Save changes** at the top.
 
 For more information, see the '[Implement OAuth for Okta](https://developer.okta.com/docs/guides/implement-oauth-for-okta/main/)' official documentation article.
 
