@@ -490,23 +490,23 @@ def get_incident_extra_data_command(client, args):
     file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
     network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
 
-    readable_output = [tableToMarkdown(f'Incident {incident_id}', incident)]
+    readable_output = [tableToMarkdown(f'Incident {incident_id}', incident, removeNull=True)]
 
     if len(context_alerts) > 0:
         readable_output.append(tableToMarkdown('Alerts', context_alerts,
-                                               headers=[key for key in context_alerts[0] if key != 'host_ip']))
+                                               headers=[key for key in context_alerts[0] if key != 'host_ip'], removeNull=True ))
     else:
-        readable_output.append(tableToMarkdown('Alerts', []))
+        readable_output.append(tableToMarkdown('Alerts', [], removeNull=True))
 
     if len(network_artifacts) > 0:
-        readable_output.append(tableToMarkdown('Network Artifacts', network_artifacts))
+        readable_output.append(tableToMarkdown('Network Artifacts', network_artifacts, removeNull=True))
     else:
-        readable_output.append(tableToMarkdown('Network Artifacts', []))
+        readable_output.append(tableToMarkdown('Network Artifacts', [], removeNull=True))
 
     if len(file_artifacts) > 0:
-        readable_output.append(tableToMarkdown('File Artifacts', file_artifacts))
+        readable_output.append(tableToMarkdown('File Artifacts', file_artifacts, removeNull=True))
     else:
-        readable_output.append(tableToMarkdown('File Artifacts', []))
+        readable_output.append(tableToMarkdown('File Artifacts', [], removeNull=True))
 
     incident.update({
         'alerts': context_alerts,
