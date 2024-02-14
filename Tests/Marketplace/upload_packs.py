@@ -94,6 +94,36 @@ def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path:
     logging.debug("Finished extracting packs artifacts")
 
 
+def download_and_extract_pack(pack_id, pack_version, storage_bucket: Any,
+                              extract_destination_path: str,
+                              storage_base_path: str) -> str | bool:
+    """
+    Downloads and extracts the pack.zip folder of the current pack version from the storage bucket.
+
+    Args:
+        pack_id (str): The pack ID.
+        pack_version (str): The version of the pack to download and extract.
+        storage_bucket (google.cloud.storage.bucket.Bucket): The storage bucket object from which to download the pack.
+        extract_destination_path (str): The full path to the directory where the pack will be extracted.
+        storage_base_path (str): The base path in the storage bucket where packs are stored.
+
+    Returns:
+        bool: False if the pack was not found in the bucket, otherwise true.
+    """
+    logging.debug(f'Start of download_and_extract_pack, {pack_id}, version {pack_version}')
+    pack_path = os.path.join(storage_base_path, pack_id, pack_version, f"{pack_id}.zip")
+    pack = storage_bucket.blob(pack_path)
+    if pack.exists():
+        download_pack_path = os.path.join(extract_destination_path, f"{pack_id}.zip")
+        pack.download_to_filename(download_pack_path)
+        with ZipFile(download_pack_path, 'r') as pack_zip:
+            pack_zip.extractall(os.path.join(extract_destination_path, pack_id))
+        return os.path.join(extract_destination_path, pack_id)
+    else:
+        logging.warning(f'{pack_id} pack of version {pack_version} was not found in the bucket. {pack_path=}')
+        return False
+
+
 def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, storage_base_path: str) \
         -> tuple[str, Any, int]:
     """Downloads and extracts index zip from cloud storage.
@@ -1310,8 +1340,8 @@ def main():
                 continue
 
         elif pack.is_metadata_updated:
-            if not pack.download_and_extract_pack(pack.current_version, storage_bucket,
-                                                  extract_destination_path, storage_base_path):
+            if not download_and_extract_pack(pack.name, pack.current_version, storage_bucket,
+                                             extract_destination_path, storage_base_path):
                 pack.status = PackStatus.FAILED_DOWNLOADING_PACK_FOLDER.name  # type: ignore[misc]
                 pack.cleanup()
                 continue

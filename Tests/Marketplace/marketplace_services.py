@@ -956,34 +956,6 @@ class Pack:
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status
 
-    def download_and_extract_pack(self, pack_version, storage_bucket: Any,
-                                  extract_destination_path: str,
-                                  storage_base_path: str) -> str | bool:
-        """
-        Downloads and extracts the pack.zip folder of the current pack version from the storage bucket.
-
-        Args:
-            pack_version (str): The version of the pack to download and extract.
-            storage_bucket (Any): The storage bucket object from which to download the pack.
-            extract_destination_path (str): The full path to the directory where the pack will be extracted.
-            storage_base_path (str): The base path in the storage bucket where packs are stored.
-
-        Returns:
-            bool: False if the pack was not found in the bucket, otherwise true.
-        """
-        logging.debug(f'Start of download_and_extract_pack, {self._pack_name}, version {pack_version}')
-        pack_path = os.path.join(storage_base_path, self._pack_name, pack_version, f"{self._pack_name}.zip")
-        pack = storage_bucket.blob(pack_path)
-        if pack.exists():
-            download_pack_path = os.path.join(extract_destination_path, f"{self._pack_name}.zip")
-            pack.download_to_filename(download_pack_path)
-            with ZipFile(download_pack_path, 'r') as pack_zip:
-                pack_zip.extractall(self.path)
-            return True
-        else:
-            logging.warning(f'{self._pack_name} pack of version {pack_version} was not found in the bucket. {pack_path=}')
-            return False
-
     def copy_and_upload_to_storage(self, production_bucket, build_bucket, successful_packs_dict,
                                    successful_uploaded_dependencies_zip_packs_dict, storage_base_path, build_bucket_base_path):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
