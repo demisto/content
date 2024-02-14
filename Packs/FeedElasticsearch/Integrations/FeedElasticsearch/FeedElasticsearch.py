@@ -228,7 +228,7 @@ def update_last_fetch(client, ioc_lst):
             break
     if last_calculated_timestamp is None:
         last_calculated_timestamp = int(datetime.now().timestamp() * 1000)
-    demisto.debug(f"FeedElasticSearch: The length of the indicators of the last time: {len(last_ids)}")
+    demisto.info(f"FeedElasticSearch: The length of the indicators of the last time: {len(last_ids)}")
     demisto.debug(f"FeedElasticSearch: The last ids which were fetched with the same last time: {last_ids}")
     return last_calculated_timestamp, last_ids
 
