@@ -373,16 +373,18 @@ class TestHelperFunctions:
         Given:
         - list of indicators returned from the fetch call with empty lastrun object.
         - list of indicators returned from the fetch call with lastrun containing the same indicators (they were fetched
-         in the previous fetch call)
-        - list of indicators returned from the fetch call, and lastrun containing an indicator that was modified in the fetch call
+         in the previous fetch call).
+        - list of indicators returned from the fetch call, and lastrun containing an indicator that was
+         modified in the fetch call.
 
         When:
-        - running filter_indicators command
+        - running filter_indicators command.
 
         Then:
         - all fetched indicators are returned, lastrun is updated with all fetched indicators ids and modified date.
         - non of the fetched indicators returned, lastrun is updated with all fetched indicators ids and modified date.
-        - only the new and modified indicators are returned, lastrun is updated with all fetched indicators ids and modified dates.
+        - only the new and modified indicators are returned, lastrun is updated with all
+         fetched indicators ids and modified dates.
         """
 
         from FeedTAXII2 import filter_previously_fetched_indicators
