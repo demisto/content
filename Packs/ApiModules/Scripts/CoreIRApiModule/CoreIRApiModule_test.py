@@ -846,6 +846,7 @@ def test_get_update_args_unassgning_user(mocker):
     assert update_args.get('assigned_user_pretty_name') is None
     assert update_args.get('unassign_user') == 'true'
 
+
 def test_handle_outgoing_issue_closure(mocker):
     """
     Given:
@@ -862,7 +863,7 @@ def test_handle_outgoing_issue_closure(mocker):
                                           'status': 2, 'inc_status': 2, 'data': {'status': 'other'}})
     request_data_log = mocker.patch.object(demisto, 'debug')
     handle_outgoing_issue_closure(remote_args)
-    
+
     assert "Closing Remote incident with status resolved_security_testing" in request_data_log.call_args[0][0]
 
 
