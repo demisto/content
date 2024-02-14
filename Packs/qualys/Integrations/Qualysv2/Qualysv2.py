@@ -324,23 +324,20 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: dict[str, dict[Any, Any]] = {
         "json_path": ["ServiceResponse", "data", "Tag"],
     },
     "qualys-update-vmware-record": {
-        "table_name": "Update Vmware Record",
         "json_path": ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
     },
     "qualys-update-vcenter-record": {
-        "table_name": "Update vCenter Record",
         "json_path": ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
     },
     "qualys-vcenter-esxi-mapped-record-list": {
-        "table_name": "List vCenter ESXi mapping records",
-        "json_path": ["VCENTER_ESXI_MAP_LIST_OUTPUT", "RESPONSE"],
+        "collection_name": "VCENTER_ESXI_MAP",
+        "table_name": "Vcenter ESXI IP List",
+        "json_path": ["VCENTER_ESXI_MAP_LIST_OUTPUT", "RESPONSE","VCENTER_ESXI_MAP_LIST","VCENTER_ESXI_MAP"],
     },
     "qualys-vcenter-esxi-mapped-record-import": {
-        "table_name": "Update vCenter ESXi mapping Records",
         "json_path": ["SIMPLE_RETURN", "RESPONSE"],
     },
     "qualys-vcenter-esxi-mapped-record-purge": {
-        "table_name": "Update Vmware Record",
         "json_path": ["SIMPLE_RETURN", "RESPONSE"],
     },
 }
@@ -546,24 +543,24 @@ COMMANDS_CONTEXT_DATA = {
         "context_key": "",
     },
     "qualys-update-vmware-record": {
-        "context_prefix": "Qualys.VmwareRecord",
-        "context_key": "ID",
+        "context_prefix": "",
+        "context_key": "",
     },
     "qualys-update-vcenter-record": {
-        "context_prefix": "Qualys.vCenterRecord",
-        "context_key": "ID",
+        "context_prefix": "",
+        "context_key": "",
     },
     "qualys-vcenter-esxi-mapped-record-list": {
-        "context_prefix": "Qualys.vCenterList",
-        "context_key": "ID",
+        "context_prefix": "Qualys.VcenterToEsxi",
+        "context_key": "VCENTER_IP",
     },
     "qualys-vcenter-esxi-mapped-record-import": {
-        "context_prefix": "Qualys.vCenterImport",
-        "context_key": "ID",
+        "context_prefix": "",
+        "context_key": "",
     },
     "qualys-vcenter-esxi-mapped-record-purge": {
-        "context_prefix": "Qualys.vCenterPurge",
-        "context_key": "ID",
+        "context_prefix": "",
+        "context_key": "",
     },
 }
 
@@ -825,7 +822,7 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
         "resp_type": "text",
     },
     "qualys-vcenter-esxi-mapped-record-list": {
-        "api_route": API_SUFFIX + "auth/vcenter/vcenter_mapping/?action=list",
+        "api_route": API_SUFFIX + "auth/vcenter/vcenter_mapping/?action=list&output_format=xml",
         "call_method": "POST",
         "resp_type": "text",
     },
@@ -1338,7 +1335,8 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
         "args": ["ids", "add_ips"],
     },
     "qualys-vcenter-esxi-mapped-record-list": {
-        "args": ["network_id", "esxi_ip", "output_format"],
+        "args": [],
+        "inner_args": ["limit"],
     },
     "qualys-vcenter-esxi-mapped-record-import": {
         "args": ["csv_data"],
@@ -2900,8 +2898,8 @@ def main():  # pragma: no cover
             "output_builder": build_single_text_output,
         },
         "qualys-vcenter-esxi-mapped-record-list": {
-            "result_handler": handle_asset_tag_result,
-            "output_builder": build_single_text_output,
+            "result_handler": handle_general_result,
+            "output_builder": build_unparsed_output,
         },
         "qualys-vcenter-esxi-mapped-record-import": {
             "result_handler": handle_asset_tag_result,
@@ -2917,10 +2915,8 @@ def main():  # pragma: no cover
 
     demisto.debug(f"Command being called is {requested_command}")
     try:
-        if requested_command=="qualys-vcenter-esxi-mapped-record-import" or requested_command=="qualys-vcenter-esxi-mapped-record-purge":
-           headers: Dict = {"X-Requested-With": "Demisto", "Content-Type": "application/octet-stream"}
-        else:
-           headers: dict = {"X-Requested-With": "Demisto"}
+
+        headers: dict = {"X-Requested-With": "Demisto"}
 
         client = Client(
             base_url=base_url, username=username, password=password, verify=verify_certificate, headers=headers, proxy=proxy
