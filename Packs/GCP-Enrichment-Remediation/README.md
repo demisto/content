@@ -28,4 +28,10 @@ This content pack includes the following playbooks:
 
 Automation to determine GCP project hierarchy by looking up parent objects until the organization level is reached.
 
-![GCPProjectHierarchy](https://raw.githubusercontent.com/demisto/content/7065e08ec9738db1ea3e2bc5d78ac643931f46d1/Packs/GCP-Enrichment-Remediation/doc_files/GCPProjecHierarchy.png)
+![GCPProjectHierarchy](https://raw.githubusercontent.com/demisto/content/master/Packs/GCP-Enrichment-Remediation/doc_files/GCPProjecHierarchy.png)
+
+#### GCPOffendingFirewallRule
+
+Automation to determine potential offending firewall rules in GCP based on port, protocol and possibly target tags (network tags).
+
+![GCPOffendingFirewallRule](https://raw.githubusercontent.com/demisto/content/2eabf20887e5664294168fb1fbd9d1bbdb916a35/Packs/GCP-Enrichment-Remediation/doc_files/GCP_-_Enrichment.png)
