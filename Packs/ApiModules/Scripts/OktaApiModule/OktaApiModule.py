@@ -72,12 +72,6 @@ class OktaClient(BaseClient):
             if missing_required_params:
                 raise ValueError(f'Required OAuth parameters are missing: {", ".join(missing_required_params)}')
 
-            # Set type of variables non-optional after we assured they're assigned for mypy
-            self.client_id: str = client_id  # type: ignore
-            self.scopes: list[str] = scopes  # type: ignore
-            self.private_key: str = private_key  # type: ignore
-            self.jwt_algorithm: JWTAlgorithm = jwt_algorithm  # type: ignore
-
     def assign_app_role(self, client_id: str, role: str, auth_type: AuthType) -> dict:
         """
         Assign a role to a client application.
@@ -121,8 +115,8 @@ class OktaClient(BaseClient):
                 'sub': self.client_id,
                 'jti': str(uuid.uuid4()),
             },
-            key=self.private_key,
-            algorithm=self.jwt_algorithm.value,
+            key=self.private_key,  # type: ignore[arg-type]
+            algorithm=self.jwt_algorithm.value,  # type: ignore[union-attr]
         )
 
     def generate_oauth_token(self, scopes: list[str]) -> dict:
@@ -178,7 +172,7 @@ class OktaClient(BaseClient):
         else:
             demisto.debug('No existing token was found. A new token will be generated.')
 
-        token_generation_response = self.generate_oauth_token(scopes=self.scopes)
+        token_generation_response = self.generate_oauth_token(scopes=self.scopes)  # type: ignore[arg-type]
         token: str = token_generation_response['access_token']
         expires_in: int = token_generation_response['expires_in']
         token_expiration = datetime.utcnow() + timedelta(seconds=expires_in)
