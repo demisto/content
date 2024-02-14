@@ -42,7 +42,8 @@ def test_run_prisma_cloud_compute_hosts_scan_list(mocker, args, expected):
         'Contents': [{'complianceIssues': [
             {"text": "", "id": 6112, "severity": "high", "cvss": 0, "status": "",
              "cause": "The directory /tmp should be mounted. File: /proc/mounts",
-             "description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand some applications.",
+             "description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand some "
+                            "applications.",
              "title": "(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured",
              "vecStr": "", "exploit": "", "riskFactors": None, "link": "", "type": "linux", "packageName": "",
              "packageVersion": "", "layerTime": 0, "templates": None, "twistlock": False, "cri": False,

@@ -2,8 +2,10 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 '''
 Script Description:
-    This script runs the "prisma-cloud-compute-hosts-scan-list" command for a specific hostname and returns details about its compliance issues, if found.
-    If any compliance issues found, it will create a new tab in the layout called "Detailed Compliance Issues" showing the issues details.
+    This script runs the "prisma-cloud-compute-hosts-scan-list" command for a specific hostname and returns details about its 
+    compliance issues, if found.
+    If any compliance issues found, it will create a new tab in the layout called "Detailed Compliance Issues" showing the issues 
+    details.
     Returns the following fields for each compliance ID:
     - Compliance ID
     - Cause
@@ -76,7 +78,8 @@ def filter_compliance_issues(compliance_issues: List[Dict[str, Any]], compliance
     ids_to_filter: List[str] = [id.strip() for id in compliance_ids.split(',')]
 
     # Filter issues based on provided IDs
-    filtered_compliance_issues: List[Dict[str, Any]] = [issue for issue in compliance_issues if str(issue.get('id', '')) in ids_to_filter]
+    filtered_compliance_issues: List[Dict[str, Any]] = [issue for issue in compliance_issues if str(issue.get('id', '')) in
+                                                        ids_to_filter]
 
     return filtered_compliance_issues
 
