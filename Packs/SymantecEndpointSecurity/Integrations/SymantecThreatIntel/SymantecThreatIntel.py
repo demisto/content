@@ -153,14 +153,20 @@ def calculate_file_severity(result: dict) -> tuple[int, str | None]:
 
 
 def calculate_network_severity(result: dict) -> tuple[int, str | None]:
-    risk_level = result.get('risk_level', 0)
+    risk_level = result.get('risk_level')
     reputation = result.get('reputation', 'UNKNOWN')
     malicious_description = None
     categories = result.get('categories', [])
 
-    score = Common.DBotScore.GOOD if risk_level <= 5 else Common.DBotScore.BAD if risk_level >= 8 else Common.DBotScore.SUSPICIOUS
-    if score == Common.DBotScore.BAD:
+    if not risk_level:
+        score = Common.DBotScore.NONE
+    elif risk_level <= 5:
+        score = Common.DBotScore.GOOD
+    elif risk_level >= 8:
+        score = Common.DBotScore.BAD
         malicious_description = f'{threat_level[risk_level]}'
+    else:
+        score = Common.DBotScore.SUSPICIOUS
 
     reputation_score = Common.DBotScore.NONE
     if reputation == 'BAD' or has_intersection(MALICIOUS_CATEGORIES, categories):
