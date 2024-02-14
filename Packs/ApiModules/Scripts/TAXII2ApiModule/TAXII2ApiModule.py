@@ -516,6 +516,12 @@ class Taxii2FeedClient:
         if tlp_color:
             fields['trafficlightprotocol'] = tlp_color
 
+        if obj_to_parse.get('confidence', ''):
+            fields['confidence'] = obj_to_parse.get('confidence', '')
+
+        if obj_to_parse.get('lang', ''):
+            fields['languages'] = obj_to_parse.get('lang', '')
+
         return fields
 
     @staticmethod
