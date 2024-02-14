@@ -379,7 +379,7 @@ Retrieves information about a specific endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint | comma separated string containing Hostname, IP, macAddress or agentGuid of the endpoint(s) to query. e.g. endpoint="test-endpoint1,demo-endpoint2". | Required | 
+| fields | A dictionary object with key/value used to create a query string. e.g. fields={"endpointName":"test-endpoint1", "ip":"52.72.139.96"}. For complete list of keys check (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1eiqs~1endpoints/get>). | Required | 
 | query_op | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint(s). e.g. query_op=or. Possible values are: and, or. | Required | 
 
 #### Context Output
@@ -1032,7 +1032,7 @@ Runs a custom script on the specified endpoint or agentGuid.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| block_objects | List of object(s) made up of `filename`, `endpoint_name` or `agent_guid` and optional `description` and optional `parameter`. e.g. [{"filename":"test.ps1","endpoint_name":"test-endpoint1","description":"Run custom script","parameter":"some-string"}]. | Required | 
+| block_objects | List of object(s) made up of `filename`, `endpoint` or `agent_guid` and optional `description` and optional `parameter`. e.g. [{"filename":"test.ps1","endpoint":"test-endpoint1","description":"Run custom script","parameter":"some-string"}]. | Required | 
 
 #### Context Output
 

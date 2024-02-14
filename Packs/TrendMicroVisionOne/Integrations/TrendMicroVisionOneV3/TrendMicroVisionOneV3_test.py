@@ -1186,19 +1186,19 @@ def mock_get_endpoint_info_response(*args, **kwargs):
     )
 
 
-def side_effect(lambda_func, args2, args3):
+def side_effect(lambda_func, *args2, **args3):
     lambda_func(mock_get_endpoint_info_response())
 
 
 # Test case for get endpoint information.
 def test_get_endpoint_information(mocker):
     """Test get information from endpoint based on endpointName or agentGuid"""
-    args = {"endpoint": "hoMSEDGEWIN10stname", "query_op": "and"}
+    args = {"query_op": "and", "fields": json.dumps({"dpt": "443", "endpointName": "MSEDGEWIN10"})}
     client = Mock()
-    client.endpoint.consume_data = Mock(side_effect=side_effect)
     my_list = []
+    client.endpoint.consume_data = Mock(side_effect=side_effect)
     client.endpoint.consume_data(
-        lambda cons: my_list.append(cons), QueryOp.AND, "MSEDGEWIN10"
+        lambda cons: my_list.append(cons), QueryOp.AND, **json.loads(args["fields"])
     )
     result = get_endpoint_info(client, args)
     assert isinstance(result.outputs[0]["agent_guid"], str)
@@ -1423,6 +1423,15 @@ def run_custom_script_mock_response(*args, **kwargs):
 
 # Test case to run a custom script
 def test_run_custom_script(mocker):
+    """
+    Given:
+        - block_objects -> A dictionary object containing endpoint or agent_guid,
+            optional description and optional parameter.
+    When:
+        - Execute run_custom_script command
+    Then:
+        - validate a success response and a task_id is generated
+    """
     client = Mock()
     client.script.run = Mock(return_value=run_custom_script_mock_response())
     args = {
@@ -1430,7 +1439,7 @@ def test_run_custom_script(mocker):
             [
                 {
                     "filename": "test.ps1",
-                    "endpoint_name": "custom-endpoint1",
+                    "endpoint": "custom-endpoint1",
                     "parameter": "string",
                     "description": "Run custom script.",
                 }
@@ -1469,6 +1478,15 @@ def get_custom_script_list_mock_response(*args, **kwargs):
 
 # Test case to fetch custom script list
 def test_get_custom_script_list(mocker):
+    """
+    Given:
+        - fields -> A dictionary object containing fileName and/or fileType
+        - query_op -> Operator used to build the query string, possible values are and/or
+    When:
+        - Execute get_custom_script_list command
+    Then:
+        - validate an id, filename and filetype are returned
+    """
     client = Mock()
     client.script.list = Mock(return_value=get_custom_script_list_mock_response())
     args = {"fields": json.dumps({"fileType": "bash"}), "query_op": "or"}
@@ -1490,6 +1508,14 @@ def download_custom_script_mock_response(*args, **kwargs):
 
 # Test case to download a custom script
 def test_download_custom_script(mocker):
+    """
+    Given:
+        - script_id -> The ID for a custom script to download
+    When:
+        - Execute download_custom_script command
+    Then:
+        - validate text response for downloaded script
+    """
     client = Mock()
     client.script.download = Mock(return_value=download_custom_script_mock_response())
     args = {"script_id": "44c99cb0-8c5f-4182-af55-62135dbe32f1"}
@@ -1511,6 +1537,14 @@ def delete_custom_script_mock_response(*args, **kwargs):
 
 # Test case to delete a custom script
 def test_delete_custom_script(mocker):
+    """
+    Given:
+        - script_id -> The ID of a custom script to delete
+    When:
+        - Execute delete_custom_script command
+    Then:
+        - validate a success response
+    """
     client = Mock()
     client.script.delete = Mock(return_value=delete_custom_script_mock_response())
     args = {"script_id": "44c99cb0-8c5f-4182-af55-62135dbe32f1"}
@@ -1532,6 +1566,17 @@ def add_custom_script_mock_response(*args, **kwargs):
 
 # Test case to add a custom script
 def test_add_custom_script(mocker):
+    """
+    Given:
+        - filename -> Name of the custom script
+        - filetype -> Filetype of the custom script
+        - description -> Optional description for the custom script
+        - script_contents -> Contents of the custom script
+    When:
+        - Execute add_custom_script command
+    Then:
+        - validate an ID is returned after successful action completion
+    """
     client = Mock()
     client.script.add = Mock(return_value=add_custom_script_mock_response())
     args = {
@@ -1560,6 +1605,18 @@ def update_custom_script_mock_response(*args, **kwargs):
 
 # Test case to update a custom script
 def test_update_custom_script(mocker):
+    """
+    Given:
+        - filename -> Name of the custom script
+        - filetype -> Filetype of the custom script
+        - script_id => ID of the custom script to update
+        - script_contents -> New contents of the custom script
+        - description -> Optional description for the custom script
+    When:
+        - Execute update_custom_script command
+    Then:
+        - validate a success response
+    """
     client = Mock()
     client.script.update = Mock(return_value=update_custom_script_mock_response())
     mocker.patch("TrendMicroVisionOneV3.requests.get", mocked_requests_get)
