@@ -383,6 +383,7 @@ xpanse-prepare-testing-bucket:
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     CLOUD_API_KEYS: $XSOAR_OPP_API_KEYS
+    CLOUD_SERVERS_PATH: "./xsoar_ng_servers.json"
   stage: run-instances
   needs:
     - job: xsoar-prepare-testing-bucket
