@@ -1,7 +1,6 @@
 commonfields:
-  id: 4005625e-f0bc-4593-887c-0f86c9c9f67b
-  version: 16
-vcShouldKeepItemLegacyProdMachine: false
+  id: PCComputeHostComplianceIssuesButton
+  version: -1
 name: PCComputeHostComplianceIssuesButton
 script: |
   '''
@@ -159,20 +158,39 @@ comment: |-
   - Compliance ID
   - Cause
   - Severity
-  - Title
+  - Title.
 enabled: true
 args:
 - name: hostname
   required: true
   description: The hostname to be enriched.
 - name: compliance_ids
-  description: A comma separated list of compliance IDs to be enriched. If no value
-    provided, it will return results for all compliance IDs.
+  description: A comma separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs.
+outputs:
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.hostname
+  description: The hostname.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues
+  description: A list of the host's compliance issues.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.Cause
+  description: Additional information regarding the root cause for the vulnerability.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.Compliance
+    ID
+  description: ID of the violation.
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.Severity
+  description: Textual representation of the vulnerability's severity.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.Title
+  description: Compliance title.
+  type: string
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.13.87159
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
