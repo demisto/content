@@ -27,7 +27,8 @@ If you configure both **Syslog Server Alerts** and **Syslog Response Rule**, mak
 
 of the syslog server the same.
 
-If you want to configure them differently, make sure to configure 2 different syslog data source on XSIAM as well, by repeating the **broker vm configuration** steps for each one.
+If you want to configure them differently, make sure to configure 2 different syslog data sources on XSIAM as well, by repeating the [#Broker VM](broker-vm) procedure for each one.
+
 
 <br>
 
