@@ -19,7 +19,7 @@ from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
     jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type, jira_file_link, \
-    jira_sanitize_file_name, jira_color_text
+    jira_sanitize_file_name, jira_color_text, transition_jira_ticket_to_unresolved
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
     TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks, TEST_PLAYBOOKS_JIRA_BASE_HEADERS, \
     write_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -77,9 +77,12 @@ def create_jira_issue(jira_server: JIRA,
                       ) -> Issue:
     summary = generate_ticket_summary(playbook_id)
     description = generate_description_for_test_playbook(playbook_id, build_number, junit_file_name, table_data, failed)
-    jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, max_days_to_reopen, jira_issue)
+    jira_issue, link_to_issue, use_existing_issue, unresolved_transition_id = find_existing_jira_ticket(jira_server, now,
+                                                                                                        max_days_to_reopen,
+                                                                                                        jira_issue)
 
     if jira_issue is not None:
+        transition_jira_ticket_to_unresolved(jira_server, jira_issue, unresolved_transition_id)
         jira_server.add_comment(issue=jira_issue, body=description)
     else:
         jira_issue = jira_server.create_issue(project=JIRA_PROJECT_ID,
