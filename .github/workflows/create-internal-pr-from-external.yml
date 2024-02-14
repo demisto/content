@@ -39,3 +39,9 @@ jobs:
           cd Utils/github_workflow_scripts
           poetry run ./create_internal_pr.py
           echo "Finished Creating Internal PR"
+      - name: Notify External PR Merge
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          echo "Add a comment"
+          gh pr comment "$PR_URL" --body "Thank you for your contribution. Your external PR has been merged and the changes are now included in an internal PR for further review. Once the build passes, the internal PR will also be merged."
