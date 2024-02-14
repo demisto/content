@@ -65,7 +65,8 @@ In order to send logs via syslog, you will need to create a response rule with a
 After creating the response rule with the "Log to a Syslog Server" action, you will have to assign it to a policy in order for it to apply.
 1. In the Enforce Console, navigate to **Manage** &rarr; **Policies** &rarr; **Policy List**.
 2. Select the policy you want to collect logs from using syslog.
-3. Go to the **Response** tab, and select the **Cortex XSIAM Syslog** rule you have created in the previous section.
+3. Go to the **Response** tab, and select the **Cortex XSIAM Syslog** rule you created in the previous section.
+
 4. Click **Add Response Rule** to add the response rule to the policy.
 5. Click **Save**
 6. Repeat steps 2-5 for any additional policies you want to collect logs from and send to Cortex XSIAM via syslog.
