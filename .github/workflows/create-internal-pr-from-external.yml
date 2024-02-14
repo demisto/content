@@ -41,6 +41,7 @@ jobs:
           echo "Finished Creating Internal PR"
       - name: Notify External PR Merge
         env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
           echo "Add a comment"
