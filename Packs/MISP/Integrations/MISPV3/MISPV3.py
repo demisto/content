@@ -304,8 +304,8 @@ def build_generic_object(template_name: str, args: list[dict]) -> GenericObjectG
 
 def build_custom_object(template_name: str, args: list[dict]):
     obj = PYMISP.object_templates()
-    for ob in obj:
-        if str(ob.get('ObjectTemplate').get('name')).lower() == template_name:
+    for entry in obj:
+        if str(entry.get('ObjectTemplate').get('name')).lower() == template_name:
 
             custom_obj = PYMISP.get_raw_object_template(template_name)
 
