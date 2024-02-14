@@ -31,8 +31,7 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
         
     override_marketplaces = list(GCPConfig.corepacks_override_contents.get('updated_corepacks_content', {}).keys())
 
-    # override_marketplaces = GCPConfig.corepacks_override_contents.get('marketplaces', [])
-    override_corepacks_file_version = GCPConfig.corepacks_override_contents.get('file_version')
+    override_corepacks_file_version = GCPConfig.corepacks_override_contents.get('updated_corepacks_content').get('file_version')
     current_corepacks_file_version = GCPConfig.core_packs_file_versions.get(override_corepacks_server_version, {}).get('file_version').get(marketplace)
     if not current_corepacks_file_version:
         logging.debug(f'Could not find a matching file version for server version {override_corepacks_server_version} in '
@@ -96,8 +95,6 @@ def upload_server_versions_metadata(artifacts_dir: str):
         artifacts_dir (str): The CI artifacts directory to upload the versions-metadata.json file to.
     """
     versions_metadata_path = os.path.join(artifacts_dir, GCPConfig.VERSIONS_METADATA_FILE)
-    logging.info(versions_metadata_path)
-    logging.info(GCPConfig.versions_metadata_contents)
     json_write(versions_metadata_path, GCPConfig.versions_metadata_contents)
     logging.success(f"Finished copying {GCPConfig.VERSIONS_METADATA_FILE} to artifacts.")
  
