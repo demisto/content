@@ -2830,8 +2830,7 @@ def qradar_reference_sets_list_command(client: Client, args: dict) -> CommandRes
 
     # if this call fails, raise an error and stop command execution
     response = client.reference_sets_list(range_, ref_name, filter_, fields)
-    demisto.debug(f"#### {response=}")
-    if ref_name and not filter_:
+    if ref_name:
         outputs = dict(response)
         if convert_date_value and outputs.get('element_type') == 'DATE':
             for data_entry in outputs.get('data', []):
