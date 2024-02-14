@@ -112,15 +112,16 @@ def get_parsed_populated_fields(fields_to_parse: list[str]) -> frozenset | None:
         demisto.debug("All fields are requested. populated_field argument is set to None.")
 
         return None
-    
+
     new_fields = [field for field in fields_to_parse if field]
-    
+
     # Due to a server bug where API request an result non-matching names, we allow this "non existing" field.
     if "RelatedIncCount" in new_fields:
         new_fields.append("investigationsCount")
 
     demisto.debug(f"User's fields to populate: {new_fields}.")
     return frozenset(new_fields)
+
 
 fields_to_hash, unpopulate_fields, populate_fields = [], [], []  # type: ignore
 
@@ -131,7 +132,7 @@ def main():
     fields_to_hash = frozenset([x for x in argToList(args.get('fieldsToHash', '')) if x])  # type: ignore
     unpopulate_fields = frozenset([x for x in argToList(args.get('dontPopulateFields', '')) if x])  # type: ignore
     populate_fields = get_parsed_populated_fields(argToList(args.get('populateFields', '')))  # type: ignore
-    
+
     limit = int(args.get('limit', PAGE_SIZE))
     query = args.get('query', '')
     offset = int(args.get('offset', 0))
