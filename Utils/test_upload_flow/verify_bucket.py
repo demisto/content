@@ -112,7 +112,6 @@ class GCP:
         metadata_path = os.path.join(self.extracting_destination, 'index', pack_id, 'metadata.json')
         return read_json(metadata_path)
 
-
     def get_pack_metadata_from_pack_folder(self, pack_id):
         """
         Returns the metadata.json of the latest pack version from the pack's zip
@@ -179,8 +178,10 @@ class GCP:
             return f.read()
 
     def check_pack_version_in_index_and_all_pack_items_exist(self, pack_id, pack_items, pack_version):
-        version_exists = [self.is_in_index(pack_id), download_and_extract_pack(pack_id, pack_version, self.storage_bucket, self.extracting_destination,
-                                                           self.storage_base_path)]
+        version_exists = [self.is_in_index(pack_id), download_and_extract_pack(pack_id, pack_version,
+                                                                               self.storage_bucket,
+                                                                               self.extracting_destination,
+                                                                               self.storage_base_path)]
         items_exists = [self.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
                         in pack_items.values()]
         return all(version_exists) and all(items_exists)
@@ -241,17 +242,16 @@ class BucketVerifier:
         verify that the 'keywords' field has been changed in the bucket, without version bump.
         """
         pack_exists = download_and_extract_pack(pack_id, self.versions[pack_id], self.gcp.storage_bucket,
-                                                       self.gcp.extracting_destination,
-                                                       self.gcp.storage_base_path)
+                                                self.gcp.extracting_destination,
+                                                self.gcp.storage_base_path)
         if not pack_exists:
             return False, pack_id
 
-        return ((keyword in self.gcp.get_pack_metadata(pack_id).get('keywords', {}) and
-                keyword in self.gcp.get_pack_metadata_from_pack_folder(pack_id).get('keywords', {})),
+        return ((keyword in self.gcp.get_pack_metadata(pack_id).get('keywords', {})
+                and keyword in self.gcp.get_pack_metadata_from_pack_folder(pack_id).get('keywords', {})),
                 pack_id,
                 VerifyMessages.DEPENDENCY
                 )
-
 
     @logger
     def verify_new_version(self, pack_id, rn):
@@ -338,8 +338,8 @@ class BucketVerifier:
         if not pack_exists:
             return False, pack_id
 
-        return ((dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}) and
-                 dependency_id in self.gcp.get_pack_metadata_from_pack_folder(pack_id).get('dependencies', {})),
+        return ((dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies', {})
+                 and dependency_id in self.gcp.get_pack_metadata_from_pack_folder(pack_id).get('dependencies', {})),
                 pack_id,
                 VerifyMessages.DEPENDENCY
                 )
@@ -451,7 +451,6 @@ class BucketVerifier:
 
         # case 15: metadata changes - verify that the permitted fields have been changed in metadata.json without version bump
         self.verify_metadata_changes('Zoom', 'Mobile')
-
 
     def is_bucket_valid(self):
         """

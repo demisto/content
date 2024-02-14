@@ -264,6 +264,7 @@ def modify_pack_metadata(pack: Path):
         json.dump(base_metadata, f)
     return pack, base_metadata['currentVersion'], None
 
+
 @add_changed_pack
 def modify_modeling_rules_path(modeling_rule: Path, old_name: str, new_name: str):
     """
