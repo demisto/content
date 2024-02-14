@@ -256,7 +256,7 @@ def test_teradata_connection(mocker, use_ldap: bool, expected_url: str):
 
     mock_create_engine = mocker.patch.object(sqlalchemy, 'create_engine')
     Client(dialect='Teradata', host='host', username='username', password='password', port='', connect_parameters='',
-                    database='', ssl_connect=False, use_ldap=use_ldap)
+           database='', ssl_connect=False, use_ldap=use_ldap)
     assert mock_create_engine.mock_calls[0][1][0] == expected_url
 
 
