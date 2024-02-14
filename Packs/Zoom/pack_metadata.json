@@ -1,8 +1,8 @@
 {
     "name": "Zoom",
     "description": "Use the Zoom integration manage your Zoom users and meetings",
-    "support": "partner",
-    "currentVersion": "1.6.9",
+    "support": "xsoar",
+    "currentVersion": "1.6.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
