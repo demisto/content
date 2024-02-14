@@ -92,66 +92,67 @@ configuration:
   - None
   section: Collect
   advanced: true
-- name: limit_assets
-  defaultValue: '100'
-  description: The maximum number of assets to fetch.
+- defaultvalue: '100'
+  display: 'Maximum number of assets to fetch'
+  name: limit_assets
   type: 0
-- defaultvalue: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime
+  section: Collect
+- additionalinfo: 'The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html'
+  defaultvalue: 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime'
   display: 'Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping).'
   name: events_columns
   type: 12
-  additionalinfo: 'The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html'
   section: Collect
   advanced: true
   required: false
 - additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev.
   defaultvalue: 'No Mirroring'
   display: Mirroring Options
-  hidden:
-  - marketplacev2
   name: mirror_options
   type: 15
+  hidden:
+  - marketplacev2
+  section: Collect
+  advanced: true
+  required: false
   options:
   - No Mirroring
   - Mirror Offense
   - Mirror Offense and Events
-  section: Collect
-  advanced: true
-  required: false
 - additionalinfo: When selected, closing the QRadar offense is mirrored in Cortex XSOAR.
-  defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
   type: 8
-  hidden:
-  - marketplacev2
+  defaultvalue: 'false'
   section: Collect
   advanced: true
+  hidden:
+  - marketplacev2
   required: false
-- additionalinfo: Maximum number of incoming incidents to mirror each time.
-  display: The number of incoming incidents to mirror each time
+- display: The number of incoming incidents to mirror each time
   name: mirror_limit
   type: 0
-  defaultvalue: '100'
+  additionalinfo: Maximum number of incoming incidents to mirror each time.
   section: Collect
   advanced: true
+  required: false
+  defaultvalue: '100'
   hidden:
   - marketplacev2
-  required: false
 - display: Advanced Parameters
   name: adv_params
   type: 12
-  additionalinfo: Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   section: Collect
   advanced: true
   required: false
+  additionalinfo: Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
   required: false
-- display: Use system proxy settings
+- display: "Use system proxy settings"
   name: proxy
   type: 8
   section: Connect
@@ -385,7 +386,6 @@ script:
       - IPs And Assets
       - None
       description: IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses.
-
     - name: protected
       description: Whether the offense should be protected.
       auto: PREDEFINED
@@ -2560,7 +2560,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.87159
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true
