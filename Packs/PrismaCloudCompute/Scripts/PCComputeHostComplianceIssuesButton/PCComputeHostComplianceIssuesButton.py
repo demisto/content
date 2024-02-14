@@ -13,9 +13,11 @@ Script Description:
     - Title
 '''
 
-from typing import List, Dict, Any
+from typing import Any
 
 # Command Function
+
+
 def run_prisma_cloud_compute_hosts_scan_list(hostname: str, compliance_ids: str) -> None:
     """
     Runs the "prisma-cloud-compute-hosts-scan-list" command with specified arguments and returns specific details.
@@ -27,16 +29,16 @@ def run_prisma_cloud_compute_hosts_scan_list(hostname: str, compliance_ids: str)
     Returns:
         None
     """
-    preconfigured_args: Dict[str, str] = {
+    preconfigured_args: dict[str, str] = {
         'compact': 'false',
         'all_results': 'true'
     }
 
-    args: Dict[str, str] = {'hostname': hostname}
+    args: dict[str, str] = {'hostname': hostname}
     args.update(preconfigured_args)
 
     # Run the prisma-cloud-compute-hosts-scan-list command
-    result: List[Dict[str, Any]] = demisto.executeCommand("prisma-cloud-compute-hosts-scan-list", args)
+    result: list[dict[str, Any]] = demisto.executeCommand("prisma-cloud-compute-hosts-scan-list", args)
     if isError(result):
         return_error(f"Failed to run 'prisma-cloud-compute-hosts-scan-list': {get_error(result)}")
 
@@ -45,22 +47,23 @@ def run_prisma_cloud_compute_hosts_scan_list(hostname: str, compliance_ids: str)
         return_error("No valid results found in the command output.")
 
     # Extract specific details from the command results
-    contents_list: List[Dict[str, Any]] = result[0]['Contents']
+    contents_list: list[dict[str, Any]] = result[0]['Contents']
 
     # Process each element in the list
     for contents in contents_list:
         # Extract compliance issues
-        compliance_issues: List[Dict[str, Any]] = contents.get('complianceIssues', [])
+        compliance_issues: list[dict[str, Any]] = contents.get('complianceIssues', [])
         if not compliance_issues:
             continue  # Skip if no compliance issues found in this element
 
         # Filter compliance issues based on provided IDs
-        filtered_compliance_issues: List[Dict[str, Any]] = filter_compliance_issues(compliance_issues, compliance_ids)
+        filtered_compliance_issues: list[dict[str, Any]] = filter_compliance_issues(compliance_issues, compliance_ids)
 
         # Process the filtered compliance_issues and output details
         process_and_output_compliance_issues(filtered_compliance_issues, hostname)
 
-def filter_compliance_issues(compliance_issues: List[Dict[str, Any]], compliance_ids: str) -> List[Dict[str, Any]]:
+
+def filter_compliance_issues(compliance_issues: list[dict[str, Any]], compliance_ids: str) -> list[dict[str, Any]]:
     """
     Filter compliance issues based on provided IDs.
 
@@ -75,15 +78,16 @@ def filter_compliance_issues(compliance_issues: List[Dict[str, Any]], compliance
         return compliance_issues  # Return all issues if no IDs provided
 
     # Split comma-separated IDs into a list
-    ids_to_filter: List[str] = [id.strip() for id in compliance_ids.split(',')]
+    ids_to_filter: list[str] = [id.strip() for id in compliance_ids.split(',')]
 
     # Filter issues based on provided IDs
-    filtered_compliance_issues: List[Dict[str, Any]] = [issue for issue in compliance_issues if str(issue.get('id', '')) in
+    filtered_compliance_issues: list[dict[str, Any]] = [issue for issue in compliance_issues if str(issue.get('id', '')) in
                                                         ids_to_filter]
 
     return filtered_compliance_issues
 
-def process_and_output_compliance_issues(compliance_issues: List[Dict[str, Any]], hostname: str) -> None:
+
+def process_and_output_compliance_issues(compliance_issues: list[dict[str, Any]], hostname: str) -> None:
     """
     Process the compliance issues and output specific details to the War Room.
 
@@ -95,10 +99,10 @@ def process_and_output_compliance_issues(compliance_issues: List[Dict[str, Any]]
         None
     """
     # Iterate over each compliance issue and extract selected keys
-    rows: List[Dict[str, Any]] = []
+    rows: list[dict[str, Any]] = []
 
     for issue in compliance_issues:
-        row: Dict[str, Any] = {
+        row: dict[str, Any] = {
             'Compliance ID': str(issue.get('id', '')),
             'Cause': issue.get('cause', ''),
             'Severity': issue.get('severity', ''),
@@ -128,6 +132,8 @@ def process_and_output_compliance_issues(compliance_issues: List[Dict[str, Any]]
     return_results(command_results)
 
 # Main function
+
+
 def main() -> None:
     """
     Main function of the script.
@@ -147,6 +153,7 @@ def main() -> None:
         run_prisma_cloud_compute_hosts_scan_list(hostname, compliance_ids)
     except Exception as e:
         return_error(f"Error in script: {str(e)}")
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
