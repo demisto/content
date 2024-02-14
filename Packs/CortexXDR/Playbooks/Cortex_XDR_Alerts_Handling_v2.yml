@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: fd96111f-f463-49f6-86ec-a05763d4cc99
+    taskid: 0a0d40e0-3b84-43f0-846c-aa4ee100308d
     type: condition
     task:
-      id: fd96111f-f463-49f6-86ec-a05763d4cc99
+      id: 0a0d40e0-3b84-43f0-846c-aa4ee100308d
       version: -1
       name: Choose playbook by category
       description: Choose the playbook to run by the alert category.
@@ -63,6 +63,8 @@ tasks:
       - "8"
       RDP Brute-Force:
       - "13"
+      Large Upload:
+      - "19"
     separatecontext: false
     conditions:
     - label: Malware
@@ -211,6 +213,30 @@ tasks:
             value:
               simple: Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service
           ignorecase: true
+    - label: Large Upload
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                    ignorecase: true
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: Large Upload
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -274,7 +300,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1880,
+          "x": 2300,
           "y": 405
         }
       }
@@ -1434,13 +1460,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: b31ca834-7ac6-439d-8246-59fba730f75b
+    taskid: 2802bd7a-1ae0-46b7-8a19-03f7e78436e1
     type: playbook
     task:
-      id: b31ca834-7ac6-439d-8246-59fba730f75b
+      id: 2802bd7a-1ae0-46b7-8a19-03f7e78436e1
       version: -1
       name: Cortex XDR Remote PsExec with LOLBIN command execution alert
-      description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and a verdict for the executed command.\n- Perform further endpoint investigation using Cortex XDR.\n- Checks for any malicious verdicts found to raise the severity of the alert.\n- Perform automatic/manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and cannot be used as a standalone version."
+      description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n  - Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).\n  - Enrich any entities and indicators from the alert and find any related campaigns.\n  - Perform command analysis to provide insights and a verdict for the executed command.\n  - Perform further endpoint investigation using Cortex XDR.\n  - Checks for any malicious verdicts found to raise the severity of the alert.\n  - Perform automatic/manual remediation response by blocking any malicious indicators found.\nThe playbook is designed to run as a sub-playbook in \"Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling\".\nIt depends on the data from the parent playbooks and cannot be used as a standalone version.\n"
       playbookName: Cortex XDR Remote PsExec with LOLBIN command execution alert
       type: playbook
       iscommand: false
@@ -1469,8 +1495,6 @@ tasks:
           accessor: endpoint_id
       HighAlertsThreshold:
         simple: "1"
-      LOLBASFeedLimit:
-        simple: "100"
       SrcIPAddress:
         complex:
           root: incident.xdralerts
@@ -1512,7 +1536,77 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+  "19":
+    id: "19"
+    taskid: e322548d-8472-4958-8362-dd9aac91a0bf
+    type: playbook
+    task:
+      id: e322548d-8472-4958-8362-dd9aac91a0bf
+      version: -1
+      name: Cortex XDR - Large Upload
+      playbookName: Cortex XDR - Large Upload
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Alert_ID:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Large Upload
+              ignorecase: true
+          accessor: alert_id
+          transformers:
+          - operator: uniq
+      AutoBlockIndicators:
+        simple: "True"
+      AutoIsolateEndpoint:
+        simple: "False"
+      BlockIndicators_UserVerification:
+        simple: "False"
+      EarlyContainment:
+        simple: "True"
+      FWApps_Processes_Whitlist:
+        simple: ip,tcp,udp,ssl,syslog,quic,Chrome.exe,Firefox.exe,Opera.exe,Safari.exe,iexplore.exe,msedge.exe,brave.exe
+      FurtherInvestigation:
+        simple: "False"
+      InternalIPRanges:
+        complex:
+          root: inputs.InternalIPRanges
+      Transferred_Data _Threshold:
+        simple: "150"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1520,13 +1614,13 @@ view: |-
       "12_16_Token Theft": 0.58,
       "1_11_Cloud": 0.81,
       "1_14_First SSO Access": 0.82,
-      "1_7_#default#": 0.63,
+      "1_7_#default#": 0.9,
       "1_9_Malware": 0.65
     },
     "paper": {
       "dimensions": {
         "height": 925,
-        "width": 4460,
+        "width": 4880,
         "x": -2200,
         "y": 70
       }
