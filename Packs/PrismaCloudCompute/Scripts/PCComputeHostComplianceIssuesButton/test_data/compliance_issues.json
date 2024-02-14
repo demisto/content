@@ -4,8 +4,8 @@
         "cause": "The directory /tmp should be mounted. File: /proc/mounts",
         "description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand some applications.",
         "title": "(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured",
-        "vecStr": "", "exploit": "", "riskFactors": None, "link": "", "type": "linux", "packageName": "",
-        "packageVersion": "", "layerTime": 0, "templates": None, "twistlock": False, "cri": False,
+        "vecStr": "", "exploit": "", "riskFactors": null, "link": "", "type": "linux", "packageName": "",
+        "packageVersion": "", "layerTime": 0, "templates": null, "twistlock": false, "cri": false,
         "published": 0, "fixDate": 0, "discovered": "0001-01-01T00:00:00Z", "functionLayer": "",
         "wildfireMalware": {}, "secret": {}
     },
@@ -14,8 +14,8 @@
         "cause": "The directory /var should be mounted. File: /proc/mounts",
         "description": "Description for compliance ID 6116",
         "title": "(CIS_Linux_2.0.0 - 1.1.6) Ensure separate partition exists for /var",
-        "vecStr": "", "exploit": "", "riskFactors": None, "link": "", "type": "linux", "packageName": "",
-        "packageVersion": "", "layerTime": 0, "templates": None, "twistlock": False, "cri": False,
+        "vecStr": "", "exploit": "", "riskFactors": null, "link": "", "type": "linux", "packageName": "",
+        "packageVersion": "", "layerTime": 0, "templates": null, "twistlock": false, "cri": false,
         "published": 0, "fixDate": 0, "discovered": "0001-01-01T00:00:00Z", "functionLayer": "",
         "wildfireMalware": {}, "secret": {}
     },
@@ -24,8 +24,8 @@
         "cause": "The directory /var/tmp should be mounted. File: /proc/mounts",
         "description": "Description for compliance ID 6117",
         "title": "(CIS_Linux_2.0.0 - 1.1.7) Ensure separate partition exists for /var/tmp",
-        "vecStr": "", "exploit": "", "riskFactors": None, "link": "", "type": "linux", "packageName": "",
-        "packageVersion": "", "layerTime": 0, "templates": None, "twistlock": False, "cri": False,
+        "vecStr": "", "exploit": "", "riskFactors": null, "link": "", "type": "linux", "packageName": "",
+        "packageVersion": "", "layerTime": 0, "templates": null, "twistlock": false, "cri": false,
         "published": 0, "fixDate": 0, "discovered": "0001-01-01T00:00:00Z", "functionLayer": "",
         "wildfireMalware": {}, "secret": {}
     },
@@ -34,8 +34,8 @@
         "cause": "The directory /var/log should be mounted. File: /proc/mounts",
         "description": "Description for compliance ID 61115",
         "title": "(CIS_Linux_2.0.0 - 1.1.11) Ensure separate partition exists for /var/log",
-        "vecStr": "", "exploit": "", "riskFactors": None, "link": "", "type": "linux", "packageName": "",
-        "packageVersion": "", "layerTime": 0, "templates": None, "twistlock": False, "cri": False,
+        "vecStr": "", "exploit": "", "riskFactors": null, "link": "", "type": "linux", "packageName": "",
+        "packageVersion": "", "layerTime": 0, "templates": null, "twistlock": false, "cri": false,
         "published": 0, "fixDate": 0, "discovered": "0001-01-01T00:00:00Z", "functionLayer": "",
         "wildfireMalware": {}, "secret": {}
     },
@@ -44,8 +44,8 @@
         "cause": "The directory /var/log/audit should be mounted. File: /proc/mounts",
         "description": "Description for compliance ID 61116",
         "title": "(CIS_Linux_2.0.0 - 1.1.12) Ensure separate partition exists for /var/log/audit",
-        "vecStr": "", "exploit": "", "riskFactors": None, "link": "", "type": "linux", "packageName": "",
-        "packageVersion": "", "layerTime": 0, "templates": None, "twistlock": False, "cri": False,
+        "vecStr": "", "exploit": "", "riskFactors": null, "link": "", "type": "linux", "packageName": "",
+        "packageVersion": "", "layerTime": 0, "templates": null, "twistlock": false, "cri": false,
         "published": 0, "fixDate": 0, "discovered": "0001-01-01T00:00:00Z", "functionLayer": "",
         "wildfireMalware": {}, "secret": {}
     },
@@ -54,9 +54,9 @@
         "cause": "The service systemd-timesyncd.service should be enabled",
         "description": "Description for compliance ID 602214",
         "title": "(CIS_Linux_2.0.0 - 2.2.1.4) Ensure systemd-timesyncd is configured",
-        "vecStr": "", "exploit": "", "riskFactors": None, "link": "", "type": "linux", "packageName": "",
-        "packageVersion": "", "layerTime": 0, "templates": None,
-        "twistlock": False, "cri": False,
+        "vecStr": "", "exploit": "", "riskFactors": null, "link": "", "type": "linux", "packageName": "",
+        "packageVersion": "", "layerTime": 0, "templates": null,
+        "twistlock": false, "cri": false,
         "published": 0, "fixDate": 0, "discovered": "0001-01-01T00:00:00Z", "functionLayer": "",
         "wildfireMalware": {}, "secret": {}
     }
