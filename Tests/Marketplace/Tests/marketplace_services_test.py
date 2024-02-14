@@ -2090,8 +2090,7 @@ class TestLoadPackMetadata:
             - Ensure the correct debug log messages are printed.
             - Ensure the updated_metadata dictionary is correct.
         """
-        # from demisto_sdk.commands.common.constants import PACK_METADATA_REQUIRE_RN_FIELDS todo - from sdk PR
-        from Tests.Marketplace.marketplace_services import PACK_METADATA_REQUIRE_RN_FIELDS # todo - from sdk PR
+        from demisto_sdk.commands.common.constants import PACK_METADATA_REQUIRE_RN_FIELDS
         logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.debug")
         metadata_path = os.path.join(tmp_path, 'metadata.json')
         dummy_pack._pack_path = tmp_path
