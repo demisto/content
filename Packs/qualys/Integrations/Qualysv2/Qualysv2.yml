@@ -2721,39 +2721,43 @@ script:
   - name: qualys-update-vmware-record
     arguments:
     - name: ids
+      required: true
       description: Record IDs to update
     - name: add_ips
+      required: true
       description: IP addresses specified will overwrite existing IPs in the record
-    description: Update Vmware records for authenticated scans of hosts running on Vmware
+    description: Update Vmware records for authenticated scans of hosts running on Vmware.
   - name: qualys-update-vcenter-record
     arguments:
     - name: ids
+      required: true
       description: Record IDs to update
     - name: add_ips
+      required: true
       description: IP addresses specified will overwrite existing IPs in the record
     description: Update vCenter records for authenticated scans of hosts running on vCenter
   - name: qualys-vcenter-esxi-mapped-record-list
     arguments:
-    - name: network_id
-      description: Network support must be enabled to specify the network_id. If network support is enabled and you do not provide a network_id, then the Default Global Network is considered. You can specify only one network_id.
-      defaultValue: "0"
-    - name: esxi_ip
-      description: Specifies the IP address of the ESXi server.
-    - name: output_format
-      auto: PREDEFINED
-      predefined:
-      - xml
-      - csv
-      description: One output format may be specified.
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
+      name: limit
     description: List vCenter ESXi mapping records
+    outputs:
+    - contextPath: Qualys.VcenterToEsxi.ESXI_IP
+      description: IDs of the hosts queued for purging.
+    - contextPath: Qualys.VcenterToEsxi.MAPPING_DATA_SOURCE
+      description: IDs of the hosts queued for purging.
+    - contextPath: Qualys.VcenterToEsxi.VCENTER_IP
+      description: IDs of the hosts queued for purging.
   - name: qualys-vcenter-esxi-mapped-record-import
     arguments:
     - name: csv_data
       description: Import vCenter ESXi mapping records
+      required: true
   - name: qualys-vcenter-esxi-mapped-record-purge
     arguments:
     - name: csv_data
       description: Purge vCenter ESXi mapping records
+      required: true
   dockerimage: demisto/python3:3.10.13.80014
   script: ''
   subtype: python3
