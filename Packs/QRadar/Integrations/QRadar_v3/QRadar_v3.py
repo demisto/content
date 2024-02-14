@@ -1637,20 +1637,25 @@ def print_debug_msg(msg: str):
     demisto.debug(f'QRadarMsg - {msg}')
 
 
-def is_reset_triggered():
+def is_reset_triggered(ctx: dict | None = None, version: Any = None):
     """
     Checks if reset of integration context have been made by the user.
     Because fetch is long running execution, user communicates with us
     by calling 'qradar-reset-last-run' command which sets reset flag in
     context.
 
+    Args:
+        ctx (dict | None): The context data to check. If it is None it will get the context from the platform.
+        version: The context data version.
     Returns:
         (bool):
         - True if reset flag was set. If 'handle_reset' is true, also resets integration context.
         - False if reset flag was not found in integration context.
     """
-    ctx, version = get_integration_context_with_version()
+    if not ctx or not version:
+        ctx, version = get_integration_context_with_version()
     if ctx and RESET_KEY in ctx:
+        # if we need to reset we have to get the version of the context
         print_debug_msg('Reset fetch-incidents.')
         demisto.setLastRun({LAST_FETCH_KEY: 0})
         context_data: dict[str, Any] = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
@@ -2161,10 +2166,11 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
                               user_query: str, events_columns: str, events_limit: int, ip_enrich: bool,
                               asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str],
                               first_fetch: str, mirror_options: str, assets_limit: int):
-    if is_reset_triggered():
+    context_data, version = get_integration_context_with_version()
+
+    if is_reset_triggered(context_data, version):
         last_highest_id = 0
     else:
-        context_data, _ = get_integration_context_with_version()
         last_highest_id = context_data.get(LAST_FETCH_KEY, 0)
     print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
     incidents, new_highest_id = get_incidents_long_running_execution(
