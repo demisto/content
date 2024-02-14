@@ -658,3 +658,31 @@ def test_empty_query(mocker):
     results = MimecastV2.query({})
 
     assert len(results.get('Contents')) == 0
+
+
+def test_get_message_metadata_with_attachments(mocker):
+    """
+        Given: Message metadata from API with attachments.
+        When: Get message command being called.
+        Then: Verify the extension value is returned.
+    """
+    message_id = '123'
+    expected_metadata = {
+        'subject': 'Test Email',
+        'from': {'emailAddress': 'test@example.com'},
+        'attachments': [{
+            'filename': 'hello world',
+            'id': '1',
+            'extension': '.txt'
+        }]
+    }
+
+    mocker.patch.object(MimecastV2, 'http_request', return_value={'data': [expected_metadata]})
+
+    _, actual_metadata = MimecastV2.get_message_metadata(message_id)
+
+    assert expected_metadata.get('subject') == actual_metadata.get('Subject')
+    assert expected_metadata.get('from').get('emailAddress') == actual_metadata.get('From')
+    assert expected_metadata.get('attachments')[0].get('filename') == actual_metadata.get('Attachments')[0].get('FileName')
+    assert expected_metadata.get('attachments')[0].get('extension') == actual_metadata.get('Attachments')[0].get('Extension')
+    assert expected_metadata.get('attachments')[0].get('id') == actual_metadata.get('Attachments')[0].get('ID')

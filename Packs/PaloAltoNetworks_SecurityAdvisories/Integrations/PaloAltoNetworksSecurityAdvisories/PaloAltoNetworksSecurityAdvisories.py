@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import List, Dict
 from dataclasses import dataclass
 import enum
 
@@ -14,7 +13,7 @@ class Client(BaseClient):
     ADVISORIES_ENDPOINT = "/advisories"
 
     def __init__(self, base_url, api_timeout=60, verify=True, proxy=False,
-                 ok_codes=tuple(), headers=None):
+                 ok_codes=(), headers=None):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
         self.api_timeout = api_timeout
 
@@ -43,7 +42,7 @@ class Client(BaseClient):
         )
 
 
-def dataclass_to_command_results(result: Any, raw_response: Union[List, Dict]) -> CommandResults:
+def dataclass_to_command_results(result: Any, raw_response: Union[list, dict]) -> CommandResults:
     """Takes a list, or a single, dataclass instance and converts it to a CommandResult instance."""
     if not result:
         command_result = CommandResults(
@@ -51,7 +50,7 @@ def dataclass_to_command_results(result: Any, raw_response: Union[List, Dict]) -
         )
         return command_result
 
-    outputs: Union[List[Dict], Dict, Any]
+    outputs: Union[list[dict], dict, Any]
     if isinstance(result, list):
         outputs = [vars(x) for x in result]
         summary_list = [vars(x) for x in result]
@@ -65,7 +64,7 @@ def dataclass_to_command_results(result: Any, raw_response: Union[List, Dict]) -
 
     extra_args = {}
     if hasattr(result, "_outputs_key_field"):
-        extra_args["outputs_key_field"] = getattr(result, "_outputs_key_field")
+        extra_args["outputs_key_field"] = result._outputs_key_field
 
     readable_output = tableToMarkdown(title, summary_list)
     command_result = CommandResults(
@@ -135,6 +134,7 @@ def test_module(client: Client):
     request_result = client.get_products()
     if request_result.get("success"):
         return "ok"
+    return None
 
 
 def get_advisories(client: Client, product: str, sort: str = "-date", severity: SeverityEnum = None, q: str = "") \
@@ -157,7 +157,7 @@ def get_advisories(client: Client, product: str, sort: str = "-date", severity: 
 
     advisory_data = client.get_advisories(product, params_dict).get("data", {})
 
-    advisory_object_list: List[Advisory] = []
+    advisory_object_list: list[Advisory] = []
     advisory_dict: dict
     for advisory_dict in advisory_data:
         advisory_object_list.append(flatten_advisory_dict(advisory_dict))
@@ -165,23 +165,80 @@ def get_advisories(client: Client, product: str, sort: str = "-date", severity: 
     return dataclass_to_command_results(advisory_object_list, raw_response=advisory_data)
 
 
-def advisory_to_indicator(advisory_dict: dict):
-    """Convert the advisory dictionary into an indicator dictionary"""
+def advisory_to_indicator(advisory_dict: dict) -> dict:
+    """Convert the advisory dictionary into an indicator dictionary
+
+    Args:
+        advisory_dict: advisory dictionary
+    Returns:
+        indicator dictionary
+    """
+
+    fields: dict = {}
+
+    if problem_type := advisory_dict.get("problemtype"):
+        tags = []  # holds cwe information as tags
+        # the dict that holds the advisory information fo CWE data
+        cwe_str: str = problem_type.get('problemtype_data', [{}])[0].get('description', [{}])[0].get('value', "")
+
+        if cwe_str and cwe_str.startswith('CWE-'):
+            # split this string after the CWE-\d* first space
+            # CWE-754 Improper Check for Unusual or Exceptional Conditions
+            cwe = cwe_str.split(" ", 1)
+            cwe[0] = cwe[0].rstrip(':')
+
+            tags.append(cwe[0])
+            fields['tags'] = tags
+
+    if references := advisory_dict.get("references"):
+        references_list: list[dict] = references.get('reference_data', [{}])
+        fields['publications'] = [
+            {
+                "link": x.get('url'),
+                "title": x.get('name'),
+                "source": x.get('refsource')
+            } for x in references_list]
+
+    impact: dict = advisory_dict.get("impact", {})
+    cvss: dict = impact.get("cvss", {})
+    # score mirrored to both fields so that default cve layout displays with full data
+    fields['cvss'] = cvss.get("baseScore", "")
+    fields['cvssscore'] = cvss.get("baseScore", "")
+    fields['cvssvector'] = cvss.get("vectorString", "")
+    fields['sourceoriginalseverity'] = cvss.get("baseSeverity", "")
+    # mirror data in these fields so default CVE layout does not need to be changed
+    # cvedescription not in default cve layout
+    advisory_description = advisory_dict.get("description", {}).get("description_data", [{}])[0].get("value", "")
+    fields['cvedescription'] = advisory_description
+    # description in default cve layout
+    fields['description'] = advisory_description
+    fields['published'] = advisory_dict.get("CVE_data_meta", {}).get("DATE_PUBLIC", "")
+    fields['name'] = advisory_dict.get("CVE_data_meta", {}).get("TITLE", [])
+
+    if impact and cvss.get("version") in ['3.1', '4.0']:
+        fields['cvssversion'] = cvss.get("version", "")
+
+        # is this v3/v4 cvss?
+        # fills out the cvsstable in default cve layout - different table column names
+        cvss_data = []
+        for k, v in cvss.items():
+            cvss_data.append(
+                {
+                    "metrics": camel_case_to_underscore(k).replace("_", " ").title(),
+                    "value": v
+                }
+            )
+        fields['cvsstable'] = cvss_data
+
     return {
         "value": advisory_dict.get("CVE_data_meta", {}).get("ID", ""),
         "type": FeedIndicatorType.CVE,
         "rawJSON": advisory_dict,
-        "fields": {
-            "cvss": advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", ""),
-            "cvedescription": advisory_dict.get("description", {}).get("description_data", [])[0].get("value", ""),
-            "cvssvector": advisory_dict.get("impact", {}).get("cvss", {}).get("vectorString", ""),
-            "sourceoriginalseverity": advisory_dict.get("impact", {}).get("cvss", {}).get("baseSeverity", ""),
-            "published": advisory_dict.get("CVE_data_meta", {}).get("DATE_PUBLIC", ""),
-        }
+        "fields": fields
     }
 
 
-def fetch_indicators(client: Client, fetch_product_name="PAN-OS"):
+def fetch_indicators(client: Client, fetch_product_name="PAN-OS") -> list[dict]:
     """
     Fetch Advisories as CVE indicators.
     :param client: Client instance
@@ -197,17 +254,26 @@ def fetch_indicators(client: Client, fetch_product_name="PAN-OS"):
 
 def main():
     """Main entrypoint for script"""
+
     client = Client(
         base_url=demisto.params().get("url")
     )
     command_name = demisto.command()
-    if command_name == "test-module":
-        return_results(test_module(client))
-    elif command_name == "pan-advisories-get-advisories":
-        return_results(get_advisories(client, **demisto.args()))
-    elif command_name == "fetch-indicators":
-        for b in batch(fetch_indicators(client, demisto.params().get("fetch_product_name"))):
-            demisto.createIndicators(b)
+    demisto.info(f'Command being called is {command_name}')
+
+    try:
+        if command_name == "test-module":
+            return_results(test_module(client))
+        elif command_name == "pan-advisories-get-advisories":
+            return_results(get_advisories(client, **demisto.args()))
+        elif command_name == "fetch-indicators":
+            for b in batch(fetch_indicators(client, demisto.params().get("fetch_product_name"))):
+                demisto.createIndicators(b)
+        else:
+            raise NotImplementedError(f"command {command_name} is not implemented.")
+
+    except Exception as err:
+        return_error(str(err))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

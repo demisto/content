@@ -27,6 +27,7 @@ from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
+from functools import wraps
 from inspect import currentframe
 
 import demistomock as demisto
@@ -40,7 +41,7 @@ def __line__():
 
 # 43 - The line offset from the beginning of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 44, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -48,6 +49,8 @@ XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
+
+SECRET_REPLACEMENT_STRING = '<XX_REPLACED>'
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -245,6 +248,7 @@ entryTypes = {
     'entryInfoFile': 9,
     'warning': 11,
     'map': 15,
+    'debug': 16,
     'widget': 17
 }
 
@@ -1591,7 +1595,7 @@ class IntegrationLogger(object):
             else:
                 res = "Failed encoding message with error: {}".format(exception)
         for s in self.replace_strs:
-            res = res.replace(s, '<XX_REPLACED>')
+            res = res.replace(s, SECRET_REPLACEMENT_STRING)
         return res
 
     def __call__(self, message):
@@ -1670,6 +1674,7 @@ class IntegrationLogger(object):
             url = ''
             headers = []
             headers_to_skip = ['Content-Length', 'User-Agent', 'Accept-Encoding', 'Connection']
+            headers_to_sanitize = ['Authorization', 'Cookie']
             request_parts = repr(data).split('\\\\r\\\\n')  # splitting lines on repr since data is a bytes-string
             for line, part in enumerate(request_parts):
                 if line == 0:
@@ -1680,6 +1685,9 @@ class IntegrationLogger(object):
                         url = 'https://{}{}'.format(host, url)
                     else:
                         if any(header_to_skip in part for header_to_skip in headers_to_skip):
+                            continue
+                        if any(header_to_sanitize in part for header_to_sanitize in headers_to_sanitize):
+                            headers.append(part.split(' ')[0] + " " + SECRET_REPLACEMENT_STRING)
                             continue
                         headers.append(part)
             curl_headers = ''
@@ -2011,22 +2019,28 @@ def url_to_clickable_markdown(data, url_keys):
     return data
 
 
-def create_clickable_url(url):
+def create_clickable_url(url, text=None):
     """
     Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
 
     :type url: ``Union[List[str], str]``
     :param url: the url of interest or a list of urls
 
-    :return: markdown format for clickable url
-    :rtype: ``str``
+    :type text: ``Union[List[str], str, None]``
+    :param text: the text of the url or a list of texts of urls.
+
+    :return: Markdown format for clickable url
+    :rtype: ``Union[List[str], str]``
 
     """
     if not url:
         return None
     elif isinstance(url, list):
+        if isinstance(text, list):
+            assert len(url) == len(text), 'The URL list and the text list must be the same length.'
+            return ['[{}]({})'.format(text, item) for text, item in zip(text, url)]
         return ['[{}]({})'.format(item, item) for item in url]
-    return '[{}]({})'.format(url, url)
+    return '[{}]({})'.format(text or url, url)
 
 
 class JsonTransformer:
@@ -7705,8 +7719,7 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
             return res
         else:
             return True, res
-
-    contents = [entry.get('Contents', {}) for entry in res]
+    contents = [entry.get('Contents', {}) for entry in res if entry['Type'] != entryTypes['debug']]
     contents = contents[0] if len(contents) == 1 else contents
 
     if fail_on_error:
@@ -7796,12 +7809,12 @@ regexFlags = re.M  # Multi line matching
 # for the global(/g) flag use re.findall({regex_format},str)
 # else, use re.match({regex_format},str)
 
-ipv4Regex = r'^(?P<ipv4>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))$'  # noqa: E501
+ipv4Regex = r'^(?P<ipv4>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))[:]?(?P<port>\d+)?$'  # noqa: E501
 ipv4cidrRegex = r'^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))$'
 ipv6Regex = r'^(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$'  # noqa: E501
 ipv6cidrRegex = r'^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))$'  # noqa: E501
 emailRegex = r'''(?i)(?:[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'''  # noqa: E501
-urlRegex = r'(?i)(?:(?P<url_with_path>(?P<scheme>(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?P<userinfo>[\w]+@)?(?P<host>(?P<simple_domain>(?:(?:[^\W_]|-)+\[?\.\]?)+[^\W\d_-]{2,})|(?P<ipv4>(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?P<HEXIPv4>0\[?x]?[\da-f]{8})|(?P<ipv6>\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?/(?P<path>(?:[\w\/%]+)(?P<extension>\[?[.]]?[^\W\d_-]+)?)?(?P<query>\?[^\s#]*)?(?P<fragment>#[\w\d]*)?)|(?P<no_path_url>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:[\w]+@)?(?:(?:(?:[^\W_]+\[?\.\]?)+[^\W\d_-]{2,})[\/.]?)|(?:(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:(?:(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?:0\[?x]?[\da-f]{8})|(?:\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))))$|(?P<ip_port>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?:(?:(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?:0\[?x]?[\da-f]{8})|(?:\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?::(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3})))$)'  # noqa: E501
+urlRegex = r'(?i)(?:(?P<url_with_path>(?P<scheme>(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?P<userinfo>[\w]+@)?(?P<host>(?P<simple_domain>(?:(?:[^\W_]|-)+\[?\.\]?)+[^\W\d_-]{2,})|(?P<ipv4>(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?P<HEXIPv4>0\[?x]?[\da-f]{8})|(?P<ipv6>\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?/(?P<path>(?:[\w\/%-]+)(?P<extension>\[?[.]]?[^\W\d_-]+)?)?(?P<query>\?[^\s#]*)?(?P<fragment>#[\w\d]*)?)|(?P<no_path_url>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:[\w]+@)?(?:(?:(?:[^\W_]+\[?\.\]?)+[^\W\d_-]{2,})[\/.]?)|(?:(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:(?:(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?:0\[?x]?[\da-f]{8})|(?:\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))))$|(?P<ip_port>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?:(?:(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?:0\[?x]?[\da-f]{8})|(?:\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?::(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3})))$)'  # noqa: E501
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 domainRegex = r'(?i)(?P<scheme>(?:http|hxxp|s?ftp)s?(?::|%3A)(?:%2F%2F|//))?(?P<fqdn>(?:(?P<domain>(?:[^\W_]|-)+)\[?\.\]?)+(?P<tld>[^\W\d_-]{2,}))'
 hashRegex = r'\b[0-9a-fA-F]+\b'
@@ -11268,7 +11281,7 @@ def split_data_to_chunks(data, target_chunk_size):
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE):
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11296,10 +11309,23 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type chunk_size: ``int``
     :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
 
+    :type should_update_health_module: ``bool``
+    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
+
     :return: None
     :rtype: ``None``
     """
-    send_data_to_xsiam(events, vendor, product, data_format, url_key, num_of_attempts, chunk_size, data_type="events")
+    send_data_to_xsiam(
+        events,
+        vendor,
+        product,
+        data_format,
+        url_key,
+        num_of_attempts,
+        chunk_size,
+        data_type="events",
+        should_update_health_module=should_update_health_module
+    )
 
 
 def is_scheduled_command_retry():
@@ -11314,6 +11340,51 @@ def is_scheduled_command_retry():
     calling_context = demisto.callingContext.get('context', {})
     sm = get_schedule_metadata(context=calling_context)
     return True if sm.get('is_polling', False) else False
+
+
+def retry(
+    times=3,
+    delay=1,
+    exceptions=Exception,
+):
+    """
+    retries to execute a function until an exception isn't raised anymore.
+
+    :type times: ``int``
+    :param times: The number of times to trigger the retry mechanism.
+
+    :type delay: ``int``
+    :param delay: The time in seconds to sleep between each time
+
+    :type exceptions: ``Exception``
+    :param exceptions: The exceptions that should be caught when executing
+        the function (Union[tuple[type[Exception], ...], type[Exception]])
+
+    :return: Any
+    :rtype: ``Any``
+    """
+    def _retry(func):
+        func_name = func.__name__
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for i in range(1, times + 1):
+                demisto.debug("Running func {func_name} for the {time} time".format(func_name=func_name, time=i))
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as error:
+                    demisto.debug(
+                        "Error when executing func {func_name}, error: {error}, time {time}".format(
+                            func_name=func_name, error=error, time=i
+                        )
+                    )
+                    if i == times:
+                        raise
+                    time.sleep(delay)  # pylint: disable=sleep-exists
+
+        return wrapper
+
+    return _retry
 
 
 def replace_spaces_in_credential(credential):
@@ -11364,7 +11435,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS):
+                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11394,6 +11465,10 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     :type data_type: ``str``
     :param data_type: Type of data to send to Xsiam, events or assets.
+
+    :type should_update_health_module: ``bool``
+    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
+        This can be useful when using send_data_to_xsiam in batches for the same fetch.
 
     :return: None
     :rtype: ``None``
@@ -11489,7 +11564,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True)
 
-    demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+    if should_update_health_module:
+        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
 
 ###########################################

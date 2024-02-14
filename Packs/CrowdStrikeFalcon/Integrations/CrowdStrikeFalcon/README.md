@@ -119,7 +119,8 @@ Exmample: `cloud_provider: 'aws'+account_id: 'my_id'`
 #### IOA Incidents
 
 The IOA fetch query uses the following format:
-**param1=val1&param2=val2**
+`param1=val1&param2=val2`
+Multiple values for the same parameter is not supported.
 Available parameters:
 
 - cloud_provider (required in every query)
@@ -133,7 +134,7 @@ Available parameters:
 - state
 
 Exmample: `cloud_provider=aws&region=eu-west-2`
-
+More information about the parameters can be found [here](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13).
 ### 1. Search for a device
 
 ---
@@ -6715,3 +6716,47 @@ Get incident behavior information
 | CrowdStrike.IncidentBehavior.display_name | String | The display name. | 
 | CrowdStrike.IncidentBehavior.objective | String | The objective. | 
 | CrowdStrike.IncidentBehavior.compound_tto | String | The compound TTO. | 
+
+
+### cs-falcon-get-ioarules
+
+***
+Get IOA Rules for Custom IOA rule triggered detections
+
+#### Base Command
+
+`cs-falcon-get-ioarules`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_ids | ID(s) of rules to list. Rule IDs can be retrieved by combining cid and rule_instance_id from 'cs-falcon-list-detection-summaries' output using this format cid:rule_instance_id. Example: 1123casdcccxxaafq13fdasf:2003 | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOARules.instance_id | String | The IOA Rule's Instance ID. | 
+| CrowdStrike.IOARules.customer_id | String | The customer ID. | 
+| CrowdStrike.IOARules.action_label | String | The IOA Rule's Action Label. | 
+| CrowdStrike.IOARules.comment | String | The IOA Rule's Comment.. | 
+| CrowdStrike.IOARules.committed_on | String | The timestamp of the IOA Rule's commitment. | 
+| CrowdStrike.IOARules.created_by | String | The IOA Rule's creator. | 
+| CrowdStrike.IOARules.created_on | String | The timestamp of the IOA Rule's creation. | 
+| CrowdStrike.IOARules.deleted | Boolean | Whether the IOA Rule is in deleted status. | 
+| CrowdStrike.IOARules.description | String | The IOA Rule's Description. | 
+| CrowdStrike.IOARules.disposition_id | String | The Disposition ID used by the IOA Rule. | 
+| CrowdStrike.IOARules.enabled | Boolean | Whether the IOA Rule is enabled. | 
+| CrowdStrike.IOARules.field_values | String | The IOA Rule's field values. | 
+| CrowdStrike.IOARules.instance_version | String | The IOA Rule's Instance Version. | 
+| CrowdStrike.IOARules.magic_cookie | String | The IOA Rule's Magic Cookie. | 
+| CrowdStrike.IOARules.modified_by | String | The IOA Rule's last modified user.
+| CrowdStrike.IOARules.modified_on| String | The timestamp of the IOA Rule's last modification. | 
+| CrowdStrike.IOARules.name | String | The IOA Rule Name. | 
+| CrowdStrike.IOARules.pattern_id | String | The IOA Rule's Pattern ID. | 
+| CrowdStrike.IOARules.pattern_severity | String | The IOA Rule's Pattern Severity. | 
+| CrowdStrike.IOARules.rulegroup_id | String | The IOA Rule's Rule Group ID. | 
+| CrowdStrike.IOARules.ruletype_id | String | The IOA Rule's Rule Type ID. | 
+| CrowdStrike.IOARules.ruletype_name | String | The IOA Rule's Rule Type Name. | 
+| CrowdStrike.IOARules.version_ids | String | The IOA Rule's Version ID. | 

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "#### Incident Fields\n\n**Actions On Campaign Incidents**\n\nReplaced the 'Link' with Add. Adding incidents to a campaign links them, as well as shows them on the Campaign Management tab.\nReplaced the 'Unlink' button with the 'Remove from Campaign' button.\nReplaced the 'Link & Close' button with the 'Add To Campaign & Close' button."
+}

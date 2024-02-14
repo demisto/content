@@ -47,7 +47,7 @@ outputs:
   description: The state of the response from the user will be stored under this context path.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.73190
+dockerimage: demisto/python3:3.10.13.84405
 runas: DBotWeakRole
 dependson:
   must:

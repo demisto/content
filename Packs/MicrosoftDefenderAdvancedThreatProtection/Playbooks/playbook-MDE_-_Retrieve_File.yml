@@ -1,8 +1,9 @@
 contentitemexportablefields:
   contentitemfields: {}
 description: |-
-  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-  This playbook uses the Live Response feature to retrieve a file from an endpoint./nNote that the endpoint id will be set from the incident field "DeviceID".
+  This playbook is part of the ‘Malware Investigation And Response’ pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook uses the Live Response feature to retrieve a file from an endpoint. The playbook supports a supplied machine id as an input. Otherwise, it will take the Device ID incident field.
+  The playbook supports only one element to be retrieved for each task (if needed more then one - use the playbook loop feature).
 id: MDE - Retrieve File
 inputs:
 - description: The file paths to be provided.
@@ -10,8 +11,18 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
+- key: MachineID
+  value: {}
+  required: false
+  description: The ID of the machine.
+  playbookInputQuery:
 name: MDE - Retrieve File
-outputs: []
+outputs:
+- contextPath: ExtractedFiles
+  description: A list of file names that were extracted from the ZIP file.
+  type: Unknown
+- contextPath: MicrosoftATP.LiveResponseAction.status
+  description: The machine action status.
 starttaskid: '0'
 tasks:
   '0':
@@ -40,9 +51,10 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": -140
+          "y": -130
         }
       }
+    continueonerrortype: ""
   '1':
     continueonerror: true
     id: '1'
@@ -58,21 +70,52 @@ tasks:
       comment:
         simple: Retrieving file - XSOAR PB ${incident.id}
       machine_id:
-        simple: ${incident.deviceid}
+        complex:
+          root: inputs.MachineID
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: inputs.MachineID
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.MachineID
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: incident.deviceid
+                iscontext: true
+          - operator: uniq
       path:
-        simple: ${inputs.paths}
+        complex:
+          root: inputs.paths
+          transformers:
+          - operator: uniq
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: 'Collect a file from a device. NOTE: Backslashes in the path must be escaped.'
-      id: 3a524860-88b6-411d-82b8-dfc9ae5263d8
+      id: f8457656-c30e-419a-8180-ed226398217d
       iscommand: true
       name: Retrieve File From MDE Live Response
       script: '|||microsoft-atp-live-response-get-file'
       type: regular
       version: -1
-    taskid: 3a524860-88b6-411d-82b8-dfc9ae5263d8
+    taskid: f8457656-c30e-419a-8180-ed226398217d
     timertriggers: []
     type: regular
     view: |-
@@ -82,6 +125,7 @@ tasks:
           "y": 185
         }
       }
+    continueonerrortype: ""
   '2':
     id: '2'
     ignoreworker: false
@@ -109,6 +153,7 @@ tasks:
           "y": 730
         }
       }
+    continueonerrortype: ""
   '3':
     evidencedata:
       customfields: {}
@@ -170,6 +215,7 @@ tasks:
           "y": 550
         }
       }
+    continueonerrortype: ""
   '4':
     id: '4'
     ignoreworker: false
@@ -206,6 +252,7 @@ tasks:
           "y": 360
         }
       }
+    continueonerrortype: ""
   '5':
     conditions:
     - condition:
@@ -256,16 +303,17 @@ tasks:
           "y": 10
         }
       }
+    continueonerrortype: ""
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 935,
+        "height": 925,
         "width": 842.5,
         "x": -300,
-        "y": -140
+        "y": -130
       }
     }
   }

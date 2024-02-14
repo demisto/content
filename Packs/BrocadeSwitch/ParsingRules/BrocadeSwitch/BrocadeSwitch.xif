@@ -9,7 +9,7 @@ filter _raw_log ~= "\>\s*\w+\s+\d+\s+\d+\:\d+\:\d+"
 | alter // Converts the timestamp string representation to datetime format
     tmp_current_year_timestamp_datetime = parse_timestamp("%Y %b %d %H:%M:%S", tmp_current_year_timestamp_string)
 | alter // Check if the calculated date is in the future (due to year transitioning during log ingestion )
-    tmp_time_difference = timestamp_diff(tmp_current_year_timestamp_datetime, current_time(), "DAY")
+    tmp_time_difference = timestamp_diff(tmp_current_year_timestamp_datetime, current_time(), "MILLISECOND")
 | alter // Calculate previous year 
     tmp_previous_year = if(tmp_time_difference > 0, to_string(subtract(to_integer(tmp_current_year), 1)), null)
 | alter // Adjust timestamp to previous year if required

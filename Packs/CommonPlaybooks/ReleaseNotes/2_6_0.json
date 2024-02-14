@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The playbook inputs of the following playbooks have been reset: Calculate Severity - Generic v2, Calculate Severity By Highest DBotScore, Calculate Severity - Standard. If you are keeping the DBotScore context under another key, or if you've customized the inputs of the Calculate Severity playbooks or subplaybooks, you will need to reconfigure them. Out of the box, the playbooks have been adjusted to accommodate for the new inputs."
+}

@@ -1,0 +1,90 @@
+category: Endpoint
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: CarbonBlackEndpointStandardEventCollector
+  version: -1
+configuration:
+- display: Server URL
+  defaultvalue: 'https://defense.conferdeploy.net'
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Secret Key
+  display: API ID
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- display: Organization Key
+  name: org_key
+  required: true
+  type: 0
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Include Audit Logs
+  name: add_audit_logs
+  type: 8
+  required: false
+  section: Collect
+- display: Maximum number of alerts per fetch
+  additionalinfo: Default 100,000.
+  defaultvalue: '100000'
+  name: max_alerts
+  type: 0
+  required: false
+  section: Collect
+- display: Maximum number of audit logs per fetch
+  additionalinfo: Default 25000.
+  defaultvalue: '25000'
+  name: max_audit_logs
+  type: 0
+  required: false
+  section: Collect
+description: 'Endpoint Standard (formerly called Carbon Black Defense), a Next-Generation Anti-Virus + EDR. Collect Anti-Virus & EDR alerts and Audit Log Events.'
+display: Carbon Black Endpoint Standard Event Collector
+name: CarbonBlackEndpointStandardEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display the events.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: The maximum number of alerts to return (maximum value - 100000).
+      name: alerts_limit
+      defaultValue: 10000
+    - description: The maximum number of audit logs to return (maximum value - 25000).
+      name: audit_logs_limit
+      defaultValue: 2500
+    description: 'Fetch alerts and audit logs from Carbon Black Endpoint Standard.'
+    name: carbonblack-endpoint-standard-get-events
+  dockerimage: demisto/python3:3.10.13.87159
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+  isfetchevents: true
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+fromversion: 6.10.0

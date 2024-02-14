@@ -4,6 +4,8 @@ import copy
 from unittest.mock import MagicMock, patch
 from datetime import datetime
 import pytest
+import re
+from freezegun import freeze_time
 
 from Devo_v2 import (
     alert_to_incident,
@@ -100,12 +102,35 @@ MOCK_QUERY_ARGS = {
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
+    "filtered_columns": "alertId,extraData,context"
+}
+MOCK_QUERY_ARGS_INVALIDE_COLUMN_NAME = {
+    "query": "from whatever",
+    "from": time.time() - 60,
+    "to": time.time(),
+    "writeToContext": "true",
+    "filtered_columns": "eventdate,abcd"
+}
+MOCK_ALERT_ARGS_REPEATED_FIELDS = {
+    "filters": MOCK_FETCH_INCIDENTS_FILTER,
+    "from": time.time() - 60,
+    "to": time.time(),
+    "writeToContext": "true",
+    "filtered_columns": "alertId,extraData,context,alertId,extraData,context",
 }
 MOCK_ALERT_ARGS = {
     "filters": MOCK_FETCH_INCIDENTS_FILTER,
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
+    "filtered_columns": "alertId,extraData,context"
+}
+MOCK_ALERT_ARGS_EMPTY_filtered_columns_PRAM = {
+    "filters": MOCK_FETCH_INCIDENTS_FILTER,
+    "from": time.time() - 60,
+    "to": time.time(),
+    "writeToContext": "true",
+    "filtered_columns": ""
 }
 MOCK_MULTI_ARGS = {
     "tables": ["app", "charlie", "test"],
@@ -113,6 +138,7 @@ MOCK_MULTI_ARGS = {
     "from": time.time() - 60,
     "to": time.time(),
     "writeToContext": "true",
+    "filtered_columns": "alertId,extraData,context"
 }
 MOCK_WRITER_ARGS = {
     "tableName": "whatever.table",
@@ -232,6 +258,7 @@ class MOCK_READER:
     pass
 
 
+@freeze_time("2024-01-01T00:00", tz_offset=0)
 def test_time_range():
     tolerance: float = 0.001
     time_from = time.time() - 60
@@ -319,7 +346,61 @@ def test_get_alerts(mock_query_results, mock_args_results):
     mock_args_results.return_value = MOCK_ALERT_ARGS
     results = get_alerts_command(OFFSET, ITEMS_PER_PAGE)
     assert len(results) == 2
-    assert results[0]["Contents"][0]["engine"] == "CPU_Usage_Alert"
+    assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
+
+
+@patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
+@patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.ds.Reader.query")
+def test_get_alerts_check_result_columns(mock_query_results, mock_args_results):
+    mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
+    mock_args_results.return_value = MOCK_ALERT_ARGS
+    results = get_alerts_command(OFFSET, ITEMS_PER_PAGE)
+    assert len(results) == 2
+    assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
+    # Check if all expected columns are present in the dictionary
+    # Convert filtered_columns from a list to a comma-separated string
+    expected_columns = ','.join(field.strip() for field in MOCK_ALERT_ARGS['filtered_columns'].split(','))
+    result = results[0]["Contents"][0]
+    assert all(column in result for column in expected_columns.split(',')), (
+        f"Not all columns present in the dictionary. Missing columns: "
+        f"{', '.join(column for column in expected_columns.split(',') if column not in result)}"
+    )
+
+
+@patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
+@patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.ds.Reader.query")
+def test_get_alerts_with_repeated_fields(mock_query_results, mock_args_results):
+    mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
+    mock_args_results.return_value = MOCK_ALERT_ARGS_REPEATED_FIELDS
+
+    results = get_alerts_command(OFFSET, ITEMS_PER_PAGE)
+
+    assert len(results) == 2
+    assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
+
+    # Check if all expected columns are present in the dictionary
+    expected_columns = ','.join(field.strip() for field in MOCK_ALERT_ARGS_REPEATED_FIELDS['filtered_columns'].split(','))
+    result = results[0]["Contents"][0]
+
+    # Assert that each field appears only once in the result
+    assert all(result[column] == result.get(column) for column in expected_columns.split(',')), (
+        f"Repeated fields not handled properly. Result: {result}"
+    )
+
+
+@patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
+@patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.ds.Reader.query")
+def test_get_alerts_with_empty_filtered_columns_param(mock_query_results, mock_args_results):
+    mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
+    mock_args_results.return_value = MOCK_ALERT_ARGS_EMPTY_filtered_columns_PRAM
+    with pytest.raises(ValueError, match="filtered_columns cannot be empty."):
+        get_alerts_command(OFFSET, ITEMS_PER_PAGE)
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
@@ -332,7 +413,18 @@ def test_run_query(mock_query_results, mock_args_results):
     results = run_query_command(OFFSET, ITEMS_PER_PAGE)
     assert (results[1]["HumanReadable"]).find("Devo Direct Link") != -1
     assert len(results) == 2
-    assert results[0]["Contents"][0]["engine"] == "CPU_Usage_Alert"
+    assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
+
+
+@patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
+@patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.ds.Reader.query")
+def test_run_query_with_invalid_column_name(mock_query_results, mock_args_results):
+    mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
+    mock_args_results.return_value = MOCK_QUERY_ARGS_INVALIDE_COLUMN_NAME
+    with pytest.raises(ValueError, match=re.escape("Fields ['abcd'] not found in query result")):
+        run_query_command(OFFSET, ITEMS_PER_PAGE)
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)

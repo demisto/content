@@ -1,0 +1,173 @@
+comment: Checks for guided pivots for a given domain.
+args:
+- name: domaintools_data
+  required: true
+  description: DomainTools context data for a domain.
+- name: max_registrant_contact_name_count
+  defaultValue: "200"
+  description: Max threshold count that can be pivoted to a registrant contact name.
+- name: max_registrant_org_count
+  defaultValue: "200"
+  description: Max threshold count that can be pivoted to a registrant org name.
+- name: max_registrar_count
+  defaultValue: "200"
+  description: Max threshold count that can be pivoted to a registrar.
+- name: max_ssl_info_organization_count
+  defaultValue: "200"
+  description: Max threshold count that can be pivoted to a ssl organization.
+- name: max_ssl_info_hash_count
+  defaultValue: "350"
+  description: Max threshold count that can be pivoted to a ssl hash.
+- name: max_ssl_email_count
+  defaultValue: "350"
+  description: Max threshold count that can be pivoted to a ssl email.
+- name: max_ssl_subject_count
+  defaultValue: "350"
+  description: Max threshold count that can be pivoted to a ssl subject.
+- name: max_name_server_host_count
+  defaultValue: "250"
+  description: Max threshold count that can be pivoted to a ssl subject.
+- name: max_name_server_ip_count
+  defaultValue: "250"
+  description: Max threshold count that can be pivoted to a nameserver ip.
+- name: max_name_server_domain_count
+  defaultValue: "250"
+  description: Max threshold count that can be pivoted to a nameserver domain.
+- name: max_soa_email_count
+  defaultValue: "200"
+  description: Max threshold count that can be pivoted to a soa email.
+- name: max_ip_address_count
+  defaultValue: "200"
+  description: Max threshold count that can be pivoted to an IP address.
+- name: max_mx_ip_count
+  defaultValue: "200"
+  description: Max threshold count that can be pivoted to a MX IP.
+- name: max_mx_host_count
+  defaultValue: "200"
+  description: Max threshold count that can be pivoted to a MX Host.
+- name: max_mx_domain_count
+  defaultValue: "200"
+  description: Max threshold count that can be pivoted to a MX Domain.
+- name: max_google_adsense_count
+  defaultValue: "200"
+  description: Max threshold count that can be pivoted to a google adsense.
+- name: max_google_analytics_count
+  defaultValue: "200"
+  description: Max threshold count that can be pivoted to a google analytics.
+outputs:
+- contextPath: PivotableDomains.PivotableRegistrantContactName.pivotable
+  description: Is the domain's registrant contact name a guided pivot.
+- contextPath: PivotableDomains.PivotableRegistrantContactName.items.count
+  description: Number of connected domains sharing the same registrant contact name.
+- contextPath: PivotableDomains.PivotableRegistrantContactName.items.value
+  description: Registrant contact name.
+- contextPath: PivotableDomains.PivotableRegistrantOrg.pivotable
+  description: Is the domain's registrant org a guided pivot.
+- contextPath: PivotableDomains.PivotableRegistrantOrg.items.count
+  description: Number of connected domains sharing the same registrant org.
+- contextPath: PivotableDomains.PivotableRegistrantOrg.items.value
+  description: Registrant org.
+- contextPath: PivotableDomains.PivotableSslInfoOrganization.pivotable
+  description: Is the domain's ssl org a guided pivot.
+- contextPath: PivotableDomains.PivotableSslInfoOrganization.items.count
+  description: Number of connected domains sharing the same ssl org.
+- contextPath: PivotableDomains.PivotableSslInfoOrganization.items.value
+  description: SSL org.
+- contextPath: PivotableDomains.PivotableSslInfoHash.pivotable
+  description: Is the domain's ssl hash a guided pivot.
+- contextPath: PivotableDomains.PivotableSslInfoHash.items.count
+  description: Number of connected domains sharing the same ssl hash.
+- contextPath: PivotableDomains.PivotableSslInfoHash.items.value
+  description: SSL hash.
+- contextPath: PivotableDomains.PivotableNameServerHost.pivotable
+  description: Is the domain's name server host a guided pivot.
+- contextPath: PivotableDomains.PivotableNameServerHost.items.count
+  description: Number of connected domains sharing the same name server host.
+- contextPath: PivotableDomains.PivotableNameServerHost.items.value
+  description: name server host.
+- contextPath: PivotableDomains.PivotableSoaEmail.pivotable
+  description: Is the domain's name soa email a guided pivot.
+- contextPath: PivotableDomains.PivotableSoaEmail.items.count
+  description: Number of connected domains sharing the same name soa email.
+- contextPath: PivotableDomains.PivotableSoaEmail.items.value
+  description: soa email.
+- contextPath: PivotableDomains.PivotableIpAddress.pivotable
+  description: Is the domain's IP address a guided pivot.
+- contextPath: PivotableDomains.PivotableIpAddress.items.count
+  description: Number of connected domains sharing the same IP address.
+- contextPath: PivotableDomains.PivotableIpAddress.items.value
+  description: IP address.
+- contextPath: PivotableDomains.PivotableNameServerIp.pivotable
+  description: Is the domain's name server IP address a guided pivot.
+- contextPath: PivotableDomains.PivotableNameServerIp.items.count
+  description: Number of connected domains sharing the same name server IP address.
+- contextPath: PivotableDomains.PivotableNameServerIp.items.value
+  description: name server IP address.
+- contextPath: PivotableDomains.PivotableMxIp.pivotable
+  description: Is the domain's mx IP address a guided pivot.
+- contextPath: PivotableDomains.PivotableMxIp.items.count
+  description: Number of connected domains sharing the same mx IP address.
+- contextPath: PivotableDomains.PivotableMxIp.items.value
+  description: mx IP address.
+- contextPath: PivotableDomains.PivotableRegistrar.pivotable
+  description: Is the domain's registrar a guided pivot.
+- contextPath: PivotableDomains.PivotableRegistrar.items.count
+  description: Number of connected domains sharing the same registrar.
+- contextPath: PivotableDomains.PivotableRegistrar.items.value
+  description: Registrar.
+- contextPath: PivotableDomains.PivotableSslSubject.pivotable
+  description: Is the domain's SSL subject a guided pivot.
+- contextPath: PivotableDomains.PivotableSslSubject.items.count
+  description: Number of connected domains sharing the SSL subject.
+- contextPath: PivotableDomains.PivotableSslSubject.items.value
+  description: SSL subject.
+- contextPath: PivotableDomains.PivotableSslEmail.pivotable
+  description: Is the domain's SSL email a guided pivot.
+- contextPath: PivotableDomains.PivotableSslEmail.items.count
+  description: Number of connected domains sharing the SSL email.
+- contextPath: PivotableDomains.PivotableSslEmail.items.value
+  description: SSL email.
+- contextPath: PivotableDomains.PivotableNameServerDomain.pivotable
+  description: Is the domain's name server domain a guided pivot.
+- contextPath: PivotableDomains.PivotableNameServerDomain.items.count
+  description: Number of connected domains sharing the name server domain.
+- contextPath: PivotableDomains.PivotableNameServerDomain.items.value
+  description: Name server domain.
+- contextPath: PivotableDomains.PivotableMxHost.pivotable
+  description: Is the domain's mx host a guided pivot.
+- contextPath: PivotableDomains.PivotableMxHost.items.count
+  description: Number of connected domains sharing the mx host.
+- contextPath: PivotableDomains.PivotableMxHost.items.value
+  description: MX host.
+- contextPath: PivotableDomains.PivotableMxDomain.pivotable
+  description: Is the domain's mx domain a guided pivot.
+- contextPath: PivotableDomains.PivotableMxDomain.items.count
+  description: Number of connected domains sharing the mx domain.
+- contextPath: PivotableDomains.PivotableMxDomain.items.value
+  description: MX domain.
+- contextPath: PivotableDomains.PivotableGoogleAnalytics.pivotable
+  description: Is the domain's Google analytics a guided pivot.
+- contextPath: PivotableDomains.PivotableGoogleAnalytics.items.count
+  description: Number of connected domains sharing the Google analytics.
+- contextPath: PivotableDomains.PivotableGoogleAnalytics.items.value
+  description: Google analytics.
+- contextPath: PivotableDomains.PivotableAdsense.pivotable
+  description: Is the domain's adsense a guided pivot.
+- contextPath: PivotableDomains.PivotableAdsense.items.count
+  description: Number of connected domains sharing the adsense.
+- contextPath: PivotableDomains.PivotableAdsense.items.value
+  description: Adsense.
+commonfields:
+  id: CheckPivotableDomains
+  version: -1
+name: CheckPivotableDomains
+script: '-'
+type: python
+tags:
+- DomainTools
+enabled: true
+subtype: python3
+fromversion: 6.6.0
+dockerimage: demisto/python3:3.10.13.84405
+tests:
+- No tests (auto formatted)

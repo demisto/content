@@ -148,6 +148,136 @@ class CoreClient(BaseClient):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
 
+    def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
+                      lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
+                      starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
+                      page_number=0, limit=100, gte_creation_time_milliseconds=0):
+        """
+        Filters and returns incidents
+
+        :param incident_id_list: List of incident ids - must be list
+        :param lte_modification_time: string of time format "2019-12-31T23:59:00"
+        :param gte_modification_time: string of time format "2019-12-31T23:59:00"
+        :param lte_creation_time: string of time format "2019-12-31T23:59:00"
+        :param gte_creation_time: string of time format "2019-12-31T23:59:00"
+        :param starred_incidents_fetch_window: string of time format "2019-12-31T23:59:00"
+        :param starred: True if the incident is starred, else False
+        :param status: string of status
+        :param sort_by_modification_time: optional - enum (asc,desc)
+        :param sort_by_creation_time: optional - enum (asc,desc)
+        :param page_number: page number
+        :param limit: maximum number of incidents to return per page
+        :param gte_creation_time_milliseconds: greater than time in milliseconds
+        :return:
+        """
+        search_from = page_number * limit
+        search_to = search_from + limit
+
+        request_data = {
+            'search_from': search_from,
+            'search_to': search_to,
+        }
+
+        if sort_by_creation_time and sort_by_modification_time:
+            raise ValueError('Should be provide either sort_by_creation_time or '
+                             'sort_by_modification_time. Can\'t provide both')
+        if sort_by_creation_time:
+            request_data['sort'] = {
+                'field': 'creation_time',
+                'keyword': sort_by_creation_time
+            }
+        elif sort_by_modification_time:
+            request_data['sort'] = {
+                'field': 'modification_time',
+                'keyword': sort_by_modification_time
+            }
+
+        filters = []
+        if incident_id_list is not None and len(incident_id_list) > 0:
+            filters.append({
+                'field': 'incident_id_list',
+                'operator': 'in',
+                'value': incident_id_list
+            })
+
+        if status:
+            filters.append({
+                'field': 'status',
+                'operator': 'eq',
+                'value': status
+            })
+
+        if starred and starred_incidents_fetch_window:
+            filters.append({
+                'field': 'starred',
+                'operator': 'eq',
+                'value': True
+            })
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': starred_incidents_fetch_window
+            })
+            if demisto.command() == 'fetch-incidents':
+                if len(filters) > 0:
+                    request_data['filters'] = filters
+                incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
+                return incidents
+
+        else:
+            if lte_creation_time:
+                filters.append({
+                    'field': 'creation_time',
+                    'operator': 'lte',
+                    'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
+                })
+
+            if gte_creation_time:
+                filters.append({
+                    'field': 'creation_time',
+                    'operator': 'gte',
+                    'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
+                })
+
+            if lte_modification_time:
+                filters.append({
+                    'field': 'modification_time',
+                    'operator': 'lte',
+                    'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
+                })
+
+            if gte_modification_time:
+                filters.append({
+                    'field': 'modification_time',
+                    'operator': 'gte',
+                    'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
+                })
+
+            if gte_creation_time_milliseconds > 0:
+                filters.append({
+                    'field': 'creation_time',
+                    'operator': 'gte',
+                    'value': gte_creation_time_milliseconds
+                })
+
+        if len(filters) > 0:
+            request_data['filters'] = filters
+
+        res = self._http_request(
+            method='POST',
+            url_suffix='/incidents/get_incidents/',
+            json_data={'request_data': request_data},
+            headers=self._headers,
+            timeout=self.timeout
+        )
+        incidents = res.get('reply', {}).get('incidents', [])
+
+        return incidents
+
+    def handle_fetch_starred_incidents(self, limit: int, page_number: int, request_data: Dict[Any, Any]) -> List[Any]:
+        """Called from get_incidents if the command is fetch-incidents. Implement in child classes."""
+        return []
+
     def get_endpoints(self,
                       endpoint_id_list=None,
                       dist_name=None,
@@ -1407,10 +1537,9 @@ def run_polling_command(client: CoreClient,
     if command_decision_field not in args:
         # create new command run
         command_results = command_function(client, args)
-        if isinstance(command_results, CommandResults):
-            outputs = [command_results.raw_response] if command_results.raw_response else []
-        else:
-            outputs = [c.raw_response for c in command_results]
+        outputs = command_results.raw_response
+        if outputs and not isinstance(outputs, list):
+            outputs = [outputs]
         command_decision_values = [o.get(command_decision_field) for o in outputs] if outputs else []  # type: ignore
         if outputs and command_decision_values:
             polling_args = {
@@ -2050,65 +2179,72 @@ def run_script_execute_commands_command(client: CoreClient, args: Dict) -> Comma
     )
 
 
-def run_script_kill_process_command(client: CoreClient, args: Dict) -> List[CommandResults]:
+def run_script_kill_process_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
     processes_names = argToList(args.get('process_name'))
-    all_processes_response = []
+    replies = []
+
     for process_name in processes_names:
         parameters = {'process_name': process_name}
         response = client.run_script('fd0a544a99a9421222b4f57a11839481', endpoint_ids, parameters, timeout, incident_id)
         reply = response.get('reply')
-        all_processes_response.append(CommandResults(
-            readable_output=tableToMarkdown(f'Run Script Kill Process on {process_name}', reply),
-            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
-            outputs_key_field='action_id',
-            outputs=reply,
-            raw_response=reply,
-        ))
+        replies.append(reply)
 
-    return all_processes_response
+    command_result = CommandResults(
+        readable_output=tableToMarkdown("Run Script Kill Process Results", replies),
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=replies,
+        raw_response=replies,
+    )
+
+    return command_result
 
 
-def run_script_file_exists_command(client: CoreClient, args: Dict) -> List[CommandResults]:
+def run_script_file_exists_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
     file_paths = argToList(args.get('file_path'))
-    all_files_response = []
+    replies = []
     for file_path in file_paths:
         parameters = {'path': file_path}
         response = client.run_script('414763381b5bfb7b05796c9fe690df46', endpoint_ids, parameters, timeout, incident_id)
         reply = response.get('reply')
-        all_files_response.append(CommandResults(
-            readable_output=tableToMarkdown(f'Run Script File Exists on {file_path}', reply),
-            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
-            outputs_key_field='action_id',
-            outputs=reply,
-            raw_response=reply,
-        ))
-    return all_files_response
+        replies.append(reply)
+
+    command_result = CommandResults(
+        readable_output=tableToMarkdown(f'Run Script File Exists on {",".join(file_paths)}', replies),
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=replies,
+        raw_response=replies,
+    )
+    return command_result
 
 
-def run_script_delete_file_command(client: CoreClient, args: Dict) -> List[CommandResults]:
+def run_script_delete_file_command(client: CoreClient, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
     file_paths = argToList(args.get('file_path'))
-    all_files_response = []
+    replies = []
     for file_path in file_paths:
         parameters = {'file_path': file_path}
         response = client.run_script('548023b6e4a01ec51a495ba6e5d2a15d', endpoint_ids, parameters, timeout, incident_id)
         reply = response.get('reply')
-        all_files_response.append(CommandResults(
-            readable_output=tableToMarkdown(f'Run Script Delete File on {file_path}', reply),
-            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
-            outputs_key_field='action_id',
-            outputs=reply,
-            raw_response=reply,
-        ))
-    return all_files_response
+        replies.append(reply)
+
+    command_result = CommandResults(
+        readable_output=tableToMarkdown(f'Run Script Delete File on {",".join(file_paths)}', replies),
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=replies,
+        raw_response=replies,
+    )
+    return command_result
 
 
 def quarantine_files_command(client, args):
@@ -3064,21 +3200,25 @@ def run_script_command(client: CoreClient, args: Dict) -> CommandResults:
     )
 
 
-def get_script_execution_status_command(client: CoreClient, args: Dict) -> List[CommandResults]:
+def get_script_execution_status_command(client: CoreClient, args: Dict) -> CommandResults:
     action_ids = argToList(args.get('action_id', ''))
-    command_results = []
+    replies = []
+    raw_responses = []
     for action_id in action_ids:
         response = client.get_script_execution_status(action_id)
         reply = response.get('reply')
         reply['action_id'] = int(action_id)
-        command_results.append(CommandResults(
-            readable_output=tableToMarkdown(f'Script Execution Status - {action_id}', reply),
-            outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptStatus',
-            outputs_key_field='action_id',
-            outputs=reply,
-            raw_response=response,
-        ))
-    return command_results
+        replies.append(reply)
+        raw_responses.append(response)
+
+    command_result = CommandResults(
+        readable_output=tableToMarkdown(f'Script Execution Status - {",".join(str(i) for i in action_ids)}', replies),
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.ScriptStatus',
+        outputs_key_field='action_id',
+        outputs=replies,
+        raw_response=raw_responses,
+    )
+    return command_result
 
 
 def parse_get_script_execution_results(results: List[Dict]) -> List[Dict]:
@@ -3958,4 +4098,102 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.{outputs_prefix}',
         outputs_key_field='id',
         outputs=outputs,
+    )
+
+
+def get_incidents_command(client, args):
+    """
+    Retrieve a list of incidents from XDR, filtered by some filters.
+    """
+
+    # sometimes incident id can be passed as integer from the playbook
+    incident_id_list = args.get('incident_id_list')
+    if isinstance(incident_id_list, int):
+        incident_id_list = str(incident_id_list)
+
+    incident_id_list = argToList(incident_id_list)
+    # make sure all the ids passed are strings and not integers
+    for index, id_ in enumerate(incident_id_list):
+        if isinstance(id_, int | float):
+            incident_id_list[index] = str(id_)
+
+    lte_modification_time = args.get('lte_modification_time')
+    gte_modification_time = args.get('gte_modification_time')
+    since_modification_time = args.get('since_modification_time')
+
+    if since_modification_time and gte_modification_time:
+        raise ValueError('Can\'t set both since_modification_time and lte_modification_time')
+    if since_modification_time:
+        gte_modification_time, _ = parse_date_range(since_modification_time, TIME_FORMAT)
+
+    lte_creation_time = args.get('lte_creation_time')
+    gte_creation_time = args.get('gte_creation_time')
+    since_creation_time = args.get('since_creation_time')
+
+    if since_creation_time and gte_creation_time:
+        raise ValueError('Can\'t set both since_creation_time and lte_creation_time')
+    if since_creation_time:
+        gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
+
+    statuses = argToList(args.get('status', ''))
+
+    starred = args.get('starred')
+    starred_incidents_fetch_window = args.get('starred_incidents_fetch_window', '3 days')
+    starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
+
+    sort_by_modification_time = args.get('sort_by_modification_time')
+    sort_by_creation_time = args.get('sort_by_creation_time')
+
+    page = int(args.get('page', 0))
+    limit = int(args.get('limit', 100))
+
+    # If no filters were given, return a meaningful error message
+    if not incident_id_list and (not lte_modification_time and not gte_modification_time and not since_modification_time
+                                 and not lte_creation_time and not gte_creation_time and not since_creation_time
+                                 and not statuses and not starred):
+        raise ValueError("Specify a query for the incidents.\nFor example:"
+                         " since_creation_time=\"1 year\" sort_by_creation_time=\"desc\" limit=10")
+
+    if statuses:
+        raw_incidents = []
+
+        for status in statuses:
+            raw_incidents += client.get_incidents(
+                incident_id_list=incident_id_list,
+                lte_modification_time=lte_modification_time,
+                gte_modification_time=gte_modification_time,
+                lte_creation_time=lte_creation_time,
+                gte_creation_time=gte_creation_time,
+                sort_by_creation_time=sort_by_creation_time,
+                sort_by_modification_time=sort_by_modification_time,
+                page_number=page,
+                limit=limit,
+                status=status,
+                starred=starred,
+                starred_incidents_fetch_window=starred_incidents_fetch_window,
+            )
+
+        if len(raw_incidents) > limit:
+            raw_incidents = raw_incidents[:limit]
+    else:
+        raw_incidents = client.get_incidents(
+            incident_id_list=incident_id_list,
+            lte_modification_time=lte_modification_time,
+            gte_modification_time=gte_modification_time,
+            lte_creation_time=lte_creation_time,
+            gte_creation_time=gte_creation_time,
+            sort_by_creation_time=sort_by_creation_time,
+            sort_by_modification_time=sort_by_modification_time,
+            page_number=page,
+            limit=limit,
+            starred=starred,
+            starred_incidents_fetch_window=starred_incidents_fetch_window,
+        )
+
+    return (
+        tableToMarkdown('Incidents', raw_incidents),
+        {
+            f'{args.get("integration_context_brand", "CoreApiModule")}.Incident(val.incident_id==obj.incident_id)': raw_incidents
+        },
+        raw_incidents
     )

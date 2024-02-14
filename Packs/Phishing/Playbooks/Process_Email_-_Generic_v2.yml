@@ -2789,10 +2789,11 @@ tasks:
       id: 754742b3-8a98-45b3-8d02-a850f90d83fd
       version: -1
       name: Upload email attachments to layout
-      description: Uploads file attachments of the email to the incident layout.
-      script: '|||core-api-multipart'
+      description: Copies a file from this incident to the specified incident. The
+        file is recorded as an entry in the specified incident’s War Room.
+      scriptName: UploadFile
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
@@ -2819,8 +2820,10 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
-      uri:
-        simple: incident/upload/${incident.id}
+      incID:
+        simple: ${incident.id}
+      target:
+        simple: incident attachment
     separatecontext: false
     continueonerrortype: ""
     view: |-
