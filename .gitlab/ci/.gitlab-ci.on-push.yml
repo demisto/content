@@ -207,9 +207,9 @@ validate-content-conf:
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
     - section_end "Prepare Content Packs for Testing"
 
-    - section_start "Override core packs versions"
-    - ./Tests/Marketplace/upload_versions_core_files.sh "$PACK_ARTIFACTS" "$CI_PIPELINE_ID" "$MARKETPLACE_VERSION" "$ARTIFACTS_FOLDER_SERVER_TYPE" "$GCS_BUILD_BUCKET" "$GCS_BUILD_BUCKET"
-    - section_end "Override core packs versions"
+    - section_start "Override and upload core packs versions"
+    - ./Tests/Marketplace/upload_versions_core_files.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
+    - section_end "Override and upload core packs versions"
 
     - section_start "Create Instances for XSOAR"
     - |

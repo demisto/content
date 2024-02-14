@@ -53,7 +53,7 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
     return True
 
 
-def override_locked_corepacks_file(build_number: str, artifacts_dir: str, marketplace: str):
+def override_locked_corepacks_file(build_number: str, artifacts_dir: str, marketplace: str = 'xsoar'):
     """
     Override an existing corepacks-X.X.X.json file, where X.X.X is the server version that was specified in the
     corepacks_override.json file.
