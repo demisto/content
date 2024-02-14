@@ -2207,22 +2207,24 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
             f'Successfully Created {len(incidents)} incidents. Incidents created: {[incident["name"] for incident in incidents]}')
 
 
-def recover_from_last_run():
+def recover_from_last_run(ctx: dict | None = None, version: Any = None):
     """
     This recovers the integration context from the last run, if there is inconsistency between last run and context.
     It happens when the container crashes after `demisto.createIncidents` and the integration context is not updated.
     """
-    context_data, version = get_integration_context_with_version()
+    if not ctx or not version:
+        ctx, version = get_integration_context_with_version()
+    assert isinstance(ctx, dict)
     last_run = demisto.getLastRun() or {}
     last_highest_id_last_run = int(last_run.get(LAST_FETCH_KEY, 0))
     print_debug_msg(f'Last highest ID from last run: {last_highest_id_last_run}')
-    last_highest_id_context = int(context_data.get(LAST_FETCH_KEY, 0))
+    last_highest_id_context = int(ctx.get(LAST_FETCH_KEY, 0))
     if last_highest_id_last_run != last_highest_id_context and last_highest_id_last_run > 0:
         # if there is inconsistency between last run and context, we need to update the context
         print_debug_msg(
             f'Updating context data with last highest ID from last run: {last_highest_id_last_run}.'
             f'ID from context: {last_highest_id_context}')
-        safely_update_context_data(context_data | {LAST_FETCH_KEY: int(last_highest_id_last_run)},
+        safely_update_context_data(ctx | {LAST_FETCH_KEY: int(last_highest_id_last_run)},
                                    version, should_update_last_fetch=True)
 
 
@@ -2255,8 +2257,9 @@ def long_running_execution_command(client: Client, params: dict):
     assets_limit = int(params.get('assets_limit', DEFAULT_ASSETS_LIMIT))
     if not argToBoolean(params.get('retry_events_fetch', True)):
         EVENTS_SEARCH_TRIES = 1
-    is_reset_triggered()
-    recover_from_last_run()
+    context_data, version = get_integration_context_with_version()
+    is_reset_triggered(context_data, version)
+    recover_from_last_run(context_data, version)
     while True:
         try:
             perform_long_running_loop(
