@@ -105,11 +105,12 @@ configuration:
   type: 8
   section: Connect
   required: false
-- display: Enable File Mirroring
-  name: enable_file_mirroring
+- display: Enable Outbound File Mirroring
+  name: enable_outbound_file_mirroring
   type: 8
   section: Connect
   required: false
+  additionalinfo: Whether to enable mirroring from xsoar to slack, mark it file mirroring is required in investigations.
 - defaultvalue: 'true'
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning

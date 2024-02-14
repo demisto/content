@@ -1787,7 +1787,7 @@ def send_mirrored_file_to_slack(entry: str, message: str, original_channel: str,
         )
         if comment:
             # if a comment was added when uploading the file, add it to the message
-            message = f'{message}\n{comment}'
+            message = f'{message}\nComment: {comment}'
         slack_send_file(original_channel, channel_id, entry, message)
     else:
         demisto.debug(f'file {file_name} will not be mirrored because file mirroring is not enabled')
@@ -2820,7 +2820,7 @@ def init_globals(command_name: str = ''):
     CUSTOM_PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
     PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
     MIRRORING_ENABLED = demisto.params().get('mirroring', True)
-    FILE_MIRRORING_ENABLED = demisto.params().get('enable_file_mirroring', False)
+    FILE_MIRRORING_ENABLED = demisto.params().get('enable_outbound_file_mirroring', False)
     LONG_RUNNING_ENABLED = demisto.params().get('longRunning', True)
     DEMISTO_API_KEY = demisto.params().get('demisto_api_key', {}).get('password', '')
     demisto_urls = demisto.demistoUrls()
