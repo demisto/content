@@ -1,7 +1,7 @@
 
 from freezegun import freeze_time
 import pytest
-from ScheduleGenericPolling import calculate_end_time, is_value_sanitized, parseIds
+from ScheduleGenericPolling import calculate_end_time, is_command_sanitized, is_value_sanitized, parseIds
 
 
 @pytest.mark.parametrize('value, expected_result',
@@ -36,4 +36,25 @@ def test_calculate_end_time(value, expected_result):
                          ])
 def test_is_value_sanitized(value, expected_result):
     result = is_value_sanitized(value)
+    assert result == expected_result
+
+@pytest.mark.parametrize('command, expected_result',
+                         [
+                             ("1234", (True, None)),
+                             ("additionalPollingCommandArgNames additionalPollingCommandArgNames",
+                             (False, 'The value of additionalPollingCommandArgNames is malformed.')),
+                             ("pollingCommandArgName additionalPollingCommandArgNames", (True, None)),
+                             ("pollingCommandArgName additionalPollingCommandArgValues pollingCommandArgName "
+                             "additionalPollingCommandArgValues",
+                             (False, 'The value of additionalPollingCommandArgValues, pollingCommandArgName is malformed.')),
+                             ("pollingCommandArgName additionalPollingCommandArgValues pollingCommandArgName "
+                             "additionalPollingCommandArgValues",
+                             (False, 'The value of additionalPollingCommandArgValues, pollingCommandArgName is malformed.')),
+                             ("pollingCommand pollingCommandArgName additionalPollingCommandArgValues pollingCommand "
+                             "pollingCommandArgName additionalPollingCommandArgValues",
+                             (False, 'The value of additionalPollingCommandArgValues, pollingCommandArgName, pollingCommand is'
+                             ' malformed.')),
+                         ])
+def test_is_command_sanitized(command, expected_result):
+    result = is_command_sanitized(command)
     assert result == expected_result

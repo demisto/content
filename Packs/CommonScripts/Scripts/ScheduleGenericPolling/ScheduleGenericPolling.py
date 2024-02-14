@@ -8,8 +8,9 @@ import uuid
 MINIMUM_XSOAR_VERSION = '8.2.0'
 MINIMUM_BUILD_NUMBER_XSOAR = 309463
 
-SANITIZED_ARG_NAMES = ['pollingCommand', 'pollingCommandArgName',
-                       'additionalPollingCommandArgNames', 'additionalPollingCommandArgValues',
+# Order is important! See is_command_sanitized implementation
+SANITIZED_ARG_NAMES = ['additionalPollingCommandArgValues', 'additionalPollingCommandArgNames', 'pollingCommandArgName',
+                       'pollingCommand',
                        ]
 
 
@@ -58,6 +59,17 @@ def is_value_sanitized(value):
     return all(current_arg_name not in value for current_arg_name in SANITIZED_ARG_NAMES)
 
 
+def is_command_sanitized(command):
+    malformed_args = []
+    for current_sanitized_arg_name in SANITIZED_ARG_NAMES:
+        if command.count(current_sanitized_arg_name) > 1:
+            malformed_args.append(current_sanitized_arg_name)
+        command = command.replace(current_sanitized_arg_name, '')
+    if malformed_args:
+        return False, f'The value of {", ".join(malformed_args)} is malformed.'
+    return True, None
+
+
 def main():  # pragma: no cover
     args = demisto.args()
     ids = parseIds(args.get('ids'))
@@ -95,9 +107,9 @@ def main():  # pragma: no cover
                                                                          dt.replace('"', r'\"'), interval, timeout,
                                                                          tag, args_names, args_values)
 
-    for current_sanitized_arg_name in SANITIZED_ARG_NAMES:
-        if command_string.count(f' {current_sanitized_arg_name}') > 1:
-            return_error(f"The value of {current_sanitized_arg_name} is malformed.")
+    command_sanitized, message = is_command_sanitized(command_string)
+    if not command_sanitized:
+            return_error(message)
 
     schedule_command_args = {
         'command': command_string,
