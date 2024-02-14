@@ -3,7 +3,7 @@ from CommonServerUserPython import *
 import boto3
 from botocore.config import Config
 
-
+a = "test"
 def validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key):
     """
     Validates that the provided parameters are compatible with the appropriate authentication method.
