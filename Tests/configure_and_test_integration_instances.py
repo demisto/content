@@ -1974,8 +1974,8 @@ def main():
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
     build = create_build_object()
     logging.info(f"Build Number: {build.ci_build_number}")
-    build.configure_servers_and_restart()
-    build.disable_instances()
+    # build.configure_servers_and_restart()
+    # build.disable_instances()
 
     if build.is_nightly or build.is_sdk_nightly:
         success = build.install_nightly_pack()
