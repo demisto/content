@@ -84,11 +84,8 @@ class Client(BaseClient):
         Log in to the API using the API key and API secret.
         The access token is stored in the headers of the request.
         """
-        try:
-            access_token = self.get_access_token()
-            self._headers['Authorization'] = f'Bearer {access_token}'
-        except Exception as e:
-            raise DemistoException(f'Failed logging in: {response}') from e
+        access_token = self.get_access_token()
+        self._headers['Authorization'] = f'Bearer {access_token}'
 
     def get_access_token(self):
         """
@@ -100,7 +97,6 @@ class Client(BaseClient):
         if integration_context.get('access_token') and integration_context.get('expiry_time') > date_to_timestamp(datetime.now()):
             return integration_context.get('access_token')
         else:
-
             try:
                 res = self._http_request(
                     method='POST',
