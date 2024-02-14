@@ -70,6 +70,16 @@ def is_command_sanitized(command):
     return True, None
 
 
+def get_command_string(ids, pollingCommand, pollingCommandArgName, playbookId, dt, interval, timeout, tag, args_names,
+                       args_values):
+    return '''!GenericPollingScheduledTask ids="{}" pollingCommand="{}" pollingCommandArgName="{}"{} \
+              pendingIds="{}" interval="{}" timeout="{}" tag="{}" additionalPollingCommandArgNames="{}" \
+              additionalPollingCommandArgValues="{}"'''.format(ids.replace('"', r'\"'), pollingCommand,
+                                                               pollingCommandArgName, playbookId,
+                                                               dt.replace('"', r'\"'), interval, timeout,
+                                                               tag, args_names, args_values)
+
+
 def main():  # pragma: no cover
     args = demisto.args()
     ids = parseIds(args.get('ids'))
@@ -81,16 +91,17 @@ def main():  # pragma: no cover
     pollingCommandArgName = args.get('pollingCommandArgName')
     tag = args.get('tag')
     playbookId = f' playbookId="{args.get("playbookId", "")}"'
+
     interval = int(args.get('interval'))
     timeout = int(args.get('timeout'))
+    if interval <= 0 or timeout <= 0:
+        return_error("Interval and timeout must be positive numbers")
+
 
     args_names = args.get('additionalPollingCommandArgNames').strip() \
         if args.get('additionalPollingCommandArgNames') else None
     args_values = args.get('additionalPollingCommandArgValues').strip() \
         if args.get('additionalPollingCommandArgValues') else None
-
-    if interval <= 0 or timeout <= 0:
-        return_error("Interval and timeout must be positive numbers")
 
     # Verify correct dt path (does not verify condition!)
     if not demisto.dt(demisto.context(), dt):
@@ -100,12 +111,8 @@ def main():  # pragma: no cover
         demisto.results("Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and "
                         "that all ids have finished running.")
 
-    command_string = '''!GenericPollingScheduledTask ids="{}" pollingCommand="{}" pollingCommandArgName="{}"{} \
-                        pendingIds="{}" interval="{}" timeout="{}" tag="{}" additionalPollingCommandArgNames="{}" \
-                        additionalPollingCommandArgValues="{}"'''.format(ids.replace('"', r'\"'), pollingCommand,
-                                                                         pollingCommandArgName, playbookId,
-                                                                         dt.replace('"', r'\"'), interval, timeout,
-                                                                         tag, args_names, args_values)
+    command_string = get_command_string(ids, pollingCommand, pollingCommandArgName, playbookId, dt, interval, timeout, tag,
+                                        args_names, args_values)
 
     command_sanitized, message = is_command_sanitized(command_string)
     if not command_sanitized:
