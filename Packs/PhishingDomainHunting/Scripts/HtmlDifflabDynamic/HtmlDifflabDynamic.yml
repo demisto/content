@@ -1,7 +1,7 @@
 commonfields:
-  id: html_difflab_dynamic
+  id: HtmlDifflabDynamic
   version: -1
-name: html_difflab_dynamic
+name: HtmlDifflabDynamic
 script: ''
 type: python
 tags:

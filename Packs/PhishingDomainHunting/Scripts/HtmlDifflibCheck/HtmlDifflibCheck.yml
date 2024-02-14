@@ -1,7 +1,7 @@
 commonfields:
-  id: html_difflib_check
+  id: HtmlDifflibCheck
   version: -1
-name: html_difflib_check
+name: HtmlDifflibCheck
 script: ''
 type: python
 tags:

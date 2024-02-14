@@ -681,7 +681,7 @@ tasks:
       version: -1
       name: Get difflib Hash Verdict
       description: ''
-      scriptName: html_difflib_check
+      scriptName: HtmlDifflibCheck
       type: regular
       iscommand: false
       brand: ""
