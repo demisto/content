@@ -71,7 +71,9 @@ def test_fetch_incidents(requests_mock, mocker):
 
     modified_raw_incident.get('alerts')[0]['host_ip_list'] = \
         modified_raw_incident.get('alerts')[0].get('host_ip').split(',')
-
+    mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
+    mocker.patch("CortexXDRIR.UPGRADED_GET_EXTRA_DATA", new=False)
+    mocker.patch("CortexXDRIR.IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET", new=True)
     next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance')
     sort_all_list_incident_fields(modified_raw_incident)
 
@@ -102,7 +104,9 @@ def test_fetch_incidents_filtered_by_status(requests_mock, mocker):
 
     mocker.patch.object(client, 'get_incidents', side_effect=get_incident_by_status)
     mocker.patch.object(client, 'get_incident_extra_data', side_effect=get_incident_extra_data_by_status)
-
+    mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
+    mocker.patch("CortexXDRIR.UPGRADED_GET_EXTRA_DATA", new=False)
+    mocker.patch("CortexXDRIR.IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET", new=True)
     statuses_to_fetch = ['under_investigation', 'new']
 
     next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance', statuses=statuses_to_fetch)
@@ -154,7 +158,8 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
 
     mocker.patch('CortexXDRIR.get_incident_extra_data_command', side_effect=return_extra_data_result)
-
+    mocker.patch("CortexXDRIR.UPGRADED_GET_EXTRA_DATA", new=False)
+    mocker.patch("CortexXDRIR.IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET", new=True)
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
 
     client = Client(
@@ -175,7 +180,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)
 
 
-def test_get_incident_extra_data(requests_mock):
+def test_get_incident_extra_data(requests_mock, mocker):
     from CortexXDRIR import get_incident_extra_data_command, Client
 
     get_incident_extra_data_response = load_test_data('./test_data/get_incident_extra_data_host_id_array.json')
@@ -187,6 +192,8 @@ def test_get_incident_extra_data(requests_mock):
     args = {
         'incident_id': '1'
     }
+    mocker.patch("CortexXDRIR.UPGRADED_GET_EXTRA_DATA", new=False)
+    mocker.patch("CortexXDRIR.IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET", new=True)
     _, outputs, _ = get_incident_extra_data_command(client, args)
 
     expected_incident = get_incident_extra_data_response.get('reply').get('incident')
@@ -241,7 +248,8 @@ class TestFetchStarredIncident:
         getLastRun_side_effect = [{'fetched_starred_incidents': {}},
                                   {'fetched_starred_incidents': {'3': True}}]
         mocker.patch.object(demisto, 'getLastRun', side_effect=getLastRun_side_effect)
-
+        mocker.patch("CortexXDRIR.UPGRADED_GET_EXTRA_DATA", new=False)
+        mocker.patch("CortexXDRIR.IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET", new=True)
         client = Client(
             base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
         args = {
@@ -281,7 +289,8 @@ class TestFetchStarredIncident:
         mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
         mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
         mocker.patch('CortexXDRIR.get_incident_extra_data_command', side_effect=return_extra_data_result)
-
+        mocker.patch("CortexXDRIR.UPGRADED_GET_EXTRA_DATA", new=False)
+        mocker.patch("CortexXDRIR.IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET", new=True)
         request_side_effect = [get_incidents_list_response,
                                no_incident_mock_response,
                                no_incident_mock_response,
@@ -486,7 +495,8 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
     # make sure get-extra-data is returning an incident
     mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
     mocker.patch('CortexXDRIR.check_if_incident_was_modified_in_xdr', return_value=True)
-
+    mocker.patch("CortexXDRIR.UPGRADED_GET_EXTRA_DATA", new=False)
+    mocker.patch("CortexXDRIR.IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET", new=True)
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     response = get_remote_data_command(client, args)
     sort_all_list_incident_fields(expected_modified_incident)
@@ -551,7 +561,8 @@ def test_get_remote_data_command_should_not_update(requests_mock, mocker):
     # make sure get-extra-data is returning an incident
     mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
     mocker.patch('CortexXDRIR.check_if_incident_was_modified_in_xdr', return_value=False)
-
+    mocker.patch("CortexXDRIR.UPGRADED_GET_EXTRA_DATA", new=False)
+    mocker.patch("CortexXDRIR.IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET", new=True)
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
 
     response = get_remote_data_command(client, args)
@@ -614,7 +625,8 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker, incid
     # make sure get-extra-data is returning an incident
     mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
     mocker.patch('CortexXDRIR.check_if_incident_was_modified_in_xdr', return_value=True)
-
+    mocker.patch("CortexXDRIR.UPGRADED_GET_EXTRA_DATA", new=False)
+    mocker.patch("CortexXDRIR.IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET", new=True)
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
 
     response = get_remote_data_command(client, args)
@@ -666,7 +678,8 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     # make sure get-extra-data is returning an incident
     mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
     mocker.patch('CortexXDRIR.check_if_incident_was_modified_in_xdr', return_value=True)
-
+    mocker.patch("CortexXDRIR.UPGRADED_GET_EXTRA_DATA", new=False)
+    mocker.patch("CortexXDRIR.IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET", new=True)
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     response = get_remote_data_command(client, args)
     sort_all_list_incident_fields(expected_modified_incident)
@@ -805,16 +818,17 @@ def test_check_using_upgraded_api_incidents_extra_data_success(mocker):
     Then:
      - Returns the incident data and use_get_incident_extra_data == True
     """
-    from CortexXDRIR import Client, check_using_upgraded_api_incidents_extra_data
-    client = Client(
+    import CortexXDRIR
+    client = CortexXDRIR.Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     incident_id = "1"
     http_response = {"replay": {"number_in_config": 10, "alert_count": 5, "incidents": [{"id": "1", "created_time":
                                                                                          "2021-12-15T12:00:00Z"}]}}
     mocker.patch.object(client, '_http_request', return_value=http_response)
 
-    use_get_incident_extra_data = check_using_upgraded_api_incidents_extra_data(client, incident_id)
-    assert use_get_incident_extra_data
+    CortexXDRIR.check_using_upgraded_api_incidents_extra_data(client, incident_id)
+    assert CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS == 10
+    assert CortexXDRIR.UPGRADED_GET_EXTRA_DATA
 
 
 def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock, mocker):
@@ -840,8 +854,8 @@ def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock, mo
     mocker.patch.object(client, "get_multiple_incidents_extra_data", side_effect=DemistoException(
         message="The server encountered an internal error", res=MockException(500)
     ))
-    result = check_using_upgraded_api_incidents_extra_data(client, '1')
-    assert not result
+    check_using_upgraded_api_incidents_extra_data(client, '1')
+    
 
 
 @freeze_time("1997-10-05 15:00:00 GMT")
@@ -859,9 +873,6 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
     get_incidents_list_response = load_test_data('./test_data/get_incidents_list_multiple_incidents_extra_data.json')
     raw_multiple_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
 
-    # requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
-    mocker.patch("CortexXDRIR.check_using_upgraded_api_incidents_extra_data",
-                 return_value=True)
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
@@ -870,6 +881,8 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
     mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
     mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
     mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
+    mocker.patch("CortexXDRIR.UPGRADED_GET_EXTRA_DATA", new=True)
+    mocker.patch("CortexXDRIR.IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET", new=True)
     next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance')
     assert len(incidents) == 2
     assert incidents[0]['name'] == 'XDR Incident 1 - desc1'
