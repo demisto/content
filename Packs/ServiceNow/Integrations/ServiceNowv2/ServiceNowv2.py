@@ -11,6 +11,7 @@ import mimetypes
 import urllib3
 urllib3.disable_warnings()
 
+
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
 

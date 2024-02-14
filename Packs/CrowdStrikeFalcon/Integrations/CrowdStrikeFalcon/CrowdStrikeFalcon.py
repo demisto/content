@@ -17,6 +17,7 @@ from gql.transport.requests import RequestsHTTPTransport
 import urllib3
 urllib3.disable_warnings()
 
+
 ''' GLOBALS/PARAMS '''
 INTEGRATION_NAME = 'CrowdStrike Falcon'
 IDP_DETECTION = "IDP detection"
