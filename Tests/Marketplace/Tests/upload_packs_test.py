@@ -694,23 +694,3 @@ class TestUpdatedPrivatePacks:
         private_index_json.get("packs").append({"id": "new_private_pack", "contentCommitHash": "111"})
         mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
         assert is_private_packs_updated(public_index_json, index_file_path)
-
-
-        # def test_update_index_and_pack_folders_metadata_changes(self, mocker):
-        #     """
-        #     Scenario: Update the bucket index when a pack is updated (new version)
-        #     Given
-        #     - Pack exists in the index folder
-        #     - Pack has a new version
-        #     When
-        #     - Updating the bucket index
-        #     Then
-        #     - Ensure new metadata files are created for the new version
-        #     - Ensure previous metadata files are not deleted
-        #     - Ensure other files in the index are removed and replaced
-        #     """
-        #     from Tests.Marketplace import upload_packs
-        #     dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False, is_metadata_updated=True)
-        #     dummy_pack.current_version = '2.0.1'
-
-
