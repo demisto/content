@@ -109,7 +109,7 @@ def main():  # pragma: no cover
 
     command_sanitized, message = is_command_sanitized(command_string)
     if not command_sanitized:
-            return_error(message)
+        return_error(message)
 
     schedule_command_args = {
         'command': command_string,
