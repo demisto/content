@@ -29,10 +29,11 @@ import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import XSOAR_ON_PREM_MP, XSOAR_SAAS_MP, PackFolders, Metadata, GCPConfig, \
     BucketUploadFlow, PACKS_FOLDER, PackTags, PackIgnored, Changelog, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
     XSIAM_MP, XPANSE_MP, TAGS_BY_MP, RN_HEADER_TO_ID_SET_KEYS
-# , PACK_METADATA_REQUIRE_RN_FIELDS todo - from sdk PR
 from demisto_sdk.commands.common.constants import (MarketplaceVersions, MarketplaceVersionToMarketplaceName,
                                                    MARKETPLACE_KEY_PACK_METADATA, PACK_METADATA_SUPPORT,
                                                    PACK_METADATA_DEPENDENCIES, PACK_METADATA_NAME, PACK_METADATA_PRICE)
+# , PACK_METADATA_REQUIRE_RN_FIELDS todo - from sdk PR
+
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 

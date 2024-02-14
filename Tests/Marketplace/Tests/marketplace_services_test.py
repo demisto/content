@@ -2080,6 +2080,35 @@ class TestLoadPackMetadata:
         assert not task_status
         assert not dummy_pack.pack_metadata
 
+    def test_update_metadata(self, mocker, dummy_pack, dummy_pack_metadata, tmp_path):
+        """
+        Given:
+            - Pack with changed metadata fields (is_metadata_updated = True)
+        When:
+            - Calling the update_metadata property.
+        Then:
+            - Ensure the correct debug log messages are printed.
+            - Ensure the updated_metadata dictionary is correct.
+        """
+        # from demisto_sdk.commands.common.constants import PACK_METADATA_REQUIRE_RN_FIELDS todo - from sdk PR
+        from Tests.Marketplace.marketplace_services import PACK_METADATA_REQUIRE_RN_FIELDS # todo - from sdk PR
+        logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.debug")
+        metadata_path = os.path.join(tmp_path, 'metadata.json')
+        dummy_pack._pack_path = tmp_path
+        with open(metadata_path, 'w') as metadata_file:
+            metadata_file.write(json.dumps(dummy_pack_metadata))
+        dummy_pack.load_pack_metadata()
+        dummy_pack._is_metadata_updated = True
+        updated_metadata = dummy_pack.update_metadata
+        assert any(
+            call_args == ((
+                "Updating metadata with statistics and metadata changes because self._pack_name='TestPack' self.is_modified=None"
+                " self.is_metadata_updated=True"),)
+            for call_args, _ in logging_mock.call_args_list
+        )
+        for field in PACK_METADATA_REQUIRE_RN_FIELDS:
+            assert field not in updated_metadata
+
 
 class TestSetDependencies:
 

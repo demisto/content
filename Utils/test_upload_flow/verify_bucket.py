@@ -26,6 +26,7 @@ class VerifyMessages(str):
     FAILED_PACK = "verified the commit hash is not updated in the pack metadata in the index.zip"
     MODIFIED_ITEM_PATH = "verified the path of the pack item is modified"
     DEPENDENCY = "verified the new dependency is in the pack metadata"
+    KEYWORDS = "verified the new keyword is in the pack metadata"
     NEW_IMAGE = "verified the new image was uploaded"
     HIDDEN_DEPENDENCY = "verified the hidden dependency pack not in metadata.json"
     PACK_NOT_IN_MARKETPLACE = ("verified the pack {} is NOT in the index and that version 1.0.0 zip DOES NOT "
@@ -250,7 +251,7 @@ class BucketVerifier:
         return ((keyword in self.gcp.get_pack_metadata(pack_id).get('keywords', {})
                 and keyword in self.gcp.get_pack_metadata_from_pack_folder(pack_id).get('keywords', {})),
                 pack_id,
-                VerifyMessages.DEPENDENCY
+                VerifyMessages.KEYWORDS
                 )
 
     @logger

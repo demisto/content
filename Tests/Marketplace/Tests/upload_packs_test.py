@@ -51,7 +51,7 @@ def scan_dir(dirs=None):
     return [FakeDirEntry('mock_path', 'mock_dir'), FakeDirEntry('mock_path2', 'mock_file')]
 
 
-class TestUpdateIndex:
+class TestUpdateIndexAndPack:
 
     statistics_metadata = {
         Metadata.DOWNLOADS: 0,
@@ -281,6 +281,90 @@ class TestUpdateIndex:
         assert copy_call_count == 2
         for call_arg in copy_call_args:
             assert call_arg[0] in expected_copy_args
+
+    def test_download_and_extract_pack(self, mocker):
+        """
+            Given:
+                - A pack version exists in the storage bucket.
+            When:
+                - Downloading and extracting the pack.
+            Then:
+                - Ensure the pack is downloaded and extracted successfully.
+        """
+        from zipfile import ZipFile
+        from Tests.Marketplace.marketplace_constants import GCPConfig
+        from Tests.Marketplace.upload_packs import download_and_extract_pack
+
+        dummy_storage_bucket = mocker.MagicMock()
+        dummy_storage_bucket.name = GCPConfig.PRODUCTION_BUCKET
+
+        pack_version = "2.0.0"
+        storage_base_path = GCPConfig.CONTENT_PACKS_PATH
+        extract_destination_path = "/path/to/save"
+        pack_name = 'HelloWorld'
+        dummy_storage_bucket = mocker.MagicMock()
+
+        pack_path = os.path.join(storage_base_path, pack_name, pack_version, f"{pack_name}.zip")
+        mocker.patch.object(ZipFile, '__init__', return_value=None)
+        mocker.patch.object(ZipFile, 'extractall')
+
+        task_status = download_and_extract_pack(pack_name, pack_version, dummy_storage_bucket, extract_destination_path,
+                                                storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
+        assert task_status
+        dummy_storage_bucket.blob.assert_called_once_with(pack_path)
+        dummy_storage_bucket.blob.return_value.exists.assert_called_once()
+        dummy_storage_bucket.blob.return_value.download_to_filename.assert_called_once_with(
+            os.path.join(extract_destination_path, f"{pack_name}.zip"))
+        ZipFile.extractall.assert_called_once_with(os.path.join(extract_destination_path, pack_name))
+
+    def test_update_index_and_pack_folders_metadata_changes(self, mocker, caplog):
+        """
+        Scenario: Soft Upload - Update the bucket index when a pack is metadata_updated
+
+        Given
+        - Pack exists in the index folder
+        - Pack has multiple versions
+        - Pack's metadata field was changed
+
+        When
+        - Updating the bucket index
+
+        Then
+        - Ensure no new metadata files are created for the new version
+        - Ensure current metadata files are updated
+        """
+        from Tests.Marketplace import upload_packs
+        logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.debug")
+
+        json_write_mock = mocker.patch.object(upload_packs, 'json_write', return_value=None)
+        mocker.patch('os.path.exists')
+        pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
+                              ('HelloWorld/changelog.json', 'changelog.json'),
+                              ('HelloWorld/README.md', 'README.md')])
+        index_dirs = scan_dir([('Index/HelloWorld/metadata-1.0.0.json', 'metadata-1.0.0.json'),
+                               ('Index/HelloWorld/metadata.json', 'metadata.json'),
+                               ('Index/HelloWorld/changelog.json', 'changelog.json'),
+                               ('Index/HelloWorld/README.md', 'README.md')])
+        mocker.patch('os.scandir', side_effect=[index_dirs, pack_dirs])
+        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False, is_metadata_updated=True)
+        dummy_pack.current_version = '1.0.0'
+        upload_packs.update_index_folder('Index', dummy_pack)
+
+        expected_copy_args = [('Index/HelloWorld/metadata.json', self.statistics_metadata),
+                              ('Index/HelloWorld/metadata-1.0.0.json', self.statistics_metadata)]
+
+        copy_call_count = json_write_mock.call_count
+        copy_call_args = json_write_mock.call_args_list
+
+        assert copy_call_count == 2
+        for call_arg in copy_call_args:
+            assert call_arg[0] in expected_copy_args
+        assert any(
+            call_args == ((
+                "Updating metadata with statistics and metadata changes because self._pack_name='HelloWorld' "
+                "self.is_modified=False self.is_metadata_updated=True"),)
+            for call_args, _ in logging_mock.call_args_list
+        )
 
 
 class TestCleanPacks:
@@ -694,57 +778,3 @@ class TestUpdatedPrivatePacks:
         private_index_json.get("packs").append({"id": "new_private_pack", "contentCommitHash": "111"})
         mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
         assert is_private_packs_updated(public_index_json, index_file_path)
-
-
-# def test_download_and_extract_pack(self, mocker, dummy_pack):
-#     """
-#         Given:
-#             - A pack version exists in the storage bucket.
-#         When:
-#             - Downloading and extracting the pack.
-#         Then:
-#             - Ensure the pack is downloaded and extracted successfully.
-#     """
-#     mocker.patch("Tests.Marketplace.marketplace_services.logging")
-#
-#     pack_version = "2.0.0"
-#     storage_base_path = GCPConfig.CONTENT_PACKS_PATH
-#     extract_destination_path = "/path/to/save"
-#     pack_name = dummy_pack._pack_name
-#
-#     dummy_storage_bucket = mocker.MagicMock()
-#     pack_path = os.path.join(storage_base_path, pack_name, pack_version, f"{pack_name}.zip")
-#     dummy_storage_bucket.blob.return_value.exists.return_value = True
-#
-#     mock_zipfile = mocker.MagicMock()
-#     mock_zipfile.extractall.return_value = None  # Mocking extractall method
-#     mocker.patch.object(zipfile, 'ZipFile', side_effect="mock_zipfile_context")
-#     mocker.patch('builtins.open', mock_open())
-#
-#     task_status = dummy_pack.download_and_extract_pack(pack_version, dummy_storage_bucket, extract_destination_path,
-#                                                        storage_base_path)
-#     assert task_status
-#     dummy_storage_bucket.blob.assert_called_once_with(pack_path)
-#     dummy_storage_bucket.blob.return_value.exists.assert_called_once()
-#     dummy_storage_bucket.blob.return_value.download_to_filename.assert_called_once_with(
-#         os.path.join(extract_destination_path, f"{pack_name}.zip"))
-#     # zipfile.ZipFile.assert_called_once_with(os.path.join(extract_destination_path, f"{pack_name}.zip"), 'r')
-#     mock_zip.extractall.assert_called_once_with(dummy_pack.path)
-
-
-# def test_update_index_and_pack_folders_metadata_changes(self, mocker):
-#     """
-#     Scenario: Update the bucket index when a pack is updated (new version)
-#     Given
-#     - Pack exists in the index folder
-#     - Pack has a new version
-#     When
-#     - Updating the bucket index
-#     Then
-#     - Ensure new metadata files are created for the new version
-#     - Ensure previous metadata files are not deleted
-#     - Ensure other files in the index are removed and replaced
-#     """
-#     from Tests.Marketplace import upload_packs
-#     dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False, is_metadata_updated=True)
-#     dummy_pack.current_version = '2.0.1'
