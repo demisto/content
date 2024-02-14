@@ -81,9 +81,10 @@ To enable sending server events to the syslog server, complete the following ste
 1. Go to the \Program Files\Symantec\DataLossPrevention\EnforceServer\15.8.00000\Protect\config directory on Windows or the /opt/Symantec/DataLossPrevention/EnforceServer/15.8.00000/Protect/config directory on Linux.
 2. Open the Manager.properties file.
 3. Uncomment the #systemevent.syslog.protocol = line by removing the # symbol from the beginning of the line, and enter [ udp | tcp | tls ] to secure communications sent from the Enforce Server to the syslog server.
-4. Uncomment the #systemevent.syslog.host= line by removing the # symbol from the beginning of the line, and enter the hostname or IP address of the syslog server.
-5. Uncomment the #systemevent.syslog.port= line by removing the # symbol from the beginning of the line. Enter the port number that should accept connections from the Enforce Server. The default is 514.
-6. Uncomment the #systemevent.syslog.format= [{0}] {1} - {2} line by removing the # symbol from the beginning of the line.
+4. Uncomment the **#systemevent.syslog.host=** line by removing the # symbol from the beginning of the line, and enter the hostname or IP address of the syslog server.
+5. Uncomment the **#systemevent.syslog.port=** line by removing the # symbol from the beginning of the line. Enter the port number that should accept connections from the Enforce Server. The default is 514.
+6. Uncomment the **#systemevent.syslog.format= [{0}] {1} - {2}** line by removing the # symbol from the beginning of the line.
+
    Then define the system event message format to be sent to the syslog server:
    If the line is uncommented without any changes, the notification messages are sent in the format: [server name] summary - details. 
    The format variables are:
