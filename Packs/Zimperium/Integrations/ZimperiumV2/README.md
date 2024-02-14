@@ -425,7 +425,7 @@ Gets a report.
 | --- | --- | --- |
 | after | The date in the criteria after which the threat occurred. | Required | 
 | before | The date in the criteria before which the threat occurred. | Optional | 
-| search_params | In the format 'device.os.version=7.1.1,vectorName=Device'. The params table is available on pages 467-468 of the Zimperium API documentation or on the website at https://mtduat.zimperium.com/ziap-docs/zips-docs/api/api_details_threat.html. | Optional | 
+| search_params | A comma-separated list of parameter and their values by which to filter your request. For example: 'device.os.version=7.1.1,vectorName=Device'. The parameters table is available under "Threat API Details" section in the "Threats" section, of the Zimperium API documentation, or on the website at https://mtduat.zimperium.com/ziap-docs/zips-docs/api/api_details_threat.html#optional-search-parameters-supported.| Optional | 
 | team_id | Used to filter the user data by the team the user belongs to. | Optional | 
 | os | Used to filter by the operating system. Possible values are: ios, android. | Optional | 
 | severity | The severity of the threat. Possible values are: LOW, NORMAL, ELEVATED, CRITICAL. | Optional | 
