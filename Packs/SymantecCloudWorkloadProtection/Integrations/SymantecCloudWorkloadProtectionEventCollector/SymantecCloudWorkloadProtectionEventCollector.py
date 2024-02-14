@@ -15,10 +15,6 @@ PRODUCT = 'cwp'
 
 ''' CLIENT CLASS '''
 
-# TODO add token mechanism, 401 = Token expired
-# DESCENDING = Newer first
-# TODO find out about "x-epmp-product-uid" in alert header
-
 
 class Client(BaseClient):
 
@@ -27,36 +23,22 @@ class Client(BaseClient):
 
     def _http_request(
         self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
-        params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
-        return_empty_response=False, retries=0, status_list_to_retry=None, backoff_factor=5,
-        raise_on_redirect=False, raise_on_status=False, error_handler=None, empty_valid_codes=None,
-        params_parser=None, **kwargs
+        params=None, data=None, files=None, timeout=None, ok_codes=None, **kwargs
     ):
         res: requests.Response = super()._http_request(
-            method, url_suffix, full_url, headers, auth, json_data, params, data, files, timeout,
-            'response', (ok_codes or (200,)) + (401,), return_empty_response, retries, status_list_to_retry, backoff_factor,
-            raise_on_redirect, raise_on_status, error_handler, empty_valid_codes, params_parser, **kwargs
+            method, url_suffix, full_url, headers, auth, json_data, params, data,
+            files, timeout, 'response', (ok_codes or (200,)) + (401,), **kwargs
         )
         if res.status_code == 401:
             self.get_new_token()
             res: requests.Response = super()._http_request(
-                method, url_suffix, full_url, headers, auth, json_data, params, data, files, timeout,
-                'response', ok_codes, return_empty_response, retries, status_list_to_retry, backoff_factor,
-                raise_on_redirect, raise_on_status, error_handler, empty_valid_codes, params_parser, **kwargs
+                method, url_suffix, full_url, headers, auth, json_data, params,
+                data, files, timeout, 'response', ok_codes, **kwargs
             )
         try:
-            match resp_type:
-                case 'json':
-                    return res.json()
-                case 'text':
-                    return res.text
-                case 'content':
-                    return res.content
-                case 'response':
-                    return res
-            return res
+            return res.json()
         except requests.JSONDecodeError as e:
-            raise DemistoException(f'Failed to parse {resp_type} object from response: {res.content}', e, res)
+            raise DemistoException(f'Failed to parse response: {res.content}', e, res)
 
     def update_authorization(self, auth: str):
         if not self._headers:
@@ -105,10 +87,11 @@ class Client(BaseClient):
         return client
 
     def _pagination_fetch(self, request_func: Callable, last_date: str) -> list[dict]:
-        events = []
+        objects = []
         end_date = datetime.now().strftime(DATE_FORMAT)
-        page_size = ceil(self.max_fetch / API_LIMIT)
-        for page in range(int(self.max_fetch / page_size)):  # TODO what to do in the case "self.max_fetch < API_LIMIT"
+        pages = ceil(self.max_fetch / API_LIMIT)  # The minimum amount of calls needed
+        page_size = ceil(self.max_fetch / pages)  # The minimum needed per call
+        for page in range(pages):
             res = request_func(
                 {
                     'pageSize': page_size,
@@ -118,23 +101,24 @@ class Client(BaseClient):
                     'order': 'ASCENDING',
                 }
             )
-            events += res.get('result', [])
+            objects += res.get('result', [])
             if res.get('total') < page_size:
                 break
-        return events
+        del objects[:self.max_fetch]
+        return objects
 
-    def _manage_duplicates(self, objects: list[dict], last_synchronous_ids: list) -> tuple[list, list]:
+    def _manage_duplicates(self, objects: list[dict], last_synchronous_ids: list, last_date: str) -> tuple[list, list]:
         ids = set(last_synchronous_ids)
         objects = list(filter((lambda x: x['uuid'] not in ids), objects))
-        last_synchronous_ids = [i['uuid'] for i in objects if i['time'] == objects[-1]['time']]
+        last_synchronous_ids = [i['uuid'] for i in objects if i['time'] == last_date]
         return objects, last_synchronous_ids
 
     def _fetch_objects(self, request_func: Callable, last_date: str | None, last_synchronous_ids: list):
         last_date = last_date or (datetime.now() - timedelta(minutes=1)).strftime(DATE_FORMAT)
         objects = self._pagination_fetch(request_func, last_date)
-        objects, last_synchronous_ids = self._manage_duplicates(objects, last_synchronous_ids)
-        last_date = dict_safe_get(objects, (0, 'time'))  # type: ignore
-        return objects, last_date, last_synchronous_ids  # TODO
+        new_last_date: str = dict_safe_get(objects, (-1, 'time'))  # type: ignore
+        objects, new_last_synchronous_ids = self._manage_duplicates(objects, last_synchronous_ids, new_last_date)
+        return objects, new_last_date, new_last_synchronous_ids
 
     def _event_request(self, data: dict):
         return self._http_request(
@@ -144,84 +128,22 @@ class Client(BaseClient):
         )
 
     def _alert_request(self, data: dict):
+        data['eventTypeToQuery'] = 16
         return self._http_request(
             'POST',
             '/dcs-service/sccs/v1/events/search',
-            data=(data | {'eventTypeToQuery': 16})
+            data=data
         )
 
     def fetch_events(self, last_date: str | None = None, last_synchronous_ids: list = []):
-        self._fetch_objects(self._event_request, last_date, last_synchronous_ids)
+        return self._fetch_objects(self._event_request, last_date, last_synchronous_ids)
 
     def fetch_alerts(self, last_date: str | None = None, last_synchronous_ids: list = []):
-        self._fetch_objects(self._alert_request, last_date, last_synchronous_ids)
+        return self._fetch_objects(self._alert_request, last_date, last_synchronous_ids)
 
 
 def test_module(client: Client) -> str:
-
-    try:
-        alert_status = params.get('alert_status', None)
-
-        fetch_events(
-            client=client,
-            last_run={},
-            first_fetch_time=first_fetch_time,
-            alert_status=alert_status,
-            max_events_per_fetch=1,
-        )
-
-    except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return 'ok'
-
-
-def get_events(client: Client, alert_status: str, args: dict) -> tuple[list[dict], CommandResults]:
-    limit = args.get('limit', 50)
-    from_date = args.get('from_date')
-    events = client.search_events(
-        prev_id=0,
-        alert_status=alert_status,
-        limit=limit,
-        from_date=from_date,
-    )
-    hr = tableToMarkdown(name='Test Event', t=events)
-    return events, CommandResults(readable_output=hr)
-
-
-def fetch_events(client: Client, last_run: dict[str, int],
-                 first_fetch_time, alert_status: str | None, max_events_per_fetch: int
-                 ) -> tuple[Dict, List[Dict]]:
-    """
-    Args:
-        client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time: If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-        max_events_per_fetch (int): number of events per fetch
-    Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
-    """
-    prev_id = last_run.get('prev_id', None)
-    if not prev_id:
-        prev_id = 0
-
-    events = client.search_events(
-        prev_id=prev_id,
-        alert_status=alert_status,
-        limit=max_events_per_fetch,
-        from_date=first_fetch_time,
-    )
-    demisto.debug(f'Fetched event with id: {prev_id + 1}.')
-
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'prev_id': prev_id + 1}
-    demisto.debug(f'Setting next run {next_run}.')
-    return next_run, events
+    return 'ok'  # TODO
 
 
 ''' MAIN FUNCTION '''
@@ -231,7 +153,7 @@ def add_time_to_events(events: list[dict]):
     """
     Adds the _time key to the events.
     Args:
-        events: List[Dict] - list of events to add the _time key to.
+        events: list[dict] - list of events to add the _time key to.
     Returns:
         list: The events with the _time key.
     """
@@ -256,24 +178,32 @@ def main() -> None:  # pragma: no cover
         elif command == 'fetch-events':
 
             last_run = demisto.getLastRun() or {'events': {}, 'alerts': {}}
+            next_run = {}
 
-            client.fetch_events(**last_run['events'])  # type: ignore
-            client.fetch_alerts(**last_run['alerts'])  # type: ignore
-
-            next_run, events = fetch_events(
-                client=client,
-                last_run=last_run,
-                first_fetch_time=first_fetch_time,
-                alert_status=alert_status,
-                max_events_per_fetch=max_events_per_fetch,
-            )
-
+            events, last_date, last_synchronous_ids = client.fetch_events(**last_run['events'])  # type: ignore
             add_time_to_events(events)
             send_events_to_xsiam(
                 events,
                 vendor=VENDOR,
                 product=PRODUCT
             )
+            next_run['events'] = {
+                'last_date': last_date,
+                'last_synchronous_ids': last_synchronous_ids
+            }
+
+            alerts, last_date, last_synchronous_ids = client.fetch_alerts(**last_run['alerts'])  # type: ignore
+            add_time_to_events(alerts)
+            send_events_to_xsiam(
+                alerts,
+                vendor=VENDOR,
+                product=PRODUCT
+            )
+            next_run['alerts'] = {
+                'last_date': last_date,
+                'last_synchronous_ids': last_synchronous_ids
+            }
+
             demisto.setLastRun(next_run)
 
     except Exception as e:
