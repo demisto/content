@@ -70,6 +70,7 @@ if [[ "${SERVER_TYPE}" == "XSIAM" ]]; then
 
 # elif [[ "${SERVER_TYPE}" == "XSOAR" ]]; then
 elif [[ "${SERVER_TYPE}" == "XSOAR" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; then
+    echo "$CLOUD_SERVERS_PATH"
     demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n "${IS_NIGHTLY}" -t "$SLACK_TOKEN" \
       -a "$CIRCLECI_TOKEN" -b "${CI_PIPELINE_ID}" -g "$CI_COMMIT_BRANCH" -m "${MEM_CHECK}" --is-ami "${IS_AMI_RUN}" -d "${INSTANCE_ROLE}" \
       --xsiam-machine "test_opp" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "XSOAR SAAS" \
