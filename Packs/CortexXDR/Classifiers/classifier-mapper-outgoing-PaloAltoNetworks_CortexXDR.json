@@ -127,6 +127,20 @@
 				}
 			}
 		},
+        "Malware Investigation and Response": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"close_reason": {
+					"simple": "closeReason"
+				},
+				"resolve_comment": {
+					"simple": "closeNotes"
+				},
+				"status": {
+					"simple": "externalstatus.[0]"
+				}
+			}
+		},
 		"dbot_classification_incident_type_all": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
