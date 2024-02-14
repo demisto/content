@@ -1,7 +1,17 @@
 id: Cortex XDR - Large Upload
 version: -1
 name: Cortex XDR - Large Upload
-description: "The playbook investigates Cortex XDR incidents involving port scan alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling’. \n\nThe playbook consists of the following procedures:\n- Searching for similar previous incidents that were closed as false positives.\n- Enrichment and investigation of the initiator and destination hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\n\nThis playbook supports the following Cortex XDR alert names:\n- Large Upload (Generic)\n- Large Upload (SMTP)\n- Large Upload (FTP)\n- Large Upload (HTTPS)"
+description: "The playbook investigates Cortex XDR incidents involving large upload
+  alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts
+  Handling v2’. \n\nThe playbook consists of the following procedures:\n- Searching
+  for similar previous incidents that were closed as false positives.\n- Enrichment
+  and investigation of the initiator and destination hostname and IP address.\n- Enrichment
+  and investigation of the initiator user, process, file, or command if it exists.\n-
+  Detection of related indicators and analysis of the relationship between the detected
+  indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks
+  detected malicious indicators.\n- Endpoint isolation.\n\nThis playbook supports
+  the following Cortex XDR alert names:\n- Large Upload (Generic)\n- Large Upload
+  (SMTP)\n- Large Upload (FTP)\n- Large Upload (HTTPS)"
 starttaskid: "0"
 tasks:
   "0":

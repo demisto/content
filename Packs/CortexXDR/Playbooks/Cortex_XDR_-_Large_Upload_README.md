@@ -1,4 +1,4 @@
-The playbook investigates Cortex XDR incidents involving port scan alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling’. 
+The playbook investigates Cortex XDR incidents involving large upload alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling v2’. 
 
 The playbook consists of the following procedures:
 - Searching for similar previous incidents that were closed as false positives.
@@ -21,18 +21,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* IP Enrichment - Generic v2
-* Threat Hunting - Generic
-* File Enrichment - Generic v2
 * Account Enrichment - Generic v2.1
-* Cortex XDR - Search and Compare Process Executions - XDR Alerts
+* Block Indicators - Generic v3
+* File Enrichment - Generic v2
+* IP Enrichment - Generic v2
+* Command-Line Analysis
 * Cortex XDR - Isolate Endpoint
+* TIM - Indicator Relationships Analysis
+* Cortex XDR - Search and Compare Process Executions - XDR Alerts
+* Domain Enrichment - Generic v2
+* Threat Hunting - Generic
 * Cortex XDR - Endpoint Investigation
 * User Investigation - Generic
-* Domain Enrichment - Generic v2
-* TIM - Indicator Relationships Analysis
-* Block Indicators - Generic v3
-* Command-Line Analysis
 
 ### Integrations
 
@@ -45,8 +45,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* xdr-get-cloud-original-alerts
 * setIncident
+* xdr-get-cloud-original-alerts
 
 ## Playbook Inputs
 
