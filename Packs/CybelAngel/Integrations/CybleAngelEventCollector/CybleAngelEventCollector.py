@@ -34,17 +34,6 @@ DEFAULT_MAX_FETCH = 5000
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls to the Saas Security platform, and does not contain any XSOAR logic.
-    Handles the token retrieval.
-
-    :param base_url (str): Saas Security server url.
-    :param client_id (str): client ID.
-    :param client_secret (str): client secret.
-    :param verify (bool): specifies whether to verify the SSL certificate or not.
-    :param proxy (bool): specifies if to use XSOAR proxy settings.
-    """
 
     def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool, **kwargs):
         self.client_id = client_id
@@ -150,31 +139,11 @@ def is_token_expired(token_initiate_time: float, token_expiration_seconds: float
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    client.get_reports(
+        start_date=(datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT),
+        end_date=datetime.now().strftime(DATE_FORMAT)
+    )
+    return "ok"
 
 
 # TODO: REMOVE the following dummy command function
