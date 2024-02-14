@@ -180,5 +180,6 @@
     "name": "Splunk - Notable Generic Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
+    "marketplaces": ["xsoar", "marketplacev2"],
     "fromVersion": "6.0.0"
 }
