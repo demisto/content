@@ -1,0 +1,50 @@
+{
+    "QueryExecution": {
+        "QueryExecutionId": "b3c194e7-6580-421c-81fa-4b409e1ba04f",
+        "Query": "SELECT * FROM test_db.test_table",
+        "StatementType": "DML",
+        "ResultConfiguration": {
+            "OutputLocation": "s3://athena-queries-test/b3c194e7-6580-421c-81fa-4b409e1ba04f.csv"
+        },
+        "ResultReuseConfiguration": {
+            "ResultReuseByAgeConfiguration": {
+                "Enabled": false
+            }
+        },
+        "QueryExecutionContext": {},
+        "Status": {
+            "State": "SUCCEEDED",
+            "SubmissionDateTime": "2023-11-07T10:01:03",
+            "CompletionDateTime": "2023-11-07T10:01:04"
+        },
+        "Statistics": {
+            "EngineExecutionTimeInMillis": 1074,
+            "DataScannedInBytes": 86996,
+            "TotalExecutionTimeInMillis": 1296,
+            "QueryQueueTimeInMillis": 192,
+            "QueryPlanningTimeInMillis": 493,
+            "ServiceProcessingTimeInMillis": 30,
+            "ResultReuseInformation": {
+                "ReusedPreviousResult": false
+            }
+        },
+        "WorkGroup": "primary",
+        "EngineVersion": {
+            "SelectedEngineVersion": "AUTO",
+            "EffectiveEngineVersion": "Athena engine version 3"
+        },
+        "SubstatementType": "SELECT"
+    },
+    "ResponseMetadata": {
+        "RequestId": "07c697eb-30b3-42a6-bb42-86afd1227d3f",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "date": "Tue, 07 Nov 2023 16:51:15 GMT",
+            "content-type": "application/x-amz-json-1.1",
+            "content-length": "2106",
+            "connection": "keep-alive",
+            "x-amzn-requestid": "07c697eb-30b3-42a6-bb42-86afd1227d3f"
+        },
+        "RetryAttempts": 0
+    }
+}

@@ -284,3 +284,24 @@ def test_add_comment_fail(mocker):
     with pytest.raises(DemistoException) as e:
         add_comment()
     assert str(e.value) == 'Failed to add comment'
+
+
+def test_edit_ticket(mocker):
+    """
+    Test failure in edit a ticket if no fields was given.
+
+    Given:
+    - ticket id
+
+    When:
+    - editing a ticket
+
+    Then:
+    - Ensure the command fails with an error message.
+    """
+    from RTIR import edit_ticket
+    mocker.patch.object(demisto, 'args', return_value={'ticket-id': '1234'})
+    try:
+        edit_ticket()
+    except Exception as ex:
+        assert ex.message == 'No arguments were given to edit the ticket.'

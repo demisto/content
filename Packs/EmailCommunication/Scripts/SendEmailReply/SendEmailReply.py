@@ -5,8 +5,37 @@ import json
 import random
 import re
 from datetime import datetime as dt
+from markdown import Extension, markdown
+from markdown.inlinepatterns import UnderscoreProcessor, EmStrongItem
 
 ERROR_TEMPLATE = 'ERROR: SendEmailReply - {function_name}: {reason}'
+UNDERLINE_RE = r'(\+)([^+]+)\1'  # +underline+ -> <u>underline</u>
+STRIKETHROUGH_RE = r'(~{2})(.+?)\1'  # ~~Strikethrough~~ -> <s>Strikethrough</s>
+
+
+class DemistoUnderlineProcessor(UnderscoreProcessor):
+    """Processor for handling Underline."""
+
+    PATTERNS = [
+        EmStrongItem(re.compile(UNDERLINE_RE, re.DOTALL | re.UNICODE), 'single', 'u')
+    ]
+
+
+class DemistoStrikethroughProcessor(UnderscoreProcessor):
+    """Processor for handling Strikethrough."""
+
+    PATTERNS = [
+        EmStrongItem(re.compile(STRIKETHROUGH_RE, re.DOTALL | re.UNICODE), 'single', 's')
+    ]
+
+
+class DemistoExtension(Extension):
+    """ Add Custom Demisto Markdown support."""
+
+    def extendMarkdown(self, md):
+        """ Modify inline patterns. """
+        md.inlinePatterns.register(DemistoUnderlineProcessor(r'\+'), 'underline', 50)
+        md.inlinePatterns.register(DemistoStrikethroughProcessor(r'~'), 'strikethrough', 50)
 
 
 def get_utc_now():
@@ -409,7 +438,7 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
             note_user = note['Metadata']['user']
             note_userdata = demisto.executeCommand("getUserByUsername", {"username": note_user})
             user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name']) or "DBot"
-            reply_body += f"{user_fullname}: \n{note['Contents']}\n\n"
+            reply_body += f"{user_fullname}: \n\n{note['Contents']}\n\n"
 
         if isinstance(attachments, str):
             attachments = argToList(attachments)
@@ -433,12 +462,8 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
     else:
         return_error("Please add a note")
 
-    try:
-        res = demisto.executeCommand("mdToHtml", {"contextKey": "replyhtmlbody", "text": reply_body})
-        reply_html_body = res[0]['EntryContext']['replyhtmlbody']
-        return reply_body, reply_html_body
-    except Exception:
-        return_error(get_error(res))
+    reply_html_body = format_body(reply_body)
+    return reply_body, reply_html_body
 
 
 def get_email_recipients(email_to, email_from, service_mail, mailbox):
@@ -616,13 +641,15 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
-    # Replace newlines with <br> element to preserve line breaks
-    new_email_body = new_email_body.replace('\n', '<br>')
-
-    res = demisto.executeCommand("mdToHtml", {"text": new_email_body})
-    html_body = res[0]['Contents']
-
-    return html_body
+    return markdown(new_email_body,
+                    extensions=[
+                        'tables',
+                        'fenced_code',
+                        'legacy_em',
+                        'sane_lists',
+                        'nl2br',
+                        DemistoExtension(),
+                    ])
 
 
 def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_type, attachments, files, email_subject,
@@ -970,8 +997,7 @@ def main():
     email_selected_thread = custom_fields.get('emailselectedthread')
     subject_include_incident_id = argToBoolean(args.get('subject_include_incident_id', False))
     body_type = args.get('bodyType') or args.get('body_type') or 'html'
-
-    argToBoolean(args.get('reputation_calc_async', False))
+    reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
 
     if new_email_attachments:
         new_attachment_names = ', '.join([attachment.get('name', '') for attachment in new_email_attachments])
@@ -982,7 +1008,7 @@ def main():
         # This case is run when replying to an email from the 'Email Communication' layout
         single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_type, attachments, files, email_subject,
                             subject_include_incident_id, email_to_str, service_mail, email_latest_message,
-                            mail_sender_instance, reputation_calc_async=False)
+                            mail_sender_instance, reputation_calc_async)
 
     elif new_thread == 'true':
         # This case is run when using the 'Email Threads' layout to send a new first-contact email message
@@ -997,5 +1023,5 @@ def main():
                            subject_include_incident_id)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

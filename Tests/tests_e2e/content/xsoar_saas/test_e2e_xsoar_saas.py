@@ -190,6 +190,9 @@ def test_slack_ask(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
                 try:
                     with save_incident(xsoar_saas_client, playbook_id=playbook_id_name) as incident_response:
                         # make sure the playbook finished successfully
+                        logging.debug(
+                            f'test_slack_ask incident metadata:\n{xsoar_saas_client.search_incidents(incident_response.id)}'
+                        )
                         assert xsoar_saas_client.poll_playbook_state(
                             incident_response.id, expected_states=(InvestigationPlaybookState.COMPLETED,)
                         )
@@ -201,9 +204,6 @@ def test_slack_ask(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
                 except Exception as error:
                     logging.error(f"test_slack_ask - time {i} - error\n{error}")
                     # print incident raw response to get info about it in case of failures
-                    logging.debug(
-                        f'test_slack_ask incident metadata:\n{xsoar_saas_client.search_incidents(incident_response.id)}'
-                    )
                     if i == 5:
                         raise error
 

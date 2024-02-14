@@ -12,10 +12,12 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
-  display: Source Reliability
+- display: Source Reliability
   name: integrationReliability
+  type: 15
+  required: true
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -24,8 +26,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
-  type: 15
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -34,16 +34,16 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- defaultvalue: 1 hours
+- defaultvalue: '1 hours'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetchTime
   type: 0
   required: false
-- defaultvalue: '25'
-  display: Fetch limit
+- display: Fetch limit
   name: fetchLimit
   type: 0
   required: false
+  defaultvalue: '25'
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -350,7 +350,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: String
-  dockerimage: demisto/python3:3.10.13.74666
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   runonce: false
   script: '-'

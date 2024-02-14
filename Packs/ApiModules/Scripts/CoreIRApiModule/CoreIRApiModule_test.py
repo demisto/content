@@ -12,7 +12,7 @@ from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoEx
 from CoreIRApiModule import CoreClient
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, list_user_groups_command, parse_user_groups, list_users_command, list_roles_command, \
-    change_user_role_command, list_risky_users_or_host_command, enrich_error_message_id_group_role
+    change_user_role_command, list_risky_users_or_host_command, enrich_error_message_id_group_role, get_incidents_command
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
@@ -3697,3 +3697,95 @@ def test_enrich_error_message_id_group_role(error_message: str, expected_error_m
         DemistoException(message=error_message, res=MockException(500)), "test", "test"
     )
     assert error_response == expected_error_message[0]
+
+
+def get_incident_by_status(incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
+                           lte_creation_time=None, gte_creation_time=None, starred=None,
+                           starred_incidents_fetch_window=None, status=None, sort_by_modification_time=None,
+                           sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
+    """
+        The function simulate the client.get_incidents method for the test_fetch_incidents_filtered_by_status
+        and for the test_get_incident_list_by_status.
+        The function got the status as a string, and return from the json file only the incidents
+        that are in the given status.
+    """
+    incidents_list = load_test_data('./test_data/get_incidents_list.json')['reply']['incidents']
+    return [incident for incident in incidents_list if incident['status'] == status]
+
+
+class TestGetIncidents:
+
+    def test_get_incident_list(self, requests_mock):
+        """
+        Given: Incidents returned from client.
+        When: Running get_incidents_command.
+        Then: Ensure the outputs contain the incidents from the client.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day'
+        }
+        _, outputs, _ = get_incidents_command(client, args)
+
+        expected_output = {
+            'CoreApiModule.Incident(val.incident_id==obj.incident_id)':
+                get_incidents_list_response.get('reply').get('incidents')
+        }
+        assert expected_output == outputs
+
+    def test_get_incident_list_by_status(self, mocker):
+        """
+        Given: A status query, and incidents filtered by the query.
+        When: Running get_incidents_command.
+        Then: Ensure outputs contain the incidents from the client.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day',
+            'status': 'under_investigation,new'
+        }
+        mocker.patch.object(client, 'get_incidents', side_effect=get_incident_by_status)
+
+        _, outputs, _ = get_incidents_command(client, args)
+
+        expected_output = {
+            'CoreApiModule.Incident(val.incident_id==obj.incident_id)':
+                get_incidents_list_response.get('reply').get('incidents')
+        }
+        assert expected_output == outputs
+
+    def test_get_starred_incident_list(self, requests_mock):
+        """
+        Given: A query with starred parameters.
+        When: Running get_incidents_command.
+        Then: Ensure the starred output is returned.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day',
+            'starred': True,
+            'starred_incidents_fetch_window': '3 days'
+        }
+        _, outputs, _ = get_incidents_command(client, args)
+
+        assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True

@@ -368,19 +368,21 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             res_json = res.json()
             reason = res.reason
             resources = res_json.get('resources', {})
+            extracted_error_message = ''
             if resources:
                 if isinstance(resources, list):
-                    reason += f'\n{str(resources)}'
+                    extracted_error_message += f'\n{str(resources)}'
                 else:
                     for host_id, resource in resources.items():
-                        errors = resource.get('errors', [])
+                        errors = resource.get('errors', []) if isinstance(resource, dict) else ''
                         if errors:
                             error_message = errors[0].get('message')
-                            reason += f'\nHost ID {host_id} - {error_message}'
-            elif res_json.get('errors'):
+                            extracted_error_message += f'\nHost ID {host_id} - {error_message}'
+            elif res_json.get('errors') and not extracted_error_message:
                 errors = res_json.get('errors', [])
                 for error in errors:
-                    reason += f"\n{error.get('message')}"
+                    extracted_error_message += f"\n{error.get('message')}"
+            reason += extracted_error_message
             err_msg = 'Error in API call to CrowdStrike Falcon: code: {code} - reason: {reason}'.format(
                 code=res.status_code,
                 reason=reason
@@ -1284,6 +1286,21 @@ def get_behaviors(behavior_ids: list[str]) -> dict:
         'POST',
         '/incidents/entities/behaviors/GET/v1',
         data=json.dumps({'ids': behavior_ids}),
+    )
+
+
+def get_ioarules(rule_ids: list[str]) -> dict:
+    """
+        Sends ioa rules entities request
+        :param rule_ids: IDs of the requested ioa rule.
+        :return: Response json of the get ioa rule entities endpoint (ioa rule objects)
+    """
+    params = {'ids': rule_ids}
+
+    return http_request(
+        'GET',
+        '/ioarules/entities/rules/v1',
+        params=params,
     )
 
 
@@ -5221,7 +5238,7 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
                           outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
 
 
-def get_cve_command(args: dict) -> list[CommandResults]:
+def get_cve_command(args: dict) -> list[dict[str, Any]]:
     """
         Get a list of vulnerabilities by spotlight
         : args: filter which include params or filter param.
@@ -5252,10 +5269,10 @@ def get_cve_command(args: dict) -> list[CommandResults]:
                               'Base Score': cve.get('base_score')}
         human_readable = tableToMarkdown('CrowdStrike Falcon CVE', cve_human_readable,
                                          headers=['ID', 'Description', 'Published Date', 'Base Score'])
-        command_results_list.append(CommandResults(raw_response=cve,
-                                                   readable_output=human_readable,
-                                                   relationships=relationships_list,
-                                                   indicator=cve_indicator))
+        command_results = CommandResults(raw_response=cve, readable_output=human_readable, relationships=relationships_list,
+                                         indicator=cve_indicator).to_context()
+        if command_results not in command_results_list:
+            command_results_list.append(command_results)
     return command_results_list
 
 
@@ -6536,6 +6553,28 @@ def get_incident_behavior_command(args: dict) -> CommandResults:
     )
 
 
+def get_ioarules_command(args: dict) -> CommandResults:
+    rule_ids = argToList(args['rule_ids'])
+    ioarules_response_data = get_ioarules(rule_ids)
+
+    ioarules = ioarules_response_data.get('resources', [])
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IOARules',
+        outputs_key_field='instance_id',
+        outputs=ioarules,
+        readable_output=tableToMarkdown(
+            name='CrowdStrike IOA Rules',
+            t=ioarules,
+            headers=['instance_id', 'description', 'enabled', 'name', 'pattern_id'],
+            headerTransform=string_to_table_header,
+            removeNull=True,
+            sort_headers=False,
+        ),
+        raw_response=ioarules_response_data,
+    )
+
+
 def main():
     command = demisto.command()
     args = demisto.args()
@@ -6765,6 +6804,8 @@ def main():
             return_results(cs_falcon_list_users_command(args=args))
         elif command == 'cs-falcon-get-incident-behavior':
             return_results(get_incident_behavior_command(args=args))
+        elif command == 'cs-falcon-get-ioarules':
+            return_results(get_ioarules_command(args=args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')

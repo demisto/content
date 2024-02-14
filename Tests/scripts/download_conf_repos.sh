@@ -136,6 +136,7 @@ clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${C
 
 cp -r ./infra/xsiam_servers.json $XSIAM_SERVERS_PATH
 cp -r ./infra/xsoar_ng_servers.json $XSOAR_NG_SERVERS_PATH
+cp -r ./infra/.gitlab/ci/name_mapping.json "${CI_PROJECT_DIR}/name_mapping.json"
 
 mv ./infra/gcp ./gcp
 rm -rf ./infra

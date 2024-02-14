@@ -5,9 +5,10 @@ import pytest
 @pytest.mark.parametrize(
     "rule, first_rule_created",
     [
-        ({"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [],
-          "UserIdGroupPairs": []}, {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [],
-                                    'PrefixListIds': [], 'UserIdGroupPairs': [], 'FromPort': 0, 'ToPort': 21}),
+        ({"IpProtocol": "-1", "IpRanges": [{"CidrIp": "10.0.0.0/16", "Description": "allow all traffic from VPC"},
+          {"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []},
+         {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [],
+          'PrefixListIds': [], 'UserIdGroupPairs': [], 'FromPort': 0, 'ToPort': 21}),
         ({"IpProtocol": "tcp", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [],
           "UserIdGroupPairs": [], 'FromPort': 0, 'ToPort': 23},
          {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [],

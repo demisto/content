@@ -180,7 +180,7 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
     # in XSOAR the fields exist with empty values.
     incident = demisto.incident()
     custom_fields = incident.get("CustomFields", {}) or {}
-    if (not is_xsiam()) and grid_id not in custom_fields:
+    if (not is_xsiam_or_xsoar_saas()) and grid_id not in custom_fields:
         raise ValueError(get_error_message(grid_id))
     current_table: list[dict] | None = custom_fields.get(grid_id)
     return pd.DataFrame(current_table) if current_table else pd.DataFrame()
@@ -276,18 +276,18 @@ def build_grid(context_path: str, keys: list[str], columns: list[str], unpack_ne
 
         # Handle entry context as dict, with unpacking of nested elements
         table = pd.DataFrame(unpack_all_data_from_dict(entry_context_data, keys, columns))
-        table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
+        table = table.rename(columns=dict(zip(table.columns, columns)))
     elif data_type == 'list':
         # Handle entry context as list of value
         table = pd.DataFrame(entry_context_data)
-        table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
+        table = table.rename(columns=dict(zip(table.columns, columns)))
     elif isinstance(entry_context_data, list):
         # Handle entry context as list of dicts
         entry_context_data = [entry_dicts_to_string(dict_obj=filter_dict(item, keys, len(columns)),
                                                     keys_to_choose=keys_from_nested)
                               for item in entry_context_data]
         table = pd.DataFrame(entry_context_data)
-        table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
+        table = table.rename(columns=dict(zip(table.columns, columns)))
     elif isinstance(entry_context_data, dict):
         # Handle entry context key-value
         # If the keys arg is * it means we don't know which keys we have in the context - Will create key-value table.
@@ -299,7 +299,7 @@ def build_grid(context_path: str, keys: list[str], columns: list[str], unpack_ne
         else:
             entry_context_data = entry_context_data
             table = pd.DataFrame([entry_context_data])
-            table.rename(columns=dict(zip(table.columns, columns)), inplace=True)
+            table = table.rename(columns=dict(zip(table.columns, columns)))
 
     else:
         table = []
@@ -354,7 +354,7 @@ def build_grid_command(grid_id: str, context_path: str, keys: list[str], columns
 
     # Sort by column name if specified, support multi columns sort
     if sort_by and set(sort_by) <= set(new_table.columns):
-        new_table.sort_values(by=sort_by, inplace=True)
+        new_table = new_table.sort_values(by=sort_by)
 
     # filter empty values in the generated table
     filtered_table = []
@@ -396,7 +396,7 @@ def main():  # pragma: no cover
                 data = entry["Contents"]["data"]
                 custom_fields = data[0].get("CustomFields") if data and data[0].get("CustomFields") else {}
         # in the debugger, there is an addition of the "_grid" suffix to the grid_id.
-        if is_xsiam() and table and grid_id not in custom_fields and f"{grid_id}_grid" not in custom_fields:
+        if is_xsiam_or_xsoar_saas() and table and grid_id not in custom_fields and f"{grid_id}_grid" not in custom_fields:
             raise ValueError(get_error_message(grid_id))
         if is_error(res_set):
             demisto.error(f'failed to execute "setIncident" with table: {table}.')

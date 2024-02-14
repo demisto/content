@@ -11,8 +11,8 @@ def test_blueliv_search_resource(mocker, requests_mock):
     module = 1
     module_type = ("Credentials", "credentials")
 
-    url = '{}/organization/{}/module/{}/{}'.format(server_url, organization, module, module_type[1])
-    matcher = re.compile('{}.*'.format(url))
+    url = f'{server_url}/organization/{organization}/module/{module}/{module_type[1]}'
+    matcher = re.compile(f'{url}.*')
 
     blueliv_response = {
         "list": [
@@ -83,8 +83,8 @@ def test_blueliv_search_resource_by_id(mocker, requests_mock):
     module = 1
     module_type = ("Credentials", "credentials")
 
-    url = '{}/organization/{}/module/{}/{}'.format(server_url, organization, module, module_type[1])
-    matcher = re.compile('{}.*'.format(url))
+    url = f'{server_url}/organization/{organization}/module/{module}/{module_type[1]}'
+    matcher = re.compile(f'{url}.*')
 
     blueliv_response = {
         "changed_at": 1589581524000,
@@ -174,8 +174,8 @@ def test_blueliv_set_resource_status(mocker, requests_mock):
     module = 1
     module_type = ("DataLeakage", "data_leakage")
 
-    url = '{}/organization/{}/module/{}/{}'.format(server_url, organization, module, module_type[1])
-    matcher = re.compile('{}.*'.format(url))
+    url = f'{server_url}/organization/{organization}/module/{module}/{module_type[1]}'
+    matcher = re.compile(f'{url}.*')
 
     blueliv_response = {
         "code": 0,
@@ -205,8 +205,8 @@ def test_blueliv_resource_set_read_status(mocker, requests_mock):
     module = 1
     module_type = ("DataLeakage", "data_leakage")
 
-    url = '{}/organization/{}/module/{}/{}'.format(server_url, organization, module, module_type[1])
-    matcher = re.compile('{}.*'.format(url))
+    url = f'{server_url}/organization/{organization}/module/{module}/{module_type[1]}'
+    matcher = re.compile(f'{url}.*')
 
     blueliv_response = {"field": "[10712044]",
                         "message": "ok.successful_markas",
@@ -235,8 +235,8 @@ def test_blueliv_resource_assign_rating(mocker, requests_mock):
     module = 1
     module_type = ("DataLeakage", "data_leakage")
 
-    url = '{}/organization/{}/module/{}/{}'.format(server_url, organization, module, module_type[1])
-    matcher = re.compile('{}.*'.format(url))
+    url = f'{server_url}/organization/{organization}/module/{module}/{module_type[1]}'
+    matcher = re.compile(f'{url}.*')
 
     blueliv_response = {"field": "",
                         "message": "ok.successful_rate",
@@ -265,8 +265,8 @@ def test_blueliv_resource_fav(mocker, requests_mock):
     module = 1
     module_type = ("DataLeakage", "data_leakage")
 
-    url = '{}/organization/{}/module/{}/{}'.format(server_url, organization, module, module_type[1])
-    matcher = re.compile('{}.*'.format(url))
+    url = f'{server_url}/organization/{organization}/module/{module}/{module_type[1]}'
+    matcher = re.compile(f'{url}.*')
 
     blueliv_response = {"field": "",
                         "message": "ok.successful_fav",
@@ -295,8 +295,8 @@ def test_blueliv_resource_set_tlp(mocker, requests_mock):
     module = 1
     module_type = ("DataLeakage", "data_leakage")
 
-    url = '{}/organization/{}/module/{}/{}'.format(server_url, organization, module, module_type[1])
-    matcher = re.compile('{}.*'.format(url))
+    url = f'{server_url}/organization/{organization}/module/{module}/{module_type[1]}'
+    matcher = re.compile(f'{url}.*')
 
     blueliv_response = {"field": "",
                         "message": "ok.tlp_updated",
@@ -325,8 +325,8 @@ def test_blueliv_resource_set_label(mocker, requests_mock):
     module = 1
     module_type = ("DataLeakage", "data_leakage")
 
-    url = '{}/organization/{}/module/{}/{}'.format(server_url, organization, module, module_type[1])
-    matcher = re.compile('{}.*'.format(url))
+    url = f'{server_url}/organization/{organization}/module/{module}/{module_type[1]}'
+    matcher = re.compile(f'{url}.*')
 
     blueliv_response = {"field": "",
                         "message": "ok.successful_save",
@@ -355,8 +355,8 @@ def test_blueliv_module_get_labels(mocker, requests_mock):
     module = 1
     module_type = ("DataLeakage", "data_leakage")
 
-    url = '{}/organization/{}/module/{}/{}'.format(server_url, organization, module, module_type[1])
-    matcher = re.compile('{}.*'.format(url))
+    url = f'{server_url}/organization/{organization}/module/{module}/{module_type[1]}'
+    matcher = re.compile(f'{url}.*')
 
     blueliv_response = [
         {
