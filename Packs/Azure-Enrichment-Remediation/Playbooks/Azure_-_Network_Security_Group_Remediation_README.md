@@ -39,8 +39,8 @@ This playbook does not use any sub-playbooks.
 | AzureVMPrivateIP | The private IP of the Azure Virtual Machine. |  | Required |
 | RemoteProtocol | The remote protocol that is publicly exposed. |  | Required |
 | RemotePort | The remote port that is publicly exposed. |  | Required |
-| SubscriptionID | This is the Azure Subscription ID \(optional\). |  | Optional |
-| ResourceGroup | This is the Azure ResourceGroup \(optional\). |  | Optional |
+| SubscriptionID | The Azure subscription ID \(optional\). |  | Optional |
+| ResourceGroup | The Azure resource group \(optional\). |  | Optional |
 
 ## Playbook Outputs
 

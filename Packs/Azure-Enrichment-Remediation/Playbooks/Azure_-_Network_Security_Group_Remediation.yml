@@ -1653,12 +1653,12 @@ inputs:
   required: true
   description: The remote port that is publicly exposed.
   playbookInputQuery:
-- description: This is the Azure Subscription ID (optional).
+- description: The Azure subscription ID (optional).
   key: SubscriptionID
   playbookInputQuery:
   required: false
   value: {}
-- description: This is the Azure ResourceGroup (optional).
+- description: The Azure resource group (optional).
   key: ResourceGroup
   playbookInputQuery:
   required: false
