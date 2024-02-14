@@ -5398,10 +5398,6 @@
             "playbookID": "TestIsInCidrRanges"
         },
         {
-            "playbookID": "TestIsNotInCidrRanges",
-            "fromversion": "6.10.0"
-        },
-        {
             "playbookID": "NetskopeAPIv1 Test",
             "integrations": "NetskopeAPIv1"
         },
