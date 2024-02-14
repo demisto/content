@@ -285,7 +285,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
             return [raw_comment]
 
 
-def demisto_ioc_to_xdr(ioc: dict, XSOARtenant: str | None) -> dict:
+def demisto_ioc_to_xdr(ioc: dict, XSOARtenant: str = '') -> dict:
     try:
         # demisto.debug(f'Raw outgoing IOC: {ioc}') # uncomment to debug, otherwise spams the log
         xdr_ioc: dict = {
@@ -448,7 +448,7 @@ def tim_insert_jsons(client: Client):
     else:
         demisto.info("pushing IOCs to XDR: did not get indicators, will use recently-modified IOCs")
         iocs = get_last_iocs()
-
+    XSOARtenant = client.http_request(url_suffix='tenant')['tenant']
     validation_errors = []
     if iocs:
         path = 'tim_insert_jsons/'
@@ -456,7 +456,7 @@ def tim_insert_jsons(client: Client):
         for i, single_batch_iocs in enumerate(batch_iocs(iocs)):
             demisto.debug(f'pushing IOCs to XDR: batch #{i} with {len(single_batch_iocs)} IOCs')
             requests_kwargs: dict = get_requests_kwargs(_json=list(
-                map(demisto_ioc_to_xdr, single_batch_iocs, client._base_url)), validate=True)
+                map(demisto_ioc_to_xdr, single_batch_iocs, client._base_url, XSOARtenant)), validate=True)
             response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
             validation_errors.extend(response.get('reply', {}).get('validation_errors'))
     else:
