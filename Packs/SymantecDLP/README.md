@@ -37,7 +37,8 @@ If you want to configure them differently, make sure to configure 2 different sy
 #### Configure a Log to a Syslog Server action
 In order to send logs via syslog, you will need to create a response rule with a "Log to a Syslog Server" action.
 1. In the Enforce Console, navigate to **Manage** &rarr; **Policies** &rarr; **Response Rules**.
-2. Click on **Add Response Rule**.
+2. Click **Add Response Rule**.
+
 3. Leave the type of response rule as **Automated Response** and click **Next**.
 4. Enter the below:
     - **Rule Name** - "Cortex XSIAM Syslog" 
