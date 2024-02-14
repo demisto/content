@@ -1417,7 +1417,7 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
-        # To debug integratin instance configuration.
+        # To debug integration instance configuration.
         integration_context = demisto.getIntegrationContext()
         if 'xpanse_integration_severity' in integration_context:
             xpanse_integration_severity = integration_context.get('xpanse_integration_severity')
