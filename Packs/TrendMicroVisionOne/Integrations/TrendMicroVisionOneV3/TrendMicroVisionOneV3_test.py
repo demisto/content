@@ -1193,12 +1193,12 @@ def side_effect(lambda_func, *args2, **args3):
 # Test case for get endpoint information.
 def test_get_endpoint_information(mocker):
     """Test get information from endpoint based on endpointName or agentGuid"""
-    args = {"query_op": "and", "fields": json.dumps({"dpt": "443", "endpointName": "MSEDGEWIN10"})}
+    args = {"query_op": "and", "endpoint": json.dumps({"dpt": "443", "endpointName": "MSEDGEWIN10"})}
     client = Mock()
     my_list = []
     client.endpoint.consume_data = Mock(side_effect=side_effect)
     client.endpoint.consume_data(
-        lambda cons: my_list.append(cons), QueryOp.AND, **json.loads(args["fields"])
+        lambda cons: my_list.append(cons), QueryOp.AND, **json.loads(args["endpoint"])
     )
     result = get_endpoint_info(client, args)
     assert isinstance(result.outputs[0]["agent_guid"], str)

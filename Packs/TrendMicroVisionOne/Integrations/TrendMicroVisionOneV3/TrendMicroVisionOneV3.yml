@@ -316,8 +316,8 @@ script:
       description: Count of total items present in suspicious object list.
       type: number
   - arguments:
-    - description: 'A dictionary object with key/value used to create a query string. e.g. fields=`{"endpointName":"test-endpoint1", "ip":"52.72.139.96"}`. For complete list of keys check (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1eiqs~1endpoints/get).'
-      name: fields
+    - description: 'A dictionary object with key/value used to create a query string. e.g. endpoint=`{"endpointName":"test-endpoint1", "ip":"52.72.139.96"}`. For complete list of keys check (https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1eiqs~1endpoints/get).'
+      name: endpoint
       required: true
     - description: "Operator used to build request header query that allows you to retrieve a subset of the collected endpoint(s). e.g. query_op=or."
       name: query_op

@@ -825,7 +825,7 @@ def get_endpoint_info(
     :rtype: ``dict`
     """
     # Required Params
-    fields = json.loads(args.get(FIELDS, EMPTY_STRING))
+    endpoint = json.loads(args.get(ENDPOINT, EMPTY_STRING))
     query_op = args.get(QUERY_OP, EMPTY_STRING)
     new_endpoint_data: list[Any] = []
     message: list[dict[str, Any]] = []
@@ -841,7 +841,7 @@ def get_endpoint_info(
                 endpoint_data
             ),
             op=query_op,
-            **fields,
+            **endpoint,
         )
     except Exception as e:
         raise RuntimeError(f"Something went wrong while fetching endpoint data: {e}")
@@ -850,7 +850,7 @@ def get_endpoint_info(
         message.append(endpoint.model_dump())
     # Check if endpoint(s) returned
     if len(message) == 0:
-        err_msg = f"No endpoint found. Please check endpoint: {fields} and query_op: {query_op}."
+        err_msg = f"No endpoint found. Please check endpoint: {endpoint} and query_op: {query_op}."
         return_error(message=err_msg)
 
     return CommandResults(
