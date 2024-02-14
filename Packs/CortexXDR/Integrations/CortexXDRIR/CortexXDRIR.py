@@ -321,14 +321,14 @@ class Client(CoreClient):
         """
         demisto.debug('beginning get_multiple_incidents_extra_data')
         request_data = {
-            "filters": [{"field": "incident_id_list", "operator": "in", "value": [incident_id_list]}],
+            "filters": [{"field": "incident_id_list", "operator": "in", "value": incident_id_list}],
             "fields_to_exclude": ["network_artifacts"] 
         }
 
         reply = self._http_request(
             method='POST',
-            url_suffix='/public_api/v1/incidents/get_multiple_incidents_extra_data/',
-            json_data={"lcaas_id": "9999029423586", 'request_data': request_data},
+            url_suffix='/incidents/get_multiple_incidents_extra_data/',
+            json_data={'request_data': request_data},
             headers=self.headers,
             timeout=self.timeout,
 
@@ -443,9 +443,10 @@ def check_using_upgraded_api_incidents_extra_data(client, incident_id: str):
     demisto.debug(f"check if get_multiple_incidents_extra_data API for incident {incident_id} can be used:")
     IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET = True
     try:
-        raw_incident: dict = client.get_multiple_incidents_extra_data(incident_id)
-        demisto.debug(f"Using get_multiple_incidents_extra_data API for incident {incident_id}.")
-        ALERTS_LIMIT_PER_INCIDENTS = int(raw_incident.get('replay', {}).get('number_in_config'))
+        raw_incident: dict = client.get_multiple_incidents_extra_data([incident_id])
+        ALERTS_LIMIT_PER_INCIDENTS = int(raw_incident.get('replay', {}).get('alerts_limit_per_incident', 50))
+        demisto.debug(f"Using get_multiple_incidents_extra_data API for incident {incident_id}.\
+            'ALERTS_LIMIT_PER_INCIDENTS: {ALERTS_LIMIT_PER_INCIDENTS}")
         UPGRADED_GET_EXTRA_DATA = True
     except Exception as err:
         if err.res.status_code == 500:  # type: ignore
@@ -455,7 +456,7 @@ def check_using_upgraded_api_incidents_extra_data(client, incident_id: str):
 
 def get_incident_extra_data_command(client, args):
     global IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET, UPGRADED_GET_EXTRA_DATA
-    list_incidents_ids = args.get('list_incidents_ids')
+    list_incidents_ids = args.get('list_incidents_ids') or [args.get('incident_id')]
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
@@ -471,13 +472,11 @@ def get_incident_extra_data_command(client, args):
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
     raw_multiple_incident : Dict[str, Any]= {}
     if not IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET:
-        demisto.debug('IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET')
         check_using_upgraded_api_incidents_extra_data(client, incident_id)
         if UPGRADED_GET_EXTRA_DATA:
-            raw_multiple_incident = client.get_multiple_incidents_extra_data(list_incidents_ids)\
-                .get('replay', {}).get('incidents', {})
+            raw_multiple_incident = client.get_multiple_incidents_extra_data(list_incidents_ids)
         
-    raw_incident = raw_multiple_incident if (UPGRADED_GET_EXTRA_DATA and\
+    raw_incident = raw_multiple_incident.get('replay', {}).get('incidents', {}) if (UPGRADED_GET_EXTRA_DATA and\
         raw_multiple_incident.get('incident', {}).get('alerts_count', 0) < ALERTS_LIMIT_PER_INCIDENTS) \
             else client.get_incident_extra_data(incident_id, alerts_limit)
 
@@ -870,8 +869,8 @@ def create_incidents_dictionary(incidents_data: List[Dict[str, Any]]) -> Dict[st
         users = incident_data.get('incident', {}).get('users')
         incident_sources = incident_data.get('incident', {}).get('incident_sources')
         alerts = incident_data.get('alerts', {}).get('data')
-        file_artifacts = incident_data.get('file_artifacts', []).get('data')
-        network_artifacts = incident_data.get('network_artifacts', []).get('data')
+        file_artifacts = incident_data.get('file_artifacts', {}).get('data')
+        network_artifacts = incident_data.get('network_artifacts', {}).get('data')
         result[incident_id] = {
             'incident': incident_data.get('incident', {}),
             'hosts': hosts,
