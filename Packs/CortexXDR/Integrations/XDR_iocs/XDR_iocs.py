@@ -253,7 +253,7 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
-def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool, XSOARtenant: str = '') -> list[str] | None:
+def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> list[str] | None:
     if comment_field_name == 'comments':
         if comments_as_tags:
             raise DemistoException("When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)."
@@ -271,7 +271,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
         # parse indicator link into tags
         raw_id = ioc.get('id')
         if raw_id:
-            return f'https://{XSOARtenant}/#/indicator/{raw_id}'.split(",")
+            return f'https://{demisto.demistoUrls()}/#/indicator/{raw_id}'.split(",")
         else:
             return None
 
@@ -300,7 +300,7 @@ def demisto_ioc_to_xdr(ioc: dict, XSOARtenant: str = '') -> dict:
         if vendors := demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {})):
             xdr_ioc['vendors'] = vendors
         if (comment := _parse_demisto_comments(ioc=ioc, comment_field_name=Client.xsoar_comments_field,
-                                               comments_as_tags=Client.comments_as_tags, XSOARtenant=XSOARtenant)):
+                                               comments_as_tags=Client.comments_as_tags)):
             xdr_ioc['comment'] = comment
 
         custom_fields = ioc.get('CustomFields', {})
@@ -448,7 +448,7 @@ def tim_insert_jsons(client: Client):
     else:
         demisto.info("pushing IOCs to XDR: did not get indicators, will use recently-modified IOCs")
         iocs = get_last_iocs()
-    XSOARtenant = client.http_request(url_suffix='tenant')['tenant']
+    XSOARtenant = demisto.demistoUrls()
     validation_errors = []
     if iocs:
         path = 'tim_insert_jsons/'
@@ -456,7 +456,7 @@ def tim_insert_jsons(client: Client):
         for i, single_batch_iocs in enumerate(batch_iocs(iocs)):
             demisto.debug(f'pushing IOCs to XDR: batch #{i} with {len(single_batch_iocs)} IOCs')
             requests_kwargs: dict = get_requests_kwargs(_json=list(
-                map(demisto_ioc_to_xdr, single_batch_iocs, client._base_url, XSOARtenant)), validate=True)
+                map(demisto_ioc_to_xdr, single_batch_iocs, XSOARtenant)), validate=True)
             response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
             validation_errors.extend(response.get('reply', {}).get('validation_errors'))
     else:
@@ -743,6 +743,7 @@ def validate_fix_severity_value(severity: str, indicator_value: str | None = Non
 
 def main():  # pragma: no cover
     params = demisto.params()
+    
     # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
     Client.severity = params.get('severity', '')
     Client.override_severity = argToBoolean(params.get('override_severity', True))
