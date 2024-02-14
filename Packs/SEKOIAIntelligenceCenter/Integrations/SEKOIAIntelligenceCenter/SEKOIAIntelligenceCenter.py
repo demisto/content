@@ -166,17 +166,11 @@ def extract_indicator_from_pattern(stix_object: dict) -> str:
     return item[0][2].strip("'")
 
 
-def extract_file_indicator_hashes(stix_object: str | None) -> dict:
+def extract_file_indicator_hashes(pattern_str: str) -> dict:
     """
     Extract hashes composing the STIX indicator pattern
     """
     hashes = {"sha512": "", "sha256": "", "sha1": "", "md5": ""}
-    pattern_str = stix_object.get('pattern')
-    if not pattern_str:
-        indicator_value = stix_object['name']
-        indicator_type = detect_file_indicator_type(indicator_value)
-        hashes[indicator_type] = indicator_value
-        return hashes
 
     # Remove enclosing brackets
     pattern_str = pattern_str.strip("[]")
@@ -288,14 +282,17 @@ def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reli
     Return stix_object of type file as indicator
     """
 
-    hashes = extract_file_indicator_hashes(stix_object)
+    if is_unknown:
+        return create_indicator_result_with_dbotscore_unknown(stix_object["name"], DBotScoreType.FILE, reliability_score)
+
+    hashes = extract_file_indicator_hashes(stix_object.get('pattern'))
+
     dbot_score = Common.DBotScore(
         indicator=hashes["md5"],
         indicator_type=DBotScoreType.FILE,
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
-        message='No results found.' if is_unknown else None
     )
 
     file = Common.File(
@@ -310,7 +307,7 @@ def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reli
     return CommandResults(
         outputs_prefix="SEKOIAIntelligenceCenter.File",
         outputs_key_field="name",
-        outputs=None if is_unknown else stix_object,
+        outputs=stix_object,
         indicator=file
     )
 
