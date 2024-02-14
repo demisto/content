@@ -1,8 +1,9 @@
 id: FireEye HX - Unisolate Endpoint
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: FireEye HX - Unisolate Endpoint
-description: This playbook unisolates endpoints according to the hostname/endpoint ID
- that is provided by the playbook input. 
+description: This playbook unisolates endpoints according to the hostname/endpoint ID that is provided by the playbook input.
 starttaskid: "0"
 tasks:
   "0":
@@ -20,6 +21,7 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -32,16 +34,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ab68d1ee-311c-4764-8310-8f99ec553bbb
+    taskid: 3fc6273a-681f-48d3-8ebf-c00264e308da
     type: condition
     task:
-      id: ab68d1ee-311c-4764-8310-8f99ec553bbb
+      id: 3fc6273a-681f-48d3-8ebf-c00264e308da
       version: -1
       name: Is FireEye HX enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -53,15 +56,16 @@ tasks:
       - "3"
     scriptarguments:
       brandname:
-        simple: FireEye HX
+        simple: FireEyeHX v2
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 320
+          "y": 270
         }
       }
     note: false
@@ -69,6 +73,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: e71526df-a0d8-4667-81a8-f3140088de36
@@ -82,11 +88,12 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 1850
+          "y": 1110
         }
       }
     note: false
@@ -94,6 +101,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 4e4554cf-b587-4ea1-8ac4-ee6643181534
@@ -120,11 +129,12 @@ tasks:
             value:
               simple: inputs.Endpoint_id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 520
+          "x": 680,
+          "y": 440
         }
       }
     note: false
@@ -132,6 +142,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 2b845f80-6c59-4b53-8303-3880b8cb0fd1
@@ -153,13 +165,14 @@ tasks:
         simple: ${inputs.Endpoint_id}
       hostName:
         simple: ${inputs.Hostname}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 780
+          "x": 870,
+          "y": 610
         }
       }
     note: false
@@ -167,6 +180,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 667d15ac-52d9-4736-89bd-7f4dee7a9f82
@@ -196,11 +211,12 @@ tasks:
           right:
             value:
               simple: contained
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 970
+          "x": 870,
+          "y": 770
         }
       }
     note: false
@@ -208,6 +224,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: a97aa654-3e95-4d67-8547-d5a339d586c2
@@ -230,11 +248,12 @@ tasks:
       hostName:
         simple: ${inputs.Hostname}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 1370
+          "x": 1080,
+          "y": 940
         }
       }
     note: false
@@ -242,17 +261,20 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "1_2_no": 0.73,
-      "3_2_#default#": 0.22,
-      "5_2_#default#": 0.39
+      "1_2_no": 0.18,
+      "3_2_#default#": 0.11,
+      "5_2_#default#": 0.23
     },
     "paper": {
       "dimensions": {
-        "height": 1775,
-        "width": 990,
+        "height": 1035,
+        "width": 1010,
         "x": 450,
         "y": 140
       }
@@ -265,8 +287,7 @@ inputs:
   description: The endpoint ID/device ID that you want to unisolate.
   playbookInputQuery:
 - key: Hostname
-  value:
-    simple:
+  value: {}
   required: false
   description: The hostname that you want to unisolate.
   playbookInputQuery:
