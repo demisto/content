@@ -4,12 +4,12 @@ filter _raw_log ~= "{.*\"APPLICATION_NAME\":"
 | alter
         DESTINATION_IP = json_extract_scalar(json_content, "$.DESTINATION_IP"),
         ENDPOINT_USERNAME = json_extract_scalar(json_content, "$.ENDPOINT_USERNAME"),
-        MACHINE_IP = json_extract_scalar(json_content, "$.ENDPOINT_USERNAME"),
+        MACHINE_IP = json_extract_scalar(json_content, "$.MACHINE_IP"),
         SEVERITY = json_extract_scalar(json_content, "$.SEVERITY")
 | alter
         xdm.source.application.name = json_extract_scalar(json_content, "$.APPLICATION_NAME"),
         xdm.intermediate.user.username = json_extract_scalar(json_content, "$.APPLICATION_USER"),
-        xdm.target.file.filename = json_extract_scalar(json_content, "$.ATTACHMENT_FILENAME"),
+        xdm.target.file.filename = json_extract_scalar(json_content, "$.FILE_NAME"),
         xdm.target.file.path = json_extract_scalar(json_content, "$.PATH"),
         xdm.target.file.directory = json_extract_scalar(json_content, "$.PARENT_PATH"),
         xdm.observer.action = json_extract_scalar(json_content, "$.BLOCKED"),
