@@ -49,4 +49,4 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
           echo "Add a comment"
-          gh pr comment "$PR_URL" --body "Thank you for your contribution. Your external PR has been merged and the changes are now included in an internal PR for further review. The internal PR will be merged within 3 business days."
+          gh pr comment "$PR_URL" --body "Thank you for your contribution. Your external PR has been merged and the changes are now included in an internal PR for further review. The internal PR will be merged to the master branch within 3 business days."
