@@ -246,15 +246,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: e5d73a46-72d1-4e69-854e-3e28963904ff
+    taskid: 7f5e247a-d7ab-4b77-8152-a951cfddbf7d
     type: condition
     task:
-      id: e5d73a46-72d1-4e69-854e-3e28963904ff
+      id: 7f5e247a-d7ab-4b77-8152-a951cfddbf7d
       version: -1
-      name: Is there any file path to retrieve?
+      name: Is there an endpoint and a file path to retrieve?
       type: condition
       iscommand: false
-      description: ''
+      description: 'Checks whether there is at least one endpoint ID and one file path for the file to retrieve.'
       brand: ""
     nexttasks:
       '#default#':
@@ -286,6 +286,11 @@ tasks:
           left:
             value:
               simple: inputs.mac_file_paths
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.endpoint_ids
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -358,7 +363,7 @@ view: |-
 inputs:
 - key: endpoint_ids
   value: {}
-  required: true
+  required: false
   description: A comma-separated list of endpoint IDs.
   playbookInputQuery:
 - key: file_path
@@ -418,5 +423,6 @@ outputs:
   description: The file type, as determined by libmagic (same as displayed in the file entries).
   type: String
 tests:
-- No tests
+- no tests
 fromversion: 6.10.0
+system: true

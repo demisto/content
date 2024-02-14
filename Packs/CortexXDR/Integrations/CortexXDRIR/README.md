@@ -65,6 +65,15 @@ and an analyst is assigned for manual investigation. If chosen, automated remedi
 with Palo Alto Networks FireWall is initiated. After a manual review by the
 SOC analyst, the XDR incident is closed automatically.
 
+To utilize this playbook for handling XDR incidents, the classifier that should be selected is `Cortex XDR - Classifier`.
+The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the selected Mapper (outgoing) should be Cortex `XDR - Outgoing Mapper`.
+
+#### Cortex XDR Lite - Incident Handling
+
+This playbook is a lite default playbook to handle XDR incidents, and it doesn't require additional integrations to run. The playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident. First, the playbook performs enrichment on the incident’s indicators. Then, the playbook performs investigation and analysis on the command line and searches for related Cortex XDR alerts by Mitre tactics to identify malicious activity performed on the endpoint and by the user. Based on the enrichment and the investigation results, the playbooks sets the verdict of the incident. If malicious indicators are found, the playbook takes action to block these indicators and isolate the affected endpoint to prevent further damage or the spread of threats. If the verdict is not determined, it lets the analyst decide whether to continue to the remediation stage or close the investigation as benign. As part of this playbook, you'll receive a comprehensive layout that presents incident details, analysis, investigation findings, and the final verdict. Additionally, the layout offers convenient remediation buttons for quicker manual actions.
+
+To utilize this playbook for handling XDR incidents, the classifier should be empty, and the selected incident type should be `Cortex XDR - Lite`.
+The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the selected Mapper (outgoing) should be Cortex `XDR - Outgoing Mapper`.
 
 ## Use Cases
 
@@ -225,12 +234,9 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | PaloAltoNetworksXDR.Incident.alert_count | number | Total number of alerts in the incident. | 
 | PaloAltoNetworksXDR.Incident.med_severity_alert_count | number | Number of alerts with the severity MEDIUM. | 
 | PaloAltoNetworksXDR.Incident.user_count | number | Number of users involved in the incident. | 
-| PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Valid values are:
-"low","medium","high"
- | 
+| PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Valid values are: "low","medium","high" | 
 | PaloAltoNetworksXDR.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
- | 
+| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".  | 
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. | 
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
 | PaloAltoNetworksXDR.Incident.notes | String | Comments entered by the user regarding the incident. | 

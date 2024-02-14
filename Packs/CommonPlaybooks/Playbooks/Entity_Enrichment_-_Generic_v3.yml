@@ -92,6 +92,8 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
+      ExecutedFromParent:
+        simple: "True"
       IP:
         complex:
           root: inputs.IP
@@ -105,6 +107,12 @@ tasks:
       ResolveIP:
         complex:
           root: inputs.ResolveIP
+      UseReputationCommand:
+        simple: ${inputs.UseReputationCommand}
+      extended_data:
+        simple: "False"
+      threat_model_association:
+        simple: "False"
     separatecontext: true
     loop:
       iscommand: false
@@ -158,6 +166,8 @@ tasks:
           root: inputs.SHA256
           transformers:
           - operator: uniq
+      UseReputationCommand:
+        simple: ${inputs.UseReputationCommand}
     separatecontext: true
     loop:
       iscommand: false
@@ -211,11 +221,11 @@ tasks:
           root: inputs.URL
           transformers:
           - operator: uniq
+      UseReputationCommand:
+        simple: ${inputs.UseReputationCommand}
       VerifyURL:
         complex:
           root: inputs.URLSSLVerification
-      UseReputationCommand:
-        simple: "False"
     separatecontext: true
     loop:
       iscommand: false
@@ -262,6 +272,8 @@ tasks:
           root: inputs.Domain
           transformers:
           - operator: uniq
+      UseReputationCommand:
+        simple: ${inputs.UseReputationCommand}
     separatecontext: true
     loop:
       iscommand: false
@@ -316,6 +328,8 @@ tasks:
           root: inputs.InternalDomains
           transformers:
           - operator: uniq
+      UseReputationCommand:
+        simple: ${inputs.UseReputationCommand}
     separatecontext: true
     loop:
       iscommand: false
@@ -603,6 +617,12 @@ inputs:
   description: |-
     Whether to verify SSL certificates for URLs.
     Can be True or False.
+  playbookInputQuery:
+- key: UseReputationCommand
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the reputation command on the indicator.
   playbookInputQuery:
 outputs:
 - contextPath: IP
