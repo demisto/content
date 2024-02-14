@@ -4,7 +4,7 @@ import hashlib
 import secrets
 import string
 from itertools import zip_longest
-
+a = "test"
 from CoreIRApiModule import *
 
 # Disable insecure warnings
