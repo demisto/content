@@ -14,11 +14,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * FireEye HX - Unisolate Endpoint
-* Unisolate Endpoint - Cybereason
-* Carbon Black Response - Unisolate Endpoint
+* Cortex XDR - Unisolate Endpoint
 * Crowdstrike Falcon - Unisolate Endpoint
 * Microsoft Defender For Endpoint - Unisolate Endpoint
-* Cortex XDR - Unisolate Endpoint
+* Unisolate Endpoint - Cybereason
+* Carbon Black Response - Unisolate Endpoint
 
 ### Integrations
 
@@ -40,7 +40,7 @@ This playbook does not use any commands.
 | --- | --- | --- | --- |
 | Endpoint_ID | The endpoint ID/device ID/sensor ID/agent ID that you want to unisolate. |  | Optional |
 | Hostname | The host name of the endpoint to unisolate \(using Cybereason or FireEyeHX\). |  | Optional |
-| IP | IP address of the endpoint to unisolate. |  | Optional |
+| IP | IP address of the endpoint to unisolate. \(using Defender or XDR\) |  | Optional |
 
 ## Playbook Outputs
 
