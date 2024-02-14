@@ -285,7 +285,7 @@ def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reli
     if is_unknown:
         return create_indicator_result_with_dbotscore_unknown(stix_object["name"], DBotScoreType.FILE, reliability_score)
 
-    hashes = extract_file_indicator_hashes(stix_object.get('pattern'))
+    hashes = extract_file_indicator_hashes(stix_object['pattern'])
 
     dbot_score = Common.DBotScore(
         indicator=hashes["md5"],
