@@ -827,7 +827,7 @@ def test_check_using_upgraded_api_incidents_extra_data_success(mocker):
     mocker.patch.object(client, '_http_request', return_value=http_response)
 
     CortexXDRIR.check_using_upgraded_api_incidents_extra_data(client, incident_id)
-    assert CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS == 10
+    assert CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS == 50
     assert CortexXDRIR.UPGRADED_GET_EXTRA_DATA
 
 
@@ -855,7 +855,6 @@ def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock, mo
         message="The server encountered an internal error", res=MockException(500)
     ))
     check_using_upgraded_api_incidents_extra_data(client, '1')
-    
 
 
 @freeze_time("1997-10-05 15:00:00 GMT")
