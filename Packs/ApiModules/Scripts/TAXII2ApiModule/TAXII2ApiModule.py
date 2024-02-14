@@ -1362,12 +1362,13 @@ class Taxii2FeedClient:
         ioc_obj_copy = copy.deepcopy(indicator_obj)
         ioc_obj_copy["value"] = value
         ioc_obj_copy["type"] = type_
+
         indicator = {
             "value": value,
             "type": type_,
             "rawJSON": ioc_obj_copy,
         }
-        fields = {}
+        fields = self.set_default_fields(indicator_obj)
         tags = list(self.tags)
         # create tags from labels:
         for label in ioc_obj_copy.get("labels", []):
@@ -1401,6 +1402,7 @@ class Taxii2FeedClient:
                 tags.append(field_tag)
 
         fields["tags"] = list(set(tags))
+        fields["publications"] = self.get_indicator_publication(indicator_obj)
 
         indicator["fields"] = fields
         return indicator
