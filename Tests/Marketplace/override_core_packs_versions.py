@@ -26,7 +26,6 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
 
     Returns True if a file should be updated and False otherwise.
     """
-    logging.info('inside')
     override_corepacks_server_version = GCPConfig.corepacks_override_contents.get('server_version')
         
     override_marketplaces = list(GCPConfig.corepacks_override_contents.get('updated_corepacks_content', {}).keys())

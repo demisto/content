@@ -4,6 +4,7 @@ if [[ -z "$3" ]]; then
   MARKETPLACE_TYPE="xsoar"  # The default is "marketplace-dist"
 else
   MARKETPLACE_TYPE=$3
+fi
 
 GCS_BUILD_BUCKET="marketplace-ci-build"
 BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID$STAGING_SUFFIX/$MARKETPLACE_TYPE"
@@ -34,4 +35,3 @@ else
 fi
 
 echo "Finished updating content packs successfully."
-
