@@ -56,9 +56,6 @@ merge-dev-secrets:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - section_start "Merging and deleting dev secrets"
-    - echo "==== Testing ====="
-    - echo "The commit title is - ${CI_COMMIT_TITLE}"
-    - echo $CI_COMMIT_TITLE
     - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> "${ARTIFACTS_FOLDER}/logs/merge_secrets.log" 2>&1 || EXIT_CODE=$?
     - job-done
     - exit $EXIT_CODE

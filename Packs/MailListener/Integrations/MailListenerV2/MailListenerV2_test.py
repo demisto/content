@@ -597,3 +597,63 @@ def test_replace_spaces_in_credentials(input_credentials, output_credentials):
     import json
 
     assert (json.dumps(replace_spaces_in_credentials(input_credentials)) == json.dumps(output_credentials))
+
+
+def test_fetch_incidents_last_uid_as_int(mocker):
+    """
+    Given:
+        - A mock client and last run with 'last_uid' as an integer - 8
+    When:
+        - Fetching incidents
+    Then:
+        - Ensure that the "last_uid" received from the 'last_run' of previous cycles is converted to an integer.
+        Also, verify that the 'last_uid' to be written in the 'last_run' for the next cycle is a string.
+    """
+    from MailListenerV2 import fetch_incidents
+    mocker.patch('MailListenerV2.Email.convert_to_incident', return_value={})
+    fetch_mail_mocker = mocker.patch('MailListenerV2.fetch_mails', return_value=([mock_email()], [mock_email()], 5))
+
+    next_run, _ = fetch_incidents(
+        client=mocker.Mock(),
+        last_run={'last_uid': 8},
+        first_fetch_time='2022-01-01 00:00:00',
+        include_raw_body=False,
+        with_headers=False,
+        permitted_from_addresses='test@example.com',
+        permitted_from_domains='example.com',
+        delete_processed=False,
+        limit=10,
+        save_file=False
+    )
+    assert isinstance(fetch_mail_mocker.call_args[1]['uid_to_fetch_from'], int)
+    assert isinstance(next_run['last_uid'], str)
+
+
+def test_fetch_incidents_last_uid_as_string(mocker):
+    """
+    Given:
+        - A mock client and last run with 'last_uid' as a string - "8"
+    When:
+        - Fetching incidents
+    Then:
+        - Ensure that the "last_uid" received from the 'last_run' of previous cycles is converted to an integer.
+        Also, verify that the 'last_uid' to be written in the 'last_run' for the next cycle is a string.
+    """
+    from MailListenerV2 import fetch_incidents
+    mocker.patch('MailListenerV2.Email.convert_to_incident', return_value={})
+    fetch_mail_mocker = mocker.patch('MailListenerV2.fetch_mails', return_value=([mock_email()], [mock_email()], 5))
+
+    next_run, incidents = fetch_incidents(
+        client=mocker.Mock(),
+        last_run={'last_uid': "8"},
+        first_fetch_time='2022-01-01 00:00:00',
+        include_raw_body=False,
+        with_headers=False,
+        permitted_from_addresses='test@example.com',
+        permitted_from_domains='example.com',
+        delete_processed=False,
+        limit=10,
+        save_file=False
+    )
+    assert isinstance(fetch_mail_mocker.call_args[1]['uid_to_fetch_from'], int)
+    assert isinstance(next_run['last_uid'], str)
