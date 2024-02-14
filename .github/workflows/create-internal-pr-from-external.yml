@@ -4,6 +4,9 @@ on:
     types: [closed]
     branches:
       - contrib/**
+      
+permissions:
+  pull-requests: write
 
 jobs:
   create_internal_pr:
