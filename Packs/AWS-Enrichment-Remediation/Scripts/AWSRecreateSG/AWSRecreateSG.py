@@ -138,7 +138,6 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
         if isError(new_sg):
             raise ValueError('Error on creating new security group')
         new_id = dict_safe_get(new_sg, (0, 'Contents', 'GroupId'))
-        print(f'{new_id=}')
     for item in recreate_list:
         cmd_args = {"groupId": new_id, "IpPermissionsFull": item, "using": instance_to_use}
         if assume_role:
