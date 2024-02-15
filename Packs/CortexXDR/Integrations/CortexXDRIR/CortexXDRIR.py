@@ -87,11 +87,12 @@ def create_auth(api_key):
 
 
 def clear_trailing_whitespace(res):
-    index = 0
-    while index < len(res):
-        for key, value in res[index].items():
-            if isinstance(value, str):
-                res[index][key] = value.rstrip()
+    if res:
+        index = 0
+        while index < len(res):
+            for key, value in res[index].items():
+                if value and isinstance(value, str):
+                    res[index][key] = value.rstrip()
         index += 1
     return res
 
@@ -445,8 +446,7 @@ def check_using_upgraded_api_incidents_extra_data(client, incident_id: str):
     try:
         raw_incident: dict = client.get_multiple_incidents_extra_data([incident_id])
         ALERTS_LIMIT_PER_INCIDENTS = int(raw_incident.get('replay', {}).get('alerts_limit_per_incident', 50))
-        demisto.debug(f"Using get_multiple_incidents_extra_data API for incident {incident_id}.\
-            'ALERTS_LIMIT_PER_INCIDENTS: {ALERTS_LIMIT_PER_INCIDENTS}")
+        demisto.debug(f"Using get_multiple_incidents_extra_data API. 'ALERTS_LIMIT_PER_INCIDENTS: {ALERTS_LIMIT_PER_INCIDENTS}")
         UPGRADED_GET_EXTRA_DATA = True
     except Exception as err:
         if err.res.status_code == 500:  # type: ignore
@@ -456,7 +456,6 @@ def check_using_upgraded_api_incidents_extra_data(client, incident_id: str):
 
 def get_incident_extra_data_command(client, args):
     global IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET, UPGRADED_GET_EXTRA_DATA
-    list_incidents_ids = args.get('list_incidents_ids') or [args.get('incident_id')]
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
@@ -473,42 +472,42 @@ def get_incident_extra_data_command(client, args):
     raw_multiple_incident : Dict[str, Any]= {}
     if not IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET:
         check_using_upgraded_api_incidents_extra_data(client, incident_id)
-        if UPGRADED_GET_EXTRA_DATA:
-            raw_multiple_incident = client.get_multiple_incidents_extra_data(list_incidents_ids)
-        
-    raw_incident = raw_multiple_incident.get('replay', {}).get('incidents', {}) if (UPGRADED_GET_EXTRA_DATA and\
-        raw_multiple_incident.get('incident', {}).get('alerts_count', 0) < ALERTS_LIMIT_PER_INCIDENTS) \
-            else client.get_incident_extra_data(incident_id, alerts_limit)
-
+    if UPGRADED_GET_EXTRA_DATA:
+        raw_multiple_incident = client.get_multiple_incidents_extra_data([incident_id]).get('reply', {})\
+            .get('incidents')[0]
+    if raw_multiple_incident.get('incident', {}).get('alert_count') < ALERTS_LIMIT_PER_INCIDENTS:
+        raw_incident = raw_multiple_incident
+    else:
+        raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
     incident = raw_incident.get('incident', {})
     incident_id = incident.get('incident_id')
-    raw_alerts = raw_incident.get('alerts', {}).get('data')
-    context_alerts = clear_trailing_whitespace(raw_alerts)
-    for alert in context_alerts:
-        alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
+    raw_alerts = raw_incident.get('alerts', {}).get('data', None)
+    readable_output = [tableToMarkdown(f'Incident {incident_id}', incident, removeNull=True)]
     file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
     network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
-
-    readable_output = [tableToMarkdown(f'Incident {incident_id}', incident, removeNull=True)]
-
-    if len(context_alerts) > 0:
-        readable_output.append(tableToMarkdown('Alerts', context_alerts,
-                                               headers=[key for key in context_alerts[0] if key != 'host_ip'], removeNull=True ))
-    else:
-        readable_output.append(tableToMarkdown('Alerts', [], removeNull=True))
-
-    if len(network_artifacts) > 0:
+    if not UPGRADED_GET_EXTRA_DATA:
+        context_alerts = clear_trailing_whitespace(raw_alerts)
+        if context_alerts:
+            for alert in context_alerts:
+                alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
+            if len(context_alerts) > 0:
+                readable_output.append(tableToMarkdown('Alerts', context_alerts,
+                                                   headers=[key for key in context_alerts[0] if key != 'host_ip'], removeNull=True ))
+        else:
+            readable_output.append(tableToMarkdown('Alerts', raw_alerts, removeNull=True))
+    elif raw_alerts and len(raw_alerts) > 0:
+        readable_output.append(tableToMarkdown('Alerts', raw_alerts, removeNull=True))
+    if network_artifacts and len(network_artifacts) > 0:
         readable_output.append(tableToMarkdown('Network Artifacts', network_artifacts, removeNull=True))
     else:
         readable_output.append(tableToMarkdown('Network Artifacts', [], removeNull=True))
-
-    if len(file_artifacts) > 0:
+    if file_artifacts and len(file_artifacts) > 0:
         readable_output.append(tableToMarkdown('File Artifacts', file_artifacts, removeNull=True))
     else:
         readable_output.append(tableToMarkdown('File Artifacts', [], removeNull=True))
 
     incident.update({
-        'alerts': context_alerts,
+        'alerts': raw_alerts,
         'file_artifacts': file_artifacts,
         'network_artifacts': network_artifacts
     })
@@ -937,8 +936,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             incident_id = raw_incident.get('incident_id')
             incident_data: dict[str, Any] = {}
             if UPGRADED_GET_EXTRA_DATA and int(incident_data_dict.get\
-                (incident_id, {}).get('incident', {}).get('alerts_count', 0)) < ALERTS_LIMIT_PER_INCIDENTS:
-                
+                (incident_id, {}).get('incident', {}).get('alert_count')) < ALERTS_LIMIT_PER_INCIDENTS:
                 incident_data = incident_data_dict.get(incident_id, {})
             else:
                 incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
