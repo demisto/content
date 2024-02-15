@@ -1,4 +1,7 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 from typing import Dict, Any
 import logging
 from datetime import datetime
@@ -69,8 +72,9 @@ class Client(BaseClient):
         return response
 
     def get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(self, filter_='', page_size=None, page_number=None,
-                                                                   subtenant=None):
-        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, subtenant=subtenant)
+                                                                   subtenant=None, subject=None, sender=None, recipient=None, reporter=None, attackType=None, threatType=None):
+        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, subtenant=subtenant, subject=subject,
+                               sender=sender, recipient=recipient, reporter=reporter, attackType=attackType, threatType=threatType)
 
         headers = self._headers
 
@@ -78,8 +82,9 @@ class Client(BaseClient):
 
         return response
 
-    def get_a_list_of_threats_request(self, filter_='', page_size=None, page_number=None, source=None, subtenant=None):
-        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, source=source, subtenant=subtenant)
+    def get_a_list_of_threats_request(self, filter_='', page_size=None, page_number=None, source=None, subtenant=None, subject=None, sender=None, recipient=None, topic=None, attackType=None, attackVector=None):
+        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, source=source, subtenant=subtenant,
+                               subject=subject, sender=sender, recipient=recipient, topic=topic, attackType=attackType, attackVector=attackVector)
 
         headers = self._headers
 
@@ -335,8 +340,15 @@ def get_a_list_of_campaigns_submitted_to_abuse_mailbox_command(client, args):
     page_size = args.get('page_size', None)
     page_number = args.get('page_number', None)
     subtenant = args.get('subtenant', None)
+    subject = args.get('subject', None)
+    sender = args.get('sender', None)
+    recipient = args.get('recipient', None)
+    reporter = args.get('reporter', None)
+    attackType = args.get('attackType', None)
+    threatType = args.get('threatType', None)
 
-    response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(filter_, page_size, page_number, subtenant)
+    response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
+        filter_, page_size, page_number, subtenant, subject, sender, recipient, reporter, attackType, threatType)
     markdown = tableToMarkdown('Campaign IDs', response.get('campaigns', []), headers=['campaignId'], removeNull=True)
 
     command_results = CommandResults(
@@ -356,8 +368,15 @@ def get_a_list_of_threats_command(client, args):
     page_number = args.get('page_number', None)
     source = str(args.get('source', ''))
     subtenant = args.get('subtenant', None)
+    subject = args.get('subject', None)
+    sender = args.get('sender', None)
+    recipient = args.get('recipient', None)
+    topic = args.get('topic', None)
+    attackType = args.get('attackType', None)
+    attackVector = args.get('attackVector', None)
 
-    response = client.get_a_list_of_threats_request(filter_, page_size, page_number, source, subtenant)
+    response = client.get_a_list_of_threats_request(
+        filter_, page_size, page_number, source, subtenant, subject, sender, recipient, topic, attackType, attackVector)
     markdown = tableToMarkdown('Threat IDs', response.get('threats'), headers=['threatId'], removeNull=True)
     command_results = CommandResults(
         readable_output=markdown,
@@ -455,7 +474,7 @@ def get_details_of_an_abuse_mailbox_campaign_command(client, args):
 
     response = client.get_details_of_an_abuse_mailbox_campaign_request(campaign_id, subtenant)
     command_results = CommandResults(
-        outputs_prefix='AbnormalSecurity.AbuseCampaign.campaigns',
+        outputs_prefix='AbnormalSecurity.AbuseCampaign',
         outputs_key_field='campaignId',
         outputs=response,
         raw_response=response
