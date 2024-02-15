@@ -1043,7 +1043,7 @@ tasks:
       to:
         simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - Resource Remediation
+        simple: Cloud Response - GCP - Resource Remediation
       body:
         simple: Analyst interaction is needed for the resource remediation.
       methods:
@@ -1219,7 +1219,7 @@ tasks:
       to:
         simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - User Remediation
+        simple: Cloud Response - GCP - User Remediation
       body:
         simple: Analyst interaction is needed for the user remediation.
       methods:
@@ -1338,7 +1338,7 @@ tasks:
       to:
         simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - Access Key Remediation
+        simple: Cloud Response - GCP - Access Key Remediation
       body:
         simple: Analyst interaction is needed for the user's access key remediation.
       methods:
@@ -1592,9 +1592,9 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst,Read-Only
+        simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - Block Indicators
+        simple: Cloud Response - GCP - Block Indicators
       body:
         simple: Analyst interaction is needed for the indicators remediation.
       methods:
@@ -1785,7 +1785,7 @@ tasks:
       '#default#':
       - "50"
       "yes":
-      - "49"
+      - "51"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1811,55 +1811,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
-    taskid: c48218de-5d85-42d3-82d3-b87162484d24
-    type: regular
-    task:
-      id: c48218de-5d85-42d3-82d3-b87162484d24
-      version: -1
-      name: Extract project name
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "51"
-    scriptarguments:
-      key:
-        simple: projectName
-      value:
-        complex:
-          root: alertJson._all_events
-          accessor: identity_name
-          transformers:
-          - operator: RegexGroups
-            args:
-              flags: {}
-              groups: {}
-              keys: {}
-              regex:
-                value:
-                  simple: projects\/([a-zA-Z0-9]+)
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1050,
-          "y": 1015
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1921,7 +1872,7 @@ tasks:
       key:
         simple: username
       value:
-        simple: projects/${projectName}/serviceAccount/${inputs.username}
+        simple: projects/${inputs.GCPprojectID}/serviceAccount/${inputs.username}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2047,6 +1998,17 @@ inputs:
   required: false
   description: The source IP address of the attacker.
   playbookInputQuery:
+- description: "The GCP Project ID. Will be used for handling service accound"
+  key: GCPprojectID
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: "Determine the account type you are dealing with: User / Service Account. Default User"
+  key: accountType
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
 outputs: []
 tests:
 - No tests (auto formatted)
