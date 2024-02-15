@@ -35,7 +35,8 @@ class Client(BaseClient):
            use_https (bool): Whether to use HTTPS URL or HTTP URL.
    """
 
-    def __init__(self, proxy: bool, verify: bool, fetch_interval_hours: str, use_https: str, reliability: str, username: str):
+    def __init__(self, proxy: bool, verify: bool, fetch_interval_hours: str, use_https: str, reliability: str,
+                 username: str = ''):
         super().__init__(proxy=proxy, verify=verify, base_url=HTTPS_BASE_URL if use_https else BASE_URL)
         self.fetch_interval_hours = fetch_interval_hours
         self.username = username
