@@ -90,6 +90,8 @@ run-unittests-and-lint:
       when: never
     - if: '$BUILD_MACHINES_CLEANUP == "true"'
       when: never
+    - if: '$SDK_RELEASE == "true"'
+      when: never
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
       when: never
     - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
