@@ -14,8 +14,8 @@ args:
   secret: true
 - description: A comma-separated list of fields to hash. Supports wildcard "*".
   name: fieldsToHash
-- defaultValue: id,score,investigationIDs
-  description: A comma-separated list of fields in the object to poplulate. Defaults are id, score, and investigationIDs.
+- defaultValue: id,value,score,investigationsCount,indicator_type
+  description: A comma-separated list of fields in the object to populate. Defaults are id,value,score,investigationsCount (RelatedIncCount),indicator_type. Set to "ALL" to receive all fields.
   name: populateFields
 comment: Gets a list of indicator objects and the associated indicator outputs that match the specified query and filters. The results are returned in a structured data file.
 commonfields:
@@ -29,7 +29,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.13.87159
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
