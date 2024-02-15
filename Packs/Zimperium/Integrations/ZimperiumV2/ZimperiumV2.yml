@@ -849,6 +849,9 @@ script:
     name: zimperium-get-cves-by-device
     outputs:
     - contextPath: Zimperium.CVEByDevice.id
+      description: The ID of the CVE.
+      type: String
+    - contextPath: Zimperium.CVEByDevice.deviceId
       description: The ID of the device.
       type: String
     - contextPath: Zimperium.CVEByDevice.activeExploit

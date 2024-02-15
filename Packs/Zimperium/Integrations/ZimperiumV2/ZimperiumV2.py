@@ -468,6 +468,7 @@ def report_get_command(client: Client, args: dict) -> CommandResults:
 
     scan_details = response.get('report', {}).get('scanDetails')
     if importance != 'All':
+        # changing the list in place (in the response dict)
         scan_details[:] = [entry for entry in scan_details if entry["importance"] == importance]
 
     hr = tableToMarkdown(name='Report', t=scan_details,
@@ -668,14 +669,16 @@ def get_cves_by_device_command(client: Client, args: dict) -> CommandResults:
 
     response = client.cve_devices_get(size=size, page=page, device_id=device_id)
 
+    for item in response.get('content', []):
+        item['deviceId'] = device_id
+
     hr = tableToMarkdown(name=f'CVE on Device {device_id}', t=response.get('content'),
                          headers=['id', 'type', 'severity', 'url', 'activeExploit', 'exploitPocUrl'],
                          headerTransform=pascalToSpace)
 
+    contex = {'Zimperium.CVEByDevice(val.id == obj.id && val.deviceId == obj.deviceId)': response.get('content')}
     command_results = CommandResults(
-        outputs_prefix='Zimperium.CVEByDevice',
-        outputs=response.get('content'),
-        outputs_key_field='id',
+        outputs=contex,
         readable_output=hr,
         raw_response=response,
     )

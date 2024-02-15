@@ -914,14 +914,15 @@ Gets the CVEs associated with a specific device.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Zimperium.CVEByDevice.id | String | The ID of the device. | 
-| Zimperium.CVEByDevice.activeExploit | Boolean | Whether the CVE is active or not. | 
-| Zimperium.CVEByDevice.exploitPocUrl.exploitPocUrls | Unknown | The exploit POC URLs for the CVE. | 
+| **Path** | **Type** | **Description**                      |
+| --- | --- |--------------------------------------|
+| Zimperium.CVEByDevice.id | String | The ID of the CVE.                   | 
+| Zimperium.CVEByDevice.deviceId | String | The ID of the device.                | 
+| Zimperium.CVEByDevice.activeExploit | Boolean | Whether the CVE is active or not.    | 
+| Zimperium.CVEByDevice.exploitPocUrl.exploitPocUrls | Unknown | The exploit POC URLs for the CVE.    | 
 | Zimperium.CVEByDevice.severity | String | The severity of a CVE on the device. | 
-| Zimperium.CVEByDevice.type | String | The CVE type. | 
-| Zimperium.CVEByDevice.url | String | The URL of the CVE. | 
+| Zimperium.CVEByDevice.type | String | The CVE type.                        | 
+| Zimperium.CVEByDevice.url | String | The URL of the CVE.                  | 
 
 #### Command example
 ```!zimperium-get-cves-by-device device_id="2a"```
@@ -938,7 +939,8 @@ Gets the CVEs associated with a specific device.
                 "id": "CVE-2019-2173",
                 "severity": "High",
                 "type": "Elevation of privilege",
-                "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-2173"
+                "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-2173",
+                "deviceId": "2a"
             },
             {
                 "activeExploit": false,
@@ -948,7 +950,8 @@ Gets the CVEs associated with a specific device.
                 "id": "CVE-2019-2176",
                 "severity": "Critical",
                 "type": "Remote code execution",
-                "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-2176"
+                "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-2176",
+                "deviceId": "2a"
             }
         ]
     }

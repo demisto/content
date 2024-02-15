@@ -2,6 +2,7 @@
     "content": [
         {
             "id": "CVE-1",
+            "deviceId": "2a",
             "type": "remote code execution",
             "severity": "critical",
             "url": "url?name=CVE-1",
@@ -12,6 +13,7 @@
         },
         {
             "id": "CVE-2",
+            "deviceId": "2a",
             "type": "code execution w/eop",
             "severity": "critical",
             "url": "url?name=CVE-2",
@@ -22,6 +24,7 @@
         },
         {
             "id": "CVE-3",
+            "deviceId": "2a",
             "type": "code execution w/eop",
             "severity": "critical",
             "url": "url?name=CVE-3",
