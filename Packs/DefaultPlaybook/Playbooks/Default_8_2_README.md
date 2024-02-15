@@ -16,14 +16,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Extract Indicators From File - Generic v2
 * Search Endpoints By Hash - Generic V2
-* Block Indicators - Generic v3
+* Detonate URL - Generic v1.5
+* Dedup - Generic v4
 * Entity Enrichment - Generic v3
 * Get File Sample - Generic
-* Extract Indicators From File - Generic v2
-* Dedup - Generic v4
 * Calculate Severity - Generic v2
-* Detonate URL - Generic v1.5
+* Block Indicators - Generic v3
 * Detonate File - Generic
 
 ### Integrations
@@ -32,14 +32,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
 * GenerateInvestigationSummaryReport
+* Set
 
 ### Commands
 
-* setIncident
 * extractIndicators
 * closeInvestigation
+* setIncident
 
 ## Playbook Inputs
 
@@ -48,6 +48,8 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | ExtractIndicators | Determines whether indicators in this incident should be extracted manually. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise, indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook. | True | Optional |
+| AdvancedInvestigation | Whether to perform advanced actions in the incident. This overrides the ExtractIndicators input as if it was set to False.<br/><br/>Possible values are: True, False.<br/><br/>If set to False, the playbook will still perform major steps such as out-of-band indicator extraction, basic file extraction and calculating severity for the incident.<br/><br/>If set to True, advanced steps will be executed:<br/>- Getting file samples from endpoints.<br/>- Searching more endpoints by the extracted file hash.<br/>- Detonating files and URLs in sandbox integrations.<br/><br/> | False | Optional |
+| DedupSimilarIncidents | Whether to deduplicate incidents that are similar to the current incident. Can be True or False. | False | Optional |
 
 ## Playbook Outputs
 
