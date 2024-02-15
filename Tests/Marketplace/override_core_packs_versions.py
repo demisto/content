@@ -96,7 +96,8 @@ def upload_server_versions_metadata(artifacts_dir: str):
     """
     versions_metadata_path = os.path.join(artifacts_dir, GCPConfig.VERSIONS_METADATA_FILE)
     json_write(versions_metadata_path, GCPConfig.versions_metadata_contents)
-    logging.success(f"Finished copying {GCPConfig.VERSIONS_METADATA_FILE} to artifacts.")
+    logging.info(artifacts_dir)
+    logging.success(f"Finished copying {GCPConfig.VERSIONS_METADATA_FILE} to artifacts to {artifacts_dir}.")
  
 def option_handler():
     """Validates and parses script arguments.
@@ -118,7 +119,6 @@ def option_handler():
    
 def main():
     install_logging('override_core_packs.log', logger=logging)
-    logging.info("here")
     options = option_handler()
     packs_artifacts_path = options.packs_artifacts_path
     marketplace = options.marketplace
