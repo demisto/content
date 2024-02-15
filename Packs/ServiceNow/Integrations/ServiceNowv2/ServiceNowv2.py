@@ -753,7 +753,7 @@ class Client(BaseClient):
                 raise Exception(f'Error parsing reply - {res.status_code=} - {str(res.content)} - {str(err)}')
 
             if 'error' in json_res:
-                demisto.debug(f"{json_res=}")
+                demisto.debug(f"{res.status_code=}, {json_res=}")
                 logged_error_response = True
                 error = json_res.get('error', {})
                 if res.status_code == 401:
@@ -771,7 +771,7 @@ class Client(BaseClient):
 
             if res.status_code < 200 or res.status_code >= 300:
                 if not logged_error_response:
-                    demisto.debug(f"{json_res=}")
+                    demisto.debug(f"{res.status_code=}, {json_res=}")
                     logged_error_response = True
                 if res.status_code != 401 or num_of_tries == (max_retries - 1):
                     raise Exception(
