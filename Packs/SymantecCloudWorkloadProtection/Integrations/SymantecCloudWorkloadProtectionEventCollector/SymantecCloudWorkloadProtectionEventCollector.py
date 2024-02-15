@@ -110,11 +110,17 @@ class Client(BaseClient):
         self._event_request(data=data)
         self._alert_request(data=data)
 
-    def _pagination_fetch(self, request_func: Callable, last_date: str) -> list[dict]:
+    def _pagination_fetch(self, request_func: Callable[[dict], dict], last_date: str) -> list[dict]:
+
+        def unpack_and_validate_res(result=None, total=None, **kwargs) -> tuple[list, int]:
+            if not (isinstance(result, list) and isinstance(total, int)):
+                raise DemistoException(f'Unexpected response from Symantec API: {kwargs}')
+            return result, total
+
         objects = []
         end_date = datetime.now().strftime(DATE_FORMAT)
         pages = ceil(self.max_fetch / API_LIMIT)  # The minimum amount of calls needed
-        page_size = ceil(self.max_fetch / pages)  # The minimum needed per call
+        page_size = ceil(self.max_fetch / pages)  # The minimum amount of objects needed per call
         for page in range(pages):
             res = request_func(
                 {
@@ -125,20 +131,21 @@ class Client(BaseClient):
                     'order': 'ASCENDING',
                 }
             )
-            objects += res.get('result') or []
-            if res.get('total') < page_size:
+            result, total = unpack_and_validate_res(**res)
+            objects += result
+            if total < page_size:
                 break
         del objects[:self.max_fetch]
         return objects
 
     def _manage_duplicates(self, objects: list[dict], last_synchronous_ids: list, last_date: str) -> tuple[list, list]:
         ids = set(last_synchronous_ids)
-        objects = list(filter((lambda x: x['uuid'] not in ids), objects))
+        objects = [x for x in objects if x['uuid'] not in ids]
         last_synchronous_ids = [i['uuid'] for i in objects if i['time'] == last_date]
         return objects, last_synchronous_ids
 
     def _fetch_objects(
-        self, request_func: Callable, last_date: str | None = None, last_synchronous_ids: list | None = None
+        self, request_func: Callable[[dict], dict], last_date: str | None = None, last_synchronous_ids: list | None = None
     ) -> tuple[list, str, list]:
         last_date = last_date or (datetime.now() - timedelta(minutes=1)).strftime(DATE_FORMAT)
         last_synchronous_ids = last_synchronous_ids or []
@@ -147,14 +154,14 @@ class Client(BaseClient):
         objects, new_last_synchronous_ids = self._manage_duplicates(objects, last_synchronous_ids, new_last_date)
         return objects, new_last_date, new_last_synchronous_ids
 
-    def _event_request(self, data: dict):
+    def _event_request(self, data: dict) -> dict:
         return self._http_request(
             'POST',
             '/dcs-service/dcscloud/v1/event/query',
             data=data
         )
 
-    def _alert_request(self, data: dict):
+    def _alert_request(self, data: dict) -> dict:
         data['eventTypeToQuery'] = 16
         return self._http_request(
             'POST',
@@ -225,7 +232,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'fetch-events':
 
-            last_run: LastRunTypes = demisto.getLastRun() or {'events': {}, 'alerts': {}}  # type: ignore
+            last_run: LastRunTypes = demisto.getLastRun() or LastRunTypes(events={}, alerts={})  # type: ignore
             next_run = LastRunTypes(
                 events=fetch_events(client, last_run['events']),
                 alerts=fetch_alerts(client, last_run['alerts'])
