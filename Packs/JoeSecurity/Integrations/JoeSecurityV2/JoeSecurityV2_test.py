@@ -1,12 +1,11 @@
 import json
 import pytest
-import io
 from CommonServerPython import Common, DemistoException, ExecutionMetrics
 from typing import Any
 
 
 def util_load_json(path: str) -> Any:
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -17,14 +16,13 @@ def client():
 
 
 def mock_gen():
-    for i in range(0, 100):
-        yield i
+    yield from range(0, 100)
 
 
-PAGINATION_SUCCESS = [({'limit': '0'}, []), ({'limit': '1'}, [0]), ({'limit': '50'}, [i for i in range(0, 50)]),
-                      ({}, [i for i in range(0, 50)]), ({'page': '1', 'page_size': '1'}, [0]),
+PAGINATION_SUCCESS = [({'limit': '0'}, []), ({'limit': '1'}, [0]), ({'limit': '50'}, list(range(0, 50))),
+                      ({}, list(range(0, 50))), ({'page': '1', 'page_size': '1'}, [0]),
                       ({'page': '1', 'page_size': '5'}, [0, 1, 2, 3, 4]), ({'page': '11', 'page_size': '10'}, []),
-                      ({'page': '10', 'page_size': '10'}, [i for i in range(90, 100)])]
+                      ({'page': '10', 'page_size': '10'}, list(range(90, 100)))]
 
 
 @pytest.mark.parametrize('args,excepted', PAGINATION_SUCCESS)
