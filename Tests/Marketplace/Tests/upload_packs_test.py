@@ -170,6 +170,7 @@ class TestUpdateIndexAndPack:
         """
         from Tests.Marketplace import upload_packs
 
+        logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.debug")
         json_write_mock = mocker.patch.object(upload_packs, 'json_write', return_value=None)
         mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
@@ -184,7 +185,7 @@ class TestUpdateIndexAndPack:
 
         mocker.patch('os.scandir', side_effect=[index_dirs, pack_dirs])
 
-        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False)
+        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False, is_metadata_updated=False)
         dummy_pack.current_version = '2.0.0'
         upload_packs.update_index_folder('Index', dummy_pack)
 
@@ -198,14 +199,22 @@ class TestUpdateIndexAndPack:
         for call_arg in copy_call_args:
             assert call_arg[0] in expected_copy_args
 
+        assert any(
+            call_args == ((
+                "Updating metadata only with statistics because self._pack_name='HelloWorld' "
+                "self.is_modified=False self.is_metadata_updated=False"),)
+            for call_args, _ in logging_mock.call_args_list
+        )
+
     def test_update_index_folder_one_version(self, mocker):
         """
-        Scenario: Update the bucket index when a pack is not updated (same version)
+        Scenario: Update the bucket index when a pack is not updated (same version) but metadata_updated.
 
         Given
         - Pack exists in the index folder
         - Pack is not updated
         - Pack has one version
+        - Pack's metadata field was changed
 
         When
         - Updating the bucket index
@@ -216,6 +225,7 @@ class TestUpdateIndexAndPack:
         """
         from Tests.Marketplace import upload_packs
 
+        logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.debug")
         json_write_mock = mocker.patch.object(upload_packs, 'json_write', return_value=None)
         mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
@@ -227,7 +237,7 @@ class TestUpdateIndexAndPack:
                                ('Index/HelloWorld/README.md', 'README.md')])
         mocker.patch('os.scandir', side_effect=[index_dirs, pack_dirs])
 
-        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False)
+        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False, is_metadata_updated=True)
         dummy_pack.current_version = '1.0.0'
         upload_packs.update_index_folder('Index', dummy_pack)
 
@@ -240,6 +250,13 @@ class TestUpdateIndexAndPack:
         assert copy_call_count == 2
         for call_arg in copy_call_args:
             assert call_arg[0] in expected_copy_args
+
+        assert any(
+            call_args == ((
+                "Updating metadata with statistics and metadata changes because self._pack_name='HelloWorld' "
+                "self.is_modified=False self.is_metadata_updated=True"),)
+            for call_args, _ in logging_mock.call_args_list
+        )
 
     def test_update_index_folder_not_versioned(self, mocker):
         """
@@ -316,55 +333,6 @@ class TestUpdateIndexAndPack:
         dummy_storage_bucket.blob.return_value.download_to_filename.assert_called_once_with(
             os.path.join(extract_destination_path, f"{pack_name}.zip"))
         ZipFile.extractall.assert_called_once_with(os.path.join(extract_destination_path, pack_name))
-
-    def test_update_index_and_pack_folders_metadata_changes(self, mocker, caplog):
-        """
-        Scenario: Soft Upload - Update the bucket index when a pack is metadata_updated
-
-        Given
-        - Pack exists in the index folder
-        - Pack has multiple versions
-        - Pack's metadata field was changed
-
-        When
-        - Updating the bucket index
-
-        Then
-        - Ensure no new metadata files are created for the new version
-        - Ensure current metadata files are updated
-        """
-        from Tests.Marketplace import upload_packs
-        logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.debug")
-
-        json_write_mock = mocker.patch.object(upload_packs, 'json_write', return_value=None)
-        mocker.patch('os.path.exists')
-        pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
-                              ('HelloWorld/changelog.json', 'changelog.json'),
-                              ('HelloWorld/README.md', 'README.md')])
-        index_dirs = scan_dir([('Index/HelloWorld/metadata-1.0.0.json', 'metadata-1.0.0.json'),
-                               ('Index/HelloWorld/metadata.json', 'metadata.json'),
-                               ('Index/HelloWorld/changelog.json', 'changelog.json'),
-                               ('Index/HelloWorld/README.md', 'README.md')])
-        mocker.patch('os.scandir', side_effect=[index_dirs, pack_dirs])
-        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False, is_metadata_updated=True)
-        dummy_pack.current_version = '1.0.0'
-        upload_packs.update_index_folder('Index', dummy_pack)
-
-        expected_copy_args = [('Index/HelloWorld/metadata.json', self.statistics_metadata),
-                              ('Index/HelloWorld/metadata-1.0.0.json', self.statistics_metadata)]
-
-        copy_call_count = json_write_mock.call_count
-        copy_call_args = json_write_mock.call_args_list
-
-        assert copy_call_count == 2
-        for call_arg in copy_call_args:
-            assert call_arg[0] in expected_copy_args
-        assert any(
-            call_args == ((
-                "Updating metadata with statistics and metadata changes because self._pack_name='HelloWorld' "
-                "self.is_modified=False self.is_metadata_updated=True"),)
-            for call_args, _ in logging_mock.call_args_list
-        )
 
 
 class TestCleanPacks:
