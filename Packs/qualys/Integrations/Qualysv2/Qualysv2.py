@@ -1550,7 +1550,6 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
     "qualys-asset-tag-update": {"args": ["id", "name", "rule_type", "rule_text", "child_to_remove", "criticality_score"]},
     "qualys-asset-tag-delete": {"args": ["id"]},
     "qualys-asset-tag-list": {"args": ["criteria", "operator", "search_data", "limit"]},
-
 }
 
 # Dictionary for arguments used by Qualys API
@@ -2037,8 +2036,6 @@ def handle_asset_tag_request_parameters(args: dict[str, str], command_name: str)
     # generate request body if required by the command
     if TAG_ASSET_COMMANDS_API_DATA[command_name].get("request_body"):
         TAG_ASSET_COMMANDS_API_DATA[command_name]["request_body"] = generate_asset_tag_xml_request_body(args, command_name)
-
-
 
 
 """ PARSERS """
@@ -2562,7 +2559,6 @@ def build_tag_asset_output(**kwargs) -> tuple[List[Any], str]:
         readable_output = human_readable_massage
         return handled_result, readable_output
 
-
     if type(handled_result) == dict and (children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple")):
         handled_result["childTags"] = children_list
         handled_result.pop("children")
@@ -2915,7 +2911,6 @@ def main():  # pragma: no cover
 
     demisto.debug(f"Command being called is {requested_command}")
     try:
-
         headers: dict = {"X-Requested-With": "Demisto"}
 
         client = Client(

@@ -21942,7 +21942,7 @@ There is no context output for this command.
 ### qualys-update-vcenter-record
 
 ***
-Update vCenter records for authenticated scans of hosts running on vCenter
+Update vCenter records for authenticated scans of hosts running on vCenter.
 
 #### Base Command
 

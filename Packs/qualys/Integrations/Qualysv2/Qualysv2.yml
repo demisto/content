@@ -2735,7 +2735,7 @@ script:
     - name: add_ips
       required: true
       description: Add IPs and/or ranges to the IPs list for this record. Multiple IPs/ranges are comma separated.
-    description: Update vCenter records for authenticated scans of hosts running on vCenter
+    description: Update vCenter records for authenticated scans of hosts running on vCenter.
   - name: qualys-vcenter-esxi-mapped-record-list
     arguments:
     - description: Specify a positive numeric value to limit the amount of results in the requested list.
@@ -2760,7 +2760,7 @@ script:
     - name: csv_data
       description: The CSV data file containing the vCenter - ESXi mapping records that you want to purge.
       required: true
-  dockerimage: demisto/python3:3.10.13.80014
+  dockerimage: demisto/python3:3.10.13.87159
   script: ''
   subtype: python3
   type: python
