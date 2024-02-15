@@ -1,4 +1,4 @@
-Iterate over EnrichedComplianceIssue information in the context data and add the important keys to a table under PrismaCloudCompute.ComplianceTable.
+Iterate over EnrichedComplianceIssue information in the context data and add the important keys to a table under PrismaCloudCompute.ComplianceTable or a provided grid id.
 
 ## Script Data
 
