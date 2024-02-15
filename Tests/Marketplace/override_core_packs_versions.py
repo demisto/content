@@ -128,7 +128,7 @@ def main():
     if should_override_locked_corepacks_file(marketplace=marketplace):
         logging.debug('Using the corepacks_override.json file to update an existing corepacks file.')
         override_locked_corepacks_file(build_number=build_number,
-                                       artifacts_dir=os.path.dirname(packs_artifacts_path),
+                                       artifacts_dir=packs_artifacts_path,
                                        marketplace=marketplace)
     else:
         logging.debug('Skipping overriding an existing corepacks file.')
