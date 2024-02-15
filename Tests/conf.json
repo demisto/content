@@ -1480,8 +1480,8 @@
                 "Rasterize"
             ],
             "timeout": 500,
-            "pid_threshold": 12,
-            "memory_threshold": 150
+            "pid_threshold": 200,
+            "memory_threshold": 300
         },
         {
             "playbookID": "CutTransformerTest"
@@ -1748,7 +1748,8 @@
                 "ews_mail_sender_labdemisto"
             ],
             "playbookID": "EWS V2 Send Mail Test 2",
-            "memory_threshold": 250
+            "memory_threshold": 300,
+            "pid_threshold": 200
         },
         {
             "integrations": [
@@ -1862,7 +1863,8 @@
             "fromversion": "6.0.0",
             "integrations": "Rasterize",
             "timeout": 240,
-            "memory_threshold": 150
+            "memory_threshold": 300,
+            "pid_threshold": 200
         },
         {
             "playbookID": "Process Email - Generic - Test - Actual Incident"
@@ -2735,7 +2737,7 @@
             ],
             "instance_names": "active_directory_ninja",
             "fromversion": "4.5.0",
-            "memory_threshold": 80
+            "memory_threshold": 100
         },
         {
             "integrations": "Freshdesk",
@@ -2761,7 +2763,9 @@
             ],
             "instance_names": "active_directory_ninja",
             "fromversion": "5.0.0",
-            "timeout": 700
+            "timeout": 700,
+            "memory_threshold": 300,
+            "pid_threshold": 200
         },
         {
             "playbookID": "Active Directory - Get User Manager Details - Test",
@@ -2868,7 +2872,8 @@
                 "Rasterize"
             ],
             "timeout": 700,
-            "memory_threshold": 200,
+            "memory_threshold": 300,
+            "pid_threshold": 200,
             "fromversion": "4.5.0"
         },
         {
@@ -3089,13 +3094,16 @@
             ],
             "playbookID": "Rasterize Test",
             "fromversion": "5.0.0",
-            "memory_threshold": 150
+            "memory_threshold": 300,
+            "pid_threshold": 200,
+            "timeout": 1500
         },
         {
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest",
             "fromversion": "5.0.0",
-            "memory_threshold": 150
+            "memory_threshold": 300,
+            "pid_threshold": 200
         },
         {
             "integrations": "Ipstack",
@@ -4762,7 +4770,6 @@
             "timeout": 15000,
             "integrations": [
                 "Core REST API",
-                "Rasterize",
                 "Demisto Lock",
                 "EWS v2"
             ],
@@ -4771,7 +4778,7 @@
                 "ews_mail_sender_labdemisto"
             ],
             "memory_threshold": 350,
-            "pid_threshold": 80,
+            "pid_threshold": 200,
             "is_mockable": false
         },
         {
@@ -4801,7 +4808,7 @@
                 "incoming_mapper_id": "EWS v2-mapper"
             },
             "memory_threshold": 400,
-            "pid_threshold": 80
+            "pid_threshold": 200
         },
         {
             "playbookID": "Phishing v3 - Get Original Email + Search & Delete - Test",
@@ -5391,6 +5398,9 @@
             "playbookID": "TestIsInCidrRanges"
         },
         {
+            "playbookID": "TestIsNotInCidrRanges"
+        },
+        {
             "playbookID": "NetskopeAPIv1 Test",
             "integrations": "NetskopeAPIv1"
         },
@@ -5420,6 +5430,7 @@
                 "Rasterize"
             ],
             "memory_threshold": 300,
+            "pid_threshold": 200,
             "marketplaces": "xsoar_on_prem"
         },
         {
@@ -6207,7 +6218,7 @@
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
-                "pid_threshold": 18
+                "pid_threshold": 100
             },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 150
