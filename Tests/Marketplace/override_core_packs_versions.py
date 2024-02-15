@@ -28,12 +28,13 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
     """
     override_corepacks_server_version = GCPConfig.corepacks_override_contents.get('server_version')
         
-    override_marketplaces = list(GCPConfig.corepacks_override_contents.get('updated_corepacks_content', {}).keys())
+    override_marketplaces = list(GCPConfig.corepacks_override_contents.keys())
 
-    override_corepacks_file_version = GCPConfig.corepacks_override_contents.get('updated_corepacks_content').get('file_version')
-    current_corepacks_file_version = GCPConfig.core_packs_file_versions.get(override_corepacks_server_version, {}).get('file_version').get(marketplace)
-    if not current_corepacks_file_version:
-        logging.debug(f'Could not find a matching file version for server version {override_corepacks_server_version} in '
+    override_corepacks_file_version = GCPConfig.corepacks_override_contents.get(marketplace, {}).get('file_version')
+    current_corepacks_file_version = GCPConfig.core_packs_file_versions.get(override_corepacks_server_version, {}).get('file_version', {}).get(marketplace)
+    if not current_corepacks_file_version or not override_corepacks_file_version:
+        logging.debug(f'Either no file version was found in {GCPConfig.COREPACKS_OVERRIDE_FILE} or could not find '
+                      f'a matching file version for server version {override_corepacks_server_version} in '
                       f'{GCPConfig.VERSIONS_METADATA_FILE} file. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
         return False
 
@@ -66,7 +67,7 @@ def override_locked_corepacks_file(build_number: str, artifacts_dir: str, market
     """
     # Get the updated content of the corepacks file:
     override_corepacks_server_version = GCPConfig.corepacks_override_contents.get('server_version')
-    corepacks_file_new_content = GCPConfig.corepacks_override_contents.get('updated_corepacks_content').get(marketplace, {})
+    corepacks_file_new_content = GCPConfig.corepacks_override_contents.get(marketplace, {}).get('updated_corepacks_content')
 
     # Update the build number to the current build number:
     corepacks_file_new_content['buildNumber'] = build_number
@@ -79,7 +80,7 @@ def override_locked_corepacks_file(build_number: str, artifacts_dir: str, market
     logging.success(f"Finished copying overriden {override_corepacks_file_name} to artifacts.")
 
     # Update the file version of the matching corepacks version in the versions-metadata.json file
-    override_corepacks_file_version = GCPConfig.corepacks_override_contents.get('file_version')
+    override_corepacks_file_version = GCPConfig.corepacks_override_contents.get(marketplace, {}).get('file_version')
     logging.debug(f'Bumping file version of server version {override_corepacks_server_version} in versions-metadata.json from'
                   f'{GCPConfig.versions_metadata_contents["version_map"][override_corepacks_server_version]["file_version"]} to'
                   f'{override_corepacks_file_version}')
