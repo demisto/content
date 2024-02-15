@@ -1,6 +1,18 @@
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+## Symantec Endpoint Security (ICDM)
 
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/hello-world)
+Query the Symantec Endpoint Security Cloud Portal (ICDM).
+
+### Receive the "API Key":
+
+- Login to the ICDM portal
+- Navigate to **Integration** > **Client Applications**
+- If you do not have an application, click **Add** and provide a name
+- Select the application to use from the list
+- Click the **Client Secret** button at the top of the fly-in
+- Copy the **OAUTH CREDENTIALS** value
+
+### Server URL
+
+This is the Domain used to connect to the API.
+By Default, the **api.sep.securitycloud.symantec.com** is used.
+You can find the tenant you are using by login in to the ICDM portal and copying the (sub-)domain from the browser window

@@ -21,8 +21,8 @@ configuration:
   required: false
   section: Collect
   type: 15
-- defaultvalue: https://api.sep.eu.securitycloud.symantec.com
-  display: Server URL (e.g. https://api.sep.eu.securitycloud.symantec.com)
+- defaultvalue: https://api.sep.securitycloud.symantec.com
+  display: Server URL (e.g. https://api.sep.securitycloud.symantec.com)
   name: url
   required: true
   section: Connect

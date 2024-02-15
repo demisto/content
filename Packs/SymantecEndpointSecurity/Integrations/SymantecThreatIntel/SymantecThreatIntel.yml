@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://api.sep.securitycloud.symantec.com/
-  display: API Tennant URL
+  display: API Tenant URL
   name: url
   required: true
   type: 0

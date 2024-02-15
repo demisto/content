@@ -1,8 +1,18 @@
-## BaseIntegration Help
+## Symantec Threat Intel
 
-Markdown file for integration configuration  help snippet. In this file add:
+Query Symantec Endpoint Security Threat Intel data.
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+### Receive the "API Key":
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+- Login to the ICDM portal
+- Navigate to **Integration** > **Client Applications**
+- If you do not have an application, click **Add** and provide a name
+- Select the application to use from the list
+- Click the **Client Secret** button at the top of the fly-in
+- Copy the **OAUTH CREDENTIALS** value
+
+### API Tenant URL
+
+This is the Domain used to connect to the API.
+By Default, the **api.sep.securitycloud.symantec.com** is used.
+You can find the tenant you are using by login in to the ICDM portal and copying the (sub-)domain from the browser window
