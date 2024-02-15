@@ -1,20 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
 
 from CommonServerUserPython import *  # noqa
 
@@ -25,14 +10,10 @@ from typing import Dict, Any, Tuple
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_MAX_FETCH = 5000
 VENDOR = "cybelangel"
 PRODUCT = "platform"
-
-''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
@@ -43,7 +24,7 @@ class Client(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
 
-    def http_request(self, method: str, url_suffix: str, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    def http_request(self, method: str, url_suffix: str, params: Dict[str, Any] | None = None):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
         """
@@ -64,12 +45,12 @@ class Client(BaseClient):
 
         return super()._http_request(method, url_suffix=url_suffix, headers=headers, params=params)
 
-    def get_reports(self, start_date: str, end_date: str) -> Dict[str, Any]:
+    def get_reports(self, start_date: str, end_date: str, limit: int = DEFAULT_MAX_FETCH) -> List[Dict[str, Any]]:
         params = {
             "start-date": start_date,
             "end-date": end_date
         }
-        return self.http_request(method='GET', url_suffix="/api/v2/reports", params=params)
+        return self.http_request(method='GET', url_suffix="/api/v2/reports", params=params)[:limit]
 
     def get_access_token(self) -> str:
         """
@@ -123,9 +104,6 @@ class Client(BaseClient):
         return access_token
 
 
-''' HELPER FUNCTIONS '''
-
-
 def is_token_expired(token_initiate_time: float, token_expiration_seconds: float) -> bool:
     """
     Check whether a token has expired. a token considered expired if it has been reached to its expiration date in
@@ -145,7 +123,42 @@ def is_token_expired(token_initiate_time: float, token_expiration_seconds: float
     return time.time() - token_initiate_time >= token_expiration_seconds - 60
 
 
-''' COMMAND FUNCTIONS '''
+def dedup_fetched_events(
+    events: List[dict],
+    last_run_fetched_event_ids: Set[str],
+) -> List[dict]:
+
+    un_fetched_events = []
+
+    for event in events:
+        event_id = event.get("id")
+        if event_id not in last_run_fetched_event_ids:
+            demisto.debug(f'event with ID {event_id} has not been fetched.')
+            un_fetched_events.append(event)
+        else:
+            demisto.debug(f'event with ID {event_id} for has been fetched')
+
+    demisto.debug(f'{un_fetched_events=}')
+    return un_fetched_events
+
+
+def get_latest_fetched_event_ids(events: List[dict]) -> Tuple[str, List[str]]:
+
+    if not events:
+        return "", []
+
+    latest_event_time = max(events, key=lambda event: datetime.strptime(event["created_at"], DATE_FORMAT))["created_at"]
+    demisto.debug(f'Latest event time: {latest_event_time}')
+
+    latest_occurred_event_ids = set()
+
+    for event in events:
+        if event["created_at"] == latest_event_time:
+            event_id = event.get("id")
+            demisto.info(f'adding event with ID {event_id} to latest occurred event IDs')
+            latest_occurred_event_ids.add(event_id)
+
+    return latest_event_time, list(latest_occurred_event_ids)
 
 
 def test_module(client: Client) -> str:
@@ -156,8 +169,19 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_events(client: Client, last_run: Dict, max_fetch: int):
-    pass
+def fetch_events(client: Client, last_run: Dict, max_fetch: int) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    last_run_time, last_fetched_report_ids = last_run.get("time"), last_run.get("fetched_report_ids")
+    reports = client.get_reports(start_date=last_run_time, end_date=datetime.now().strftime(DATE_FORMAT), limit=max_fetch)
+    reports = dedup_fetched_events(reports, last_run_fetched_event_ids=last_fetched_report_ids)
+
+    for report in reports:
+        report["_time"] = report["created_at"]
+
+    latest_report_time, last_fetched_report_ids = get_latest_fetched_event_ids(reports)
+    last_run.update({"time": latest_report_time or last_run_time, "fetched_report_ids": last_fetched_report_ids})
+    return reports, last_run
+
+
 
 
 def get_events(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -192,6 +216,7 @@ def main() -> None:
         elif command == 'fetch-events':
             events, last_fetch = fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to xsiam')
             demisto.setLastRun(last_fetch)
         elif command == "cyble-angel-get-events":
             return_results(get_events(client, demisto.args()))
