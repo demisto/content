@@ -64,31 +64,29 @@ def main():
     content_pr = get_pr_by_id('content', content_pr_id, access_token)
     sdk_pr = get_pr_by_id('demisto-sdk', sdk_pr_id, access_token)
 
-    content_pr_state = content_pr.get('state')
-    sdk_pr_state = sdk_pr.get('state')
-
     # initialize timer
     start = time.time()
     elapsed: float = 0
 
     # wait to content pr and sdk pr to be closed
-    while (sdk_pr_state == 'open' or content_pr_state == 'open') and elapsed < TIMEOUT:
-
-        logging.info(f'content pr state is {content_pr_state}')
-        logging.info(f'sdk pr state is {sdk_pr_state}')
-
-        time.sleep(300)  # 5 minutes
-
+    while elapsed < TIMEOUT:
         content_pr = get_pr_by_id('content', content_pr_id, access_token)
         sdk_pr = get_pr_by_id('demisto-sdk', sdk_pr_id, access_token)
 
         content_pr_state = content_pr.get('state')
         sdk_pr_state = sdk_pr.get('state')
 
+        logging.info(f'content pr state is {content_pr_state}')
+        logging.info(f'sdk pr state is {sdk_pr_state}')
+
+        if sdk_pr_state != 'open' and content_pr_state != 'open':
+            break
+
+        time.sleep(300)  # 5 minutes
         elapsed = time.time() - start
 
-    if elapsed >= TIMEOUT:
-        errors.append('Timeout reached while waiting for SDK and content pull requests to be merged')
+        if elapsed >= TIMEOUT:
+            errors.append('Timeout reached while waiting for SDK and content pull requests to be merged')
 
     # check that content pr is merged
     if not content_pr.get('merged'):

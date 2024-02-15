@@ -34,23 +34,22 @@ def main():
     start = time.time()
     elapsed: float = 0
 
-    demisto_sdk_versions = ''
-
-    while f'demisto_sdk-{release_branch_name}' not in demisto_sdk_versions and elapsed < TIMEOUT:
+    while elapsed < TIMEOUT:
         res = requests.get(ARTIFACTS_URL, verify=False)
         if res.status_code != requests.codes.ok:
             logging.error(f'Failed to get the artifacts from {ARTIFACTS_URL}')
             sys.exit(1)
 
-        demisto_sdk_versions = res.text
+        if f'demisto_sdk-{release_branch_name}' in res.text:
+            break
+
         logging.info(f'The release {release_branch_name} is not yet in the artifacts')
         time.sleep(300)  # 5 minutes
-
         elapsed = time.time() - start
 
-    if elapsed >= TIMEOUT:
-        logging.critical('Timeout reached while waiting for SDK release artifacts')
-        sys.exit(1)
+        if elapsed >= TIMEOUT:
+            logging.critical('Timeout reached while waiting for SDK release artifacts')
+            sys.exit(1)
 
     logging.success(f'SDK release version {release_branch_name} is out')
 

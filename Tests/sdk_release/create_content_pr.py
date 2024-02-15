@@ -106,23 +106,22 @@ def main():
     # initialize timer
     start = time.time()
     elapsed: float = 0
-
     content_pr: dict = {}
+
     # wait to content pr to create
-    while not content_pr and elapsed < TIMEOUT:
-        time.sleep(60)
+    while elapsed < TIMEOUT:
         content_pr = get_pr_from_branch('content', release_branch_name, access_token)
+        if content_pr:
+            logging.success(f'content pull request created: {content_pr.get("html_url")}')
+            break
 
-        if not content_pr:
-            logging.info('content pull request not created yet')
-
+        logging.info('content pull request not created yet')
+        time.sleep(60)
         elapsed = time.time() - start
 
-    if elapsed >= TIMEOUT:
-        logging.error('Timeout reached while waiting for content pull requests creation')
-        sys.exit(1)
-
-    logging.success(f'content pull request created: {content_pr.get("html_url")}')
+        if elapsed >= TIMEOUT:
+            logging.error('Timeout reached while waiting for content pull requests creation')
+            sys.exit(1)
 
     # write the changelog text to SLACK_CHANGELOG_FILE
     changelog_text = get_changelog_text(release_branch_name, text_format='slack')

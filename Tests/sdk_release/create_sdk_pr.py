@@ -177,17 +177,9 @@ def main():
     ).get('id')
 
     logging.info(f'SDK changelog workflow triggered successfully: {SDK_WORKFLOW_SUFFIX}{workflow_id}')
-
-    # initialize timer
+    elapsed = 0
     start = time.time()
-    elapsed: float = 0
-
-    status = ''
-    url = f'{API_SUFFIX}/actions/runs/{workflow_id}/jobs'
-
-    # wait to the workflow to finished
-    while status != 'completed' and elapsed < TIMEOUT:
-        time.sleep(10)
+    while elapsed < TIMEOUT:
         response = requests.request('GET', url, headers=headers, verify=False)
         if response.status_code != requests.codes.ok:
             logging.error('Failed to retrieve SDK changelog workflow status')
@@ -196,13 +188,44 @@ def main():
 
         job_data = response.json().get('jobs', [])[0]
         status = job_data.get('status')
+        if status == "completed":
+            logging.info("SDK changelog workflow completed")
+            break
+
         logging.info(f'waiting to SDK changelog workflow to finish, current status: {status}')
+        time.sleep(10)
 
         elapsed = time.time() - start
+        if elapsed >= TIMEOUT:
+            logging.critical('Timeout reached while waiting for SDK changelog workflow to complete')
+            sys.exit(1)
 
-    if elapsed >= TIMEOUT:
-        logging.critical('Timeout reached while waiting for SDK changelog workflow to complete')
-        sys.exit(1)
+    # initialize timer
+    start = time.time()
+
+    elapsed: float = 0
+    url = f'{API_SUFFIX}/actions/runs/{workflow_id}/jobs'
+
+    while elapsed < TIMEOUT:
+        response = requests.request('GET', url, headers=headers, verify=False)
+        if response.status_code != requests.codes.ok:
+            logging.error('Failed to retrieve SDK changelog workflow status')
+            logging.error(response.text)
+            sys.exit(1)
+
+        job_data = response.json().get('jobs', [])[0]
+        status = job_data.get('status')
+        if status == "completed":
+            logging.info("SDK changelog workflow completed")
+            break
+
+        logging.info(f'waiting to SDK changelog workflow to finish, current status: {status}')
+        time.sleep(10)
+        elapsed = time.time() - start
+
+        if elapsed >= TIMEOUT:
+            logging.critical('Timeout reached while waiting for SDK changelog workflow to complete')
+            sys.exit(1)
 
     if job_data.get('conclusion') != 'success':
         logging.error('Retrieve SDK changelog workflow Failed:')

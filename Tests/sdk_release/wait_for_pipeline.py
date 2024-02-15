@@ -71,16 +71,19 @@ def main():
     start = time.time()
     elapsed: float = 0
 
-    while pipeline_status not in ['failed', 'success', 'canceled'] and elapsed < TIMEOUT:
-        logging.info(f'Pipeline {pipeline_id} status is {pipeline_status}')
+    while elapsed < TIMEOUT:
         pipeline_status = get_pipeline_status(pipeline_id, project_id, token)
-        time.sleep(300)  # 5 minutes
+        logging.info(f'Pipeline {pipeline_id} status is {pipeline_status}')
 
+        if pipeline_status in ['failed', 'success', 'canceled']:
+            break
+
+        time.sleep(300)  # 5 minutes
         elapsed = time.time() - start
 
-    if elapsed >= TIMEOUT:
-        logging.critical(f'Timeout reached while waiting for the pipeline to complete, pipeline number: {pipeline_id}')
-        sys.exit(1)
+        if elapsed >= TIMEOUT:
+            logging.critical(f'Timeout reached while waiting for the pipeline to complete, pipeline number: {pipeline_id}')
+            sys.exit(1)
 
     pipeline_url = get_pipeline_info(pipeline_id, project_id, token).get('web_url')
 
