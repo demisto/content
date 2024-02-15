@@ -97,7 +97,6 @@ def main():  # pragma: no cover
     if interval <= 0 or timeout <= 0:
         return_error("Interval and timeout must be positive numbers")
 
-
     args_names = args.get('additionalPollingCommandArgNames').strip() \
         if args.get('additionalPollingCommandArgNames') else None
     args_values = args.get('additionalPollingCommandArgValues').strip() \

@@ -81,8 +81,8 @@ def test_is_command_sanitized(command, expected_result):
                               '               additionalPollingCommandArgValues="hihi" pollingCommand="Set"  ids="payload"'
                               ' pendingIds=".=\'payload\'"  pollingCommandArgName="key" additionalPollingCommandArgNames="value"'
                               ' additionalPollingCommandArgValues="bar"',
-                              (False, 'The value of additionalPollingCommandArgValues, additionalPollingCommandArgNames, pollingCommandArgName, pollingCommand is'
-                               ' malformed.')),
+                              (False, 'The value of additionalPollingCommandArgValues, additionalPollingCommandArgNames, '
+                               'pollingCommandArgName, pollingCommand is malformed.')),
                          ])
 def test_get_command_string(ids, pollingCommand, pollingCommandArgName, playbookId, dt, interval, timeout, tag,
                             args_names, args_values, expected_command_String, expected_result):
