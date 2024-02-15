@@ -1,7 +1,27 @@
 [MODEL: dataset="axonius_asm_raw"]
 alter
-    action = split(trim(json_extract(event,"$['action']"),"\""),"."),
-    category = split(trim(json_extract(event,"$['category']"),"\""),"."),
-    params = json_extract(event,"$['params']"),
-    type = trim(json_extract(event,"$['type']"),"\""),
-    user = trim(json_extract(event,"$['user']"),"\"")
+    action = split(trim(json_extract(event,"$.action"),"\""),"."),
+    category = trim(json_extract(event,"$.category"),"\""),
+    params = json_extract(event,"$.params"),
+    type = trim(json_extract(event,"$.type"),"\""),
+    user1 = trim(json_extract(event,"$.user"),"\""),
+    ip = json_extract_scalar(event,"$.params.ip")
+| alter
+    action1 = arrayindex(action,1),
+    category1 = arrayindex(split(category,"."),1),
+    ipv4 = arrayindex(regextract(ip,"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),0),
+    ipv6 = arrayindex(regextract(ip,"[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}"),0),
+    status = json_extract_scalar(params,"$.status"),
+    user2 = json_extract_scalar(params,"$.user_name")
+| alter
+    xdm.event.is_completed = if(action1 ~="Complete" or action1~="End", true, false),
+    xdm.event.original_event_type = category,
+    xdm.event.type =  category1,
+    xdm.observer.action = action1,
+    xdm.event.description = params,
+    xdm.source.user.username = coalesce(user2,user1),
+    xdm.event.log_level = if(type~="info",XDM_CONST.LOG_LEVEL_INFORMATIONAL , type~="error",XDM_CONST.LOG_LEVEL_ERROR , type~="notice",XDM_CONST.LOG_LEVEL_NOTICE,type~="warn",XDM_CONST.LOG_LEVEL_WARNING,type~="alert",XDM_CONST.LOG_LEVEL_ALERT,type ~="critical",XDM_CONST.LOG_LEVEL_CRITICAL,type~="bug",XDM_CONST.LOG_LEVEL_DEBUG,type~="emergency",XDM_CONST.LOG_LEVEL_EMERGENCY),
+    xdm.source.ipv4 = ipv4,
+    xdm.source.ipv6 = ipv6,
+    xdm.event.outcome = if(status~="success",XDM_CONST.OUTCOME_SUCCESS,status~="fail" or action1~="Fail", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = json_extract_scalar(params,"$.reason");
