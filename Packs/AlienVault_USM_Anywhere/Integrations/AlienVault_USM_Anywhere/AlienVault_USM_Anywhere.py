@@ -150,8 +150,12 @@ def convert_timestamp_to_iso86(timestamp: str, timezone_letter: str = 'Z') -> st
     """
     if not timestamp:
         return ''
-    datetime_from_timestamp = dateparser.parse(timestamp, settings={"TO_TIMEZONE": timezone_letter,
-                                                                    "RETURN_AS_TIMEZONE_AWARE": True})
+    try:
+        datetime_from_timestamp = dateparser.parse(str(timestamp), settings={"TO_TIMEZONE": timezone_letter,
+                                                                             "RETURN_AS_TIMEZONE_AWARE": True})
+    except Exception as e:
+        demisto.error(f"Encountered issue for {timestamp}. err: {str(e)}")
+        return ''
     assert datetime_from_timestamp is not None, f'{timestamp} could not be parsed'
     time_in_iso86 = datetime_from_timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f")
     return time_in_iso86[:-3] + timezone_letter

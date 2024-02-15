@@ -1,6 +1,6 @@
-category: Data Enrichment & Threat Intelligence
+category: Data Enrichment & Threat Intelligence (Dev Feb 15th)
 commonfields:
-  id: AlienVault USM Anywhere
+  id: AlienVault USM Anywhere_dev
   version: -1
 configuration:
 - defaultvalue: https://www.example.com
@@ -57,7 +57,7 @@ configuration:
   required: false
 description: Searches for and monitors alarms and events from AlienVault USM Anywhere.
 display: AlienVault USM Anywhere
-name: AlienVault USM Anywhere
+name: AlienVault USM Anywhere_dev
 script:
   commands:
   - arguments:

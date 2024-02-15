@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa
 from CommonServerPython import *  # noqa
 import cv2
+
 # pylint: disable=E1101  # disable pylint not recognizing cv2's attributes.
 
 
