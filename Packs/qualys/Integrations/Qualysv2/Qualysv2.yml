@@ -2722,19 +2722,19 @@ script:
     arguments:
     - name: ids
       required: true
-      description: Record IDs to update. Specify record IDs and/or ID ranges Multiple entries are comma separated.
+      description:  A comma-separated list of record IDs to update. Specify record IDs and/or ID ranges.
     - name: add_ips
       required: true
-      description: Add IPs and/or ranges to the IPs list for this record. Multiple IPs/ranges are comma separated.
+      description: A comma-separated list of IPs and/or ranges to add to the IPs list for this record.
     description: Update Vmware records for authenticated scans of hosts running on Vmware.
   - name: qualys-update-vcenter-record
     arguments:
     - name: ids
       required: true
-      description: Record IDs to update. Specify record IDs and/or ID ranges Multiple entries are comma separated.
+      description: A comma-separated list of record IDs to update. Specify record IDs and/or ID ranges.
     - name: add_ips
       required: true
-      description: Add IPs and/or ranges to the IPs list for this record. Multiple IPs/ranges are comma separated.
+      description: A comma-separated list of IPs and/or ranges to add to the IPs list for this record.
     description: Update vCenter records for authenticated scans of hosts running on vCenter.
   - name: qualys-vcenter-esxi-mapped-record-list
     arguments:

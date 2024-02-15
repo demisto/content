@@ -21925,8 +21925,8 @@ Update Vmware records for authenticated scans of hosts running on Vmware.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | Record IDs to update. Specify record IDs and/or ID ranges Multiple entries are comma separated. | Required | 
-| add_ips | Add IPs and/or ranges to the IPs list for this record. Multiple IPs/ranges are comma separated. | Required | 
+| ids | A comma-separated list of record IDs to update. Specify record IDs and/or ID ranges. | Required | 
+| add_ips | A comma-separated list of IPs and/or ranges to add to the IPs list for this record. | Required | 
 
 #### Context Output
 
@@ -21952,8 +21952,8 @@ Update vCenter records for authenticated scans of hosts running on vCenter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | Record IDs to update. Specify record IDs and/or ID ranges Multiple entries are comma separated. | Required | 
-| add_ips | Add IPs and/or ranges to the IPs list for this record. Multiple IPs/ranges are comma separated. | Required | 
+| ids | A comma-separated list of record IDs to update. Specify record IDs and/or ID ranges. | Required | 
+| add_ips | A comma-separated list of IPs and/or ranges to add to the IPs list for this record. | Required | 
 
 #### Context Output
 
