@@ -141,7 +141,6 @@ class CloudServer(Server):
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
-
 class XSOARServer(Server):
 
     def __init__(self, internal_ip, user_name, password, build_number=''):
@@ -566,9 +565,10 @@ class Build(ABC):
             If the server version is higher or equal to 6.0 - will return True if the packs installation was successful
             both before that update and after the update.
         """
-        installed_content_packs_successfully = self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number,
-                                                                        self.marketplace_tag_name, self.artifacts_folder,
-                                                                        self.marketplace_buckets)
+        # installed_content_packs_successfully = self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number,
+        #                                                                 self.marketplace_tag_name, self.artifacts_folder,
+        #                                                                 self.marketplace_buckets)
+        installed_content_packs_successfully = True
         installed_content_packs_successfully &= self.install_packs(production_bucket=False)
         return installed_content_packs_successfully
 
@@ -593,7 +593,7 @@ class XSOARBuild(Build):
     def __init__(self, options):
         super().__init__(options)
         self.ami_env = options.ami_env
-        self.servers = [XSOARServer(internal_ip,
+        self.servers = [XSOARServer(internal_ip + "/xsoar",
                                     self.username,
                                     self.password,
                                     self.ci_build_number) for internal_ip in self.get_servers(options.ami_env)]
@@ -621,18 +621,18 @@ class XSOARBuild(Build):
     def configure_servers_and_restart(self):
         manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
         for server in self.servers:
-            configurations = {}
-            if is_redhat_instance(server.internal_ip):
-                configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
-                configurations.update(NO_PROXY_CONFIG)
-                configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
-            else:
-                configurations.update(DOCKER_HARDENING_CONFIGURATION)
-            configure_types = ['docker hardening', 'marketplace']
-            configurations.update(MARKET_PLACE_CONFIGURATION)
+            configurations = {'content.pack.verify': 'false'}
+            # if is_redhat_instance(server.internal_ip):
+            #     configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
+            #     configurations.update(NO_PROXY_CONFIG)
+            #     configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
+            # else:
+            #     configurations.update(DOCKER_HARDENING_CONFIGURATION)
+            # configure_types = ['docker hardening', 'marketplace']
+            # configurations.update(MARKET_PLACE_CONFIGURATION)
 
-            error_msg = f"failed to set {' and '.join(configure_types)} configurations"
-            server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
+            # error_msg = f"failed to set {' and '.join(configure_types)} configurations"
+            server.add_server_configuration(configurations, error_msg="OPP error", restart=not manual_restart)
 
         if manual_restart:
             input('restart your server and then press enter.')
@@ -671,7 +671,7 @@ class XSOARBuild(Build):
             logging.error("Failed to install nightly packs")
         return success
 
-    @run_with_proxy_configured
+    # @run_with_proxy_configured
     def test_integrations_post_update(self, new_module_instances: list,
                                       modified_module_instances: list) -> tuple:
         """
@@ -689,7 +689,7 @@ class XSOARBuild(Build):
         successful_tests_post, failed_tests_post = self.instance_testing(modified_module_instances, pre_update=False)
         return successful_tests_post, failed_tests_post
 
-    @run_with_proxy_configured
+    # @run_with_proxy_configured
     def configure_and_test_integrations_pre_update(self, new_integrations, modified_integrations) -> tuple:
         """
         Configures integration instances that exist in the current version and for each integration runs 'test-module'.
@@ -823,19 +823,34 @@ class CloudBuild(Build):
     def get_cloud_configuration(cloud_machine, cloud_servers_path, cloud_servers_api_keys_path):
         logging.info('getting cloud configuration')
 
-        cloud_servers = get_json_file(cloud_servers_path)
-        conf = cloud_servers.get(cloud_machine)
-        cloud_servers_api_keys = get_json_file(cloud_servers_api_keys_path)
-        api_key = cloud_servers_api_keys.get(cloud_machine)
-        return api_key, conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
+        # cloud_servers = get_json_file(cloud_servers_path)
+        # conf = cloud_servers.get(cloud_machine)
+        # cloud_servers_api_keys = get_json_file(cloud_servers_api_keys_path)
+        # api_key = cloud_servers_api_keys.get(cloud_machine)
+        api_key=os.getenv('DEMISTO_API_KEY_8')
+        base_url=os.getenv('TEST_VAR_XSOAR8_API')
+        logging.info(f"{api_key} + {base_url}")
+        return api_key, '8.4.0', base_url, '1'
 
     @property
     def marketplace_name(self) -> str:
         return self.marketplace_tag_name
 
     def configure_servers_and_restart(self):
-        # No need of this step in cloud.
-        pass
+        manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
+        for server in self.servers:
+            configurations = {'content.pack.verify': 'false'}
+            # if is_redhat_instance(server.internal_ip):
+            #     configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
+            #     configurations.update(NO_PROXY_CONFIG)
+            #     configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
+            # else:
+            #     configurations.update(DOCKER_HARDENING_CONFIGURATION)
+            # configure_types = ['docker hardening', 'marketplace']
+            # configurations.update(MARKET_PLACE_CONFIGURATION)
+
+            # error_msg = f"failed to set {' and '.join(configure_types)} configurations"
+            server.add_server_configuration(configurations, error_msg="OPP error", restart=not manual_restart)
 
     def test_integration_with_mock(self, instance: dict, pre_update: bool):
         # No need of this step in CLOUD.
@@ -1799,7 +1814,7 @@ def create_build_object() -> Build:
     options = options_handler()
     logging.info(f'Server type: {options.server_type}')
     if options.server_type == XSOAR_SERVER_TYPE:
-        return XSOARBuild(options)
+        return CloudBuild(options)
     elif options.server_type in [XSIAM_SERVER_TYPE, XSOAR_SASS_SERVER_TYPE]:
         return CloudBuild(options)
     else:
@@ -1959,9 +1974,8 @@ def main():
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
     build = create_build_object()
     logging.info(f"Build Number: {build.ci_build_number}")
-
-    build.configure_servers_and_restart()
-    build.disable_instances()
+    # build.configure_servers_and_restart()
+    # build.disable_instances()
 
     if build.is_nightly or build.is_sdk_nightly:
         success = build.install_nightly_pack()

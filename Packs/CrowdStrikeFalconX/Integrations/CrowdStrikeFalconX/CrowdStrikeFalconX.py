@@ -10,7 +10,6 @@ from CommonServerPython import *
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 class FileReportWarning(Exception):
     """
     This class is in charge of catching errors raised from having an error object in the
