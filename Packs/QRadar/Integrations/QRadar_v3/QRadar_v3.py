@@ -2171,7 +2171,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
     if is_reset_triggered(context_data, version):
         last_highest_id = 0
     else:
-        last_highest_id = context_data.get(LAST_FETCH_KEY, 0)
+        last_highest_id = int(context_data.get(LAST_FETCH_KEY, 0))
     print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
     incidents, new_highest_id = get_incidents_long_running_execution(
         client=client,
