@@ -1332,7 +1332,7 @@ def create_single_asset_for_offense_enrichment(asset: dict) -> dict:
     return add_iso_entries_to_asset(dict(offense_without_properties, **properties, **interfaces))
 
 
-def enrich_offense_with_assets(client: Client, offense_ips: List[str], assets_limit: int | None) -> List[dict]:
+def enrich_offense_with_assets(client: Client, offense_ips: List[str], assets_limit: int | None = 100) -> List[dict]:
     """
     Receives list of offense's IPs, and performs API call to QRadar service to retrieve assets correlated to IPs given.
     Args:
