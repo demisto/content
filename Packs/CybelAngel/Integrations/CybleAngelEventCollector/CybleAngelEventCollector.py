@@ -43,7 +43,7 @@ class Client(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
 
-    def http_request(self, *args, **kwargs):
+    def http_request(self, method: str, url_suffix: str, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
         """
@@ -52,9 +52,19 @@ class Client(BaseClient):
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
         }
-        return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
 
-    def get_reports(self, start_date: str, end_date: str):
+        response = super()._http_request(
+            method, url_suffix=url_suffix, headers=headers, params=params, resp_type="response", ok_codes=(401, 200)
+        )
+        if response.status_code == 200:
+            return response.json()
+
+        token = self.get_token_request()
+        headers["Authorization"] = f'Bearer {token}'
+
+        return super()._http_request(method, url_suffix=url_suffix, headers=headers, params=params)
+
+    def get_reports(self, start_date: str, end_date: str) -> Dict[str, Any]:
         params = {
             "start-date": start_date,
             "end-date": end_date
@@ -81,20 +91,9 @@ class Client(BaseClient):
             token_expiration_seconds=float(token_expiration_seconds)
         ):
             return access_token
+        return self.get_access_token()
 
-        # there's no token or it is expired
-        access_token, token_expiration_seconds = self.get_token_request()
-        integration_context = {
-            'access_token': access_token,
-            'token_expiration_seconds': token_expiration_seconds,
-            'token_initiate_time': time.time()
-        }
-        demisto.debug(f'updating access token')
-        set_integration_context(context=integration_context)
-
-        return access_token
-
-    def get_token_request(self) -> Tuple[str, str]:
+    def get_token_request(self) -> str:
         """
         Sends request to retrieve token.
 
@@ -112,7 +111,16 @@ class Client(BaseClient):
                 "grant_type": "client_credentials"
             }
         )
-        return token_response.get('access_token'), token_response.get('expires_in')
+        access_token, token_expiration_seconds = token_response.get('access_token'), token_response.get('expires_in')
+        integration_context = {
+            'access_token': access_token,
+            'token_expiration_seconds': token_expiration_seconds,
+            'token_initiate_time': time.time()
+        }
+        demisto.debug(f'updating access token')
+        set_integration_context(context=integration_context)
+
+        return access_token
 
 
 ''' HELPER FUNCTIONS '''
