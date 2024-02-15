@@ -332,7 +332,7 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: dict[str, dict[Any, Any]] = {
     "qualys-vcenter-esxi-mapped-record-list": {
         "collection_name": "VCENTER_ESXI_MAP",
         "table_name": "Vcenter ESXI IP List",
-        "json_path": ["VCENTER_ESXI_MAP_LIST_OUTPUT", "RESPONSE","VCENTER_ESXI_MAP_LIST","VCENTER_ESXI_MAP"],
+        "json_path": ["VCENTER_ESXI_MAP_LIST_OUTPUT", "RESPONSE", "VCENTER_ESXI_MAP_LIST", "VCENTER_ESXI_MAP"],
     },
     "qualys-vcenter-esxi-mapped-record-import": {
         "json_path": ["SIMPLE_RETURN", "RESPONSE"],
