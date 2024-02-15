@@ -691,7 +691,7 @@ def test_fetch_incidents__last_uid_was_zero(mocker):
 def test_fetch_mails__mail_id_is_greater(mocker):
     """
     Given:
-        - A mock client and last run with uid_to_fetch_from == 2 
+        - A mock client and last run with uid_to_fetch_from == 2
         - The email UID returend from the client are  [1, 2, 3]
     When:
         - Fetching incidents
