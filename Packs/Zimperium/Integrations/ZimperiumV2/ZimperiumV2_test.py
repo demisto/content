@@ -173,7 +173,7 @@ def test_get_cves_by_device_command(client, requests_mock):
     results = get_cves_by_device_command(client=client, args=args)
 
     assert results.outputs.get('Zimperium.CVEByDevice(val.id == obj.id && val.deviceId == obj.deviceId)')[0].get('id') == \
-           mock_response_cve_devices_get.get('content', [''])[0].get('id')
+        mock_response_cve_devices_get.get('content', [''])[0].get('id')
     assert 'CVE on Device' in results.readable_output
     assert results.raw_response == mock_response_cve_devices_get
 
