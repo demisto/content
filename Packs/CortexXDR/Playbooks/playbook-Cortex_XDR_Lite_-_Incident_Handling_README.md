@@ -13,6 +13,9 @@ Verdict:
 Verdict Handling:
 - Handles malicious incidents by initiating appropriate response actions, including blocking malicious indicators, isolating endpoints, and disabling user accounts.
 
+To utilize this playbook as the default for handling XDR incidents, the classifier should be empty, and the selected incident type should be `Cortex XDR - Lite`.
+The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the selected Mapper (outgoing) should be Cortex `XDR - Outgoing Mapper`.
+
 
 ## Dependencies
 
@@ -21,15 +24,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Entity Enrichment - Generic v3
-* Command-Line Analysis
-* Block Indicators - Generic v3
-* Cortex XDR - Isolate Endpoint
 * Cortex XDR - Get entity alerts by MITRE tactics
+* Block Indicators - Generic v3
+* Command-Line Analysis
+* Cortex XDR - Isolate Endpoint
 
 ### Integrations
 
-* Cortex XDR - IR
 * CortexXDRIR
+* Cortex XDR - IR
 
 ### Scripts
 
