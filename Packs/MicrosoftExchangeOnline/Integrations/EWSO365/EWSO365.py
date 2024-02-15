@@ -2078,16 +2078,17 @@ def handle_attached_email_with_incorrect_message_id(attached_email: Message):
     return attached_email
 
 
-def handle_incorrect_message_id(incorrect_id):
+def handle_incorrect_message_id(message_id):
     """
     Handles the same logic as handle_attached_email_with_incorrect_message_id but expects only a string.
     """
     demisto.debug('XSUP-32660: handle_incorrect_message_id running')
-    if incorrect_id.endswith("]>") and incorrect_id.startswith("<["):
-        demisto.debug(f'XSUP-32660: value returned from handle_incorrect_message_id: "<{incorrect_id[2:-2]}>"')
-        return f"<{incorrect_id[2:-2]}>"
-    demisto.debug(f'XSUP-32660: value returned from handle_incorrect_message_id: {incorrect_id=}')
-    return incorrect_id
+    if message_id.find("<[") != -1 or message_id.find("]>") != -1:
+        fixed_message_id = message_id.replace("<[", "<").replace("]>", ">")
+        demisto.debug(f'XSUP-32660: value returned from handle_incorrect_message_id after fix: {fixed_message_id}')
+        return fixed_message_id
+    demisto.debug(f'XSUP-32660: value returned from handle_incorrect_message_id: {message_id=}')
+    return message_id
 
 
 def parse_incident_from_item(item):     # pragma: no cover
