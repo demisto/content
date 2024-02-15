@@ -880,7 +880,9 @@ script:
     - description: The tags for the new service.
       isArray: true
       name: tags
-    description: Creates a service.
+    description: >
+     Creates a service.
+     Note: overrides the service if it already exists.
     deprecated: true
     name: panorama-create-service
     outputs:
@@ -9366,7 +9368,7 @@ script:
       description: The job ID to use when polling.
     description: Exports a tech support file (TSF).
     polling: true
-  dockerimage: demisto/pan-os-python:1.0.0.83880
+  dockerimage: demisto/pan-os-python:1.0.0.85910
   isfetch: true
   runonce: false
   script: ''

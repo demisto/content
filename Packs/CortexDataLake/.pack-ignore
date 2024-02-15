@@ -4,6 +4,15 @@ ignore=IN126,IN136,IN124
 [file:README.md]
 ignore=RM102,RM106
 
+[file:Cortex_Data_Lake_-_Traffic_Indicators_Hunting.yml]
+ignore=BA101,PB118
+
+[file:Cortex_Data_Lake_-_File_Indicators_Hunting.yml]
+ignore=BA101,PB118
+
+[file:Cortex_Data_Lake_-_Indicators_Hunting.yml]
+ignore=BA101
+
 [known_words]
 CDL
 geolocations

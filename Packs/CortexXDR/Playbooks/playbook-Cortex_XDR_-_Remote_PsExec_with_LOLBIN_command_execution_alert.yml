@@ -60,7 +60,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - "40"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -74,110 +74,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 7f23cbc7-1205-479f-8e37-fad0c534c899
-    type: playbook
-    task:
-      id: 7f23cbc7-1205-479f-8e37-fad0c534c899
-      version: -1
-      name: Entity Enrichment - Generic v4
-      description: Enrich entities using one or more integrations.
-      playbookName: Entity Enrichment - Generic v4
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      CVE:
-        complex:
-          root: CVE
-          accessor: ID
-      Domain:
-        complex:
-          root: Domain
-          accessor: Name
-          transformers:
-          - operator: uniq
-      Email:
-        complex:
-          root: Account
-          accessor: Email.Address
-          transformers:
-          - operator: uniq
-      Hostname:
-        complex:
-          root: Endpoint
-          accessor: Hostname
-          transformers:
-          - operator: uniq
-      IP:
-        complex:
-          root: IP
-          accessor: Address
-          transformers:
-          - operator: uniq
-      MD5:
-        complex:
-          root: File
-          accessor: MD5
-          transformers:
-          - operator: uniq
-      RasterizeURL:
-        simple: "True"
-      ResolveIP:
-        simple: "False"
-      SHA1:
-        complex:
-          root: File
-          accessor: SHA1
-          transformers:
-          - operator: uniq
-      SHA256:
-        complex:
-          root: File
-          accessor: SHA256
-          transformers:
-          - operator: uniq
-      URL:
-        complex:
-          root: URL
-          accessor: Data
-          transformers:
-          - operator: uniq
-      UseReputationCommand:
-        simple: "False"
-      Username:
-        complex:
-          root: Account
-          accessor: Username
-          transformers:
-          - operator: uniq
-      VerifyURL:
-        simple: "False"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -301,7 +197,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "37"
+      - "41"
     scriptarguments:
       Commandline:
         complex:
@@ -912,10 +808,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 62e7c905-d334-4ea2-8576-17236fcc5069
+    taskid: ad3a79b5-0ec4-4f46-88d4-1ad86271a10c
     type: regular
     task:
-      id: 62e7c905-d334-4ea2-8576-17236fcc5069
+      id: ad3a79b5-0ec4-4f46-88d4-1ad86271a10c
       version: -1
       name: Set Command-Line Verdict to Layout
       description: commands.local.cmd.set.incident
@@ -940,7 +836,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 870
         }
       }
     note: false
@@ -1040,6 +936,155 @@ tasks:
         "position": {
           "x": 860,
           "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 67b37cd8-b7af-4a96-8818-c1631bb52882
+    type: playbook
+    task:
+      id: 67b37cd8-b7af-4a96-8818-c1631bb52882
+      version: -1
+      name: Entity Enrichment - Generic v3
+      description: Enrich entities using one or more integrations.
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      URLSSLVerification:
+        simple: "False"
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 5625d789-4fb5-4cb9-8b80-29e14d551e34
+    type: condition
+    task:
+      id: 5625d789-4fb5-4cb9-8b80-29e14d551e34
+      version: -1
+      name: Has command line verdict?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: commandlineverdict
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
         }
       }
     note: false

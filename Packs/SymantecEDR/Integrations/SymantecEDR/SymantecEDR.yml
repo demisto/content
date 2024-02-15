@@ -20,6 +20,14 @@ configuration:
   name: isFetch
   type: 8
   required: false
+- display: Incident data source
+  name: fetch_incidents_events_type
+  type: 15
+  required: false
+  defaultvalue: incidents
+  options:
+  - incidents
+  - events
 - additionalinfo: Retrieve incident related events from EDR database. An additional API call will be made for each fetched incident.
   display: Fetch incidents alerts
   name: isIncidentsEvent
@@ -32,7 +40,7 @@ configuration:
   required: false
 - additionalinfo: If not selected, will fetch Open Incidents.
   defaultvalue: Open
-  display: Status to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open, In-Progress
+  display: Incidents "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open, In-Progress
   name: fetch_status
   options:
   - Open
@@ -42,21 +50,48 @@ configuration:
   type: 16
   required: false
 - additionalinfo: If not selected, will fetch High and Medium incidents.
-  defaultvalue: High,Medium
-  display: Priority to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.
+  defaultvalue: 'High,Medium'
+  display: Incidents "Priority" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.
   name: fetch_priority
+  type: 16
+  required: false
   options:
   - Low
   - Medium
   - High
+- additionalinfo: If not selected, will fetch Success Events.
+  defaultvalue: 'Success'
+  display: Events "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Unknown, Success
+  name: fetch_event_status
   type: 16
   required: false
-- additionalinfo: First Fetch timestamp, Default is 3 days. The maximum time range is 30 days. For example, if configured as 60 days based on the current datetime, then data will be fetched according to the time range using start_time=60 days and end_time=30 days.
-  defaultvalue: '3 days'
-  display: First fetch timestamp (<number> <time unit>, e.g., 10 minutes, 12 hours, 7 days)
+  options:
+  - Unknown
+  - Success
+  - Failure
+- display: Events "Severity" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Info, Warning
+  name: fetch_severity
+  type: 16
+  required: false
+  additionalinfo: If not selected, will fetch Info events.
+  defaultvalue: Info
+  options:
+  - Info
+  - Warning
+  - Minor
+  - Major
+  - Critical
+  - Fatal
+- display: Query string to fetch incidents/events. For example - "updated:[2017-01-01T00:00:00.000Z TO 2017-01-08T00:00:00.000Z]"
+  name: fetch_incidents_query
+  type: 0
+  required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 10 minutes, 12 hours, 7 days)
   name: first_fetch
   type: 0
   required: false
+  additionalinfo: First Fetch timestamp, Default is 3 days. The maximum time range is 30 days. For example, if configured as 60 days based on the current datetime, then data will be fetched according to the time range using start_time=60 days and end_time=30 days.
+  defaultvalue: '3 days'
 - additionalinfo: Maximum Number of Incidents fetch limit. Maximum Default limit is 50.
   defaultvalue: '50'
   display: Maximum number of incidents to fetch
@@ -100,7 +135,7 @@ script:
       name: device_id
       required: true
     description: |-
-      Isolates endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint device IDs.
+      Isolates or quarantines endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint device IDs.
     name: symantec-edr-endpoint-isolate
     outputs:
     - contextPath: SymantecEDR.Command.isolate_endpoint.command_id
@@ -427,7 +462,7 @@ script:
       - Unknown
       - Success
       - Failure
-    description: Get system activities.
+    description: Get system activities or logs.
     name: symantec-edr-system-activity-list
     outputs:
     - contextPath: SymantecEDR.SystemActivity.device_time
@@ -530,7 +565,7 @@ script:
       name: query
     - description: 'The type ID. Refer to the event summary type IDs link: https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html.'
       name: type_id
-    description: Get Audit Events.
+    description: Get audit events.
     name: symantec-edr-audit-event-list
     outputs:
     - contextPath: SymantecEDR.AuditEvent.user_agent_ip
@@ -540,7 +575,7 @@ script:
       description: 'The GUID assigned for this incident.'
       type: String
     - contextPath: SymantecEDR.AuditEvent.entity_result.type
-      description: 'The type of the managed entity.Depending on this entity type, data would contain the corresponding entity content. Refer to this link  https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf section 3.74 Entity for all the Possible values for managed entity types.'
+      description: 'The type of the managed entity. Depending on this entity type, data would contain the corresponding entity content. Refer to this link  https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf section 3.74 Entity for all the possible values for managed entity types.'
       type: String
     - contextPath: SymantecEDR.AuditEvent.entity_result.uid
       description: Unique identifier associated with the managed entity.
@@ -651,7 +686,7 @@ script:
       - major
       - critical
       - fatal
-    description: Get events from EDR on-premise.
+    description: Get events or system alerts from EDR on-premise.
     name: symantec-edr-event-list
     outputs:
     - contextPath: SymantecEDR.Event.type_id
@@ -879,7 +914,7 @@ script:
       description: The username or ID that originated or caused the event.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.user_domain
-      description: Event User associated with Domain.
+      description: Event user associated with domain.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.user_sid
       description: Unique ID of the user that originated the event or the user on whose behalf the event occurred.
@@ -960,10 +995,10 @@ script:
       description: 'The process integrity level (Windows only). Possible values are:  0 = Unknown, 1 = Untrusted,  2 = Low,  3 = Medium,  4 = Medium Plus,  5 = High, 6 = System,  7 = Protected.'
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.process.user.name
-      description: Process User Name.
+      description: Process user name.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.process.user.sid
-      description: Process Unique SID.
+      description: Process unique SID.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.process.file.normalized_path
       description: The CSIDL normalized path name;Windows Only.
@@ -972,7 +1007,7 @@ script:
       description: The name of the file.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.process.file.md5
-      description: The MD5 Checksum of the file.
+      description: The MD5 checksum of the file.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.process.file.modified
       description: The process identifier as reported by the operating system.
@@ -999,10 +1034,10 @@ script:
       description: The possible values of supported category_id. 0 = All Events, 1 = Suspicious N-Gram, 2 = Process Launch , 3 = Process Termination , 100 = Suspicious Protocol-Port Usage By System Processes, 102 = Suspicious PowerShell commands.
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.enriched_data.rule_description
-      description: Enriched Rule Description.
+      description: Enriched rule description.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.event_uuid
-      description: The Unique event UUID.
+      description: The unique event UUID.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.attacks.technique_uid
       description: The MITRE technique ID for the attack. Possible values are listed in https://attack.mitre.org/techniques/enterprise.
@@ -1020,7 +1055,7 @@ script:
       description: 'Indicates the reason of event being related to an incident. Possible values are: 1 - Event triggered the incident , 2 - Event is part of process lineage tracking, 3 - Event is likely related to the incident.'
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.ref_uid
-      description: The Event Reference UID.
+      description: The event reference UID.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.correlation_uid
       description: Event Correlation UID.
@@ -1215,7 +1250,7 @@ script:
       description: 'The comment for this allow list policy. If not specified, then defaults to empty string. Example: No monitoring required for control traffic from this IP.'
       type: String
     - contextPath: SymantecEDR.AllowListPolicy.id
-      description: 'The unique ID of this allow list policy. This ID can be used in patch or delete request. Note: This is ignored if present in create request.'
+      description: 'The unique ID of this allow list policy. This ID can be used in a patch or delete request. Note: This is ignored if present in a create request.'
       type: String
     - contextPath: SymantecEDR.AllowListPolicy.target_type
       description: 'The type of this whitelist policy. enum (ip, domain, url, sha256, incident_trigger_sig_id). Example: ip.'
@@ -1304,7 +1339,7 @@ script:
     - description: Device ID of the target computer/endpoint,.
       name: device_id
       required: true
-    - description: The SHA256 value of the target file,.
+    - description: The SHA256 value of the target file.
       name: sha2
       required: true
     description: Deletes a file, i.e., deletes all instances of the file, based on the file hash that you have specified from the endpoint using the device ID.
@@ -1383,7 +1418,7 @@ script:
       description: SHA256 hash of the file submitted for analysis.
       type: String
     polling: true
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   runonce: false
   script: '-'

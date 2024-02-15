@@ -8,30 +8,31 @@ def upload_file(incident_id: str, entry_id: str, body: str = '', as_incident_att
                                   {"uri": f'{service_name}/upload/{incident_id}', "entryID": entry_id, "body": body})
 
 
-def upload_file_command(args: dict) -> tuple[str, str]:
+def upload_file_command(args: dict) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     incident_id = args.get('incID', '')
-    entry_id = args.get('entryID', '')
+    entry_ids = argToList(args.get('entryID', ''))
     body = args.get('body', '')
     target = args.get('target', 'war room entry')
-    response = upload_file(incident_id, entry_id, body, target == 'incident attachment')
-    if is_error(response[0]):
-        raise Exception("There was an issue uploading the file. Check your API key and input arguments.")
+    for entry_id in entry_ids:
+        response = upload_file(incident_id, entry_id, body, target == 'incident attachment')
+        if is_error(response[0]):
+            raise DemistoException("There was an issue uploading the file. Check your API key and input arguments.")
 
-    uploaded_entry_id = demisto.dt(response, 'Contents.response.entries.id')
-    readable = 'File uploaded successfully.'
-    # in case the file uploaded as war room entry
-    if uploaded_entry_id:
-        readable += f' Entry ID is {uploaded_entry_id}'
-    if body:
-        readable += f'. Comment is:{body}'
-
-    return readable, response
+        uploaded_entry_id = demisto.dt(response, 'Contents.response.entries.id')
+        readable = 'File uploaded successfully.'
+        # in case the file uploaded as war room entry
+        if uploaded_entry_id:
+            readable += f' Entry ID is {uploaded_entry_id}'
+        if body:
+            readable += f'. Comment is:{body}'
+        command_results.append(CommandResults(readable_output=readable, raw_response=response))
+    return command_results
 
 
 def main():
     try:
-        readable, response = upload_file_command(demisto.args())
-        return_outputs(readable, {}, response)
+        return_results(upload_file_command(demisto.args()))
     except Exception as err:
         return_error(str(err))
 
