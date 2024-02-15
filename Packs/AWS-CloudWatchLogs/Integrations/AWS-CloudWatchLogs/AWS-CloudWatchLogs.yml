@@ -339,7 +339,7 @@ script:
       description: The name of the log stream.
     - name: timestamp
       required: true
-      description: The time the event occurred, expressed as the number of milliseconds fter Jan 1, 1970 00:00:00 UTC. (Unix Time)
+      description: The time the event occurred, expressed as the number of milliseconds fter Jan 1, 1970 00:00:00 UTC. (Unix Time).
     - name: message
       required: true
       description: The raw event message.
