@@ -1,4 +1,7 @@
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Panorama
   version: -1
@@ -14,7 +17,6 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
-  display: ''
 - defaultvalue: '443'
   display: Port (e.g 443)
   name: port
@@ -154,10 +156,9 @@ configuration:
   name: fetch_job_polling_max_num_attempts
   additionalinfo: "The maximum number of attempts to try and pull results for each log type from a job that was created by its query. Each attempt takes around 1 second. Increasing this value is useful in case there are many logs to pull from a given log type.\nNote: When increasing this number, in case fetching more than 4 logs types together, it is recommended to split different log types for different integration instances"
   type: 0
-  defaultvalue: '10'
+  defaultvalue: 10
   advanced: true
   section: Collect
-  required: false
 - display: Traffic Log Type Query
   name: traffic_query
   additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
@@ -219,11 +220,6 @@ configuration:
   type: 13
   section: Connect
   required: false
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -5039,7 +5035,7 @@ script:
   - arguments:
     - description: The serial number of the device.
       name: target
-    - default: true
+    - defaultValue: 'running_config'
       description: Name of the file to save the config to. Default is "running_config".
       name: filename
     description: Pull the running config file.
@@ -9368,7 +9364,7 @@ script:
       description: The job ID to use when polling.
     description: Exports a tech support file (TSF).
     polling: true
-  dockerimage: demisto/pan-os-python:1.0.0.85910
+  dockerimage: demisto/pan-os-python:1.0.0.87401
   isfetch: true
   runonce: false
   script: ''
@@ -9380,3 +9376,5 @@ tests:
 - palo_alto_panorama_test_pb
 - PAN-OS-firewall-topology-test-pb
 - PAN-OS-panorama-topology-test-pb
+defaultmapperin: Panorama Mapper
+defaultclassifier: Panorama Classifier
