@@ -59,7 +59,7 @@ configuration:
   type: 13
 description: Fetch and investigate mobile security alerts, generated based on anomalous or unauthorized activities detected on a user's mobile device. Compatible with Zimperium 5.X API version.
 name: Zimperium v2
-fromversion: 6.10.0
+fromversion: 6.9.0
 display: Zimperium v2
 script:
   commands:
