@@ -135,11 +135,17 @@ def test_main_unpopulate(mocker):
     pytest.param(["field1", "field2", "field3"], frozenset(["field1", "field2", "field3"]), id="Normal fields populating"),
     pytest.param(["field1", "field1", "field2"], frozenset(["field1", "field2"]), id="Normal fields populating with duplicates"),
     pytest.param(["field1", "RelatedIncCount"], frozenset(
-        ["field1", "investigationsCount"]), id="populating `RelatedIncCount` field"),
+        ["field1", "RelatedIncCount", "investigationsCount"]), id="populating `RelatedIncCount` field"),
     pytest.param(["field1", "investigationsCount"], frozenset(
         ["field1", "investigationsCount"]), id="populating `investigationsCount` field"),
     pytest.param(["ALL", "field1", "field2"], None, id="Using both `ALL` and other fields."),
 ])
 def test_get_parsed_populated_fields(fields_to_parse, expected_result):
+    """
+    Given: A list of fields to parse for an indicator
+    When: The function is called with these fields
+    Then: returns a frozenset containing the parsed fields (according to API need), or None if all fields are requested.
+    """
+
     result = get_parsed_populated_fields(fields_to_parse)
     assert result == expected_result

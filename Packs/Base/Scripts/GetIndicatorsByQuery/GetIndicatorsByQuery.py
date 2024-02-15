@@ -108,7 +108,7 @@ def get_parsed_populated_fields(fields_to_parse: list[str]) -> frozenset | None:
     """ Gets a list of fields to populate for an indicator and parse it according to specific requirements."""
     # Due to using the always populated field and no ability to provide None value in the UI, we allow an explicit override.
 
-    if fields_to_parse == "ALL":
+    if  "ALL" in fields_to_parse:
         demisto.debug("All fields are requested. populated_field argument is set to None.")
 
         return None
