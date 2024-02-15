@@ -15,7 +15,7 @@ NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
 
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
-XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
+XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident Schema'
 INTEGRATION_NAME = 'Cortex XDR - IR'
 ALERTS_LIMIT_PER_INCIDENTS = -1
 
@@ -35,6 +35,8 @@ XDR_INCIDENT_FIELDS = {
     "manual_severity": {"description": "Incident severity assigned by the user. "
                                        "This does not affect the calculated severity low medium high",
                         "xsoar_field_name": "severity"},
+    "close_reason": {"description": "The close reason of the XSOAR incident",
+                     "xsoar_field_name": "closeReason"}
 }
 
 MIRROR_DIRECTION = {
@@ -688,9 +690,12 @@ def handle_incoming_user_unassignment(incident_data):
 
 
 def handle_incoming_closing_incident(incident_data):
+    incident_id = incident_data.get('incident_id')
+    demisto.debug(f'handle_incoming_closing_incident {incident_data=} {incident_id=}')
     closing_entry = {}  # type: Dict
     if incident_data.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR:
-        demisto.debug(f"Closing XDR issue {incident_data.get('incident_id')}")
+        demisto.debug(f"handle_incoming_closing_incident {incident_data.get('status')=} {incident_id=}")
+        demisto.debug(f"Closing XDR issue {incident_id=}")
         closing_entry = {
             'Type': EntryType.NOTE,
             'Contents': {
@@ -702,11 +707,14 @@ def handle_incoming_closing_incident(incident_data):
         }
         incident_data['closeReason'] = closing_entry['Contents']['closeReason']
         incident_data['closeNotes'] = closing_entry['Contents']['closeNotes']
+        demisto.debug(f"handle_incoming_closing_incident {incident_id=} {incident_data['closeReason']=} "
+                      f"{incident_data['closeNotes']=}")
 
         if incident_data.get('status') == 'resolved_known_issue':
             close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
             closing_entry['Contents']['closeNotes'] = close_notes
             incident_data['closeNotes'] = close_notes
+            demisto.debug(f"handle_incoming_closing_incident {incident_id=} {close_notes=}")
 
     return closing_entry
 
@@ -829,12 +837,16 @@ def get_remote_data_command(client, args):
 
 def update_remote_system_command(client, args):
     remote_args = UpdateRemoteSystemArgs(args)
+    incident_id = remote_args.remote_incident_id
+    demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
 
     if remote_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
                       f'incident {remote_args.remote_incident_id}')
+        demisto.debug(f'{remote_args.delta=}')
     try:
         if remote_args.incident_changed:
+            demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
             update_args = get_update_args(remote_args)
 
             update_args['incident_id'] = remote_args.remote_incident_id
