@@ -155,6 +155,8 @@ class DemistoWrapper(Demisto):
 # TODO: handle self._heartbeat_thread
 try:
     # try except for CommonServerPython tests.
+    # demisto._heartbeat_enabled = False
+    # demisto._heartbeat_thread.join()
     demisto = DemistoWrapper(context)  # type:ignore [name-defined] # noqa: F821 # pylint: disable=E0602
 except NameError:
     pass
