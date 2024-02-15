@@ -92,6 +92,8 @@ configuration:
   - DGA Domain Feed
   - High-Confidence DGA Domain Feed
   - Sinkhole Feed
+  - Malware Domains Feed
+  - Phishing Domains Feed
   required: true
   type: 16
 - display: Username

@@ -1,16 +1,16 @@
-### Getting Started with BitSight for Security Performance Management
+### Getting Started with Bitsight for Security Performance Management
 
-To get started with the integration, contact BitSight support so that your BitSight portal can be enabled to share findings with Cortext XSOAR.
+To get started with the integration, contact Bitsight support so that your Bitsight portal can be enabled to share findings with Cortext XSOAR.
 
-API Key: BitSight customers can generate an API token to enable communication between BitSight and Cortex XSOAR. Steps for generating an API token:
+API Key: Bitsight customers can generate an API token to enable communication between Bitsight and Cortex XSOAR. Steps for generating an API token:
 
-1) Login to BitSight SPM at https://service.bitsighttech.com/app/spm/.
+1) Login to Bitsight SPM at https://service.bitsighttech.com/app/spm/.
 2) Click on the gear icon in top-right side.
 3) In the dropdown menu, click on "Account".
 4) In the "User Preferences" tab, there will be a section "API Token" to generate a new API Token.
-5) Click on "Generate New Token" and use that token to authenticate the BitSight integration in XSOAR.
+5) Click on "Generate New Token" and use that token to authenticate the Bitsight integration in XSOAR.
 
-Company's GUID: Each company monitored by BitSight is identified by a unique identifier (Global Unique Identifier, or GUID). In addition, each subsidiary company associated with a parent company also has a GUID and is organized in a hierarchical tree structure.
+Company's GUID: Each company monitored by Bitsight is identified by a unique identifier (Global Unique Identifier, or GUID). In addition, each subsidiary company associated with a parent company also has a GUID and is organized in a hierarchical tree structure.
 
 You can specify the GUID for a parent or subsidiary company in your company tree. Any issues related to that company and its child companies in the tree structure will be retrieved. You can easily find the GUID for your parent organization by executing the following command:
 
