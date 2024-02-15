@@ -2056,11 +2056,11 @@ def handle_attached_email_with_incorrect_message_id(attached_email: Message):
             message_id = attached_email._headers[i][1]
             demisto.debug(f'XSUP-32660: {message_id=}')
             try:
-                if message_id.endswith("]>") and message_id.startswith("<["):
+                if message_id.find("<[") != -1 or message_id.find("]>") != -1:
                     demisto.debug(f"Fixing invalid {message_id=} attachment header by removing its square bracket \
                         wrapper (see XSUP-32074 for further information)")
                     attached_email._headers.pop(i)
-                    message_id_value = f"<{message_id[2:-2]}>"
+                    message_id_value = message_id.replace("<[", "<").replace("]>", ">")
 
             except Exception as e:
                 # The function is designed to handle a specific format error for the Message-ID header
