@@ -168,11 +168,7 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
 
-    :return:
-    :rtype:
-    """
     params = demisto.params()
     client_id: str = params.get('credentials', {}).get('identifier', '')
     client_secret: str = params.get('credentials', {}).get('password', '')
