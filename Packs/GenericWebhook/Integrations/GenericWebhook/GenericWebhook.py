@@ -49,13 +49,12 @@ class GenericWebhookAccessFormatter(AccessFormatter):
 
 @app.post('/')
 async def handle_post(
-        incident: Incident,
-        request: Request,
-        credentials: HTTPBasicCredentials = Depends(basic_auth),
-        token: APIKey = Depends(token_auth)
+    incident: Incident,
+    request: Request,
+    credentials: HTTPBasicCredentials = Depends(basic_auth),
+    token: APIKey = Depends(token_auth)
 ):
     demisto.debug('handling request')
-    demisto.info(get_message_memory_dump(None, None))
     credentials_param = demisto.params().get('credentials')
     if credentials_param and (username := credentials_param.get('identifier')):
         password = credentials_param.get('password', '')
@@ -67,7 +66,7 @@ async def handle_post(
             if not token or not compare_digest(token, password):
                 auth_failed = True
         elif (not credentials) or (not (compare_digest(credentials.username, username)
-                                   and compare_digest(credentials.password, password))):
+                                        and compare_digest(credentials.password, password))):
             auth_failed = True
         if auth_failed:
             request_headers = dict(request.headers)
@@ -115,7 +114,7 @@ async def handle_post(
             except Exception as e:
                 demisto.error(f'Failed storing sample events - {e}')
     demisto.debug("-->Incidents were: {}".format(incidents))
-    incidents =  demisto.createIncidents(incidents)
+    incidents = demisto.createIncidents(incidents)
     demisto.debug('created incidents')
     return incidents
     # end change
@@ -167,6 +166,8 @@ def delete_cache():
 
     except Exception as e:
         demisto.error(f'Failed removing sample events - {e}')
+
+
 # end change
 
 
@@ -239,4 +240,4 @@ def main() -> None:
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-        main()
+    main()
