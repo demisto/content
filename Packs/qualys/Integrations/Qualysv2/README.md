@@ -21915,7 +21915,7 @@ There is no context output for this command.
 ### qualys-update-vmware-record
 
 ***
-Update Vmware records for authenticated scans of hosts running on Vmware
+Update Vmware records for authenticated scans of hosts running on Vmware.
 
 #### Base Command
 
@@ -21925,12 +21925,20 @@ Update Vmware records for authenticated scans of hosts running on Vmware
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | Record IDs to update. | Optional | 
-| add_ips | IP addresses specified will overwrite existing IPs in the record. | Optional | 
+| ids | Record IDs to update. Specify record IDs and/or ID ranges Multiple entries are comma separated. | Required | 
+| add_ips | Add IPs and/or ranges to the IPs list for this record. Multiple IPs/ranges are comma separated. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!qualys-update-vmware-record ids=123 add_ips=5.2.8.9```
+
+#### Human Readable Output
+
+>Successfully Updated
+
 ### qualys-update-vcenter-record
 
 ***
@@ -21944,16 +21952,24 @@ Update vCenter records for authenticated scans of hosts running on vCenter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | Record IDs to update. | Optional | 
-| add_ips | IP addresses specified will overwrite existing IPs in the record. | Optional | 
+| ids | Record IDs to update. Specify record IDs and/or ID ranges Multiple entries are comma separated. | Required | 
+| add_ips | Add IPs and/or ranges to the IPs list for this record. Multiple IPs/ranges are comma separated. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!qualys-update-vmware-record ids=123 add_ips=5.2.8.9```
+
+#### Human Readable Output
+
+>Successfully Updated
+
 ### qualys-vcenter-esxi-mapped-record-list
 
 ***
-List vCenter ESXi mapping records
+List VCenter ESXi mapping records.
 
 #### Base Command
 
@@ -21963,16 +21979,43 @@ List vCenter ESXi mapping records
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| network_id | Network support must be enabled to specify the network_id. If network support is enabled and you do not provide a network_id, then the Default Global Network is considered. You can specify only one network_id. Default is 0. | Optional | 
-| esxi_ip | Specifies the IP address of the ESXi server. | Optional | 
-| output_format | One output format may be specified. Possible values are: xml, csv. | Optional | 
+| limit | Specify a positive numeric value to limit the amount of results in the requested list. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Qualys.VcenterToEsxi.ESXI_IP | unknown | The IP address of the ESXi server. | 
+| Qualys.VcenterToEsxi.MAPPING_DATA_SOURCE | unknown | The source of this mapping record. | 
+| Qualys.VcenterToEsxi.VCENTER_IP | unknown | The IP address of the vCenter. | 
+
+#### Command Example
+```!qualys-vcenter-esxi-mapped-record-list```
+
+#### Context Example
+```json
+{
+    "Qualys": {
+        "VcenterToEsxi": {
+            "ESXI_IP": "1.1.1.1",
+            "MAPPING_DATA_SOURCE": "File",
+            "VCENTER_IP": "1.1.1.3"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Vcenter ESXI IP List
+>|ESXI_IP|MAPPING_DATA_SOURCE|VCENTER_IP|
+>|---|---|---|
+>| 1.1.1.1 | FILE | 1.1.1.3 |
+
 ### qualys-vcenter-esxi-mapped-record-import
 
 ***
+Import vCenter - ESXi mapping records.
 
 #### Base Command
 
@@ -21982,14 +22025,23 @@ There is no context output for this command.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| csv_data | Import vCenter ESXi mapping records. | Optional | 
+| csv_data | The CSV data file containing the vCenter - ESXi mapping records that you want to import. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!qualys-vcenter-esxi-mapped-record-import csv_data=`vCenter IP,ESXi IP 1.1.1.1,1.1.1.2```
+
+#### Human Readable Output
+
+>Successfully imported 1 record
+
 ### qualys-vcenter-esxi-mapped-record-purge
 
 ***
+Purge vCenter - ESXi mapping records.
 
 #### Base Command
 
@@ -21999,8 +22051,15 @@ There is no context output for this command.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| csv_data | Purge vCenter ESXi mapping records. | Optional | 
+| csv_data | The CSV data file containing the vCenter - ESXi mapping records that you want to purge. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!qualys-vcenter-esxi-mapped-record-purge csv_data=`vCenter IP,ESXi IP 1.1.1.1,1.1.1.2```
+
+#### Human Readable Output
+
+>Successfully purged 1 record
