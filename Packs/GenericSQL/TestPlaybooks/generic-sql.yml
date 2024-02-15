@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 50
+          "y": -190
         }
       }
     note: false
@@ -60,7 +60,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 370
+          "y": 150
         }
       }
     note: false
@@ -233,7 +233,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 195
+          "y": -35
         }
       }
     note: false
@@ -473,12 +473,12 @@ tasks:
       brand: Generic SQL
     nexttasks:
       '#none#':
-      - "31"
+      - "37"
     scriptarguments:
       Digits:
         simple: "True"
       Length:
-        simple: "8"
+        simple: "7"
       Lowercase:
         simple: "False"
       Punctuation:
@@ -493,7 +493,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 545
+          "y": 335
         }
       }
     note: false
@@ -680,7 +680,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - "36"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -803,6 +803,80 @@ tasks:
         "position": {
           "x": 480,
           "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: c9123102-0f37-436b-8218-ae487f78507e
+    type: regular
+    task:
+      id: c9123102-0f37-436b-8218-ae487f78507e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: RandomString
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 89d7be33-12f5-49bb-83dd-a4bce5c98937
+    type: regular
+    task:
+      id: 89d7be33-12f5-49bb-83dd-a4bce5c98937
+      version: -1
+      name: Set
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: RandomString
+      value:
+        simple: 1${RandomString}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 530
         }
       }
     note: false
