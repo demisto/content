@@ -31,7 +31,8 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
     override_marketplaces = list(GCPConfig.corepacks_override_contents.keys())
 
     override_corepacks_file_version = GCPConfig.corepacks_override_contents.get(marketplace, {}).get('file_version')
-    current_corepacks_file_version = GCPConfig.core_packs_file_versions.get(override_corepacks_server_version, {}).get('file_version', {}).get(marketplace)
+    current_corepacks_file_version = (GCPConfig.core_packs_file_versions.get(override_corepacks_server_version, {}).
+                                      get('file_version', {}).get(marketplace))
     if not current_corepacks_file_version or not override_corepacks_file_version:
         logging.debug(f'Either no file version was found in {GCPConfig.COREPACKS_OVERRIDE_FILE} or could not find '
                       f'a matching file version for server version {override_corepacks_server_version} in '
@@ -96,7 +97,6 @@ def upload_server_versions_metadata(artifacts_dir: str):
     """
     versions_metadata_path = os.path.join(artifacts_dir, GCPConfig.VERSIONS_METADATA_FILE)
     json_write(versions_metadata_path, GCPConfig.versions_metadata_contents)
-    logging.info(artifacts_dir)
     logging.success(f"Finished copying {GCPConfig.VERSIONS_METADATA_FILE} to artifacts to {artifacts_dir}.")
  
 def option_handler():
@@ -134,7 +134,7 @@ def main():
         logging.debug('Skipping overriding an existing corepacks file.')
     
     # upload server versions metadata to bucket
-    upload_server_versions_metadata(os.path.dirname(packs_artifacts_path))
+    upload_server_versions_metadata(packs_artifacts_path)
 
 
 if __name__ == '__main__':
