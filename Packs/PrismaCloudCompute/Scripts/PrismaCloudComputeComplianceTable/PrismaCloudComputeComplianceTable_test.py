@@ -39,6 +39,21 @@ SECOND_HOST_OUTPUT['ComplianceIssues'] = ['13372 (high | custom) - title']
 TWO_HOST_OUTPUT = [copy.deepcopy(HOST_OUTPUT), copy.deepcopy(HOST_OUTPUT)]
 TWO_HOST_OUTPUT[1]['Hostname'] = 'some_hostname2'
 
+'''--------- Host output context data grid ---------'''
+HOST_OUTPUT_GRID = util_load_json('test_data/host-expected-output-grid.json')
+HOST_OUTPUT_UPDATED_GRID = copy.deepcopy(HOST_OUTPUT_GRID)
+HOST_OUTPUT_UPDATED_GRID.update({'complianceissues': '1337 (high | custom) - title\n\n13372 (high | custom) - title'})
+
+SECOND_HOST_OUTPUT_GRID = copy.deepcopy(HOST_OUTPUT_GRID)
+SECOND_HOST_OUTPUT_GRID['hostname'] = 'some_hostname2'
+SECOND_HOST_OUTPUT_GRID['complianceissues'] = '13372 (high | custom) - title'
+
+TWO_HOST_OUTPUT_GRID = [copy.deepcopy(HOST_OUTPUT_GRID), copy.deepcopy(HOST_OUTPUT_GRID)]
+TWO_HOST_OUTPUT_GRID[1]['hostname'] = 'some_hostname2'
+
+TWO_HOST_OUTPUT_UPDATED_GRID = [copy.deepcopy(HOST_OUTPUT_UPDATED_GRID), copy.deepcopy(HOST_OUTPUT_UPDATED_GRID)]
+TWO_HOST_OUTPUT_UPDATED_GRID[1]['hostname'] = 'some_hostname2'
+
 
 '''--------- Container input context data ---------'''
 CONTAINER_INPUT = util_load_json('test_data/container-scan-results.json')
@@ -69,6 +84,22 @@ SECOND_CONTAINER_OUTPUT['ComplianceIssues'] = ['13372 (high | custom) - title']
 TWO_CONTAINER_OUTPUT = [copy.deepcopy(CONTAINER_OUTPUT), copy.deepcopy(CONTAINER_OUTPUT)]
 TWO_CONTAINER_OUTPUT[1]['ContainerID'] = 'some_container_id2'
 
+'''--------- Container output context as grid ---------'''
+
+CONTAINER_OUTPUT_GRID = util_load_json('test_data/container-expected-output-grid.json')
+CONTAINER_OUTPUT_UPDATED_GRID = copy.deepcopy(CONTAINER_OUTPUT_GRID)
+CONTAINER_OUTPUT_UPDATED_GRID.update({'complianceissues': '1337 (high | custom) - title\n\n13372 (high | custom) - title'})
+
+SECOND_CONTAINER_OUTPUT_GRID = copy.deepcopy(CONTAINER_OUTPUT_GRID)
+SECOND_CONTAINER_OUTPUT_GRID['containerid'] = 'some_container_id2'
+SECOND_CONTAINER_OUTPUT_GRID['complianceissues'] = '13372 (high | custom) - title'
+
+TWO_CONTAINER_OUTPUT_GRID = [copy.deepcopy(CONTAINER_OUTPUT_GRID), copy.deepcopy(CONTAINER_OUTPUT_GRID)]
+TWO_CONTAINER_OUTPUT_GRID[1]['containerid'] = 'some_container_id2'
+
+TWO_CONTAINER_OUTPUT_UPDATED_GRID = [copy.deepcopy(CONTAINER_OUTPUT_UPDATED_GRID), copy.deepcopy(CONTAINER_OUTPUT_UPDATED_GRID)]
+TWO_CONTAINER_OUTPUT_UPDATED_GRID[1]['containerid'] = 'some_container_id2'
+
 '''--------- Image input context data ---------'''
 IMAGE_INPUT = util_load_json('test_data/image-scan-results.json')
 IMAGE_INPUT_AS_DICT = copy.deepcopy(IMAGE_INPUT)
@@ -97,6 +128,21 @@ SECOND_IMAGE_OUTPUT['ComplianceIssues'] = ['13372 (high | custom) - title']
 
 TWO_IMAGE_OUTPUT = [copy.deepcopy(IMAGE_OUTPUT), copy.deepcopy(IMAGE_OUTPUT)]
 TWO_IMAGE_OUTPUT[1]['ImageID'] = 'some_image_id2'
+
+'''--------- Image output context data grid ---------'''
+IMAGE_OUTPUT_GRID = util_load_json('test_data/image-expected-output-grid.json')
+IMAGE_OUTPUT_UPDATED_GRID = copy.deepcopy(IMAGE_OUTPUT_GRID)
+IMAGE_OUTPUT_UPDATED_GRID.update({'complianceissues': '1337 (high | custom) - title\n\n13372 (high | custom) - title'})
+
+SECOND_IMAGE_OUTPUT_GRID = copy.deepcopy(IMAGE_OUTPUT_GRID)
+SECOND_IMAGE_OUTPUT_GRID['imageid'] = 'some_image_id2'
+SECOND_IMAGE_OUTPUT_GRID['complianceissues'] = '13372 (high | custom) - title'
+
+TWO_IMAGE_OUTPUT_GRID = [copy.deepcopy(IMAGE_OUTPUT_GRID), copy.deepcopy(IMAGE_OUTPUT_GRID)]
+TWO_IMAGE_OUTPUT_GRID[1]['imageid'] = 'some_image_id2'
+
+TWO_IMAGE_OUTPUT_UPDATED_GRID = [copy.deepcopy(IMAGE_OUTPUT_UPDATED_GRID), copy.deepcopy(IMAGE_OUTPUT_UPDATED_GRID)]
+TWO_IMAGE_OUTPUT_UPDATED_GRID[1]['imageid'] = 'some_image_id2'
 
 
 @pytest.mark.parametrize('input_context, object_type, expected_context, expected_context_path', [
@@ -135,6 +181,50 @@ def test_create_new_outputs(mocker, input_context, object_type, expected_context
 
     append_context.assert_called_once_with(expected_context_path, expected_context)
     assert not update_results.called, 'Should only create context data and not update existing in this test.'
+
+
+@pytest.mark.parametrize('input_context, object_type, expected_context', [
+    (HOST_INPUT, 'Host', [HOST_OUTPUT_GRID]),
+    (TWO_HOST_INPUT, 'Host', TWO_HOST_OUTPUT_GRID),
+    (HOST_INPUT_AS_DICT, 'Host', [HOST_OUTPUT_GRID]),
+    (CONTAINER_INPUT, 'Container', [CONTAINER_OUTPUT_GRID]),
+    (TWO_CONTAINER_INPUT, 'Container', TWO_CONTAINER_OUTPUT_GRID),
+    (CONTAINER_INPUT_AS_DICT, 'Container', [CONTAINER_OUTPUT_GRID]),
+    (IMAGE_INPUT, 'Image', [IMAGE_OUTPUT_GRID]),
+    (TWO_IMAGE_INPUT, 'Image', TWO_IMAGE_OUTPUT_GRID),
+    (IMAGE_INPUT_AS_DICT, 'Image', [IMAGE_OUTPUT_GRID]),
+], ids=['Host', 'TwoHosts', 'HostAsDict', 'Container', 'TwoContainers', 'ContainerAsDict', 'Image', 'TwoImages', 'ImageAsDict'])
+def test_create_new_outputs_in_grid(mocker, input_context, object_type, expected_context):
+    """
+    Given:
+        NEW enriched compliance issues with NEW compliance objects ids in the input context data.
+        For each compliance object type (Host, Container, Image) check the following:
+            1. Single object in a list
+            2. Two objects in a list
+            3. Single object as a dict response
+
+    When:
+        Running update_context_paths
+
+    Then:
+        Assert the newly created compliance GRID in the context data is as expected.
+        Assert nothing was updated.
+    """
+    grid_id = 'some_grid_id'
+    demisto_args = {'resourceType': object_type, 'gridID': grid_id}
+    incident_fields = {"CustomFields": {grid_id: [{}, {}]}}
+    mocker.patch.object(demisto, 'incident', return_value=incident_fields)
+    mocker.patch.object(demisto, 'context', return_value=input_context)
+    update_results = mocker.patch.object(demisto, 'executeCommand', return_value=None)
+
+    update_context_paths(demisto_args)
+    expected_fields = {
+        'customFields': {
+            grid_id: expected_context
+        }
+    }
+
+    update_results.assert_called_once_with("setIncident", expected_fields)
 
 
 def merge_input_and_output_context(input_context, output_context, object_type):
@@ -195,6 +285,55 @@ def test_update_outputs(mocker, input_context, input_context_in_path, object_typ
     assert not append_context.called, 'Should only update context data and not update existing in this test.'
 
 
+@pytest.mark.parametrize('input_context, input_context_in_path, object_type, already_present_output, expected_context',
+                         [(HOST_UPDATE_INPUT, HOST_UPDATE_INPUT['PrismaCloudCompute']['ReportHostScan'],
+                             'Host', [HOST_OUTPUT_GRID], [HOST_OUTPUT_UPDATED_GRID]),
+                          (TWO_HOST_UPDATE_INPUT, TWO_HOST_UPDATE_INPUT['PrismaCloudCompute']['ReportHostScan'],
+                           'Host', TWO_HOST_OUTPUT_GRID, TWO_HOST_OUTPUT_UPDATED_GRID),
+                          (CONTAINER_UPDATE_INPUT, CONTAINER_UPDATE_INPUT['PrismaCloudCompute']['ContainersScanResults'],
+                           'Container', [CONTAINER_OUTPUT_GRID], [CONTAINER_OUTPUT_UPDATED_GRID]),
+                          (TWO_CONTAINER_UPDATE_INPUT,
+                           TWO_CONTAINER_UPDATE_INPUT['PrismaCloudCompute']['ContainersScanResults'],
+                           'Container', TWO_CONTAINER_OUTPUT_GRID, TWO_CONTAINER_OUTPUT_UPDATED_GRID),
+                          (IMAGE_UPDATE_INPUT, IMAGE_UPDATE_INPUT['PrismaCloudCompute']['ReportsImagesScan'],
+                           'Image', [IMAGE_OUTPUT_GRID], [IMAGE_OUTPUT_UPDATED_GRID]),
+                          (TWO_IMAGE_UPDATE_INPUT, TWO_IMAGE_UPDATE_INPUT['PrismaCloudCompute']['ReportsImagesScan'],
+                           'Image', TWO_IMAGE_OUTPUT_GRID, TWO_IMAGE_OUTPUT_UPDATED_GRID)],
+                         ids=['Host', 'TwoHosts', 'Container', 'TwoContainers', 'Image', 'TwoImages'])
+def test_update_outputs_grid(mocker, input_context, input_context_in_path, object_type, already_present_output, expected_context):
+    """
+    Given:
+        NEW enriched compliance issues with OLD compliance objects ids in the input context data.
+        For each compliance object type (Host, Container, Image) check the following:
+            1. Single object in a list
+            2. Two objects in a list
+
+    When:
+        Running update_context_paths
+
+    Then:
+        Assert the updated compliance table in the context data is as expected.
+        Assert nothing was created.
+    """
+    grid_id = 'some_grid'
+    demisto_args = {'resourceType': object_type, 'gridID': grid_id}
+    incident_fields = {"CustomFields": {grid_id: already_present_output}}
+
+    mocker.patch.object(demisto, 'incident', return_value=incident_fields)
+    mocker.patch.object(demisto, 'context', return_value=input_context)
+
+    update_results = mocker.patch.object(demisto, 'executeCommand', return_value=None)
+
+    update_context_paths(demisto_args)
+    expected_fields = {
+        'customFields': {
+            grid_id: expected_context
+        }
+    }
+
+    update_results.assert_called_once_with("setIncident", expected_fields)
+
+
 @pytest.mark.parametrize('input_context, input_context_in_path, object_type, already_present_output',
                          [
                              (HOST_INPUT, HOST_INPUT['PrismaCloudCompute']['ReportHostScan'], 'Host', [HOST_OUTPUT]),
@@ -206,7 +345,7 @@ def test_update_existing_outputs(mocker, input_context, input_context_in_path, o
     """
     Given:
         OLD enriched compliance issues with OLD compliance objects ids in the input context data.
-        Check for each compliance object type (Host, Container, Image).
+        Check for each compliance object type in different cases: Host, Container, Image.
 
     When:
         Running update_context_paths
@@ -226,6 +365,39 @@ def test_update_existing_outputs(mocker, input_context, input_context_in_path, o
 
     assert not update_results.called, 'Should not update anything in this test.'
     assert not append_context.called, 'Should not create any new outputs in this test.'
+
+
+@pytest.mark.parametrize('input_context, input_context_in_path, object_type, already_present_output',
+                         [
+                             (HOST_INPUT, HOST_INPUT['PrismaCloudCompute']['ReportHostScan'], 'Host', [HOST_OUTPUT_GRID]),
+                             (CONTAINER_INPUT, CONTAINER_INPUT['PrismaCloudCompute']['ContainersScanResults'], 'Container',
+                              [CONTAINER_OUTPUT_GRID]),
+                             (IMAGE_INPUT, IMAGE_INPUT['PrismaCloudCompute']['ReportsImagesScan'], 'Image', [IMAGE_OUTPUT_GRID])],
+                         ids=['Host', 'Container', 'Image'])
+def test_update_existing_outputs_grid(mocker, input_context, input_context_in_path, object_type, already_present_output):
+    """
+    Given:
+        OLD enriched compliance issues with OLD compliance objects ids in the input context data.
+        Check for each compliance object type in different cases: Host, Container, Image.
+
+    When:
+        Running update_context_paths
+
+    Then:
+        Assert the returned output is untouched.
+    """
+    grid_id = 'some_grid'
+    demisto_args = {'resourceType': object_type, 'gridID': grid_id}
+    incident_fields = {"CustomFields": {grid_id: already_present_output}}
+
+    mocker.patch.object(demisto, 'incident', return_value=incident_fields)
+    mocker.patch.object(demisto, 'context', return_value=input_context)
+
+    update_results = mocker.patch.object(demisto, 'executeCommand', return_value=None)
+
+    update_context_paths(demisto_args)
+
+    update_results.assert_called_once_with("setIncident", {'customFields': {grid_id: already_present_output}})
 
 
 @pytest.mark.parametrize('input_context, input_context_in_path, object_type, already_present_output, expected_update, '
@@ -250,7 +422,7 @@ def test_create_and_update_outputs(mocker, input_context, input_context_in_path,
     """
     Given:
         NEW enriched compliance issues with OLD & NEW compliance objects ids in the input context data.
-        Check for each compliance object type (Host, Container, Image).
+        Check for each compliance object type in different cases: Hosts, Containers, Images.
 
     When:
         Running update_context_paths
@@ -271,3 +443,43 @@ def test_create_and_update_outputs(mocker, input_context, input_context_in_path,
     assert list(update_results.call_args[0][0]['EntryContext'].keys()) == [expected_update_path]
     assert update_results.call_args[0][0]['EntryContext'][expected_update_path] == expected_update
     append_context.assert_called_once_with(expected_create_path, expected_create)
+
+
+@pytest.mark.parametrize('input_context, input_context_in_path, object_type, already_present_output, expected_grid',
+                         [
+                             (TWO_HOST_UPDATE_INPUT, TWO_HOST_UPDATE_INPUT['PrismaCloudCompute']['ReportHostScan'],
+                              'Host', [HOST_OUTPUT_GRID], [SECOND_HOST_OUTPUT_GRID, HOST_OUTPUT_UPDATED_GRID]),
+                             (TWO_CONTAINER_UPDATE_INPUT,
+                              TWO_CONTAINER_UPDATE_INPUT['PrismaCloudCompute']['ContainersScanResults'],
+                              'Container', [CONTAINER_OUTPUT_GRID],
+                              [SECOND_CONTAINER_OUTPUT_GRID, CONTAINER_OUTPUT_UPDATED_GRID]),
+                             (TWO_IMAGE_UPDATE_INPUT, TWO_IMAGE_UPDATE_INPUT['PrismaCloudCompute']['ReportsImagesScan'],
+                              'Image', [IMAGE_OUTPUT_GRID], [SECOND_IMAGE_OUTPUT_GRID, IMAGE_OUTPUT_UPDATED_GRID]),
+                         ], ids=['Hosts', 'Containers', 'Images'])
+def test_create_and_update_outputs_grid(mocker, input_context, input_context_in_path, object_type, already_present_output,
+                                        expected_grid):
+    """
+    Given:
+        NEW enriched compliance issues with OLD & NEW compliance objects ids in the input context data.
+        Check for each compliance object type in different cases: Hosts, Containers, Images.
+
+    When:
+        Running update_context_paths
+
+    Then:
+        Assert the updated objects in the table are as expected.
+        Assert the expected objects were created.
+    """
+    grid_id = 'some_grid'
+    demisto_args = {'resourceType': object_type, 'gridID': grid_id}
+    incident_fields = {"CustomFields": {grid_id: already_present_output}}
+
+    mocker.patch.object(demisto, 'incident', return_value=incident_fields)
+    mocker.patch.object(demisto, 'get', return_value=input_context_in_path)
+    mocker.patch.object(demisto, 'context', return_value=input_context)
+
+    update_results = mocker.patch.object(demisto, 'executeCommand', return_value=None)
+
+    update_context_paths(demisto_args)
+
+    update_results.assert_called_once_with("setIncident", {'customFields': {grid_id: expected_grid}})

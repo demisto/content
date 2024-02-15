@@ -1,7 +1,10 @@
+import pandas
+
 import demistomock as demisto
 from CommonServerPython import *
 import enum
 import abc
+import pandas as pd
 
 
 INTEGRATION_NAME = 'PrismaCloudCompute'
@@ -172,7 +175,7 @@ def get_input_object_list(context_data: dict, compliance_obj: ComplianceObject) 
     return [input_objects]
 
 
-def get_output_object_list(compliance_obj: ComplianceObject) -> tuple[list, list]:
+def get_output_object_list(compliance_obj: ComplianceObject, grid_id: str = '') -> tuple[list, list]:
     """Get the already present resource list in the table.
 
     Args:
@@ -181,16 +184,24 @@ def get_output_object_list(compliance_obj: ComplianceObject) -> tuple[list, list
     Returns:
         (List[dict], List[str]): The list of the specified resource, list of their ids.
     """
-    context_data = demisto.context()
-    compliance_table_context = context_data.get(f'{INTEGRATION_NAME}', {}).get('ComplianceTable', {})
-    output_objects = compliance_table_context.get(compliance_obj.capitalized_type, [])
+
+    if grid_id:
+        incident = demisto.incident()
+        custom_fields = incident.get("CustomFields", {}) or {}
+        output_objects = custom_fields.get(grid_id)
+        output_id = compliance_obj.output_context_id.lower()
+
+    else:
+        context_data = demisto.context()
+        compliance_table_context = context_data.get(f'{INTEGRATION_NAME}', {}).get('ComplianceTable', {})
+        output_objects = compliance_table_context.get(compliance_obj.capitalized_type, [])
+        output_id = compliance_obj.output_context_id
 
     if type(output_objects) is list:
         output_objects_list = output_objects
     else:
         output_objects_list = [output_objects]
 
-    output_id = compliance_obj.output_context_id
     return output_objects_list, [output_obj.get(output_id) for output_obj in output_objects_list]
 
 
@@ -228,24 +239,143 @@ def update_output_obj_with_issues(compliance_obj: ComplianceObject, input_obj_id
         })
 
 
+def update_context_data(all_object_type_data: list, output_objs_to_append: dict, compliance_obj: ComplianceObject) -> None:
+    """Update context data with new objects and new compliance issues that need updating.
+
+    Args:
+        all_object_type_data (list): List of the new data.
+        output_objs_to_append (dict): Dict of (key: object id) and their (value: new compliance issues).
+        compliance_obj (ComplianceObject): The compliance object the data refers to.
+    """
+    if all_object_type_data:
+        appendContext(compliance_obj.output_context_path, all_object_type_data)
+
+    demisto.debug(f"The objects to update are {list(output_objs_to_append.keys())}. Updating")
+    for obj_to_update_id in output_objs_to_append:
+        update_output_obj_with_issues(compliance_obj, obj_to_update_id, output_objs_to_append[obj_to_update_id])
+
+
+def turn_pd_grid_to_context_table(pd_grid: pandas.DataFrame) -> list:
+    """Turn pandas DataFrame object to a list of dicts to save in the context_data.
+
+    Args:
+        pd_grid (pandas.DataFrame): The pandas dataframe to convert
+
+    Returns: (list) of dicts of data inside the pd_grid provided.
+    """
+    context_table = []
+    for record in pd_grid.to_dict(orient='records'):
+        new_record_dict = {}
+        for record_key, record_value in record.items():
+            if record_value and (isinstance(record_value, dict) or isinstance(record_value, list) or pd.notnull(record_value)):
+                if isinstance(record_value, dict):
+                    str_record_value = "\n".join(f'{dict_key}: {dict_value}' for dict_key, dict_value in record_value.items())
+                elif isinstance(record_value, list):
+                    str_record_value = "\n\n".join(record_value)
+                else:
+                    str_record_value = str(record_value)
+                new_record_dict.update({record_key.lower(): str_record_value})
+        if new_record_dict:
+            context_table.append(new_record_dict)
+    return context_table
+
+
+def update_grid_table(all_new_data: list, output_objs_to_append: dict,
+                      compliance_obj: ComplianceObject, grid_id: str) -> None:
+    """Update grid in the incident context data.
+
+    Args:
+        all_new_data (list): List of the new data.
+        output_objs_to_append (dict): Dict of (key: object id) and their (value: new compliance issues).
+        compliance_obj (ComplianceObject): The compliance object the data refers to.
+        grid_id (str): The grid id to update.
+    """
+    demisto.debug(f"Updating grid {grid_id} table with all new:\n{all_new_data}\noutput_objs:\n{output_objs_to_append}")
+    incident = demisto.incident()
+    custom_fields = incident.get("CustomFields", {}) or {}
+    current_table = custom_fields.get(grid_id)
+    demisto.debug(f"current table is {current_table}")
+    current_df = pd.DataFrame(current_table) if current_table else pd.DataFrame()
+    demisto.debug(f"Current dataframe {current_df}")
+
+    out_id = compliance_obj.output_context_id.lower()
+    for id_to_update in output_objs_to_append:
+        previous_issues = current_df.loc[current_df[out_id] == id_to_update, 'complianceissues'].iloc[0]
+        issues = output_objs_to_append[id_to_update]
+        non_duplicated_issues = [issue for issue in issues if issue not in previous_issues]
+        if non_duplicated_issues:
+            merged_issue_list = previous_issues + "\n\n" + "\n\n".join(non_duplicated_issues)
+            current_df.loc[current_df[out_id] == id_to_update, 'complianceissues'] = merged_issue_list
+
+    new_grid = pd.concat([pd.DataFrame(all_new_data), current_df])
+
+    demisto.debug(f"New dataframe after concat and sort:\n{new_grid}")
+
+    # filter empty values in the generated table and turn to dict
+    context_table = turn_pd_grid_to_context_table(new_grid)
+
+    demisto.debug(f"filtered_table: {context_table}")
+
+    # Execute automation 'setIncident` which change the Context data in the incident
+    demisto.executeCommand("setIncident", {
+        'customFields': {
+            grid_id: context_table,
+        },
+    })
+
+
 def create_issue_record(issue_obj: dict):
     """Create a unique issue string from the issue_obj dict."""
     return f"{issue_obj.get('id')} ({issue_obj.get('severity')} | {issue_obj.get('type')}) - {issue_obj.get('title')}"
 
 
-def update_objects_by_issues(compliance_obj: ComplianceObject, root_context_key: str):
+def categorize_issue_in_object(issue: str, input_obj: dict, compliance_obj: ComplianceObject,
+                               output_objs_ids: list, output_objs_to_create: dict, output_objs_to_append: dict) -> None:
+    """Categorize the new issue information based on if the object is new or old.
+
+    WARNING: Mutates output_objs_to_create and output_objs_to_append.
+
+    Args:
+        issue (str): The issue to categorize.
+        input_obj (dict): The input object dict.
+        compliance_obj (ComplianceObject): The type of compliance object.
+        output_objs_ids (list): The ids of the objects already present in the output.
+        output_objs_to_append (dict): Append the issues to this dict if they are already present in the output.
+        output_objs_to_create (dict): Add the issues with the corresponding object id to this dict if they are new.
+
+    """
+    input_obj_id = compliance_obj.get_input_context_id(input_obj)
+    if input_obj_id not in output_objs_ids:
+        demisto.debug(f"Got new {compliance_obj.object_type.value} with id {input_obj_id} in issue {issue}")
+        if input_obj_id in output_objs_to_create:
+            output_objs_to_create[input_obj_id]['issues'].append(issue)
+        else:
+            output_objs_to_create[input_obj_id] = {
+                'input_obj': input_obj,
+                'issues': [issue]
+            }
+    else:
+        demisto.debug(f"Got old {compliance_obj.object_type.value} with id {input_obj_id} in issue {issue}")
+        if input_obj_id in output_objs_to_append:
+            output_objs_to_append[input_obj_id].append(issue)
+        else:
+            output_objs_to_append[input_obj_id] = [issue]
+
+
+def update_objects_by_issues(compliance_obj: ComplianceObject, root_context_key: str, grid_id: str = ''):
     """Go over enriched issues in the context data and update the output table.
 
     Args:
         compliance_obj (ComplianceObject): The resource type class to update in the table.
         root_context_key (str): The context data path to the root, containing the input data.
+        grid_id (str): The grid id to write the outputs to.
     """
     if root_context_key:
         issues_input_objects = demisto.get(demisto.context(), root_context_key)
     else:
         issues_input_objects = demisto.context()
     issues_input_objects = issues_input_objects if type(issues_input_objects) is list else [issues_input_objects]
-    output_objs, output_objs_ids = get_output_object_list(compliance_obj)
+    output_objs, output_objs_ids = get_output_object_list(compliance_obj, grid_id)
     demisto.debug(f"Starting update, the already present output object ids are {output_objs_ids}")
 
     output_objs_to_create: dict = {}
@@ -257,23 +387,8 @@ def update_objects_by_issues(compliance_obj: ComplianceObject, root_context_key:
         demisto.debug(f"Got {len(input_objs)} {compliance_obj.object_type.value} for issue {issue}")
 
         for input_obj in input_objs:
-            input_obj_id = compliance_obj.get_input_context_id(input_obj)
-            demisto.debug(f"Got {input_obj_id} and outputs are {output_objs_ids}")
-            if input_obj_id not in output_objs_ids:
-                demisto.debug(f"Got new {compliance_obj.object_type.value} with id {input_obj_id} in issue {issue}")
-                if input_obj_id in output_objs_to_create:
-                    output_objs_to_create[input_obj_id]['issues'].append(issue)
-                else:
-                    output_objs_to_create[input_obj_id] = {
-                        'input_obj': input_obj,
-                        'issues': [issue]
-                    }
-            else:
-                demisto.debug(f"Got old {compliance_obj.object_type.value} with id {input_obj_id} in issue {issue}")
-                if input_obj_id in output_objs_to_append:
-                    output_objs_to_append[input_obj_id].append(issue)
-                else:
-                    output_objs_to_append[input_obj_id] = [issue]
+            categorize_issue_in_object(issue, input_obj, compliance_obj, output_objs_ids, output_objs_to_create,
+                                       output_objs_to_append)
 
     demisto.debug(f"The new objects to create are {list(output_objs_to_create.keys())}. Creating")
 
@@ -286,18 +401,18 @@ def update_objects_by_issues(compliance_obj: ComplianceObject, root_context_key:
         all_object_type_data.append(output_context_data)
 
     # Append after collecting all the new data
-    if all_object_type_data:
-        appendContext(compliance_obj.output_context_path, all_object_type_data)
+    if grid_id:
+        update_grid_table(all_object_type_data, output_objs_to_append, compliance_obj, grid_id)
 
-    demisto.debug(f"The objects to update are {list(output_objs_to_append.keys())}. Updating")
-    for obj_to_update_id in output_objs_to_append:
-        update_output_obj_with_issues(compliance_obj, obj_to_update_id, output_objs_to_append[obj_to_update_id])
+    else:
+        update_context_data(all_object_type_data, output_objs_to_append, compliance_obj)
 
 
 def update_context_paths(demisto_args: dict):
     compliance_obj = COMPLIANCE_OBJ_CLASS[demisto_args.get('resourceType', '').lower()]
     return update_objects_by_issues(compliance_obj,
-                                    demisto_args.get('contextPath', ''))
+                                    demisto_args.get('contextPath', ''),
+                                    demisto_args.get('gridID', ''))
 
 
 def main():  # pragma: no cover

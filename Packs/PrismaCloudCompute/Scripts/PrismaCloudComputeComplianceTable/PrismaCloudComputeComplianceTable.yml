@@ -11,6 +11,10 @@ args:
   name: contextPath
   required: false
   type: str
+- description: The grid ID to write the outputs to.
+  name: gridID
+  required: false
+  type: str
 comment: Iterate over EnrichedComplianceIssue information in the context data and add the important keys to a table under PrismaCloudCompute.ComplianceTable.
 commonfields:
   id: PrismaCloudComputeComplianceTable
@@ -67,9 +71,11 @@ outputs:
   type: Dictionary
 script: '-'
 tags:
-- basescript
+- context
+- field-display
+- Prisma Cloud Compute
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.13.87159
+dockerimage: demisto/pandas:1.0.0.87405
 fromversion: 6.0.0
