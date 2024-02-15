@@ -65,6 +65,10 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
 script:
   script: ''
   type: python
@@ -447,7 +451,7 @@ script:
       description: The name of the log group.
       type: string
     description: Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace.
-  dockerimage: demisto/boto3py3:1.0.0.52713
+  dockerimage: demisto/boto3py3:1.0.0.87887
 tests:
 - No Tests
 fromversion: 5.0.0
