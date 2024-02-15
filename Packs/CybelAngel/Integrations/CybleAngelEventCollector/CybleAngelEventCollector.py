@@ -29,6 +29,8 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_MAX_FETCH = 5000
+VENDOR = "cybelangel"
+PRODUCT = "platform"
 
 ''' CLIENT CLASS '''
 
@@ -146,22 +148,12 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def fetch_events(client: Client, last_run: Dict, max_fetch: int):
+    pass
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
 
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
+def get_events(client: Client, args: Dict[str, Any]) -> CommandResults:
+    pass
 
 
 ''' MAIN FUNCTION '''
@@ -187,20 +179,19 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy
         )
-
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
-
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        if command == 'test-module':
+            return_results(test_module(client))
+        elif command == 'fetch-events':
+            events, last_fetch = fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch)
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(last_fetch)
+        elif command == "cyble-angel-get-events":
+            return_results(get_events(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute {command} command.\nError:\ntype:{type(e)}, error:{str(e)}")
 
 
 ''' ENTRY POINT '''
