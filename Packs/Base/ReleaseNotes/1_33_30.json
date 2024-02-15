@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": null
+    "breakingChangesNotes": "Updated the automation to always use the *populateFields*. The default values were changed to minimize the possible affects."
 }
