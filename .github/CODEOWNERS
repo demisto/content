@@ -37,7 +37,7 @@
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
-/Packs/PAN-OS/Integrations/ @GuyAfik @jlevypaloalto
+/Packs/PAN-OS/Integrations/ @jlevypaloalto
 /Packs/PrismaCloudCompute/Integrations/ @GuyAfik
 /Packs/PrismaSaasSecurity/Integrations/ @GuyAfik
 
@@ -101,7 +101,7 @@ Utils/trigger_nightly_sdk_build.sh @dorschw
 .pre-commit-config_template.yaml @dorschw @ilaner
 
 # XDR Related
-/Packs/CortexXDR/Integrations/ @dansterenson
+/Packs/CortexXDR/Integrations/ @maimorag
 /Packs/Core/Integrations/ @dansterenson
 /Packs/ApiModules/Scripts/CoreIRApiModule/* @dansterenson
 

@@ -14,8 +14,6 @@ from Tests.scripts.utils import logging_wrapper as logging
 import urllib3
 urllib3.disable_warnings()
 
-PRIVATE_BUILD_INFRA_SCRIPTS = ['Tests/scripts/validate_premium_packs.sh', 'Tests/scripts/validate_premium_packs.py',
-                               'Tests/scripts/validate_index.py', 'Tests/configure_and_test_integration_instances.py']
 PRIVATE_BUILD_INFRA_FOLDERS = ['Tests/private_build', 'Tests/Marketplace']
 
 NON_PRIVATE_BUILD_FILES = ['Tests/Marketplace/landingPage_sections.json',
@@ -70,8 +68,6 @@ def branch_has_private_build_infra_change(branch_name: str = None) -> bool:
     for infra_file in modified_files:
         if infra_file in NON_PRIVATE_BUILD_FILES:
             continue
-        if infra_file in PRIVATE_BUILD_INFRA_SCRIPTS:
-            return True
 
         path = os.path.dirname(infra_file)
         for infra_code_dir_path in PRIVATE_BUILD_INFRA_FOLDERS:
