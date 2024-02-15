@@ -60,7 +60,7 @@ For more information, see the '[Implement OAuth for Okta](https://developer.okta
     | Use OAuth 2.0 Authentication | See detailed instructions on the 'Help' tab. | False |
     | Client ID | Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab. | False |
     | Private Key | In PEM format. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab. | False |
-    | JWT Signing Algorithm | Algorithm to sign generated JWT tokens with. Doesn't affect integration functionality. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab. | False |
+    | JWT Signing Algorithm | Algorithm to sign generated JWT tokens with. Doesn't affect integration's functionality. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 

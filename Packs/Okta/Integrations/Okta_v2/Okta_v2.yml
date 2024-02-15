@@ -43,7 +43,7 @@ configuration:
   section: Connect
   required: false
 - display: JWT Signing Algorithm
-  additionalinfo: Algorithm to sign generated JWT tokens with. Doesn't affect integration functionality. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
+  additionalinfo: Algorithm to sign generated JWT tokens with. Doesn't affect integration's functionality. Required and used if OAuth 2.0 is used for authentication. See detailed instructions on the 'Help' tab.
   name: jwt_algorithm
   type: 15
   section: Connect
