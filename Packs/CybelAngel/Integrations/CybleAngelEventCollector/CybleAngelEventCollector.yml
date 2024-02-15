@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: CybleAngelEventCollector
+  id: CybleAngel Event Collector
   version: -1
 configuration:
 - defaultvalue: https://platform.cybelangel.com
@@ -8,6 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Client ID
   displaypassword: Client Secret
   name: credentials
@@ -18,35 +19,42 @@ configuration:
   defaultvalue: "5000"
   type: 0
   required: true
+  section: Collect
   additionalinfo: Minimum is 10. Maximum is 1000.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: CybleAngelEventCollector
-name: CybleAngelEventCollector
+  section: Connect
+  advanced: true
+description: 'CybleAngel Event Collector collects reports from Cyble Angel platform which specializes in external attack surface protection and management.'
+display: CybleAngel Event Collector
+name: CybleAngel Event Collector
 script:
   commands:
   - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      name: dummy
+    - description: 'Get reports from a specific start date'
+      name: start_date
       required: true
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    - description: 'Get reports until a specific end date'
+      name: end_date
+      required: true
+    description: 'Collect reports from cyble angel'
+    name: cyble-angel-get-events
+    outputs: []
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
-fromversion: 8.5.0
+  dockerimage: demisto/python3:3.10.13.87159
+fromversion: 8.0.0
+marketplaces:
+  - marketplacev2
 tests:
 - No tests (auto formatted)
