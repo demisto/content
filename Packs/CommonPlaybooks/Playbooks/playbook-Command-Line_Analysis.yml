@@ -1113,6 +1113,12 @@ tasks:
                 value:
                   simple: inputs.Commandline
                 iscontext: true
+          - operator: RemoveEmpty
+            args:
+              empty_values: { }
+              remove_keys:
+                value:
+                  simple: "true"
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
