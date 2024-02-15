@@ -110,7 +110,7 @@ configuration:
   type: 8
   section: Connect
   required: false
-  additionalinfo: Whether to enable mirroring from xsoar to slack, mark it file mirroring is required in investigations.
+  additionalinfo: Whether to enable mirroring only from xsoar to slack, mark it if file mirroring is required in investigations.
 - defaultvalue: 'true'
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning
