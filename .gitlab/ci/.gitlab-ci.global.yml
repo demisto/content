@@ -246,8 +246,7 @@
       chmod -R 777 ./Packs  # required for the lint, we use the permissions of the file when running pytest within the containers
       echo "the Packs changes between upload commit ${LAST_UPLOAD_COMMIT} to master commit ${CI_COMMIT_SHA} is:"
       git status -- Packs  # show the differences between the upload commit to the master branch for the Packs folder before commit
-      git add Packs
-      git commit -m "updated branch to upload commit ${LAST_UPLOAD_COMMIT}"
+      git commit -am "updated branch to upload commit ${LAST_UPLOAD_COMMIT}"
       git status -- Packs # show the differences between the upload commit to the master branch for the Packs folder after commit
       echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
     else
