@@ -847,7 +847,7 @@ def test_get_update_args_unassgning_user(mocker):
     assert update_args.get('unassign_user') == 'true'
 
 
-def test_handle_outgoing_issue_closure(mocker):
+def test_handle_outgoing_issue_closure_close_reason(mocker):
     """
     Given:
         -  a dict indicating changed fields (delta)
