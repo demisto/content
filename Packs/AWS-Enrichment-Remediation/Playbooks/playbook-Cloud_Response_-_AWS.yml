@@ -1115,9 +1115,9 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst,Read-Only
+        simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - Credentials Remediation
+        simple: Cloud Response - AWS - Credentials Remediation
       body:
         simple: Analyst interaction is needed for the credentials remediation.
       methods: []
@@ -1235,7 +1235,7 @@ tasks:
       to:
         simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - Resource Remediation
+        simple: Cloud Response - AWS - Resource Remediation
       body:
         simple: Analyst interaction is needed for the resource remediation.
       methods:
@@ -1412,7 +1412,7 @@ tasks:
       to:
         simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - User Remediation
+        simple: Cloud Response - AWS - User Remediation
       body:
         simple: Analyst interaction is needed for the user remediation.
       methods:
@@ -1665,9 +1665,9 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst,Read-Only
+        simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - Block Indicators
+        simple: Cloud Response - AWS - Block Indicators
       body:
         simple: Analyst interaction is needed for the indicators remediation.
       methods: []

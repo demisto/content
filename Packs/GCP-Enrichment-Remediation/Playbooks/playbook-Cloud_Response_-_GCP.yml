@@ -834,27 +834,7 @@ tasks:
                 iscontext: true
       zone:
         complex:
-          root: alertJson._all_events
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: alertJson._all_events.referenced_resource_name
-                iscontext: true
-              right:
-                value:
-                  simple: Manual resource remediation.Answers.0
-                iscontext: true
-              ignorecase: true
-          accessor: zone
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: inputs.resourceZone
-                iscontext: true
+          root: inputs.resourceZone
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -901,27 +881,7 @@ tasks:
                 iscontext: true
       zone:
         complex:
-          root: alertJson._all_events
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: alertJson._all_events.referenced_resource_name
-                iscontext: true
-              right:
-                value:
-                  simple: Manual resource remediation.Answers.0
-                iscontext: true
-              ignorecase: true
-          accessor: zone
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: inputs.resourceZone
-                iscontext: true
+          root: inputs.resourceZone
     separatecontext: false
     continueonerrortype: ""
     view: |-
