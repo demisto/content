@@ -281,20 +281,18 @@ def turn_pd_grid_to_context_table(pd_grid: pandas.DataFrame) -> list:
 
 
 def update_grid_table(all_new_data: list, output_objs_to_append: dict,
-                      compliance_obj: ComplianceObject, grid_id: str) -> None:
+                      compliance_obj: ComplianceObject, grid_id: str, current_table: list) -> None:
     """Update grid in the incident context data.
 
     Args:
         all_new_data (list): List of the new data.
-        output_objs_to_append (dict): Dict of (key: object id) and their (value: new compliance issues).
+        output_objs_to_append (dict): Dict of object ids (keys) and their new compliance issues (values).
         compliance_obj (ComplianceObject): The compliance object the data refers to.
         grid_id (str): The grid id to update.
+        current_table (list): The already present table in the incident.
     """
-    demisto.debug(f"Updating grid {grid_id} table with all new:\n{all_new_data}\noutput_objs:\n{output_objs_to_append}")
-    incident = demisto.incident()
-    custom_fields = incident.get("CustomFields", {}) or {}
-    current_table = custom_fields.get(grid_id)
-    demisto.debug(f"current table is {current_table}")
+    demisto.debug(f"Updating grid {grid_id} table with all new:\n{all_new_data}\n"
+                  f"output_objs:\n{output_objs_to_append}\ncurrent table is:\n{current_table}")
     current_df = pd.DataFrame(current_table) if current_table else pd.DataFrame()
     demisto.debug(f"Current dataframe {current_df}")
 
@@ -314,7 +312,7 @@ def update_grid_table(all_new_data: list, output_objs_to_append: dict,
     # filter empty values in the generated table and turn to dict
     context_table = turn_pd_grid_to_context_table(new_grid)
 
-    demisto.debug(f"filtered_table: {context_table}")
+    demisto.debug(f"New table for context: {context_table}")
 
     # Execute automation 'setIncident` which change the Context data in the incident
     demisto.executeCommand("setIncident", {
@@ -402,7 +400,7 @@ def update_objects_by_issues(compliance_obj: ComplianceObject, root_context_key:
 
     # Append after collecting all the new data
     if grid_id:
-        update_grid_table(all_object_type_data, output_objs_to_append, compliance_obj, grid_id)
+        update_grid_table(all_object_type_data, output_objs_to_append, compliance_obj, grid_id, output_objs)
 
     else:
         update_context_data(all_object_type_data, output_objs_to_append, compliance_obj)

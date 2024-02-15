@@ -345,7 +345,7 @@ def test_update_existing_outputs(mocker, input_context, input_context_in_path, o
     """
     Given:
         OLD enriched compliance issues with OLD compliance objects ids in the input context data.
-        Check for each compliance object type in different cases: Host, Container, Image.
+        Given a different compliance object type in each case: Host, Container, Image.
 
     When:
         Running update_context_paths
@@ -378,7 +378,7 @@ def test_update_existing_outputs_grid(mocker, input_context, input_context_in_pa
     """
     Given:
         OLD enriched compliance issues with OLD compliance objects ids in the input context data.
-        Check for each compliance object type in different cases: Host, Container, Image.
+        Given a different compliance object type in each case: Host, Container, Image.
 
     When:
         Running update_context_paths
@@ -422,7 +422,7 @@ def test_create_and_update_outputs(mocker, input_context, input_context_in_path,
     """
     Given:
         NEW enriched compliance issues with OLD & NEW compliance objects ids in the input context data.
-        Check for each compliance object type in different cases: Hosts, Containers, Images.
+        Given a different compliance object type in each case: Host, Container, Image.
 
     When:
         Running update_context_paths
@@ -461,7 +461,7 @@ def test_create_and_update_outputs_grid(mocker, input_context, input_context_in_
     """
     Given:
         NEW enriched compliance issues with OLD & NEW compliance objects ids in the input context data.
-        Check for each compliance object type in different cases: Hosts, Containers, Images.
+        Given a different compliance object type in each case: Host, Container, Image.
 
     When:
         Running update_context_paths
