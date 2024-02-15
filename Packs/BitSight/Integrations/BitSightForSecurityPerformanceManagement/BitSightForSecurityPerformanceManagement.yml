@@ -103,8 +103,8 @@ configuration:
   name: incidentType
   type: 13
   required: false
-description: Use the "BitSight for Security Performance Management" Integration to get company guid, details, and findings. This integration also allows to fetch the findings by using the fetch incidents capability.
-display: BitSight for Security Performance Management
+description: Use the "Bitsight for Security Performance Management" Integration to get company guid, details, and findings. This integration also allows to fetch the findings by using the fetch incidents capability.
+display: Bitsight for Security Performance Management
 name: BitSight for Security Performance Management
 script:
   commands:
@@ -115,7 +115,7 @@ script:
         Note: Users can get the list of the GUID by executing the "bitsight-companies-guid-get" command.
       name: guid
       required: true
-    description: BitSight command to get company details based on the provided GUID. The details include rating details, rating history, and grades for individual risk vectors.
+    description: Bitsight command to get company details based on the provided GUID. The details include rating details, rating history, and grades for individual risk vectors.
     execution: true
     name: bitsight-company-details-get
     outputs:
@@ -162,7 +162,7 @@ script:
       description: The type of rating.
       type: string
     - contextPath: BitSight.Company.displayURL
-      description: The URL to this company's overview page in the BitSight platform.
+      description: The URL to this company's overview page in the Bitsight platform.
       type: string
     - contextPath: BitSight.Company.ratingDetails.name
       description: The name of this risk vector.
@@ -183,22 +183,22 @@ script:
       description: The risk category of this risk vector.
       type: string
     - contextPath: BitSight.Company.ratingDetails.categoryOrder
-      description: Used to visually sort this risk category in the BitSight platform.
+      description: Used to visually sort this risk category in the Bitsight platform.
       type: number
     - contextPath: BitSight.Company.ratingDetails.beta
       description: A true value indicates this risk vector is in beta and does not affect this company's security rating.
       type: boolean
     - contextPath: BitSight.Company.ratingDetails.order
-      description: Used to visually sort this risk vector in the BitSight platform.
+      description: Used to visually sort this risk vector in the Bitsight platform.
       type: number
     - contextPath: BitSight.Company.ratingDetails.displayUrl
-      description: The URL in the BitSight platform that contains the details of this risk vector.
+      description: The URL in the Bitsight platform that contains the details of this risk vector.
       type: string
     - contextPath: BitSight.Company.ratings.ratingDate
-      description: The date when this BitSight Security Rating Report was generated.
+      description: The date when this Bitsight Security Rating Report was generated.
       type: date
     - contextPath: BitSight.Company.ratings.rating
-      description: The BitSight Security Rating of this company on this day.
+      description: The Bitsight Security Rating of this company on this day.
       type: number
     - contextPath: BitSight.Company.ratings.range
       description: The rating category of this company on this day.
@@ -231,13 +231,13 @@ script:
       description: The number of companies that are monitoring this company.
       type: number
     - contextPath: BitSight.Company.availableUpgradeTypes
-      description: For internal BitSight use.
+      description: For internal Bitsight use.
       type: string
     - contextPath: BitSight.Company.hasCompanyTree
       description: A true value indicates this company has a Ratings Tree.
       type: boolean
     - contextPath: BitSight.Company.hasPreferredContact
-      description: For internal BitSight use.
+      description: For internal Bitsight use.
       type: boolean
     - contextPath: BitSight.Company.isBundle
       description: A true value indicates this company is part of a ratings bundle.
@@ -252,13 +252,13 @@ script:
       description: The name of this organization's primary company.
       type: string
     - contextPath: BitSight.Company.permissions.canDownloadCompanyReport
-      description: A true value indicates you can view and download BitSight Security Rating Reports (PDF).
+      description: A true value indicates you can view and download Bitsight Security Rating Reports (PDF).
       type: boolean
     - contextPath: BitSight.Company.permissions.canViewForensics
       description: A true value indicates you have the Event Forensics add-on package.
       type: boolean
     - contextPath: BitSight.Company.permissions.canViewServiceProviders
-      description: A true value indicates you can access BitSight for Fourth Party Risk Management.
+      description: A true value indicates you can access Bitsight for Fourth Party Risk Management.
       type: boolean
     - contextPath: BitSight.Company.permissions.canRequestSelfPublishedEntity
       description: A true value indicates you can request the creation of a self-published rating.
@@ -270,13 +270,13 @@ script:
       description: A true value indicates you can identify assets and segment your network with infrastructure tags.
       type: boolean
     - contextPath: BitSight.Company.permissions.canViewCompanyReports
-      description: A true value indicates you can view BitSight Security Rating Reports.
+      description: A true value indicates you can view Bitsight Security Rating Reports.
       type: boolean
     - contextPath: BitSight.Company.permissions.canManagePrimaryCompany
       description: A true value indicates you can highlight a primary for your organization.
       type: boolean
     - contextPath: BitSight.Company.permissions.hasControl
-      description: For internal BitSight use.
+      description: For internal Bitsight use.
       type: boolean
     - contextPath: BitSight.Company.permissions.canEnableVendorAccess
       description: A true value indicates you can modify vendor access.
@@ -285,16 +285,16 @@ script:
       description: A true value indicates your company is the primary for your organization.
       type: boolean
     - contextPath: BitSight.Company.securityGrade
-      description: For internal BitSight use.
+      description: For internal Bitsight use.
       type: string
     - contextPath: BitSight.Company.inSpmPortfolio
       description: A true value indicates this company is in your Security Performance Management portfolio (My Company, SPM Subsidiary, etc.).
       type: boolean
     - contextPath: BitSight.Company.isMycompMysubsBundle
-      description: For internal BitSight use.
+      description: For internal Bitsight use.
       type: string
     - contextPath: BitSight.Company.companyFeatures
-      description: For internal BitSight use.
+      description: For internal Bitsight use.
       type: string
   - arguments:
     - description: |-
@@ -344,7 +344,7 @@ script:
     - defaultValue: '0'
       description: Set the starting point of the results to be returned. A 0 (zero) value starts the results from the first record in the result set.
       name: offset
-    description: BitSight command to get company findings.
+    description: Bitsight command to get company findings.
     name: bitsight-company-findings-get
     outputs:
     - contextPath: BitSight.Company.guid
@@ -363,10 +363,10 @@ script:
       description: Identifier associated with the asset.
       type: string
     - contextPath: BitSight.Company.CompanyFinding.assets.category
-      description: The BitSight-calculated asset importance.
+      description: The Bitsight-calculated asset importance.
       type: string
     - contextPath: BitSight.Company.CompanyFinding.assets.importance
-      description: For internal BitSight use.
+      description: For internal Bitsight use.
       type: number
     - contextPath: BitSight.Company.CompanyFinding.assets.isIp
       description: A true value indicates this asset is an IP address.
@@ -408,13 +408,13 @@ script:
       description: Infrastructure tags that help identify this asset.
       type: string
     - contextPath: BitSight.Company.CompanyFinding.duration
-      description: For internal BitSight use.
+      description: For internal Bitsight use.
       type: string
     - contextPath: BitSight.Company.CompanyFinding.comments
       description: A thread of finding comments.
       type: string
     - contextPath: BitSight.Company.CompanyFinding.remainingDecay
-      description: For internal BitSight use.
+      description: For internal Bitsight use.
       type: number
     - contextPath: BitSight.Company.CompanyFinding.remediationHistory.lastRequestedRefreshDate
       description: The date when a record refresh that included this finding was last requested.
@@ -447,7 +447,7 @@ script:
       description: The user-assigned asset importance.
       type: string
     - contextPath: BitSight.Company.CompanyFinding.assetOverrides.overrideImportance
-      description: For internal BitSight use.
+      description: For internal Bitsight use.
       type: unknown
     - contextPath: BitSight.Company.CompanyFinding.attributedCompanies.guid
       description: The unique identifier of the company attributed to the finding.
@@ -467,7 +467,7 @@ script:
     - contextPath: BitSight.Page.count
       description: The number of findings.
       type: Number
-  - description: BitSight command to get list of companies and GUID.
+  - description: Bitsight command to get list of companies and GUID.
     name: bitsight-companies-guid-get
     outputs:
     - contextPath: BitSight.Company.name
@@ -510,10 +510,10 @@ script:
       description: The rating type.
       type: String
     - contextPath: BitSight.Company.logo
-      description: The URL in the BitSight platform to this company's logo image.
+      description: The URL in the Bitsight platform to this company's logo image.
       type: String
     - contextPath: BitSight.Company.sparkline
-      description: The URL in the BitSight platform to this company's historical ratings trend line.
+      description: The URL in the Bitsight platform to this company's historical ratings trend line.
       type: String
     - contextPath: BitSight.Company.externalId
       description: The external ID assigned to this company.
@@ -528,21 +528,21 @@ script:
       description: The primary domain of this company.
       type: String
     - contextPath: BitSight.Company.securityGrade
-      description: For internal BitSight use.
+      description: For internal Bitsight use.
       type: String
     - contextPath: BitSight.Company.gradeDate
-      description: For internal BitSight use.
+      description: For internal Bitsight use.
       type: Date
     - contextPath: BitSight.Company.displayURL
-      description: The URL in the BitSight platform to this company's overview page.
+      description: The URL in the Bitsight platform to this company's overview page.
       type: String
     - contextPath: BitSight.Company.href
-      description: The URL in the BitSight platform to this company's page.
+      description: The URL in the Bitsight platform to this company's page.
       type: String
     - contextPath: BitSight.MyCompany.guid
       description: The unique identifier of my company.
       type: String
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.13.87159
   isfetch: true
   runonce: false
   script: '-'
