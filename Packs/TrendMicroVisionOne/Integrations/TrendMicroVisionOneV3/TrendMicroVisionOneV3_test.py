@@ -55,11 +55,11 @@ from pytmv1 import (
     ListEndpointActivityResp,
     GetEmailActivitiesCountResp,
     MsData,
-    FileType,
     TextResp,
     MsDataUrl,
     MultiResp,
     ObjectType,
+    ScriptType,
     MultiResult,
     MultiUrlResp,
     NoContentResp,
@@ -1193,7 +1193,10 @@ def side_effect(lambda_func, *args2, **args3):
 # Test case for get endpoint information.
 def test_get_endpoint_information(mocker):
     """Test get information from endpoint based on endpointName or agentGuid"""
-    args = {"query_op": "and", "endpoint": json.dumps({"dpt": "443", "endpointName": "MSEDGEWIN10"})}
+    args = {
+        "query_op": "and",
+        "endpoint": json.dumps({"dpt": "443", "endpointName": "MSEDGEWIN10"}),
+    }
     client = Mock()
     my_list = []
     client.endpoint.consume_data = Mock(side_effect=side_effect)
@@ -1379,7 +1382,7 @@ def add_note_mock_response(*args, **kwargs):
 # Test case for add note
 def test_add_note(mocker):
     client = Mock()
-    client.note.add = Mock(return_value=add_note_mock_response())
+    client.note.create = Mock(return_value=add_note_mock_response())
     args = {"workbench_id": "WB-14-20190709-00003", "content": "This is a new note."}
     result = add_note(client, args)
     assert isinstance(result.outputs["message"], str)
@@ -1462,13 +1465,13 @@ def get_custom_script_list_mock_response(*args, **kwargs):
                 Script(
                     id="cb044c99-8fc5-2418-f5a5-2f15dbe62133",
                     file_name="string",
-                    file_type=FileType.BASH,
+                    file_type=ScriptType.BASH,
                     description="Script to update some values",
                 ),
                 Script(
                     id="44c99cb0-8c5f-4182-af55-62135dbe32f1",
                     file_name="string",
-                    file_type=FileType.POWERSHELL,
+                    file_type=ScriptType.POWERSHELL,
                     description="Script to delete duplicate values",
                 ),
             ]
@@ -1578,7 +1581,7 @@ def test_add_custom_script(mocker):
         - validate an ID is returned after successful action completion
     """
     client = Mock()
-    client.script.add = Mock(return_value=add_custom_script_mock_response())
+    client.script.create = Mock(return_value=add_custom_script_mock_response())
     args = {
         "file_url": "http://someurl.com/testscript.sh",
         "filename": "test_script.sh",

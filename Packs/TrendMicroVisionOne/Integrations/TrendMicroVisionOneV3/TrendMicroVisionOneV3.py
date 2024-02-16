@@ -837,9 +837,7 @@ def get_endpoint_info(
     # Make rest call
     try:
         v1_client.endpoint.consume_data(
-            lambda endpoint_data: new_endpoint_data.append(
-                endpoint_data
-            ),
+            lambda endpoint_data: new_endpoint_data.append(endpoint_data),
             op=query_op,
             **endpoint,
         )
@@ -2332,7 +2330,7 @@ def add_note(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandRes
     message: dict[str, Any] = {}
 
     # Make rest call
-    resp = v1_client.note.add(alert_id=workbench_id, note=content)
+    resp = v1_client.note.create(alert_id=workbench_id, note_content=content)
     note_resp: pytmv1.AddAlertNoteResp = unwrap(resp.response)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
@@ -2534,14 +2532,14 @@ def add_custom_script(
     script_contents = args.get(SCRIPT_CONTENTS, EMPTY_STRING)
     # Assign the file type enum
     if filetype.lower() == "bash":
-        filetype = pytmv1.FileType.BASH
+        filetype = pytmv1.ScriptType.BASH
     elif filetype.lower() == "powershell":
-        filetype = pytmv1.FileType.POWERSHELL
+        filetype = pytmv1.ScriptType.POWERSHELL
     # Make rest call
-    resp = v1_client.script.add(
-        file_type=filetype,
-        file_name=filename,
-        file_content=script_contents,
+    resp = v1_client.script.create(
+        script_type=filetype,
+        script_name=filename,
+        script_content=script_contents,
         description=description,
     )
     # Check if an error occurred during rest call
@@ -2622,15 +2620,15 @@ def update_custom_script(
     script_contents = args.get(SCRIPT_CONTENTS, EMPTY_STRING)
     # Assign the file type enum
     if filetype.lower() == "bash":
-        filetype = pytmv1.FileType.BASH
+        filetype = pytmv1.ScriptType.BASH
     elif filetype.lower() == "powershell":
-        filetype = pytmv1.FileType.POWERSHELL
+        filetype = pytmv1.ScriptType.POWERSHELL
     # Make rest call
     resp = v1_client.script.update(
-        file_name=filename,
-        file_type=filetype,
+        script_name=filename,
+        script_type=filetype,
         description=description,
-        file_content=script_contents,
+        script_content=script_contents,
         script_id=script_id,
     )
     # Check if an error occurred during rest call
