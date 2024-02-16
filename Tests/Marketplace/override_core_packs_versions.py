@@ -9,8 +9,6 @@ from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
 
-
-
 def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
     """
     Checks if the corepacks_override.json file in the repo should be used to override an existing corepacks file.
@@ -27,7 +25,7 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
     Returns True if a file should be updated and False otherwise.
     """
     override_corepacks_server_version = GCPConfig.corepacks_override_contents.get('server_version')
-        
+
     override_marketplaces = list(GCPConfig.corepacks_override_contents.keys())
 
     override_corepacks_file_version = GCPConfig.corepacks_override_contents.get(marketplace, {}).get('file_version')
@@ -88,6 +86,7 @@ def override_locked_corepacks_file(build_number: str, artifacts_dir: str, market
     GCPConfig.versions_metadata_contents['version_map'][override_corepacks_server_version]['file_version'][marketplace] = \
         override_corepacks_file_version
 
+
 def upload_server_versions_metadata(artifacts_dir: str):
     """
     Upload the versions-metadata.json to the build artifacts folder.
@@ -98,7 +97,8 @@ def upload_server_versions_metadata(artifacts_dir: str):
     versions_metadata_path = os.path.join(artifacts_dir, GCPConfig.VERSIONS_METADATA_FILE)
     json_write(versions_metadata_path, GCPConfig.versions_metadata_contents)
     logging.success(f"Finished copying {GCPConfig.VERSIONS_METADATA_FILE} to artifacts to {artifacts_dir}.")
- 
+
+
 def option_handler():
     """Validates and parses script arguments.
 
@@ -112,18 +112,18 @@ def option_handler():
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-mp', '--marketplace', help="marketplace version", default='xsoar')
-    
+
     # disable-secrets-detection-end
     return parser.parse_args()
 
-   
+
 def main():
     install_logging('override_core_packs.log', logger=logging)
     options = option_handler()
     packs_artifacts_path = options.packs_artifacts_path
     marketplace = options.marketplace
     build_number = options.ci_build_number if options.ci_build_number else str(uuid.uuid4())
-    
+
     # override a locked core packs file (used for hot-fixes)
     if should_override_locked_corepacks_file(marketplace=marketplace):
         logging.debug('Using the corepacks_override.json file to update an existing corepacks file.')
@@ -132,7 +132,7 @@ def main():
                                        marketplace=marketplace)
     else:
         logging.debug('Skipping overriding an existing corepacks file.')
-    
+
     # upload server versions metadata to bucket
     upload_server_versions_metadata(packs_artifacts_path)
 
