@@ -2,7 +2,7 @@ commonfields:
   id: SlackBlockBuilder
   version: -1
 name: SlackBlockBuilder
-script: '-'
+script: ''
 type: python
 tags:
 - slack
@@ -41,13 +41,17 @@ args:
   defaultValue: NoResponse
 - description: The instance of SlackV3 this script should use.
   name: slackInstance
+- description: The ID of the thread to which to reply. Can be retrieved from a previous send-notification command.
+  name: thread_id
 outputs:
 - contextPath: SlackBlockState
   type: unknown
   description: The state of the response from the user will be stored under this context path.
+- contextPath: SlackBlockBuilder
+  description: The thread ID retrieved from the message notification
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.84405
+dockerimage: demisto/python3:3.10.13.87159
 runas: DBotWeakRole
 dependson:
   must:
@@ -55,3 +59,7 @@ dependson:
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+runonce: false
