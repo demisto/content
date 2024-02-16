@@ -1,10 +1,10 @@
 {
     "CONTRIBUTION_REVIEWERS": [
-        "YuvHayun",
-        "yucohen",
-        "shmuel44"
+        "jbabazadeh",
+        "moishce",
+        "merit-maita"
     ],
-    "CONTRIBUTION_TL": "AradCarmi",
+    "CONTRIBUTION_TL": "JudahSchwartz",
     "CONTRIBUTION_SECURITY_REVIEWER": "melamedbn",
     "ON_CALL_DEVS": [
         "dfried",
