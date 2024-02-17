@@ -17,6 +17,7 @@ AWS_ROLE_ARN = PARAMS['roleArn']
 AWS_ROLE_SESSION_NAME = PARAMS['roleSessionName']
 AWS_ROLE_SESSION_DURATION = PARAMS['sessionDuration']
 AWS_ROLE_POLICY = None
+
 AWS_ACCESS_KEY_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('access_key')
 AWS_SECRET_ACCESS_KEY = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret_key')
 VERIFY_CERTIFICATE = not PARAMS.get('insecure', True)
