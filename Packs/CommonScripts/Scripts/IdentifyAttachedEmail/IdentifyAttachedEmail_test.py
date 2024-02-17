@@ -166,3 +166,34 @@ def test_identify_attached_mail_no_entries_passed(mocker):
 
     results = identify_attached_mail({})
     assert results == ('yes', {'reportedemailentryid': '23@2'})
+
+
+def test_identify_attached_mail_no_email_found(mocker):
+    """
+    Given
+    - no email entries in the warroom
+    - the platform is xsoar saas
+
+    When
+    - running the script to get the entries
+
+    Then
+    - no entries to be found
+
+    """
+    import CommonServerPython
+    mocker.patch.object(CommonServerPython, 'get_demisto_version', return_value={
+        'version': '8.2.0',
+        'buildNumber': '12345'
+    })
+
+    def execute_command(command, args):
+        if command == 'getEntries' and args == {"filter": {"categories": ["attachments"]}}:
+            return
+        else:
+            pytest.fail()
+
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+
+    results = identify_attached_mail({})
+    assert results == ('yes', {'reportedemailentryid': '23@2'})
