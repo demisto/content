@@ -196,4 +196,4 @@ def test_identify_attached_mail_no_email_found(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
 
     results = identify_attached_mail({})
-    assert results == ('yes', {'reportedemailentryid': '23@2'})
+    assert results == ('no', None)
