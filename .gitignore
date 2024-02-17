@@ -100,3 +100,8 @@ demisto_sdk_debug.log.*
 
 # Ignore Modeling Rules test conf
 Packs/**/ModelingRules/**/**/*_testdata.json
+
+# Build files
+.cache/
+.npm/
+pipeline_jobs_folder/
