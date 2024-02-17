@@ -4,7 +4,7 @@ commonfields:
 name: AWS - ACM
 display: AWS - ACM
 category: IT Services
-description: Amazon Web Services Certificate Manager Service (ACM)
+description: Amazon Web Services Certificate Manager Service (ACM).
 configuration:
 - display: Role Arn
   name: roleArn
@@ -34,7 +34,7 @@ configuration:
   - eu-north-1
   - eu-west-3
   type: 15
-  required: false
+  required: true
 - display: Role Session Duration
   name: sessionDuration
   type: 0
@@ -273,7 +273,7 @@ script:
       - EC_secp521r1
       description: Specify one or more algorithms that can be used to generate key pairs.
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
       name: region
       predefined:
       - us-east-1
@@ -317,7 +317,7 @@ script:
       required: true
       description: The key-value pair that defines the tag. The tag value is optional.
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
       name: region
       predefined:
       - us-east-1
@@ -353,7 +353,7 @@ script:
       required: true
       description: The key-value pair that defines the tag to remove.
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
       name: region
       predefined:
       - us-east-1
@@ -386,7 +386,7 @@ script:
       required: true
       description: The ARN of the ACM certificate for which you want to list the tags.
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
       name: region
       predefined:
       - us-east-1
@@ -425,7 +425,7 @@ script:
       required: true
       description: The ARN of the certificate.
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used
+      description: The AWS Region, if not specified the default region will be used.
       name: region
       predefined:
       - us-east-1
@@ -460,7 +460,7 @@ script:
       description: The certificate chain that contains the root certificate issued by the certificate authority (CA).
       type: string
     description: Retrieves a certificate specified by an ARN and its certificate chain . The chain is an ordered list of certificates that contains the end entity certificate, intermediate certificates of subordinate CAs, and the root certificate in that order. The certificate and certificate chain are base64 encoded. If you want to decode the certificate to see the individual fields, you can use OpenSSL.
-  dockerimage: demisto/boto3py3:1.0.0.45936
+  dockerimage: demisto/boto3py3:1.0.0.87582
   subtype: python3
 tests:
 - ACM-Test
