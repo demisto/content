@@ -16,6 +16,7 @@ XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive',
     'Resolved': 'resolved_true_positive',
+    'Resolved - Security Testing': 'resolved_security_testing',
 }
 
 XDR_RESOLVED_STATUS_TO_XSOAR = {
@@ -23,7 +24,7 @@ XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
     'resolved_true_positive': 'Resolved',
-    'resolved_security_testing': 'Other',
+    'resolved_security_testing': 'Resolved - Security Testing',
     'resolved_other': 'Other',
     'resolved_auto': 'Resolved'
 }
