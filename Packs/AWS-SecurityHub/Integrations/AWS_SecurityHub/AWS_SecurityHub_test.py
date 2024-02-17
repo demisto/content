@@ -3,7 +3,7 @@ import demistomock as demisto
 import datetime
 from freezegun import freeze_time
 from CommonServerPython import IncidentStatus
-from AWS_SecurityHub import AWSClient, get_findings_command, list_members_command
+from AWS_SecurityHub1 import AWSClient, get_findings_command, list_members_command
 
 FILTER_FIELDS_TEST_CASES = [
     (
@@ -87,7 +87,7 @@ def test_parse_filter_field(test_input, expected_output):
      - Ensure one set of name,value,comparison is parsed correctly
      - Ensure two sets of name,value,comparison are parsed correctly
     """
-    from AWS_SecurityHub import parse_filter_field
+    from AWS_SecurityHub1 import parse_filter_field
     assert parse_filter_field(test_input) == expected_output
 
 
@@ -132,7 +132,7 @@ def test_parse_tag_field(test_input, expected_output):
      - Ensure one pair of key, value is parsed correctly
      - Ensure two pairs of key, value are parsed correctly
     """
-    from AWS_SecurityHub import parse_tag_field
+    from AWS_SecurityHub1 import parse_tag_field
     assert parse_tag_field(test_input) == expected_output
 
 
@@ -156,7 +156,7 @@ def test_parse_resource_ids(test_input, expected_output):
      - Ensure a string without spaces return a valid list separated by ','.
      - Ensure a string with spaces return a valid list separated by ','.
     """
-    from AWS_SecurityHub import parse_resource_ids
+    from AWS_SecurityHub1 import parse_resource_ids
     assert parse_resource_ids(test_input) == expected_output
 
 
@@ -233,7 +233,7 @@ def test_fetch_incidents(mocker):
     Then:
         - Verify the last run is set as the created time + 1 millisecond, i.e. 2020-03-22T13:22:13.934Z
     """
-    from AWS_SecurityHub import fetch_incidents
+    from AWS_SecurityHub1 import fetch_incidents
     mocker.spy(demisto, 'setLastRun')
     client = MockClient()
     fetch_incidents(client, 'Low', False, None, 'Both', None, None, None)
@@ -250,7 +250,7 @@ def test_fetch_with_archive_findings_without_findings(mocker):
     Then:
         - Verify that the fetch function terminate without errors.
     """
-    from AWS_SecurityHub import fetch_incidents
+    from AWS_SecurityHub1 import fetch_incidents
     mocker.patch.object(demisto, "getLastRun", return_value={})
     set_last_run_mocker = mocker.spy(demisto, 'setLastRun')
     client = MockClient(return_findings=False)
@@ -271,7 +271,7 @@ def test_fetch_incidents_with_filters(mocker):
     Then:
         - Check the filters to get_findings.
     """
-    from AWS_SecurityHub import fetch_incidents
+    from AWS_SecurityHub1 import fetch_incidents
     expected_filters = {
         'CreatedAt': [{
             'Start': '2018-10-24T14:13:20+00:00',
@@ -340,7 +340,7 @@ def test_severity_mapping(severity, expected_demisto_severity):
         Then:
             - Verifying demisto severity.
     """
-    from AWS_SecurityHub import severity_mapping
+    from AWS_SecurityHub1 import severity_mapping
     result = severity_mapping(severity)
     assert result == expected_demisto_severity
 
@@ -369,7 +369,7 @@ def test_create_filters_list_dictionaries(arr, compare_param, expected_result):
         Then:
             - Checks the list of returned comparisons objects.
     """
-    from AWS_SecurityHub import create_filters_list_dictionaries
+    from AWS_SecurityHub1 import create_filters_list_dictionaries
     result = create_filters_list_dictionaries(arr, compare_param)
     assert result == expected_result
 
@@ -398,7 +398,7 @@ def test_build_severity_label_obj(label, expected_result):
             - Checks the returned  list of comparisons objects. For example, if the severity level is Medium, than the
                 list of comparison object will contain MEDIUM, HIGH and CRITICAL.
     """
-    from AWS_SecurityHub import build_severity_label_obj
+    from AWS_SecurityHub1 import build_severity_label_obj
     result = build_severity_label_obj(label)
     assert result == expected_result
 
@@ -412,7 +412,7 @@ def test_get_remote_data_command():
     Then:
         - Verifying the returned GetRemoteDataResponse object.
     """
-    from AWS_SecurityHub import get_remote_data_command
+    from AWS_SecurityHub1 import get_remote_data_command
     client = MockClient()
     args = {
         'id': 'Id',
@@ -429,7 +429,7 @@ def test_get_mapping_fields_command():
     Then:
         - Verifying that a SchemeTypeMapping object containing the fields in the outgoing mapper is returned.
     """
-    from AWS_SecurityHub import get_mapping_fields_command
+    from AWS_SecurityHub1 import get_mapping_fields_command
     expected_fields = {
         'AWS Security Hub Finding': {
             'Confidence': '',
@@ -563,7 +563,7 @@ def test_update_remote_system_command(mocker, args, remote_id, expected_kwargs):
     Then:
         - Verify that the correct arguments were sent to AWS Security Hub.
     """
-    from AWS_SecurityHub import update_remote_system_command
+    from AWS_SecurityHub1 import update_remote_system_command
     client = MockClient()
     batch_update_mock = mocker.patch.object(MockClient, 'batch_update_findings')
     result = update_remote_system_command(client, args, True)
@@ -580,7 +580,7 @@ def test_last_update_to_time():
     Then:
         - Returns the timestamp.
     """
-    from AWS_SecurityHub import last_update_to_time
+    from AWS_SecurityHub1 import last_update_to_time
     last_update = '2023-02-05T22:49:47.637Z'
     expected_timestamp = 1675637387
     result = last_update_to_time(last_update)
