@@ -166,7 +166,7 @@ In order to connect to the Azure Network Security Groups use one of the followin
 
 ##### Client Credentials Flow
 
-Note: [The chat commands](#chat-commands) are only supported when using the `Authorization Cod flow`.
+Note: [The chat commands](#chat-commands) are only supported when using the `Authorization Code flow`.
 
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
