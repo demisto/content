@@ -140,7 +140,8 @@ validate-content-conf:
     - !reference [.create-release-notes-and-common-docs]
     - !reference [.secrets-fetch]
     - section_start "Create or update content graph" --collapsed
-
+    - echo "Staging the repo to include the private packs in the graph"
+    - git add Packs
     - echo "Updating the content graph"
     - mkdir "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
     - demisto-sdk update-content-graph -g --marketplace "${MARKETPLACE_VERSION}" -o "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
