@@ -1,5 +1,5 @@
 {
-    "name": "AWS - Security Lake",
+    "name": "Amazon - Security Lake",
     "description": "Amazon Security Lake is a fully managed security data lake service.",
     "support": "xsoar",
     "currentVersion": "1.0.4",
