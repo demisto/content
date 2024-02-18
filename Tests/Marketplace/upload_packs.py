@@ -1211,7 +1211,6 @@ def main():
     create_corepacks_config(storage_bucket, build_number, index_folder_path,
                             os.path.dirname(packs_artifacts_path), storage_base_path, marketplace)
 
-
     prepare_index_json(index_folder_path=index_folder_path,
                        build_number=build_number,
                        private_packs=private_packs,

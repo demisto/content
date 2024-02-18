@@ -452,8 +452,6 @@ class TestCorepacksFiles:
         # Remove the temp artifacts dir that was created for testing:
         shutil.rmtree(artifacts_dir)
 
-    
-
 
 class TestUpdatedPrivatePacks:
 

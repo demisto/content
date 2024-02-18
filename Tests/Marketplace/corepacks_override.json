@@ -1,7 +1,6 @@
 {
     "server_version": "8.4.0",
     "xsoar_saas": {
-        "file_version": "3",
         "updated_corepacks_content": {
             "corePacks": [
                 "Whois/1.5.1/Whois.zip",
@@ -64,7 +63,6 @@
         }
     },
     "marketplacev2": {
-        "file_version": "2",
         "updated_corepacks_content": {
             "corePacks": [
                 "Whois/1.5.1/Whois.zip",

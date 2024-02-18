@@ -1,55 +1,47 @@
 import os
 import argparse
 import uuid
+import json
 
-
+from git import Repo
 from Tests.Marketplace.marketplace_services import json_write
 from Tests.Marketplace.marketplace_constants import GCPConfig
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
 
-def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
+def should_override_locked_corepacks_file(marketplace: str):
     """
-    Checks if the corepacks_override.json file in the repo should be used to override an existing corepacks file.
-    The override file should be used if the following conditions are met:
-    1. The versions-metadata.json file contains a server version that matches the server version specified in the
-        override file.
-    2. The file version of the server version in the corepacks_override.json file is greater than the matching file
-        version in the versions-metadata.json file.
-    3. The marketplace to which the upload is taking place matches the marketplace specified in the override file.
+        Checks if the corepacks_override.json file in the repo should be used to override an existing corepacks file.
+        The override file should be used if the following conditions are met:
+        1. The current version of the corepacks_override.json is different from the last version in master.
+        2. The current marketplace appears as should be overriden in the corepacks_override.json.
 
-    Args
-        marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2 or xpanse
+        Args
+            marketplace (str): the marketplace type of the bucket. possible options: xsoar, xsoar_saas, marketplace_v2 or xpanse
 
-    Returns True if a file should be updated and False otherwise.
-    """
-    override_corepacks_server_version = GCPConfig.corepacks_override_contents.get('server_version')
+        Returns True if a file should be updated and False otherwise.
+        """
+    # Specify the file path
+    file_path = "Tests/Marketplace/corepacks_override.json"
 
-    override_marketplaces = list(GCPConfig.corepacks_override_contents.keys())
+    # Open the Git repository
+    repo = Repo(search_parent_directories=True)
+    branch = repo.heads['master']
 
-    override_corepacks_file_version = GCPConfig.corepacks_override_contents.get(marketplace, {}).get('file_version')
-    current_corepacks_file_version = (GCPConfig.core_packs_file_versions.get(override_corepacks_server_version, {}).
-                                      get('file_version', {}).get(marketplace))
-    if not current_corepacks_file_version or not override_corepacks_file_version:
-        logging.debug(f'Either no file version was found in {GCPConfig.COREPACKS_OVERRIDE_FILE} or could not find '
-                      f'a matching file version for server version {override_corepacks_server_version} in '
-                      f'{GCPConfig.VERSIONS_METADATA_FILE} file. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
-        return False
+    # Access the file as a blob from the last commit
+    last_commit_blob = branch.commit.tree / file_path
 
-    if int(override_corepacks_file_version) <= int(current_corepacks_file_version):
-        logging.debug(
-            f'Corepacks file version: {override_corepacks_file_version} of server version {override_corepacks_server_version} in '
-            f'{GCPConfig.COREPACKS_OVERRIDE_FILE} is not greater than the version in {GCPConfig.VERSIONS_METADATA_FILE}: '
-            f'{current_corepacks_file_version}. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
-        return False
+    # Get the content of the last commit blob
+    last_commit_content = json.loads(last_commit_blob.data_stream.read())
 
-    if override_marketplaces and marketplace not in override_marketplaces:
-        logging.debug(f'Current marketplace {marketplace} is not selected in the {GCPConfig.VERSIONS_METADATA_FILE} '
-                      f'file. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
-        return False
+    # Get the current file content
+    current_override_content = GCPConfig.corepacks_override_contents
 
-    return True
+    # If the files are different and the current marketplace is in the override file we override
+    if current_override_content != last_commit_content and marketplace in current_override_content:
+        return True
+    return False
 
 
 def override_locked_corepacks_file(build_number: str, artifacts_dir: str, marketplace: str = 'xsoar'):
@@ -71,20 +63,12 @@ def override_locked_corepacks_file(build_number: str, artifacts_dir: str, market
     # Update the build number to the current build number:
     corepacks_file_new_content['buildNumber'] = build_number
 
-    # Upload the updated corepacks file to the given artifacts folder:
+    # Upload the updated corepacks file to the given artifacts' folder:
     override_corepacks_file_name = f'corepacks-{override_corepacks_server_version}.json'
     logging.debug(f'Overriding {override_corepacks_file_name} with the following content:\n {corepacks_file_new_content}')
     corepacks_json_path = os.path.join(artifacts_dir, override_corepacks_file_name)
     json_write(corepacks_json_path, corepacks_file_new_content)
     logging.success(f"Finished copying overriden {override_corepacks_file_name} to artifacts.")
-
-    # Update the file version of the matching corepacks version in the versions-metadata.json file
-    override_corepacks_file_version = GCPConfig.corepacks_override_contents.get(marketplace, {}).get('file_version')
-    logging.debug(f'Bumping file version of server version {override_corepacks_server_version} in versions-metadata.json from'
-                  f'{GCPConfig.versions_metadata_contents["version_map"][override_corepacks_server_version]["file_version"]} to'
-                  f'{override_corepacks_file_version}')
-    GCPConfig.versions_metadata_contents['version_map'][override_corepacks_server_version]['file_version'][marketplace] = \
-        override_corepacks_file_version
 
 
 def upload_server_versions_metadata(artifacts_dir: str):
