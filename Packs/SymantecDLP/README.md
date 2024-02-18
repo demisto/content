@@ -78,7 +78,7 @@ See [Configuring the Log to a Syslog Server action](https://techdocs.broadcom.co
 ###  Syslog Server Alerts
 To enable sending server events to the syslog server, complete the following steps:
 
-1. Go to the \Program Files\Symantec\DataLossPrevention\EnforceServer\15.8.00000\Protect\config directory on Windows or the /opt/Symantec/DataLossPrevention/EnforceServer/15.8.00000/Protect/config directory on Linux.
+1. Go to the \Program Files\Symantec\DataLossPrevention\EnforceServer\{version}\Protect\config directory on Windows or the /opt/Symantec/DataLossPrevention/EnforceServer/{version}/Protect/config directory on Linux.
 2. Open the Manager.properties file.
 3. Uncomment the **#systemevent.syslog.protocol =** line by removing the # symbol from the beginning of the line, and enter **[ udp | tcp | tls ]** to secure communications sent from the Enforce Server to the syslog server.
 
