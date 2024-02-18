@@ -1023,11 +1023,12 @@ def test_not_authenticated_retry_positive(requests_mock, mocker):
     assert client.send_request('') == {}
     assert demisto.debug.call_count == 4
     debug = demisto.debug.call_args_list
-    expected_debug_msg = "Got status code 401 - {'error': {'message': 'User Not Authenticated', " \
+    expected_debug_msg = "Got status code 401, json_res={'error': {'message': 'User Not Authenticated', " \
                          "'detail': 'Required to provide Auth information'}, 'status': 'failure'}. Retrying ..."
     assert debug[0][0][0] == expected_debug_msg
     assert debug[1][0][0] == expected_debug_msg
 
+e
 
 def test_not_authenticated_retry_negative(requests_mock, mocker):
     """
@@ -1075,7 +1076,7 @@ def test_not_authenticated_retry_negative(requests_mock, mocker):
                             "\"status\": \"failure\"}' with headers {}"
     assert demisto.debug.call_count == 6
     debug = demisto.debug.call_args_list
-    expected_debug_msg = "Got status code 401 - {'error': {'message': 'User Not Authenticated', " \
+    expected_debug_msg = "Got status code 401, json_res={'error': {'message': 'User Not Authenticated', " \
                          "'detail': 'Required to provide Auth information'}, 'status': 'failure'}. Retrying ..."
     assert debug[0][0][0] == expected_debug_msg
     assert debug[1][0][0] == expected_debug_msg
