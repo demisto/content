@@ -186,6 +186,9 @@ script:
       auto: PREDEFINED
     - description: The query to filter the device.
       name: filter
+    - name: limit
+      description: The maximum records to return
+      defaultValue: 50
     - description: A comma-separated list of device IDs to limit the results.
       name: ids
     - auto: PREDEFINED

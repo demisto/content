@@ -1763,6 +1763,7 @@ def search_device(filter_operator='AND'):
         'site_name': str(args.get('site_name', '')).split(','),
         'local_ip': str(args.get('ip', '')).split(',')
     }
+    limit = int(args.get('limit', 50))
     url_filter = '{}'.format(str(args.get('filter', '')))
     op = ',' if filter_operator == 'OR' else '+'
     # In Falcon Query Language, '+' stands for AND and ',' for OR
@@ -1783,7 +1784,7 @@ def search_device(filter_operator='AND'):
                 # All args should be a list. this is a fallback
                 url_filter = "{url_filter}{operator}{inp_arg}:'{arg_val}'".format(url_filter=url_filter, operator=op,
                                                                                   inp_arg=k, arg_val=arg)
-    raw_res = http_request('GET', '/devices/queries/devices/v1', params={'filter': url_filter})
+    raw_res = http_request('GET', '/devices/queries/devices/v1', params={'filter': url_filter, 'limit': limit})
     device_ids = raw_res.get('resources')
     if not device_ids:
         return None
