@@ -1504,6 +1504,10 @@ script:
     - description: Template for creating a standard change request.
       name: template
       required: true
+    - description: Whether to force-use the default api version (not versioned), ignoring the API version parameter.
+      name: force_default_url
+      required: false
+      defaultValue: 'false'
     description: Create a change request from a template.
     name: servicenow-create-co-from-template
     outputs:
@@ -1606,7 +1610,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api.
       type: string
-  dockerimage: demisto/python3:3.10.13.85667
+  dockerimage: demisto/python3:3.10.13.86272
   isfetch: true
   ismappable: true
   isremotesyncin: true
