@@ -689,17 +689,15 @@ script:
       - unknown
       - truePositive
       - falsePositive
-      - benignPositive
+      - informationalExpectedActivity
     - auto: PREDEFINED
       description: Relevant only for Alerts v2. Use this field to update the alert's determination.
       name: determination
       predefined:
       - unknown
-      - apt
       - malware
       - phishing
       - other
-      - securityPersonnel
       - securityTesting
       - multiStagedAttack
       - maliciousUserActivity
