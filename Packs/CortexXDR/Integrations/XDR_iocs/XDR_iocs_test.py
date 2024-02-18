@@ -943,7 +943,7 @@ def test_parse_demisto_comments__custom_field_empty_value(comments_as_tags: bool
     assert _parse_demisto_comments(
         ioc={'CustomFields': {comment_field: ''}},
         comment_field_name=comment_field,
-        comments_as_tags=comments_as_tags,
+        comments_as_tags=comments_as_tags
     ) is None
 
 

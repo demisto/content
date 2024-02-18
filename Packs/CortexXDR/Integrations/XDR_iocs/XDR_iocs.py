@@ -268,7 +268,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
         return [comment]
 
     elif comment_field_name == 'indicator_link':
-        # parse indicator link into tags
+        # parse indicator link into comments field
         raw_id = ioc.get('id')
         if raw_id:
             return f'https://{demisto.demistoUrls()}/#/indicator/{raw_id}'.split(",")
@@ -285,7 +285,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
             return [raw_comment]
 
 
-def demisto_ioc_to_xdr(ioc: dict, XSOARtenant: str = '') -> dict:
+def demisto_ioc_to_xdr(ioc: dict) -> dict:
     try:
         # demisto.debug(f'Raw outgoing IOC: {ioc}') # uncomment to debug, otherwise spams the log
         xdr_ioc: dict = {
@@ -399,13 +399,12 @@ def get_iocs_to_keep_file():
 
 
 def create_last_iocs_query(from_date, to_date):
-    return f'from:>={from_date} and modified:<{to_date} and ({Client.query})'
+    return f'modified:>={from_date} and modified:<{to_date} and ({Client.query})'
 
 
 def get_last_iocs(batch_size=200) -> list:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
     last_run: dict = get_integration_context()
-    last_run['time'] = '1706613836134'
     query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
     demisto.info(f"querying XSOAR's recently-modified IOCs with {query=}")
     iocs: list = list(get_iocs_generator(query=query, size=batch_size))
@@ -448,7 +447,6 @@ def tim_insert_jsons(client: Client):
     else:
         demisto.info("pushing IOCs to XDR: did not get indicators, will use recently-modified IOCs")
         iocs = get_last_iocs()
-    XSOARtenant = demisto.demistoUrls()
     validation_errors = []
     if iocs:
         path = 'tim_insert_jsons/'
@@ -456,7 +454,7 @@ def tim_insert_jsons(client: Client):
         for i, single_batch_iocs in enumerate(batch_iocs(iocs)):
             demisto.debug(f'pushing IOCs to XDR: batch #{i} with {len(single_batch_iocs)} IOCs')
             requests_kwargs: dict = get_requests_kwargs(_json=list(
-                map(demisto_ioc_to_xdr, single_batch_iocs, XSOARtenant)), validate=True)
+                map(demisto_ioc_to_xdr, single_batch_iocs)), validate=True)
             response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
             validation_errors.extend(response.get('reply', {}).get('validation_errors'))
     else:
@@ -777,9 +775,9 @@ def main():  # pragma: no cover
             get_sync_file(set_time=argToBoolean(args['set_time']), zip=argToBoolean(args['zip']))
         elif command == 'xdr-iocs-to-keep-file':
             get_iocs_to_keep_file()
-        elif command in commands:  # xdr-iocs-push
+        elif command in commands:
             commands[command](client)
-        elif command == 'xdr-iocs-sync':  # changes enhancement
+        elif command == 'xdr-iocs-sync':
             xdr_iocs_sync_command(client, args.get('firstTime') == 'true')
         else:
             raise NotImplementedError(command)
