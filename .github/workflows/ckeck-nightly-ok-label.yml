@@ -13,7 +13,7 @@ jobs:
         id: check-changes
         with:
           script: |
-            const GitLabFilesChanged = git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep '^\.gitlab/'
+            const GitLabFilesChanged = git diff --name-only | grep '^\.gitlab/'
             if (GitLabFilesChanged) {
                 console.log('Files under .gitlab folder has changed, Will check if the PR has the nightly-ok label.');
               } else {
@@ -31,6 +31,6 @@ jobs:
             if (hasLabel) {
               console.log('All good the PR has the nightly-ok label.');
             } else {
-              console.log('PR does not have the `nightly-ok` label. it is required when changing files under tht `.gitlab` directory. Please run nightly using the Utils/gitlab_triggers/trigger_content_nightly_build.sh script check that succeeded and add the nightly-ok label');
+              console.log('PR does not have the `nightly-ok` label. it is required when changing files under the `.gitlab` directory. Please run nightly using the Utils/gitlab_triggers/trigger_content_nightly_build.sh script check that succeeded and add the nightly-ok label');
               process.exit(1); // Exit with failure status if label is missing
             }
