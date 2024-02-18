@@ -159,7 +159,7 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 
 ### Grant the Demisto Bot Permissions in Microsoft Graph
 
-In order to connect to the Azure Network Security Groups use one of the following methods:
+In order to connect to Microsoft Teams use one of the following authentication methods:
 
 1. *Client Credentials Flow*
 2. *Authorization Code Flow*
