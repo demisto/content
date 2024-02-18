@@ -36,11 +36,14 @@ script:
     - name: project_id
       description: Add a project id for this issue
       type: textArea
+      required: true
     - name: tracker_id
       description: Add a tracker id for this issue
+      type: textArea
     - name: status_id
       required: true
       description: Add a status id for this issue
+      type: textArea
     - name: priority_id
       required: true
       description: Add a priority id for this issue
@@ -64,7 +67,7 @@ script:
       - '...]'
       description: Add an array of Key:value pairs as custom fields for this issue
       isArray: true
-    - name: watchers_user_ids
+    - name: watcher_user_ids
       description: Add an array with watchers user ids for this issue
       isArray: true
     - name: is_private
@@ -125,6 +128,146 @@ script:
     outputs:
       - contextPath: Redmine.issue
         description: kmsjnak
+  - name: redmine-issue-update
+    description: Update an issue
+    arguments:
+    - name: issue_id
+      description: Add the id of the issue you want to change
+      type: textArea
+      required: true
+    - name: project_id
+      description: Add a project id to update for this issue
+      type: textArea
+    - name: tracker_id
+      description: Add a tracker id to update for this issue
+      type: textArea
+    - name: status_id
+      description: Add a status id to update for this issue
+      type: textArea
+    - name: priority_id
+      description: Add a priority id to update for this issue
+      type: textArea
+    - name: subject
+      description: Add a subject to update for this issue
+      type: textArea
+    - name: description
+      description: Add a project id to update for this issue
+      type: textArea
+    - name: category_id
+      description: Add a category id to update for this issue
+      type: textArea
+    - name: fixed_version_id
+      description: Add a fixed version id to update for this issue
+      type: textArea
+    - name: assigned_to_id
+      description: Add an id of the user to assign the issue to 
+      type: textArea
+    - name: parent_issue_id
+      description: Add an id of the parent issue to update for this issue
+      type: textArea
+    - name: custom_fields
+      description: Add an array of [{key:value}] to update for this issue
+      isArray: true
+    - name: watcher_user_ids
+      description: Add an array of user ids to add as watchers 
+      isArray: true
+    - name: is_private
+      description: Is the issue private? (True/False)
+      type: textArea
+    - name: estimated_hours
+      description: Add number of hours estimated for this issue
+      type: textArea
+    - name: notes
+      description: Add comment about the update
+      type: textArea
+    - name: private_notes
+      description: Add True is the notes are private
+      type: textArea
+    outputs:
+      - contextPath: Redmine.issue
+        description: kmsjnak
+  - name: redmine-issue-show
+    description: Show an issue by id
+    arguments:
+    - name: issue_id
+      description: Add the id of the issue you want to show
+      type: textArea
+      required: true
+    - name: include (possible values- children/attachments/relations/changesets/journals/watchers/allowed_statuses)
+      description: fields to add to the response 
+      isArray: true
+    outputs:
+      - contextPath: Redmine.Issue
+        description: Show the issue with specified id
+  - name: redmine-issue-delete
+    description: Delete an issue by id
+    arguments:
+    - name: issue_id
+      description: Add the id of the issue you want to remove
+      type: textArea
+      required: true
+    outputs:
+      - contextPath: 
+        description:
+  - name: redmine-issue-watcher-add
+    description: Add a watcher to your wanted issue
+    arguments:
+    - name: issue_id
+      description: Add the id of the issue you want to add a watcher to
+      type: textArea
+      required: true
+    - name: watcher_id
+      description: Add the id of the watcher to append to the issue
+      type: textArea
+      required: true
+    outputs:
+      - contextPath: 
+        description:
+  - name: redmine-issue-watcher-remove
+    description: Remove a watcher of an issue
+    arguments:
+    - name: issue_id
+      description: Enter the id of the issue you want to update
+      type: textArea
+      required: true
+    - name: watcher_id
+      description: Enter the id of the watcher to remove from this issue
+      type: textArea
+      required: true
+    outputs:
+      - contextPath: 
+        description:
+  - name: redmine-project-list
+    description: Return all projects (public and private, the user has access to)
+    arguments:
+          - name: include (possible values- trackers/issue_categories/enabled_modules/time_entry_activities/issue_custom_fields)
+            description: Add which fields to add to the response
+            isArray: true
+            type: textArea
+    outputs:
+      - contextPath: Redmine.Project
+        description: All projects the user has access to
+  - name: redmine-custom-field-list
+    description: Returns all custom fields definitions
+    arguments:
+    outputs:
+      - contextPath: Redmine.CustomField
+        description: Returns all custom fields which are being used
+  - name: redmine-user-id-list
+    description: Returns a list of users
+    arguments:
+    - name: status (possible values-1/2/3)
+      description: Get only users with a specific status (1-Active, 2-Registered, 3-Locked)
+      type: textArea
+    - name: name
+      description: Get only users with a specific name (search for a match in firstname,lastname and email)
+      type: textArea
+    - name: group_id
+      description: Get only users with a specific group id
+      type: textArea
+    outputs:
+      - contextPath: Redmine.Users
+        description: Returns a list of all users
   dockerimage: demisto/python3:3.10.9.42476
   runonce: false
   subtype: python3
