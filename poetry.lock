@@ -1474,7 +1474,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "ds-conf-json-2"
-resolved_reference = "3e637c527b88f3bba0639f6ffa818cd940fedd73"
+resolved_reference = "461478e1d01c038cfa7b6b6fa226a484f0dc9de7"
 
 [[package]]
 name = "deprecated"
