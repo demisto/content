@@ -847,6 +847,27 @@ def test_get_update_args_unassgning_user(mocker):
     assert update_args.get('unassign_user') == 'true'
 
 
+def test_handle_outgoing_issue_closure_close_reason(mocker):
+    """
+    Given:
+        -  a dict indicating changed fields (delta)
+        - the incident status - set to set to 2 == Closed
+    When
+        - running handle_outgoing_issue_closure
+    Then
+        - Closing the issue with the resolved_security_testing status
+    """
+    from CoreIRApiModule import handle_outgoing_issue_closure
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({'delta': {'assigned_user_mail': 'None', 'closeReason': 'Resolved - Security Testing'},
+                                          'status': 2, 'inc_status': 2, 'data': {'status': 'other'}})
+    request_data_log = mocker.patch.object(demisto, 'debug')
+    handle_outgoing_issue_closure(remote_args)
+
+    assert "handle_outgoing_issue_closure Closing Remote incident incident_id=None with status resolved_security_testing" in request_data_log.call_args[  # noqa: E501
+        0][0]
+
+
 def test_get_update_args_close_incident():
     """
     Given:
