@@ -15,6 +15,7 @@ configuration:
   name: incidentType
   type: 13
 - name: max_fetch
+  display: Max Fetch
   type: 0
   defaultvalue: '50'
 - defaultvalue: 7 days

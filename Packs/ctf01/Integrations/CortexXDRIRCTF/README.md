@@ -1,5 +1,5 @@
 Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
-This integration was integrated and tested with version xx of Cortex XDR - IR CTF.
+This integration was integrated and tested with version 8.2 of Cortex XDR - IR CTF.
 
 ## Configure Cortex XDR - IR CTF on Cortex XSOAR
 
