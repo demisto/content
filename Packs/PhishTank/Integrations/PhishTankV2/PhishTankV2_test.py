@@ -246,7 +246,7 @@ def test_url_command(mocker, data, url, expected_score, expected_table):
 
 
 @pytest.mark.parametrize('username, expected_headers', [
-    ('test', {'User-Agent':'phishtank/test'}),
+    ('test', {'User-Agent': 'phishtank/test'}),
     ('', {})])
 def test_user_agent_header(mocker, username, expected_headers):
     """
