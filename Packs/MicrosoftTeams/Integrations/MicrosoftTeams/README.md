@@ -251,7 +251,7 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
     | The header of an external form hyperlink. |  | False |
     | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 and XSIAM | False |
     | Use system proxy settings |  | False |
-    | Long running instance |  | False |
+    | Long running instance |  | True |
     | Listen port, e.g., 7000 (Required for investigation mirroring and direct messages) | longRunningPort | False |
     | Incident type | Incident type. | False |
 
