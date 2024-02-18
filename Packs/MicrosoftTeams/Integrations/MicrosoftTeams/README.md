@@ -159,14 +159,14 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 
 ### Grant the Demisto Bot Permissions in Microsoft Graph
 
-In order to connect to the Azure Network Security Groups use one of the following methods:
+In order to connect to Microsoft Teams use one of the following authentication methods:
 
 1. *Client Credentials Flow*
 2. *Authorization Code Flow*
 
 ##### Client Credentials Flow
 
-Note: [The chat commands](#chat-commands) are only supported when using the `Authorization Cod flow`.
+Note: [The chat commands](#chat-commands) are only supported when using the `Authorization Code flow`.
 
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
@@ -273,12 +273,9 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 2. Enter your Client/Application ID in the **Bot ID** parameter. 
 3. Enter your Client Secret in the **Bot Password** parameter.
 4. Enter your Application redirect URI in the **Application redirect URI** parameter.
-5. Copy the following URL and replace the **TENANT_ID**, **CLIENT_ID** and **REDIRECT_URI** with your own client ID and redirect URI, accordingly.
-https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=code&response_mode=query&scope=offline_access%20https%3A%2F%2Fgraph.microsoft.com%2F.default&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&state=12345. When prompted, accept the Microsoft authorization request for the required permissions. You will be automatically redirected to a link with the following structure:
-```REDIRECT_URI?code=AUTH_CODE&state=12345&session_state=SESSION_STATE```
-6. Copy the **AUTH_CODE** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter. 
-7. Save the instance.
-8. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
+5. Run the !microsoft-teams-generate-login-url command in the War Room and follow the instructions.
+6. Save the instance.
+7. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
 
 
 ### Add the Demisto Bot to a Team
