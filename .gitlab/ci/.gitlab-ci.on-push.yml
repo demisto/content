@@ -10,8 +10,6 @@
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
 trigger-private-build:
-  tags:
-    - gke
   stage: unittests-and-validations
   extends:
     - .default-job-settings
@@ -42,8 +40,6 @@ trigger-private-build:
   - section_end "Create Release Notes and Common Server Documentation"
 
 merge-dev-secrets:
-  tags:
-    - gke
   extends:
     - .default-job-settings
   variables:
@@ -63,8 +59,6 @@ merge-dev-secrets:
   allow_failure: true
 
 stop-running-pipelines:
-  tags:
-    - gke
   stage: unittests-and-validations
   extends:
     - .default-job-settings
@@ -109,8 +103,6 @@ run-validations:
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
-  tags:
-    - gke
   stage: unittests-and-validations
   extends:
     - .default-job-settings
@@ -121,8 +113,6 @@ validate-content-conf:
     - job-done
 
 .generic-prepare-testing-bucket:
-  tags:
-    - gke
   extends:
     - .default-job-settings
   rules:
@@ -292,8 +282,6 @@ xpanse-prepare-testing-bucket:
   - section_end "Run Tests"
 
 .test_content_on_xsoar_server_instances_base:
-  tags:
-    - gke
   extends:
     - .default-job-settings
     - .push-rule
@@ -389,8 +377,6 @@ tests_xsoar_server:
         - "Server Master"
 
 fan-in-nightly:
-  tags:
-    - gke
   stage: fan-in
   rules:
     - if: '$NIGHTLY'
@@ -417,8 +403,6 @@ jobs-done-check-nightly:
     - xsiam-test_playbooks_results
     - xsiam-test_modeling_rule_results
     # - xsoar-saas_test_e2e_results
-  tags:
-    - gke
   rules:
     - if: '$NIGHTLY'
       when: always
@@ -431,8 +415,6 @@ fan-in-on-push:
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
-  tags:
-    - gke
   script:
     - echo "fan in on push"
   variables:
@@ -462,8 +444,6 @@ jobs-done-check-on-push:
     - xsoar-test_playbooks_results
     - xsiam-test_playbooks_results
     - xsiam-test_modeling_rule_results
-  tags:
-    - gke
   variables:
     WORKFLOW: 'Content PR'
     master_branch_name: master
@@ -474,8 +454,6 @@ fan-in-on-merge:
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
-  tags:
-    - gke
   script:
     - echo "fan in on merge"
   variables:
@@ -505,8 +483,6 @@ jobs-done-check-on-merge:
     - xsoar-test_playbooks_results
     - xsiam-test_playbooks_results
     - xsiam-test_modeling_rule_results
-  tags:
-    - gke
   variables:
     WORKFLOW: 'Content Merge'
     master_branch_name: master
@@ -573,9 +549,6 @@ slack-notify-on-merge:
     SLACK_ALLOW_FAILURE: 'false'
 
 .test_content_on_cloud_server_instances_base:
-  tags:
-    - gke
-    - us-west1
   extends:
     - .default-job-settings
     - .push-rule
@@ -726,8 +699,6 @@ xsoar_ng_server_ga:
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 test-upload-flow:
-  tags:
-    - gke
   extends:
     - .default-job-settings
   rules:

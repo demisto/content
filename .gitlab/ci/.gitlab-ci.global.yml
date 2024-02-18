@@ -399,8 +399,6 @@
   - section_end "Validate content-test-conf Branch Merged"
 
 .unittests-and-lint-settings:
-  tags:
-    - gce
   stage: unittests-and-validations
   artifacts:
     reports:

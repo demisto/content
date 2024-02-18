@@ -97,8 +97,6 @@ demisto-sdk-nightly:run-validations:
     - .sdk-nightly-schedule-rule
 
 demisto_sdk_nightly:check_idset_dependent_commands:
-  tags:
-    - gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -152,8 +150,6 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - job-done
 
 demisto-sdk-nightly:xsoar-prepare-testing-bucket:
-  tags:
-    - gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -178,8 +174,6 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
     - job-done
 
 demisto-sdk-nightly:mpv2-prepare-testing-bucket:
-  tags:
-    - gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -205,8 +199,6 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
     - job-done
 
 demisto-sdk-nightly:xpanse-prepare-testing-bucket:
-  tags:
-    - gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -230,8 +222,6 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
     - job-done
 
 demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
-  tags:
-    - gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -254,8 +244,6 @@ demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
     - job-done
 
 demisto-sdk-nightly:test-upload-flow:
-  tags:
-    - gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
@@ -510,8 +498,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-saas:
     - !reference [.unlock-machine]
 
 demisto-sdk-nightly:fan-in:
-  tags:
-    - gke
   stage: fan-in
   extends:
     - .sdk-nightly-schedule-rule-always
