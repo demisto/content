@@ -5427,7 +5427,7 @@
             "playbookID": "DBotPredictURLPhishing_test",
             "integrations": [
                 "Whois",
-                "Rasterize"
+                "Rasterize7"
             ],
             "memory_threshold": 300,
             "pid_threshold": 200,

@@ -167,6 +167,14 @@ repos:
     language: system
     require_serial: true
     skip:commit: true
+  - id: validate-conf-json
+    name: validate conf.json
+    description: validate conf.json
+    files: Tests/conf.json
+    pass_filenames: false
+    entry: validate-conf-json
+    language: system
+    skip:commit: true
   - id: format
     name: format
     description: Format non-code files, to comply with XSOAR standards.
