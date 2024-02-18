@@ -24,7 +24,7 @@ token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 PROXIES, USE_SSL = handle_proxy_for_long_running()
 
 
-class AWS_SNS_CLIENT(BaseClient):
+class AWS_SNS_CLIENT(BaseClient):  # pragma no cover
     def __init__(self, base_url=None):
         if PROXIES:
             self.proxies = PROXIES
@@ -40,7 +40,7 @@ class AWS_SNS_CLIENT(BaseClient):
 client = AWS_SNS_CLIENT()
 
 
-class ServerConfig():
+class ServerConfig():  # pragma no cover
     def __init__(self, certificate_path, private_key_path, log_config, ssl_args):
         self.certificate_path = certificate_path
         self.private_key_path = private_key_path
@@ -59,8 +59,8 @@ def is_valid_sns_message(sns_payload):
         bool: True if the message is valid, False otherwise.
     """
     # taken from https://github.com/boto/boto3/issues/2508
-    # Can only be one of these types.
     demisto.debug('In is_valid_sns_message')
+    # Can only be one of these types.
     if sns_payload["Type"] not in ["SubscriptionConfirmation", "Notification", "UnsubscribeConfirmation"]:
         demisto.error('Not a valid SNS message')
         return False
@@ -136,7 +136,7 @@ def is_valid_integration_credentials(credentials, request_headers, token):
         return True, header_name
 
 
-def handle_subscription_confirmation(subscribe_url) -> Response:
+def handle_subscription_confirmation(subscribe_url) -> Response:  # pragma: no cover
     demisto.debug('SubscriptionConfirmation request')
     try:
         return client.get(full_url=subscribe_url)
@@ -146,13 +146,13 @@ def handle_subscription_confirmation(subscribe_url) -> Response:
                         content='Failed handling SubscriptionConfirmation')
 
 
-def handle_notification(payload, raw_jason):
+def handle_notification(payload, raw_json):
     message = payload['Message']
     demisto.debug(f'Notification request msg: {message}')
     return {
         'name': payload['Subject'],
         'labels': [],
-        'rawJSON': raw_jason,
+        'rawJSON': raw_json,
         'occurred': payload['Timestamp'],
         'details': f'ExternalID:{payload["MessageId"]} TopicArn:{payload["TopicArn"]} Message:{message}',
         'type': 'AWS-SNS Notification'
@@ -174,7 +174,7 @@ def store_samples(incident):
 @app.post(f'/{PARAMS.get("endpoint","")}')
 async def handle_post(request: Request,
                       credentials: HTTPBasicCredentials = Depends(basic_auth),
-                      token: APIKey = Depends(token_auth)):
+                      token: APIKey = Depends(token_auth)):  # pragma no cover
     """
     Handles incoming AWS-SNS POST requests.
     Supports SubscriptionConfirmation, Notification and UnsubscribeConfirmation.
@@ -203,7 +203,7 @@ async def handle_post(request: Request,
     try:
         type = request_headers['x-amz-sns-message-type']
         payload = await request.json()
-        raw_jason = json.dumps(payload)
+        raw_json = json.dumps(payload)
     except Exception as e:
         demisto.error(f'Error in request parsing: {e}')
         return Response(status_code=status.HTTP_400_BAD_REQUEST, content='Failed parsing request.')
@@ -222,7 +222,7 @@ async def handle_post(request: Request,
         demisto.debug(f'Response from subscribe url: {response}')
         return response
     elif type == 'Notification':
-        incident = handle_notification(payload, raw_jason)
+        incident = handle_notification(payload, raw_json)
         data = demisto.createIncidents(incidents=[incident])
         demisto.debug(f'Created incident: {incident}')
         if PARAMS.get('store_samples'):
@@ -240,7 +240,7 @@ async def handle_post(request: Request,
         return f'Failed handling AWS SNS request, unknown type: {payload["Type"]}'
 
 
-def unlink_certificate(certificate_path, private_key_path):
+def unlink_certificate(certificate_path, private_key_path):  # pragma: no cover
     if certificate_path:
         os.unlink(certificate_path)
     if private_key_path:
@@ -248,7 +248,7 @@ def unlink_certificate(certificate_path, private_key_path):
     time.sleep(5)
 
 
-def setup_server():
+def setup_server():  # pragma no cover
     certificate = PARAMS.get('certificate', '')
     private_key = PARAMS.get('key', '')
 
@@ -284,7 +284,7 @@ def setup_server():
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no cover
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         try:

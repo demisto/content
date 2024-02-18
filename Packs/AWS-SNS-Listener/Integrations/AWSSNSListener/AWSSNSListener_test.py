@@ -1,39 +1,25 @@
 import pytest
-from AWSSNSListener import handle_notification, AWS_SNS_CLIENT, is_valid_sns_message
+from AWSSNSListener import handle_notification, is_valid_sns_message, is_valid_integration_credentials
+from unittest.mock import patch
+import requests
 
-id1_pub = [[{'uuid': 'a5b57ec5feaa', 'published': '2022-04-17T12:32:36.667'}]]
-
-PAYLOAD = {'Type': 'Notification',
-           'Message': 'foo',
-           'Subject': 'NotificationSubject',
-           'Timestamp': '2023-01-15T12:00:00Z',
-           'MessageId': '59149ac9-b8c9-5b4c-8d2f-c7d4e8',
-           'TopicArn': 'arn:aws:sns:us-east-1:123456789012:MyTopic',
-           'SignatureVersion': '1',
-           'Signature': 'OVRmweRaUfoatpLlbwHRahOpPjKL3qexIv7joeOLOGEcofr2enCv4PBlu8/VxdgrJodQfVss0t6m4aEDees5ce6lRflKXoYDaMOa0bYa7MCmRy5SCX/rjveklt1CJ1dDOpLg5zMXBLMvL2WXS5P7KQB7O89gSwo6nl7A65yWuT1W58ys0B1KXe2LnPtG3agAn/rEwrRbmFGvK9EjNEgVDKCrE41Iv9qF4WE8I5ISLDbBL/UifotXQHNDlsCFkyF99MLir/R  K8bOHVnsIh16OJxC5c/P236I0avoacOeqdOy1ijZ/d60K4m95T3C5MSFkwtd4QfRMRsdPLqNCXF2w=',
-           'SigningCertURL': 'https://sns.eu-central-1.amazonaws.com/SimpleNotificationService-01d088a6f77103d0fe307c0069e40ed6.pem'
-           }
-
-
-@pytest.fixture
-def dummy_client(mocker):
-    '''
-    A dummy client fixture for testing.
-    '''
-    events = [id1_pub]
-
-    client = AWS_SNS_CLIENT('base_url')
-    mocker.patch.object(client, 'get', side_effect=events)
-    return client
+VALID_PAYLOAD = {
+    "Type": "Notification",
+    "MessageId": "uuid",
+    "TopicArn": "topicarn",
+    "Subject": "NotificationSubject",
+    "Message": "NotificationMessage",
+    "Timestamp": "2024-02-13T18:03:27.239Z",
+    "SignatureVersion": "1",
+    "Signature": b"sign",
+    "SigningCertURL": "https://link.pem",
+}
 
 
 @pytest.fixture
-def mock_handle_proxy(mocker):
-    mock = mocker.patch('AWSSNSListener.handle_proxy_for_long_running')
-    mock.return_value = ({'http': 'http://127.0.0.1',
-                          'https': 'https://127.0.0.1'},
-                         True)
-    return mock
+def mock_params(mocker):
+    return mocker.patch('AWSSNSListener.PARAMS', new={'credentials': {'identifier': 'foo', 'password': 'bar'}},
+                        autospec=False)
 
 
 def test_handle_notification_valid():
@@ -47,17 +33,80 @@ def test_handle_notification_valid():
         'name': 'NotificationSubject',
         'labels': [],
         'rawJSON': raw_json,
-        'occurred': '2023-01-15T12:00:00Z',
-        'details': 'ExternalID:59149ac9-b8c9-5b4c-8d2f-c7d4e8 TopicArn:arn:aws:sns:us-east-1:123456789012:MyTopic Message:foo',
+        'occurred': '2024-02-13T18:03:27.239Z',
+        'details': 'ExternalID:uuid TopicArn:topicarn Message:NotificationMessage',
         'type': 'AWS-SNS Notification'
     }
 
-    actual_incident = handle_notification(PAYLOAD, raw_json)
+    actual_incident = handle_notification(VALID_PAYLOAD, raw_json)
 
     assert actual_incident == expected_notification
 
-    
-def test_is_valid_sns_message(dummy_client):
-    result = is_valid_sns_message(PAYLOAD)
-    assert result is True
 
+@patch("AWSSNSListener.client")
+@patch("AWSSNSListener.X509")
+@patch("M2Crypto.EVP.PKey")
+def test_is_valid_sns_message(mock_client, mock_x509, mock_PKey):
+    mock_resp = requests.models.Response()
+    mock_resp.status_code = 200
+    response_content = '''-----BEGIN VALID CERTIFICATE-----
+                          -----END CERTIFICATE-----'''
+    mock_resp._content = str.encode(response_content)
+    mock_client.get.return_value = mock_resp
+    mock_PKey.verify_final.return_value = 1
+    mock_x509.get_pubkey.return_value = mock_PKey
+    mock_x509.load_cert_string.return_value = mock_x509
+    is_valid = is_valid_sns_message(VALID_PAYLOAD)
+    assert is_valid
+
+
+@patch("AWSSNSListener.client")
+@patch("AWSSNSListener.X509")
+@patch("M2Crypto.EVP.PKey")
+def test_not_valid_sns_message(mock_client, mock_x509, mock_PKey):
+    mock_resp = requests.models.Response()
+    mock_resp.status_code = 200
+    response_content = '''-----BEGIN INVALID CERTIFICATE-----
+                          -----END CERTIFICATE-----'''
+    mock_resp._content = str.encode(response_content)
+    mock_client.get.return_value = mock_resp
+    mock_PKey.verify_final.return_value = 2
+    mock_x509.get_pubkey.return_value = mock_PKey
+    mock_x509.load_cert_string.return_value = mock_x509
+    is_valid = is_valid_sns_message(VALID_PAYLOAD)
+    assert is_valid is False
+
+
+@patch('fastapi.security.http.HTTPBasicCredentials')
+def test_valid_credentials(mock_httpBasicCredentials, mock_params):
+    """
+     Given valid credentials, request headers and token
+     When is_valid_integration_credentials is called
+     Then it should return True, header_name
+    """
+    mock_httpBasicCredentials.username = 'foo'
+    mock_httpBasicCredentials.password = 'bar'
+    request_headers = {}
+    token = "sometoken"
+    result, header_name = is_valid_integration_credentials(
+        mock_httpBasicCredentials, request_headers, token
+    )
+    assert result is True
+    assert header_name is None
+
+
+@patch('fastapi.security.http.HTTPBasicCredentials')
+def test_invalid_credentials(mock_httpBasicCredentials, mock_params):
+    """
+     Given invalid credentials, request headers and token
+     When is_valid_integration_credentials is called
+     Then it should return True, header_name
+    """
+    mock_httpBasicCredentials.username = 'foot'
+    mock_httpBasicCredentials.password = 'bark'
+    request_headers = {}
+    token = "sometoken"
+    result, header_name = is_valid_integration_credentials(
+        mock_httpBasicCredentials, request_headers, token
+    )
+    assert result is False
