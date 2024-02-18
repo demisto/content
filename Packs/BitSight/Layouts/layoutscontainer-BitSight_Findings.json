@@ -9,7 +9,7 @@
             {
                 "hidden": false,
                 "id": "hkzismdwjw",
-                "name": "BitSight",
+                "name": "Bitsight",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -166,7 +166,7 @@
                         "minH": 1,
                         "minW": 3,
                         "moved": false,
-                        "name": "BitSight",
+                        "name": "Bitsight",
                         "static": false,
                         "w": 3,
                         "x": 0,
