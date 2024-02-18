@@ -127,6 +127,8 @@ def test_fetch_incidents(mocker):
 @pytest.mark.parametrize('query, limit, result', [("a | b | limit 5", 10, "a | b | limit 10 "),
                                                   ("a | b ", 10, "a | b | limit 10 "),
                                                   ("a | b | limit 1 | take 1", 10, "a | b | limit 10 | limit 10 "),
+                                                  ("a | where Subject == \"a || b\" | limit  ", 10,
+                                                   "a | where Subject == \"a || b\" | limit 10 ")
                                                   ])
 def test_query_set_limit(query: str, limit: int, result: str):
     assert _query_set_limit(query, limit) == result
