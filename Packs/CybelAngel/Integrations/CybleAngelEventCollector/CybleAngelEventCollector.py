@@ -109,7 +109,7 @@ class Client(BaseClient):
 
 def is_token_expired(token_initiate_time: float, token_expiration_seconds: float) -> bool:
     """
-    Check whether a token has expired. a token considered expired if it has been reached to its expiration date in
+    Checks whether a token has expired. a token considered expired if it has been reached to its expiration date in
     seconds minus a minute.
 
     for example ---> time.time() = 300, token_initiate_time = 240, token_expiration_seconds = 120
