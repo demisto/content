@@ -81,6 +81,7 @@ JavaScript
 CPE
 CPEs
 debug-entry
+clickable
 
 [tests_require_network]
 CommonServerPython
