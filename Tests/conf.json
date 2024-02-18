@@ -1854,7 +1854,7 @@
             "playbookID": "SymantecEndpointProtection_Test"
         },
         {
-            "integrations": "carbonblackprotection",
+            "integrations": "CarbonBlackProtectionV2",
             "playbookID": "search_endpoints_by_hash_-_carbon_black_protection_-_test",
             "timeout": 500
         },
@@ -5578,12 +5578,12 @@
             "playbookID": "testplaybook- JoeSecuirtyV2"
         },
         {
-            "integrations": "FortinetFortiwebVM",
+            "integrations": "fortiweb_vm",
             "playbookID": "playbook-FortiwebVM_V1_Test",
             "fromversion": "6.2.0"
         },
         {
-            "integrations": "FortinetFortiwebVM",
+            "integrations": "fortiweb_vm",
             "playbookID": "playbook-FortiwebVM_V2_Test",
             "fromversion": "6.2.0"
         },
@@ -5982,8 +5982,6 @@
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "ForescoutEyeInspect": "No instance - developed by Qmasters",
         "FortiManager": "Can only be run within PANW network",
-        "HelloWorldSimple": "This is just an example integration - no need for test",
-        "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774 - CIAC-1502",
         "LogRhythm": "The integration is deprecated",
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
@@ -5993,7 +5991,7 @@
         "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
         "ThreatExchange v2": "No instance",
         "PhishLabs IOC EIR": "No instance, CRTX-91214",
-        "Fortimail": "No instance"
+        "fortimail": "No instance"
     },
     "nightly_packs": [
         "CommonScripts",
@@ -6135,7 +6133,7 @@
         "G Suite Security Alert Center": "googleclient sdk has time based challenge exchange",
         "GoogleDrive": "googleclient sdk has time based challenge exchange",
         "Syslog Sender": "syslog",
-        "syslog": "syslog",
+        "Syslog v2": "syslog",
         "MongoDB Log": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL",
         "Zoom": "Uses dynamic token",
