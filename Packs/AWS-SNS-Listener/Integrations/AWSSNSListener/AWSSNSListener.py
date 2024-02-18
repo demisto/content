@@ -24,7 +24,7 @@ token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 PROXIES, USE_SSL = handle_proxy_for_long_running()
 
 
-class AWS_SNS_CLIENT(BaseClient):  # pragma no cover
+class AWS_SNS_CLIENT(BaseClient):  # pragma: no cover
     def __init__(self, base_url=None):
         if PROXIES:
             self.proxies = PROXIES
@@ -40,7 +40,7 @@ class AWS_SNS_CLIENT(BaseClient):  # pragma no cover
 client = AWS_SNS_CLIENT()
 
 
-class ServerConfig():  # pragma no cover
+class ServerConfig():  # pragma: no cover
     def __init__(self, certificate_path, private_key_path, log_config, ssl_args):
         self.certificate_path = certificate_path
         self.private_key_path = private_key_path
@@ -159,7 +159,7 @@ def handle_notification(payload, raw_json):
     }
 
 
-def store_samples(incident):  # pragme no cover
+def store_samples(incident):  # pragma: no cover
     try:
         sample_events_to_store.append(incident)
         integration_context = get_integration_context()
@@ -172,9 +172,9 @@ def store_samples(incident):  # pragme no cover
 
 
 @app.post(f'/{PARAMS.get("endpoint","")}')
-async def handle_post(request: Request,  # pragma no cover
+async def handle_post(request: Request,
                       credentials: HTTPBasicCredentials = Depends(basic_auth),
-                      token: APIKey = Depends(token_auth)):
+                      token: APIKey = Depends(token_auth)):   # pragma: no cover
     """
     Handles incoming AWS-SNS POST requests.
     Supports SubscriptionConfirmation, Notification and UnsubscribeConfirmation.
@@ -248,7 +248,7 @@ def unlink_certificate(certificate_path, private_key_path):  # pragma: no cover
     time.sleep(5)
 
 
-def setup_server():  # pragma no cover
+def setup_server():  # pragma: no cover
     certificate = PARAMS.get('certificate', '')
     private_key = PARAMS.get('key', '')
 
