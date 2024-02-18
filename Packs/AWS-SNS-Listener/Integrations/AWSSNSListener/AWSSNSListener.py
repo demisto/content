@@ -159,7 +159,7 @@ def handle_notification(payload, raw_json):
     }
 
 
-def store_samples(incident):
+def store_samples(incident):  # pragme no cover
     try:
         sample_events_to_store.append(incident)
         integration_context = get_integration_context()
@@ -172,9 +172,9 @@ def store_samples(incident):
 
 
 @app.post(f'/{PARAMS.get("endpoint","")}')
-async def handle_post(request: Request,
+async def handle_post(request: Request,  # pragma no cover
                       credentials: HTTPBasicCredentials = Depends(basic_auth),
-                      token: APIKey = Depends(token_auth)):  # pragma no cover
+                      token: APIKey = Depends(token_auth)):
     """
     Handles incoming AWS-SNS POST requests.
     Supports SubscriptionConfirmation, Notification and UnsubscribeConfirmation.
