@@ -10,14 +10,5 @@ jobs:
       pull-requests: write
       contents: write
 
-    if: "!contains(github.event.pull_request.labels.*.name, 'Community Support Level')"
     uses: ./.github/workflows/pre-commit-reuse.yml
       
-  pre-commit-community-level:
-    permissions:
-      checks: write
-      pull-requests: write
-      contents: write
-
-    if: contains(github.event.pull_request.labels.*.name, 'Community Support Level')
-    uses: ./.github/workflows/pre-commit-reuse.yml

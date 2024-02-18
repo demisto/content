@@ -524,3 +524,32 @@ def test_paginate_with_page_size_more_than_INCIDENT_API_LIMIT():
     from PagerDuty import pagination_incidents
     with pytest.raises(DemistoException, match="The max size for page is 100. Please provide a lower page size."):
         pagination_incidents({"user_ids": "test_id"}, {"page_size": 200, "page": 2}, "")
+
+
+@pytest.mark.parametrize('add_content', [True, False])
+def test_main_handles_httperror(requests_mock, mocker, add_content):
+    """
+        Given: params that causes http error.
+        When: sending an HTTP request.
+        Then: print the correct error message.
+    """
+    mocker.patch.object(demisto, 'params', return_value={'APIKey': 'test', 'ServiceKey': 'test', 'FetchInterval': '1'})
+
+    from PagerDuty import main, SERVER_URL, ON_CALLS_USERS_SUFFIX
+
+    class Response:
+        def __init__(self, add_content):
+            if add_content:
+                self.content = 'Https error test'
+    url = SERVER_URL + ON_CALLS_USERS_SUFFIX
+    requests_mock.get(url, exc=requests.exceptions.HTTPError(response=Response(add_content)))
+
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    error_method = mocker.patch('PagerDuty.return_error')
+    main()
+
+    assert error_method.call_count == 1
+    if add_content:
+        assert error_method.call_args.args[0] == 'Error in API request Https error test'
+    else:
+        assert error_method.call_args.args[0] == 'Error in API request '

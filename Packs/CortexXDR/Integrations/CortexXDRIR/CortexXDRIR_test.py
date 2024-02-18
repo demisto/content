@@ -47,48 +47,6 @@ def get_incident_extra_data_by_status(incident_id, alerts_limit):
 ''' TESTS FUNCTIONS '''
 
 
-def test_get_incident_list(requests_mock):
-    from CortexXDRIR import get_incidents_command, Client
-
-    get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
-    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
-
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
-    args = {
-        'incident_id_list': '1 day'
-    }
-    _, outputs, _ = get_incidents_command(client, args)
-
-    expected_output = {
-        'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)':
-            get_incidents_list_response.get('reply').get('incidents')
-    }
-    assert expected_output == outputs
-
-
-def test_get_incident_list_by_status(mocker):
-    from CortexXDRIR import get_incidents_command, Client
-
-    get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
-
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
-    args = {
-        'incident_id_list': '1 day',
-        'status': 'under_investigation,new'
-    }
-    mocker.patch.object(client, 'get_incidents', side_effect=get_incident_by_status)
-
-    _, outputs, _ = get_incidents_command(client, args)
-
-    expected_output = {
-        'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)':
-            get_incidents_list_response.get('reply').get('incidents')
-    }
-    assert expected_output == outputs
-
-
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_fetch_incidents(requests_mock, mocker):
     from CortexXDRIR import fetch_incidents, Client, sort_all_list_incident_fields
@@ -264,23 +222,6 @@ def test_get_incident_extra_data(requests_mock):
 
 class TestFetchStarredIncident:
 
-    def test_get_starred_incident_list(self, requests_mock):
-        from CortexXDRIR import get_incidents_command, Client
-
-        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
-        requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
-
-        client = Client(
-            base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
-        args = {
-            'incident_id_list': '1 day',
-            'starred': True,
-            'starred_incidents_fetch_window': '3 days'
-        }
-        _, outputs, _ = get_incidents_command(client, args)
-
-        assert outputs['PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
-
     def test_get_starred_incident_list_with_limit(self, mocker):
         """
         Given:
@@ -307,7 +248,8 @@ class TestFetchStarredIncident:
             'incident_id_list': '1 day',
             'starred': True,
             'limit': 1,
-            'starred_incidents_fetch_window': '3 days'
+            'starred_incidents_fetch_window': '3 days',
+            'integration_context_brand': 'PaloAltoNetworksXDR'
         }
         _, outputs, _ = get_incidents_command(client, args)
         res = outputs['PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)']
@@ -493,7 +435,7 @@ def test_get_mapping_fields_command():
         - the result fits the expected mapping.
     """
     from CortexXDRIR import get_mapping_fields_command
-    expected_mapping = {"Cortex XDR Incident": {
+    expected_mapping = {"Cortex XDR Incident Schema": {
         "status": "Current status of the incident: \"new\",\"under_"
                   "investigation\",\"resolved_known_issue\","
                   "\"resolved_duplicate\",\"resolved_false_positive\","
@@ -502,7 +444,8 @@ def test_get_mapping_fields_command():
         "assigned_user_pretty_name": "Full name of the user assigned to the incident.",
         "resolve_comment": "Comments entered by the user when the incident was resolved.",
         "manual_severity": "Incident severity assigned by the user. This does not "
-                           "affect the calculated severity low medium high"
+                           "affect the calculated severity low medium high",
+        "close_reason": "The close reason of the XSOAR incident"
     }}
     res = get_mapping_fields_command()
     assert expected_mapping == res.extract_mapping()

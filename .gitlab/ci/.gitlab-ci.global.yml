@@ -71,7 +71,7 @@
 .check_build_files_are_up_to_date: &check_build_files_are_up_to_date
   - section_start "Check Build Files Are Up To Date"
   - |
-    if [[ -n "${DEMISTO_SDK_NIGHTLY}" ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]] || [[ -n "${SLACK_JOB}" ]] || [[ "${BUILD_MACHINES_CLEANUP}" == "true" ]] || [[ "${DELETE_MISMATCHED_BRANCHES}" == "true" ]] || [[ "${SECURITY_SCANS}" == "true" ]] || [[ "${DEMISTO_TEST_NATIVE_CANDIDATE}" == "true" ]] || [[ "${CI_COMMIT_BRANCH}" == "master" ]]; then
+    if [[ -n "${DEMISTO_SDK_NIGHTLY}" ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]] || [[ -n "${SLACK_JOB}" ]] || [[ "${BUILD_MACHINES_CLEANUP}" == "true" ]] || [[ "${DELETE_MISMATCHED_BRANCHES}" == "true" ]] || [[ "${SECURITY_SCANS}" == "true" ]] || [[ "${DEMISTO_TEST_NATIVE_CANDIDATE}" == "true" ]] || [[ "${CI_COMMIT_BRANCH}" == "master" ]] || [[ "${SDK_RELEASE}" == "true" ]]; then
       echo "Running a build which doesn't require build files check validation"
     else
       ./Tests/scripts/is_file_up_to_date.sh .gitlab $CI_COMMIT_BRANCH
@@ -87,7 +87,7 @@
 .stop_contrib_external_build: &stop_contrib_external_build
   - - section_start "Stop contrib external build"
   - |
-    if [[ $CI_COMMIT_BRANCH =~ ^contrib/* && $CI_PIPELINE_SOURCE = "push" && $(curl --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/demisto/content/pulls?state=open&base=master&head=demisto:${CI_COMMIT_BRANCH}" | jq) = '[]' ]]; then
+    if [[ $CI_COMMIT_BRANCH =~ ^contrib/* && $CI_PIPELINE_SOURCE = "push" && $(curl --get --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/demisto/content/pulls?state=open&base=master" --data-urlencode "head=demisto:${CI_COMMIT_BRANCH}" | jq) = '[]' ]]; then
       echo "not running on contrib/ branches when there is no open internal PR or the pipeline was manually triggered"
       set -e
       exit 1
@@ -127,6 +127,14 @@
       source "$BASH_ENV"
     fi
   - source .circleci/content_release_vars.sh
+  # DEMISTO_SDK_GRAPH_FORCE_CREATE set to true to create graph from scratch.
+  - |
+    if [[ $NIGHTLY ]]; then
+      echo "set DEMISTO_SDK_GRAPH_FORCE_CREATE to true to create graph from scratch"
+      export DEMISTO_SDK_GRAPH_FORCE_CREATE=true
+      echo "DEMISTO_SDK_GRAPH_FORCE_CREATE was set to true to create graph from scratch"
+      echo $DEMISTO_SDK_GRAPH_FORCE_CREATE
+    fi
   - section_end "Source BASH Environment"
   - section_start "Granting execute permissions on files" --collapsed
   - chmod +x ./Tests/scripts/*
@@ -137,9 +145,9 @@
   - section_start "getting contrib packs" --collapsed
   - |
     if [[ -n "${CONTRIB_BRANCH}" ]]; then
-      REPO=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+      USERNAME=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
       BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-      python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $REPO
+      python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USERNAME -c $CONTRIB_REPO
     fi
   - section_end "getting contrib packs"
 
@@ -206,7 +214,7 @@
 .build_parameters: &build_parameters
   - section_start "Build Parameters" --collapsed
   - echo "Environment Variables:"
-  - set | grep -E "^ARTIFACTS_FOLDER.*=|^JIRA_.*=|^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^GCS_MARKET_XPANSE_BUCKET=|^SLACK_.*=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ARTIFACTS_FOLDER_INSTANCE=|^ARTIFACTS_FOLDER_SERVER_TYPE=|^ENV_RESULTS_PATH=|^LAST_UPLOAD_COMMIT=|^DEMISTO_SDK_LOG_FILE_SIZE=|^DEMISTO_SDK_LOG_FILE_COUNT=|^DEMISTO_SDK_LOG_FILE_PATH=|^DEMISTO_SDK_LOG_NO_COLORS=|^DEMISTO_SDK_LOG_NOTIFY_PATH=|^POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=" | sort
+  - set | grep -E "^ARTIFACTS_FOLDER.*=|^JIRA_.*=|^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^GCS_MARKET_XPANSE_BUCKET=|^SLACK_.*=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ARTIFACTS_FOLDER_INSTANCE=|^ARTIFACTS_FOLDER_SERVER_TYPE=|^ENV_RESULTS_PATH=|^LAST_UPLOAD_COMMIT=|^DEMISTO_SDK_LOG_FILE_SIZE=|^DEMISTO_SDK_LOG_FILE_COUNT=|^DEMISTO_SDK_LOG_FILE_PATH=|^DEMISTO_SDK_LOG_NO_COLORS=|^DEMISTO_SDK_LOG_NOTIFY_PATH=|^POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=|^DEMISTO_SDK_NIGHTLY=|^OVERRIDE_SDK_REF=|^SDK_REF=" | sort
   - echo "Versions Installed:"
   - python --version
   - python3 --version
@@ -444,7 +452,7 @@
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
   services:
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+    - name: ${DOCKER_IO}/library/docker:20.10.12-dind
       alias: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
@@ -469,6 +477,10 @@
         ./Tests/scripts/sdk_pylint_check.sh
       fi
     - section_end "Test Infrastructure"
+    - section_start "Revoking GCP Auth and Configure Docker"
+    - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+    - gcloud auth configure-docker ${DOCKER_IO_DOMAIN} >> "${ARTIFACTS_FOLDER}/logs/configure_docker_with_registry.log" 2>&1
+    - section_end "Revoking GCP Auth and Configure Docker"
     - section_start "Run Unit Testing and Lint"
     - |
       if [[ -n $BUCKET_UPLOAD && $TEST_UPLOAD == "true" ]]; then

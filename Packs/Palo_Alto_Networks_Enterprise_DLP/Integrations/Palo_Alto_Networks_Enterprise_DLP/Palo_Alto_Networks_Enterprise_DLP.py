@@ -56,6 +56,7 @@ class Client(BaseClient):
             self.refresh_token = credentials[PASSWORD]
         else:
             self.access_token = ''
+            self._refresh_token_with_client_credentials()
 
     def _refresh_token(self):
         """Refreshes Access Token"""
@@ -213,7 +214,7 @@ class Client(BaseClient):
 
         return self._get_dlp_api_call(url)
 
-    def get_dlp_incidents(self, regions: str, start_time: int = None, end_time: int = None) -> dict:
+    def get_dlp_incidents(self, regions: str, start_time: int = None, end_time: int = None) -> tuple:
         url = INCIDENTS_URL
         params = {}
         if regions:
@@ -225,7 +226,7 @@ class Client(BaseClient):
         query_string = urllib.parse.urlencode(params)
         url = f"{url}?{query_string}"
         resp, status_code = self._get_dlp_api_call(url)
-        return resp
+        return resp, status_code
 
     def update_dlp_incident(self, incident_id: str, feedback: FeedbackStatus, user_id: str, region: str,
                             report_id: str, dlp_channel: str, error_details: str = None):
@@ -356,13 +357,19 @@ def parse_dlp_report(report_json) -> CommandResults:
     )
 
 
-def test(client):
+def test(client: Client, params: dict):
     """ Test Function to test validity of access and refresh tokens"""
-    report_json, status_code = client.get_dlp_report('1')
+    dlp_regions = params.get("dlp_regions", "")
+    report_json, status_code = client.get_dlp_incidents(regions=dlp_regions)
     if status_code in [200, 204]:
         return_results("ok")
     else:
-        raise DemistoException(f"Integration test failed: Unexpected status ({status_code})")
+        message = f"Integration test failed: Unexpected status ({status_code}) - "
+        if "error" in report_json:
+            message += f"Error message: \"{report_json.get('error')}\""
+        else:
+            message += "Could not determine the error reason. Make sure the DLP Regions parameter is configured correctly."
+        raise DemistoException(message)
 
 
 def print_debug_msg(msg: str):
@@ -447,7 +454,7 @@ def fetch_incidents(client: Client, regions: str, start_time: int = None, end_ti
     else:
         print_debug_msg('Start fetching most recent incidents')
 
-    notification_map = client.get_dlp_incidents(regions=regions, start_time=start_time, end_time=end_time)
+    notification_map, _ = client.get_dlp_incidents(regions=regions, start_time=start_time, end_time=end_time)
     incidents = []
     for region, notifications in notification_map.items():
         for notification in notifications:
@@ -588,7 +595,7 @@ def reset_last_run_command() -> str:
     """
     ctx = get_integration_context()
     ctx[RESET_KEY] = 'true'
-    set_to_integration_context_with_retries(ctx)
+    set_integration_context(ctx)
     return 'fetch-incidents was reset successfully.'
 
 
@@ -620,7 +627,7 @@ def main():
         elif demisto.command() == 'pan-dlp-reset-last-run':
             return_results(reset_last_run_command())
         elif demisto.command() == "test-module":
-            test(client)
+            test(client, params)
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

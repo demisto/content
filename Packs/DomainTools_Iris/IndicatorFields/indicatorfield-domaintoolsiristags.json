@@ -1,0 +1,31 @@
+{
+    "id": "indicator_domaintoolsiristags",
+    "version": -1,
+    "modified": "2023-10-16T17:13:01.885961592Z",
+    "name": "DomainTools Iris Tags",
+    "ownerOnly": false,
+    "cliName": "domaintoolsiristags",
+    "type": "tagsSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "DomainTools Iris"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.6.0"
+}

@@ -4364,9 +4364,10 @@ def test_edit_message_not_valid_thread_id(mocker):
                                                 headers={})
     api_call = SlackApiError('The request to the Slack API failed.', err_response)
 
-    expected_body = ('The request to the Slack API failed.\n'"The server responded with: {'ok': "
-                     "False, 'error': 'message_not_found'}")
-
+    expected_body = (
+        "The request to the Slack API failed.\n"
+        "The server responded with: {'ok': False, 'error': 'message_not_found'}"
+    )
     link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
     mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
     mocker.patch.object(demisto, 'demistoUrls', return_value={'warRoom': link})
@@ -4449,8 +4450,9 @@ def test_pin_message_invalid_thread_id(mocker):
     api_call = SlackApiError('The request to the Slack API failed.', err_response)
 
     expected_body = (
-        'The request to the Slack API failed.\n'"The server responded with: {'ok': False, "
-        "'error': 'message_not_found'}")
+        "The request to the Slack API failed.\n"
+        "The server responded with: {'ok': False, 'error': 'message_not_found'}"
+    )
 
     mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
     mocker.patch.object(demisto, 'args', return_value={'channel': "random", "threadID": "1629281551.001000"})
@@ -4985,6 +4987,13 @@ def test_list_channels(mocker):
     slack_response_mock = {
         'ok': True,
         'channels': json.loads(CHANNELS)}
+    expected_human_readable = (
+        '### Channels list for None with filter None\n'
+        '|Created|Creator|ID|Name|Purpose|\n|---|---|---|---|---|\n'
+        '| 1666361240 | spengler | C0475674L3Z | general | This is the '
+        'one channel that will always include everyone. It’s a great '  # noqa: RUF001
+        'spot for announcements and team-wide conversations. |\n'
+    )
     mocker.patch.object(SlackV3, 'send_slack_request_sync', side_effect=[slack_response_mock, {'user': js.loads(USERS)[0]}])
     mocker.patch.object(demisto, 'args', return_value={'channel_id': 1, 'public_channel': 'public_channel', 'limit': 1})
     mocker.patch.object(demisto, 'results')
@@ -4992,11 +5001,7 @@ def test_list_channels(mocker):
     # mocker.patch.object(SlackV3, 'send_slack_request_sync', side_effect=slack_response_mock)
     SlackV3.list_channels()
     assert demisto.results.called
-    assert demisto.results.call_args[0][0]['HumanReadable'] == '### Channels list for None with filter None\n' \
-                                                               '|Created|Creator|ID|Name|Purpose|\n|---|---|---|---|---|\n' \
-                                                               '| 1666361240 | spengler | C0475674L3Z | general | This is the' \
-                                                               ' one channel that will always include everyone. It’s a great'\
-                                                               ' spot for announcements and team-wide conversations. |\n'
+    assert demisto.results.call_args[0][0]['HumanReadable'] == expected_human_readable
     assert demisto.results.call_args[0][0]['ContentsFormat'] == 'json'
 
 

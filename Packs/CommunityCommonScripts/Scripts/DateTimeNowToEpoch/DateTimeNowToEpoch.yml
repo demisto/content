@@ -9,12 +9,12 @@ comment: Returns the current datetime as an epoch value for use in timestamp com
 enabled: true
 outputs:
 - contextPath: DateTimeNowEpoch
-  description: The current date/time epoch as an integer value
+  description: The current date/time epoch as an integer value.
   type: number
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.12.66339
+dockerimage: demisto/python3:3.10.13.83255
 runas: DBotWeakRole
 fromversion: 6.9.0
 tests:

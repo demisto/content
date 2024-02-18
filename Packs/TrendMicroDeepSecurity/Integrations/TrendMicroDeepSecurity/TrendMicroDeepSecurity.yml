@@ -30,7 +30,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Cloud Security Protection
+description: Cloud Security Protection.
 display: Trend Micro Deep Security
 name: Trend Micro Deep Security
 script:
@@ -918,7 +918,7 @@ script:
       name: computer_id
       required: true
     - auto: PREDEFINED
-      description: The name of the setting
+      description: The name of the setting.
       name: name
       predefined:
       - logInspectionSettingSeverityClippingAgentEventSendSyslogLevelMin
@@ -1155,12 +1155,12 @@ script:
       description: The ID of the computer that owns the setting.
       type: integer
     - contextPath: TrendMicro.ComputersSettings.name
-      description: The name of the setting
+      description: The name of the setting.
       type: string
     - contextPath: TrendMicro.ComputersSettings.value
       description: The value of the setting.
       type: string
-  - description: Get information about all existing computer groups
+  - description: Get information about all existing computer groups.
     name: trendmicro-list-computer-groups
     outputs:
     - contextPath: TrendMicro.ComputerGroups.name
@@ -1237,7 +1237,7 @@ script:
     - description: The value to compare against the field name.
       name: value
       required: true
-    - description: If true, forces the response objects to be sorted by ID, overriding the default sort order
+    - description: If true, forces the response objects to be sorted by ID, overriding the default sort order.
       name: sort_by_object_id
     description: Search for specific computer groups by some field name with a certain type. Every field has a specific type. It can be a simple type like a string, a numeric, or a boolean. However, it can also be a choice, which is a string with specific options (enumeration). To search, you must provide the field_name and field_type, the operation to perform, and the value to search.
     name: trendmicro-search-computer-groups
@@ -1255,7 +1255,7 @@ script:
     - description: The ID number of the computer group to get. The ID can be obtained from the trendmicro-list-computer-groups and trendmicro-search-computer-groups commands.
       name: computer_group_id
       required: true
-    description: Get information of a certain computer group
+    description: Get information of a certain computer group.
     name: trendmicro-get-computer-group
     outputs:
     - contextPath: TrendMicro.ComputerGroups.name
@@ -1293,7 +1293,7 @@ script:
     - description: The ID number of the computer group to delete. The ID can be obtained from the trendmicro-list-computer-groups and trendmicro-search-computer-groups commands.
       name: computer_group_id
       required: true
-    description: Delete a certain computer group
+    description: Delete a certain computer group.
     name: trendmicro-delete-computer-group
   - arguments:
     - description: The maximum number of objects to return.
@@ -1697,7 +1697,7 @@ script:
       description: Whether logging for this filter is disabled.
       type: boolean
     - contextPath: TrendMicro.FirewallRules.includePacketData
-      description: Whether this filter should capture data for every log
+      description: Whether this filter should capture data for every log.
       type: boolean
     - contextPath: TrendMicro.FirewallRules.alertEnabled
       description: Whether this filter should be alerted on.
@@ -1824,7 +1824,7 @@ script:
       - single
       - multiple
       - mac-list
-    - description: Source MAC address
+    - description: Source MAC address.
       name: source_mac_value
     - description: List of MAC addresses.
       isArray: true
@@ -2116,7 +2116,7 @@ script:
       description: Name of the firewall rule.
       type: string
     - contextPath: TrendMicro.FirewallRules.description
-      description: Description of the firewall. rule
+      description: Description of the firewall. rule.
       type: string
     - contextPath: TrendMicro.FirewallRules.action
       description: Action of the packet filter.
@@ -2442,7 +2442,7 @@ script:
     - description: Comma-delimited list of the addresses.
       isArray: true
       name: destination_mac_multiple
-    - description: ID of the MAC address list,
+    - description: ID of the MAC address list,.
       name: destination_mac_list_id
     - description: Whether the destination MAC setting should be inverted.
       name: destination_mac_not
@@ -3301,7 +3301,7 @@ script:
     - description: The ID number of the policy. The ID can be obtained from the trendmicro-list-policies and trendmicro-search-policies commands.
       name: policy_id
       required: true
-    - description: The name of the policy settings
+    - description: The name of the policy settings.
       name: name
       required: true
       auto: PREDEFINED
@@ -3536,7 +3536,7 @@ script:
     name: trendmicro-reset-policy-setting
     outputs:
     - contextPath: TrendMicro.PolicySettings.policyId
-      description: Policy ID of a setting
+      description: Policy ID of a setting.
       type: integer
     - contextPath: TrendMicro.PolicySettings.name
       description: Name of a setting.
@@ -3959,7 +3959,7 @@ script:
       description: The name of the default policy setting.
     - contextPath: TrendMicro.DefaultPolicySettings.value
       description: The value of the default policy setting.
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   subtype: python3
   type: python

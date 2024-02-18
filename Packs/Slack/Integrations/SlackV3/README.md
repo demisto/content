@@ -607,23 +607,6 @@ There is no context output for this command.
 
 > The message was successfully pinned.
 
-### Known Limitations
-
-- All commands which use `channel` as a parameter, it is now advised to use `channel-id` using the channel ID found in
-  the incident's context under the `Slack.Channels.ID` value. Using `channel-id` as opposed to `channel` will improve
-  the performance of the integration.
-- SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
-  Because of this, you may have some users in Slack who are not users in Cortex XSOAR. This will occasionally cause the
-  module
-  health to indicate that an error has occurred because a user was unable to be found. In this circumstance, the error
-  is expected and is purely cosmetic in nature.
-- In some cases when mirroring an investigation, kicking the admin will cause no further actions to be able to be
-  performed by the bot. Any subsequent actions taken on the channel (such as mirror out) will result in a "not in
-  channel" error.
-- Note: If a dedicated channel is configured, however there are no notifications being sent, verify that the *Types of
-  Notifications* to send parameter is populated.
-- ***mirror-investigation*** will only mirror chat messages between XSOAR and Slack. Images, threads, and files are not
-  supported at this tme.
 
 ### slack-get-integration-context
 
@@ -728,10 +711,28 @@ Retrieves replies to specific messages, regardless of whether it's from a public
 #### Context Output
 
 There is no context output for this command.
-```
+
+## Known Limitations
+
+- All commands which use `channel` as a parameter, it is now advised to use `channel-id` using the channel ID found in
+  the incident's context under the `Slack.Channels.ID` value. Using `channel-id` as opposed to `channel` will improve
+  the performance of the integration.
+- SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
+  Because of this, you may have some users in Slack who are not users in Cortex XSOAR. This will occasionally cause the
+  module
+  health to indicate that an error has occurred because a user was unable to be found. In this circumstance, the error
+  is expected and is purely cosmetic in nature.
+- In some cases when mirroring an investigation, kicking the admin will cause no further actions to be able to be
+  performed by the bot. Any subsequent actions taken on the channel (such as mirror out) will result in a "not in
+  channel" error.
+- Note: If a dedicated channel is configured, however there are no notifications being sent, verify that the *Types of
+  Notifications* to send parameter is populated.
+- ***mirror-investigation*** will only mirror chat messages between Cortex XSOAR and Slack. Images, threads, and files are not supported at this tme.
 
 ## Troubleshooting
----
+
 **Issue**: The survey sent from SlackBlockBuilder is sent to Slack and submitted successfully, but the response does not show up in context data in Cortex XSOAR.
 
 **Resolution**: The most likely cause is that there is no API key entered into the Slack v3 integration instance settings, or the API key was not created by the default admin user. Ensure that an API key created by a default admin user is entered into the Slack v3 integration instance settings. Also, make sure to mark the **Trust any certificate (not secure)** integration parameter.
+
+

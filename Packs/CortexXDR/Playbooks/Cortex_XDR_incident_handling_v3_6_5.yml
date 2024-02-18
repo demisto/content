@@ -1995,6 +1995,30 @@ view: |-
     }
   }
 inputs:
+- key: LinkSimilarIncidents
+  value:
+    simple: "Yes"
+  required: false
+  description: This input indicates whether the playbook will link similar incidents. To link similar incidents, specify Yes/No.
+  playbookInputQuery:
+- key: CriticalUsernames
+  value:
+    simple: admin,administrator
+  required: false
+  description: |-
+    A comma-separated list of names of critical users in the organization.
+    This will affect the calculated severity of the incident.
+  playbookInputQuery:
+- key: CriticalHostnames
+  value: {}
+  required: false
+  description: A comma-separated list of names of critical endpoints in the organization. This will affect the calculated severity of the incident.
+  playbookInputQuery:
+- key: CriticalADGroups
+  value: {}
+  required: false
+  description: A comma-separated list of DN names of critical Active Directory groups. This will affect the severity calculated for this incident.
+  playbookInputQuery:
 - key: incident_id
   value:
     complex:
@@ -2003,17 +2027,22 @@ inputs:
   required: false
   description: Incident ID.
   playbookInputQuery:
-- key: LinkSimilarIncidents
+- key: XDRDomain
   value:
-    simple: "Yes"
+    complex:
+      root: incident
+      accessor: xdrurl
+      transformers:
+      - operator: Cut
+        args:
+          delimiter:
+            value:
+              simple: /
+          fields:
+            value:
+              simple: "3"
   required: false
-  description: This input indicates whether the playbook will link similar incidents. To link similar incidents, specify Yes/No.
-  playbookInputQuery:
-- key: Hunting
-  value:
-    simple: "Yes"
-  required: false
-  description: This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No.
+  description: XDR instance domain
   playbookInputQuery:
 - key: InternalRange
   value:
@@ -2034,33 +2063,21 @@ inputs:
   required: false
   description: "A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list \n\"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). \nIf a list is not provided, will use the default list provided in the IsIPInRanges."
   playbookInputQuery:
-- key: CriticalUsernames
-  value:
-    simple: admin,administrator
-  required: false
-  description: |-
-    A comma-separated list of names of critical users in the organization.
-    This will affect the calculated severity of the incident.
-  playbookInputQuery:
-- key: CriticalHostnames
+- key: InternalDomainName
   value: {}
   required: false
-  description: A comma-separated list of names of critical endpoints in the organization. This will affect the calculated severity of the incident.
-  playbookInputQuery:
-- key: CriticalADGroups
-  value: {}
-  required: false
-  description: A comma-separated list of DN names of critical Active Directory groups. This will affect the severity calculated for this incident.
+  description: The organizations internal domain name. This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If there is more than one domain, use the | character to separate values such as (paloaltonetworks.com|test.com).
   playbookInputQuery:
 - key: InternalHostRegex
   value: {}
   required: false
   description: This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts match the organization's naming convention. For example, the host testpc1 will have the following regex \w{6}\d{1}.
   playbookInputQuery:
-- key: InternalDomainName
-  value: {}
+- key: Hunting
+  value:
+    simple: "Yes"
   required: false
-  description: The organizations internal domain name. This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If there is more than one domain, use the | character to separate values such as (paloaltonetworks.com|test.com).
+  description: This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No.
   playbookInputQuery:
 - key: TimeStamp
   value:
@@ -2073,23 +2090,6 @@ inputs:
     simple: "False"
   required: false
   description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
-  playbookInputQuery:
-- key: XDRDomain
-  value:
-    complex:
-      root: incident
-      accessor: xdrurl
-      transformers:
-      - operator: Cut
-        args:
-          delimiter:
-            value:
-              simple: /
-          fields:
-            value:
-              simple: "3"
-  required: false
-  description: XDR instance domain
   playbookInputQuery:
 - key: AutoBlockIndicators
   value:
@@ -2108,6 +2108,37 @@ inputs:
   required: false
   description: "Possible values: True/False.\nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:
+inputSections:
+- inputs:
+  - LinkSimilarIncidents
+  - CriticalUsernames
+  - CriticalHostnames
+  - CriticalADGroups
+  - incident_id
+  - XDRDomain
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, user engagements and ticketing methods
+- inputs:
+  - InternalRange
+  - InternalDomainName
+  - InternalHostRegex
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
+  - Hunting
+  - TimeStamp
+  name: Investigation
+  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - AutoRemediation
+  - AutoBlockIndicators
+  - UserVerification
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - Test XDR Playbook

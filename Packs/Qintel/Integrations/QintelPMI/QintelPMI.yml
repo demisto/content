@@ -30,14 +30,14 @@ script:
       isArray: true
       name: cve
       required: true
-    description: Queries Qintel for CVE intelligence
+    description: Queries Qintel for CVE intelligence.
     name: cve
     outputs:
     - contextPath: CVE.ID
-      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      description: 'The ID of the CVE, for example: CVE-2015-1653.'
       type: String
     - contextPath: CVE.CVSS
-      description: 'The CVSS of the CVE, for example: 10.0'
+      description: 'The CVSS of the CVE, for example: 10.0.'
       type: String
     - contextPath: CVE.Published
       description: The timestamp of when the CVE was published.
@@ -49,19 +49,19 @@ script:
       description: A description of the CVE.
       type: String
     - contextPath: Qintel.CVE.ID
-      description: The ID of the CVE
+      description: The ID of the CVE.
       type: string
     - contextPath: Qintel.CVE.AffectedSystem
-      description: Systems affected by the CVE
+      description: Systems affected by the CVE.
       type: string
     - contextPath: Qintel.CVE.AffectedVersions
-      description: Systems affected by the CVE
+      description: Systems affected by the CVE.
       type: string
     - contextPath: Qintel.CVE.LastObserved
-      description: Last threat actor observation time
+      description: Last threat actor observation time.
       type: string
     - contextPath: Qintel.CVE.Observations
-      description: List of observations
+      description: List of observations.
       type: array
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -79,7 +79,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.84405
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

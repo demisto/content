@@ -30,157 +30,157 @@ configuration:
 description: |-
   The BMC Service Request Management application enables an IT department and other business departments to easily define available services, publish those services in a service catalog, and automate fulfillment of those services for the user community, enabling users to help themselves.
   This integration uses SOAP API and supports SRM 9.0 version.
-display: BMC Remedy SR (Beta)
+display: remedy_sr_beta (Beta)
 name: remedy_sr_beta
 script:
   commands:
   - arguments:
-    - description: Service request ID
+    - description: Service request ID.
       name: service_request_id
       required: true
-    description: Get ticket details
+    description: Get ticket details.
     name: remedy-get-ticket
     outputs:
     - contextPath: Remedy.Ticket.RequesterEmail
-      description: Email of requester
+      description: Email of requester.
       type: string
     - contextPath: Remedy.Ticket.RequesterName
-      description: Name of requester
+      description: Name of requester.
       type: string
     - contextPath: Remedy.Ticket.RequesterPhone
-      description: Phone of requester
+      description: Phone of requester.
       type: string
     - contextPath: Remedy.Ticket.RequesterNTID
-      description: NTID of requester
+      description: NTID of requester.
       type: string
     - contextPath: Remedy.Ticket.RequesterWorkLocation
-      description: Work location of requester
+      description: Work location of requester.
       type: string
     - contextPath: Remedy.Ticket.RequesterWorkCity
-      description: Work city of requester
+      description: Work city of requester.
       type: string
     - contextPath: Remedy.Ticket.RequesterWorkStreet
-      description: Work street of requester
+      description: Work street of requester.
       type: string
     - contextPath: Remedy.Ticket.Details
-      description: Ticket details
+      description: Ticket details.
       type: string
     - contextPath: Remedy.Ticket.Priority
-      description: Ticket priority
+      description: Ticket priority.
       type: string
     - contextPath: Remedy.Ticket.ServiceRequestId
-      description: Ticket Service request ID
+      description: Ticket Service request ID.
       type: string
     - contextPath: Remedy.Ticket.Details
-      description: Ticket Details
+      description: Ticket Details.
       type: string
     - contextPath: Remedy.Ticket.SourceReference
-      description: Source reference of the ticket
+      description: Source reference of the ticket.
       type: string
     - contextPath: Remedy.Ticket.Date
-      description: Date the ticket was created
+      description: Date the ticket was created.
       type: string
     - contextPath: Remedy.Ticket.Time
-      description: Time the ticket was created
+      description: Time the ticket was created.
       type: string
     - contextPath: Remedy.Ticket.ContactEmail
-      description: Contact Email
+      description: Contact Email.
       type: string
     - contextPath: Remedy.Ticket.ContactName
-      description: Contact Name
+      description: Contact Name.
       type: string
     - contextPath: Remedy.Ticket.ContactPhone
-      description: Contact Phone
+      description: Contact Phone.
       type: string
     - contextPath: Remedy.Ticket.RequesterPERNR
-      description: Requester PERNR
+      description: Requester PERNR.
       type: string
   - arguments:
-    - description: Ticket details
+    - description: Ticket details.
       name: details
       required: true
-    - description: Requester NTID
+    - description: Requester NTID.
       name: requester_ntid
       required: true
-    - description: Requester PERNR
+    - description: Requester PERNR.
       name: requester_pernr
-    - description: Contact Email
+    - description: Contact Email.
       name: contact_email
-    - description: Contact Name
+    - description: Contact Name.
       name: contact_name
-    - description: Contact Phone
+    - description: Contact Phone.
       name: contact_phone
-    - description: Email of User
+    - description: Email of User.
       name: requester_email
       required: true
-    - description: Requester First/Last Name
+    - description: Requester First/Last Name.
       name: requester_name
       required: true
-    - description: User Phone
+    - description: User Phone.
       name: requester_phone
       required: true
-    - description: Requester City
+    - description: Requester City.
       name: requester_work_city
       required: true
-    - description: Requester Office
+    - description: Requester Office.
       name: requester_work_location
       required: true
-    - description: Requester Street
+    - description: Requester Street.
       name: requester_work_street
       required: true
-    description: Create a ticket
+    description: Create a ticket.
     name: remedy-create-ticket
     outputs:
     - contextPath: Remedy.Ticket.RequesterEmail
-      description: Email of requester
+      description: Email of requester.
       type: string
     - contextPath: Remedy.Ticket.RequesterName
-      description: Name of requester
+      description: Name of requester.
       type: string
     - contextPath: Remedy.Ticket.RequesterPhone
-      description: Phone of requester
+      description: Phone of requester.
       type: string
     - contextPath: Remedy.Ticket.RequesterNTID
-      description: NTID of requester
+      description: NTID of requester.
       type: string
     - contextPath: Remedy.Ticket.RequesterWorkLocation
-      description: Work location of requester
+      description: Work location of requester.
       type: string
     - contextPath: Remedy.Ticket.RequesterWorkCity
-      description: Work city of requester
+      description: Work city of requester.
       type: string
     - contextPath: Remedy.Ticket.RequesterWorkStreet
-      description: Work street of requester
+      description: Work street of requester.
       type: string
     - contextPath: Remedy.Ticket.Details
-      description: Ticket details
+      description: Ticket details.
       type: string
     - contextPath: Remedy.Ticket.Priority
-      description: Ticket priority
+      description: Ticket priority.
       type: string
     - contextPath: Remedy.Ticket.ServiceRequestId
-      description: Ticket Service request ID
+      description: Ticket Service request ID.
       type: string
     - contextPath: Remedy.Ticket.RequesterPERNR
-      description: Requester PERNR
+      description: Requester PERNR.
       type: string
     - contextPath: Remedy.Ticket.ContactEmail
-      description: Contact Email
+      description: Contact Email.
       type: string
     - contextPath: Remedy.Ticket.ContactName
-      description: Contact Name
+      description: Contact Name.
       type: string
     - contextPath: Remedy.Ticket.ContactPhone
-      description: Contact Phone
+      description: Contact Phone.
       type: string
   - deprecated: true
-    description: Update a ticket
+    description: Update a ticket.
     name: remedy-update-ticket
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.84405
 tests:
 - No Test
 beta: true
