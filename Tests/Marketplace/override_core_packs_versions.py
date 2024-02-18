@@ -4,8 +4,8 @@ import uuid
 import json
 
 from git import Repo
-from Tests.Marketplace.marketplace_services import json_write
-from Tests.Marketplace.marketplace_constants import GCPConfig
+from Tests.Marketplace.marketplace_services import json_write, get_content_git_client, get_recent_commits_data
+from Tests.Marketplace.marketplace_constants import GCPConfig, CONTENT_ROOT_PATH
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -25,12 +25,10 @@ def should_override_locked_corepacks_file(marketplace: str):
     # Specify the file path
     file_path = "Tests/Marketplace/corepacks_override.json"
 
-    # Open the Git repository
-    repo = Repo(search_parent_directories=True)
-    branch = repo.heads['master']
+    content_repo = get_content_git_client(CONTENT_ROOT_PATH)
 
     # Access the file as a blob from the last commit
-    last_commit_blob = branch.commit.tree / file_path
+    last_commit_blob = content_repo.commit.tree / file_path
 
     # Get the content of the last commit blob
     last_commit_content = json.loads(last_commit_blob.data_stream.read())
