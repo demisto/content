@@ -57,7 +57,7 @@ class Client(BaseClient):
 
     def get_access_token(self) -> str:
         """
-       Obtains access and refresh token from server.
+       Obtains access and refresh token from CybleAngel server.
        Access token is used and stored in the integration context until expiration time.
        After expiration, new refresh token and access token are obtained and stored in the
        integration context.
