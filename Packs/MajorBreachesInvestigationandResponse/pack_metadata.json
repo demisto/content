@@ -109,6 +109,10 @@
         "ServiceNow": {
             "mandatory": false,
             "display_name": "ServiceNow"
+        },
+        "IvantiCriticalVulnerabilities": {
+            "mandatory": false,
+            "display_name": "Ivanti Critical Vulnerabilities"
         }
     },
     "marketplaces": [
