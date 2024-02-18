@@ -5036,7 +5036,7 @@ script:
     - description: The serial number of the device.
       name: target
     - defaultValue: 'running_config'
-      description: Name of the file to save the config to. Default is "running_config".
+      description: Name of the file to save the configuration to.
       name: filename
     description: Pull the running config file.
     name: pan-os-get-running-config
