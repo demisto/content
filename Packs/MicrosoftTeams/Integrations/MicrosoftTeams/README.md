@@ -274,7 +274,6 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 3. Enter your Client Secret in the **Bot Password** parameter.
 4. Enter your Application redirect URI in the **Application redirect URI** parameter.
 5. Run the !microsoft-teams-generate-login-url command in the War Room and follow the instructions.
-6. Copy the **AUTH_CODE** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter. 
 7. Save the instance.
 8. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
 
