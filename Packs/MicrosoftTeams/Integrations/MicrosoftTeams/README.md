@@ -275,7 +275,7 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 4. Enter your Application redirect URI in the **Application redirect URI** parameter.
 5. Run the !microsoft-teams-generate-login-url command in the War Room and follow the instructions.
 6. Save the instance.
-8. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
+7. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
 
 
 ### Add the Demisto Bot to a Team
