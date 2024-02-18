@@ -274,7 +274,6 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 3. Enter your Client Secret in the **Bot Password** parameter.
 4. Enter your Application redirect URI in the **Application redirect URI** parameter.
 5. Run the !microsoft-teams-generate-login-url command in the War Room and follow the instructions.
-https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=code&response_mode=query&scope=offline_access%20https%3A%2F%2Fgraph.microsoft.com%2F.default&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&state=12345. When prompted, accept the Microsoft authorization request for the required permissions. You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&state=12345&session_state=SESSION_STATE```
 6. Copy the **AUTH_CODE** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter. 
 7. Save the instance.
