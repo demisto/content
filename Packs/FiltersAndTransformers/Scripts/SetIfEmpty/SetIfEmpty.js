@@ -24,14 +24,17 @@ function isValueEmpty(value) {
 function getValueToSet(value) {
     const applyIfEmpty = toBoolean(args.applyIfEmpty);
 
-    if (value === null || (applyIfEmpty && isValueEmpty(value))) {
+    if (value == null || (applyIfEmpty && isValueEmpty(value))) {
         value = args.defaultValue;
     }
 
-    if (value === null) {
+    if (value == null) {
         return [];
-    } else 
+    } else if (Array.isArray(value)) {
+        return JSON.parse(JSON.stringify(value));  // solve reference issue from chaining transformers XSUP-32809
+    } else {
         return value;
+    }
 }
 
 

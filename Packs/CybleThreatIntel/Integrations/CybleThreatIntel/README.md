@@ -37,18 +37,18 @@ Fetch the indicators based on the taxii service
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                        | **Required** |
-|-------------------|--------------------------------------------------------------------------------------------------------| --- |
-| limit             | Number of records to return, default value will be 50. Using a smaller limit will get faster responses. | Optional | 
-| begin             | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                              | Optional | 
-| end               | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                              | Optional | 
-| collection        | Collection name to fetch indicators from                                                               | Required | 
+| **Argument Name** | **Description**                                                                                         | **Required** |
+|-----------------|-------------------------------------------------------------------------------------------------------|------------|
+| limit           | Number of records to return, default value will be 50. Using a smaller limit will get faster responses. | Optional   | 
+| begin           | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                             | Optional   | 
+| end             | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                             | Optional   | 
+| collection      | Collection name to fetch indicators from                                                              | Required   | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CybleIntel.Threat.details | String | Returns the Threat Intel details from the Taxii service  | 
+| **Path**                  | **Type** | **Description**                                         |
+|-------------------------|--------|---------------------------------------------------------|
+| CybleIntel.Threat.details | String | Returns the Threat Intel details from the Taxii service | 
 
 ### cyble-vision-get-collection-names
 
@@ -61,6 +61,6 @@ Fetch the available collection name for the taxii service
 
 #### Context Output
 
-| **Path**                      | **Type** | **Description**                                |
-|-------------------------------| --- |------------------------------------------------|
+| **Path**                    | **Type** | **Description**                                 |
+|---------------------------|--------|-----------------------------------------------|
 | CybleIntel.collection.names | String | Available collection names for the feed service | 

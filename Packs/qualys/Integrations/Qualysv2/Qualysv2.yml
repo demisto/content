@@ -2718,7 +2718,49 @@ script:
     - contextPath: Qualys.Purge.ID
       description: IDs of the hosts queued for purging.
     description: Purge hosts in your account to remove the assessment data associated with them.
-  dockerimage: demisto/python3:3.10.13.80014
+  - name: qualys-update-vmware-record
+    arguments:
+    - name: ids
+      required: true
+      description:  A comma-separated list of record IDs to update. Specify record IDs and/or ID ranges.
+    - name: add_ips
+      required: true
+      description: A comma-separated list of IPs and/or ranges to add to the IPs list for this record.
+    description: Update Vmware records for authenticated scans of hosts running on Vmware.
+  - name: qualys-update-vcenter-record
+    arguments:
+    - name: ids
+      required: true
+      description: A comma-separated list of record IDs to update. Specify record IDs and/or ID ranges.
+    - name: add_ips
+      required: true
+      description: A comma-separated list of IPs and/or ranges to add to the IPs list for this record.
+    description: Update vCenter records for authenticated scans of hosts running on vCenter.
+  - name: qualys-vcenter-esxi-mapped-record-list
+    arguments:
+    - description: Specify a positive numeric value to limit the amount of results in the requested list.
+      name: limit
+    description: List VCenter ESXi mapping records.
+    outputs:
+    - contextPath: Qualys.VcenterToEsxi.ESXI_IP
+      description: The IP address of the ESXi server.
+    - contextPath: Qualys.VcenterToEsxi.MAPPING_DATA_SOURCE
+      description: The source of this mapping record.
+    - contextPath: Qualys.VcenterToEsxi.VCENTER_IP
+      description: The IP address of the vCenter.
+  - name: qualys-vcenter-esxi-mapped-record-import
+    description: Import vCenter - ESXi mapping records.
+    arguments:
+    - name: csv_data
+      description: The CSV data file containing the vCenter - ESXi mapping records that you want to import.
+      required: true
+  - name: qualys-vcenter-esxi-mapped-record-purge
+    description: Purge vCenter - ESXi mapping records.
+    arguments:
+    - name: csv_data
+      description: The CSV data file containing the vCenter - ESXi mapping records that you want to purge.
+      required: true
+  dockerimage: demisto/python3:3.10.13.87159
   script: ''
   subtype: python3
   type: python
