@@ -1028,7 +1028,6 @@ def test_not_authenticated_retry_positive(requests_mock, mocker):
     assert debug[0][0][0] == expected_debug_msg
     assert debug[1][0][0] == expected_debug_msg
 
-e
 
 def test_not_authenticated_retry_negative(requests_mock, mocker):
     """
