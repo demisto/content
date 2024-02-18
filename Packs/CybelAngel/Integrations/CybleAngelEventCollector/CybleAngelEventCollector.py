@@ -1,3 +1,5 @@
+import dateparser
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -10,7 +12,7 @@ from typing import Dict, Any, Tuple
 urllib3.disable_warnings()
 
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 DEFAULT_MAX_FETCH = 5000
 VENDOR = "cybelangel"
 PRODUCT = "platform"
@@ -34,7 +36,7 @@ class Client(BaseClient):
             'Content-Type': 'application/json',
         }
 
-        response = super()._http_request(
+        response = self._http_request(
             method, url_suffix=url_suffix, headers=headers, params=params, resp_type="response", ok_codes=(401, 200)
         )
         if response.status_code == 200:
@@ -43,14 +45,15 @@ class Client(BaseClient):
         token = self.get_token_request()
         headers["Authorization"] = f'Bearer {token}'
 
-        return super()._http_request(method, url_suffix=url_suffix, headers=headers, params=params)
+        return self._http_request(method, url_suffix=url_suffix, headers=headers, params=params)
 
     def get_reports(self, start_date: str, end_date: str, limit: int = DEFAULT_MAX_FETCH) -> List[Dict[str, Any]]:
         params = {
             "start-date": start_date,
             "end-date": end_date
         }
-        return self.http_request(method='GET', url_suffix="/api/v2/reports", params=params)[:limit]
+        reports = self.http_request(method='GET', url_suffix="/api/v2/reports", params=params).get("reports") or []
+        return reports[:limit]
 
     def get_access_token(self) -> str:
         """
@@ -147,7 +150,7 @@ def get_latest_fetched_event_ids(events: List[dict]) -> Tuple[str, List[str]]:
     if not events:
         return "", []
 
-    latest_event_time = max(events, key=lambda event: datetime.strptime(event["created_at"], DATE_FORMAT))["created_at"]
+    latest_event_time = max(events, key=lambda event: dateparser.parse(event["created_at"]).strftime(DATE_FORMAT))["created_at"]
     demisto.debug(f'Latest event time: {latest_event_time}')
 
     latest_occurred_event_ids = set()
@@ -180,7 +183,6 @@ def fetch_events(client: Client, last_run: Dict, max_fetch: int) -> Tuple[List[D
     latest_report_time, last_fetched_report_ids = get_latest_fetched_event_ids(reports)
     last_run.update({"time": latest_report_time or last_run_time, "fetched_report_ids": last_fetched_report_ids})
     return reports, last_run
-
 
 
 
