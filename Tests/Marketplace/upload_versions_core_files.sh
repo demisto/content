@@ -12,7 +12,7 @@ BUILD_BUCKET_PACKS_DIR_PATH="$BUILD_BUCKET_PATH/content/packs"
 BUILD_BUCKET_PACKS_DIR_FULL_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PACKS_DIR_PATH"
 
 echo "Starting calculate override core packs"
-python3 ./Tests/Marketplace/override_core_packs_versions.py -pa "${ARTIFACTS_FOLDER_SERVER_TYPE}" -n "${CI_PIPELINE_ID}" -mp "${MARKETPLACE_TYPE}"
+python3 ./Tests/Marketplace/override_core_packs_versions.py -pa "${ARTIFACTS_FOLDER_SERVER_TYPE}" -n "${CI_PIPELINE_ID}" -mp "${MARKETPLACE_TYPE}" -uc "${LAST_UPLOAD_COMMIT}"
 echo "Finished calculate override core packs"
 
 

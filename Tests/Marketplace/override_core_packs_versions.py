@@ -10,7 +10,7 @@ from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
 
-def should_override_locked_corepacks_file(marketplace: str):
+def should_override_locked_corepacks_file(marketplace: str, last_upload_commit: str):
     """
         Checks if the corepacks_override.json file in the repo should be used to override an existing corepacks file.
         The override file should be used if the following conditions are met:
@@ -19,6 +19,7 @@ def should_override_locked_corepacks_file(marketplace: str):
 
         Args
             marketplace (str): the marketplace type of the bucket. possible options: xsoar, xsoar_saas, marketplace_v2 or xpanse
+            last_upload_commit(str): Last upload commit.
 
         Returns True if a file should be updated and False otherwise.
         """
@@ -26,9 +27,11 @@ def should_override_locked_corepacks_file(marketplace: str):
     file_path = "Tests/Marketplace/corepacks_override.json"
 
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
+    logging.info(last_upload_commit)
+    commit = content_repo.commit(last_upload_commit)
 
     # Access the file as a blob from the last commit
-    last_commit_blob = content_repo.commit.tree / file_path
+    last_commit_blob = commit.tree / file_path
 
     # Get the content of the last commit blob
     last_commit_content = json.loads(last_commit_blob.data_stream.read())
@@ -94,6 +97,7 @@ def option_handler():
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-mp', '--marketplace', help="marketplace version", default='xsoar')
+    parser.add_argument('-uc', '--upload_commit', help="Last upload commit", required=True)
 
     # disable-secrets-detection-end
     return parser.parse_args()
@@ -105,9 +109,10 @@ def main():
     packs_artifacts_path = options.packs_artifacts_path
     marketplace = options.marketplace
     build_number = options.ci_build_number if options.ci_build_number else str(uuid.uuid4())
+    last_upload_commit = options.upload_commit
 
     # override a locked core packs file (used for hot-fixes)
-    if should_override_locked_corepacks_file(marketplace=marketplace):
+    if should_override_locked_corepacks_file(marketplace=marketplace, last_upload_commit=last_upload_commit):
         logging.debug('Using the corepacks_override.json file to update an existing corepacks file.')
         override_locked_corepacks_file(build_number=build_number,
                                        artifacts_dir=packs_artifacts_path,

@@ -211,7 +211,7 @@ validate-content-conf:
     - section_end "Prepare Content Packs for Testing"
 
     - section_start "Override and upload core packs versions"
-    - ./Tests/Marketplace/upload_versions_core_files.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
+    - ./Tests/Marketplace/upload_versions_core_files.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION" "$LAST_UPLOAD_COMMIT"
     - section_end "Override and upload core packs versions"
 
     - section_start "Create Instances for XSOAR"
