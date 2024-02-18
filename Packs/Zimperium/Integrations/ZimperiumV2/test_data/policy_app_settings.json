@@ -1,0 +1,48 @@
+{
+    "id": "9e",
+    "accountId": "25",
+    "groups": [
+        {
+            "id": "37",
+            "accountId": "25",
+            "name": "Default Group",
+            "description": "Default Group",
+            "created": "2023-12-05T20:09:16.621+00:00",
+            "modified": "2023-12-05T20:09:16.621+00:00",
+            "staticFilesWritten": "2024-01-16T06:00:54.585+00:00",
+            "zapps": [],
+            "userActivations": [
+                {
+                    "id": "40"
+                }
+            ],
+            "groupActivations": [],
+            "global": true,
+            "emm": false
+        }
+    ],
+    "name": "Default",
+    "detectionEnabled": true,
+    "cogitoEnabled": true,
+    "cogitoThreshold": 70,
+    "phishingEnabled": true,
+    "phishingThreshold": 75,
+    "phishingDBRefreshMinutes": 480,
+    "created": "2023-12-05T20:09:16.621+00:00",
+    "modified": "2023-12-05T20:09:16.729+00:00",
+    "staticFilesWritten": "2023-12-05T20:09:17.418+00:00",
+    "jsonHash": "61",
+    "protoHash": "ea",
+    "dangerzoneEnabled": true,
+    "siteInsightEnabled": false,
+    "phishingLocalClassifierEnabled": true,
+    "appRiskLookupEnabled": true,
+    "autoBatteryOptimizationEnabled": true,
+    "autoActivateKnox": false,
+    "privacySummaryEnabled": true,
+    "forensicAnalysisEnabled": false,
+    "team": null,
+    "assigned": true,
+    "teamId": null,
+    "global": true
+}
