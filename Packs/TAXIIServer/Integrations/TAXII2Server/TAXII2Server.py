@@ -11,7 +11,6 @@ from dateutil.parser import parse
 from requests.utils import requote_uri
 from werkzeug.exceptions import RequestedRangeNotSatisfiable
 
-
 ''' GLOBAL VARIABLES '''
 HTTP_200_OK = 200
 HTTP_400_BAD_REQUEST = 400
@@ -40,8 +39,6 @@ TAXII_V21_CONTENT_LEN = 104857600
 TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'description',
                                 'accounttype', 'userid', 'mitreid', 'stixid'}
 PAGE_SIZE = 2000
-
-
 
 XSOAR_TYPES_TO_STIX_SCO = {
     FeedIndicatorType.CIDR: 'ipv4-addr',
