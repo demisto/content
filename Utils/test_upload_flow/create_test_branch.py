@@ -338,6 +338,7 @@ def do_changes_on_branch(packs_path: Path):
     # case 12: Verify setting hidden dependency does not add this dependency to the metadata - MicrosoftAdvancedThreatAnalytics
     add_dependency(packs_path / 'MicrosoftAdvancedThreatAnalytics', packs_path / 'Microsoft365Defender',
                    mandatory=False)
+    enhance_release_notes(packs_path / 'MicrosoftAdvancedThreatAnalytics')
 
     # case 13: Verify new only-XSOAR pack uploaded only to XSOAR's bucket - TestUploadFlowXSOAR
     create_new_pack(pack_id='TestUploadFlowXSOAR')
