@@ -18,7 +18,7 @@ jobs:
         id: check-changes
         run: |
           CHANGED_FILES=$(git diff --name-only origin/master origin/${{ github.head_ref || github.ref_name }}  | grep '^\.gitlab/')
-          if [[ -n "$CHANGED_FILES" ]]; then
+          if ${{ -n "$CHANGED_FILES" }}; then
             echo 'Files under .gitlab folder has changed, Will check if the PR has the `nightly-ok` label.'
             echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
           else
@@ -26,7 +26,7 @@ jobs:
           fi
 
       - name: Check if PR has the nightly-ok label
-        uses: actions/github-script@v5
+        uses: actions/github-script@v7
         id: check-label
         if: ${{ steps.check-changes.outputs.changed_files }}
         with:
