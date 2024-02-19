@@ -320,6 +320,6 @@ def test_log_warning():
 
 
 def test_poppler_version():
-    from pdf2image import *  # noqa: F405
+    from pdf2image import *  # noqa: F406
     poppler_version = pdf2image._get_poppler_version("pdftoppm")
     assert poppler_version[0] > 20
