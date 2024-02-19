@@ -5,16 +5,11 @@
     "associatedTypes": [
         "Hello World Alert"
     ],
-    "breachScript": "",
     "caseInsensitive": true,
     "cliName": "helloworldtype",
     "closeForm": false,
-    "columns": null,
     "content": true,
-    "defaultRows": null,
-    "description": "",
     "editForm": true,
-    "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
     "id": "incident_helloworldtype",
@@ -23,17 +18,12 @@
     "name": "Hello World Type",
     "neverSetAsRequired": false,
     "ownerOnly": false,
-    "placeholder": "",
     "required": false,
-    "script": "",
-    "selectValues": null,
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": null,
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
     "unsearchable": false,
-    "useAsKpi": false,
-    "validationRegex": ""
+    "useAsKpi": false
 }

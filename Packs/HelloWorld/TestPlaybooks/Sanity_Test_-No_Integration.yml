@@ -38,10 +38,7 @@ tasks:
       id: 2ec78643-dd4f-4d3c-8210-d1f663359258
       version: -1
       name: A simple sanity if
-      description: "Takes the comments of a given entry ID and stores them in the\
-        \ incident context, under a provided context key. \nFor accessing the last\
-        \ executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the\
-        \ value for the entryId input parameter."
+      description: "Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. \nFor accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
       type: condition
       iscommand: false
       brand: ""
@@ -141,4 +138,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: Tests pack infra
+description: Tests pack infra.
