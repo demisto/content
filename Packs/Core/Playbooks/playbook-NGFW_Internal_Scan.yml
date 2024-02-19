@@ -589,8 +589,6 @@ tasks:
       attackerRemoteIP:
         complex:
           root: inputs.scannerIP
-      timeRange:
-        simple: 24 hours ago
     separatecontext: false
     loop:
       iscommand: false

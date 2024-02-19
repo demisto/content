@@ -27,6 +27,7 @@ from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
+from functools import wraps
 from inspect import currentframe
 
 import demistomock as demisto
@@ -40,7 +41,7 @@ def __line__():
 
 # 43 - The line offset from the beginning of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 44, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -823,6 +824,42 @@ def add_http_prefix_if_missing(address=''):
         if address.startswith(prefix):
             return address
     return 'http://' + address
+
+
+def handle_proxy_for_long_running(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
+                                  insecure_param_name=None):
+    """
+        Handle logic for long running integration routing traffic through the system proxy.
+        Should usually be called at the beginning of the integration, depending on proxy checkbox state.
+        Long running integrations on hosted tenants XSOAR8 and XSIAM has a dedicated env. var.: CRTX_HTTP_PROXY.
+        Fallback call to handle_proxy in cases long running integration on engine or XSOAR6
+
+        :type proxy_param_name: ``string``
+        :param proxy_param_name: name of the "use system proxy" integration parameter
+
+        :type checkbox_default_value: ``bool``
+        :param checkbox_default_value: Default value of the proxy param checkbox
+
+        :type handle_insecure: ``bool``
+        :param handle_insecure: Whether to check the insecure param and unset env variables
+
+        :type insecure_param_name: ``string``
+        :param insecure_param_name: Name of insecure param. If None will search insecure and unsecure
+
+        :return: proxies dict for the 'proxies' parameter of 'requests' functions and use_ssl boolean
+        :rtype: ``Tuple[dict, boolean]``
+    """
+    proxies = {}
+    crtx_http_proxy = os.environ.get('CRTX_HTTP_PROXY', None)
+    if crtx_http_proxy:
+        demisto.error('Setting proxies according to CRTX_HTTP_PROXY: {}'.format(crtx_http_proxy))
+        proxies = {
+            'http': crtx_http_proxy,
+            'https': crtx_http_proxy
+        }
+        handle_insecure = True
+        return proxies, handle_insecure
+    return handle_proxy(proxy_param_name, checkbox_default_value, handle_insecure, insecure_param_name), handle_insecure
 
 
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
@@ -6900,7 +6937,7 @@ class CommandResults:
                  content_format=None,
                  execution_metrics=None,
                  replace_existing=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any], bool) -> None  # noqa: E501
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, List[Any], bool) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
@@ -11280,7 +11317,7 @@ def split_data_to_chunks(data, target_chunk_size):
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE):
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11308,10 +11345,23 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type chunk_size: ``int``
     :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
 
+    :type should_update_health_module: ``bool``
+    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
+
     :return: None
     :rtype: ``None``
     """
-    send_data_to_xsiam(events, vendor, product, data_format, url_key, num_of_attempts, chunk_size, data_type="events")
+    send_data_to_xsiam(
+        events,
+        vendor,
+        product,
+        data_format,
+        url_key,
+        num_of_attempts,
+        chunk_size,
+        data_type="events",
+        should_update_health_module=should_update_health_module
+    )
 
 
 def is_scheduled_command_retry():
@@ -11326,6 +11376,51 @@ def is_scheduled_command_retry():
     calling_context = demisto.callingContext.get('context', {})
     sm = get_schedule_metadata(context=calling_context)
     return True if sm.get('is_polling', False) else False
+
+
+def retry(
+    times=3,
+    delay=1,
+    exceptions=Exception,
+):
+    """
+    retries to execute a function until an exception isn't raised anymore.
+
+    :type times: ``int``
+    :param times: The number of times to trigger the retry mechanism.
+
+    :type delay: ``int``
+    :param delay: The time in seconds to sleep between each time
+
+    :type exceptions: ``Exception``
+    :param exceptions: The exceptions that should be caught when executing
+        the function (Union[tuple[type[Exception], ...], type[Exception]])
+
+    :return: Any
+    :rtype: ``Any``
+    """
+    def _retry(func):
+        func_name = func.__name__
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for i in range(1, times + 1):
+                demisto.debug("Running func {func_name} for the {time} time".format(func_name=func_name, time=i))
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as error:
+                    demisto.debug(
+                        "Error when executing func {func_name}, error: {error}, time {time}".format(
+                            func_name=func_name, error=error, time=i
+                        )
+                    )
+                    if i == times:
+                        raise
+                    time.sleep(delay)  # pylint: disable=sleep-exists
+
+        return wrapper
+
+    return _retry
 
 
 def replace_spaces_in_credential(credential):
@@ -11376,7 +11471,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS):
+                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11406,6 +11501,10 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     :type data_type: ``str``
     :param data_type: Type of data to send to Xsiam, events or assets.
+
+    :type should_update_health_module: ``bool``
+    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
+        This can be useful when using send_data_to_xsiam in batches for the same fetch.
 
     :return: None
     :rtype: ``None``
@@ -11501,7 +11600,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True)
 
-    demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+    if should_update_health_module:
+        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
 
 ###########################################
