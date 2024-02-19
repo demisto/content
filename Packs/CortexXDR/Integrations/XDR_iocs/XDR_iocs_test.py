@@ -1052,7 +1052,7 @@ def test_parse_demisto_comments_url__default(mocker):
     inc_id = '111111'
     mocker.patch.object(demisto, 'demistoUrls', return_value='url')
     assert _parse_demisto_comments(
-        ioc={'id': comment_value},
+        ioc={'id': inc_id},
         comment_field_name='indicator_link',
         comments_as_tags=False
     ) == [f'https://url/#/indicator/{comment_value}']
