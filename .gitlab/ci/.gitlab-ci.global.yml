@@ -249,10 +249,11 @@
       git commit -am "updated branch to upload commit ${LAST_UPLOAD_COMMIT}"
       git status -- Packs # show the differences between the upload commit to the master branch for the Packs folder after commit
       echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
-    else
-      echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly or the ${LAST_UPLOAD_COMMIT} and ${CI_COMMIT_SHA} are equal"
+    elif [[ "${NIGHTLY}" != true ]]; then
+      echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly."
+    elif [[ ${LAST_UPLOAD_COMMIT} == ${CI_COMMIT_SHA} ]]; then
+      echo "not checking out to the latest upload commit because the ${LAST_UPLOAD_COMMIT} and ${CI_COMMIT_SHA} are equal."
     fi
-  - |
   - section_end "Checkout upload commit content nightly"
 
 .export_cloud_machine_constants: &export_cloud_machine_constants
