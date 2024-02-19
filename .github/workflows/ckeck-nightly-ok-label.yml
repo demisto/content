@@ -11,15 +11,14 @@ jobs:
     steps:
       - name: Check if files under .gitlab directory are changed
         id: check-changes
-        with:
-          script: |
-            const GitLabFilesChanged = git diff --name-only | grep '^\.gitlab/'
-            if (GitLabFilesChanged) {
-                console.log('Files under .gitlab folder has changed, Will check if the PR has the nightly-ok label.');
-              } else {
-                console.log('PR does not have the `nightly-ok` label. it is required when changing files under tht `.gitlab` directory.');
-                process.exit(0); // Will finish the process with exit code 0.
-              }
+        run: |
+          const GitLabFilesChanged = git diff --name-only | grep '^\.gitlab/'
+          if (GitLabFilesChanged) {
+              console.log('Files under .gitlab folder has changed, Will check if the PR has the nightly-ok label.');
+            } else {
+              console.log('PR does not have the `nightly-ok` label. it is required when changing files under tht `.gitlab` directory.');
+              process.exit(0); // Will finish the process with exit code 0.
+            }
 
       - name: Check if PR has the nightly-ok label
         uses: actions/github-script@v5
