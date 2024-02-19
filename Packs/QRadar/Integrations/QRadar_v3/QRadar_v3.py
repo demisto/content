@@ -3097,7 +3097,7 @@ def qradar_geolocations_for_ip_command(client: Client, args: dict) -> CommandRes
         CommandResults.
     """
     ips = argToList(args.get('ip'))
-    filter_ = f'''ip_address IN ({','.join((f'"{str(ip)}"' for ip in ips))})'''
+    filter_ = f'''ip_address IN ({','.join((f'"{str(ip)}"' for ip in ips))})'''  # noqa: UP034
     fields = args.get('fields')
 
     # if this call fails, raise an error and stop command execution
@@ -3214,7 +3214,7 @@ def qradar_get_custom_properties_command(client: Client, args: dict) -> CommandR
     fields = args.get('fields')
     if not filter_:
         if field_names:
-            filter_ += f'''name IN ({','.join((f'"{str(name)}"' for name in field_names))})'''
+            filter_ += f'''name IN ({','.join(f'"{str(name)}"' for name in field_names)})'''
         if like_names:
             filter_ += ' or '.join(f' name ILIKE "%{like}%"' for like in like_names)
 
