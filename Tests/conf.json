@@ -1676,9 +1676,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "TestDedupIncidentsPlaybook"
-        },
-        {
             "playbookID": "TestDedupIncidentsByName"
         },
         {
@@ -4714,7 +4711,7 @@
             "playbookID": "Test Playbook TrendMicroDDA",
             "fromversion": "5.0.0",
             "integrations": [
-                "Trend Micro Deep Discovery Analyzer Beta"
+                "Trend Micro Deep Discovery Analyzer"
             ]
         },
         {
@@ -5427,7 +5424,7 @@
             "playbookID": "DBotPredictURLPhishing_test",
             "integrations": [
                 "Whois",
-                "Rasterize7"
+                "Rasterize"
             ],
             "memory_threshold": 300,
             "pid_threshold": 200,
@@ -5669,7 +5666,7 @@
             "playbookID": "Test - Netcraft"
         },
         {
-            "integrations": "Fortimail",
+            "integrations": "fortimail",
             "playbookID": "playbook-Fortimail_Test"
         },
         {
@@ -5682,7 +5679,7 @@
         "test-threatConnectv3": "No instance - Instance issues",
         "generic-sql-mssql-encrypted-connection": "Instance issues",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
-        "CiscoWSAv2": "No instance - developed by Qmasters",
+        "playbook-CiscoWSA_Test": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
         "RegPathReputationBasicLists_test": "The D2 pack is deprecated",
         "CirclIntegrationTest": "No instance",
@@ -5701,7 +5698,6 @@
         "MAR - Endpoint data collection test": "Issue CIAC-4521",
         "Tidy - Test": "Will run it manually.",
         "Protectwise-Test": "Issue CRTX-86776",
-        "TestDedupIncidentsPlaybook": "Issue 24344",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance - Issue 27112",
@@ -5714,14 +5710,14 @@
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "IntSights Mssp Test": "Issue #16351",
-        "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
+        "AWS - SQS Test Playbook": "Issue 19854",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
-        "Fidelis Elevate Network": "Issue 26453",
+        "Fidelis-Test": "Issue 26453",
         "Cortex XDR - IOC - Test": "Issue 37957",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
         "TCPUtils-Test": "Issue 29677",
@@ -5759,8 +5755,7 @@
         "get_original_email_-_ews-_test": "Issue 27571",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
-        "EWS Extension: Powershell Online V2 Test": "Issue 39008",
-        "O365 - EWS - Extension - Test": "Issue 39008",
+        "playbook-O365-EWS-Extension-Powershell-Online-V2-Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
         "iDefense_v2_Test": "Issue 40126",
         "Feed iDefense Test": "Issue 34035",
@@ -5937,7 +5932,7 @@
         "AlienVault USM Anywhere": "No instance - Issue #18273",
         "Dell Secureworks": "No instance",
         "Service Manager": "No instance - Expired license",
-        "carbonblackprotection": "No instance - License expired",
+        "CarbonBlackProtectionV2": "No instance - License expired",
         "icebrg": "No instance - Issue 14312 - CIAC-2006",
         "Freshdesk": "No instance - Trial account expired",
         "Kafka V2": "No instance - Can not connect to instance from remote",
@@ -5967,7 +5962,7 @@
         "CiscoAMP": "No instance & Depreceated, replaced by AMPV2",
         "AMPv2": "No instance - developed by Qmasters",
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
-        "FortinetFortiwebVM": "No instance - developed by Qmasters",
+        "fortiweb_vm": "No instance - developed by Qmasters",
         "_comment2": "~~~ UNSTABLE ~~~",
         "ThreatConnect v2": "unstable instance",
         "_comment3": "~~~ QUOTA ISSUES ~~~",
@@ -6100,7 +6095,6 @@
         "ProtectWise": "Nightly - Checking",
         "google-vault": "Nightly - Checking",
         "Forcepoint": "Nightly - Checking",
-        "palo_alto_firewall": "Need to check test module",
         "Signal Sciences WAF": "error with certificate",
         "google": "'unsecure' parameter not working",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
@@ -6210,7 +6204,7 @@
         "abuse.ch SSL Blacklist Feed",
         "ipinfo",
         "ipinfo_v2",
-        "syslog"
+        "Syslog v2"
     ],
     "private_tests": [
         "HelloWorldPremium_Scan-Test",
