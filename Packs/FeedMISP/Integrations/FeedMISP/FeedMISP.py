@@ -211,7 +211,7 @@ def handle_file_type_fields(raw_type: str, indicator_obj: Dict[str, Any]) -> Non
 
 
 def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, page: int, from_timestamp: str = ''
-    ) -> Dict[str, Any]:
+                      ) -> Dict[str, Any]:
     """
     Creates a dictionary in the format required by MISP to be used as a query.
     Args:
@@ -505,7 +505,8 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
     page = arg_to_number(args.get('page')) or 1
-    params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type=attribute_type, limit=limit, page=page)
+    params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type=attribute_type, limit=limit,
+                                                                          page=page)
     response = client.search_query(params_dict)
     if error_message := response.get('Error'):
         raise DemistoException(error_message)
@@ -544,10 +545,10 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
-    last_run = str(demisto.getLastRun().get('timestamp', '7d'))
+    last_run = demisto.getLastRun().get('timestamp', '100d') if demisto.getLastRun() else ''
     params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type=attribute_types, limit=2000,
                                                                           page=1, from_timestamp=last_run)
-    
+
     search_query_per_page = client.search_query(params_dict)
     last_timestamp = ''
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
@@ -555,8 +556,6 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))}\
                         page: {params_dict["page"]}')
         indicators = build_indicators(search_query_per_page, attribute_types, tlp_color, params.get('url'), reputation, feed_tags)
-        # indicators_iterator = build_indicators_iterator(search_query_per_page, params.get('url'))
-        # added_indicators_iterator = update_indicators_iterator(indicators, params_dict, True)
         demisto.createIndicators(indicators)
         params_dict['page'] += 1
         last_timestamp = search_query_per_page['response']['Attribute'][-1]['timestamp']
@@ -574,7 +573,7 @@ def main():
     timeout = arg_to_number(params.get('timeout')) or 60
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    command = "fetch-indicators" #demisto.command()
+    command = demisto.command()
     args = demisto.args()
 
     demisto.debug(f'Command being called is {command}')
