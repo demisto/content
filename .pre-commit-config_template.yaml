@@ -297,7 +297,7 @@ repos:
     - decorator==5.1.1 ; python_version >= "3.8" and python_version < "3.11"
     - defusedxml==0.7.1 ; python_version >= "3.8" and python_version < "3.11"
     - demisto-py==3.2.14 ; python_version >= "3.8" and python_version < "3.11"
-    - demisto-sdk @ git+https://github.com/demisto/demisto-sdk.git@e69686b879ff3f6e2b456deca22aecb1a77cc3c7 ; python_version >= "3.8" and python_version < "3.11"
+    - demisto-sdk @ git+https://github.com/demisto/demisto-sdk.git@d46facbce3da36b10e26af63c175667da8a66ba3 ; python_version >= "3.8" and python_version < "3.11"
     - dictdiffer==0.9.0 ; python_version >= "3.8" and python_version < "3.11"
     - dictor==0.1.12 ; python_version >= "3.8" and python_version < "3.11"
     - distlib==0.3.8 ; python_version >= "3.8" and python_version < "3.11"
