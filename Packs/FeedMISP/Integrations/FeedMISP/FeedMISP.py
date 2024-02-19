@@ -210,7 +210,7 @@ def handle_file_type_fields(raw_type: str, indicator_obj: Dict[str, Any]) -> Non
     indicator_obj['fields'][raw_type.upper()] = hash_value
 
 
-def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, page: int, from_timestamp: str = ''
+def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, page: int, from_timestamp: str | None = ''
                       ) -> Dict[str, Any]:
     """
     Creates a dictionary in the format required by MISP to be used as a query.
@@ -260,36 +260,6 @@ def get_ip_type(ip_attribute: Dict[str, Any]) -> str:
     Returns: FeedIndicatorType
     """
     return FeedIndicatorType.ip_to_indicator_type(ip_attribute['value'])
-
-
-def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
-                               params_dict: Dict[str, Any],
-                               is_fetch: bool) -> Optional[List[Dict[str, Any]]]:
-    """
-    sorts the indicators by their timestamp and returns a list of only new indicators received from MISP
-    Args:
-        params_dict: user's params sent to misp
-        indicators_iterator: list of indicators
-        is_fetch: flag for wether funciton was called for fetching command or a get
-    Returns: Sorted list of new indicators
-    """
-    last_run = demisto.getLastRun()
-    demisto.debug(f"last_run: {last_run}")
-    indicators_iterator.sort(key=lambda indicator: indicator['value']['timestamp'])
-
-    if last_run is None:
-        return indicators_iterator
-    if params_dict != last_run.get('params'):
-        if is_fetch:
-            demisto.setLastRun(None)
-        return indicators_iterator
-
-    last_timestamp = int(last_run.get('timestamp'))
-
-    for index in range(len(indicators_iterator)):
-        if int(indicators_iterator[index]['value']['timestamp']) > last_timestamp:
-            return indicators_iterator[index:]
-    return []
 
 
 def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
@@ -545,12 +515,12 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
-    last_run = demisto.getLastRun().get('timestamp', '100d') if demisto.getLastRun() else ''
-    params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type=attribute_types, limit=2000,
+    limit = arg_to_number(params.get('feedFetchLimit')) or 2000
+    last_run = demisto.getLastRun().get('timestamp') if demisto.getLastRun() else ''
+    params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type=attribute_types, limit=limit,
                                                                           page=1, from_timestamp=last_run)
 
     search_query_per_page = client.search_query(params_dict)
-    last_timestamp = ''
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
         demisto.debug(f'search_query_per_page number of attributes:\
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))}\
@@ -558,13 +528,13 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         indicators = build_indicators(search_query_per_page, attribute_types, tlp_color, params.get('url'), reputation, feed_tags)
         demisto.createIndicators(indicators)
         params_dict['page'] += 1
-        last_timestamp = search_query_per_page['response']['Attribute'][-1]['timestamp']
+        last_run = search_query_per_page['response']['Attribute'][-1]['timestamp']
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
     params_dict.pop("limit", None)
     params_dict.pop("page", None)
-    demisto.setLastRun({'timestamp': last_timestamp, 'params': params_dict})
+    demisto.setLastRun({'timestamp': last_run, 'params': params_dict})
 
 
 def main():

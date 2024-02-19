@@ -75,6 +75,11 @@ configuration:
   defaultvalue: "240"
   type: 19
   required: false
+- display: Feed Fetch Indictors Limit
+  name: feedFetchLimit
+  defaultvalue: "2000"
+  type: 19
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
