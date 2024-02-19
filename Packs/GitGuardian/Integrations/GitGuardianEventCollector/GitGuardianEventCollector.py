@@ -32,8 +32,8 @@ class Client(BaseClient):
     """
 
     def search_events(
-        self, last_run: dict[str, str], max_events_per_fetch: int
-    ) -> tuple[List[Dict], List[Dict], str, str]:  # noqa: E501
+        self, last_run: dict[str, Any], max_events_per_fetch: int
+    ) -> tuple[List[Dict], List[Dict], List[int], str, str]:  # noqa: E501
         """
         Searches for GitGuardian alerts using the '/secrets' and '/audit_logs' API endpoints.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -46,8 +46,8 @@ class Client(BaseClient):
             List: A list of events that were fetched
             str: The time to start the next incident fetch.
         """
-        incidents, next_run_incidents = self.search_incidents(
-            last_run.get("incident_from_fetch_time", ""), max_events_per_fetch
+        incidents, next_run_incidents, last_fetched_incident_ids = self.search_incidents(
+            last_run.get("incident_from_fetch_time", ""), max_events_per_fetch, last_run.get("last_fetched_incident_ids", [])
         )
         audit_logs, next_run_audit_logs = self.search_audit_logs(
             last_run.get("audit_log_from_fetch_time", ""), max_events_per_fetch
@@ -56,11 +56,11 @@ class Client(BaseClient):
         self.add_time_to_events(incidents, "incident")
         self.add_time_to_events(audit_logs, "audit_log")
 
-        return incidents, audit_logs, next_run_incidents, next_run_audit_logs
+        return incidents, audit_logs,last_fetched_incident_ids, next_run_incidents, next_run_audit_logs
 
     def search_incidents(
-        self, from_fetch_time: str, max_events_per_fetch: int
-    ) -> tuple[List[Dict], str]:
+        self, from_fetch_time: str, max_events_per_fetch: int, last_fetched_incident_ids: List[int]
+    ) -> tuple[List[Dict], str, List[int]]:
         """Searching the API for new incidents.
 
         Args:
@@ -76,7 +76,7 @@ class Client(BaseClient):
         total_num_of_fetched_incidents = 0
         params = {"from": from_fetch_time, "per_page": DEFAULT_PAGE_SIZE}
 
-        while total_num_of_fetched_incidents < max_events_per_fetch:
+        while True:
             if next_url:
                 demisto.debug(f"GG: Fetching incidents using the next_url: {next_url}")
                 response = self._http_request(
@@ -90,26 +90,30 @@ class Client(BaseClient):
                     url_suffix="/secrets",
                     params=params,
                 )
+            new_incidents = self.remove_duplicated_incidents(response.get("results"), last_fetched_incident_ids)
+            incidents.extend(new_incidents)
+            total_num_of_fetched_incidents += len(new_incidents)
 
-            incidents.extend(response.get("results"))
             next_url = response.get("next")
-            total_num_of_fetched_incidents += len(response.get("results"))
-
             if not next_url:
                 break
 
-        incidents = incidents[:max_events_per_fetch]
+        sorted_incidents = self.sort_incidents_based_on_last_occurrence_date(incidents)
+        incidents = sorted_incidents[:max_events_per_fetch]
 
         if len(incidents) == 0:
-            demisto.debug("GG: No incidents were fetched")
             next_run_incidents_from_fetch = from_fetch_time
+            fetched_incident_ids = last_fetched_incident_ids
+            demisto.debug("GG: No incidents were fetched")
         else:
-            next_run_incidents_from_fetch = incidents[-1].get("created_at")
+            next_run_incidents_from_fetch: str = incidents[-1].get("last_occurrence_date", "")
+            fetched_incident_ids = self.extract_incident_ids_with_same_last_occurrence_date(incidents,
+                                                                                            next_run_incidents_from_fetch)
             demisto.debug(
                 f"GG: {len(incidents)} incidents were fetched, last incident time is {next_run_incidents_from_fetch}"
             )
 
-        return incidents, next_run_incidents_from_fetch
+        return incidents, next_run_incidents_from_fetch, fetched_incident_ids
 
     def search_audit_logs(
         self, from_fetch_time: str, max_events_per_fetch: int
@@ -214,7 +218,51 @@ class Client(BaseClient):
                 )
                 event["source_log_type"] = event_type
 
+    @staticmethod
+    def remove_duplicated_incidents(incidents: List[Dict], last_fetched_incident_ids: List):
+        """Remove incidents that were already fetched in the last fetch, due to first_occurrence_date not supporting miliseconds
 
+        Args:
+            incidents (List[Dict]): _description_
+            last_fetched_incident_ids (List): _description_
+        """
+        new_incidents = []
+        for incident in incidents:
+            if incident.get('id') not in last_fetched_incident_ids:
+                new_incidents.append(incident)
+
+        return new_incidents
+
+    @staticmethod
+    def sort_incidents_based_on_last_occurrence_date(incidents: List[Dict]):
+        """Sort incidents based on their last_occurrence_date. Returns the incidents in an ascending manner (earliest to latest)
+
+        Args:
+            incidents (List[Dict]): _description_
+            last_fetched_incident_ids (List): _description_
+        """
+
+        def get_date_time(dict_item):
+            return datetime.strptime(dict_item["last_occurrence_date"], "%Y-%m-%dT%H:%M:%SZ")
+
+        sorted_incidents = sorted(incidents, key=get_date_time)
+
+        return sorted_incidents
+
+
+    @staticmethod
+    def extract_incident_ids_with_same_last_occurrence_date(incidents: List[Dict], last_occurrence_date: str):
+        """Extract incidents with the same last_occurrence_date. Returns the incidents in an ascending manner (earliest to latest)
+
+        Args:
+            incidents (List[Dict]): _description_
+            last_fetched_incident_ids (List): _description_
+        """
+
+        ids_with_same_occurrence_date = [incident["id"] for incident in incidents if incident["last_occurrence_date"] == last_occurrence_date]  # noqa: E501
+
+        return ids_with_same_occurrence_date
+            
 def test_module(
     client: Client, from_fetch_time: str, max_events_per_fetch: int = 1
 ) -> str:
@@ -259,7 +307,7 @@ def get_events(
         "incident_from_fetch_time": from_date,
         "audit_log_from_fetch_time": from_date,
     }
-    incidents, audit_logs, _, _ = client.search_events(last_run, limit)
+    incidents, audit_logs, _, _, _ = client.search_events(last_run, limit)
     hr = tableToMarkdown(
         name="Test Event - incidents",
         t=incidents,
@@ -292,6 +340,7 @@ def fetch_events(
     (
         incidents,
         audit_logs,
+        last_fetched_incident_ids,
         next_run_incidents,
         next_run_audit_logs,
     ) = client.search_events(last_run, max_events_per_fetch)
@@ -300,6 +349,7 @@ def fetch_events(
     next_run = {
         "incident_from_fetch_time": next_run_incidents,
         "audit_log_from_fetch_time": next_run_audit_logs,
+        "last_fetched_incident_ids": last_fetched_incident_ids,
     }
 
     return next_run, incidents, audit_logs
