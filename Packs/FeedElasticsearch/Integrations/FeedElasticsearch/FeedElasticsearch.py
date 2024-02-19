@@ -236,6 +236,7 @@ def update_last_fetch(client, ioc_lst):
 def fetch_indicators_command(client, feed_type, src_val, src_type, default_type, last_fetch, fetch_limit):
     """Implements fetch-indicators command"""
     last_fetch_timestamp = get_last_fetch_timestamp(last_fetch, client.time_method, client.fetch_time)
+    demisto.debug(f"FeedElasticSearch: last_fetch_timestamp is: {last_fetch_timestamp}")
     prev_iocs_ids = demisto.getLastRun().get("ids", [])
     now = datetime.now()
     ioc_lst: list = []
@@ -274,7 +275,7 @@ def get_last_fetch_timestamp(last_fetch, time_method, fetch_time):
     if last_fetch:
         last_fetch_timestamp = last_fetch
     else:
-        last_fetch, _ = parse_date_range(date_range=fetch_time, utc=False)
+        last_fetch = dateparser.parse(fetch_time)
         # if timestamp: get the last fetch to the correct format of timestamp
         last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
     if 'Timestamp - Seconds' in time_method:
