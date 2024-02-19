@@ -1474,7 +1474,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "ds-conf-json-2"
-resolved_reference = "f12f28e14aa65701698b6accaf058880c134e6f9"
+resolved_reference = "e69686b879ff3f6e2b456deca22aecb1a77cc3c7"
 
 [[package]]
 name = "deprecated"
@@ -5717,13 +5717,13 @@ paramiko = "*"
 
 [[package]]
 name = "selenium"
-version = "4.17.2"
+version = "4.18.0"
 description = ""
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "selenium-4.17.2-py3-none-any.whl", hash = "sha256:5aee79026c07985dc1b0c909f34084aa996dfe5b307602de9016d7a621a473f2"},
-    {file = "selenium-4.17.2.tar.gz", hash = "sha256:d43d6972e516855fb242ef9ce4ce759057b115070e702e7b1c1032fe7b38d87b"},
+    {file = "selenium-4.18.0-py3-none-any.whl", hash = "sha256:d0ac1ab0aa50dffad8050e7f0170395ea23bcecccf7d59b69bc430e47eeb9dac"},
+    {file = "selenium-4.18.0.tar.gz", hash = "sha256:8912e690d4e72350ca733ad28be894e87683064de3304e5f5b5b386697a6c47d"},
 ]
 
 [package.dependencies]
