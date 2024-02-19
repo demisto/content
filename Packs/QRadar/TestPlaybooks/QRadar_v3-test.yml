@@ -2188,8 +2188,8 @@ tasks:
       '#none#':
       - "64"
     scriptarguments:
-      offense_id:
-        simple: ${inputs.offense_id}
+      query_expression:
+        simple: SELECT * FROM events WHERE severity >= 5
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2269,8 +2269,7 @@ tasks:
       - "66"
     scriptarguments:
       query_expression:
-        simple: SELECT * FROM events WHERE INOFFENSE(${inputs.offense_id}) limit 3
-          start 3600000
+        simple: SELECT * FROM events WHERE severity >= 5
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3309,12 +3308,6 @@ view: |-
       }
     }
   }
-inputs:
-- key: offense_id
-  value:
-    simple: "203"
-  required: false
-  description: "The offense_id to search for."
-  playbookInputQuery: null
+inputs: []
 outputs: []
 fromversion: 5.0.0
