@@ -269,11 +269,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
 
     elif comment_field_name == 'indicator_link':
         # parse indicator link into comments field
-        raw_id = ioc.get('id')
-        if raw_id:
-            return f'https://{demisto.demistoUrls()}/#/indicator/{raw_id}'.split(",")
-        else:
-            return None
+        return [f'https://{demisto.demistoUrls()}/#/indicator/{ioc.get('id')}']
 
     else:  # custom comments field
         if not (raw_comment := ioc.get('CustomFields', {}).get(comment_field_name)):
