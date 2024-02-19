@@ -1049,17 +1049,14 @@ def main():
             OFFSET = 0
             items_per_page = int(demisto.args().get("items_per_page", ITEMS_PER_PAGE))
             if items_per_page <= 0:
-                raise ValueError("The items_per_page should be a positive non-zero value.")
-            limit = int(demisto.args().get("limit", LIMIT))
-            if limit <= 0:
-                raise ValueError("The 'limit' parameter should be a positive non-zero value.")
+                raise ValueError("items_per_page should be a positive non-zero value.")
             total = 0
-            demisto.results(multi_table_query_command(OFFSET, limit))
+            demisto.results(multi_table_query_command(OFFSET, items_per_page))
             total = total + COUNT_MULTI_TABLE
-            while limit * 2 == COUNT_MULTI_TABLE:
-                OFFSET = OFFSET + limit
+            while items_per_page * 2 == COUNT_MULTI_TABLE:
+                OFFSET = OFFSET + items_per_page
                 total = total + COUNT_MULTI_TABLE
-                demisto.results(multi_table_query_command(OFFSET, limit))
+                demisto.results(multi_table_query_command(OFFSET, items_per_page))
         elif demisto.command() == "devo-write-to-table":
             demisto.results(write_to_table_command())
         elif demisto.command() == "devo-write-to-lookup-table":
