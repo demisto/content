@@ -775,7 +775,7 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 | --- | --- | --- |
 | limit | The number of managed devices to fetch. Default is 10. | Optional | 
 | next_link | A link that specifies a starting point to use for subsequent calls. | Optional | 
-| page_size | Number of results to return per page. Maximum page size is 1000.<br/>Note: Page size is only relevant when the next_link parameter is not specified. | Optional | 
+| page_size | Number of results to return per page. <br/>Note: Page size is only relevant when the next_link parameter is not specified. | Optional | 
 
 #### Context Output
 
