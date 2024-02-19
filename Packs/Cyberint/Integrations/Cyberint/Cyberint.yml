@@ -13,6 +13,11 @@ configuration:
   name: environment
   required: true
   type: 0
+- additionalinfo: The customer name.
+  display: Customer name
+  name: customer_name
+  type: 0
+  required: false
 - additionalinfo: An incident will be created with the originated Alert details per CSV file record.
   display: Create an incident per CSV record
   name: duplicate_alert
