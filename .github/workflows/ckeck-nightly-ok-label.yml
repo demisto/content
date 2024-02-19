@@ -11,17 +11,18 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Check if files under .gitlab directory are changed
         id: check-changes
         run: |
-          git fetch origin master
-          diff=$(git diff --name-only origin/master | grep '^\.gitlab/')
-          if (diff) {
-              console.log('Files under .gitlab folder has changed, Will check if the PR has the nightly-ok label.');
-            } else {
-              console.log('PR does not have the `nightly-ok` label. it is required when changing files under tht `.gitlab` directory.');
-              process.exit(0); // Will finish the process with exit code 0.
+          CHANGED_FILES=$(git diff --name-only origin/master ${{ github.head_ref || github.ref_name }}  | grep '^\.gitlab/')
+          if [ -n "$CHANGED_FILES" ]; then
+              echo 'Files under .gitlab folder has changed, Will check if the PR has the `nightly-ok` label.'
+          else
+              echo 'PR does not have the `nightly-ok` label. it is required when changing files under the `.gitlab` directory.');
+              exit 0 // Will finish the process with exit code 0.
             }
 
       - name: Check if PR has the nightly-ok label
@@ -32,7 +33,7 @@ jobs:
             const labels = context.payload.pull_request.labels.map(label => label.name);
             const hasLabel = labels.includes('nightly-ok');
             if (hasLabel) {
-              console.log('All good, the PR has the nightly-ok label.');
+              console.log('All good, the PR has the `nightly-ok` label.');
             } else {
               console.log('PR does not have the `nightly-ok` label. It is required when changing files under the `.gitlab` directory. Please run nightly using the Utils/gitlab_triggers/trigger_content_nightly_build.sh script, check that succeeded, and add the `nightly-ok` label');
               process.exit(1); // Exit with failure status if label is missing
