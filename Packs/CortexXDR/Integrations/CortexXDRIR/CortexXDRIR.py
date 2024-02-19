@@ -17,8 +17,6 @@ API_KEY_LENGTH = 128
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
 INTEGRATION_NAME = 'Cortex XDR - IR'
-UPGRADED_GET_EXTRA_DATA = False
-IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET = False
 ALERTS_LIMIT_PER_INCIDENTS = -1
 
 
@@ -428,34 +426,8 @@ def get_last_mirrored_in_time(args):
     return last_mirrored_in_timestamp
 
 
-def check_using_upgraded_api_incidents_extra_data(client, incident_id: str):
-    """Checks if the new XDR version is installed (otherwise we will get internal error 500)
-        and get_multiple_incidents_extra_data returns at least number_in_config indicators.
-
-    Args:
-        client (Client): The Cortex XDR client used to make API calls.
-        incident_id (list or str):incident_ids that specifies which incidents to get data for.
-
-    Returns:
-        bool: True if the additional incident data retrieval was successful, False otherwise.
-        Dict: if the call sus
-    """
-    global ALERTS_LIMIT_PER_INCIDENTS, IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET, UPGRADED_GET_EXTRA_DATA
-    demisto.debug(f"check if get_multiple_incidents_extra_data API for incident {incident_id} can be used:")
-    IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET = True
-    try:
-        raw_incident: dict = client.get_multiple_incidents_extra_data([incident_id])
-        ALERTS_LIMIT_PER_INCIDENTS = int(raw_incident.get('replay', {}).get('alerts_limit_per_incident', 50))
-        demisto.debug(f"Using get_multiple_incidents_extra_data API. 'ALERTS_LIMIT_PER_INCIDENTS: {ALERTS_LIMIT_PER_INCIDENTS}")
-        UPGRADED_GET_EXTRA_DATA = True
-    except Exception as err:
-        if err.res.status_code == 500:  # type: ignore
-            demisto.debug(f"Using get_multiple_incidents_extra_data API for incident {incident_id}.")
-            UPGRADED_GET_EXTRA_DATA = False
-
-
 def get_incident_extra_data_command(client, args):
-    global IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET, UPGRADED_GET_EXTRA_DATA
+    global ALERTS_LIMIT_PER_INCIDENTS
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
@@ -469,33 +441,29 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-    raw_multiple_incident : Dict[str, Any]= {}
-    if not IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET:
-        check_using_upgraded_api_incidents_extra_data(client, incident_id)
-    if UPGRADED_GET_EXTRA_DATA:
-        raw_multiple_incident = client.get_multiple_incidents_extra_data([incident_id]).get('reply', {})\
+    raw_incident : Dict[str, Any]= client.get_multiple_incidents_extra_data([incident_id]).get('reply', {})
+    if ALERTS_LIMIT_PER_INCIDENTS <0:
+        ALERTS_LIMIT_PER_INCIDENTS = int(raw_incident.get('alerts_limit_per_incident', 50))
+    raw_multiple_incident = client.get_multiple_incidents_extra_data([incident_id]).get('reply', {})\
             .get('incidents')[0]
-    if raw_multiple_incident.get('incident', {}).get('alert_count') < ALERTS_LIMIT_PER_INCIDENTS:
-        raw_incident = raw_multiple_incident
-    else:
-        raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
+    if raw_multiple_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS:
+        raw_multiple_incident = client.get_incident_extra_data(incident_id, alerts_limit)
     incident = raw_incident.get('incident', {})
     incident_id = incident.get('incident_id')
     raw_alerts = raw_incident.get('alerts', {}).get('data', None)
     readable_output = [tableToMarkdown(f'Incident {incident_id}', incident, removeNull=True)]
     file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
     network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
-    if not UPGRADED_GET_EXTRA_DATA:
-        context_alerts = clear_trailing_whitespace(raw_alerts)
-        if context_alerts:
-            for alert in context_alerts:
-                alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
-            if len(context_alerts) > 0:
-                readable_output.append(tableToMarkdown('Alerts', context_alerts,
-                                                   headers=[key for key in context_alerts[0] if key != 'host_ip'], removeNull=True ))
-        else:
-            readable_output.append(tableToMarkdown('Alerts', raw_alerts, removeNull=True))
-    elif raw_alerts and len(raw_alerts) > 0:
+    context_alerts = clear_trailing_whitespace(raw_alerts)
+    if context_alerts:
+        for alert in context_alerts:
+            alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
+        if len(context_alerts) > 0:
+            readable_output.append(tableToMarkdown('Alerts', context_alerts,
+                                               headers=[key for key in context_alerts[0] if key != 'host_ip'], removeNull=True ))
+    else:
+        readable_output.append(tableToMarkdown('Alerts', raw_alerts, removeNull=True))
+    if raw_alerts and len(raw_alerts) > 0:
         readable_output.append(tableToMarkdown('Alerts', raw_alerts, removeNull=True))
     if network_artifacts and len(network_artifacts) > 0:
         readable_output.append(tableToMarkdown('Network Artifacts', network_artifacts, removeNull=True))
@@ -884,7 +852,7 @@ def create_incidents_dictionary(incidents_data: List[Dict[str, Any]]) -> Dict[st
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None):
-    global IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET, UPGRADED_GET_EXTRA_DATA, ALERTS_LIMIT_PER_INCIDENTS
+    global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
@@ -924,18 +892,17 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         list_incidents_ids: list[str] = []
         incident_data_dict: dict[str, Any] = {}
         if not IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET and raw_incidents:
-            check_using_upgraded_api_incidents_extra_data(client, raw_incidents[0].get('incident_id')[-1])
-            
-        if UPGRADED_GET_EXTRA_DATA:
-            list_incidents_ids = [raw_incident.get('incident_id') for raw_incident in raw_incidents
-                                  if len(list_incidents_ids) < max_fetch]
-            raw_incidents_data = client.get_multiple_incidents_extra_data(list_incidents_ids)
-            incident_data_dict = create_incidents_dictionary(raw_incidents_data.get('reply', {}).get('incidents'))
+            ALERTS_LIMIT_PER_INCIDENTS =  arg_to_number(client.get_multiple_incidents_extra_data([raw_incidents[0\
+                ].get('incident_id')[-1]]).get('replay', {}).get('alerts_limit_per_incident')) or 50
+        list_incidents_ids = [raw_incident.get('incident_id') for raw_incident in raw_incidents
+                              if len(list_incidents_ids) < max_fetch]
+        raw_incidents_data = client.get_multiple_incidents_extra_data(list_incidents_ids)
+        incident_data_dict = create_incidents_dictionary(raw_incidents_data.get('reply', {}).get('incidents'))
 
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
             incident_data: dict[str, Any] = {}
-            if UPGRADED_GET_EXTRA_DATA and int(incident_data_dict.get\
+            if int(incident_data_dict.get\
                 (incident_id, {}).get('incident', {}).get('alert_count')) < ALERTS_LIMIT_PER_INCIDENTS:
                 incident_data = incident_data_dict.get(incident_id, {})
             else:
