@@ -22,7 +22,7 @@ class LastRun(TypedDict):
     last_synchronous_ids: list[str]
 
 
-class LastRunTypes(TypedDict):
+class LastRuns(TypedDict):
     alerts: LastRun
     events: LastRun
 
@@ -37,11 +37,11 @@ class Client(BaseClient):
 
     def _http_request(
         self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
-        params=None, data=None, files=None, timeout=None, ok_codes=None, **kwargs
+        params=None, data=None, files=None, timeout=None, ok_codes=(200,), **kwargs
     ):
         res: requests.Response = super()._http_request(
             method, url_suffix, full_url, headers, auth, json_data, params, data,
-            files, timeout, 'response', (ok_codes or (200,)) + (401,), **kwargs
+            files, timeout, 'response', ok_codes + (401,), **kwargs
         )
         if res.status_code == 401:
             self.get_new_token()
@@ -91,7 +91,7 @@ class Client(BaseClient):
         )
         client.credentials = {
             'client_id': credentials['identifier'],
-            'client_secret': credentials['password']
+            'client_secret': credentials['password'],
         }
         client.max_fetch = arg_to_number(max_events_per_fetch) or 0
         client.update_authorization(
@@ -135,7 +135,7 @@ class Client(BaseClient):
             objects += result
             if total < page_size:
                 break
-        del objects[:self.max_fetch]
+        del objects[self.max_fetch:]
         return objects
 
     def _manage_duplicates(self, objects: list[dict], last_synchronous_ids: list, last_date: str) -> tuple[list, list]:
@@ -194,28 +194,6 @@ def add_time_to_objects(objects: list[dict]):
         obj['_time'] = obj.get('time')
 
 
-def _fetch_objects(fetch_func: Callable[[LastRun], tuple[list, str, list]], args: LastRun) -> LastRun:
-    objects, last_date, last_synchronous_ids = fetch_func(args)
-    add_time_to_objects(objects)
-    send_events_to_xsiam(
-        objects,
-        vendor=VENDOR,
-        product=PRODUCT
-    )
-    return LastRun(
-        last_date=last_date,
-        last_synchronous_ids=last_synchronous_ids
-    )
-
-
-def fetch_events(client: Client, args: LastRun) -> LastRun:
-    return _fetch_objects(client.fetch_events, args)
-
-
-def fetch_alerts(client: Client, args: LastRun) -> LastRun:
-    return _fetch_objects(client.fetch_alerts, args)
-
-
 def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
@@ -232,12 +210,23 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'fetch-events':
 
-            last_run: LastRunTypes = demisto.getLastRun() or LastRunTypes(events={}, alerts={})  # type: ignore
-            next_run = LastRunTypes(
-                events=fetch_events(client, last_run['events']),
-                alerts=fetch_alerts(client, last_run['alerts'])
+            last_run: LastRuns = demisto.getLastRun() or LastRuns(events={}, alerts={})  # type: ignore
+
+            events, last_date, last_synchronous_ids = client.fetch_events(last_run['events'])
+            events_last_run = LastRun(last_date=last_date, last_synchronous_ids=last_synchronous_ids)
+
+            alerts, last_date, last_synchronous_ids = client.fetch_alerts(last_run['alerts'])
+            alerts_last_run = LastRun(last_date=last_date, last_synchronous_ids=last_synchronous_ids)
+
+            events += alerts
+            add_time_to_objects(events)
+            send_events_to_xsiam(
+                events,
+                vendor=VENDOR,
+                product=PRODUCT,
             )
-            demisto.setLastRun(next_run)
+
+            demisto.setLastRun(LastRuns(events=events_last_run, alerts=alerts_last_run))
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{e}')
