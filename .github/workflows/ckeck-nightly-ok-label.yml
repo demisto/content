@@ -23,7 +23,7 @@ jobs:
           else
               echo 'PR does not have the `nightly-ok` label. it is required when changing files under the `.gitlab` directory.');
               exit 0 // Will finish the process with exit code 0.
-            }
+          fi
 
       - name: Check if PR has the nightly-ok label
         uses: actions/github-script@v5
