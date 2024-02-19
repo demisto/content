@@ -17,11 +17,11 @@ jobs:
       - name: Check if files under .gitlab directory are changed
         id: check-changes
         run: |
-          CHANGED_FILES=$(git diff --name-only origin/master "origin/${{ github.head_ref || github.ref_name }}"  | grep '^\.gitlab/')
+          CHANGED_FILES=$(git diff --name-only origin/master origin/${{ github.head_ref || github.ref_name }}  | grep '^\.gitlab/')
           if [ -n "$CHANGED_FILES" ]; then
               echo 'Files under .gitlab folder has changed, Will check if the PR has the `nightly-ok` label.'
           else
-              echo 'PR does not have the `nightly-ok` label. it is required when changing files under the `.gitlab` directory.');
+              echo 'PR does not have the `nightly-ok` label. it is required when changing files under the `.gitlab` directory.'
               exit 0 // Will finish the process with exit code 0.
           fi
 
