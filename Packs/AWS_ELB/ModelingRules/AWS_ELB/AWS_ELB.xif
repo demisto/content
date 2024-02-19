@@ -1,0 +1,84 @@
+[MODEL: dataset = "aws_elb_raw"]
+alter // initialize util constants
+    field_separator = "##", // an arbitrary string that would be used as a temporary field separator to construct an ordinal list of all fields. This string must be different from any valid consecutive string that may appear on the original raw log.  
+    NIL = "-" // the character that represents a blank field
+
+// extract log fields which are separated by double quotes e.g., "user agent"
+| alter quoted_fields = regextract(_raw_log, "\"(\S[^\"]+)") 
+
+// split the raw log into segments, using quotes as a segment delimiter 
+| alter log_segments = split(_raw_log, "\"")
+
+ // clean white spaces from the extracted segments
+| alter log_segments_cleaned = arrayfilter(arraymap(log_segments, trim("@element")), len("@element") > 0)
+
+// insert a delimiter between the different fields within each segment 
+| alter field_delimited_log_segments = arraymap(log_segments_cleaned, 
+        // if the segment is originally a quoted string, leave it as is: 
+        if(quoted_fields contains trim("@element"), "@element", 
+        // edge case where the field is a comma-separated list (e.g. cs-auth-groups) of values and the original comparison fails 
+        "@element" ~= ",\s", "@element",
+        // else, add the defined separator between each field in the segment (separated originally by a space)
+        arraystring(regextract("@element", "\S+"), field_separator)))
+// add the field separator between the segments and flatten them to a unified string
+| alter flattened_field_list  = arraystring(field_delimited_log_segments, field_separator)
+
+// split the delimited string of fields into an index-based array 
+| alter field_list = split(flattened_field_list, field_separator)
+
+| alter
+    client_ipv4 = regextract(arrayindex(field_list,3),"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),
+    client_ipv6 = regextract(arrayindex(field_list,3),"([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})\:"),
+    client_port = regextract(arrayindex(field_list,3),"\:(\d+)"),
+    target_ipv4 = regextract(arrayindex(field_list,4),"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),
+    target_ipv6 = regextract(arrayindex(field_list,4),"([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})\:"),
+    req_port = regextract(arrayindex(field_list,4),"\:(\d+)"),
+    req_method = regextract(arrayindex(field_list,12),"(\w+)\s"),
+    req_url = regextract(arrayindex(field_list,12),"\w+\s(.+)\:"),
+    target_port = regextract(arrayindex(field_list,12),"\:(\d+)"),
+    req_uri = regextract(arrayindex(field_list,12),"\:\d+(.+)\s"),
+    req_method_version = regextract(arrayindex(field_list,12),"\:\d+.+\s(.+)"),
+    req_process_time = if(arrayindex(field_list,5)="-1","0",arrayindex(field_list,5)),
+    target_process_time = if(arrayindex(field_list,6)="-1","0",arrayindex(field_list,6)),
+    response_process_time = if(arrayindex(field_list,7)="-1","0",arrayindex(field_list,7)),
+    resource_zone = arrayindex(regextract(arrayindex(field_list,16),"\w+\:\w+\:\w+\:(.+?)\:"),0)
+
+//calculation of the duration time, this is separated due to the limitation of ADD function
+| alter partial_duration_time = add(to_float(req_process_time), to_float(target_process_time))
+
+| alter
+    xdm.event.description = _raw_log,
+    xdm.intermediate.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AWS,
+    xdm.network.application_protocol = arrayindex(field_list,0),
+    xdm.intermediate.host.device_id = arrayindex(field_list,2),
+    xdm.source.ipv4 = arrayindex(client_ipv4,0),
+    xdm.source.ipv6 = arrayindex(client_ipv6,0),
+    xdm.source.port = to_number(arrayindex(client_port,0)),
+    xdm.target.ipv4 = arrayindex(target_ipv4,0),
+    xdm.target.ipv6 = arrayindex(target_ipv6,0),
+    xdm.intermediate.port = to_number(arrayindex(req_port,0)),
+    xdm.target.port = to_number(arrayindex(target_port,0)),
+    xdm.event.duration =  to_integer(add(to_float(partial_duration_time), to_float(response_process_time))),
+    xdm.network.http.response_code = if(arrayindex(field_list,9)=NIL, null, arrayindex(field_list,9)),
+    xdm.source.sent_bytes = to_number(arrayindex(field_list,11)),
+    xdm.network.http.url = concat(arrayindex(req_url,0),arrayindex(req_uri,0)),
+    xdm.network.http.method = arrayindex(req_method,0),
+    xdm.network.application_protocol_category = arrayindex(req_method_version,0),
+    xdm.source.host.device_model = if(arrayindex(field_list,13)=NIL,null,arrayindex(field_list,13)),
+    xdm.network.tls.cipher = if(arrayindex(field_list,14) = NIL, null, arrayindex(field_list,14)),
+    xdm.network.tls.protocol_version = if(arrayindex(field_list,15)=NIL, null, arrayindex(field_list,15)),
+    xdm.target.resource.name = if(arrayindex(field_list,16) = NIL, null,arrayindex(regextract(arrayindex(field_list,16),"\w+\:\w+\:\w+\:(.+)"),0)),
+    xdm.target.resource.type = if(arrayindex(field_list,16) = NIL, null,arrayindex(regextract(arrayindex(field_list,16),"\w+\:\w+\:\w+"),0)),
+    xdm.target.cloud.region = if(arrayindex(field_list,16) = NIL, null,resource_zone),
+    xdm.network.http.http_header.value = arrayindex(field_list,17),
+    xdm.network.http.http_header.header = if(arrayindex(field_list,17) != null,"X-Amzn-Trace_Id"),
+    xdm.network.tls.server_name = if(arrayindex(field_list,18)= NIL, null, arrayindex(field_list,18)),
+    xdm.network.tls.server_certificate.subject = if(arrayindex(field_list,19)=NIL, null, arrayindex(field_list,19)),
+    xdm.network.tls.server_certificate.issuer = if(arrayindex(field_list,19)!= NIL, arrayindex(regextract(arrayindex(field_list,19),"\w+\:\w+\:\w+"),0)),
+    xdm.network.rule = arrayindex(field_list,20),
+    xdm.observer.action = if(arrayindex(field_list,22) = NIL,null, arrayindex(field_list,22)),
+    xdm.target.url = if(arrayindex(field_list,23) = NIL,null,arrayindex(field_list,23)),
+    xdm.event.outcome_reason = if(arrayindex(field_list,24) = NIL,null,arrayindex(field_list,24)),
+    xdm.event.outcome = if(arrayindex(field_list,24) = NIL,XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
+    xdm.alert.severity = if(arrayindex(field_list,27) = NIL,null, arrayindex(field_list,27)),
+    xdm.alert.name = if(arrayindex(field_list,28)=NIL, null,arrayindex(field_list,28));
