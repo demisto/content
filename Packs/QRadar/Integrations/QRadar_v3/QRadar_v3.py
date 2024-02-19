@@ -707,6 +707,18 @@ class Client(BaseClient):
                 'Range': range_
             }
         )
+    
+    def get_log_source(self, qrd_encryption_algorithm: str, qrd_encryption_password: str, id: str,
+                       fields: Optional[str] = None):
+        return self.http_request(
+            method='GET',
+            url_suffix=f'/config/event_sources/log_source_management/log_sources/{id}',
+            params=assign_params(fields=fields),
+            additional_headers={
+                'x-qrd-encryption-algorithm': qrd_encryption_algorithm,
+                'x-qrd-encryption-password': qrd_encryption_password
+            }
+        )
 
     def custom_properties(self, range_: Optional[str] = None, filter_: Optional[str] = None,
                           fields: Optional[str] = None):
@@ -3143,6 +3155,7 @@ def qradar_log_sources_list_command(client: Client, args: dict) -> CommandResult
     - fields: If used, will filter all fields except for the specified ones.
               Use this parameter to specify which fields you would like to get back in the
               response. Fields that are not explicitly named are excluded.
+    - id: If used, will fetch only the specified log source.
     Args:
         client (Client): QRadar client to perform the API call.
         args (Dict): Demisto args.
@@ -3155,9 +3168,12 @@ def qradar_log_sources_list_command(client: Client, args: dict) -> CommandResult
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
-
+    id = args.get('id')
+    
     # if this call fails, raise an error and stop command execution
-    response = client.log_sources_list(qrd_encryption_algorithm, qrd_encryption_password, range_, filter_, fields)
+    response = (
+        client.log_sources_list(qrd_encryption_algorithm, qrd_encryption_password, range_, filter_, fields) if id is None
+        else [client.get_log_source(qrd_encryption_algorithm, qrd_encryption_password, id, fields)])
     outputs = sanitize_outputs(response, LOG_SOURCES_OLD_NEW_MAP)
     headers = build_headers(['ID', 'Name', 'Description'], set(LOG_SOURCES_OLD_NEW_MAP.values()))
 
