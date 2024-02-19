@@ -84,8 +84,8 @@ script:
     outputs:
       - contextPath: Redmine.issue
         description: kmsjnak
-  - name: redmine-issues-list
-    description: Show list of issues
+  - name: redmine-issue-list
+    description: Show a list of issues
     arguments:
     - name: page
       description: Add a page number
@@ -93,22 +93,22 @@ script:
     - name: page_size
       description: Add page size (default is 50)
     - name: limit
-      description: Add the number of issues to show in the response
+      description: Add the number of issues to show in the response (default 50 maximum 100)
       type: textArea
     - name: sort
-      description: Add a field to sort according to. Append :decs to invert the order
+      description: Add a field to sort according to. Append :desc to invert the order
       type: textArea
     - name: include
-      description: Add an array of fields to fetch
+      description: Add an array of extra fields to fetch (possible value- attachments/relations)
       isArray: true
     - name: issue_id
-      description: Add an array of issues' id to show
+      description: Add an array of issues' ids to show
       isArray: true
     - name: project_id
       description: Add a project id to show issues of this project
       type: textArea
     - name: subproject_id
-      description: Add a subproject id to show issues of this subproject_id
+      description: Add a subproject id to show issues of this subproject_id (use project_id=someID&subproject_id=!* to exclude subproject)
       type: textArea
     - name: tracker_id
       description: Add a tracker id to show issues of this tracker id
@@ -127,7 +127,7 @@ script:
       type: textArea
     outputs:
       - contextPath: Redmine.issue
-        description: kmsjnak
+        description: Show a list of issues
   - name: redmine-issue-update
     description: Update an issue
     arguments:

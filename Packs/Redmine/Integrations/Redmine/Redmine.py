@@ -137,7 +137,20 @@ def update_issue_command(client: Client, args: dict[str, Any]):
         raise DemistoException('Issue_id is missing- in order to update this issue')
 
 def get_issues_list_command(client: Client, args: dict[str, Any]):
-    return client.get_issues_list_request(args)
+    offset = (int(args.pop('page_number',1))-1)*int(args.pop('page_size',50))
+    args_to_request = assign_params(offset=offset, limit=,**args)
+    response = client.get_issues_list_request(args)
+    readable_response = create_readable_response(response, asset_list_handler, 'value')
+    command_results = CommandResults(
+        outputs_prefix='SysAid.Asset',
+        outputs_key_field='id',
+        outputs=response,
+        raw_response=response,
+        readable_output=create_paging_header(limit, page_number) + tableToMarkdown('Asset Results:',
+                                                                                   readable_response,
+                                                                                   headers=headers,
+                                                                                   removeNull=True,
+                                                                                   headerTransform=pascalToSpace))
 
 def get_issue_by_id_command(client: Client, args: dict[str, Any]):
     include_possible_values = {'children', 'attachments', 'relations', 'changesets', 'journals', 'watchers', 'allowed_statuses'}
