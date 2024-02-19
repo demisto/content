@@ -146,13 +146,12 @@ class Client(BaseClient):
 
     def _fetch_objects(
         self, request_func: Callable[[dict], dict], last_date: str | None = None, last_synchronous_ids: list | None = None
-    ) -> tuple[list, str, list]:
+    ) -> tuple[list, LastRun]:
         last_date = last_date or (datetime.now() - timedelta(minutes=1)).strftime(DATE_FORMAT)
-        last_synchronous_ids = last_synchronous_ids or []
         objects = self._pagination_fetch(request_func, last_date)
         new_last_date: str = dict_safe_get(objects, (-1, 'time'))  # type: ignore
-        objects, new_last_synchronous_ids = self._manage_duplicates(objects, last_synchronous_ids, new_last_date)
-        return objects, new_last_date, new_last_synchronous_ids
+        objects, new_last_synchronous_ids = self._manage_duplicates(objects, last_synchronous_ids or [], new_last_date)
+        return objects, LastRun(last_date=new_last_date, last_synchronous_ids=new_last_synchronous_ids)
 
     def _event_request(self, data: dict) -> dict:
         return self._http_request(
@@ -169,10 +168,10 @@ class Client(BaseClient):
             data=data
         )
 
-    def fetch_events(self, args: LastRun) -> tuple[list, str, list]:
+    def fetch_events(self, args: LastRun) -> tuple[list, LastRun]:
         return self._fetch_objects(self._event_request, **args)
 
-    def fetch_alerts(self, args: LastRun) -> tuple[list, str, list]:
+    def fetch_alerts(self, args: LastRun) -> tuple[list, LastRun]:
         return self._fetch_objects(self._alert_request, **args)
 
 
@@ -212,11 +211,8 @@ def main() -> None:  # pragma: no cover
 
             last_run: LastRuns = demisto.getLastRun() or LastRuns(events={}, alerts={})  # type: ignore
 
-            events, last_date, last_synchronous_ids = client.fetch_events(last_run['events'])
-            events_last_run = LastRun(last_date=last_date, last_synchronous_ids=last_synchronous_ids)
-
-            alerts, last_date, last_synchronous_ids = client.fetch_alerts(last_run['alerts'])
-            alerts_last_run = LastRun(last_date=last_date, last_synchronous_ids=last_synchronous_ids)
+            events, events_last_run = client.fetch_events(last_run['events'])
+            alerts, alerts_last_run = client.fetch_alerts(last_run['alerts'])
 
             events += alerts
             add_time_to_objects(events)
@@ -227,6 +223,26 @@ def main() -> None:  # pragma: no cover
             )
 
             demisto.setLastRun(LastRuns(events=events_last_run, alerts=alerts_last_run))
+        
+        elif command == 'symantec-fetch-events-test':
+            args = demisto.args()
+            client._event_request({
+                'pageSize': arg_to_number(args['page_size']),
+                'pageNumber': arg_to_number(args['page_number']),
+                'startDate': args['start_date'],
+                'endDate': args['end_date'],
+                'order': args['order'],
+            })
+            
+        elif command == 'symantec-fetch-alerts-test':
+            args = demisto.args()
+            client._alert_request({
+                'pageSize': arg_to_number(args['page_size']),
+                'pageNumber': arg_to_number(args['page_number']),
+                'startDate': args['start_date'],
+                'endDate': args['end_date'],
+                'order': args['order'],
+            })
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{e}')

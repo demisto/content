@@ -62,6 +62,44 @@ script:
     description: Fetch alerts for Cortex XSIAM.
     name: fetch-events
     outputs: []
+  - arguments:
+    - defaultValue: ''
+      description: ''
+      name: page_size
+    - defaultValue: ''
+      description: ''
+      name: page_number
+    - defaultValue: ''
+      description: ''
+      name: start_date
+    - defaultValue: ''
+      description: ''
+      name: end_date
+    - defaultValue: ''
+      description: ''
+      name: order
+    description: Test fetch events.
+    name: symantec-fetch-events-test
+    outputs: []
+  - arguments:
+    - defaultValue: ''
+      description: ''
+      name: page_size
+    - defaultValue: ''
+      description: ''
+      name: page_number
+    - defaultValue: ''
+      description: ''
+      name: start_date
+    - defaultValue: ''
+      description: ''
+      name: end_date
+    - defaultValue: ''
+      description: ''
+      name: order
+    description: Test fetch alerts.
+    name: symantec-fetch-alerts-test
+    outputs: []
   dockerimage: demisto/python3:3.10.13.87159
   isfetchevents: true
   runonce: false
