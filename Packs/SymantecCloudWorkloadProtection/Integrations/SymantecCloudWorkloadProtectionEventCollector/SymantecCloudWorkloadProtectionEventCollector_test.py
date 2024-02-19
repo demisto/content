@@ -32,4 +32,15 @@ def test_pagination_fetch():
 
     result = client._pagination_fetch(mock_request_func, last_date)
 
-    assert result == EVENTS[10:]
+    assert result == EVENTS[:10]
+
+
+def test_manage_duplicates():
+
+    from SymantecCloudWorkloadProtectionEventCollector import Client
+
+    objects, last_run = Client(None)._manage_duplicates(EVENTS, [0, 1, 2])
+
+    assert objects == EVENTS[3:]
+    assert last_run['last_date'] == '2023-01-08T00:00:00.00Z'
+    assert last_run['last_synchronous_ids'] == [19]

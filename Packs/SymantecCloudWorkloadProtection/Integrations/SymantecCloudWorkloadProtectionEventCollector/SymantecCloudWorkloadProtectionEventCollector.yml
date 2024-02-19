@@ -63,39 +63,41 @@ script:
     name: fetch-events
     outputs: []
   - arguments:
-    - defaultValue: ''
+    - defaultValue: '20'
       description: ''
       name: page_size
-    - defaultValue: ''
+    - defaultValue: '0'
       description: ''
       name: page_number
-    - defaultValue: ''
+    - defaultValue: '2023-01-01T00:00:00.00Z'
       description: ''
       name: start_date
-    - defaultValue: ''
+    - defaultValue: ASCENDING
       description: ''
-      name: end_date
-    - defaultValue: ''
-      description: ''
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
       name: order
     description: Test fetch events.
     name: symantec-fetch-events-test
     outputs: []
   - arguments:
-    - defaultValue: ''
+    - defaultValue: '20'
       description: ''
       name: page_size
-    - defaultValue: ''
+    - defaultValue: '0'
       description: ''
       name: page_number
-    - defaultValue: ''
+    - defaultValue: '2023-01-01T00:00:00.00Z'
       description: ''
       name: start_date
-    - defaultValue: ''
+    - defaultValue: ASCENDING
       description: ''
-      name: end_date
-    - defaultValue: ''
-      description: ''
+      auto: PREDEFINED
+      predefined:
+      - ASCENDING
+      - DESCENDING
       name: order
     description: Test fetch alerts.
     name: symantec-fetch-alerts-test

@@ -138,20 +138,19 @@ class Client(BaseClient):
         del objects[self.max_fetch:]
         return objects
 
-    def _manage_duplicates(self, objects: list[dict], last_synchronous_ids: list, last_date: str) -> tuple[list, list]:
+    def _manage_duplicates(self, objects: list[dict], last_synchronous_ids: list) -> tuple[list, LastRun]:
         ids = set(last_synchronous_ids)
+        last_date: str = dict_safe_get(objects, (-1, 'time'))  # type: ignore
         objects = [x for x in objects if x['uuid'] not in ids]
         last_synchronous_ids = [i['uuid'] for i in objects if i['time'] == last_date]
-        return objects, last_synchronous_ids
+        return objects, LastRun(last_date=last_date, last_synchronous_ids=last_synchronous_ids)
 
     def _fetch_objects(
         self, request_func: Callable[[dict], dict], last_date: str | None = None, last_synchronous_ids: list | None = None
     ) -> tuple[list, LastRun]:
         last_date = last_date or (datetime.now() - timedelta(minutes=1)).strftime(DATE_FORMAT)
         objects = self._pagination_fetch(request_func, last_date)
-        new_last_date: str = dict_safe_get(objects, (-1, 'time'))  # type: ignore
-        objects, new_last_synchronous_ids = self._manage_duplicates(objects, last_synchronous_ids or [], new_last_date)
-        return objects, LastRun(last_date=new_last_date, last_synchronous_ids=new_last_synchronous_ids)
+        return self._manage_duplicates(objects, last_synchronous_ids or [])
 
     def _event_request(self, data: dict) -> dict:
         return self._http_request(
@@ -216,33 +215,33 @@ def main() -> None:  # pragma: no cover
 
             events += alerts
             add_time_to_objects(events)
-            send_events_to_xsiam(
-                events,
-                vendor=VENDOR,
-                product=PRODUCT,
-            )
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
             demisto.setLastRun(LastRuns(events=events_last_run, alerts=alerts_last_run))
-        
+
+        # TEMP
         elif command == 'symantec-fetch-events-test':
             args = demisto.args()
-            client._event_request({
+            res = client._event_request({
                 'pageSize': arg_to_number(args['page_size']),
                 'pageNumber': arg_to_number(args['page_number']),
                 'startDate': args['start_date'],
-                'endDate': args['end_date'],
+                'endDate': datetime.now().strftime(DATE_FORMAT),
                 'order': args['order'],
             })
-            
+            return_results(CommandResults(readable_output=json.dumps(res, indent=4)))
+
+        # TEMP
         elif command == 'symantec-fetch-alerts-test':
             args = demisto.args()
-            client._alert_request({
+            res = client._alert_request({
                 'pageSize': arg_to_number(args['page_size']),
                 'pageNumber': arg_to_number(args['page_number']),
                 'startDate': args['start_date'],
-                'endDate': args['end_date'],
+                'endDate': datetime.now().strftime(DATE_FORMAT),
                 'order': args['order'],
             })
+            return_results(CommandResults(readable_output=json.dumps(res, indent=4)))
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{e}')
