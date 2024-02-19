@@ -3,7 +3,6 @@ import argparse
 import uuid
 import json
 
-from git import Repo
 from Tests.Marketplace.marketplace_services import json_write, get_content_git_client
 from Tests.Marketplace.marketplace_constants import GCPConfig, CONTENT_ROOT_PATH
 from Tests.scripts.utils.log_util import install_logging
