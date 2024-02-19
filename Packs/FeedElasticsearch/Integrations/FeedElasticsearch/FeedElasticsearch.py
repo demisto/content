@@ -276,6 +276,8 @@ def get_last_fetch_timestamp(last_fetch, time_method, fetch_time):
         last_fetch_timestamp = last_fetch
     else:
         last_fetch = dateparser.parse(fetch_time)
+        if not last_fetch:
+            raise ValueError("Failed to parse the fetch time")
         # if timestamp: get the last fetch to the correct format of timestamp
         last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
     if 'Timestamp - Seconds' in time_method:
