@@ -4,7 +4,7 @@ import uuid
 import json
 
 from git import Repo
-from Tests.Marketplace.marketplace_services import json_write, get_content_git_client, get_recent_commits_data
+from Tests.Marketplace.marketplace_services import json_write, get_content_git_client
 from Tests.Marketplace.marketplace_constants import GCPConfig, CONTENT_ROOT_PATH
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
