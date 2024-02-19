@@ -24,7 +24,7 @@ jobs:
             echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
             echo $GITHUB_OUTPUT
           else
-            echo 'No file is changed in the `.gitlab` folder.'
+            echo 'Files in the .gitlab folder have not been changed.'
           fi
 
       - name: Check if PR has the nightly-ok label
