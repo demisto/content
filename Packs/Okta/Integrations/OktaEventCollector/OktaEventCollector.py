@@ -140,7 +140,7 @@ def fetch_events(client: Client,
                  events_limit: int,
                  last_run_after,
                  last_object_ids: list[str] = [],
-                 next_link: str = '') -> tuple[list[dict], str]:   # pragma: no cover
+                 next_link: str = '') -> tuple[list[dict], str]:
     while True:
         events, epoch_time_to_continue_fetch, next_link = get_events_command(client=client,
                                                                              total_events_to_fetch=events_limit,

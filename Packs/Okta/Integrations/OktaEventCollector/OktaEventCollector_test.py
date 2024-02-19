@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from freezegun import freeze_time
-from OktaEventCollector import Client, DemistoException, get_events_command, get_last_run, main, remove_duplicates
+from OktaEventCollector import Client, DemistoException, fetch_events, get_events_command, get_last_run, main, remove_duplicates
 
 import demistomock as demisto
 
@@ -92,10 +92,12 @@ def test_get_events_with_next_link_success(dummy_client, mocker):
     mock_remove_duplicates.return_value = [{'id': 1,
                                             'published': '2022-04-17T12:32:36.667'}]
     mocker.patch('OktaEventCollector.remove_duplicates', mock_remove_duplicates)
-    mocker.patch.object(dummy_client, 'get_events', side_effect=[MockResponse(text=id1_pub)])
-    events, epoch, _ = get_events_command(dummy_client, 1, 'since', ['id1'], next_link='next_link')
+    mocker.patch.object(dummy_client, 'get_events', side_effect=[
+                        MockResponse(text=id1_pub, links={'next': {'url': 'next_link'}})])
+    events, epoch, next_link = get_events_command(dummy_client, 1, 'since', ['id1'], next_link='next_link')
     assert len(events) == 1
     assert epoch == 0
+    assert next_link == 'next_link'
 
 
 def test_get_events_no_events(dummy_client, mocker):
@@ -115,14 +117,29 @@ def test_get_events_429_error_failure(dummy_client, mocker):
         get_events_command(dummy_client, 1, 'since', ['id1'])
 
 
-# def test_get_events_general_failure(dummy_client, mocker):
-#     mock_remove_duplicates = MagicMock()
-#     mock_remove_duplicates.return_value = [{'id': 1,
-#                                             'published': '2022-04-17T12:32:36.667'}]
-#     mocker.patch('OktaEventCollector.remove_duplicates', mock_remove_duplicates)
-#     mocker.patch.object(dummy_client, 'get_events', side_effect=[Exception()])
-#     with pytest.raises(Exception):
-#         get_events_command(dummy_client, 1, 'since', ['id1'])
+def test_get_events_general_failure(dummy_client, mocker):
+    mock_remove_duplicates = MagicMock()
+    mock_remove_duplicates.return_value = [{'id': 1,
+                                            'published': '2022-04-17T12:32:36.667'}]
+    mocker.patch('OktaEventCollector.remove_duplicates', mock_remove_duplicates)
+    mocker.patch.object(dummy_client, 'get_events', side_effect=BaseException())
+    with pytest.raises(BaseException):
+        get_events_command(dummy_client, 1, 'since', ['id1'])
+
+
+def test_fetch_event(dummy_client, mocker):
+    response = {
+        'events': [{'id': 1, 'published': '2022-04-17T12:32:36.667'}],
+        'epoch_time_to_continue_fetch': 0,
+        'next_link': 'next_link'
+    }
+    mocker.patch('OktaEventCollector.get_events_command', side_effect=[
+                 ([], 1, response['next_link']),
+                 (response['events'], response['epoch_time_to_continue_fetch'], response['next_link']),
+                 ])
+    events, next_link = fetch_events(dummy_client, 0, 1, '')
+    assert events == [{'id': 1, 'published': '2022-04-17T12:32:36.667'}]
+    assert next_link == 'next_link'
 
 
 @freeze_time('2022-04-17T12:32:36.667Z')
