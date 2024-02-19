@@ -313,8 +313,6 @@ def get_trail_status(args):
         human_readable = tableToMarkdown('AWS CloudTrail Trail Status', data)
         return_outputs(human_readable, ec)
 
-    except Exception as e:
-        return_error("Error: {}. An error occurred while processing the AWS API response.".format(str(e)))
 
 
 def update_trail(args):
