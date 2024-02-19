@@ -1,8 +1,7 @@
 id: HelloWorld-Test
 version: -1
 name: HelloWorld-Test
-description: 'HelloWorld Test Playbook - for documentation on how to write test playbooks
-  please refer to: https://xsoar.pan.dev/docs/integrations/test-playbooks'
+description: 'HelloWorld Test Playbook - for documentation on how to write test playbooks please refer to: https://xsoar.pan.dev/docs/integrations/test-playbooks'
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -75,8 +75,7 @@ tasks:
       id: d6b71f5e-face-4121-827a-19ef7b93988a
       version: -1
       name: helloworld-say-hello
-      description: Run the helloworld-say-hello-command with argument name set to
-        "Dbot"
+      description: Run the helloworld-say-hello-command with argument name set to "Dbot"
       script: '|||helloworld-say-hello'
       type: regular
       iscommand: true
@@ -1063,6 +1062,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1084,8 +1084,7 @@ tasks:
       id: d13cda5f-dc63-4d0e-8fe4-29fba01be349
       version: -1
       name: Test Fetch Incidents
-      description: Execute FetchIncident for a given instance. We get the instance
-        name from the module.
+      description: Execute FetchIncident for a given instance. We get the instance name from the module.
       scriptName: FetchFromInstance
       type: regular
       iscommand: false
@@ -1121,8 +1120,7 @@ tasks:
       id: a4189d6f-9d63-462d-8dbb-d89167f1674e
       version: -1
       name: DeleteContext
-      description: Delete Context to make sure the DBotScore is not tainted from the
-        previous command
+      description: Delete Context to make sure the DBotScore is not tainted from the previous command
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1233,6 +1231,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -1260,6 +1259,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -1358,6 +1358,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -1385,6 +1386,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -1412,6 +1414,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"

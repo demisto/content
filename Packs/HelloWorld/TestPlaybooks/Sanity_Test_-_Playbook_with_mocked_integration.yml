@@ -215,4 +215,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: Tests MITMProxy (mocks)
+description: Tests MITMProxy (mocks).

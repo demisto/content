@@ -1,7 +1,7 @@
 id: HelloWorld_Scan-Test
 version: -1
 name: HelloWorld_Scan-Test
-description: Test Playbook for HelloWorld Scan
+description: Test Playbook for HelloWorld Scan.
 starttaskid: '0'
 tasks:
   '0':
@@ -63,14 +63,7 @@ tasks:
       id: b30f4cfd-3679-4faf-8436-96c07540e899
       version: -1
       name: HelloWorld Scan
-      description: "This Playbook simulates a vulerability scan using the \"HelloWorld\"\
-        \ sample integration. It's used to demonstrate how to use the GenericPolling\
-        \ mechanism to run jobs that take several seconds or minutes to complete.\
-        \ It is designed to be used as a subplaybook, but you can also use it as a\
-        \ standalone playbook, by providing the ${Endpoint.Hostname} input in the\
-        \ Context.\n\nOther inputs include the report output format (JSON context\
-        \ or File attached), and the Interval/Timeouts to use for polling the scan\
-        \ status until it's complete."
+      description: "This Playbook simulates a vulerability scan using the \"HelloWorld\" sample integration. It's used to demonstrate how to use the GenericPolling mechanism to run jobs that take several seconds or minutes to complete. It is designed to be used as a subplaybook, but you can also use it as a standalone playbook, by providing the ${Endpoint.Hostname} input in the Context.\n\nOther inputs include the report output format (JSON context or File attached), and the Interval/Timeouts to use for polling the scan status until it's complete."
       playbookName: HelloWorld Scan
       type: playbook
       iscommand: false
@@ -118,9 +111,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 545,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
-  \    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 545,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
 inputs: []
 outputs: []
 fromversion: 5.0.0
