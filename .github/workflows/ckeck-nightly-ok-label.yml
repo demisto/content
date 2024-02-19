@@ -1,4 +1,4 @@
-name: Check nightly-ok Label
+name: Check nightly-ok label
 
 on:
   pull_request:
