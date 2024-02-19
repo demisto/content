@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 920c22d6-d535-4a6a-8ab7-58ebbeed976d
+    taskid: 5a34d55b-590f-4173-87ec-e802868c6dcb
     type: start
     task:
-      id: 920c22d6-d535-4a6a-8ab7-58ebbeed976d
+      id: 5a34d55b-590f-4173-87ec-e802868c6dcb
       version: -1
       name: ""
       iscommand: false
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b6090a27-fb18-43d0-8585-a8502f704ece
+    taskid: 7ef24b09-4953-421c-8ee2-40bbd123552e
     type: regular
     task:
-      id: b6090a27-fb18-43d0-8585-a8502f704ece
+      id: 7ef24b09-4953-421c-8ee2-40bbd123552e
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -72,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 0031d449-012e-4f09-89af-8843cfb474bb
+    taskid: abe4f795-9b49-456e-8661-b99f0f789a84
     type: regular
     task:
-      id: 0031d449-012e-4f09-89af-8843cfb474bb
+      id: abe4f795-9b49-456e-8661-b99f0f789a84
       version: -1
       name: Offense List
       description: Gets offenses from QRadar.
@@ -107,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: eae7aeda-15b8-4f95-80ad-df5141a21d4f
+    taskid: a0234bb6-16fa-486e-8036-14cd5f93d8c7
     type: condition
     task:
-      id: eae7aeda-15b8-4f95-80ad-df5141a21d4f
+      id: a0234bb6-16fa-486e-8036-14cd5f93d8c7
       version: -1
       name: Validate Outputs
       type: condition
@@ -175,10 +175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 422d210b-e693-4775-8344-bd3f118b777f
+    taskid: d899e641-a074-49fb-80ea-3c380dab7c2a
     type: title
     task:
-      id: 422d210b-e693-4775-8344-bd3f118b777f
+      id: d899e641-a074-49fb-80ea-3c380dab7c2a
       version: -1
       name: Test Playbook Done
       type: title
@@ -191,7 +191,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 13145
+          "y": 12620
         }
       }
     note: false
@@ -203,10 +203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 9d03d619-0f8e-49fa-8d29-e675cefd8f53
+    taskid: ecdec2de-7bc9-473e-88ad-2270e7144541
     type: regular
     task:
-      id: 9d03d619-0f8e-49fa-8d29-e675cefd8f53
+      id: ecdec2de-7bc9-473e-88ad-2270e7144541
       version: -1
       name: Update Offense
       description: Update an offense.
@@ -242,10 +242,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: f8758e44-edb6-445f-8048-7df84b0a5da4
+    taskid: a897afac-a94b-4808-8128-6e6ad3d9f534
     type: condition
     task:
-      id: f8758e44-edb6-445f-8048-7df84b0a5da4
+      id: a897afac-a94b-4808-8128-6e6ad3d9f534
       version: -1
       name: Validate Outputs
       type: condition
@@ -296,10 +296,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 5c752027-a780-41c2-8560-f8b8fcb4b5ff
+    taskid: cc4cd6c9-46ab-4e14-88a8-1c699d3c263b
     type: regular
     task:
-      id: 5c752027-a780-41c2-8560-f8b8fcb4b5ff
+      id: cc4cd6c9-46ab-4e14-88a8-1c699d3c263b
       version: -1
       name: Create Note To Offense
       description: Retrieve a list of notes for an offense.
@@ -333,10 +333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 05299b7e-88af-42fb-8fc4-e3011ad328bb
+    taskid: 16f93421-bc6b-4dc1-8050-4caca301aec4
     type: condition
     task:
-      id: 05299b7e-88af-42fb-8fc4-e3011ad328bb
+      id: 16f93421-bc6b-4dc1-8050-4caca301aec4
       version: -1
       name: Validate Outputs
       type: condition
@@ -382,10 +382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 22c04981-8901-4976-87d2-f5727eb3febd
+    taskid: 6d719bea-2b1f-4312-8199-339860dee0ba
     type: regular
     task:
-      id: 22c04981-8901-4976-87d2-f5727eb3febd
+      id: 6d719bea-2b1f-4312-8199-339860dee0ba
       version: -1
       name: Note List
       description: Create a note on an offense.
@@ -421,10 +421,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 7df6f5f6-08eb-4f4f-8b33-53a3c8ee9c2e
+    taskid: e79df0f9-e835-4914-871f-65747cf9eadb
     type: condition
     task:
-      id: 7df6f5f6-08eb-4f4f-8b33-53a3c8ee9c2e
+      id: e79df0f9-e835-4914-871f-65747cf9eadb
       version: -1
       name: Validate Outputs
       type: condition
@@ -462,10 +462,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: fa93b508-4022-4c10-8044-23a896c298da
+    taskid: 9f3e540a-febf-4c94-837b-7e8056b98217
     type: regular
     task:
-      id: fa93b508-4022-4c10-8044-23a896c298da
+      id: 9f3e540a-febf-4c94-837b-7e8056b98217
       version: -1
       name: Get Closing Reasons List
       description: Retrieve a list of offense closing reasons.
@@ -497,10 +497,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: cc9be382-b2d2-40a9-8d1a-d743c219b8d3
+    taskid: c2f75745-cebb-4f5d-8d5a-f2c98c277864
     type: condition
     task:
-      id: cc9be382-b2d2-40a9-8d1a-d743c219b8d3
+      id: c2f75745-cebb-4f5d-8d5a-f2c98c277864
       version: -1
       name: Validate Outputs
       type: condition
@@ -570,10 +570,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: a51b1410-efdf-4f75-83a3-9c5f11208cd1
+    taskid: 6230d3d2-c828-448e-851b-8dea41215ac8
     type: regular
     task:
-      id: a51b1410-efdf-4f75-83a3-9c5f11208cd1
+      id: 6230d3d2-c828-448e-851b-8dea41215ac8
       version: -1
       name: Rules List
       description: Retrieves a list of rules.
@@ -607,10 +607,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 51105aa9-f405-4751-8f48-ce385fbfee65
+    taskid: e6dd4cd8-fe65-4e04-8b3b-2739791c8b32
     type: condition
     task:
-      id: 51105aa9-f405-4751-8f48-ce385fbfee65
+      id: e6dd4cd8-fe65-4e04-8b3b-2739791c8b32
       version: -1
       name: Validate Outputs
       type: condition
@@ -704,10 +704,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: c1588b1d-ab8e-4e55-8f47-b705c51cf5bb
+    taskid: 4f332269-bc3e-43c4-8db9-257f7cdc525e
     type: regular
     task:
-      id: c1588b1d-ab8e-4e55-8f47-b705c51cf5bb
+      id: 4f332269-bc3e-43c4-8db9-257f7cdc525e
       version: -1
       name: Group Rule List
       description: Retrieves a list of the rule groups.
@@ -741,10 +741,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 478e63c4-6b7d-42e3-82d7-aaebc06140cb
+    taskid: 07bc4b3f-b86e-4564-8ef5-2ab53d91e55a
     type: condition
     task:
-      id: 478e63c4-6b7d-42e3-82d7-aaebc06140cb
+      id: 07bc4b3f-b86e-4564-8ef5-2ab53d91e55a
       version: -1
       name: Validate Outputs
       type: condition
@@ -806,10 +806,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 701783b3-d734-4580-8479-4e4f2a397e8e
+    taskid: f1496f60-a82d-4113-8a7b-b21159f71587
     type: regular
     task:
-      id: 701783b3-d734-4580-8479-4e4f2a397e8e
+      id: f1496f60-a82d-4113-8a7b-b21159f71587
       version: -1
       name: Assets List
       description: Retrieves assets list.
@@ -841,10 +841,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 93a4456e-943f-46ec-8eb2-baf40646c28b
+    taskid: 5ea279c9-01b5-4410-8d85-7b7c5a36eec6
     type: condition
     task:
-      id: 93a4456e-943f-46ec-8eb2-baf40646c28b
+      id: 5ea279c9-01b5-4410-8d85-7b7c5a36eec6
       version: -1
       name: Validate Outputs
       type: condition
@@ -890,10 +890,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 28fd0dab-a5b7-42d2-82e4-258937e99cd5
+    taskid: 62cb6b92-ac10-4305-864b-451d91f63e2b
     type: regular
     task:
-      id: 28fd0dab-a5b7-42d2-82e4-258937e99cd5
+      id: 62cb6b92-ac10-4305-864b-451d91f63e2b
       version: -1
       name: Create Reference Set
       description: Create a new reference set.
@@ -931,10 +931,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: b42f76c2-30a2-449b-8f21-c918836d8fa1
+    taskid: b9bfcb92-db51-4855-80df-67f2068884c0
     type: condition
     task:
-      id: b42f76c2-30a2-449b-8f21-c918836d8fa1
+      id: b9bfcb92-db51-4855-80df-67f2068884c0
       version: -1
       name: Validate Outputs
       type: condition
@@ -1004,10 +1004,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 07331bf8-a960-4745-8a06-48b8b4232f97
+    taskid: c882ad81-33b7-4da1-8343-505e668d01ad
     type: regular
     task:
-      id: 07331bf8-a960-4745-8a06-48b8b4232f97
+      id: c882ad81-33b7-4da1-8343-505e668d01ad
       version: -1
       name: Get Reference Details
       description: Retrieve a list of reference sets.
@@ -1039,10 +1039,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 35d6b65e-6c66-4b56-820e-3221fc62b44a
+    taskid: 0b1a22d9-78d8-4912-8d65-674ead82324c
     type: regular
     task:
-      id: 35d6b65e-6c66-4b56-820e-3221fc62b44a
+      id: 0b1a22d9-78d8-4912-8d65-674ead82324c
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -1076,10 +1076,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 3ee72307-8dd0-4ab1-8923-96689e7b92d5
+    taskid: d3d06b00-7b28-41c8-8f73-e6ac75d94626
     type: regular
     task:
-      id: 3ee72307-8dd0-4ab1-8923-96689e7b92d5
+      id: d3d06b00-7b28-41c8-8f73-e6ac75d94626
       version: -1
       name: Add Value To Reference
       description: Add or update an element in a reference set.
@@ -1115,10 +1115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: bfaf2d7c-bf76-415b-8986-23cf81ea3a9b
+    taskid: d97409d4-bd78-45d1-8377-330c999c5014
     type: condition
     task:
-      id: bfaf2d7c-bf76-415b-8986-23cf81ea3a9b
+      id: d97409d4-bd78-45d1-8377-330c999c5014
       version: -1
       name: Validate Outputs, With New Element Count
       type: condition
@@ -1180,10 +1180,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: e925c4ef-3213-4bfe-82aa-ba3ee7e8c0b1
+    taskid: dc4494b2-f7fe-48ab-80d4-c8913e1f1b47
     type: regular
     task:
-      id: e925c4ef-3213-4bfe-82aa-ba3ee7e8c0b1
+      id: dc4494b2-f7fe-48ab-80d4-c8913e1f1b47
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -1217,10 +1217,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 08d48151-c602-49a2-8e31-89b179d21ba8
+    taskid: e88edf9a-3bd6-4ad7-8cec-deb086468b8b
     type: regular
     task:
-      id: 08d48151-c602-49a2-8e31-89b179d21ba8
+      id: e88edf9a-3bd6-4ad7-8cec-deb086468b8b
       version: -1
       name: Delete Reference Set Value
       description: Remove a value from a reference set.
@@ -1256,10 +1256,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 70059596-df9e-449f-8eec-1e1590c5c7d8
+    taskid: e8d7a397-d826-4fca-80b6-118974664c89
     type: regular
     task:
-      id: 70059596-df9e-449f-8eec-1e1590c5c7d8
+      id: e8d7a397-d826-4fca-80b6-118974664c89
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -1293,10 +1293,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 24e02516-26dd-427b-8387-cb2fecbab6df
+    taskid: 1789fa21-71c3-482a-833f-dd7e513381ed
     type: regular
     task:
-      id: 24e02516-26dd-427b-8387-cb2fecbab6df
+      id: 1789fa21-71c3-482a-833f-dd7e513381ed
       version: -1
       name: Get Reference With The Deleted Value
       description: Retrieve a list of reference sets.
@@ -1328,10 +1328,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 09f6eed5-414f-4da3-8d86-d3575021a5bb
+    taskid: 365a9bec-9763-40d4-8099-834a8198a185
     type: condition
     task:
-      id: 09f6eed5-414f-4da3-8d86-d3575021a5bb
+      id: 365a9bec-9763-40d4-8099-834a8198a185
       version: -1
       name: Validate Outputs, Validate Element Count Decreased
       type: condition
@@ -1369,10 +1369,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 2477e3f4-10fa-4e8d-8dd6-830b00bf87a9
+    taskid: 24d71cd3-c837-4b32-820f-668a438d8385
     type: regular
     task:
-      id: 2477e3f4-10fa-4e8d-8dd6-830b00bf87a9
+      id: 24d71cd3-c837-4b32-820f-668a438d8385
       version: -1
       name: Delete Reference Set
       description: Removes a reference set or purges its contents.
@@ -1404,10 +1404,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 7cda6c6a-414a-4907-8956-562a6e65cdce
+    taskid: 8d5e1f40-1c18-4510-8c43-6eb1a0225198
     type: regular
     task:
-      id: 7cda6c6a-414a-4907-8956-562a6e65cdce
+      id: 8d5e1f40-1c18-4510-8c43-6eb1a0225198
       version: -1
       name: Get Domains List
       description: Gets the list of domains. You must have the System Administrator or Security Administrator permissions to call this endpoint if you are trying to retrieve the details of all domains. You can retrieve details of domains that are assigned to your Security Profile without having the System Administrator or Security Administrator permissions. If you do not have the System Administrator or Security Administrator permissions, then for each domain assigned to your security profile you can only view the values for the id and name fields. All other values return null.
@@ -1436,10 +1436,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 9e030fc5-06ba-4552-83ec-3df2e4e729a8
+    taskid: 2516f350-98ad-4a2e-84fb-cfc8231fa3bb
     type: condition
     task:
-      id: 9e030fc5-06ba-4552-83ec-3df2e4e729a8
+      id: 2516f350-98ad-4a2e-84fb-cfc8231fa3bb
       version: -1
       name: Validate Outputs
       type: condition
@@ -1477,10 +1477,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 83b10f17-2d0c-4b88-8555-28a1ba1d6d06
+    taskid: 7d46c1a9-6947-4eab-8fbd-a7af9e55179c
     type: regular
     task:
-      id: 83b10f17-2d0c-4b88-8555-28a1ba1d6d06
+      id: 7d46c1a9-6947-4eab-8fbd-a7af9e55179c
       version: -1
       name: Geolocations For IPs
       description: Retrieves the MaxMind geoip data for the given IP address.
@@ -1514,10 +1514,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 34409f2c-9686-42c2-8fdc-09b6767c3013
+    taskid: b0d8b930-73c3-49a3-8108-defc964c8e57
     type: condition
     task:
-      id: 34409f2c-9686-42c2-8fdc-09b6767c3013
+      id: b0d8b930-73c3-49a3-8108-defc964c8e57
       version: -1
       name: Validate Outputs
       type: condition
@@ -1611,10 +1611,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 1b7dbcd7-2242-44ba-81b3-d0da446e6619
+    taskid: d600ff3e-6fba-45ad-85d2-9b0bb6e3c156
     type: regular
     task:
-      id: 1b7dbcd7-2242-44ba-81b3-d0da446e6619
+      id: d600ff3e-6fba-45ad-85d2-9b0bb6e3c156
       version: -1
       name: Sources List
       description: Retrieves a list of log sources.
@@ -1648,10 +1648,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: eb1ebb8a-9aba-4fde-8108-a5c5139a5864
+    taskid: d95e5775-bf1b-4f6a-8d0c-ebe78aa5ba23
     type: condition
     task:
-      id: eb1ebb8a-9aba-4fde-8108-a5c5139a5864
+      id: d95e5775-bf1b-4f6a-8d0c-ebe78aa5ba23
       version: -1
       name: Validate Outputs
       type: condition
@@ -1715,10 +1715,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: ebe6fb74-cf0c-4fcd-826e-eeec124c59dd
+    taskid: 3e09a3bd-629c-4f4d-8aa5-165f77636372
     type: regular
     task:
-      id: ebe6fb74-cf0c-4fcd-826e-eeec124c59dd
+      id: 3e09a3bd-629c-4f4d-8aa5-165f77636372
       version: -1
       name: Custom Properties
       description: Retrieves a list of event regex properties.
@@ -1750,10 +1750,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 7a2bbfe2-cc08-46ac-8e65-cf0b043e066d
+    taskid: dd2418fa-1013-4489-8755-c9faf6cb5386
     type: condition
     task:
-      id: 7a2bbfe2-cc08-46ac-8e65-cf0b043e066d
+      id: dd2418fa-1013-4489-8755-c9faf6cb5386
       version: -1
       name: Validate Outputs
       type: condition
@@ -1807,10 +1807,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 51638b74-ed2e-4538-8b08-a5515fe9cd3f
+    taskid: 7376e742-4bb8-48f1-8833-f87929720639
     type: regular
     task:
-      id: 51638b74-ed2e-4538-8b08-a5515fe9cd3f
+      id: 7376e742-4bb8-48f1-8833-f87929720639
       version: -1
       name: Get Saved Searches
       description: Retrieves a list of Ariel saved searches.
@@ -1842,10 +1842,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 68f155ef-7064-49f5-8652-861c0640752d
+    taskid: 7b1cf8eb-5efb-4abe-8ac5-3bd0495d38a5
     type: regular
     task:
-      id: 68f155ef-7064-49f5-8652-861c0640752d
+      id: 7b1cf8eb-5efb-4abe-8ac5-3bd0495d38a5
       version: -1
       name: Get Search IDs
       description: Retrieves the list of Ariel searches IDs. Search status and results can be polled by sending search ID to 'qradar-search-status-get' and 'qradar-search-results-get' commands.
@@ -1877,10 +1877,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 4ed418cd-4b52-4375-8b3e-be377997f756
+    taskid: 926e8ee3-561a-468c-85a1-2c5513890f8a
     type: regular
     task:
-      id: 4ed418cd-4b52-4375-8b3e-be377997f756
+      id: 926e8ee3-561a-468c-85a1-2c5513890f8a
       version: -1
       name: Get Source IPs
       description: Get Source IPs
@@ -1912,10 +1912,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: f8e7d42f-0369-4075-8980-8d9a28b9fd3e
+    taskid: 1b920d3a-6a4d-4023-81b6-7a328c904654
     type: condition
     task:
-      id: f8e7d42f-0369-4075-8980-8d9a28b9fd3e
+      id: 1b920d3a-6a4d-4023-81b6-7a328c904654
       version: -1
       name: Does Results Exists
       type: condition
@@ -1950,12 +1950,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: f213d35c-9034-40d0-8dd4-a43c80665862
+    taskid: 4b1b2d91-3948-49ff-8fc1-d8704c90f50f
     type: regular
     task:
-      id: f213d35c-9034-40d0-8dd4-a43c80665862
+      id: 4b1b2d91-3948-49ff-8fc1-d8704c90f50f
       version: -1
-      name: Get Local Destination IPs
+      name: 'Get Local Destination IPs '
       description: Get Source IPs
       script: '|||qradar-ips-local-destination-get'
       type: regular
@@ -1985,10 +1985,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 9e8951b1-0b73-4d62-8cd8-3be5b7146668
+    taskid: 15c37a20-5f8d-4236-8b23-3da131491f63
     type: condition
     task:
-      id: 9e8951b1-0b73-4d62-8cd8-3be5b7146668
+      id: 15c37a20-5f8d-4236-8b23-3da131491f63
       version: -1
       name: Does Results Exists
       type: condition
@@ -1996,7 +1996,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "63"
+      - "65"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2023,10 +2023,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 732b9a9f-6418-4ae7-89c6-69cc5d022602
+    taskid: 8a18cbdd-5fd6-4c50-82a6-5d049e9b2219
     type: regular
     task:
-      id: 732b9a9f-6418-4ae7-89c6-69cc5d022602
+      id: 8a18cbdd-5fd6-4c50-82a6-5d049e9b2219
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2060,10 +2060,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 46855953-d7b8-49af-8405-4738ca3e6c9a
+    taskid: 60f27b5c-9b9d-4768-8bf1-bbcfd84a43d0
     type: regular
     task:
-      id: 46855953-d7b8-49af-8405-4738ca3e6c9a
+      id: 60f27b5c-9b9d-4768-8bf1-bbcfd84a43d0
       version: -1
       name: 'create reference set with #'
       description: Creates a new reference set.
@@ -2101,10 +2101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: c4a0e02d-cffb-437c-8422-aae63e433cd6
+    taskid: 75be1b38-48c0-4237-857b-88434b48b4a8
     type: regular
     task:
-      id: c4a0e02d-cffb-437c-8422-aae63e433cd6
+      id: 75be1b38-48c0-4237-857b-88434b48b4a8
       version: -1
       name: 'set value to reference set that contains #'
       description: Adds or updates an element in a reference set.
@@ -2138,10 +2138,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: ef490bf0-b7d2-42bc-88bc-8b14c97e50e0
+    taskid: b1f00324-077d-43fe-81e7-57c674e2840f
     type: regular
     task:
-      id: ef490bf0-b7d2-42bc-88bc-8b14c97e50e0
+      id: b1f00324-077d-43fe-81e7-57c674e2840f
       version: -1
       name: 'delete reference set with #'
       description: Removes a reference set or purges its contents.
@@ -2171,14 +2171,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "63":
-    id: "63"
-    taskid: 3982c03e-57c7-4f0b-8beb-46c209514f78
+  "65":
+    id: "65"
+    taskid: be2d2a1a-b8da-40f1-8a32-9ed56de1ff2e
     type: regular
     task:
-      id: 3982c03e-57c7-4f0b-8beb-46c209514f78
+      id: be2d2a1a-b8da-40f1-8a32-9ed56de1ff2e
       version: -1
-      name: Get events with polling
+      name: get events with polling custom query
       description: Polling command to search for events of a specific offense.
       script: '|||qradar-search-retrieve-events'
       type: regular
@@ -2186,7 +2186,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "64"
+      - "66"
     scriptarguments:
       query_expression:
         simple: SELECT * FROM events WHERE severity >= 5
@@ -2206,12 +2206,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "64":
-    id: "64"
-    taskid: e7401796-e0d1-4115-80c9-09235aae457e
+  "66":
+    id: "66"
+    taskid: 9724b426-d5ba-49a1-8c2f-7d4c622a2b5a
     type: condition
     task:
-      id: e7401796-e0d1-4115-80c9-09235aae457e
+      id: 9724b426-d5ba-49a1-8c2f-7d4c622a2b5a
       version: -1
       name: Validate polling
       type: condition
@@ -2219,7 +2219,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "67"
+      - "68"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2251,132 +2251,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "65":
-    id: "65"
-    taskid: eef4905f-e83f-45bf-8b40-d1e38d97977f
-    type: regular
-    task:
-      id: eef4905f-e83f-45bf-8b40-d1e38d97977f
-      version: -1
-      name: get events with polling custom query
-      description: Polling command to search for events of a specific offense.
-      script: '|||qradar-search-retrieve-events'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "66"
-    scriptarguments:
-      query_expression:
-        simple: SELECT * FROM events WHERE severity >= 5
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 9820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "66":
-    id: "66"
-    taskid: a596ea4b-0b0d-42d9-8559-f7f2efcc8d59
-    type: condition
-    task:
-      id: a596ea4b-0b0d-42d9-8559-f7f2efcc8d59
-      version: -1
-      name: Validate polling
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "68"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.SearchEvents.ID
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.SearchEvents.Events
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 9995
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "67":
-    id: "67"
-    taskid: afc7323e-1454-46c9-80af-012c3bd1618e
-    type: regular
-    task:
-      id: afc7323e-1454-46c9-80af-012c3bd1618e
-      version: -1
-      name: Delete Context
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "65"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 9645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 43c8a023-b2d2-4cd4-8390-7ad84367e89d
+    taskid: c1920f8a-eda3-47f6-895f-c2fab84923c1
     type: regular
     task:
-      id: 43c8a023-b2d2-4cd4-8390-7ad84367e89d
+      id: c1920f8a-eda3-47f6-895f-c2fab84923c1
       version: -1
       name: Delete Context
       description: |-
@@ -2401,7 +2281,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 10170
+          "y": 9645
         }
       }
     note: false
@@ -2413,10 +2293,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: f11ee798-2d93-4aec-8548-4a069c078238
+    taskid: 8cfa3e1b-cc13-46aa-8c0d-4660ae7cc6f1
     type: regular
     task:
-      id: f11ee798-2d93-4aec-8548-4a069c078238
+      id: 8cfa3e1b-cc13-46aa-8c0d-4660ae7cc6f1
       version: -1
       name: Create Remote network cidrs
       description: Create remote network cidrs
@@ -2442,7 +2322,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 11045
+          "y": 10520
         }
       }
     note: false
@@ -2454,10 +2334,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 58dd14c9-8321-485f-8ca2-a8201f22fc55
+    taskid: 3519f9bb-cae4-42bd-8517-65594207d4d8
     type: regular
     task:
-      id: 58dd14c9-8321-485f-8ca2-a8201f22fc55
+      id: 3519f9bb-cae4-42bd-8517-65594207d4d8
       version: -1
       name: Remote network cidrs List
       description: Retrieves the list of staged remote networks.
@@ -2479,7 +2359,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 11220
+          "y": 10695
         }
       }
     note: false
@@ -2491,10 +2371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 864bc884-7b3f-4676-84e8-564abe301bc4
+    taskid: 9ba136bb-62ed-47f3-8361-75c9c7345152
     type: condition
     task:
-      id: 864bc884-7b3f-4676-84e8-564abe301bc4
+      id: 9ba136bb-62ed-47f3-8361-75c9c7345152
       version: -1
       name: Validate Outputs
       type: condition
@@ -2520,7 +2400,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 11395
+          "y": 10870
         }
       }
     note: false
@@ -2532,10 +2412,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: d36f20f1-438f-4f0d-8add-52a056699c04
+    taskid: dcc668d2-4fff-4c5b-84a0-72af105679ac
     type: regular
     task:
-      id: d36f20f1-438f-4f0d-8add-52a056699c04
+      id: dcc668d2-4fff-4c5b-84a0-72af105679ac
       version: -1
       name: Update Remote network cidrs
       description: Updates an existing staged remote network.
@@ -2563,7 +2443,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 12620
+          "y": 12095
         }
       }
     note: false
@@ -2575,10 +2455,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 4a8d9fd1-9109-4eba-8f19-bcbb911ee09f
+    taskid: d72dc291-ebfc-44b7-8d68-41818e1c8b07
     type: condition
     task:
-      id: 4a8d9fd1-9109-4eba-8f19-bcbb911ee09f
+      id: d72dc291-ebfc-44b7-8d68-41818e1c8b07
       version: -1
       name: Validate Outputs
       type: condition
@@ -2620,7 +2500,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 12795
+          "y": 12270
         }
       }
     note: false
@@ -2632,10 +2512,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: 4040e052-eee0-479d-8fca-eccbb795f762
+    taskid: 42325145-aac9-4cd0-8753-7eacf3b99086
     type: regular
     task:
-      id: 4040e052-eee0-479d-8fca-eccbb795f762
+      id: 42325145-aac9-4cd0-8753-7eacf3b99086
       version: -1
       name: Delete Remote network cidrs
       description: Deletes an existing staged remote network.
@@ -2655,7 +2535,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 12970
+          "y": 12445
         }
       }
     note: false
@@ -2667,10 +2547,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 4763d0ce-7871-45ce-83ba-c13797499227
+    taskid: d75a892e-e5ff-4a9e-816c-9c6ed5f405c4
     type: regular
     task:
-      id: 4763d0ce-7871-45ce-83ba-c13797499227
+      id: d75a892e-e5ff-4a9e-816c-9c6ed5f405c4
       version: -1
       name: Write ID
       description: Set a value in context under the key you entered.
@@ -2708,10 +2588,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: 769e7cda-593e-4e49-824f-4b7889441852
+    taskid: aa319752-818c-4108-839a-9825b68ad458
     type: regular
     task:
-      id: 769e7cda-593e-4e49-824f-4b7889441852
+      id: aa319752-818c-4108-839a-9825b68ad458
       version: -1
       name: DeleteContext
       description: |-
@@ -2750,10 +2630,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: dc204356-2c2f-4700-8f9e-a6a27dacd298
+    taskid: 3db4f74f-b916-491a-8806-4563a22d7f00
     type: regular
     task:
-      id: dc204356-2c2f-4700-8f9e-a6a27dacd298
+      id: 3db4f74f-b916-491a-8806-4563a22d7f00
       version: -1
       name: Delete Reference Set
       description: Removes a reference set or purges its contents.
@@ -2786,10 +2666,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 02fa9478-c09f-4b87-8175-179ae4a6cc3d
+    taskid: adcf4aa9-04fc-4dcc-8f0a-bd631f40f275
     type: regular
     task:
-      id: 02fa9478-c09f-4b87-8175-179ae4a6cc3d
+      id: adcf4aa9-04fc-4dcc-8f0a-bd631f40f275
       version: -1
       name: 'delete reference set with #'
       description: Removes a reference set or purges its contents.
@@ -2822,10 +2702,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: e1c62169-5167-4fd6-8791-1dbe1d5b67ec
+    taskid: 97b2ecda-3780-4052-864a-2534df90eaf1
     type: regular
     task:
-      id: e1c62169-5167-4fd6-8791-1dbe1d5b67ec
+      id: 97b2ecda-3780-4052-864a-2534df90eaf1
       version: -1
       name: Find old cidr
       description: Retrieves the list of staged remote networks.
@@ -2845,7 +2725,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 10345
+          "y": 9820
         }
       }
     note: false
@@ -2857,10 +2737,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 51b39265-e01b-45e0-84b4-c8b5e4f11676
+    taskid: 57382499-cab8-46cc-85a8-d99aaa33abbc
     type: condition
     task:
-      id: 51b39265-e01b-45e0-84b4-c8b5e4f11676
+      id: 57382499-cab8-46cc-85a8-d99aaa33abbc
       version: -1
       name: If Exists
       type: condition
@@ -2885,7 +2765,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 10520
+          "y": 9995
         }
       }
     note: false
@@ -2897,10 +2777,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: becfb7fe-521f-4185-8462-6e7257b28562
+    taskid: 37bd03f1-6443-4d24-8897-d5b647161abb
     type: regular
     task:
-      id: becfb7fe-521f-4185-8462-6e7257b28562
+      id: 37bd03f1-6443-4d24-8897-d5b647161abb
       version: -1
       name: Delete old cidr
       description: Deletes an existing staged remote network.
@@ -2920,7 +2800,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 10695
+          "y": 10170
         }
       }
     note: false
@@ -2932,10 +2812,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 76c622ba-7ee2-4843-8952-53f99cf72a80
+    taskid: 82ff0b14-7ce2-4655-8231-d4d0d024f644
     type: regular
     task:
-      id: 76c622ba-7ee2-4843-8952-53f99cf72a80
+      id: 82ff0b14-7ce2-4655-8231-d4d0d024f644
       version: -1
       name: Delete Context
       description: |-
@@ -2960,7 +2840,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 10870
+          "y": 10345
         }
       }
     note: false
@@ -2972,10 +2852,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: 730d4678-f23b-4da6-8ad0-b97926c7188b
+    taskid: 64b2836a-ec97-4865-80ce-55249563faa7
     type: regular
     task:
-      id: 730d4678-f23b-4da6-8ad0-b97926c7188b
+      id: 64b2836a-ec97-4865-80ce-55249563faa7
       version: -1
       name: Find old cidr
       description: Retrieves the list of staged remote networks.
@@ -2995,7 +2875,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 11920
+          "y": 11395
         }
       }
     note: false
@@ -3007,10 +2887,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: f33e8dce-8cf8-4015-853a-50b84c3f377b
+    taskid: 2b643a74-bf91-47a1-8e73-03906ff9b77c
     type: condition
     task:
-      id: f33e8dce-8cf8-4015-853a-50b84c3f377b
+      id: 2b643a74-bf91-47a1-8e73-03906ff9b77c
       version: -1
       name: If Exists
       type: condition
@@ -3035,7 +2915,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 12095
+          "y": 11570
         }
       }
     note: false
@@ -3047,10 +2927,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: 7c8fbc45-2554-4118-8e2a-88de5a61a20e
+    taskid: 9d873d27-e3a0-4b36-845d-ba1150148b57
     type: regular
     task:
-      id: 7c8fbc45-2554-4118-8e2a-88de5a61a20e
+      id: 9d873d27-e3a0-4b36-845d-ba1150148b57
       version: -1
       name: Delete old cidr
       description: Deletes an existing staged remote network.
@@ -3070,7 +2950,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 12270
+          "y": 11745
         }
       }
     note: false
@@ -3082,10 +2962,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: cd6e32e5-aeda-401a-833a-a68671e68b3e
+    taskid: 26707944-447b-4b87-8b13-7372f68b0caa
     type: regular
     task:
-      id: cd6e32e5-aeda-401a-833a-a68671e68b3e
+      id: 26707944-447b-4b87-8b13-7372f68b0caa
       version: -1
       name: Delete Context
       description: |-
@@ -3112,7 +2992,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 12445
+          "y": 11920
         }
       }
     note: false
@@ -3124,10 +3004,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: 7f58fd9b-27f2-4487-8d50-7fc64483dd4e
+    taskid: 1e2eec6d-666b-4bac-8cc0-a6b10840ae02
     type: regular
     task:
-      id: 7f58fd9b-27f2-4487-8d50-7fc64483dd4e
+      id: 1e2eec6d-666b-4bac-8cc0-a6b10840ae02
       version: -1
       name: WriteID
       description: Set a value in context under the key you entered.
@@ -3149,7 +3029,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 11570
+          "y": 11045
         }
       }
     note: false
@@ -3161,10 +3041,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 333d6486-b04d-467c-8bee-4eeb4568b74a
+    taskid: ab726a4f-2881-4d88-8c4a-4b5bbf4aa3d7
     type: regular
     task:
-      id: 333d6486-b04d-467c-8bee-4eeb4568b74a
+      id: ab726a4f-2881-4d88-8c4a-4b5bbf4aa3d7
       version: -1
       name: DeleteContext
       description: |-
@@ -3191,7 +3071,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 11745
+          "y": 11220
         }
       }
     note: false
@@ -3203,10 +3083,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: 142ccee3-7c9c-460b-851b-78bebc3d0955
+    taskid: 9942aefe-adc1-441c-80c9-aa4b99384c40
     type: regular
     task:
-      id: 142ccee3-7c9c-460b-851b-78bebc3d0955
+      id: 9942aefe-adc1-441c-80c9-aa4b99384c40
       version: -1
       name: Add Values To Reference
       description: Add or update an element in a reference set.
@@ -3242,10 +3122,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: bd00c7ed-4e21-4b48-8c6f-75abb5d53433
+    taskid: 6a21199b-e69d-4318-86d5-1a7033794b7f
     type: playbook
     task:
-      id: bd00c7ed-4e21-4b48-8c6f-75abb5d53433
+      id: 6a21199b-e69d-4318-86d5-1a7033794b7f
       version: -1
       name: QRadarFullSearch
       description: This playbook runs a QRadar query and return its results to the context.
@@ -3301,7 +3181,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 13160,
+        "height": 12635,
         "width": 810,
         "x": 50,
         "y": 50
