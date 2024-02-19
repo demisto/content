@@ -15,7 +15,8 @@ jobs:
       - name: Check if files under .gitlab directory are changed
         id: check-changes
         run: |
-          diff=$(git diff --name-only master ${{ github.event.after }} | grep '^\.gitlab/')
+          echo $GITHUB_REF
+          diff=$(git diff --name-only origin/master... $GITHUB_REF | grep '^\.gitlab/')
           if (diff) {
               console.log('Files under .gitlab folder has changed, Will check if the PR has the nightly-ok label.');
             } else {
