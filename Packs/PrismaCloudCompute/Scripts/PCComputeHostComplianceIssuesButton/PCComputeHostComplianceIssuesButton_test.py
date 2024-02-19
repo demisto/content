@@ -57,7 +57,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-compliance_issues = util_load_json('test_data/compliance_issues.json')
+compliance_issues = util_load_json('test_data/host_compliance_issues.json')
 
 
 @pytest.mark.parametrize('args, expected', TEST_CASES)
