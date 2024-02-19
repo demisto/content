@@ -69,6 +69,7 @@ configuration:
   name: proxy
   type: 8
   required: false
+  section: Connect
 script:
   script: ''
   type: python
