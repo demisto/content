@@ -39,12 +39,14 @@ class Client(BaseClient):
         self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
         params=None, data=None, files=None, timeout=None, ok_codes=(200,), **kwargs
     ):
+        demisto.debug(f'http_request to {url_suffix!r} with {data=}')
         res: requests.Response = super()._http_request(
             method, url_suffix, full_url, headers, auth, json_data, params, data,
             files, timeout, 'response', ok_codes + (401,), **kwargs
         )
         if res.status_code == 401:
-            self.get_new_token()
+            demisto.debug('Token expired, 401 status code received.')
+            self.update_authorization(self.get_new_token())
             res: requests.Response = super()._http_request(
                 method, url_suffix, full_url, headers, auth, json_data, params,
                 data, files, timeout, 'response', ok_codes, **kwargs
@@ -98,6 +100,7 @@ class Client(BaseClient):
             demisto.getIntegrationContext().get(AUTH_CONTEXT_KEY)
             or client.get_new_token()
         )
+        demisto.debug('client created')
         return client
 
     def test_credentials(self):
@@ -107,7 +110,9 @@ class Client(BaseClient):
             'startDate': (datetime.now() - timedelta(days=30)).strftime(DATE_FORMAT),
             'endDate': datetime.now().strftime(DATE_FORMAT)
         }
+        demisto.debug('Testing event endpoint...')
         self._event_request(data=data)
+        demisto.debug('Testing alert endpoint...')
         self._alert_request(data=data)
 
     def _pagination_fetch(self, request_func: Callable[[dict], dict], last_date: str) -> list[dict]:
@@ -121,6 +126,7 @@ class Client(BaseClient):
         end_date = datetime.now().strftime(DATE_FORMAT)
         pages = ceil(self.max_fetch / API_LIMIT)  # The minimum amount of calls needed
         page_size = ceil(self.max_fetch / pages)  # The minimum amount of objects needed per call
+        demisto.debug(f'paginating with {pages=}, {page_size=}, {end_date=}')
         for page in range(pages):
             res = request_func(
                 {
@@ -132,6 +138,7 @@ class Client(BaseClient):
                 }
             )
             result, total = unpack_and_validate_res(**res)
+            demisto.debug(f'Got results: result[0]={(result or [None])[0]}, {len(result)=}, {total=}')
             objects += result
             if total < page_size:
                 break
@@ -140,9 +147,10 @@ class Client(BaseClient):
 
     def _manage_duplicates(self, objects: list[dict], last_synchronous_ids: list) -> tuple[list, LastRun]:
         ids = set(last_synchronous_ids)
-        last_date: str = dict_safe_get(objects, (-1, 'time'))  # type: ignore
         objects = [x for x in objects if x['uuid'] not in ids]
+        last_date: str = dict_safe_get(objects, (-1, 'time'))  # type: ignore
         last_synchronous_ids = [i['uuid'] for i in objects if i['time'] == last_date]
+        demisto.debug(f'New LastRun: {last_date=}, {last_synchronous_ids=}')
         return objects, LastRun(last_date=last_date, last_synchronous_ids=last_synchronous_ids)
 
     def _fetch_objects(

@@ -1,5 +1,4 @@
 from CommonServerPython import *
-import pytest
 
 
 def load_json(filename: str):
