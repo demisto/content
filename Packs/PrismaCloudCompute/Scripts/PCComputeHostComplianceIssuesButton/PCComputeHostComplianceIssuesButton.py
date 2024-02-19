@@ -106,7 +106,8 @@ def process_and_output_compliance_issues(compliance_issues: list[dict[str, Any]]
             'Compliance ID': str(issue.get('id', '')),
             'Cause': issue.get('cause', ''),
             'Severity': issue.get('severity', ''),
-            'Title': issue.get('title', '')
+            'Title': issue.get('title', ''),
+            'Description': issue.get('description', '')
         }
         rows.append(row)
 
@@ -121,7 +122,7 @@ def process_and_output_compliance_issues(compliance_issues: list[dict[str, Any]]
         readable_output=tableToMarkdown(
             f'Compliance Issues of host {hostname}',
             rows,
-            headers=['Compliance ID', 'Cause', 'Severity', 'Title']
+            headers=['Compliance ID', 'Cause', 'Severity', 'Title', 'Description']
         )
     )
 

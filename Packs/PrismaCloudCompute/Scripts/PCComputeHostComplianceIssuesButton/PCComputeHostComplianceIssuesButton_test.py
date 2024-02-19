@@ -10,29 +10,49 @@ from CommonServerPython import *  # noqa: F401
 TEST_CASES = [
     ({'hostname': 'example-host', 'ComplianceIDs': '6112'}, [
         {'Compliance ID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
-         'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured'}
+         'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
+         'Description': 'The /tmp directory is a world-writable directory '
+                        'used for temporary storage by all users and some applications.'}
     ]),
     ({'hostname': 'example-host', 'ComplianceIDs': '6112,6116,6117'}, [
         {'Compliance ID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
-         'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured'},
+         'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
+         'Description': 'The /tmp directory is a world-writable directory '
+                        'used for temporary storage by all users and some applications.'},
         {'Compliance ID': '6116', 'Cause': 'The directory /var should be mounted. File: /proc/mounts',
-         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.6) Ensure separate partition exists for /var'},
+         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.6) Ensure separate partition exists for /var',
+         'Description': 'Ensure that a separate partition exists for the /var directory '
+                        'to prevent system instability in the event of log files consuming too much space.'},
         {'Compliance ID': '6117', 'Cause': 'The directory /var/tmp should be mounted. File: /proc/mounts',
-         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.7) Ensure separate partition exists for /var/tmp'}
+         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.7) Ensure separate partition exists for /var/tmp',
+         'Description': 'Ensure that a separate partition exists for the /var/tmp directory to prevent '
+                        'denial-of-service attacks and other issues caused by filling up the /var directory.'}
     ]),
     ({'hostname': 'example-host', 'ComplianceIDs': ''}, [
         {'Compliance ID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
-         'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured'},
+         'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
+         'Description': 'The /tmp directory is a world-writable directory used for temporary storage by all users and some '
+                        'applications.'},
         {'Compliance ID': '6116', 'Cause': 'The directory /var should be mounted. File: /proc/mounts',
-         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.6) Ensure separate partition exists for /var'},
+         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.6) Ensure separate partition exists for /var',
+         'Description': 'Ensure that a separate partition exists for the /var directory to prevent system '
+                        'instability in the event of log files consuming too much space.'},
         {'Compliance ID': '6117', 'Cause': 'The directory /var/tmp should be mounted. File: /proc/mounts',
-         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.7) Ensure separate partition exists for /var/tmp'},
+         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.7) Ensure separate partition exists for /var/tmp',
+         'Description': 'Ensure that a separate partition exists for the /var/tmp directory '
+                        'to prevent denial-of-service attacks and other issues caused by filling up the /var directory.'},
         {'Compliance ID': '61115', 'Cause': 'The directory /var/log should be mounted. File: /proc/mounts',
-         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.11) Ensure separate partition exists for /var/log'},
+         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.11) Ensure separate partition exists for /var/log',
+         'Description': 'Ensure that a separate partition exists for the /var/log directory '
+                        'to prevent system instability due to the log files consuming too much space.'},
         {'Compliance ID': '61116', 'Cause': 'The directory /var/log/audit should be mounted. File: /proc/mounts',
-         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.12) Ensure separate partition exists for /var/log/audit'},
+         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.12) Ensure separate partition exists for /var/log/audit',
+         'Description': 'Ensure that a separate partition exists for the /var/log/audit directory '
+                        'to prevent system instability due to audit log files consuming too much space.'},
         {'Compliance ID': '602214', 'Cause': 'The service systemd-timesyncd.service should be enabled',
-         'Severity': 'low', 'Title': '(CIS_Linux_2.0.0 - 2.2.1.4) Ensure systemd-timesyncd is configured'}
+         'Severity': 'low', 'Title': '(CIS_Linux_2.0.0 - 2.2.1.4) Ensure systemd-timesyncd is configured',
+         'Description': 'Ensure that the systemd-timesyncd service '
+                        'is enabled to synchronize the system clock with a remote server.'}
     ])
 ]
 

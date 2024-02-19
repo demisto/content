@@ -31,6 +31,9 @@ outputs:
 - contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.Title
   description: Compliance title.
   type: string
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.Description
+  description: Compliance issue description.
+  type: string
 scripttarget: 0
 subtype: python3
 runonce: false
