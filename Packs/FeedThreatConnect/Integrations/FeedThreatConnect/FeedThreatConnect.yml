@@ -99,7 +99,6 @@ configuration:
   - URL
   - ASN
   - CIDR
-  - EmailSubject
   - Hashtag
   - Mutex
   - Registry Key

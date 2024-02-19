@@ -149,7 +149,6 @@ INDICATOR_TYPES = ['EmailAddress',
                    'URL',
                    'ASN',
                    'CIDR',
-                   'Email Subject',
                    'Hashtag',
                    'Mutex',
                    'Registry Key',
@@ -203,7 +202,7 @@ def create_types_query(params: dict, endpoint: str) -> str:
         raise DemistoException('No indicator type or group type were chosen, please choose at least one.')
     if endpoint == 'indicators':
         if 'All' in indicator_types:
-            return ''
+            types.extend(INDICATOR_TYPES)
         else:
             types.extend(indicator_types)
     else:
@@ -236,7 +235,7 @@ def calculate_dbot_score(threat_assess_score: Optional[Union[int, str]] = None) 
 
 
 def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
-    """ Parsing indicator by indicators demisto convension.
+    """ Parsing indicator by indicators demisto convention.
     Args:
         indicator: Indicator as raw response.
     Returns:
@@ -244,6 +243,7 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     """
     indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''))
     indicator_value = indicator.get('summary') or indicator.get('name')
+    demisto.debug(f'TC: Mapping indicator {indicator_value} with type: {indicator.get("type", "")}, that was mapped to type: {indicator_type}')  # noqa: E501
     fields = create_indicator_fields(indicator, indicator_type)
     relationships = create_indicator_relationships(fields, indicator_type, indicator_value)  # type: ignore
     indicator_obj = {
@@ -260,8 +260,10 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
 
 def create_indicator_fields(indicator, indicator_type):
     """Creating an indicator fields from a raw indicator"""
+    demisto.debug('TC: Starting to create indicator fields')
     params = demisto.params()
-    indicator_fields_mapping = TC_INDICATOR_TO_XSOAR_INDICATOR[indicator_type]
+    indicator_fields_mapping = TC_INDICATOR_TO_XSOAR_INDICATOR.get(indicator_type, {})
+    
     fields: dict = {}
 
     for indicator_key, xsoar_indicator_key in indicator_fields_mapping.items():
@@ -581,8 +583,12 @@ def get_indicators_command(client: Client, args: dict) -> dict:  # type: ignore 
 
         types = argToList(args.get("indicator_type"))
         query = ''
-        if types and 'All' not in types:
-            query = 'AND typeName IN ("' + '","'.join(types) + '")'
+        
+        if types:
+            if 'All' in types:
+                query = 'AND typeName IN ("' + '","'.join(INDICATOR_TYPES) + '")'
+            else:
+                query = 'AND typeName IN ("' + '","'.join(types) + '")'
 
         tql = active_only + confidence + threat_score + confidence + owners + query
         tql = tql.replace('AND ', '', 1)
