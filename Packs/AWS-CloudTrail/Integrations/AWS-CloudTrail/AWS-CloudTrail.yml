@@ -386,7 +386,7 @@ script:
     - description: Specifies the name of the trail.
       name: name
       required: true
-    description: Returns a JSON-formatted list of information about the specified trail. Fields include information on delivery errors, Amazon SNS and Amazon S3 errors, and start and stop logging times for each trail
+    description: Returns a JSON-formatted list of information about the specified trail. Fields include information on delivery errors, Amazon SNS and Amazon S3 errors, and start and stop logging times for each trail.
     name: aws-cloudtrail-get-trail-status
     outputs:
     - contextPath: AWS.CloudTrail.TrailStatus.IsLogging
