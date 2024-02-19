@@ -6,7 +6,7 @@ Microsoft integrations (Graph and Azure) in Cortex XSOAR use Azure Active Direct
 
 There are two application authentication methods available:
 
- * [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
+ * [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application) (Cortex XSOAR - MS Graph Device Managment)
  * [Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
 
 Depending on the authentication method that you use, the integration parameters might change.

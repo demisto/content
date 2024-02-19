@@ -17,7 +17,7 @@ Follow these steps for a self-deployed configuration:
 4. In Cortex XSOAR, go to  **Settings** > **Integrations** > **Credentials** and create a new credentials set. 
 5. In the *Username* parameter, enter your registered app Application (client) ID.
 6. In the *Password* parameter, enter the secret value you created.
-7. Copy your tenant ID for the integration configuration usage.
+7. Copy your tenant ID fofr the integration configuration usage.
 
 #### Azure Managed Identities Authentication
 ##### Note: This option is relevant only if the integration is running on Azure VM.
