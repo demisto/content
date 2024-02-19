@@ -400,7 +400,7 @@ script:
       description: Displays any Amazon SNS error that CloudTrail encountered when attempting to send a notification.
       type: string
     - contextPath: AWS.CloudTrail.TrailStatus.LatestDeliveryTime
-      description: Specifies the date and time that CloudTrail last delivered log files to an account’s Amazon S3 bucket
+      description: Specifies the date and time that CloudTrail last delivered log files to an account’s Amazon S3 bucket.
       type: date
     - contextPath: AWS.CloudTrail.TrailStatus.LatestNotificationTime
       description: Specifies the date and time of the most recent Amazon SNS notification that CloudTrail has written a new log file to an account’s Amazon S3 bucket.
