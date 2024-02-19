@@ -1049,7 +1049,7 @@ def test_parse_demisto_comments_url__default(mocker):
     Then    check the output values
     """
     from XDR_iocs import _parse_demisto_comments
-    comment_value = '111111'
+    inc_id = '111111'
     mocker.patch.object(demisto, 'demistoUrls', return_value='url')
     assert _parse_demisto_comments(
         ioc={'id': comment_value},
