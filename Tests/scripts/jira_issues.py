@@ -62,13 +62,26 @@ def jira_color_text(text: str, color: str) -> str:
     return f"{{color:{color}}}{text}{{color}}"
 
 
+def get_transition(jira_server, jira_issue) -> str | None:
+    transitions = jira_server.transitions(jira_issue)
+    unresolved_transition = next(filter(lambda transition: transition['name'] == JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME,
+                                        transitions), None)
+    return unresolved_transition['id'] if unresolved_transition else None
+
+
+def transition_jira_ticket_to_unresolved(jira_server: JIRA, jira_issue: Issue | None, unresolved_transition_id: str | None):
+    if unresolved_transition_id:
+        jira_server.transition_issue(jira_issue, unresolved_transition_id)
+
+
 def find_existing_jira_ticket(jira_server: JIRA,
                               now: datetime,
                               max_days_to_reopen: int,
                               jira_issue: Issue | None,
-                              ) -> tuple[Issue | None, Issue | None, bool]:
+                              ) -> tuple[Issue | None, Issue | None, bool, str | None]:
     link_to_issue = None
     jira_issue_to_use = None
+    unresolved_transition_id = None
     if use_existing_issue := (jira_issue is not None):
         searched_issue: Issue = jira_issue
         if searched_issue.get_field("resolution"):
@@ -76,18 +89,7 @@ def find_existing_jira_ticket(jira_server: JIRA,
             if use_existing_issue := (resolution_date
                                       and (now - resolution_date)
                                       <= timedelta(days=max_days_to_reopen)):  # type: ignore[assignment]
-
-                #  Get the available transitions for the issue
-                transitions = jira_server.transitions(searched_issue)
-
-                # Find the transition with the specified ID
-                unresolved_transition = None
-                for transition in transitions:
-                    if transition['name'] == JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME:
-                        unresolved_transition = transition
-                        break
-                if unresolved_transition:
-                    jira_server.transition_issue(searched_issue, unresolved_transition['id'])
+                if unresolved_transition_id := get_transition(jira_server, jira_issue):
                     jira_issue_to_use = searched_issue
                 else:
                     logging.error(f"Failed to find the '{JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}' "
@@ -95,12 +97,11 @@ def find_existing_jira_ticket(jira_server: JIRA,
                     jira_issue_to_use = None
                     use_existing_issue = False
                     link_to_issue = searched_issue
-
             else:
                 link_to_issue = searched_issue
         else:
             jira_issue_to_use = searched_issue
-    return jira_issue_to_use, link_to_issue, use_existing_issue
+    return jira_issue_to_use, link_to_issue, use_existing_issue, unresolved_transition_id
 
 
 def generate_build_markdown_link(ci_pipeline_id: str) -> str:
