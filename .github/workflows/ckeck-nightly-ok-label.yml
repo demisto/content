@@ -16,7 +16,6 @@ jobs:
         id: check-changes
         run: |
           git fetch origin master
-          console.lgo($GITHUB_REF)
           diff=$(git diff --name-only origin/master | grep '^\.gitlab/')
           if (diff) {
               console.log('Files under .gitlab folder has changed, Will check if the PR has the nightly-ok label.');
