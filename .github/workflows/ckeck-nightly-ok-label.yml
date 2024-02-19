@@ -9,12 +9,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+#      - name: Checkout repo
+#        uses: actions/checkout@v4
 
       - name: Check if files under .gitlab directory are changed
         id: check-changes
         run: |
+          git fetch origin master
           console.lgo($GITHUB_REF)
           diff=$(git diff --name-only origin/master | grep '^\.gitlab/')
           if (diff) {
