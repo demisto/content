@@ -317,3 +317,9 @@ def test_log_warning():
     from rasterize import pypdf_logger
     assert pypdf_logger.level == logging.ERROR
     assert pypdf_logger.level == logging.ERROR
+
+
+def test_poppler_version():
+    from pdf2image import *  # noqa: F405
+    poppler_version = pdf2image._get_poppler_version("pdftoppm")
+    assert poppler_version[0] > 20
