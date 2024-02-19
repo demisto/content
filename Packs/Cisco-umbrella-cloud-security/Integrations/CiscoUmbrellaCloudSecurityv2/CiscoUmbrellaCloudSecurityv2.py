@@ -103,20 +103,8 @@ class Client(BaseClient):
                     url_suffix=Client.AUTH_SUFFIX,
                     headers={'Content-Type': 'application/x-www-form-urlencoded'},
                     auth=(self.api_key, self.api_secret),
-                    data={'grant_type': 'client_credentials'},
-                    resp_type='response',
-                    ok_codes=(200, 201, 401)
+                    data={'grant_type': 'client_credentials'}
                 )
-                try:
-                    res = res.json()
-                except ValueError as exception:
-                    raise DemistoException('Failed to parse json object from response: {}'.format(res.content),
-                                           exception)
-                if 'error' in res:
-                    return_error(
-                        f'Error occurred while creating an access token. Please check the API key and secret '
-                        f'and try to run the login command again to generate a new access token as it '
-                        f'might have expired.\n{res}')
                 if res.get('access_token'):
                     expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
                     expiry_time += res.get('expires_in', 0) * 1000 - 10
