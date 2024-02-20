@@ -603,12 +603,10 @@ def get_indicators_command(client: Client, args: dict) -> tuple(str, dict, list)
     response, status = client.make_request(Method.GET, url)
     if status == 'Success':
         t = [parse_indicator(indicator) for indicator in response]
-    else:
-        t = []
-    readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
+        readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
                                                t=t, removeNull=True)  # type: ignore # noqa
 
-    return readable_output, {}, list(response)
+        return readable_output, {}, list(response)  # type: ignore
 
 
 def get_owners_command(client: Client, args: dict) -> COMMAND_OUTPUT:  # pragma: no cover
