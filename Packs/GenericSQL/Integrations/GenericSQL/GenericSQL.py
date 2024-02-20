@@ -224,10 +224,12 @@ def generate_variable_names_and_mapping(bind_variables_names_list: list,
     # dialect is a configuration parameter with multiple choices, so it should be one of the keys in the mapping
     char_to_count, char_to_replace = mapping_dialect_regex[dialect]
 
+    create_bind_variables_names_list = False
     if not bind_variables_names_list:
         bind_variables_names_list = []
+        create_bind_variables_names_list = True
     for i in range(len(re.findall(char_to_count, query))):
-        if not bind_variables_names_list:
+        if create_bind_variables_names_list:
             bind_variable_name = f"bind_variable_{i + 1}"
             bind_variables_names_list.append(f"bind_variable_{i+1}")
         else:
