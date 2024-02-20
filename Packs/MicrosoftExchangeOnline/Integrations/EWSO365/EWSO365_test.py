@@ -869,7 +869,9 @@ def test_handle_attached_email_with_incorrect_id(mocker, headers, expected_forma
 
 
 @pytest.mark.parametrize("message_id, expected_message_id_output", [
-    pytest.param('<message_id>', '<message_id>', id="valid message_id"),
+    pytest.param('<message_id>', '<message_id>', id="valid message_id 1"),
+    pytest.param('<mess<[age_id>', '<mess<[age_id>', id="valid message_id 2"),
+    pytest.param('<>]message_id>', '<>]message_id>', id="valid message_id 3"),
     pytest.param('<[message_id]>', '<message_id>', id="invalid message_id"),
     pytest.param('\r\n\t<message_id>', '\r\n\t<message_id>', id="valid message_id with escape chars"),
     pytest.param('\r\n\t<[message_id]>', '\r\n\t<message_id>', id="invalid message_id with escape chars"),
