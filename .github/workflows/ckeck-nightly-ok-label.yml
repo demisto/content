@@ -24,7 +24,7 @@ jobs:
           echo "Files in the.gitlab folder have changed: ${GITLAB_CHANGED_FILES}"
           if [[ $GITLAB_CHANGED_FILES == true ]]; then
             echo 'Files under .gitlab folder has changed, Will check if the PR has the `nightly-ok` label.'
-            echo "gitlab_changed_files=GITLAB_CHANGED_FILES" >> $GITHUB_OUTPUT
+            echo "gitlab_changed_files=$GITLAB_CHANGED_FILES" >> $GITHUB_OUTPUT
           else
             echo 'Files in the.gitlab folder have not been changed.'
           fi
