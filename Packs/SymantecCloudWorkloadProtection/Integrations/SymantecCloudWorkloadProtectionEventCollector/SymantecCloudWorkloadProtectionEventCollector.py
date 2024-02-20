@@ -3,6 +3,7 @@ from CommonServerPython import *
 from collections.abc import Callable
 from typing import TypedDict
 from math import ceil
+import yaml
 
 # Disable insecure warnings
 
@@ -39,22 +40,35 @@ class Client(BaseClient):
         self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
         params=None, data=None, files=None, timeout=None, ok_codes=(200,), **kwargs
     ):
-        demisto.debug(f'http_request to {url_suffix!r} with {data=}')
-        res: requests.Response = super()._http_request(
-            method, url_suffix, full_url, headers, auth, json_data, params, data,
-            files, timeout, 'response', ok_codes + (401,), **kwargs
-        )
-        if res.status_code == 401:
-            demisto.debug('Token expired, 401 status code received.')
-            self.update_authorization(self.get_new_token())
-            res: requests.Response = super()._http_request(
-                method, url_suffix, full_url, headers, auth, json_data, params,
-                data, files, timeout, 'response', ok_codes, **kwargs
-            )
         try:
+            demisto.debug(f'http_request to {url_suffix!r} with {data=}')
+            res: requests.Response = super()._http_request(
+                method, url_suffix, full_url, headers, auth, json_data, params, data,
+                files, timeout, 'response', ok_codes + (401,), **kwargs
+            )
+            if res.status_code == 401:
+                demisto.debug('Token expired, 401 status code received.')
+                self.update_authorization(self.get_new_token())
+                res: requests.Response = super()._http_request(
+                    method, url_suffix, full_url, headers, auth, json_data, params,
+                    data, files, timeout, 'response', ok_codes, **kwargs
+                )
             return res.json()
         except requests.JSONDecodeError as e:
             raise DemistoException(f'Failed to parse response: {res.content}', e, res)
+        except Exception as e:
+            raise e  # TODO add specific error messages
+
+    def client_error_handler(self, res: requests.Response):
+        """Generic handler for API call error
+        Constructs and throws a proper error for the API call response.
+        """
+        err_msg = f'Error in API call [{res.status_code}] - {res.reason}\n'
+        try:
+            err_msg += yaml.safe_dump(res.json())
+        except ValueError:
+            err_msg += res.text
+        raise DemistoException(err_msg, res=res)
 
     def update_authorization(self, auth: str):
         if not self._headers:
