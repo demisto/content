@@ -51,7 +51,7 @@ In order to verify that the messaging endpoint is open as expected, you can surf
 ## Setup Examples
 
 ### 1. Using Cortex XSOAR or Cortex XSIAM rerouting
-In this configuration, we will use Cortex XSOAR/XSIAM functionality, which reroutes HTTPS requests that hit the default port (443) to the web server that the integration spins up.
+In this configuration, we will use Cortex XSOAR/Cortex XSIAM functionality, which reroutes HTTPS requests that hit the default port (443) to the web server that the integration spins up.
 
 The messaging endpoint needs to be:
 
