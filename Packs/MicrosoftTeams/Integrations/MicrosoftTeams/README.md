@@ -249,7 +249,7 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
     | Disable Automatic Notifications | Whether to disable automatic notifications to the configured notifications channel. | False |
     | Allow external users to create incidents via direct message |  | False |
     | The header of an external form hyperlink. |  | False |
-    | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 and XSIAM | False |
+    | Trust any certificate (not secure) | Do not check for Cortex XSOAR version 8 and Cortex XSIAM. | False |
     | Use system proxy settings |  | False |
     | Long running instance |  | True |
     | Listen port, e.g., 7000 (Required for investigation mirroring and direct messages) | longRunningPort | False |
