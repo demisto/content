@@ -262,9 +262,9 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 
 ##### Authentication Using the Client Credentials Flow
 
-1. Choose the 'Client Credentials' option in the **Authentication Type** parameter.
-2. Enter your Client/Application ID in the **Bot ID** parameter. 
-3. Enter your Client Secret in the **Bot Password** parameter.
+1. Choose the 'Client Credentials' option in the *Authentication Type* parameter.
+2. Enter your Client/Application ID in the *Bot ID* parameter. 
+3. Enter your Client Secret in the *Bot Password* parameter.
 4. Save the instance.
 
 ##### Authentication Using the Authorization Code Flow
