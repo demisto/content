@@ -28,4 +28,4 @@ tests:
 - Process Email - Generic - Test - Incident Starter
 - Phishing v2 - Test - Incident Starter
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.13.87159

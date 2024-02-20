@@ -5675,6 +5675,11 @@
         {
             "integrations": "Zimperium v2",
             "playbookID": "Zimperiumv2-TestPlaybook"
+        },        
+        {
+            "integrations": "AWS-SNS-Listener",
+            "playbookID": "AWS SNS Listener - Test",
+            "instance_names": "AWS-SNS-Listener"
         }
     ],
     "skipped_tests": {
@@ -5859,7 +5864,9 @@
         "OpsGenieV3TestPlaybook": "Issue CIAC-7649",
         "ThreatStream-Test": "Issue CRTX-96526",
         "MSG-Threat-Assessment-test": "API limitation",
-        "BambenekConsultingFeed_Test": "Issue CRTX-99480"
+        "BambenekConsultingFeed_Test": "Issue CRTX-99480",
+        "AWS SNS Listener - Test": "Cant validate mock msg against AWS-SNS in TBP",
+        "MSG-ediscovery-tpb": "Issue CIAC-9763"
     },
     "skipped_integrations": {
         "EWS Mail Sender": "The integration is deprecated",
