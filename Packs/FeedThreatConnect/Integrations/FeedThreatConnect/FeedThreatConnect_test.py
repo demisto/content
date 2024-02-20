@@ -6,7 +6,7 @@ from FeedThreatConnect import create_or_query, parse_indicator, set_tql_query, c
 
 
 def load_json_file(path):
-    with open(path, 'r') as _json_file:
+    with open(path) as _json_file:
         return json.load(_json_file)
 
 

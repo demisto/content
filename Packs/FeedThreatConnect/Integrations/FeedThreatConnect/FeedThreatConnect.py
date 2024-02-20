@@ -7,7 +7,6 @@ import hmac
 from contextlib import contextmanager
 from enum import Enum
 from math import ceil
-from typing import Tuple
 
 # Local packages
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -29,7 +28,7 @@ Development info:
 INTEGRATION_NAME = 'ThreatConnect Feed'
 INTEGRATION_COMMAND_NAME = 'tc'
 INTEGRATION_CONTEXT_NAME = 'ThreatConnect'
-COMMAND_OUTPUT = Tuple[str, Union[Dict[str, Any], List[Any]], Union[Dict[str, Any], List[Any]]]
+COMMAND_OUTPUT = tuple[str, Union[Dict[str, Any], List[Any]], Union[Dict[str, Any], List[Any]]]
 INDICATOR_MAPPING_NAMES = {
     'Address': FeedIndicatorType.IP,
     'CIDR': FeedIndicatorType.CIDR,
@@ -261,7 +260,7 @@ def create_indicator_fields(indicator, indicator_type):
     """Creating an indicator fields from a raw indicator"""
     params = demisto.params()
     indicator_fields_mapping = TC_INDICATOR_TO_XSOAR_INDICATOR.get(indicator_type, {})
-    
+
     fields: dict = {}
 
     for indicator_key, xsoar_indicator_key in indicator_fields_mapping.items():
@@ -415,7 +414,7 @@ def module_test_command(client: Client, args):  # pragma: no cover # noqa
             return_error(str(e))
 
 
-def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> Tuple[
+def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> tuple[
     List[Dict[str, Any]], List[Dict[str, Any]]]:  # noqa  # pragma: no cover
     """ Fetch indicators from ThreatConnect
 
@@ -557,7 +556,7 @@ def get_updated_last_run(indicators: list, groups: list, previous_run: dict) -> 
     return next_run
 
 
-def get_indicators_command(client: Client, args: dict) -> dict:  # type: ignore # pragma: no cover
+def get_indicators_command(client: Client, args: dict) -> tuple(str, dict, list):  # type: ignore # pragma: no cover
     """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
     Args:
         client: ThreatConnect client.
@@ -581,7 +580,7 @@ def get_indicators_command(client: Client, args: dict) -> dict:  # type: ignore 
 
         types = argToList(args.get("indicator_type"))
         query = ''
-        
+
         if types:
             if 'All' in types:
                 query = 'AND typeName IN ("' + '","'.join(INDICATOR_TYPES) + '")'
@@ -604,10 +603,12 @@ def get_indicators_command(client: Client, args: dict) -> dict:  # type: ignore 
     response, status = client.make_request(Method.GET, url)
     if status == 'Success':
         t = [parse_indicator(indicator) for indicator in response]
-        readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
+    else:
+        t = []
+    readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
                                                t=t, removeNull=True)  # type: ignore # noqa
 
-        return readable_output, {}, list(response)  # type: ignore
+    return readable_output, {}, list(response)
 
 
 def get_owners_command(client: Client, args: dict) -> COMMAND_OUTPUT:  # pragma: no cover
