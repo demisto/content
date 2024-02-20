@@ -1,6 +1,8 @@
 import io
+import os
 from pathlib import Path
 from typing import List
+import yaml
 
 import click
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
@@ -14,6 +16,8 @@ import json
 from demisto_sdk.commands.content_graph.objects.base_playbook import TaskConfig
 
 playbook_converer_app = typer.Typer(name="Playbook-Converter")
+
+CORE_ALERT_FIELDS_PATH = 'Utils/convert_xsoar_playbook_to_xsiam/system_fields.json'
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -37,6 +41,15 @@ def generate_prompt(data: TaskConfig, type: str, options: List[str]=None) -> str
 
     return mapping[answer]
 
+def get_system_alert_fields():
+    try:
+        with open(CORE_ALERT_FIELDS_PATH, 'r') as file:
+            return json.load(file)
+    except:
+        logger.warning("The list of system alert fields is empty.")
+        return {}
+
+
 @click.group(
     invoke_without_command=True,
     no_args_is_help=True,
@@ -46,6 +59,27 @@ def generate_prompt(data: TaskConfig, type: str, options: List[str]=None) -> str
 def main():
     logging_setup(logger.DEBUG)
 
+def replace_occurrences(data, keyword, mapping):
+    if isinstance(data, dict):
+        for key, value in data.items():
+            if isinstance(value, str) and keyword in value:
+                if f"{keyword}.Alert" in value:
+                    field = value.split('.')[-1]
+                    field_mapping = mapping.get(field)
+                    data[key] = value.replace(f"{keyword}.Alert.{field}", f"Alert.{field_mapping}") if field_mapping else value.replace(f"{keyword}.Alert", "Alert")
+                else:
+                    data[key] = value.replace(keyword, "Core")
+
+            elif isinstance(value, (dict, list)):
+                replace_occurrences(value, keyword, mapping)
+    elif isinstance(data, list):
+        for i, item in enumerate(data):
+            if isinstance(item, str) and keyword in item:
+                data[i] = item.replace(keyword, mapping)
+            elif isinstance(item, (dict, list)):
+                replace_occurrences(item, keyword, mapping)
+
+
 @playbook_converer_app.command()
 def convert_playbook(
     input_path: str = typer.Option(None, "--input", "-i", help="The path to the playbook yaml file."),
@@ -53,12 +87,15 @@ def convert_playbook(
     src: str = typer.Option("XSOAR", "--src", "-f", help="From what product to convert this file (default: XSOAR)", case_sensitive=False),
     dst: str = typer.Option("XSIAM", "--dst", "-t", help="To what product to convert this file (default: XSIAM)", case_sensitive=False),
 ):
+    commands_not_replaced_str = ""
     if src == "XSOAR" and dst == "XSIAM":
         mapping = util_load_json('Utils/convert_xsoar_playbook_to_xsiam/xsoar_to_xsiam_command_mapping.json')
     else:
         mapping = util_load_json('Utils/convert_xsoar_playbook_to_xsiam/xsiam_to_xsoar_command_mapping.json')
 
+    system_alert_fields = get_system_alert_fields()
     playbook_path = CONTENT_PATH / Path(input_path)
+
     playbook = BaseContent.from_path(playbook_path)
     commands_replaced = {}
     commands_not_replaced = []
@@ -68,49 +105,8 @@ def convert_playbook(
         playbook.object_id = f'{playbook_id} Converted'
     if playbook_display_name := playbook.display_name:
         playbook.display_name = f'{playbook_display_name} Converted'
+
     for id, data in playbook.tasks.items():
-        if data.conditions:
-            for condition_config in data.conditions:
-                if condition_config.condition:
-                    for condition in condition_config.condition:
-                        for condition_data in condition:
-                            filters =condition_data.get('left', {}).get('value', {}).get('complex', {}).get('filters', [])
-                            root = condition_data.get('left', {}).get('value', {}).get('complex', {}).get('root')
-                            if root and 'PaloAltoNetworksXDR' in root:
-                                answer = generate_prompt(data, "conditions:root")
-                                condition_data['left']['value']['complex']['root'] = root.replace('PaloAltoNetworksXDR', answer)
-                            for filter_config in filters:
-                                for filter in filter_config:
-                                    simple = filter.get('left', {}).get('value', {}).get('simple')
-                                    if 'PaloAltoNetworksXDR' in simple:
-                                        answer = generate_prompt(data, "conditions:filter")
-
-                                        filter['left']['value']['simple'] = root.replace('PaloAltoNetworksXDR',answer)
-
-        if data.scriptarguments:
-            if root := data.scriptarguments.get('value', {}).get('complex', {}).get('root'):
-                data.scriptarguments['value']['complex']['root'] = root.replace('PaloAltoNetworksXDR', 'Core')
-
-            for arg, arg_data in data.scriptarguments.items():
-                if root := arg_data.get('complex', {}).get('root'):
-                    if "PaloAltoNetworksXDR" in root:
-                        answer = generate_prompt(data, "scriptarguments:root")
-                        data.scriptarguments[arg]['complex']['root'] = root.replace("PaloAltoNetworksXDR", answer)
-
-                if filters := arg_data.get('complex', {}).get('filters'):
-                    for filter in filters:
-                        for elem in filter:
-                            if simple := elem.get('left', {}).get('value', {}).get('simple'):
-                                if 'PaloAltoNetworksXDR' in simple:
-                                    answer = generate_prompt(data, "scriptarguments:filters")
-                                    elem['left']['value']['simple'] = simple.replace("PaloAltoNetworksXDR", answer)
-                                if simple := elem.get('right', {}).get('value', {}).get('simple'):
-                                    if 'PaloAltoNetworksXDR' in simple:
-                                        answer = generate_prompt(data, "scriptarguments:filters")
-                                        elem['right']['value']['simple'] = simple.replace("PaloAltoNetworksXDR", answer)
-
-            if simple := data.scriptarguments.get('key', {}).get('simple'):
-                data.scriptarguments['key']['simple'] = simple.replace('PaloAltoNetworksXDR', 'Core')
 
         if (task_script_name := data.task.script) and (coammnd_name := task_script_name.replace('|','')) in mapping:
             if convert_to := mapping[coammnd_name]:
@@ -121,8 +117,17 @@ def convert_playbook(
                     data.task.name = task_name.replace('xdr', 'core')
             else:
                 commands_not_replaced.append(coammnd_name)
+
     output_path = Path(f"{output}/{playbook.path.stem}_converted.yml") if output else Path(f"{playbook_path.parent}/{playbook.path.stem}_converted.yml")
+
     playbook.save(output_path)
+    with open(output_path, 'r') as file:
+        yaml_data = yaml.safe_load(file)
+
+    replace_occurrences(yaml_data, "PaloAltoNetworksXDR", system_alert_fields)
+    with open(output_path, 'w') as file:
+        yaml.dump(yaml_data, file)
+
     commands_replaced_str = f"Converted the following commands from {src} to {dst}:\n"
     commands_replaced_str += "\n".join(f'{k} --> {v}' for k,v in commands_replaced.items())
     if commands_not_replaced:
