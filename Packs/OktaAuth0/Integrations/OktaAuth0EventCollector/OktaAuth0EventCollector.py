@@ -174,7 +174,6 @@ def test_module_command(client: Client, params: dict, last_run: dict) -> str:
     Returns:
         (str) 'ok' if success.
     """
-    params = prepare_query_params(params)
     fetch_events_command(client, params, last_run)
     return 'ok'
 
