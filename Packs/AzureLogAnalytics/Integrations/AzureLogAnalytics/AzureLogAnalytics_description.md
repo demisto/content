@@ -7,7 +7,7 @@ Full documentation for this integration is available in the [reference docs](htt
 
 You need to grant Cortex XSOAR authorization to access Azure Log Analytics.
 
-1. Access the [authorization flow](https://oproxy.demisto.ninja/ms-azure-log-analytics). 
+1. Access the [authorization flow](https://oproxy.demisto.ninja/ms-azure-log-analytics) (Cortex XSOAR - Azure LogAnalytics). 
 2. Click the **Start Authorization Process** button. 
    You will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. 
 3. Click the **Accept** button. 

@@ -8,7 +8,7 @@ Note: Depending on the authentication method that you use, the integration param
 #### Cortex XSOAR Azure App
 You need to grant Cortex XSOAR authorization to access Azure Active Directory Users.
 
-1. Access the [authorization flow](https://oproxy.demisto.ninja/ms-graph-user).
+1. Access the [authorization flow](https://oproxy.demisto.ninja/ms-graph-user) (Cortex XSOAR - MS Graph User).
 2. Click the **Start Authorization Process** button and you will be prompted to grant Cortex XSOAR permissions for your Azure Active Directory Users.
 3. Click the **Accept** button and you will receive your ID, token, and key. You will need to enter these when you configure the Azure Active Directory Users integration instance in Cortex XSOAR.
 
