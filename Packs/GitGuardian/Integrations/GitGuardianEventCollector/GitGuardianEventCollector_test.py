@@ -52,11 +52,12 @@ def test_search_incidents(client):
 
     max_events_per_fetch = 1
     from_fetch_time = "2024-01-03T21:10:40Z"
-    incidents, next_run_incidents_from_fetch = client.search_incidents(
-        from_fetch_time, max_events_per_fetch
+    last_fetched_incident_ids = []
+    incidents, next_run_incidents_from_fetch, _ = client.search_incidents(
+        from_fetch_time, max_events_per_fetch, last_fetched_incident_ids
     )
     assert len(incidents) == 1
-    assert next_run_incidents_from_fetch == "2024-01-03T21:10:42.679524Z"
+    assert next_run_incidents_from_fetch == "2024-01-03T21:05:38Z"
 
 
 def test_search_audit_log(client):
@@ -111,6 +112,7 @@ def test_fetch_events(client):
     last_run = {
         "incident_from_fetch_time": "2024-01-03T21:10:40Z",
         "audit_log_from_fetch_time": "2024-01-03T21:10:40Z",
+        "last_fetched_incident_ids": []
     }
 
     next_run, incidents, audit_logs = fetch_events(
@@ -118,5 +120,6 @@ def test_fetch_events(client):
     )
     assert len(incidents) == 2
     assert len(audit_logs) == 1
-    assert next_run.get("incident_from_fetch_time") == "2024-01-08T19:04:02.270567Z"
+    assert next_run.get("incident_from_fetch_time") == "2024-01-09T17:00:00Z"
     assert next_run.get("audit_log_from_fetch_time") == "2024-01-09T12:24:40.089758Z"
+    assert next_run.get("last_fetched_incident_ids") == [2]

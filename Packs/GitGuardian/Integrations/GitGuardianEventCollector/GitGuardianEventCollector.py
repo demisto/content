@@ -219,12 +219,8 @@ class Client(BaseClient):
                 event["source_log_type"] = event_type
 
     @staticmethod
-    def remove_duplicated_incidents(incidents: List[Dict], last_fetched_incident_ids: List):
+    def remove_duplicated_incidents(incidents: List[Dict], last_fetched_incident_ids: List[int]):
         """Remove incidents that were already fetched in the last fetch, due to first_occurrence_date not supporting miliseconds
-
-        Args:
-            incidents (List[Dict]): _description_
-            last_fetched_incident_ids (List): _description_
         """
         new_incidents = []
         for incident in incidents:
@@ -236,10 +232,6 @@ class Client(BaseClient):
     @staticmethod
     def sort_incidents_based_on_last_occurrence_date(incidents: List[Dict]):
         """Sort incidents based on their last_occurrence_date. Returns the incidents in an ascending manner (earliest to latest)
-
-        Args:
-            incidents (List[Dict]): _description_
-            last_fetched_incident_ids (List): _description_
         """
 
         def get_date_time(dict_item):
@@ -252,11 +244,8 @@ class Client(BaseClient):
 
     @staticmethod
     def extract_incident_ids_with_same_last_occurrence_date(incidents: List[Dict], last_occurrence_date: str):
-        """Extract incidents with the same last_occurrence_date. Returns the incidents in an ascending manner (earliest to latest)
-
-        Args:
-            incidents (List[Dict]): _description_
-            last_fetched_incident_ids (List): _description_
+        """Extract incident ids of incidents with the same last_occurrence_date.
+        Returns the incidents in an ascending manner (earliest to latest).
         """
 
         ids_with_same_occurrence_date = [incident["id"] for incident in incidents if incident["last_occurrence_date"] == last_occurrence_date]  # noqa: E501
@@ -284,6 +273,7 @@ def test_module(
         last_run = {
             "incident_from_fetch_time": from_fetch_time,
             "audit_log_from_fetch_time": from_fetch_time,
+            "last_fetched_incident_ids": [],
         }
         client.search_events(last_run, max_events_per_fetch)
 
@@ -306,6 +296,7 @@ def get_events(
     last_run = {
         "incident_from_fetch_time": from_date,
         "audit_log_from_fetch_time": from_date,
+        "last_fetched_incident_ids": [],
     }
     incidents, audit_logs, _, _, _ = client.search_events(last_run, limit)
     hr = tableToMarkdown(
