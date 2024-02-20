@@ -20,7 +20,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - "6"
     separatecontext: false
     view: |-
       {
@@ -54,15 +54,21 @@ tasks:
       - '2'
     scriptarguments:
       file_path:
-        simple: ${inputs.PathsToGet}
+        complex:
+          root: inputs.PathsToGet
+          transformers:
+          - operator: uniq
       host_ids:
-        simple: ${inputs.HostId}
+        complex:
+          root: inputs.HostId
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 190
+          "x": 890,
+          "y": 560
         }
       }
     note: false
@@ -95,16 +101,15 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: LastArrayElement
-      nonSensetivePassword:
-        simple: ${inputs.ZipPassword}
       nonsensitive_password:
-        simple: ${inputs.ZipPassword}
+        complex:
+          root: inputs.ZipPassword
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 350
+          "x": 890,
+          "y": 720
         }
       }
     note: false
@@ -131,7 +136,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 870
+          "y": 1280
         }
       }
     note: false
@@ -181,8 +186,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 530
+          "x": 890,
+          "y": 900
         }
       }
     note: false
@@ -230,8 +235,107 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 700
+          "x": 1040,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e5c3001b-7ebf-4e51-810f-c50c3ebd9274
+    type: condition
+    task:
+      id: e5c3001b-7ebf-4e51-810f-c50c3ebd9274
+      version: -1
+      name: Is CrowdStrike Falcon enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    scriptarguments:
+      brandname:
+        simple: CrowdstrikeFalcon
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 0c9ac239-34cc-46eb-8662-7d573761dc7c
+    type: condition
+    task:
+      id: 0c9ac239-34cc-46eb-8662-7d573761dc7c
+      version: -1
+      name: Are all required inputs provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.PathsToGet
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.HostId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileNames
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ZipPassword
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 360
         }
       }
     note: false
@@ -243,11 +347,16 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "4_3_yes": 0.19,
+      "4_5_#default#": 0.6,
+      "6_3_#default#": 0.13,
+      "6_7_yes": 0.52
+    },
     "paper": {
       "dimensions": {
-        "height": 885,
-        "width": 710,
+        "height": 1295,
+        "width": 970,
         "x": 450,
         "y": 50
       }

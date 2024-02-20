@@ -278,7 +278,7 @@ demisto-sdk-nightly:run-end-to-end-tests-general:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
   services: # needed for running lint
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+    - name: ${DOCKER_IO}/library/docker:20.10.12-dind
       alias: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
@@ -318,7 +318,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
   services: # needed for running e2e tests for docker
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+    - name: ${DOCKER_IO}/library/docker:20.10.12-dind
       alias: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
@@ -385,13 +385,15 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - !reference [.destroy_xsoar_instances]
 
 demisto-sdk-nightly:run-end-to-end-tests-xsiam:
+  rules:
+    - when: never
   tags:
     - gce
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
   services: # needed for running e2e tests for docker
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+    - name: ${DOCKER_IO}/library/docker:20.10.12-dind
       alias: docker
   variables:
       CLOUD_MACHINES_TYPE: "build"
@@ -449,13 +451,15 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
     - !reference [.unlock-machine]
 
 demisto-sdk-nightly:run-end-to-end-tests-xsoar-saas:
+  rules:
+    - when: never
   tags:
     - gce
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
   services: # needed for running e2e tests for docker
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+    - name: ${DOCKER_IO}/library/docker:20.10.12-dind
       alias: docker
   variables:
     CLOUD_MACHINES_TYPE: "build"
@@ -527,9 +531,12 @@ demisto-sdk-nightly:trigger-slack-notify:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: "Demisto SDK Nightly"
     JOB_NAME: "demisto-sdk-nightly:fan-in"
+    DEMISTO_SDK_NIGHTLY: $DEMISTO_SDK_NIGHTLY
+    OVERRIDE_SDK_REF: $OVERRIDE_SDK_REF
+    SDK_REF: $SDK_REF
     SLACK_CHANNEL: $SLACK_CHANNEL
     SLACK_JOB: "true"
-    SLACK_ALLOW_FAILURE: 'false'
+    SLACK_ALLOW_FAILURE: "false"
     CI_PROJECT_ID: $CI_PROJECT_ID
     CI_SERVER_URL: $CI_SERVER_URL
     JIRA_SERVER_URL: $JIRA_SERVER_URL

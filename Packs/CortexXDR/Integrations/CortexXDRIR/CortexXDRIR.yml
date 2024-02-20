@@ -233,9 +233,8 @@ script:
       description: Number of users involved in the incident.
       type: number
     - contextPath: PaloAltoNetworksXDR.Incident.severity
-      description: |-
-        Calculated severity of the incident. Valid values are:
-        "low","medium","high".
+      description: |
+        Calculated severity of the incident. Valid values are: "low","medium","high".
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.low_severity_alert_count
       description: Number of alerts with the severity LOW.
@@ -3472,7 +3471,7 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.87159
   isfetch: true
   isfetch:xpanse: false
   script: ''

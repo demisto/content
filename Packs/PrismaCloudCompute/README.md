@@ -74,22 +74,22 @@ Timestamp parsing support is available for the **time** field in `%h %d, %Y %H:%
 <~XSOAR>
 ## Overview
 
-This integration lets you import **Palo Alto Networks - Prisma Cloud Compute** alerts into Demisto
+This integration lets you import **Palo Alto Networks - Prisma Cloud Compute** alerts into XSOAR
 
 ## Use Cases
 
-Manage Prisma Cloud Compute alerts in Demisto.
+Manage Prisma Cloud Compute alerts in Cortex XSOAR.
 You can create new playbooks, or extend the default ones, to analyze alerts, assign tasks based on your analysis, and open tickets on other platforms.
 
 ## Configure Prisma Cloud Compute
 
-Configure Prisma Cloud Compute to send alerts to Demisto by creating an alert profile.
+Configure Prisma Cloud Compute to send alerts to Cortex XSOAR by creating an alert profile.
 
 1. Login to your Prisma Cloud Compute console.
 1. Navigate to **Manage > Alerts**.
 1. Create a new alert profile by clicking **Add Profile**.
-1. On the left, select **Demisto** from the provider list.
-1. On the right, select the alert triggers. Alert triggers specify which alerts are sent to Demisto.
+1. On the left, select **XSOAR** from the provider list.
+1. On the right, select the alert triggers. Alert triggers specify which alerts are sent to Cortex XSOAR.
 1. Click **Save** to save the alert profile
 
 ## Configure Cortex XSOAR
@@ -111,13 +111,17 @@ Configure Prisma Cloud Compute to send alerts to Demisto by creating an alert pr
 
 ## Using the integration and scripts
 
-The integration ships with four default playbooks, along with four scripts that are used by the playbooks. The scripts encode the raw JSON alerts into Demisto objects that can then be used in the playbooks. The scripts are:
+The integration ships with four default playbooks:
+* Prisma Cloud Compute - Audit Alert v3
+* Prisma Cloud Compute - Cloud Discovery Alert
+* Prisma Cloud Compute - Compliance Alert
+* Prisma Cloud Compute - Vulnerability Alert
 
-* PrismaCloudComputeParseAuditAlert
+3 of the above playbooks (all except _Audit Alert v3_) contain a single script. The script in each playbook encode the raw JSON alerts into Cortex XSOAR objects that can then be used in the playbooks. The scripts are:
+
 * PrismaCloudComputeParseComplianceAlert
 * PrismaCloudComputeParseVulnerabilityAlert
 * PrismaCloudComputeParseCloudDiscoveryAlert
-
 
 To better understand how playbooks and scripts interoperate, consider the _Prisma Cloud Compute - Vulnerability Alert_ playbook.
 
@@ -127,16 +131,37 @@ To better understand how playbooks and scripts interoperate, consider the _Prism
 ![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_raw_input.png)
 
 
-* Click **outputs** to see how the script transformed the raw JSON input into a Demisto object.
+* Click **outputs** to see how the script transformed the raw JSON input into a XSOAR object.
 
 
 ![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_outputs.png)
 
-At this point, you can add tasks that extend the playbook to check and respond to alerts depending on the properties of the Demisto object.
+At this point, you can add tasks that extend the playbook to check and respond to alerts depending on the properties of the Cortex XSOAR object.
+
+### Audit Alert v3 playbook
+This playbook is not similar to the other 3 playbooks. It is a default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
+
+The playbook has the following sections:
+
+Enrichment:
+- Image details
+- Similar container events
+- Owner details
+- Vulnerabilities
+- Compliance details
+- Forensics
+- Defender logs.
+
+Remediation:
+- Block Indicators - Generic v3
+- Cloud Response - Generic
+- Manual Remediation
+
+Currently, the playbook supports incidents created by **Runtime** and **WAAS** triggers.
 
 ## Troubleshooting
 
-If any alerts are missing in Demisto, check the status of the integration:
+If any alerts are missing in Cortex XSOAR, check the status of the integration:
 
 ![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_instance.png)
 </~XSOAR>

@@ -30,7 +30,7 @@ script:
     - description: The IP address for which to retrieve information.
       name: ip
       required: true
-    description: Get IP info
+    description: Get IP info.
     name: infoblox-get-ip
     outputs:
     - contextPath: Infoblox.IP.ReferenceID
@@ -116,7 +116,7 @@ script:
       description: Retrieves the next page of the search. The last NextpageID corresponds to the last search performed.
       type: string
   - arguments:
-    - description: Maximum results to return. (default is 50)
+    - description: Maximum results to return. (default is 50).
       name: max_results
     description: List all response policy zones.
     name: infoblox-list-response-policy-zones
@@ -665,7 +665,7 @@ script:
     - description: The Infoblox object type (can be retrieved by running the 'infoblox-list-response-policy-zone-rules' command).
       name: object_type
       required: true
-    - description: 'The full rule name (usually the rule name followed by its zone. Example: name.domain.com)'
+    - description: 'The full rule name (usually the rule name followed by its zone. Example: name.domain.com).'
       name: rule_name
       required: true
     - description: The fields to include in the return object (supported object fields can be retrieved by running the *infoblox-get-object-fields* command).
@@ -694,7 +694,7 @@ script:
       required: true
     description: Deletes a given response policy zone.
     name: infoblox-delete-response-policy-zone
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: ''
   subtype: python3

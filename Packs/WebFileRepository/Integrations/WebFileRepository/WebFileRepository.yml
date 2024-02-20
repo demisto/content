@@ -135,6 +135,31 @@ script:
     description: Upload files to the repository.
     name: wfr-upload-file
   - arguments:
+    - name: file_name
+      required: true
+      description: The name of the file.
+    - name: data
+      description: Input data to create the file.
+    - name: encoding
+      auto: PREDEFINED
+      predefined:
+      - utf-8
+      - base64
+      description: Encoding type of the input data. Default is utf-8.
+      defaultValue: utf-8
+    - name: extract_archive
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to extract files to archive files, otherwise false.
+      defaultValue: "false"
+    - name: upload_directory
+      description: The directory path where to upload.
+      defaultValue: /
+    description: Upload a file from data to the repository.
+    name: wfr-upload-as-file
+  - arguments:
     - description: The entry ID list of files.
       isArray: true
       name: entry_ids
@@ -193,6 +218,36 @@ script:
     description: Download a file from the repository.
     name: wfr-download-file
   - arguments:
+    - name: path
+      required: true
+      description: The file path.
+    - name: encoding
+      auto: PREDEFINED
+      predefined:
+      - utf-8
+      - base64
+      description: Encoding type to convert the file data when setting to the context.
+        Default is utf-8.
+      defaultValue: utf-8
+    outputs:
+    - contextPath: WebFileRepository.Files.Name
+      description: The file name.
+      type: string
+    - contextPath: WebFileRepository.Files.Path
+      description: The file path.
+      type: string
+    - contextPath: WebFileRepository.Files.Size
+      description: The file size in bytes.
+      type: number
+    - contextPath: WebFileRepository.Files.Data
+      description: The file data encoded in the encoding.
+      type: string
+    - contextPath: WebFileRepository.Files.Encoding
+      description: The encoding name.
+      type: string
+    description: Retrieve the file data from the repository into the context.
+    name: wfr-download-as-text
+  - arguments:
     - description: The name to give the archive-file to save.
       name: save_as
     description: Download a file to which all the files are archived.
@@ -200,7 +255,7 @@ script:
   - arguments: []
     description: Reset the repository data.
     name: wfr-reset
-  dockerimage: demisto/bottle:1.0.0.83335
+  dockerimage: demisto/bottle:1.0.0.86350
   longRunning: true
   longRunningPort: true
   resetContext: true
