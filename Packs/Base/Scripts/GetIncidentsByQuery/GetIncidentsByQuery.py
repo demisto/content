@@ -31,7 +31,7 @@ def to_file_entry(incidents: list[dict], output_format: str) -> dict[str, Any]:
     }
 
 
-def main():  # pragma: no-cover
+def main():
     try:
         args = demisto.args()
         incidents = get_incidents_by_query(args)

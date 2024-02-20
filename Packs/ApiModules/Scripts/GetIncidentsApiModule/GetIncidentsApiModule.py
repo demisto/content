@@ -61,8 +61,8 @@ def format_incident(inc: dict, fields_to_populate: list[str], include_context: b
     inc.update(custom_fields)
     if fields_to_populate:
         inc = {k: v for k, v in inc.items() if k.lower() in {val.lower() for val in fields_to_populate}}
-    if any(f.lower() == "customfields" for f in fields_to_populate):
-        inc["CustomFields"] = custom_fields
+        if any(f.lower() == "customfields" for f in fields_to_populate):
+            inc["CustomFields"] = custom_fields
     if include_context:
         inc['context'] = execute_command("getContext", {"id": inc["id"]}, extract_contents=True)
     return inc
