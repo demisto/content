@@ -45,13 +45,35 @@ jobs:
 
     - name: "Check coverage.xml exists"
       if: always()
-      id: check_files
+      id: check-coverage-xml-exists
       uses: andstor/file-existence-action@v2
       with:
         files: "coverage_report/coverage.xml"
 
+    - name: "Check pytest report exists"
+      if: always()
+      id: check-pytest-junit-exists
+      uses: andstor/file-existence-action@v2
+      with:
+        files: ".report_pytest.xml"
+
+    - name: Upload junit report
+      uses: actions/upload-artifact@v4
+      if: |
+        always() && 
+        steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
+        github.event.pull_request.head.repo.fork == false
+      with:
+        name: pytest
+        path: .report_pytest.xml
+        if-no-files-found: error
+
     - name: Pytest coverage comment
-      if: always() && steps.check_files.outputs.files_exists == 'true' && github.event.pull_request.head.repo.fork == false
+      if: |
+        always() && 
+        steps.check-coverage-xml-exists.outputs.files_exists == 'true' && 
+        steps.check-pytest-junit-exists.outputs.files_exists == false && 
+        github.event.pull_request.head.repo.fork == false
       uses: MishaKav/pytest-coverage-comment@main
       with:
         pytest-xml-coverage-path: coverage_report/coverage.xml
