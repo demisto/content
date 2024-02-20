@@ -65,7 +65,7 @@ class Client(BaseClient):
         res = self._http_request(
             'POST',
             '/dcs-service/dcscloud/v1/oauth/tokens',
-            data=self.credentials
+            json_data=self.credentials
         )
         auth = f'{res["token_type"]} {res["access_token"]}'  # type: ignore
         demisto.setIntegrationContext(
@@ -164,7 +164,7 @@ class Client(BaseClient):
         return self._http_request(
             'POST',
             '/dcs-service/dcscloud/v1/event/query',
-            data=data
+            json_data=data
         )
 
     def _alert_request(self, data: dict) -> dict:
@@ -172,7 +172,7 @@ class Client(BaseClient):
         return self._http_request(
             'POST',
             '/dcs-service/sccs/v1/events/search',
-            data=data
+            json_data=data
         )
 
     def fetch_events(self, args: LastRun) -> tuple[list, LastRun]:
