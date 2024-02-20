@@ -67,7 +67,6 @@ jobs:
         name: pytest
         path: .report_pytest.xml
         if-no-files-found: error
-        compression-level: 0 # no compression
 
     - name: Pytest coverage comment
       if: |
