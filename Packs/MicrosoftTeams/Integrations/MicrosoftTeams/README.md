@@ -356,7 +356,7 @@ Message was sent successfully.
 ***
 Mirrors the Cortex XSOAR/XSIAM investigation to the specified Microsoft Teams channel. Supports only standard channels.
 
-**Note**: Mirrored channels could be used to run Cortex XSOAR/XSIAM built-in commands.
+**Note**: Mirrored channels could be used to run Cortex XSOAR/Cortex XSIAM built-in commands.
 
 
 ##### Base Command
