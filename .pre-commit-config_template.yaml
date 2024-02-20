@@ -206,7 +206,7 @@ repos:
     - pytest-in-docker
   - id: coverage-pytest-analyze
     name: coverage-pytest-analyze
-    entry: demisto-sdk coverage-pytest-analyze
+    entry: demisto-sdk coverage-analyze
     description: Running demisto-sdk coverage-analyze and showing a coverage report.
     language: system
     pass_filenames: false
