@@ -70,7 +70,7 @@ In addition, make sure ***Instance execute external*** is enabled (for Cortex XS
 
 
 ### 2. Using NGINX as reverse proxy
-In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR/XSIAM, goes through a reverse proxy (e.g. NGINX) which relays the HTTPS requests posted from Microsoft Teams
+In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR/Cortex XSIAM, goes through a reverse proxy (e.g., NGINX) which relays the HTTPS requests posted from Microsoft Teams
 to the Cortex XSOAR/XSIAM server on HTTP.
 
 On NGINX, configure the following:
