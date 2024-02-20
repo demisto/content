@@ -331,6 +331,16 @@ WINCOLLECT_DESTINATION_OLD_NEW_MAP = {
     'event_rate_throttle':'EventRateThrottle'
 }
 
+DISCONNECTED_LOG_COLLECTOR_OLD_NEW_MAP = {
+    'id': 'ID',
+    'name': 'Name',
+    'host': 'Host',
+    'tls_certificate': 'TlsCertificate',
+    'port': 'Port',
+    'transport_protocol': 'TransportProtocol',
+    'inernal': 'IsInternal',
+    'event_rate_throttle':'EventRateThrottle'
+}
 
 ''' ENRICHMENT MAPS '''
 
@@ -832,6 +842,24 @@ class Client(BaseClient):
         return self.http_request(
             method='GET',
             url_suffix=f'/config/event_sources/wincollect/wincollect_destinations/{id}',
+            params=assign_params(fields=fields)
+        )
+    
+    def disconnected_log_collectors_list(self, range_: str, filter_: Optional[str] = None, fields: Optional[str] = None):
+        
+        return self.http_request(
+            method='GET',
+            url_suffix='/config/event_sources/disconnected_log_collectors',
+            params=assign_params(filter=filter_, fields=fields),
+            additional_headers={
+                'Range': range_
+            }
+        )
+    
+    def get_disconnected_log_collector(self, id: str, fields: Optional[str] = None):
+        return self.http_request(
+            method='GET',
+            url_suffix=f'/config/event_sources/disconnected_log_collectors/{id}',
             params=assign_params(fields=fields)
         )
 
@@ -4161,7 +4189,7 @@ def qradar_remote_network_deploy_execution_command(client: Client, args):
         raw_response=response
     )
 
-def qradar_event_collectors_list(client: Client, args: dict) -> CommandResults:
+def qradar_event_collectors_list_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves a list of event collectors from QRadar service.
     possible arguments:
@@ -4200,9 +4228,9 @@ def qradar_event_collectors_list(client: Client, args: dict) -> CommandResults:
         raw_response=response
     )
 
-def qradar_wincollect_destinations_list(client: Client, args: dict) -> CommandResults:
+def qradar_wincollect_destinations_list_command(client: Client, args: dict) -> CommandResults:
     """
-    Retrieves a list of event collectors from QRadar service.
+    Retrieves a list of WinCollect destinations from QRadar service.
     possible arguments:
     - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
     - filter: Query filter to filter results returned by QRadar service. see
@@ -4233,6 +4261,45 @@ def qradar_wincollect_destinations_list(client: Client, args: dict) -> CommandRe
 
     return CommandResults(
         readable_output=tableToMarkdown('WinCollect Destinations List', outputs, headers, removeNull=True),
+        outputs_prefix='QRadar.WinCollectDestination',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+def qradar_disconnected_log_collectors_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of disconnected log collectors from QRadar service.
+    possible arguments:
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: Use this parameter to specify which fields you would like to get back in the response.
+              Fields that are not named are excluded.
+              Specify subfields in brackets and multiple fields in the same object are separated by commas.
+    - id: If used, will fetch only the specified log source.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    filter_ = args.get('filter')
+    fields = args.get('fields')
+    id = args.get('id')
+    
+    # if this call fails, raise an error and stop command execution
+    response =(
+        client.disconnected_log_collectors_list(range_, filter_, fields) if id is None
+        else [client.get_disconnected_log_collector(id, fields)])
+    outputs = sanitize_outputs(response, DISCONNECTED_LOG_COLLECTOR_OLD_NEW_MAP)
+    headers = build_headers(['ID'], set(DISCONNECTED_LOG_COLLECTOR_OLD_NEW_MAP.values()))
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Disconnected Log Collectors List', outputs, headers, removeNull=True),
         outputs_prefix='QRadar.WinCollectDestination',
         outputs_key_field='ID',
         outputs=outputs,
@@ -4520,10 +4587,13 @@ def main() -> None:  # pragma: no cover
             return_results(qradar_remote_network_deploy_execution_command(client, args))
         
         elif command == 'qradar-event-collectors-list':
-            return_results(qradar_event_collectors_list(client, args))
+            return_results(qradar_event_collectors_list_command(client, args))
 
         elif command == 'qradar-wincollect-destinations-list':
-            return_results(qradar_wincollect_destinations_list(client, args))
+            return_results(qradar_wincollect_destinations_list_command(client, args))
+        
+        elif command == 'qradar-disconnected-log-collectors-list':
+            return_results(qradar_disconnected_log_collectors_list_command(client, args))
         
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
