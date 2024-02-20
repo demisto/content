@@ -2218,10 +2218,10 @@ def parse_incident_from_item(item):     # pragma: no cover
                             ):
                                 try:
                                     if header.name.lower() == "message-id":
-                                        # Handle a case where a Message-ID header was NOT already in attached_email,
-                                        # and instead is coming from attachment.item.headers.
-                                        # Meaning it wasn't handled in handle_attached_email_with_incorrect_message_id function
-                                        # and instead it is handled here using handle_incorrect_message_id function.
+                                        """ Handle a case where a Message-ID header was NOT already in attached_email,
+                                        and instead is coming from attachment.item.headers.
+                                        Meaning it wasn't handled in handle_attached_email_with_incorrect_message_id function
+                                        and instead it is handled here using handle_incorrect_message_id function."""
                                         correct_message_id = handle_incorrect_message_id(header.value)
                                         if (header.name.lower(), correct_message_id) not in attached_email_headers:
                                             attached_email.add_header(header.name, correct_message_id)
@@ -2230,9 +2230,6 @@ def parse_incident_from_item(item):     # pragma: no cover
                                 except ValueError as err:
                                     if "There may be at most" not in str(err):
                                         raise err
-                                except IndexError as err:
-                                    demisto.debug('IndexError exception is raised from parse_incidents_from_item')
-                                    raise err
 
                     attached_email_bytes = attached_email.as_bytes()
                     chardet_detection = chardet.detect(attached_email_bytes)
