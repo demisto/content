@@ -1193,7 +1193,7 @@ def fetch_incidents(v1_client: pytmv1.Client):
                 "details": record.description if isinstance(record, SaeAlert) else None,
                 "occurred": record.created_date_time,
                 "severity": incident_severity_to_dbot_score(record.severity),
-                "rawJSON": record.json(),
+                "rawJSON": record.model_dump_json(),
             }
             incidents.append(incident)
     demisto.setLastRun({"start_time": end.isoformat()})
