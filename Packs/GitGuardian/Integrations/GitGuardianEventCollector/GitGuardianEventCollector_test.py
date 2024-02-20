@@ -101,6 +101,52 @@ def test_alter_next_fetch_time(client):
     assert next_fetch_time == "2024-01-08T18:12:15.035563Z"
 
 
+def test_extract_incident_ids_with_same_last_occurrence_date(client):
+    """
+    Given: A mock GitGuardian client.
+    When: Running extract_incident_ids_with_same_last_occurrence_date.
+    Then: Ensure the indicators returned have the same last_occurence_date as the one provided
+    """
+
+    incidents = [{"id": 1, "last_occurrence_date": "2024-01-03T21:05:38Z"},
+                 {"id": 2, "last_occurrence_date": "2024-02-03T21:05:38Z"},
+                 {"id": 3, "last_occurrence_date": "2024-01-03T21:05:38Z"}]
+    ids_with_same_occurrence_date = client.extract_incident_ids_with_same_last_occurrence_date(incidents, '2024-01-03T21:05:38Z')
+    assert ids_with_same_occurrence_date == [1, 3]
+
+
+def test_sort_incidents_based_on_last_occurrence_date(client):
+    """
+    Given: A mock GitGuardian client.
+    When: Running extract_incident_ids_with_same_last_occurrence_date.
+    Then: Ensure the indicators returned sorted by last_occurence_date
+    """
+
+    incidents = [{"id": 1, "last_occurrence_date": "2024-02-03T21:05:38Z"},
+                 {"id": 2, "last_occurrence_date": "2024-01-03T21:05:38Z"},
+                 {"id": 3, "last_occurrence_date": "2024-03-03T21:05:38Z"}]
+    sorted_incidents = client.sort_incidents_based_on_last_occurrence_date(incidents)
+    assert sorted_incidents == [{"id": 2, "last_occurrence_date": "2024-01-03T21:05:38Z"},
+                                {"id": 1, "last_occurrence_date": "2024-02-03T21:05:38Z"},
+                                {"id": 3, "last_occurrence_date": "2024-03-03T21:05:38Z"}]
+
+
+def test_remove_duplicated_incidents(client):
+    """
+    Given: A mock GitGuardian client.
+    When: Running remove_duplicated_incidents.
+    Then: Ensure the indicators returned without the incidents that were fetched before
+    """
+
+    incidents = [{"id": 1, "last_occurrence_date": "2024-02-03T21:05:38Z"},
+                 {"id": 2, "last_occurrence_date": "2024-01-03T21:05:38Z"},
+                 {"id": 3, "last_occurrence_date": "2024-03-03T21:05:38Z"}]
+    last_fetched_ids = [1]
+    sorted_incidents = client.remove_duplicated_incidents(incidents, last_fetched_ids)
+    assert sorted_incidents == [{"id": 2, "last_occurrence_date": "2024-01-03T21:05:38Z"},
+                                {"id": 3, "last_occurrence_date": "2024-03-03T21:05:38Z"}]
+
+
 def test_fetch_events(client):
     """
     Given: A mock GitGuardian client.
