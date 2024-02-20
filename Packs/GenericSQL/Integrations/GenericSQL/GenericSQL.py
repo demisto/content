@@ -18,6 +18,7 @@ POSTGRES_SQL = "PostgreSQL"
 MY_SQL = "MySQL"
 MS_ODBC_DRIVER = "Microsoft SQL Server - MS ODBC Driver"
 MICROSOFT_SQL_SERVER = "Microsoft SQL Server"
+SAP_HANA = "SAP HANA"
 FETCH_DEFAULT_LIMIT = '50'
 
 try:
@@ -99,7 +100,7 @@ class Client:
             module = "oracle"
         elif dialect in {MICROSOFT_SQL_SERVER, MS_ODBC_DRIVER}:
             module = "mssql+pyodbc"
-        elif dialect == "SAP HANA":
+        elif dialect == SAP_HANA:
             module = "hana"
         else:
             module = str(dialect)
@@ -195,12 +196,15 @@ def generate_default_port_by_dialect(dialect: str) -> str | None:
     return None
 
 
-def generate_variable_names_and_mapping(bind_variables_values_list: list, query: str, dialect: str) ->\
-        tuple[dict[str, Any], str | Any]:
+def generate_variable_names_and_mapping(bind_variables_names_list: list,
+                                        bind_variables_values_list: list,
+                                        query: str,
+                                        dialect: str) -> tuple[dict[str, Any], str | Any]:
     """
     In case of passing just bind_variables_values, since it's no longer supported in SQL Alchemy v2.,
     this function generates names for those variables and return an edited query with a mapping.
     Args:
+        bind_variables_names_list: The names of the values to put as bind variables.
         bind_variables_values_list: Values to put in the bind variables
         query: The given query which contains chars to replace
         dialect: The DB dialect
@@ -213,16 +217,23 @@ def generate_variable_names_and_mapping(bind_variables_values_list: list, query:
                              MS_ODBC_DRIVER: ("\\?", "?"),
                              POSTGRES_SQL: ("%s", "%s"),
                              MY_SQL: ("%s", "%s"),
-                             ORACLE: ("%s", "%s")
+                             ORACLE: ("%s", "%s"),
+                             SAP_HANA: ("\\?", "?")
                              }
 
     # dialect is a configuration parameter with multiple choices, so it should be one of the keys in the mapping
     char_to_count, char_to_replace = mapping_dialect_regex[dialect]
 
-    bind_variables_names_list = []
+    if not bind_variables_names_list:
+        bind_variables_names_list = []
     for i in range(len(re.findall(char_to_count, query))):
-        query = query.replace(char_to_replace, f":bind_variable_{i+1}", 1)
-        bind_variables_names_list.append(f"bind_variable_{i+1}")
+        if not bind_variables_names_list:
+            bind_variable_name = f"bind_variable_{i + 1}"
+            bind_variables_names_list.append(f"bind_variable_{i+1}")
+        else:
+            bind_variable_name = bind_variables_names_list[i]
+        demisto.debug(f'The chosen {bind_variable_name=}')
+        query = query.replace(char_to_replace, f":{bind_variable_name}", 1)
     return dict(zip(bind_variables_names_list, bind_variables_values_list)), query
 
 
@@ -239,10 +250,14 @@ def generate_bind_vars(bind_variables_names: str, bind_variables_values: str, qu
     """
     bind_variables_names_list = argToList(bind_variables_names)
     bind_variables_values_list = argToList(bind_variables_values)
+    demisto.debug(f'{bind_variables_names_list=} {bind_variables_values_list=}')
 
     if bind_variables_values and not bind_variables_names:
-        return generate_variable_names_and_mapping(bind_variables_values_list, query, dialect)
+        return generate_variable_names_and_mapping([], bind_variables_values_list, query, dialect)
     elif len(bind_variables_names_list) == len(bind_variables_values_list):
+        demisto.debug(f'{dialect=}')
+        if dialect == SAP_HANA:
+            return generate_variable_names_and_mapping(bind_variables_names_list, bind_variables_values_list, query, dialect)
         return dict(zip(bind_variables_names_list, bind_variables_values_list)), query
     else:
         raise Exception("The bind variables lists are not is the same length")
@@ -333,6 +348,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
         bind_variables_names = args.get('bind_variables_names', "")
         bind_variables_values = args.get('bind_variables_values', "")
         bind_variables, sql_query = generate_bind_vars(bind_variables_names, bind_variables_values, sql_query, client.dialect)
+        demisto.debug(f'{bind_variables=} {sql_query=}')
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables)
         result = convert_sqlalchemy_to_readable_table(result)
