@@ -15,6 +15,7 @@
         "Asset Management"
     ],
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
     ]
 }

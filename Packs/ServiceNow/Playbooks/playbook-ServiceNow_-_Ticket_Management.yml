@@ -844,4 +844,5 @@ tests:
 - No tests (auto formatted)
 marketplaces:
   - xsoar
+  - marketplacev2
 fromversion: 6.8.0
