@@ -787,6 +787,6 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- Darktrace Test Playbook
+- TestMBsPlaybook
 fromversion: 6.0.0
 description: Deprecated. Use Darktrace Basic Model Breach Handler and Darktrace Basic AI Analyst Event Handler instead.

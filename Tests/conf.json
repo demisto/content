@@ -90,7 +90,7 @@
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": " Test Playbook - MDE - Retrieve File",
+            "playbookID": "Test Playbook - MDE - Retrieve File",
             "instance_names": "microsoft_defender_atp_dev"
         },
         {
@@ -111,15 +111,15 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test_Playbook_-_Cortex_XDR_-_Endpoint_Investigation"
+            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation"
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test_Playbook-Cortex_XDR_Malware_-_Incident Enrichment"
+            "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment"
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test_Playbook_-_Cortex_XDR_-_Retrieve_File_by_sha256"
+            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256"
         },
         {
             "integrations": "Twitter v2",
@@ -266,7 +266,7 @@
         },
         {
             "integrations": "GSuiteAdmin",
-            "playbookID": "GSuiteAdmin-MobileDevices-Test",
+            "playbookID": "playbook-GSuiteAdmin-MobileDevices-Test",
             "fromversion": "5.5.0"
         },
         {
@@ -1071,16 +1071,12 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "AWS - Athena - Beta",
-            "playbookID": "Beta-Athena-Test"
-        },
-        {
             "integrations": "BeyondTrust Password Safe",
             "playbookID": "BeyondTrust-Test"
         },
         {
             "integrations": "Dell Secureworks",
-            "playbookID": "secureworks_test"
+            "playbookID": "Secureworks"
         },
         {
             "integrations": "ServiceNow v2",
@@ -1452,7 +1448,7 @@
         },
         {
             "integrations": "Threat Grid",
-            "playbookID": "ThreatGrid_Test",
+            "playbookID": "ThreatGridTest",
             "timeout": 600
         },
         {
@@ -4209,10 +4205,10 @@
             ]
         },
         {
-            "playbookID": "Darktrace Test Playbook",
+            "playbookID": "TestMBsPlaybook",
             "fromversion": "6.0.0",
             "integrations": [
-                "Darktrace"
+                "DarktraceMBs"
             ]
         },
         {
@@ -5417,10 +5413,6 @@
             "memory_threshold": 100
         },
         {
-            "playbookID": "Dedup - Generic v3",
-            "fromversion": "5.5.0"
-        },
-        {
             "playbookID": "DBotPredictURLPhishing_test",
             "integrations": [
                 "Whois",
@@ -5475,7 +5467,7 @@
         },
         {
             "integrations": "CloudflareWAF",
-            "playbookID": "playbook-TestCloudflareWAFPlaybook_Test",
+            "playbookID": "TestCloudflareWAFPlaybook",
             "fromversion": "6.2.0"
         },
         {
@@ -5542,11 +5534,8 @@
         },
         {
             "integrations": "Secneurx Analysis",
-            "playbookID": "Detonate URL - SecneurX Anlaysis - Test",
+            "playbookID": "Detonate URL - SecneurX Analysis - Test",
             "fromversion": "6.2.0"
-        },
-        {
-            "playbookID": "GridFieldSetup_test"
         },
         {
             "playbookID": "TestGetArrayElements"
@@ -5572,7 +5561,7 @@
         {
             "integrations": "JoeSecurityV2",
             "fromversion": "6.2.0",
-            "playbookID": "testplaybook- JoeSecuirtyV2"
+            "playbookID": "testplaybook-JoeSecuirtyV2"
         },
         {
             "integrations": "fortiweb_vm",
@@ -5667,7 +5656,7 @@
         },
         {
             "integrations": "fortimail",
-            "playbookID": "playbook-Fortimail_Test"
+            "playbookID": "Fortimail"
         },
         {
             "integrations": "Zimperium v2",
@@ -5818,7 +5807,7 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
-        "AD v2 - debug-mode": "No credentials",
+        "AD v2 - debug-mode - Test": "No credentials",
         "Google-KMS-test": "No instance",
         "hashicorp_test": "No instance",
         "Google BigQuery Test": "No instance",

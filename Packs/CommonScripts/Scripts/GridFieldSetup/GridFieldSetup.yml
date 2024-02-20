@@ -51,4 +51,4 @@ tags:
 type: python
 fromversion: 6.5.0
 tests:
-- GridFieldSetup_test
+- No tests
