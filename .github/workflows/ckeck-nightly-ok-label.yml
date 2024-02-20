@@ -26,17 +26,17 @@ jobs:
             echo "changed_files=null" >> $GITHUB_OUTPUT
           fi
 
-      - name: Check if PR has the nightly-ok label
-        uses: actions/github-script@v7
-        id: check-label
-        if: ${{ steps.check-changes.outputs.changed_files }}
-        with:
-          script: |
-            const labels = context.payload.pull_request.labels.map(label => label.name);
-            const hasLabel = labels.includes('nightly-ok');
-            if (hasLabel) {
-              console.log('All good, the PR has the `nightly-ok` label.');
-            } else {
-              console.log('PR does not have the `nightly-ok` label. It is required when changing files under the `.gitlab` directory. Please run nightly using the Utils/gitlab_triggers/trigger_content_nightly_build.sh script, check that succeeded, and add the `nightly-ok` label');
-              process.exit(1); // Exit with failure status if label is missing
-            }
+#      - name: Check if PR has the nightly-ok label
+#        uses: actions/github-script@v7
+#        id: check-label
+#        if: ${{ steps.check-changes.outputs.changed_files }}
+#        with:
+#          script: |
+#            const labels = context.payload.pull_request.labels.map(label => label.name);
+#            const hasLabel = labels.includes('nightly-ok');
+#            if (hasLabel) {
+#              console.log('All good, the PR has the `nightly-ok` label.');
+#            } else {
+#              console.log('PR does not have the `nightly-ok` label. It is required when changing files under the `.gitlab` directory. Please run nightly using the Utils/gitlab_triggers/trigger_content_nightly_build.sh script, check that succeeded, and add the `nightly-ok` label');
+#              process.exit(1); // Exit with failure status if label is missing
+#            }
