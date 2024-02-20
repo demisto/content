@@ -20,7 +20,7 @@ jobs:
           CHANGED_FILES=$(git diff --name-only origin/master origin/${{ github.head_ref || github.ref_name }})
           echo "All changed files:"
           echo "${CHANGED_FILES}"
-          GITLAB_CHANGED_FILES=$( [[ $CHANGED_FILES =~ '\.gitlab/ci' ]] && echo true || echo false)
+          GITLAB_CHANGED_FILES=$( [[ $CHANGED_FILES == *".gitlab/ci"* ]] && echo true || echo false)
           echo "Files in the.gitlab folder have changed: ${GITLAB_CHANGED_FILES}"
           if [[ $CHANGED_FILES == true ]]; then
             echo 'Files under .gitlab folder has changed, Will check if the PR has the `nightly-ok` label.'
