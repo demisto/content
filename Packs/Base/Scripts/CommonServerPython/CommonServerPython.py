@@ -826,6 +826,42 @@ def add_http_prefix_if_missing(address=''):
     return 'http://' + address
 
 
+def handle_proxy_for_long_running(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
+                                  insecure_param_name=None):
+    """
+        Handle logic for long running integration routing traffic through the system proxy.
+        Should usually be called at the beginning of the integration, depending on proxy checkbox state.
+        Long running integrations on hosted tenants XSOAR8 and XSIAM has a dedicated env. var.: CRTX_HTTP_PROXY.
+        Fallback call to handle_proxy in cases long running integration on engine or XSOAR6
+
+        :type proxy_param_name: ``string``
+        :param proxy_param_name: name of the "use system proxy" integration parameter
+
+        :type checkbox_default_value: ``bool``
+        :param checkbox_default_value: Default value of the proxy param checkbox
+
+        :type handle_insecure: ``bool``
+        :param handle_insecure: Whether to check the insecure param and unset env variables
+
+        :type insecure_param_name: ``string``
+        :param insecure_param_name: Name of insecure param. If None will search insecure and unsecure
+
+        :return: proxies dict for the 'proxies' parameter of 'requests' functions and use_ssl boolean
+        :rtype: ``Tuple[dict, boolean]``
+    """
+    proxies = {}
+    crtx_http_proxy = os.environ.get('CRTX_HTTP_PROXY', None)
+    if crtx_http_proxy:
+        demisto.error('Setting proxies according to CRTX_HTTP_PROXY: {}'.format(crtx_http_proxy))
+        proxies = {
+            'http': crtx_http_proxy,
+            'https': crtx_http_proxy
+        }
+        handle_insecure = True
+        return proxies, handle_insecure
+    return handle_proxy(proxy_param_name, checkbox_default_value, handle_insecure, insecure_param_name), handle_insecure
+
+
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
                  insecure_param_name=None):
     """
@@ -6901,7 +6937,7 @@ class CommandResults:
                  content_format=None,
                  execution_metrics=None,
                  replace_existing=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any], bool) -> None  # noqa: E501
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, List[Any], bool) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
