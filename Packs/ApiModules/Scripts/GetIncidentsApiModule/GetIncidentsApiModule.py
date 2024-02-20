@@ -58,7 +58,7 @@ def format_incident(inc: dict, fields_to_populate: list[str], include_context: b
         dict: The formatted incident.
     """
     custom_fields = inc.pop('CustomFields', {})
-    inc.update(custom_fields)
+    inc.update(custom_fields or {})
     if fields_to_populate:
         inc = {k: v for k, v in inc.items() if k.lower() in {val.lower() for val in fields_to_populate}}
         if any(f.lower() == "customfields" for f in fields_to_populate):
