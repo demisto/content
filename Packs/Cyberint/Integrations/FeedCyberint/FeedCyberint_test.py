@@ -156,3 +156,51 @@ def test_fetch_indicators_command(
 
     assert expected_url in url_indicators
     assert expected_ip in ip_indicators
+
+
+def test_test_module_success(
+    requests_mock,
+    mock_client: FeedCyberint.Client,
+):
+    """
+    Scenario:
+    - Test the test_module.
+
+    Given:
+    - mock_client.
+
+    When:
+    - Called the test_module.
+
+    Then:
+    - Ensure that response is ok when status is 200.
+    """
+    requests_mock.get(REQUEST_URL, text=load_mock_response())
+
+    result = FeedCyberint.test_module(mock_client)
+
+    assert result == "ok"
+
+
+def test_test_module_forbidden(
+    requests_mock,
+    mock_client: FeedCyberint.Client,
+):
+    """
+    Scenario:
+    - Test the test_module.
+
+    Given:
+    - mock_client.
+
+    When:
+    - Called the test_module with a 403 on a forbidden claim.
+
+    Then:
+    - Ensure that the response is Authorization Error.
+    """
+    requests_mock.get(REQUEST_URL, status_code=403)
+
+    result = FeedCyberint.test_module(mock_client)
+
+    assert result == "Authorization Error: invalid `API Token`"
