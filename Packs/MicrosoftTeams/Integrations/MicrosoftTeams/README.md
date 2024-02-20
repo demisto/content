@@ -138,7 +138,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 ### Create the Demisto Bot in Microsoft Teams
 
 
-#### Creating the Demisto Bot using Microsoft Azure Portal.
+#### Creating the Demisto Bot using Microsoft Azure Portal
 1. Navigate to the [Create an Azure Bot page](https://portal.azure.com/#create/Microsoft.AzureBot).
 2. In the Bot Handle field, type **Demisto Bot**.
 3. Fill in the required Subscription and Resource Group, relevant links: [Subscription](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/create-subscription), [Resource Groups](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal).
