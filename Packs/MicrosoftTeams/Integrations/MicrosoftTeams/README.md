@@ -1112,7 +1112,7 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
         
    3. If the cURL queries were sent successfully, you should see the following line in Cortex XSOAR logs: `Finished processing Microsoft Teams activity successfully`.
 
-   4. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate. (Not XSOAR/XSIAM Rerouting ).
+   4. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate. (Not for Cortex XSOAR/Cortex XSIAM Rerouting ).
        1. Run `openssl s_client -connect <domain.com>:443` .
        2. Verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
     
