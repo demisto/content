@@ -334,12 +334,10 @@ WINCOLLECT_DESTINATION_OLD_NEW_MAP = {
 DISCONNECTED_LOG_COLLECTOR_OLD_NEW_MAP = {
     'id': 'ID',
     'name': 'Name',
-    'host': 'Host',
-    'tls_certificate': 'TlsCertificate',
-    'port': 'Port',
-    'transport_protocol': 'TransportProtocol',
-    'inernal': 'IsInternal',
-    'event_rate_throttle':'EventRateThrottle'
+    'description': 'Description',
+    'protocol': 'Protocol',
+    'uuid': 'UUID',
+    'version': 'Version'
 }
 
 ''' ENRICHMENT MAPS '''
@@ -4300,7 +4298,7 @@ def qradar_disconnected_log_collectors_list_command(client: Client, args: dict) 
 
     return CommandResults(
         readable_output=tableToMarkdown('Disconnected Log Collectors List', outputs, headers, removeNull=True),
-        outputs_prefix='QRadar.WinCollectDestination',
+        outputs_prefix='QRadar.DisconnectedLogCollector',
         outputs_key_field='ID',
         outputs=outputs,
         raw_response=response
