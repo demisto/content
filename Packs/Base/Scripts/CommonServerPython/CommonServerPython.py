@@ -158,7 +158,8 @@ def fix_traceback_line_numbers(trace_str):
 
     return trace_str
 
-
+# todo: run only on: demisto.callingContext
+# demisto.callingContext.get('context', {}).get('IntegrationBrand', ''), demisto.callingContext.get('context', {}).get('ScriptName', '')
 from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
 
