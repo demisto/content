@@ -1075,7 +1075,7 @@ There is no context output for this command.
 
 
 ## Running commands from Microsoft Teams
-You can run Cortex XSOAR/XSIAM commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
+You can run Cortex XSOAR/Cortex XSIAM commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
 
 ## Direct messages commands
 You can chat with the bot in direct messages in order to retrieve data (list incidents and tasks) and run operations (create incident and mirror an investigation) related to Cortex XSOAR.
