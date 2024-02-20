@@ -36,7 +36,7 @@ args:
 - description: A comma-separated list of fields in the object to poplulate.
   name: populateFields
 - defaultValue: '100'
-  description: Incidents query batch size
+  description: Incidents query batch size.
   name: pageSize
 comment: |-
   Gets a list of incident objects and the associated incident outputs that
@@ -62,7 +62,7 @@ tags:
 - ml
 timeout: 60µs
 type: python
-dockerimage: demisto/python3:3.10.12.66339
+dockerimage: demisto/python3:3.10.13.87159
 tests:
 - Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0
