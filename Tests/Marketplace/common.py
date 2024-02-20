@@ -67,7 +67,7 @@ def generic_request_with_retries(client: DemistoClient,
                                                                                      path=path,
                                                                                      method=method,
                                                                                      accept=accept,
-                                                                                     body=json.dumps(body),
+                                                                                     body=body,
                                                                                      response_type=response_type,
                                                                                      _request_timeout=request_timeout)
 

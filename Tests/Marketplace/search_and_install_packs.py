@@ -302,7 +302,7 @@ def install_packs(client: DemistoClient,
     success = True
     body = {
         'packs': packs_to_install,
-        'ignoreWarnings': True
+        'ignoreWarnings': "true"
     }
 
     def success_handler(response_data_packs):
@@ -335,7 +335,7 @@ def install_packs(client: DemistoClient,
             ]
             body = {
                 'packs': packs_to_install,
-                'ignoreWarnings': True
+                'ignoreWarnings': "true"
             }
             return body
 
