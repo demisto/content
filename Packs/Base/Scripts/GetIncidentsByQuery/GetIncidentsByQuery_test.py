@@ -16,11 +16,12 @@ def test_encode_outputs():
     - once with unexpected format
     Then: Ensure the results are encoded correctly, or an error is raised in case of unexpected format
     """
+    from GetIncidentsByQuery import encode_outputs
     incidents = [{"id": 1}]
-    assert json.loads(GetIncidentsByQuery.encode_outputs(incidents, "json")) == incidents
-    assert pickle.loads(GetIncidentsByQuery.encode_outputs(incidents, "pickle")) == incidents
+    assert json.loads(encode_outputs(incidents, "json")) == incidents
+    assert pickle.loads(encode_outputs(incidents, "pickle")) == incidents  # guardrails-disable-line
     with pytest.raises(DemistoException):
-        GetIncidentsByQuery.encode_outputs(incidents, "oyvey")
+        encode_outputs(incidents, "oyvey")
 
 
 def test_to_file_entry(mocker):

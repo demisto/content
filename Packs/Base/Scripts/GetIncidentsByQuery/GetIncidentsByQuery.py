@@ -9,7 +9,7 @@ from GetIncidentsApiModule import *
 def encode_outputs(incidents: list[dict], output_format: str) -> str | bytes:
     match output_format:
         case "pickle":
-            return pickle.dumps(incidents, protocol=2)
+            return pickle.dumps(incidents, protocol=2)  # guardrails-disable-line
         case "json":
             return json.dumps(incidents)
         case _:
