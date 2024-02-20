@@ -436,7 +436,7 @@ def main() -> None:
     command = demisto.command()
 
     api_key = demisto.get(demisto.params(), 'creds_apikey.password')
-    api_key_id = demisto.get(demisto.params(), 'creds_apikey_id.password')
+    api_key_id = demisto.params().get("creds_apikey_id", {}).get("password")
     server_url = demisto.demistoUrls()["server"]
     base_url = params.get('url', server_url)
     verify_certificate = not params.get('insecure', False)
