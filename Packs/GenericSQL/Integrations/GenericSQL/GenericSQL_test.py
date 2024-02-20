@@ -580,6 +580,47 @@ def test_generate_variable_names_and_mapping(bind_variables_values_list: list, q
     - Ensure the query contains unique variables names instead of the placeholders
     """
     from GenericSQL import generate_variable_names_and_mapping
-    result = generate_variable_names_and_mapping(bind_variables_values_list, query, dialect)
+    result = generate_variable_names_and_mapping([], bind_variables_values_list, query, dialect)
     assert expected_result[0] == result[0]
     assert expected_result[1] == result[1]
+
+
+BIND_VARIABLES_NAMES_LIST = ['ID', 'LastName', 'FirstName']
+BIND_VARIABLES_VALUES_LIST = ['2', 'lname', 'fname']
+QUERY = 'INSERT into TestTable(ID, LastName, FirstName) VALUES (?, ?, ?)'
+EXPECTED_QUERY_WITH_NAMES_LIST = 'INSERT into TestTable(ID, LastName, FirstName) VALUES (:ID, :LastName , :FirstName)'
+EXPECTED_VARIABLES_DICT_WITH_NAMES_LIST = {'ID': '2', 'LastName': 'lname', 'FirstName': 'fname'}
+EXPECTED_QUERY_WITHOUT_NAMES_LIST = ('INSERT into TestTable(ID, LastName, FirstName) VALUES (:bind_variable_1, :bind_variable_2 '
+                                     ', :bind_variable_3)')
+EXPECTED_VARIABLES_DICT_WITHOUT_NAMES_LIST = {'bind_variable_1': '2', 'bind_variable_2': 'lname', 'bind_variable_3': 'fname'}
+
+
+@pytest.mark.parametrize("bind_variables_names_list, bind_variables_values_list, query, dialect, expected_query, "
+                         "expected_variables_dict",
+                         [
+                             # with bind_variables_names_list
+                             (BIND_VARIABLES_NAMES_LIST, BIND_VARIABLES_VALUES_LIST, QUERY, 'SAP HANA',
+                              EXPECTED_QUERY_WITH_NAMES_LIST, EXPECTED_VARIABLES_DICT_WITH_NAMES_LIST),
+                             # without bind_variables_names_list
+                             ([], BIND_VARIABLES_VALUES_LIST, QUERY, 'SAP HANA', EXPECTED_QUERY_WITHOUT_NAMES_LIST,
+                              EXPECTED_VARIABLES_DICT_WITHOUT_NAMES_LIST)
+                         ])
+def test_generate_variable_names_and_mapping_sap_hana(bind_variables_names_list, bind_variables_values_list, query, dialect,
+                                                      expected_query, expected_variables_dict):
+    """
+    Given
+    - Case A: A bind_variables_names_list along with the other arguments.
+    - Case B: An empty bind_variables_names_list and the other arguments.
+    When
+    - Executing generate_variable_names_and_mapping function
+    Then
+    - Case A: The sql_query and the bind_variables will contain the keys from the given bind_variables_names_list.
+    - Case B: The sql_query and the bind_variables will contain bind_variable_i+1 as the keys.
+    """
+    from GenericSQL import generate_variable_names_and_mapping
+    bind_variables, sql_query = generate_variable_names_and_mapping(bind_variables_names_list,
+                                                                    bind_variables_values_list,
+                                                                    query,
+                                                                    dialect)
+    assert bind_variables == expected_variables_dict
+    assert sql_query == expected_query
