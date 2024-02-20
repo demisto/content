@@ -210,7 +210,7 @@ def handle_file_type_fields(raw_type: str, indicator_obj: Dict[str, Any]) -> Non
     indicator_obj['fields'][raw_type.upper()] = hash_value
 
 
-def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, page: int, from_timestamp: str | None = ''
+def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, page: int, from_timestamp: str = ''
                       ) -> Dict[str, Any]:
     """
     Creates a dictionary in the format required by MISP to be used as a query.
