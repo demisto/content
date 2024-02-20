@@ -36,7 +36,7 @@ jobs:
         with:
           script: |
             console.log("Checking GITHUB_OUTPUT")
-            console.log(steps.check-changes.outputs)
+            console.log(${{ steps.check-changes.outputs.gitlab_changed_files }})
             const labels = context.payload.pull_request.labels.map(label => label.name);
             const hasLabel = labels.includes('nightly-ok');
             if (hasLabel) {
