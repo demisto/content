@@ -56,7 +56,7 @@ class Client(BaseClient):
         self.add_time_to_events(incidents, "incident")
         self.add_time_to_events(audit_logs, "audit_log")
 
-        return incidents, audit_logs,last_fetched_incident_ids, next_run_incidents, next_run_audit_logs
+        return incidents, audit_logs, last_fetched_incident_ids, next_run_incidents, next_run_audit_logs
 
     def search_incidents(
         self, from_fetch_time: str, max_events_per_fetch: int, last_fetched_incident_ids: List[int]
@@ -102,11 +102,11 @@ class Client(BaseClient):
         incidents = sorted_incidents[:max_events_per_fetch]
 
         if len(incidents) == 0:
-            next_run_incidents_from_fetch = from_fetch_time
+            next_run_incidents_from_fetch: str = from_fetch_time
             fetched_incident_ids = last_fetched_incident_ids
             demisto.debug("GG: No incidents were fetched")
         else:
-            next_run_incidents_from_fetch: str = incidents[-1].get("last_occurrence_date", "")
+            next_run_incidents_from_fetch = incidents[-1].get("last_occurrence_date", "")
             fetched_incident_ids = self.extract_incident_ids_with_same_last_occurrence_date(incidents,
                                                                                             next_run_incidents_from_fetch)
             demisto.debug(
@@ -241,7 +241,6 @@ class Client(BaseClient):
 
         return sorted_incidents
 
-
     @staticmethod
     def extract_incident_ids_with_same_last_occurrence_date(incidents: List[Dict], last_occurrence_date: str):
         """Extract incident ids of incidents with the same last_occurrence_date.
@@ -251,7 +250,8 @@ class Client(BaseClient):
         ids_with_same_occurrence_date = [incident["id"] for incident in incidents if incident["last_occurrence_date"] == last_occurrence_date]  # noqa: E501
 
         return ids_with_same_occurrence_date
-            
+
+
 def test_module(
     client: Client, from_fetch_time: str, max_events_per_fetch: int = 1
 ) -> str:

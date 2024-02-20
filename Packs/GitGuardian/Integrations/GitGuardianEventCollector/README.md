@@ -1,5 +1,5 @@
 This is the GitGuardian event collector integration for Cortex XSIAM.
-This integration was integrated and tested with version xx of GitGuardianEventCollector.
+This integration was integrated and tested with version 1.0.0 of GitGuardianEventCollector.
 
 ## Configure GitGuardian Event Collector on Cortex XSOAR
 

@@ -1,6 +1,5 @@
 import json
 from GitGuardianEventCollector import get_events, fetch_events
-import demistomock as demisto
 import pytest
 
 

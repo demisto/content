@@ -63,7 +63,7 @@ script:
     description: Gets events from GitGuardian.
     execution: false
     name: gitguardian-get-events
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.13.87159
   isfetchevents: true
   runonce: false
   script: '-'
