@@ -280,7 +280,7 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 
 ### Add the Demisto Bot to a Team
 
-- Note: the following need to be done after configuring the integration on Cortex XSOAR/XSIAM (the previous step).
+- Note: The following needs to be done after configuring the integration on Cortex XSOAR/Cortex XSIAM (the previous step).
 
 1. Download the ZIP file located at the bottom of this article.
 2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
