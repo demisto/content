@@ -742,9 +742,9 @@ def test_vulnerabilities_process(mocker, requests_mock):
     requests_mock.get(f'{BASE_URL}/vulns/export/123/status', json=MOCK_CHUNKS_STATUS)
     requests_mock.get(f'{BASE_URL}/vulns/export/123/chunks/1', json=MOCK_CHUNK_CONTENT)
     last_run = {}
-    assert run_vulnerabilities_fetch(client, last_run=last_run, severity=[])
+    assert run_vulnerabilities_fetch(client, last_run=last_run)
 
-    generate_export_uuid(client, last_run=last_run, severity=[])
+    generate_export_uuid(client, last_run=last_run)
     assert last_run.get('vuln_export_uuid') == '123'
 
     vulnerabilities, finished = get_vulnerabilities_chunks(client, '123')
