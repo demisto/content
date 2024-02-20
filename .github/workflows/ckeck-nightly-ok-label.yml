@@ -22,7 +22,7 @@ jobs:
           echo "${CHANGED_FILES}"
           GITLAB_CHANGED_FILES=$( [[ $CHANGED_FILES == *".gitlab/ci"* ]] && echo true || echo false)
           echo "Files in the.gitlab folder have changed: ${GITLAB_CHANGED_FILES}"
-          if [[ $CHANGED_FILES == true ]]; then
+          if [[ $GITLAB_CHANGED_FILES == true ]]; then
             echo 'Files under .gitlab folder has changed, Will check if the PR has the `nightly-ok` label.'
             echo "changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
           else
