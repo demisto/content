@@ -418,3 +418,27 @@ def test_delete_destination_list_command(requests_mock, mock_client):
 
     assert command_results.readable_output == expected_readable_output
     assert command_results.raw_response == response
+
+
+def test_get_access_token(requests_mock, mock_client):
+    """
+    Scenario:
+    - Test get an access token
+    Given:
+    - Nothing
+    When:
+    - get_access_token
+    Then:
+    - Ensure that an access token is returned
+    """
+    
+    response = load_mock_response('token.json')
+    requests_mock.post(
+        url=f'{CiscoUmbrellaCloudSecurityv2.BASE_URL}/auth/v2/token',
+        json=response
+    )
+
+    access_token = CiscoUmbrellaCloudSecurityv2.get_access_token(mock_client)
+
+    assert access_token == response.get('access_token')
+    
