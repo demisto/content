@@ -9368,7 +9368,7 @@ script:
       description: The job ID to use when polling.
     description: Exports a tech support file (TSF).
     polling: true
-  dockerimage: demisto/pan-os-python:1.0.0.85910
+  dockerimage: demisto/pan-os-python:1.0.0.87401
   isfetch: true
   runonce: false
   script: ''
