@@ -427,6 +427,9 @@
 .run-unittests-and-lint:
   extends:
     - .unittests-and-lint-settings
+  variables:
+    KUBERNETES_CPU_REQUEST: 2
+    KUBERNETES_MEMORY_REQUEST: 2Gi
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
