@@ -87,13 +87,15 @@ repos:
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image:native: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
-    entry: coverage
+    entry: python
     language: docker
     files: Packs\/.*_test\.py$
     exclude: test_data
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
+    - /src/Tests/scripts/script_runner.py
+    - coverage
     - run
     - -p
     - --source=.
@@ -104,12 +106,13 @@ repos:
     - --rootdir=/src
     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
+    - --files
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
-    isolate_container: true
-    split_by_network: true
-    change_working_directory: true
+    support_require_isolated: true
+    support_require_network: true
     skip:commit: true
+
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
     description: Run powershell tests
@@ -128,6 +131,7 @@ repos:
     isolate_container: true
     change_working_directory: true
     skip:commit: true
+
   - id: pwsh-analyze-in-docker
     name: pwsh-analyze-in-docker
     description: Run powershell analyze
@@ -147,6 +151,7 @@ repos:
     isolate_container: true
     change_working_directory: true
     skip:commit: true
+
   - id: is-circle-changed
     name: is-circle-changed
     description: Checks if circle files are changed, and checkout to current if it is.
