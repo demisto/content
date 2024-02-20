@@ -517,8 +517,7 @@
         },
         {
             "integrations": [
-                "Syslog Sender",
-                "syslog"
+                "Syslog Sender"
             ],
             "playbookID": "Test Syslog",
             "fromversion": "5.5.0",
@@ -1873,10 +1872,6 @@
             "playbookID": "ExposeIncidentOwner-Test"
         },
         {
-            "integrations": "google",
-            "playbookID": "GsuiteTest"
-        },
-        {
             "integrations": "OpenPhish",
             "playbookID": "OpenPhish Test Playbook"
         },
@@ -3031,10 +3026,6 @@
         {
             "integrations": "AWS - CloudTrail",
             "playbookID": "3da2e31b-f114-4d7f-8702-117f3b498de9"
-        },
-        {
-            "integrations": "carbonblackprotection",
-            "playbookID": "67b0f25f-b061-4468-8613-43ab13147173"
         },
         {
             "integrations": "DomainTools",
@@ -6122,7 +6113,6 @@
         "G Suite Security Alert Center": "googleclient sdk has time based challenge exchange",
         "GoogleDrive": "googleclient sdk has time based challenge exchange",
         "Syslog Sender": "syslog",
-        "Syslog v2": "syslog",
         "MongoDB Log": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL",
         "Zoom": "Uses dynamic token",
@@ -6199,7 +6189,6 @@
         "abuse.ch SSL Blacklist Feed",
         "ipinfo",
         "ipinfo_v2",
-        "Syslog v2"
     ],
     "private_tests": [
         "HelloWorldPremium_Scan-Test",
