@@ -86,8 +86,8 @@ The port (`7000` in this example), to which the reverse proxy should forward the
 ![image](https://github.com/demisto/content/raw/fa322765a440f8376bbf7ac85f0400beb720f712/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/InstanceConfig7000.png)
 
 ### 3. Using Apache reverse proxy and Cortex XSOAR engine
-In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR/XSIAM, goes through a reverse proxy (e.g., [Apache](https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html)) and possibly a load balancer, which relays the HTTPS requests posted from Microsoft Teams
-to a Cortex XSOAR/XSIAM engine, which can be put in a DMZ, on HTTP.
+In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR/Cortex XSIAM, goes through a reverse proxy (e.g., [Apache](https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html)) and possibly a load balancer, which relays the HTTPS requests posted from Microsoft Teams
+to a Cortex XSOAR/Cortex XSIAM engine, which can be put in a DMZ, on HTTP.
 
 The port (`7000` in this example), to which the reverse proxy should forward the traffic on HTTP, should be the same port you specify in the integration instance configuration, as the web server the integration spins up, listens on that port.
 
