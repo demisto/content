@@ -2084,9 +2084,8 @@ def handle_incorrect_message_id(message_id: str) -> str:
     if re.search("\<\[.*\]\>", message_id):
         # find and replace "<[" with "<" and "]>" with ">"
         fixed_message_id = re.sub(r'<\[(.*?)\]>', r'<\1>', message_id)
-        demisto.debug(f'Value returned from handle_incorrect_message_id after fix: {fixed_message_id}')
+        demisto.debug('Fixed message id {message_id} to {fixed_message_id}')
         return fixed_message_id
-    demisto.debug(f'Value returned from handle_incorrect_message_id: {message_id=}')
     return message_id
 
 
