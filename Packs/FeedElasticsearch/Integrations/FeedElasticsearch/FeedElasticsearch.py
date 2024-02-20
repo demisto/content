@@ -219,7 +219,7 @@ def update_last_fetch(client, ioc_lst):
             demisto.info(f"ioc {ioc.get('name')} if missing {client.time_field}")
             break
         calculate_timestamp = int(calculate_time.timestamp() * 1000)
-        if not last_calculated_timestamp or calculate_timestamp == last_calculated_timestamp:
+        if not last_calculated_timestamp or calculate_timestamp >= last_calculated_timestamp:
             last_calculated_timestamp = calculate_timestamp
             last_ids.append(ioc.get('id'))
         else:
