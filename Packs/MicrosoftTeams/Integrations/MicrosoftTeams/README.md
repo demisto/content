@@ -99,7 +99,7 @@ The port (`7000` in this example), to which the reverse proxy should forward the
 ### 4. Using Cloudflare
 In this configuration, we will use [Cloudflare proxy](https://support.cloudflare.com/hc/en-us/articles/360039824852-Cloudflare-and-the-Cloud-Conceptual-overview-videos).
 
-The messaging endpoint should be the Cortex XSOAR/XSIAM URL, which need to be hosted on Cloudflare, with the port to which Cloudflare proxy directs the HTTPS traffic, e.g. `https://mysite.com:8443`
+The messaging endpoint should be the Cortex XSOAR/Cortex XSIAM URL, which needs to be hosted on Cloudflare, with the port to which Cloudflare proxy directs the HTTPS traffic, e.g., `https://mysite.com:8443`
 
 In the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step, the following need to be configured:
  - The port selected above.
