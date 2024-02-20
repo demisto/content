@@ -132,7 +132,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 
 1. [Create the Demisto Bot in Microsoft Teams](#create-the-demisto-bot-in-microsoft-teams)
 2. [Grant the Demisto Bot Permissions in Microsoft Graph](#grant-the-demisto-bot-permissions-in-microsoft-graph)
-3. [Configure Microsoft Teams on Cortex XSOAR or XSIAM](#configure-microsoft-teams-on-cortex-xsoar)
+3. [Configure Microsoft Teams on Cortex XSOAR or Cortex XSIAM](#configure-microsoft-teams-on-cortex-xsoar)
 4. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
 
 ### Create the Demisto Bot in Microsoft Teams
