@@ -2049,11 +2049,11 @@ def handle_attached_email_with_incorrect_message_id(attached_email: Message):
     Returns:
         Message: attached email object.
     """
-    demisto.debug('XSUP-32660: handle_attached_email_with_incorrect_message_id running')
     message_id_value = ""
     for i in range(len(attached_email._headers)):
         if attached_email._headers[i][0] == "Message-ID":
             message_id = attached_email._headers[i][1]
+            demisto.debug(f'Handling Message-ID header, {message_id=}.')
             try:
                 message_id_value = handle_incorrect_message_id(message_id)
                 if message_id_value != message_id:
@@ -2081,13 +2081,12 @@ def handle_incorrect_message_id(message_id: str) -> str:
     2. '\r\n\t<[message_id]>' --> '\r\n\t<message_id>'
     If no necessary changes identified the original 'message_id' argument value is returned.
     """
-    demisto.debug('XSUP-32660: handle_incorrect_message_id running')
     if re.search("\<\[.*\]\>", message_id):
         # find and replace "<[" with "<" and "]>" with ">"
         fixed_message_id = re.sub(r'<\[(.*?)\]>', r'<\1>', message_id)
-        demisto.debug(f'XSUP-32660: value returned from handle_incorrect_message_id after fix: {fixed_message_id}')
+        demisto.debug(f'Value returned from handle_incorrect_message_id after fix: {fixed_message_id}')
         return fixed_message_id
-    demisto.debug(f'XSUP-32660: value returned from handle_incorrect_message_id: {message_id=}')
+    demisto.debug(f'Value returned from handle_incorrect_message_id: {message_id=}')
     return message_id
 
 
@@ -2190,18 +2189,14 @@ def parse_incident_from_item(item):     # pragma: no cover
 
                 # save the attachment
                 if attachment.item.mime_content:
-                    demisto.debug('XSUP-32660: if attachment.item.mime_content')
                     mime_content = attachment.item.mime_content
                     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
-                    demisto.debug(f'XSUP-32660: {mime_content=}, {email_policy=}')
                     if isinstance(mime_content, str) and not mime_content.isascii():
                         mime_content = mime_content.encode()
                     attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
                         if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content, policy=email_policy)
-                    demisto.debug(f'XSUP-32660: {attached_email=}')
                     if attachment.item.headers:
-                        demisto.debug('XSUP-32660: if attachment.item.headers')
                         # compare header keys case-insensitive
                         attached_email_headers = []
                         attached_email = handle_attached_email_with_incorrect_message_id(attached_email)
@@ -2215,7 +2210,7 @@ def parse_incident_from_item(item):     # pragma: no cover
 
                             v = ' '.join(map(str.strip, v.split('\r\n')))
                             attached_email_headers.append((h.lower(), v))
-                        demisto.debug(f'XSUP-32660: {attached_email_headers=}')
+                        demisto.debug(f'{attached_email_headers=}')
                         for header in attachment.item.headers:
                             if (
                                     (header.name.lower(), header.value)
@@ -2224,15 +2219,12 @@ def parse_incident_from_item(item):     # pragma: no cover
                             ):
                                 try:
                                     if header.name.lower() == "message-id":
-                                        demisto.debug('XSUP-32660: header.name.lower() == "message-id"')
                                         # Handle a case where a Message-ID header was NOT already in attached_email,
                                         # and instead is coming from attachment.item.headers.
                                         # Meaning it wasn't handled in handle_attached_email_with_incorrect_message_id function
                                         # and instead it is handled here using handle_incorrect_message_id function.
                                         correct_message_id = handle_incorrect_message_id(header.value)
-                                        demisto.debug(f'XSUP-32660: {correct_message_id=}')
                                         if (header.name.lower(), correct_message_id) not in attached_email_headers:
-                                            demisto.debug('XSUP-32660: adding message-id header')
                                             attached_email.add_header(header.name, correct_message_id)
                                     else:
                                         attached_email.add_header(header.name, header.value)
