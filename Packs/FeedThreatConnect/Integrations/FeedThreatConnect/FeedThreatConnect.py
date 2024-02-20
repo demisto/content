@@ -243,7 +243,6 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     """
     indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''))
     indicator_value = indicator.get('summary') or indicator.get('name')
-    demisto.debug(f'TC: Mapping indicator {indicator_value} with type: {indicator.get("type", "")}, that was mapped to type: {indicator_type}')  # noqa: E501
     fields = create_indicator_fields(indicator, indicator_type)
     relationships = create_indicator_relationships(fields, indicator_type, indicator_value)  # type: ignore
     indicator_obj = {
@@ -260,7 +259,6 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
 
 def create_indicator_fields(indicator, indicator_type):
     """Creating an indicator fields from a raw indicator"""
-    demisto.debug('TC: Starting to create indicator fields')
     params = demisto.params()
     indicator_fields_mapping = TC_INDICATOR_TO_XSOAR_INDICATOR.get(indicator_type, {})
     
