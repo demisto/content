@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import json
 import time
 from typing import Any
 from collections.abc import Callable
@@ -66,7 +67,7 @@ def generic_request_with_retries(client: DemistoClient,
                                                                                      path=path,
                                                                                      method=method,
                                                                                      accept=accept,
-                                                                                     body=body,
+                                                                                     body=json.dumps(body),
                                                                                      response_type=response_type,
                                                                                      _request_timeout=request_timeout)
 
