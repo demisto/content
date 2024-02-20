@@ -1,5 +1,6 @@
 id: FeedCyberint
 version: 2
+fromversion: 5.0.0
 vcShouldKeepItemLegacyProdMachine: false
 name: FeedCyberint
 starttaskid: "0"

@@ -175,6 +175,6 @@ script:
       description: The feed confidence.
       type: String
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.87159
   feed: true
   subtype: python3
