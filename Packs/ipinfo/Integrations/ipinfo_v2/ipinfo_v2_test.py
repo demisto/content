@@ -13,7 +13,6 @@ from ipinfo_v2 import BRAND_NAME
 @pytest.fixture(autouse=True)
 def handle_calling_context(mocker):
     mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': BRAND_NAME}, 'integration': True})
-#TEST
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
