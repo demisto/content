@@ -22,9 +22,9 @@ jobs:
           echo "${CHANGED_FILES}"
           GITLAB_CHANGED_FILES=$( [[ $CHANGED_FILES == *".gitlab/ci"* ]] && echo true || echo false)
           echo "Files in the.gitlab folder have changed: ${GITLAB_CHANGED_FILES}"
+          echo "gitlab_changed_files=$GITLAB_CHANGED_FILES" >> $GITHUB_OUTPUT
           if [[ $GITLAB_CHANGED_FILES == true ]]; then
             echo 'Files under .gitlab folder has changed, Will check if the PR has the `nightly-ok` label.'
-            echo "gitlab_changed_files=$GITLAB_CHANGED_FILES" >> $GITHUB_OUTPUT
           else
             echo 'Files in the.gitlab folder have not been changed.'
           fi
@@ -32,11 +32,9 @@ jobs:
       - name: Check if PR has the nightly-ok label
         uses: actions/github-script@v7
         id: check-label
-#        if: ${{ steps.check-changes.outputs.gitlab_changed_files == true }}
+        if: ${{ steps.check-changes.outputs.gitlab_changed_files == true }}
         with:
           script: |
-            console.log("Checking GITHUB_OUTPUT")
-            console.log(${{ steps.check-changes.outputs.gitlab_changed_files }})
             const labels = context.payload.pull_request.labels.map(label => label.name);
             const hasLabel = labels.includes('nightly-ok');
             if (hasLabel) {
