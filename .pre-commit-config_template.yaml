@@ -207,7 +207,7 @@ repos:
   - id: coverage-analyze
     name: coverage-analyze
     entry: demisto-sdk coverage-analyze
-    description: Running demisto-sdk coverage-analyze and showing a coverage report.
+    description: Running demisto-sdk coverage-pytest-analyze and showing a coverage report.
     language: system
     pass_filenames: false
     args:
