@@ -269,11 +269,11 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 
 ##### Authentication Using the Authorization Code Flow
 
-1. Choose the 'Authorization Code' option in the **Authentication Type** parameter.
-2. Enter your Client/Application ID in the **Bot ID** parameter. 
-3. Enter your Client Secret in the **Bot Password** parameter.
-4. Enter your Application redirect URI in the **Application redirect URI** parameter.
-5. Run the !microsoft-teams-generate-login-url command in the War Room and follow the instructions.
+1. Choose the 'Authorization Code' option in the *Authentication Type* parameter.
+2. Enter your Client/Application ID in the *Bot ID* parameter. 
+3. Enter your Client Secret in the *Bot Password* parameter.
+4. Enter your Application redirect URI in the *Application redirect URI* parameter.
+5. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
 6. Save the instance.
 7. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
 
