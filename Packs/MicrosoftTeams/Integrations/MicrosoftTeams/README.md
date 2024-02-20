@@ -128,7 +128,7 @@ The information in this video is for Cortex XSOAR 6 only.
 
 ## Prerequisites
 
-Before you can create an instance of the Microsoft Teams integration in Cortex XSOAR/XSIAM, you need to complete the following procedures.
+Before you can create an instance of the Microsoft Teams integration in Cortex XSOAR/Cortex XSIAM, you need to complete the following procedures.
 
 1. [Create the Demisto Bot in Microsoft Teams](#create-the-demisto-bot-in-microsoft-teams)
 2. [Grant the Demisto Bot Permissions in Microsoft Graph](#grant-the-demisto-bot-permissions-in-microsoft-graph)
