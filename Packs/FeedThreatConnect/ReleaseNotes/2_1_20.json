@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The option for 'EmailSubject' for indicator type configuration was removed."
+}
