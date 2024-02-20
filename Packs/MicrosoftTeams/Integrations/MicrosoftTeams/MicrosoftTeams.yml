@@ -712,7 +712,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.87877
+  dockerimage: demisto/teams:1.0.0.88121
   longRunning: true
   longRunningPort: true
   script: ''
