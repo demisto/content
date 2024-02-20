@@ -1,3 +1,5 @@
+
+
 .bucket-upload-rule:
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
