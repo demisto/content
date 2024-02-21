@@ -379,8 +379,8 @@ Retrieves information about a specific endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint | A dictionary object with key/value used to create a query string. e.g. endpoint={"endpointName":"test-endpoint1", "ip":"52.72.139.96"}. Multiple endpoints can be queried but unique keys need to be supplied (e.g. `endpointName`, `ip`, etc.). For complete list of keys check (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1eiqs~1endpoints/get>). | Required | 
-| query_op | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint(s). e.g. query_op=or. Possible values are: and, or. When multiple endpoints are being queried using endpointName and ip, query_op will be used accordingly to build the query. For example, if query_op is `or`, the results retrieved will contain endpoint information for endpoint that matches the endpointName or the ip but if the query_op is `and`, the result will only contain endpoint information that matches both endpointName and ip specified. | Required | 
+| endpoint | Filter (A dictionary object with key/value used to create a query string) for retrieving a subset of endpoint information e.g. endpoint={"endpointName":"test-endpoint1", "ip":"52.72.139.96"}. Multiple endpoints can be queried but unique keys need to be supplied (e.g. `endpointName`, `ip`, etc.). For complete list of keys check (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1eiqs~1endpoints/get>). | Required | 
+| query_op | Conditional operator used to build request that allows user to retrieve a subset of collected endpoint(s). Possible values: and/or. Ex. `or`: the results retrieved will contain information for endpoint(s) matching endpointName OR ip. `and`: results retrieved will contain endpoint information for endpoint matching endpointName AND ip. | Required | 
 
 #### Context Output
 
@@ -410,8 +410,8 @@ Displays search results from the Endpoint Activity Data source that match the pa
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | Statement that allows you to retrieve a subset of the collected endpoint activity data. e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get>). | Required | 
-| query_op | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. query_op=or. Possible values are: and, or. | Optional | 
+| fields | Filter (A dictionary object with key/value used to create a query string) for retrieving a subset of endpoint activity data e.g. {"endpointName":"sample-host","dpt": 443}. Complete list of supported fields (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get>). | Required | 
+| query_op | Conditional operator used to build request that allows user to retrieve a subset of collected endpoint activity data. Possible values: and/or. Ex. `or`: the results retrieved will contain activity data for endpoint(s) matching endpointName OR dpt. `and`: will contain activity data for endpoint matching endpointName AND dpt. Defaults to `and`.| Optional | 
 | start | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. e.g. start="2023-10-01T08:00:00Z". | Optional | 
 | end | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z". | Optional | 
 | top | Number of records displayed on a page. e.g. top=5. | Optional | 
@@ -478,8 +478,8 @@ Displays total count of search results from the Endpoint Activity Data source th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | Statement that allows you to retrieve a subset of the collected endpoint activity data. e.g. {"endpointName":"sample-host","macAddress":"00:11:22:33:44:55"}. Complete list of supported fields (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get>). | Required | 
-| query_op | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint activity data. e.g. query_op=or. Possible values are: and, or. | Optional | 
+| fields | Filter (A dictionary object with key/value used to create a query string) for retrieving endpoint activity data count e.g. {"endpointName":"sample-host","dpt":443}. Complete list of supported fields (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get>). | Required | 
+| query_op | Conditional operator used to build request that allows user to retrieve a count of collected endpoint activity. Possible values: and/or. Ex. `or`: the results retrieved will contain activity count for endpoint(s) matching endpointName OR dpt. `and`: the results retrieved will contain activity count for endpoint matching endpointName AND dpt. Defaults to `and`.| Optional | 
 | start | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. e.g. start="2023-10-01T08:00:00Z". | Optional | 
 | end | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z". | Optional | 
 | select | List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="dpt,dst,endpointHostName". | Optional | 
@@ -503,8 +503,8 @@ Displays search results from the Email Activity Data source that match the param
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | Statement that allows you to retrieve a subset of the collected email activity data. e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get>). | Required | 
-| query_op | Operator used to build request header query that allows you to retrieve a subset of the collected email activity data. e.g. mailMsgSubject:spam `and` mailSenderIp:192.169.1.1..'. Possible values are: and, or. | Optional | 
+| fields | Filter (A dictionary object with key/value used to create a query string) for retrieving a subset of email activity data e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get>). | Required | 
+| query_op | Conditional operator used to build request that allows user to retrieve a subset of email activity data. Possible values: and/or. Ex. `or`: the results retrieved will contain activity data for email(s) matching mailMsgSubject OR mailSenderIp. `and`: the results retrieved will contain activity data for email matching mailMsgSubject AND mailSenderIp. Defaults to `and`. | Optional | 
 | start | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. e.g. start="2023-10-01T08:00:00Z". | Optional | 
 | end | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z". | Optional | 
 | top | Number of records displayed on a page. e.g. top=5. | Optional | 
@@ -543,8 +543,8 @@ Displays search results from the Email Activity Data source that match the param
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | Statement that allows you to retrieve a subset of the collected email activity data. e.g. {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get>). | Required | 
-| query_op | Operator used to build request header query that allows you to retrieve a subset of the collected email activity data. e.g. query_op=and. Possible values are: and, or. | Optional | 
+| fields | Filter (A dictionary object with key/value used to create a query string) for retrieving email activity data count e.g.  {"mailMsgSubject":"spam","mailSenderIp":"192.169.1.1"}. Complete list of supported fields (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get>). | Required | 
+| query_op | Conditional operator used to build request that allows user to retrieve a count of collected email activity. Possible values: and/or. Ex. `or`: the results retrieved will contain activity count for email(s) matching mailMsgSubject OR mailSenderIp. `and`: the results retrieved will contain activity count for email matching mailMsgSubject AND mailSenderIp. Defaults to `and`. | Optional | 
 | start | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. e.g. start="2023-10-01T08:00:00Z". | Optional | 
 | end | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made. e.g. end="2023-12-01T08:00:00Z". | Optional | 
 | select | List of fields to include in the search results. If no fields are specified, the query returns all supported fields. e.g. select="mailMsgSubject,mailFromAddresses,mailToAddresses". | Optional | 
@@ -1054,8 +1054,8 @@ Fetches a list of all available custom scripts in V1 XDR Portal.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | Filter for retrieving a subset of the custom scripts list. e.g. {"fileName":"test-script.ps1","fileType":"powershell"}. If you want a list of all custom scripts available, run action with fields=`{}`. | Required | 
-| query_op | The query operator used to join fields to filter query. e.g. query_op="or". | Optional | 
+| fields | Filter (A dictionary object with key/value used to create a query string) for retrieving a subset of the custom scripts list. e.g. {"fileName":"test-script.ps1","fileType":"powershell"}. If you want a list of all custom scripts available, run action with fields=`{}`. | Required | 
+| query_op | Conditional operator used to build request that allows user to retrieve a subset of custom scripts. Possible values: and/or. Ex. `or`: the results retrieved will contain custom script(s) matching FileName OR FileType. `and`: the result retrieved will contain custom script matching FileName AND FileType. Defaults to `and`. | Optional | 
 
 #### Context Output
 
