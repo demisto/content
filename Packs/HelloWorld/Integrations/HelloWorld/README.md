@@ -10,8 +10,8 @@ This is the Hello World integration for getting started.
     | --- | --- | --- |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
     | Server URL (e.g., https://api.xsoar-example.com) |  | True |
-    | Fetch alerts |  | False |
-    | Alert type |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
     | Maximum number of alerts per fetch |  | False |
     | API Key |  | True |
     | Score threshold for IP reputation command | Set this to determine the HelloWorld score that will determine if an IP is malicious \(0-100\) | False |
@@ -19,8 +19,10 @@ This is the Hello World integration for getting started.
     | First fetch time |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Commands
 
@@ -213,8 +215,8 @@ Return IP information and reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | List of IPs. | Optional | 
-| threshold | If the IP has a reputation above the threshold, then the IP is defined as malicious. If threshold is not set, then the threshold from the instance configuration is used. Default is 65. | Optional | 
+| ip | A comma-separated list of IPs. | Optional | 
+| threshold | If the IP has a reputation above the threshold, then the IP is defined as malicious. If a threshold not set, then threshold from the instance configuration is used. Default is 65. | Optional | 
 
 #### Context Output
 
@@ -263,6 +265,7 @@ Return IP information and reputation.
 | IP.Relationships.Relationship | string | The name of the relationship. | 
 | IP.Relationships.EntityAType | string | The type of the source of the relationship. | 
 | IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
+
 
 #### Command example
 ```!ip ip="8.8.8.8"```
@@ -686,4 +689,23 @@ Return IP information and reputation.
 >|as_owner|asn|continent|country|jarm|last_analysis_stats|last_modification_date|network|regional_internet_registry|reputation|tags|total_votes|whois_date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| EMERALD-ONION |  | NA | US | :jarm: | ***harmless***: 72<br/>***malicious***: 5<br/>***suspicious***: 2<br/>***timeout***: 0<br/>***undetected***: 8 |  | :cidr: | ARIN |  | ***values***:  | ***harmless***: 0<br/>***malicious***: 1 |  |
+### helloworld-new-cmd
+
+***
+New command to test out https://jira-dc.paloaltonetworks.com/browse/CIAC-4657
+
+#### Base Command
+
+`helloworld-new-cmd`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| HelloWorld.NewCmd | unknown |  | 
 
