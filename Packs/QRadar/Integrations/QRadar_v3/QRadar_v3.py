@@ -4334,7 +4334,7 @@ def qradar_log_source_types_list_command(client: Client, args: dict) -> CommandR
         client.get_resource_list(range_, endpoint, filter_, fields) if id is None
         else [client.get_resource(id, endpoint, fields)])
     outputs = sanitize_outputs(response, LOG_SOURCE_TYPES_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Name', 'Custom', 'Version', 'UUID', 'SupportedLanguageIDs', 'ProtocolTypes'], set())
+    headers = build_headers(['ID', 'Name', 'Custom', 'Version', 'UUID', 'SupportedLanguageIDs'], set())
 
     return CommandResults(
         readable_output=tableToMarkdown('Log Source Types List', outputs, headers, removeNull=True),
