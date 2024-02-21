@@ -185,6 +185,7 @@ def main():  # pragma: no cover
 
         command = demisto.command()
         LOG(f'Command being called is {command}')
+        return None
 
         if command == 'test-module':
             client.test_connection()

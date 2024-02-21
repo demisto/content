@@ -401,9 +401,10 @@ def fetch():
             }
 
             incidents.append(incident)
-
+            demisto.debug(f'already_fetched {len(already_fetched)} list length.')
             if len(already_fetched) > MAX_UNIQUE:
-                already_fetched.pop(0)
+                first_seen = already_fetched.pop(0)
+                demisto.debug(f'removed {first_seen} from already_fetched list')
             already_fetched.append(r_id)
 
             if len(incidents) >= FETCH_CHUNK_SIZE:
