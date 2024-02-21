@@ -57,6 +57,13 @@ jobs:
       with:
         files: ".report_pytest.xml"
 
+    - name: Create pack-wise pytest report
+        run: poetry run Utils/github_workflow_scripts/parse_junit_per_pack.py
+        if: |
+        always() && 
+        steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
+        github.event.pull_request.head.repo.fork == false
+
     - name: Upload junit report
       uses: actions/upload-artifact@v4
       if: |
@@ -65,7 +72,9 @@ jobs:
         github.event.pull_request.head.repo.fork == false
       with:
         name: pytest
-        path: .report_pytest.xml
+        path: |
+          .report_pytest.xml
+          packwise_pytest_time.csv
         if-no-files-found: error
 
     - name: Pytest coverage comment
