@@ -1694,7 +1694,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: Comma separated list of IPv4 network ranges to be used as source addresses for the `remediation-allow-port-<port#>-<tcp|udp>` rule to be created.  Typically this will be private IP ranges (to allow access within the vnet and bastion hosts) but other networks can be added as needed.
+- description: Comma-separated list of IPv4 network ranges to be used as source addresses for the `remediation-allow-port-<port#>-<tcp|udp>` rule to be created.  Typically this will be private IP ranges (to allow access within the vnet and bastion hosts) but other networks can be added as needed.
   key: RemediationAllowRanges
   playbookInputQuery:
   required: false
