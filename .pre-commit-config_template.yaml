@@ -80,7 +80,7 @@ repos:
       arg_name: --rcfile
       file_name: .pylintrc
     skip:commit: true
-    
+
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
@@ -110,9 +110,9 @@ repos:
     - --files
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
-    support_require_network: true
     skip:commit: true
-
+    support_pack_ignore_config: true
+  
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
     description: Run powershell tests
