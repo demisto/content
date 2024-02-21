@@ -505,7 +505,7 @@ def file_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any]
              result: (PollResult): The parsed PollResult object.
      """
     file_path = demisto.getFilePath(file)
-    name = Path(file_path['name'])
+    name = file_path['name']
     demisto.debug(f"Trying to upload file {name=} from entry= {file_path['path']}")
 
     with open(file_path['path'], 'rb') as f:
