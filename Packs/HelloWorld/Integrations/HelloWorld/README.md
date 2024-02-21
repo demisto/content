@@ -10,8 +10,8 @@ This is the Hello World integration for getting started.
     | --- | --- | --- |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
     | Server URL (e.g., https://api.xsoar-example.com) |  | True |
-    | Fetch alerts |  | False |
-    | Alert type |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
     | Maximum number of alerts per fetch |  | False |
     | API Key |  | True |
     | Score threshold for IP reputation command | Set this to determine the HelloWorld score that will determine if an IP is malicious \(0-100\) | False |
@@ -21,6 +21,7 @@ This is the Hello World integration for getting started.
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Commands
 
@@ -686,4 +687,3 @@ Return IP information and reputation.
 >|as_owner|asn|continent|country|jarm|last_analysis_stats|last_modification_date|network|regional_internet_registry|reputation|tags|total_votes|whois_date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| EMERALD-ONION |  | NA | US | :jarm: | ***harmless***: 72<br/>***malicious***: 5<br/>***suspicious***: 2<br/>***timeout***: 0<br/>***undetected***: 8 |  | :cidr: | ARIN |  | ***values***:  | ***harmless***: 0<br/>***malicious***: 1 |  |
-

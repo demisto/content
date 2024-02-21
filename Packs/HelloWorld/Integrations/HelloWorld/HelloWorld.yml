@@ -17,7 +17,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  defaultvalue: C - Fairly reliable
+  defaultvalue: D - Not usually reliable
   type: 15
   section: Collect
   required: false
