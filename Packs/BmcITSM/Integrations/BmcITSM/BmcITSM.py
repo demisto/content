@@ -2842,7 +2842,6 @@ def work_order_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     validate_related_arguments_provided(support_organization=support_organization, support_group=support_group)
     
     client.update_work_order_request(
-        #format_ticket_request_id(request_id),
         request_id,
         summary=summary,
         detailed_description=detailed_description,
