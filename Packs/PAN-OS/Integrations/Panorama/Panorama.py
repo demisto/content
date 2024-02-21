@@ -13772,7 +13772,7 @@ def pan_os_edit_security_profile_group_command(args: dict) -> CommandResults:
         CommandResults: The command results with raw response and readable outputs.
     """
     group_name = args.get("group_name")
-    profile_to_change = args.get("profile_to_change")
+    profile_to_change = args.get("profile_to_change", "")
     profile_value = args.get("profile_value")
 
     profile_to_change_map = {
@@ -13789,8 +13789,8 @@ def pan_os_edit_security_profile_group_command(args: dict) -> CommandResults:
         "type": "config",
         "action": "edit",
         "key": API_KEY,
-        "xpath": f"{XPATH_RULEBASE}profile-group/entry[@name='{group_name}']/{profile_to_change_map.get(profile_to_change, '')}",  # type: ignore
-        "element": add_argument(profile_value, profile_to_change_map.get(profile_to_change, ""), True)  # type: ignore
+        "xpath": f"{XPATH_RULEBASE}profile-group/entry[@name='{group_name}']/{profile_to_change_map.get(profile_to_change)}",
+        "element": add_argument(profile_value, profile_to_change_map.get(profile_to_change), True)  # type: ignore
     }
 
     raw_response = http_request(URL, "GET", params=params)
