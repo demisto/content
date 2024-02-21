@@ -361,6 +361,11 @@ LOG_SOURCE_EXTENSION_OLD_NEW_MAP = {
     'uuid': 'UUID',
 }
 
+LOG_SOURCE_LANGUAGE_OLD_NEW_MAP = {
+    'id': 'ID',
+    'name': 'Name'
+}
+
 
 ''' ENRICHMENT MAPS '''
 
@@ -4412,6 +4417,46 @@ def qradar_log_source_extensions_list_command(client: Client, args: dict) -> Com
         raw_response=response
     )
 
+def qradar_log_source_languages_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of log source types from QRadar service.
+    possible arguments:
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: Use this parameter to specify which fields you would like to get back in the response.
+              Fields that are not named are excluded.
+              Specify subfields in brackets and multiple fields in the same object are separated by commas.
+    - id: If used, will fetch only the specified log source.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    filter_ = args.get('filter')
+    fields = args.get('fields')
+    endpoint = '/config/event_sources/log_source_management/log_source_languages'
+    id = args.get('id')
+    
+    # if this call fails, raise an error and stop command execution
+    response =(
+        client.get_resource_list(range_, endpoint, filter_, fields) if id is None
+        else [client.get_resource(id, endpoint, fields)])
+    outputs = sanitize_outputs(response, LOG_SOURCE_LANGUAGE_OLD_NEW_MAP)
+    headers = build_headers(['ID', 'Name'], set())
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Log Source Languages List', outputs, headers, removeNull=True),
+        outputs_prefix='QRadar.LogSourceLanguage',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
 def migrate_integration_ctx(ctx: dict) -> dict:
     """Migrates the old context to the current context
 
@@ -4704,6 +4749,9 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'qradar-log-source-extensions-list':
             return_results(qradar_log_source_extensions_list_command(client, args))
+
+        elif command == 'qradar-log-source-languages-list':
+            return_results(qradar_log_source_languages_list_command(client, args))
         
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')

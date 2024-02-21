@@ -2667,44 +2667,44 @@ script:
     - name: id
       description: 'ID of a specific disconnected log collector'
     outputs:
-    - contextPath: QRadar.LogSourceTypesList.custom
+    - contextPath: QRadar.LogSourceTypesList.Custom
       description: ''
       type: Boolean
-    - contextPath: QRadar.LogSourceTypesList.default_protocol_id
+    - contextPath: QRadar.LogSourceTypesList.DefaultProtocolID
       description: ''
       type: Number
-    - contextPath: QRadar.LogSourceTypesList.id
-      description: ''
+    - contextPath: QRadar.LogSourceTypesList.ID
+      description: 'The ID of the log source type'
       type: Number
-    - contextPath: QRadar.LogSourceTypesList.internal
-      description: ''
+    - contextPath: QRadar.LogSourceTypesList.Internal
+      description: 'The condition is set to true if the log source type is an internal log source type (for example, System Notification, SIM Audit, Asset Profiler, and so on) for which log sources cannot be created, edited, or deleted. If this is a user configurable log source type, the condition is set to false.'
       type: Boolean
-    - contextPath: QRadar.LogSourceTypesList.latest_version
-      description: ''
+    - contextPath: QRadar.LogSourceTypesList.LatestVersion
+      description: 'The latest available version of the log source type component.'
       type: String
-    - contextPath: QRadar.LogSourceTypesList.log_source_extension_id
-      description: ''
+    - contextPath: QRadar.LogSourceTypesList.LogSourceExtensionID
+      description: 'The log source extension that is associated with the log source type. The ID must correspond to an existing log source extension or be set to null. See the Log Source Extension API (/api/config/event_sources/log_source_management/log_source_extensions/).'
       type: Number
-    - contextPath: QRadar.LogSourceTypesList.name
-      description: ''
+    - contextPath: QRadar.LogSourceTypesList.Name
+      description: 'The unique name of the log source type. The name is not localized.'
       type: String
     - contextPath: QRadar.LogSourceTypesList.protocol_types.documented
-      description: ''
+      description: 'Indicates whether the protocol is documented/fully supported for this log source type.'
       type: Boolean
     - contextPath: QRadar.LogSourceTypesList.protocol_types.protocol_id
-      description: ''
+      description: 'ID of the protocol type'
       type: Number
     - contextPath: QRadar.LogSourceTypesList.supported_language_ids
-      description: ''
+      description: 'The IDs of the languages supported by this log source type. Each ID must correspond to an existing log source language. See the Log Source Language API'
       type: List
     - contextPath: QRadar.LogSourceTypesList.uuid
-      description: ''
+      description: 'A string uuid the log source type'
       type: String
     - contextPath: QRadar.LogSourceTypesList.version
-      description: ''
+      description: 'The log source type plugin version.'
       type: String
   - name: qradar-log-source-extensions-list
-    description: Retrieves a list of log sources extensions.
+    description: Retrieves a list of log source extensions.
     arguments:
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
@@ -2717,17 +2717,37 @@ script:
     - name: id
       description: 'ID of a specific disconnected log collector'
     outputs:
-    - contextPath: QRadar.LogSourceTypesList.Name
-      description: ''
+    - contextPath: QRadar.LogSourceExtension.Name
+      description: 'The name of the log source extension'
       type: String
-    - contextPath: QRadar.LogSourceTypesList.Description
-      description: ''
+    - contextPath: QRadar.LogSourceExtension.Description
+      description: 'The description of the log source extension.'
       type: String
-    - contextPath: QRadar.LogSourceTypesList.Id
-      description: ''
+    - contextPath: QRadar.LogSourceExtension.ID
+      description: 'The ID of the extension.'
       type: Number
-    - contextPath: QRadar.LogSourceTypesList.UUID
-      description: ''
+    - contextPath: QRadar.LogSourceExtension.UUID
+      description: 'The UUID string of the log source extension.'
+      type: String
+  - name: qradar-log-source-languages-list
+    description: Retrieves a list of log source languages.
+    arguments:
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_languages-GET.html.'
+      isArray: true
+    - name: id
+      description: 'ID of a specific disconnected log collector'
+    outputs:
+    - contextPath: QRadar.LogSourceLanguage.ID
+      description: 'The ID of the language. This ID does not change across deployments.'
+      type: Number
+    - contextPath: QRadar.LogSourceLanguage.Name
+      description: 'The display name of the language.'
       type: String
   script: '-'
   type: python
