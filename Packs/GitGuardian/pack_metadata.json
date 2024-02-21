@@ -1,6 +1,6 @@
 {
     "name": "GitGuardian",
-    "description": "GitGuardian is a developer-first solution scanning GitHub activity in real-time for API secret tokens, database credentials, certificates",
+    "description": "GitGuardian is a developer-first solution scanning GitHub activity in real-time for API secret tokens, database credentials, certificates.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
