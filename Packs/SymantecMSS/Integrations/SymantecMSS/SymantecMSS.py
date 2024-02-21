@@ -29,7 +29,7 @@ def pfx_to_pem(pfx, pfx_password):
     with tempfile.NamedTemporaryFile(suffix=".pem") as t_pem:
         f_pem = open(t_pem.name, "wb")
 
-        private_key, certificate, additional_certificates = pkcs12.load_key_and_certificates(pfx, pfx_password)
+        private_key, certificate, additional_certificates = pkcs12.load_key_and_certificates(pfx, str.encode(pfx_password))
         if private_key:
             f_pem.write(private_key.private_bytes(
                     encoding=serialization.Encoding.PEM,
