@@ -757,19 +757,23 @@ def test_get_packs_and_dependencies_to_install_no_deprecated(mocker: MockFixture
     Then:
         Ensure correct return value with no deprecated dependencies
     """
+    client = MockClient()
     mocker.patch.object(script, 'search_for_deprecated_dependencies',
                         return_value=True)
+    mocker.patch.object(script, "get_server_numeric_version", return_value="6.9")
+    mocker.patch.object(script, "create_packs_artifacts", return_value="")
 
     pack_id = "PackA"
-    dependencies = ["Dep1", "Dep2"]
+    dependencies = {"Dep1", "Dep2"}
     production_bucket = True
     dependencies_data = {}
+    mocker.patch.object(script, "filter_packs_by_min_server_version", return_value=dependencies)
 
     pack_ids = [pack_id]
     graph_dependencies = DiGraph([(d, pack_id) for d in dependencies])
 
     result = script.get_packs_and_dependencies_to_install(
-        pack_ids, graph_dependencies, production_bucket, dependencies_data)
+        pack_ids, graph_dependencies, production_bucket, dependencies_data, client)
 
     assert result == (True, {pack_id, *dependencies})
 
@@ -783,11 +787,13 @@ def test_get_packs_and_dependencies_to_install_no_dependencies(mocker: MockFixtu
     Then:
         Ensure that the pack itself added to result
     """
+    client = MockClient()
     mocker.patch.object(script, 'search_for_deprecated_dependencies',
                         return_value=True)
+    mocker.patch.object(script, "create_packs_artifacts", return_value="")
 
     pack_id = "PackA"
-    dependencies = []
+    dependencies = {}
     production_bucket = True
     dependencies_data = {}
 
@@ -796,7 +802,7 @@ def test_get_packs_and_dependencies_to_install_no_dependencies(mocker: MockFixtu
     graph_dependencies.add_node(pack_id)
 
     result = script.get_packs_and_dependencies_to_install(
-        pack_ids, graph_dependencies, production_bucket, dependencies_data)
+        pack_ids, graph_dependencies, production_bucket, dependencies_data, client)
 
     assert result == (True, {pack_id, *dependencies})
 
@@ -815,19 +821,23 @@ def test_get_packs_and_dependencies_to_install_deprecated(mocker: MockFixture):
         - Ensure empty dependencies set returned
         - Ensure no deprecated dependencies flag set to False
     """
-    mocker.patch.object(script, 'search_for_deprecated_dependencies',
+    client = MockClient()
+    mocker.patch.object(script, "search_for_deprecated_dependencies",
                         return_value=False)
+    mocker.patch.object(script, "get_server_numeric_version", return_value="6.9")
+    mocker.patch.object(script, "create_packs_artifacts", return_value="")
 
     pack_id = "PackA"
-    dependencies = ["Dep1", "Dep2"]
+    dependencies = {"Dep1", "Dep2"}
     production_bucket = True
     dependencies_data = {}
+    mocker.patch.object(script, "filter_packs_by_min_server_version", return_value=dependencies)
 
     pack_ids = [pack_id]
     graph_dependencies = DiGraph([(d, pack_id) for d in dependencies])
 
     result = script.get_packs_and_dependencies_to_install(
-        pack_ids, graph_dependencies, production_bucket, dependencies_data)
+        pack_ids, graph_dependencies, production_bucket, dependencies_data, client)
 
     assert result == (False, set())
 
@@ -997,3 +1007,62 @@ def test_search_and_install_packs_failure_install_packs(mocker: MockFixture):
     )
 
     assert success is False
+
+
+@pytest.mark.parametrize(
+    'pack_version, expected_results',
+    [('6.5.0', {'TestPack'}), ('6.8.0', set())])
+def test_get_packs_with_higher_min_version(mocker: MockFixture, pack_version, expected_results):
+    """
+    Given:
+        - Pack names to install.
+        - case 1: pack with a version lower than the machine.
+        - case 2: pack with a version higher than the machine.
+    When:
+        - Running 'get_packs_with_higher_min_version' method.
+    Then:
+        - Assert the returned packs are with higher min version than the server version.
+        - case 1: shouldn't filter any packs.
+        - case 2: should filter the pack.
+    """
+    mocker.patch.object(script, "get_json_file",
+                        return_value={"serverMinVersion": "6.6.0"})
+
+    packs_with_higher_min_version = script.get_packs_with_higher_min_version({'TestPack'}, pack_version, "")
+    assert packs_with_higher_min_version == expected_results
+
+
+def test_filter_packs_by_min_server_version_packs_filtered(mocker: MockFixture):
+    """
+    Given:
+        A set of pack IDs and a server version
+    When:
+        Some packs have a higher min version than the server version
+    Then:
+        It returns the pack IDs that have a lower min version
+    """
+    packs_id = {"Pack1", "Pack2", "Pack3"}
+    server_version = "6.10.0"
+    mocker.patch.object(script, 'get_packs_with_higher_min_version', return_value={"Pack2", "Pack3"})
+
+    filtered_packs = script.filter_packs_by_min_server_version(packs_id, server_version, "")
+
+    assert filtered_packs == {"Pack1"}
+
+
+def test_filter_packs_by_min_server_version_no_packs_filtered(mocker: MockFixture):
+    """
+    Given:
+        A set of pack IDs and a server version
+    When:
+        No packs have a higher min version than the server version
+    Then:
+        It returns the original set of pack IDs
+    """
+    packs_id = {"Pack1", "Pack2", "Pack3"}
+    server_version = "6.9.0"
+    mocker.patch.object(script, 'get_packs_with_higher_min_version', return_value=set())
+
+    filtered_packs = script.filter_packs_by_min_server_version(packs_id, server_version, "")
+
+    assert filtered_packs == packs_id
