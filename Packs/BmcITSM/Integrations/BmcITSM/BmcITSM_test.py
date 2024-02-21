@@ -1480,4 +1480,3 @@ def test_ticket_list_work_order_command(
     assert result.outputs_prefix == "BmcITSM.Ticket"
     assert len(outputs) == expected_outputs_len
     assert outputs[0]["DisplayID"] == expected_name
-
