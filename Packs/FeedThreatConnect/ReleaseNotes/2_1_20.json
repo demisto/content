@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The option for 'EmailSubject' for indicator type configuration was removed."
+    "breakingChangesNotes": "The *EmailSubject* option was removed from the *Indicator Types* feed parameter."
 }

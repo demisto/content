@@ -556,7 +556,7 @@ def get_updated_last_run(indicators: list, groups: list, previous_run: dict) -> 
     return next_run
 
 
-def get_indicators_command(client: Client, args: dict) -> tuple(str, dict, list):  # type: ignore # pragma: no cover
+def get_indicators_command(client: Client, args: dict) -> dict:  # type: ignore # pragma: no cover
     """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
     Args:
         client: ThreatConnect client.
@@ -607,6 +607,7 @@ def get_indicators_command(client: Client, args: dict) -> tuple(str, dict, list)
                                                t=t, removeNull=True)  # type: ignore # noqa
 
         return readable_output, {}, list(response)  # type: ignore
+    return {}
 
 
 def get_owners_command(client: Client, args: dict) -> COMMAND_OUTPUT:  # pragma: no cover
