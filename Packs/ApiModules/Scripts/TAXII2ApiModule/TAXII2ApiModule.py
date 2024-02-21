@@ -1236,11 +1236,13 @@ class Taxii2FeedClient:
         indicators = []
         relationships_lst = []
         try:
-            non_parsed_objects = {}
+            parsed_objects_counter = {}
             for envelope in envelopes:
+                self.increase_count(parsed_objects_counter, 'envelope')
                 stix_objects = envelope.get("objects")
                 if not stix_objects:
                     # no fetched objects
+                    self.increase_count(parsed_objects_counter, 'not-parsed-envelope-not-stix')
                     break
 
                 # we should build the id_to_object dict before iteration as some object reference each other
@@ -1257,16 +1259,16 @@ class Taxii2FeedClient:
                     # we currently don't support extension object
                     if obj_type == 'extension-definition':
                         demisto.debug(f'There is no parsing function for object type "extension-definition", for object {obj}.')
-                        self.increase_count(non_parsed_objects, 'extension-definition')
+                        self.increase_count(parsed_objects_counter, 'not-parsed-extension-definition')
                         continue
                     elif obj_type == 'relationship':
                         relationships_lst.append(obj)
-                        self.increase_count(non_parsed_objects, 'relationship')
+                        self.increase_count(parsed_objects_counter, 'not-parsed-relationship')
                         continue
 
                     if not parse_objects_func.get(obj_type):
                         demisto.debug(f'There is no parsing function for object type {obj_type}, for object {obj}.')
-                        self.increase_count(non_parsed_objects, obj_type)
+                        self.increase_count(parsed_objects_counter, f'not-parsed-{obj_type}')
                         continue
                     if result := parse_objects_func[obj_type](obj):
                         indicators.extend(result)
@@ -1282,7 +1284,7 @@ class Taxii2FeedClient:
             demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
         finally:
             demisto.debug(f'Finished parsing {len(envelopes)} envelopes. Got {len(indicators)} indicators '
-                          f'and {len(relationships_lst)} relationships. Non parsed objects counters: {non_parsed_objects}')
+                          f'and {len(relationships_lst)} relationships. Parsed objects counters: {parsed_objects_counter}')
         demisto.debug("Finished parsing all objects")
         return indicators, relationships_lst
 
