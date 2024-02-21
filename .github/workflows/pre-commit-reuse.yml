@@ -76,8 +76,8 @@ jobs:
       with:
         name: pytest
         path: |
-          .report_pytest.xml
           packwise_pytest_time.csv
+          .report_pytest.xml
         if-no-files-found: error
 
     - name: Pytest coverage comment

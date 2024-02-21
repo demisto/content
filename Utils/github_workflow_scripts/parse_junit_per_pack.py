@@ -30,7 +30,7 @@ def parse_xml(path: Path = Path(".report_pytest.xml")) -> dict[str, float]:
     for suite in ET.parse(path).getroot().findall("testsuite"):
         for case in suite.findall("testcase"):
             pack_name = parse_pack_name(case.attrib["classname"])
-            pack_times[pack_name] += round(float(case.attrib["time"]), 2)
+            pack_times[pack_name] += float(case.attrib["time"])
     return dict(pack_times)
 
 
@@ -43,7 +43,12 @@ def write_csv(pack_times: dict[str, float], output_path: Path) -> None:
         writer.writeheader()
         writer.writerows(
             [
-                {"pack": pack, "duration": duration}
+                {
+                    "pack": pack,
+                    "duration": str(
+                        round(duration, 2)
+                    ),  # str avoids floating point percision
+                }
                 for pack, duration in sorted(
                     pack_times.items(),
                     key=operator.itemgetter(1),
