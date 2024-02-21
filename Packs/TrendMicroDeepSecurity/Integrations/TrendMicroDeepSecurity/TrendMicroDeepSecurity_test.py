@@ -1025,3 +1025,23 @@ def test_create_once_only_scheduled_task_command(requests_mock):
     assert result.outputs == {"test": "test"}
     assert result.outputs_prefix == "TrendMicro.ScheduledTask"
 
+
+def test_delete_scheduled_task_command(requests_mock):
+    """
+    Scenario: Deletes scheduled tasks by task-IDs.
+
+    Given:
+        - task-ids argument
+    When:
+        - delete_scheduled_task_command is called.
+    Then:
+        - Ensure human readable is returned
+    """
+    from TrendMicroDeepSecurity import delete_scheduled_task_command
+    requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/1', status_code=200, json={})
+    requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/2', status_code=200, json={})
+    client = Client(base_url=BASE_URL, api_key="xxx", use_ssl=False, use_proxy=False)
+    args = convert_args(delete_scheduled_task_command, {"task_ids": "1,2"})
+    result = delete_scheduled_task_command(client, **args)
+
+    assert result.readable_output

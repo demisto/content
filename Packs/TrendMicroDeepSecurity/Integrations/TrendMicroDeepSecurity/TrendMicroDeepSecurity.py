@@ -1788,7 +1788,7 @@ def create_once_only_scheduled_task_command(client: Client, name: str, type: str
     )
 
 
-def delete_scheduled_task(client: Client, task_ids: List[int]):
+def delete_scheduled_task_command(client: Client, task_ids: List[int]):
     for task_id in task_ids:
         client.delete_scheduled_task(task_id)
 
@@ -1864,7 +1864,7 @@ def main():
                                      "trendmicro-list-policies": list_policies_command,
                                      "trendmicro-create-policy": create_policy_command,
                                      "trendmicro-create-onceonly-scheduled-task": create_once_only_scheduled_task_command,
-                                     "trendmicro-delete-scheduled-task": delete_scheduled_task,
+                                     "trendmicro-delete-scheduled-task": delete_scheduled_task_command,
                                      "test-module": test_module}
 
     error_message = ""
