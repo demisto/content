@@ -382,7 +382,7 @@ class Taxii2FeedClient:
                     break
             if not collection_found:
                 raise DemistoException(
-                    "Could not find the provided Collection name in the available collections. "
+                    "Could not find the provided Collection name ({collection_to_fetch}) in the available collections. "
                     "Please make sure you entered the name correctly."
                 )
 
@@ -1179,7 +1179,9 @@ class Taxii2FeedClient:
         try:
             demisto.debug(f"Fetching {page_size} objects from TAXII server")
             envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
+            demisto.debug(f"Fetched {len(envelopes)} envelopes from TAXII server")
             indicators = self.load_stix_objects_from_envelope(envelopes, limit)
+            demisto.debug(f"Loaded {len(indicators)} indicators from TAXII server")
         except InvalidJSONError as e:
             demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}')
             # raised when the response is empty, because {} is parsed into '筽'
@@ -1224,10 +1226,20 @@ class Taxii2FeedClient:
 
         return indicators
 
+
+    @staticmethod
+    def increase_count(counter: dict[str, int], id: str):
+        if id in dict:
+            dict[id] = dict[id] + 1
+        else:
+            dict[id] = 1
+
+
     def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
         relationships_lst = []
         try:
+            non_parsed_objects = {}
             for envelope in envelopes:
                 stix_objects = envelope.get("objects")
                 if not stix_objects:
@@ -1248,27 +1260,32 @@ class Taxii2FeedClient:
                     # we currently don't support extension object
                     if obj_type == 'extension-definition':
                         demisto.debug(f'There is no parsing function for object type "extension-definition", for object {obj}.')
+                        increase_count(non_parsed_objects, 'extension-definition')
                         continue
                     elif obj_type == 'relationship':
                         relationships_lst.append(obj)
+                        increase_count(non_parsed_objects, 'relationship')
                         continue
 
                     if not parse_objects_func.get(obj_type):
                         demisto.debug(f'There is no parsing function for object type {obj_type}, for object {obj}.')
-
+                        increase_count(non_parsed_objects, obj_type)
                         continue
                     if result := parse_objects_func[obj_type](obj):
                         indicators.extend(result)
                         self.update_last_modified_indicator_date(obj.get("modified"))
 
                     if reached_limit(limit, len(indicators)):
-                        demisto.debug("Reached limit of indicators to fetch")
+                        demisto.debug(f"Reached the limit ({limit}) of indicators to fetch. Indicators len: {len(indicators)}")
                         return indicators, relationships_lst
         except Exception as e:
             if len(indicators) == 0:
                 demisto.debug("No Indicator were parsed")
                 raise e
             demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
+        finally:
+            demisto.debug(f'Finished parsing {len(envelopes)} envelopes. Got {len(indicators)} indicators '
+                          f'and {len(relationships_lst)} relationships. Non parsed objects counters: {non_parsed_objects}')
         demisto.debug("Finished parsing all objects")
         return indicators, relationships_lst
 
@@ -1286,7 +1303,9 @@ class Taxii2FeedClient:
                 self.objects_to_fetch.append('relationship')
             kwargs['type'] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
+            demisto.debug(f'Collection is a v20 type collction, {collection_to_fetch}')
             return v20.as_pages(get_objects, per_request=page_size, **kwargs)
+        demisto.debug(f'Collection is a v21 type collction, {collection_to_fetch}')
         return v21.as_pages(get_objects, per_request=page_size, **kwargs)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
@@ -1314,6 +1333,7 @@ class Taxii2FeedClient:
         extracted_objs = [
             item for item in stix_objs if item.get("type") in required_objects
         ]  # retrieve only required type
+        demisto.debug(f'Extracted {len(extracted_objs)} out of {len(stix_objs)} Stix objects with the types: {required_objects}')
 
         return extracted_objs
 
