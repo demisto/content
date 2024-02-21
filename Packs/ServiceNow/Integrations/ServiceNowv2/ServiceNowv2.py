@@ -2394,7 +2394,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         arg_name='lastUpdate',
         required=True
     )
-    demisto.debug(f'last_update of {ticket_id=} is {last_update}')
+    demisto.debug(f'last_update is {last_update}')
 
     ticket_type = client.ticket_type
     result = client.get(ticket_type, ticket_id)
