@@ -9459,7 +9459,7 @@ script:
       name: device-group
     description: Deletes a security profile group from Panorama.
     name: pan-os-delete-security-profile-group
-  dockerimage: demisto/pan-os-python:1.0.0.85910
+  dockerimage: demisto/pan-os-python:1.0.0.87401
   isfetch: true
   runonce: false
   script: ''
