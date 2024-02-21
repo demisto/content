@@ -292,27 +292,25 @@ def get_trail_status(args):
 
     kwargs = {'Name': args.get('name')}
 
-    try:
-        response = client.get_trail_status(**kwargs)
+    response = client.get_trail_status(**kwargs)
 
-        data = {
-            'IsLogging': response.get('IsLogging'),
-            'LatestDeliveryTime': handle_returning_date_to_string(response.get('LatestDeliveryTime')),
-            'LatestCloudWatchLogsDeliveryError': response.get('LatestCloudWatchLogsDeliveryError'),
-            'LatestDeliveryErrorDetails': response.get('LatestDeliveryErrorDetails'),
-            'LatestNotificationError': response.get('LatestNotificationError'),
-            'LatestNotificationTime': handle_returning_date_to_string(response.get('LatestNotificationTime')),
-            'StartLoggingTime': handle_returning_date_to_string(response.get('StartLoggingTime')),
-            'StopLoggingTime': handle_returning_date_to_string(response.get('StopLoggingTime')),
-            'LatestCloudWatchLogsDeliveryTime': handle_returning_date_to_string(response.get('LatestCloudWatchLogsDeliveryTime')),
-            'LatestDigestDeliveryTime': handle_returning_date_to_string(response.get('LatestDigestDeliveryTime')),
-            'LatestDigestDeliveryError': response.get('LatestDigestDeliveryError')
+    data = {
+        'IsLogging': response.get('IsLogging'),
+        'LatestDeliveryTime': handle_returning_date_to_string(response.get('LatestDeliveryTime')),
+        'LatestCloudWatchLogsDeliveryError': response.get('LatestCloudWatchLogsDeliveryError'),
+        'LatestDeliveryErrorDetails': response.get('LatestDeliveryErrorDetails'),
+        'LatestNotificationError': response.get('LatestNotificationError'),
+        'LatestNotificationTime': handle_returning_date_to_string(response.get('LatestNotificationTime')),
+        'StartLoggingTime': handle_returning_date_to_string(response.get('StartLoggingTime')),
+        'StopLoggingTime': handle_returning_date_to_string(response.get('StopLoggingTime')),
+        'LatestCloudWatchLogsDeliveryTime': handle_returning_date_to_string(response.get('LatestCloudWatchLogsDeliveryTime')),
+        'LatestDigestDeliveryTime': handle_returning_date_to_string(response.get('LatestDigestDeliveryTime')),
+        'LatestDigestDeliveryError': response.get('LatestDigestDeliveryError')
         }
 
-        ec = {'AWS.CloudTrail.TrailStatus(val.Name == obj.Name)': data}
-        human_readable = tableToMarkdown('AWS CloudTrail Trail Status', data)
-        return_outputs(human_readable, ec)
-
+    ec = {'AWS.CloudTrail.TrailStatus(val.Name == obj.Name)': data}
+    human_readable = tableToMarkdown('AWS CloudTrail Trail Status', data)
+    return_outputs(human_readable, ec)
 
 
 def update_trail(args):
