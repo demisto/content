@@ -39,7 +39,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### cyberint-get-indicators
 
 ***
-Gets indicators from the feed.
+Gets indicators from the feed. To increase the execution timeout, use the `execution-timeout` argument or add this server configuration- <integration_name>.<command_name>.timeout
 
 #### Base Command
 
@@ -65,7 +65,7 @@ Gets indicators from the feed.
 | Cyberint.confidence | String | The feed confidence. |
 
 #### Command example
-```!cyberint-get-indicators limit=10 execution-timeout=700```
+```!cyberint-get-indicators limit=10```
 #### Context Example
 ```json
 {
