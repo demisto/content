@@ -40,13 +40,7 @@ def extract_hyperlinks_from_pptx(file_path):
     return links
 
 
-def extract_hyperlink_by_file_type(args: Dict[str, Any]) -> CommandResults:
-
-    entry_id = args.get("entry_id")
-    file_result = demisto.getFilePath(entry_id)
-    if not file_result:
-        return_error("Couldn't find entry id: {}".format(entry_id))
-    file_path = file_result.get('path')
+def extract_hyperlink_by_file_type(file_path: str) -> CommandResults:
 
     result = []
     if file_path.endswith('.xlsx'):
@@ -70,8 +64,15 @@ def extract_hyperlink_by_file_type(args: Dict[str, Any]) -> CommandResults:
 
 
 def main():
+
+    entry_id = demisto.args().get("entry_id")
+    file_result = demisto.getFilePath(entry_id)
+    if not file_result:
+        return_error("Couldn't find entry id: {}".format(entry_id))
+    file_path = file_result.get('path')
+
     try:
-        return_results(extract_hyperlink_by_file_type(demisto.args()))
+        return_results(extract_hyperlink_by_file_type(file_path))
     except Exception as ex:
         return_error(f'Failed to execute ExtractHyperlinksFromOfficeFiles. Error: {str(ex)}')
 

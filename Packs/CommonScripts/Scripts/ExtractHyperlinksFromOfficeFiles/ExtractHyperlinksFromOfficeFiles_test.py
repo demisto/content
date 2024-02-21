@@ -6,7 +6,7 @@ def test_basescript_dummy():
     When:
     Then:
     """
-    from BaseScript import basescript_dummy_command
+    from ExtractHyperlinksFromOfficeFiles import extract_hyperlink_by_file_type
 
     args = {
         'dummy': 'this is a dummy response'
