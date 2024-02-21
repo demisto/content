@@ -186,9 +186,12 @@ script:
       auto: PREDEFINED
     - description: The query to filter the device.
       name: filter
-    - description: The maximum records to return.
+    - description: The maximum records to return [1-5000].
       name: limit
       defaultValue: 50
+    - description: The offset to start retrieving records from.
+      name: offset
+      defaultValue: 0
     - description: 'A comma-separated list of device IDs to limit the results.'
       name: ids
     - auto: PREDEFINED
@@ -2112,6 +2115,12 @@ script:
       name: ip
     - description: The endpoint hostname.
       name: hostname
+    - description: The maximum records to return [1-5000].
+      name: limit
+      defaultValue: 50
+    - description: The offset to start retrieving records from.
+      name: offset
+      defaultValue: 0
     description: Returns information about an endpoint, does not support regex.
     name: endpoint
     outputs:
