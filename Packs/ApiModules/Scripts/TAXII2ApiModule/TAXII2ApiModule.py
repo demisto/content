@@ -1226,13 +1226,11 @@ class Taxii2FeedClient:
 
         return indicators
 
-
     def increase_count(self, counter: dict[str, int], id: str):
-        if id in dict:
-            dict[id] = dict[id] + 1
+        if id in counter:
+            counter[id] = counter[id] + 1
         else:
-            dict[id] = 1
-
+            counter[id] = 1
 
     def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
@@ -1259,16 +1257,16 @@ class Taxii2FeedClient:
                     # we currently don't support extension object
                     if obj_type == 'extension-definition':
                         demisto.debug(f'There is no parsing function for object type "extension-definition", for object {obj}.')
-                        increase_count(non_parsed_objects, 'extension-definition')
+                        self.increase_count(non_parsed_objects, 'extension-definition')
                         continue
                     elif obj_type == 'relationship':
                         relationships_lst.append(obj)
-                        increase_count(non_parsed_objects, 'relationship')
+                        self.increase_count(non_parsed_objects, 'relationship')
                         continue
 
                     if not parse_objects_func.get(obj_type):
                         demisto.debug(f'There is no parsing function for object type {obj_type}, for object {obj}.')
-                        increase_count(non_parsed_objects, obj_type)
+                        self.increase_count(non_parsed_objects, obj_type)
                         continue
                     if result := parse_objects_func[obj_type](obj):
                         indicators.extend(result)
