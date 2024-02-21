@@ -346,12 +346,14 @@ def create_related_incidents_df(
 def enrich_incidents(
     incidents: pd.DataFrame,
     fields_to_display: list,
+    is_current_incident: bool = False,
 ) -> pd.DataFrame:
     """
     Enriches a DataFrame of incidents with the given fields to display.
 
     :param similar_incidents: Incidents dataFrame
     :param fields_to_display: Fields selected for enrichement
+    :param is_current_incident: Whether enriching the current incident
     :return: Incidents dataFrame enriched
     """
     if incidents.empty:
@@ -364,8 +366,11 @@ def enrich_incidents(
         "populateFields": ",".join(fields_to_display),
     }
     demisto.debug(f"Executing GetIncidentsByQuery with {args=}")
-    res = execute_command("GetIncidentsByQuery", args, fail_on_error=True)
-    incidents_map: dict[str, dict] = {incident[INCIDENT_ID_FIELD]: incident for incident in json.loads(res)}
+    if is_current_incident:
+        res = demisto.incidents()
+    else:
+        res = json.loads(execute_command("GetIncidentsByQuery", args, fail_on_error=True))
+    incidents_map: dict[str, dict] = {incident[INCIDENT_ID_FIELD]: incident for incident in res}
     if CREATED_FIELD in fields_to_display:
         incidents[CREATED_FIELD] = [
             dateparser.parse(incidents_map[inc_id][CREATED_FIELD]).strftime(DATE_FORMAT)  # type: ignore
@@ -450,6 +455,7 @@ def similar_incidents_results(
 def actual_incident_results(
     incident_df: pd.DataFrame,
     incident_id: str,
+    is_current_incident: bool,
     indicators_data: dict,
     fields_to_display: list[str],
 ) -> CommandResults:
@@ -457,6 +463,7 @@ def actual_incident_results(
     Formats the given DataFrame, and returns a CommandResults object of the actual incident data
     :param incident_df: a DataFrame of actual incident
     :param incident_id: the incident ID
+    :param is_current_incident: whether this is the incident triggering the command
     :param indicators_data: indicators data of the actual incident
     :param fields_to_display: A list of fields to display
     :return: a CommandResults obj
@@ -468,7 +475,7 @@ def actual_incident_results(
     incident_df[INDICATORS_COLUMN] = incident_df[INDICATORS_COLUMN].apply(
         lambda inc_ids: replace_indicator_ids_with_values(inc_ids, indicators_data)
     )
-    incident_df = enrich_incidents(incident_df, fields_to_display)
+    incident_df = enrich_incidents(incident_df, fields_to_display, is_current_incident)
     additional_headers = [
         x for x in incident_df.columns.tolist()
         if x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + FIELDS_TO_EXCLUDE_FROM_DISPLAY
@@ -483,7 +490,10 @@ def actual_incident_results(
     )
 
 
-def find_similar_incidents_by_indicators(incident_id: str, args: dict) -> list[CommandResults]:
+def find_similar_incidents_by_indicators(args: dict) -> list[CommandResults]:
+    is_current_incident: bool = not bool(args.get("incidentId"))
+    incident_id = demisto.incidents()[0]["id"] if is_current_incident else args["incidentId"]
+
     # get_indicators_of_actual_incident() args
     indicators_types = argToList(args.get("indicatorsTypes"), transform=str.lower)
     min_number_of_indicators = int(args["minNumberOfIndicators"])
@@ -525,7 +535,13 @@ def find_similar_incidents_by_indicators(incident_id: str, args: dict) -> list[C
 
     if show_actual_incident:
         command_results_list.append(
-            actual_incident_results(actual_incident_df, incident_id, indicators_of_actual_incident, fields_to_display)
+            actual_incident_results(
+                actual_incident_df,
+                incident_id,
+                is_current_incident,
+                indicators_of_actual_incident,
+                fields_to_display,
+            )
         )
     command_results_list.extend([
         mutual_indicators_results(mutual_indicators, incident_ids),
@@ -537,8 +553,7 @@ def find_similar_incidents_by_indicators(incident_id: str, args: dict) -> list[C
 def main():  # pragma: no cover
     try:
         args = demisto.args()
-        incident_id = args.get("incidentId") or demisto.incidents()[0]["id"]
-        return_results(find_similar_incidents_by_indicators(incident_id, args))
+        return_results(find_similar_incidents_by_indicators(args))
     except Exception as e:
         return_error(f"Failed to execute DBotFindSimilarIncidentsByIndicators. Error: {e}")
 
