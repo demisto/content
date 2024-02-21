@@ -1371,18 +1371,8 @@ def delete_limit_param(url):
 def main():
     try:
         params = demisto.params()
-        base_url = params['url'].rstrip('/')
-
-        api_token = params.get("credentials", {}).get("password") or params.get('apitoken')
-
-        if not api_token:
-            raise ValueError('Missing API token.')
-
-        verify_certificate = not params.get('insecure', False)
-        proxy = params.get('proxy', False)
 
         demisto.debug(f'Command being called is {demisto.command()}')
-
         commands = {
             'test-module': module_test,
             'okta-unlock-user': unlock_user_command,
@@ -1422,19 +1412,18 @@ def main():
         }
 
         command = demisto.command()
-        auth_type = AuthType.OAUTH if argToBoolean(params.get('use_oauth', False)) else AuthType.API_TOKEN
 
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
+            base_url=params['url'].rstrip('/'),
+            verify=(not params.get('insecure', False)),
             headers={
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            proxy=proxy,
+            proxy=params.get('proxy', False),
             ok_codes=(200, 201, 204),
-            api_token=api_token,
-            auth_type=auth_type,
+            api_token=params.get("credentials", {}).get("password") or params.get('apitoken'),
+            auth_type=AuthType.OAUTH if argToBoolean(params.get('use_oauth', False)) else AuthType.API_TOKEN,
             client_id=params.get('client_id'),
             scopes=OAUTH_TOKEN_SCOPES,
             private_key=params.get('private_key'),

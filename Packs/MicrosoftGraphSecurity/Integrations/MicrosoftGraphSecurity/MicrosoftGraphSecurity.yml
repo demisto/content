@@ -689,17 +689,15 @@ script:
       - unknown
       - truePositive
       - falsePositive
-      - benignPositive
+      - informationalExpectedActivity
     - auto: PREDEFINED
       description: Relevant only for Alerts v2. Use this field to update the alert's determination.
       name: determination
       predefined:
       - unknown
-      - apt
       - malware
       - phishing
       - other
-      - securityPersonnel
       - securityTesting
       - multiStagedAttack
       - maliciousUserActivity
@@ -2038,7 +2036,7 @@ script:
     - contextPath: MSGraphMail.AssessmentRequest.ResultMessage
       description: The result message of the assessment request.
       type: String
-  dockerimage: demisto/crypto:1.0.0.82826
+  dockerimage: demisto/crypto:1.0.0.87358
   isfetch: true
   runonce: false
   script: '-'
