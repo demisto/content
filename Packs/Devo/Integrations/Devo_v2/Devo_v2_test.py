@@ -152,6 +152,18 @@ MOCK_WRITER_ARGS = {
     "tableName": "whatever.table",
     "records": '[{"foo": "hello"}, {"foo": "world"}, {"foo": "demisto"}]',
 }
+MOCK_WRITER_ARGS_LIST = {
+    "tableName": "whatever.table",
+    "records": '[["a", "b", "c"], ["1", "2", "3"]]',
+}
+MOCK_WRITER_ARGS_EMPTY = {
+    "tableName": "whatever.table",
+    "records": '[1234, true]',
+}
+MOCK_WRITER_ARGS_STR = {
+    "tableName": "whatever.table",
+    "records": '["This is my first event", "This is my second log"]',
+}
 MOCK_WRITE_TO_TABLE_RECORDS = {
     "tableName": "whatever.table",
     "records": '[{"hello": "world"}, {"abc": "xyz"}, {"data": "test"}]',
@@ -521,6 +533,20 @@ def test_write_devo(mock_load_results, mock_write_args):
 @patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
 @patch("Devo_v2.demisto.args")
 @patch("Devo_v2.Sender")
+def test_write_devo_str(mock_load_results, mock_write_args):
+    mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
+    mock_write_args.return_value = MOCK_WRITER_ARGS_STR
+    try:
+        write_to_table_command()
+    except ValueError as exc:
+        error_msg = str(exc)
+        assert 'Failed to execute command devo-write-to-table.' in error_msg
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
 def test_write_devo_data(mock_load_results, mock_write_args):
     mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
     mock_write_args.return_value = MOCK_WRITER_ARGS
@@ -529,11 +555,29 @@ def test_write_devo_data(mock_load_results, mock_write_args):
     except ValueError as exc:
         error_msg = str(exc)
         assert "Error decoding JSON. Please ensure the records are valid JSON." in error_msg
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+def test_write_devo_list(mock_load_results, mock_write_args):
+    mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
+    mock_write_args.return_value = MOCK_WRITER_ARGS_LIST
     try:
         write_to_table_command()
     except ValueError as exc:
         error_msg = str(exc)
         assert "The 'records' parameter must be a list." in error_msg
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+def test_write_devo_no_data(mock_load_results, mock_write_args):
+    mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
+    mock_write_args.return_value = MOCK_WRITER_ARGS_EMPTY
     try:
         write_to_table_command()
     except ValueError as exc:

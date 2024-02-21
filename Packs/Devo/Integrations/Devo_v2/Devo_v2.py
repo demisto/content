@@ -825,7 +825,7 @@ def multi_table_query_command(offset, items):
 
 
 def convert_to_str(value):
-    if isinstance(value, list) and len(value) == 0:
+    if isinstance(value, list) and not value:
         return_warning("Empty list encountered.")
         return '[]'
     elif isinstance(value, dict) and not value:

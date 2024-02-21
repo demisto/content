@@ -327,7 +327,7 @@ For more information on the way we write to a table please refer to this documen
 | **Argument Name** | **Description**                                                 | **Required** |
 |-------------------|-----------------------------------------------------------------|--------------|
 | tableName         | Table name to write to                                          | Required     |
-| records           | Records to write to given tableName                             | Required     |
+| records           | Records written to specified Devo table.                             | Required     |
 | linqLinkBase      | Overrides the global link base so is able to be set at run time | Optional     |
 
 
@@ -386,8 +386,8 @@ adding in extra lookup information found [HERE](https://github.com/DevoInc/pytho
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | lookupTableName | Lookup table name you are trying to write to | Required |
-| headers | Headers of records to upload. Order sensitive. | Required |
-| records | Lookup table records to insert | Required |
+| headers | Headers for lookup table control. | Required |
+| records | Records to write to the specified table. | Required |
 
 
 ##### Context Output
