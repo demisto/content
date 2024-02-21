@@ -1,0 +1,20 @@
+{
+        "Custom": true,
+        "DefaultProtocolID": 42,
+        "ID": 42,
+        "Internal": true,
+        "LatestVersion": "String",
+        "LogSourceExtensionID": 42,
+        "Name": "String",
+        "ProtocolTypes": [
+            {
+                "Documented": true,
+                "ProtocolID": 42
+            }
+        ],
+        "SupportedLanguageIDs": [
+            42
+        ],
+        "UUID": "String",
+        "Version": "String"
+}

@@ -2662,10 +2662,47 @@ script:
     - name: filter
       description: 'Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-disconnected_log_collectors-GET.html.'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_types-GET.html.'
       isArray: true
     - name: id
       description: 'ID of a specific disconnected log collector'
+    outputs:
+    - contextPath: QRadar.LogSourceTypesList.custom
+      description: ''
+      type: Boolean
+    - contextPath: QRadar.LogSourceTypesList.default_protocol_id
+      description: ''
+      type: Number
+    - contextPath: QRadar.LogSourceTypesList.id
+      description: ''
+      type: Number
+    - contextPath: QRadar.LogSourceTypesList.internal
+      description: ''
+      type: Boolean
+    - contextPath: QRadar.LogSourceTypesList.latest_version
+      description: ''
+      type: String
+    - contextPath: QRadar.LogSourceTypesList.log_source_extension_id
+      description: ''
+      type: Number
+    - contextPath: QRadar.LogSourceTypesList.name
+      description: ''
+      type: String
+    - contextPath: QRadar.LogSourceTypesList.protocol_types.documented
+      description: ''
+      type: Boolean
+    - contextPath: QRadar.LogSourceTypesList.protocol_types.protocol_id
+      description: ''
+      type: Number
+    - contextPath: QRadar.LogSourceTypesList.supported_language_ids
+      description: ''
+      type: List
+    - contextPath: QRadar.LogSourceTypesList.uuid
+      description: ''
+      type: String
+    - contextPath: QRadar.LogSourceTypesList.version
+      description: ''
+      type: String
   script: '-'
   type: python
   subtype: python3
