@@ -2394,13 +2394,13 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         arg_name='lastUpdate',
         required=True
     )
-    demisto.debug(f'last_update is {last_update}')
+    demisto.debug(f'last_update of {ticket_id=} is {last_update}')
 
     ticket_type = client.ticket_type
     result = client.get(ticket_type, ticket_id)
 
     if not result or 'result' not in result:
-        return 'Ticket was not found.'
+        return f'Ticket {ticket_id=} was not found.'
 
     if isinstance(result['result'], list):
         if len(result['result']) == 0:
@@ -2417,13 +2417,15 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         required=False
     )
 
-    demisto.debug(f'ticket_last_update is {ticket_last_update}')
-
-    if last_update > ticket_last_update:
-        demisto.debug('Nothing new in the ticket')
+    demisto.debug(f'ticket_last_update of {ticket_id=} is {ticket_last_update}')
+    is_fetch = demisto.params().get('isFetch')
+    if is_fetch and last_update > ticket_last_update:
+        demisto.debug(f'Nothing new in the ticket {ticket_id=}')
         ticket = {}
 
     else:
+        # in case we use SNOW just to mirror by setting the incident with mirror fields
+        # is_fetch will be false, so we will update even the XSOAR incident will be updated then SNOW ticket.
         demisto.debug(f'ticket is updated: {ticket}')
 
     parse_dict_ticket_fields(client, ticket)
