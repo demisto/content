@@ -624,3 +624,51 @@ def test_generate_variable_names_and_mapping_sap_hana(bind_variables_names_list,
                                                                     dialect)
     assert bind_variables == expected_variables_dict
     assert sql_query == expected_query
+
+
+STR_BIND_VARIABLES_NAMES = 'ID, LastName, FirstName'
+STR_VARIABLES_VALUE = '2, lname, fname'
+
+
+@pytest.mark.parametrize("bind_variables_names, bind_variables_values, expected_bind_variables_names_list, "
+                         "expected_bind_variables_values_list",
+                         [
+                             # with bind_variables_names
+                             (STR_BIND_VARIABLES_NAMES, STR_VARIABLES_VALUE, BIND_VARIABLES_NAMES_LIST,
+                              BIND_VARIABLES_VALUES_LIST),
+                             # without bind_variables_names
+                             ([], STR_VARIABLES_VALUE, [], BIND_VARIABLES_VALUES_LIST)
+                         ])
+def test_generate_bind_vars(mocker, bind_variables_names, bind_variables_values, expected_bind_variables_names_list,
+                            expected_bind_variables_values_list):
+    """
+    Given
+    - Case A: A bind_variables_names str along with the other arguments.
+    - Case B: An empty bind_variables_names and the other arguments.
+    When
+    - Executing generate_bind_vars function
+    Then
+    - Case A: The generate_bind_vars is called with the correct arguments (bind_variables_names_list isn't empty).
+    - Case B: The generate_bind_vars is called with the correct arguments (bind_variables_names_list is empty).
+    """
+    from GenericSQL import generate_bind_vars
+    mock_call = mocker.patch("GenericSQL.generate_variable_names_and_mapping")
+    dialect = 'SAP HANA'
+    generate_bind_vars(bind_variables_names, bind_variables_values, QUERY, dialect)
+    mock_call.assert_called_with(expected_bind_variables_names_list, expected_bind_variables_values_list, QUERY, dialect)
+
+
+def test_generate_bind_vars_exception():
+    """
+    Given
+    - bind_variables_names and bind_variables_values but there are more values than matching names.
+    When
+    - Executing generate_bind_vars function
+    Then
+    - An exception should be raised.
+    """
+    from GenericSQL import generate_bind_vars
+    try:
+        generate_bind_vars('variable_name1', STR_VARIABLES_VALUE, QUERY, 'SAP HANA')
+    except Exception as e:
+        assert str(e) == 'The bind variables lists are not is the same length'
