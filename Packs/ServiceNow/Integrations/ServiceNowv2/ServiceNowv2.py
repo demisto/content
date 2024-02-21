@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
-import shutil
 from collections.abc import Callable, Iterable
 
 
@@ -709,8 +708,8 @@ class Client(BaseClient):
                 try:
                     file_entry = file['id']
                     file_name = file['name']
-                    shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
-                    with open(file_name, 'rb') as f:
+                    file_path = demisto.getFilePath(file_entry)['path']
+                    with open(file_path, 'rb') as f:
                         file_info = (file_name, f, self.get_content_type(file_name))
                         if self.use_oauth:
                             access_token = self.snow_client.get_access_token()
@@ -723,7 +722,6 @@ class Client(BaseClient):
                             res = requests.request(method, url, headers=headers, data=body, params=params,
                                                    files={'file': file_info}, auth=self._auth,
                                                    verify=self._verify, proxies=self._proxies)
-                    shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
                 except Exception as err:
                     raise Exception('Failed to upload file - ' + str(err))
             else:
