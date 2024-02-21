@@ -9226,9 +9226,13 @@ if 'requests' in sys.modules:
 
         def _return_execution_metrics_results(self):
             """ Returns execution metrics results.
+            Might raise an AttributeError exception if execution_metrics is not initialized.
             """
-            if self.execution_metrics.metrics:
-                return_results(cast(CommandResults, self.execution_metrics.metrics))
+            try:
+                if self.execution_metrics.metrics:
+                    return_results(cast(CommandResults, self.execution_metrics.metrics))
+            except AttributeError:
+                pass
 
 
 def batch(iterable, batch_size=1):
