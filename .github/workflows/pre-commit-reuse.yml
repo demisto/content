@@ -19,6 +19,9 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
     - name: Setup python
       uses: actions/setup-python@v4
       with:
