@@ -423,13 +423,11 @@ def test_delete_destination_list_command(requests_mock, mock_client):
 def test_get_access_token(requests_mock, mock_client):
     """
     Scenario:
-    - Test get an access token
-    Given:
-    - Nothing
+    - Test the flow of getting an access token
     When:
-    - get_access_token
+    - running the get_access_token method.
     Then:
-    - Ensure that an access token is returned
+    - Ensure that an access token is returned.
     """
     
     response = load_mock_response('token.json')
@@ -438,7 +436,7 @@ def test_get_access_token(requests_mock, mock_client):
         json=response
     )
 
-    access_token = CiscoUmbrellaCloudSecurityv2.get_access_token(mock_client)
+    access_token = CiscoUmbrellaCloudSecurityv2.Client.get_access_token(mock_client)
 
     assert access_token == response.get('access_token')
     
