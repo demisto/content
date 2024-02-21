@@ -1002,3 +1002,26 @@ def test_trendmicro_create_policy_command(requests_mock):
 
     assert result.outputs_prefix == "TrendMicro.Policies"
     assert result.outputs["name"] == "TestPolicy"
+
+
+def test_create_once_only_scheduled_task_command(requests_mock):
+    """
+    Scenario: Create a new scheduled task for a computer ID
+
+    Given:
+        - name, type and computer ID arguments
+    When:
+        - create_once_only_scheduled_task_command is called.
+    Then:
+        - Ensure outputs prefix is correct.
+        - Ensure the context is valid (simply the raw api response)
+    """
+    from TrendMicroDeepSecurity import create_once_only_scheduled_task_command
+    requests_mock.post(f'{BASE_URL}/api/scheduledtasks', json={"test": "test"})
+    client = Client(base_url=BASE_URL, api_key="xxx", use_ssl=False, use_proxy=False)
+    args = convert_args(create_once_only_scheduled_task_command, {"name": "test", "type": "test", "computer_id": "123"})
+    result = create_once_only_scheduled_task_command(client, **args)
+
+    assert result.outputs == {"test": "test"}
+    assert result.outputs_prefix == "TrendMicro.ScheduledTask"
+
