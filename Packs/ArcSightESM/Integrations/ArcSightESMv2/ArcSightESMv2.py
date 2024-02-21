@@ -287,6 +287,8 @@ def get_query_viewer_results(query_viewer_id):
     if not isinstance(results, list):
         results = [results]
 
+    demisto.debug(f"len(results) = {len(results)}, len(fields) = {len(fields)}")
+
     if len(fields) == 0 or len(results) == 0:
         return fields, results
 
@@ -382,13 +384,21 @@ def fetch():
     fields, query_results = get_query_viewer_results(events_query_viewer_id or cases_query_viewer_id)
     # sort query_results by creation time
     query_results.sort(key=lambda k: int(k.get('Start Time') or k.get('Create Time')))
-
+    try:
+        ids = []
+        for result in query_results:
+            ids.append(result.get('ID') or result.get('Event ID'))
+        demisto.debug(f"query_results {ids=}")
+        demisto.debug(f"length query_results {len(ids)=}")
+    except Exception:
+        demisto.debug("failed writing log")
     incidents = []
     for result in query_results:
         # convert case or event to demisto incident
         r_id = result.get('ID') or result.get('Event ID')
         if r_id not in already_fetched:
             create_time_epoch = int(result.get('Start Time') or result.get('Create Time'))
+            demisto.debug(f"{create_time_epoch=}")
             result['Create Time'] = parse_timestamp_to_datestring(create_time_epoch)
             incident_name = result.get('Name') or f'New {type_of_incident} from arcsight at {datetime.now()}'
             labels = [{'type': key.encode('utf-8'), 'value': value.encode('utf-8') if value else value} for key, value
