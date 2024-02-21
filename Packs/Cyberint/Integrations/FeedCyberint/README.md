@@ -12,6 +12,7 @@ This integration was integrated and tested with version 1 of Cyberint Feed.
     | The Cyberint IOC feed endpoint URL |  | True |
     | API Key (Leave empty. Fill in the API Key in the password field.) |  | True |
     | API access token |  | True |
+    | Customer name |  | False |
     | Fetch indicators |  | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
     | Source Reliability | Reliability of the source providing the intelligence data | True |
@@ -48,7 +49,7 @@ Gets indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. The default value is 10. Default is 10. | Optional |
+| limit | The maximum number of results to return.  Default is 10. | Optional |
 
 #### Context Output
 
