@@ -47,19 +47,26 @@ script:
     - name: priority_id
       required: true
       description: Add a priority id for this issue
+      type: textArea
     - name: subject
       required: true
       description: Add a subject for this issue
+      type: textArea
     - name: description
       description: Add a description for this issue
+      type: textArea
     - name: category_id
       description: Add a category id for this issue
+      type: textArea
     - name: fixed_version_id
       description: Add a target version id for this issue
+      type: textArea
     - name: assigned_to_id
       description: Add an ID of the user to assign the issue to
+      type: textArea
     - name: parent_issue_id
       description: Add the ID of the parent issue
+      type: textArea
     - name: custom_fields
       auto: PREDEFINED
       predefined:
@@ -73,14 +80,22 @@ script:
     - name: is_private
       description: Is the issue private? (True/False)
       defaultValue: "True"
+      type: textArea
     - name: estimated_hours
       description: Add number of hours estimated for this issue
+      type: textArea
     - name: file_entry_id
       description: Add the entry ID of the file to upload
+      type: textArea
     - name: file_name
       description: Add the name of the file to attach
+      type: textArea
     - name: file_description
       description: Add the description of the file you attached
+      type: textArea
+    - name: file_content_type
+      description: Add the file content of the file you attached
+      type: textArea
     outputs:
       - contextPath: Redmine.issue
         description: kmsjnak
@@ -92,6 +107,7 @@ script:
       type: textArea
     - name: page_size
       description: Add page size (default is 50)
+      type: textArea
     - name: limit
       description: Add the number of issues to show in the response (default 50 maximum 100)
       type: textArea
@@ -108,7 +124,7 @@ script:
       description: Add a project id to show issues of this project
       type: textArea
     - name: subproject_id
-      description: Add a subproject id to show issues of this subproject_id (use project_id=someID&subproject_id=!* to exclude subproject)
+      description: Add a subproject id to show issues of this subproject_id (use project_id=someID and subproject_id=!* to exclude subproject)
       type: textArea
     - name: tracker_id
       description: Add a tracker id to show issues of this tracker id
@@ -182,6 +198,18 @@ script:
       type: textArea
     - name: private_notes
       description: Add True is the notes are private
+      type: textArea
+    - name: file_entry_id
+      description: Add the entry ID of the file to upload
+      type: textArea
+    - name: file_name
+      description: Add the name of the file to attach
+      type: textArea
+    - name: file_description
+      description: Add the description of the file you attached
+      type: textArea
+    - name: file_content_type
+      description: Add the file content of the file you attached
       type: textArea
     outputs:
       - contextPath: Redmine.issue
