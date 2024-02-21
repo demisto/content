@@ -3,6 +3,7 @@ import time
 from typing import Any
 from collections.abc import Callable
 from urllib.parse import urljoin
+from demisto_client.demisto_api.api.default_api import DefaultApi as DemistoClient
 import demisto_client
 import requests
 from demisto_client.demisto_api.rest import ApiException
@@ -13,7 +14,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 ALREADY_IN_PROGRESS = "operation is already in progress"
 
 
-def generic_request_with_retries(client: demisto_client,
+def generic_request_with_retries(client: DemistoClient,
                                  retries_message: str,
                                  exception_message: str,
                                  prior_message: str,
@@ -107,7 +108,7 @@ def generic_request_with_retries(client: demisto_client,
     return False, None
 
 
-def get_updating_status(client: demisto_client,
+def get_updating_status(client: DemistoClient,
                         attempts_count: int = 5,
                         sleep_interval: int = 60,
                         request_timeout: int = 300,
@@ -131,7 +132,7 @@ def get_updating_status(client: demisto_client,
                                         )
 
 
-def wait_until_not_updating(client: demisto_client,
+def wait_until_not_updating(client: DemistoClient,
                             attempts_count: int = 2,
                             sleep_interval: int = 30,
                             maximum_time_to_wait: int = 600,
