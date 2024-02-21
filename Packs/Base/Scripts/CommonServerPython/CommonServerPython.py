@@ -199,7 +199,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set
+    from typing import Optional, Dict, List, Any, Union, Set, cast
 
     from urllib3 import disable_warnings
     disable_warnings()
@@ -512,6 +512,7 @@ class ErrorTypes(object):
     PROXY_ERROR = 'ProxyError'
     SSL_ERROR = 'SSLError'
     TIMEOUT_ERROR = 'TimeoutError'
+    RETRY_ERROR = "RetryError"
 
 
 class FeedIndicatorType(object):
@@ -7322,7 +7323,7 @@ class ExecutionMetrics(object):
     """
 
     def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
-                 proxy_error=0, ssl_error=0, timeout_error=0):
+                 proxy_error=0, ssl_error=0, timeout_error=0, retry_error=0):
         self._metrics = []
         self.metrics = None
         self.success = success
@@ -7334,6 +7335,7 @@ class ExecutionMetrics(object):
         self.proxy_error = proxy_error
         self.ssl_error = ssl_error
         self.timeout_error = timeout_error
+        self.retry_error = retry_error
         """
             Initializes an ExecutionMetrics object. Once initialized, you may increment each metric type according to the
             metric you'd like to report. Afterwards, pass the `metrics` value to CommandResults.
@@ -7364,6 +7366,9 @@ class ExecutionMetrics(object):
 
             :type timeout_error: ``int``
             :param timeout_error: Quantity of Timeout Error metrics
+
+            :type retry_error: ``int``
+            :param retry_error: Quantity of Retry Error metrics
 
             :type metrics: ``CommandResults``
             :param metrics: Append this value to your CommandResults list to report the metrics to your server.
@@ -7455,6 +7460,15 @@ class ExecutionMetrics(object):
     def timeout_error(self, value):
         self._timeout_error = value
         self.update_metrics(ErrorTypes.TIMEOUT_ERROR, self._timeout_error)
+
+    @property
+    def retry_error(self):
+        return self._retry_error
+
+    @retry_error.setter
+    def retry_error(self, value):
+        self._retry_error = value
+        self.update_metrics(ErrorTypes.RETRY_ERROR, self._retry_error)
 
     def get_metric_list(self):
         return self._metrics
@@ -8772,7 +8786,10 @@ if 'requests' in sys.modules:
             system_timeout = os.getenv('REQUESTS_TIMEOUT', '')
             self.timeout = float(entity_timeout or system_timeout or timeout)
 
+            self.execution_metrics = ExecutionMetrics()
+
         def __del__(self):
+            self._return_execution_metrics_results()
             try:
                 self._session.close()
             except AttributeError:
@@ -8862,7 +8879,8 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, empty_valid_codes=None, params_parser=None, **kwargs):
+                          error_handler=None, empty_valid_codes=None, params_parser=None, with_metrics=False,
+                          **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -8960,6 +8978,9 @@ if 'requests' in sys.modules:
             see here for more info: https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
             Note! supported only in python3.
 
+            :type with_metrics ``bool``
+            :param with_metrics: Whether or not to calculate execution metrics from the response
+
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
@@ -8989,40 +9010,20 @@ if 'requests' in sys.modules:
                     timeout=timeout,
                     **kwargs
                 )
-                # Handle error responses gracefully
                 if not self._is_status_code_valid(res, ok_codes):
-                    if error_handler:
-                        error_handler(res)
-                    else:
-                        self.client_error_handler(res)
+                    self._handle_error(error_handler, res, with_metrics)
 
-                if not empty_valid_codes:
-                    empty_valid_codes = [204]
-                is_response_empty_and_successful = (res.status_code in empty_valid_codes)
-                if is_response_empty_and_successful and return_empty_response:
-                    return res
+                return self._handle_success(res, resp_type, empty_valid_codes, return_empty_response, with_metrics)
 
-                resp_type = resp_type.lower()
-                try:
-                    if resp_type == 'json':
-                        return res.json()
-                    if resp_type == 'text':
-                        return res.text
-                    if resp_type == 'content':
-                        return res.content
-                    if resp_type == 'xml':
-                        ET.fromstring(res.text)
-                    if resp_type == 'response':
-                        return res
-                    return res
-                except ValueError as exception:
-                    raise DemistoException('Failed to parse {} object from response: {}'  # type: ignore[str-bytes-safe]
-                                           .format(resp_type, res.content), exception, res)
             except requests.exceptions.ConnectTimeout as exception:
+                if with_metrics:
+                    self.execution_metrics.timeout_error += 1
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.SSLError as exception:
+                if with_metrics:
+                    self.execution_metrics.ssl_error += 1
                 # in case the "Trust any certificate" is already checked
                 if not self._verify:
                     raise
@@ -9030,10 +9031,14 @@ if 'requests' in sys.modules:
                           ' the integration configuration.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.ProxyError as exception:
+                if with_metrics:
+                    self.execution_metrics.proxy_error += 1
                 err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
                           ' selected, try clearing the checkbox.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.ConnectionError as exception:
+                if with_metrics:
+                    self.execution_metrics.connection_error += 1
                 # Get originating Exception in Exception chain
                 error_class = str(exception.__class__)
                 err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
@@ -9043,12 +9048,144 @@ if 'requests' in sys.modules:
                     .format(err_type, exception.errno, exception.strerror)
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.RetryError as exception:
+                if with_metrics:
+                    self.execution_metrics.retry_error += 1
                 try:
                     reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
                 except Exception:  # noqa: disable=broad-except
                     reason = ''
                 err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
                 raise DemistoException(err_msg, exception)
+
+        def _handle_error(self, error_handler, res, should_update_metrics):
+            """ Handles error response by calling error handler or default handler.
+            If an exception is raised, update metrics with failure. Otherwise, proceeds.
+
+            :type res: ``requests.Response``
+            :param res: Response from API after the request for which to check error type
+
+            :type error_handler ``callable``
+            :param error_handler: Given an error entry, the error handler outputs the
+                new formatted error message.
+
+            :type should_update_metrics ``bool``
+            :param should_update_metrics: Whether or not to update execution metrics according to response
+            """
+            try:
+                if error_handler:
+                    error_handler(res)
+                else:
+                    self.client_error_handler(res)
+            except Exception:
+                if should_update_metrics:
+                    self._update_metrics(res, success=False)
+                raise
+
+        def _handle_success(self, res, resp_type, empty_valid_codes, return_empty_response, should_update_metrics):
+            """ Handles successful response
+
+            :type res: ``requests.Response``
+            :param res: Response from API after the request for which to check error type
+
+            :type resp_type: ``str``
+            :param resp_type:
+                Determines which data format to return from the HTTP request. The default
+                is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
+                 to return the full response object.
+
+            :type empty_valid_codes: ``list``
+            :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
+                can vary)
+
+            :type return_empty_response: ``bool``
+            :param response: Whether to return an empty response body if the response code is in empty_valid_codes
+
+            :type should_update_metrics ``bool``
+            :param should_update_metrics: Whether or not to update execution metrics according to response
+            """
+            if should_update_metrics:
+                self._update_metrics(res, success=True)
+
+            if not empty_valid_codes:
+                empty_valid_codes = [204]
+            is_response_empty_and_successful = (res.status_code in empty_valid_codes)
+            if is_response_empty_and_successful and return_empty_response:
+                return res
+
+            return self.cast_response(res, resp_type)
+
+        def cast_response(self, res, resp_type, raise_on_error=True):
+            resp_type = resp_type.lower()
+            try:
+                if resp_type == 'json':
+                    return res.json()
+                if resp_type == 'text':
+                    return res.text
+                if resp_type == 'content':
+                    return res.content
+                if resp_type == 'xml':
+                    ET.fromstring(res.text)
+                if resp_type == 'response':
+                    return res
+                return res
+            except ValueError as exception:
+                if raise_on_error:
+                    raise DemistoException('Failed to parse {} object from response: {}'  # type: ignore[str-bytes-safe]
+                                           .format(resp_type, res.content), exception, res)
+
+        def _update_metrics(self, res, success):
+            """ Updates execution metrics based on response and success flag.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check error type
+
+            :type success: ``bool``
+            :param success: Wheter the request succeeded or failed
+            """
+            if success:
+                if not self.is_polling_in_progress(res):
+                    self.execution_metrics.success += 1
+            else:
+                error_type = self.determine_error_type(res)
+                if error_type == ErrorTypes.QUOTA_ERROR:
+                    self.execution_metrics.quota_error += 1
+                elif error_type == ErrorTypes.AUTH_ERROR:
+                    self.execution_metrics.auth_error += 1
+                elif error_type == ErrorTypes.SERVICE_ERROR:
+                    self.execution_metrics.service_error += 1
+                elif error_type == ErrorTypes.GENERAL_ERROR:
+                    self.execution_metrics.general_error += 1
+
+        def determine_error_type(self, response):
+            """ Determines the type of error based on response status code and content.
+            Note: this method can be overriden by subclass when implementing execution metrics.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check error type
+
+            :return: The error type if found, otherwise None
+            :rtype: ``ErrorTypes``
+            """
+            if response.status_code == 401:
+                return ErrorTypes.AUTH_ERROR
+            elif response.status_code == 429:
+                return ErrorTypes.QUOTA_ERROR
+            elif response.status_code == 500:
+                return ErrorTypes.SERVICE_ERROR
+            return ErrorTypes.GENERAL_ERROR
+
+        def is_polling_in_progress(self, response):
+            """If thie response indicates polling operation in progress, return True.
+            Note: this method should be overriden by subclass when implementing polling reputation commands
+            with execution metrics.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check the polling status
+
+            :return: Whether the response indicates polling in progress
+            :rtype: ``bool``
+            """
+            return False
 
         def _is_status_code_valid(self, response, ok_codes=None):
             """If the status code is OK, return 'True'.
@@ -9086,6 +9223,12 @@ if 'requests' in sys.modules:
             except ValueError:
                 err_msg += '\n{}'.format(res.text)
                 raise DemistoException(err_msg, res=res)
+
+        def _return_execution_metrics_results(self):
+            """ Returns execution metrics results.
+            """
+            if self.execution_metrics.metrics:
+                return_results(cast(CommandResults, self.execution_metrics.metrics))
 
 
 def batch(iterable, batch_size=1):
