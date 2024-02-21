@@ -292,12 +292,12 @@ def slack_block_builder_command(args: Dict[str, Any]):
     human_readable = notification.send_response[0]['HumanReadable']
     # Dict object returned from sending the message; contains Slack metadata
     context_output = {
-        'thread_id': notification.send_response[0]['Contents']['ts'],
-        'channel': notification.send_response[0]['Contents']['channel'],
-        'text': notification.send_response[0]['Contents']['message']['text'],
-        'bot_id': notification.send_response[0]['Contents']['message']['bot_id'],
-        'username': notification.send_response[0]['Contents']['message']['username'],
-        'app_id': notification.send_response[0]['Contents']['message']['app_id']
+        'ThreadID': notification.send_response[0]['Contents']['ts'],
+        'Channel': notification.send_response[0]['Contents']['channel'],
+        'Text': notification.send_response[0]['Contents']['message']['text'],
+        'BotID': notification.send_response[0]['Contents']['message']['bot_id'],
+        'Username': notification.send_response[0]['Contents']['message']['username'],
+        'AppID': notification.send_response[0]['Contents']['message']['app_id']
     }
     return CommandResults(
         readable_output=human_readable,
