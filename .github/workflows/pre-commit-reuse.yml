@@ -64,7 +64,7 @@ jobs:
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
         github.event.pull_request.head.repo.fork == false
 
-    - name: Upload junit report
+    - name: Upload junit & pack-wise pytest report
       uses: actions/upload-artifact@v4
       if: |
         always() && 
