@@ -6188,7 +6188,7 @@
         "Whois",
         "abuse.ch SSL Blacklist Feed",
         "ipinfo",
-        "ipinfo_v2",
+        "ipinfo_v2"
     ],
     "private_tests": [
         "HelloWorldPremium_Scan-Test",
