@@ -5,7 +5,4 @@ pychrome
 
 [tests_require_network]
 Rasterize
-
-[tests_require_isolated]
-Rasterize
 Rasterize v2 Pre-Release

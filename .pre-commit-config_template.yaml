@@ -91,7 +91,8 @@ repos:
     entry: python
     language: docker
     files: Packs\/.*_test\.py$
-    exclude: test_data
+    # this is the list of test files that should be run with network enabled, so we need to exclude them from here
+    exclude: test_data|Packs/ApiModules/Scripts/NGINXApiModule/NGINXApiModule_test.py|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
@@ -111,8 +112,41 @@ repos:
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
-    support_pack_ignore_config: true
-  
+    pass_docker_extra_args:ci: --rm false --network none
+    pass_docker_extra_args:nightly: --rm false --network none
+    pass_extra_docker_args: --network none
+
+  - id: pytest-in-docker-network
+    name: pytest-in-docker-network
+    description: Run pytest with network enabled on the code in content packs
+    docker_image:nightly: native:ga,native:maintenance,from-yml
+    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image: from-yml
+    entry: coverage
+    language: docker
+    # this is the list of test files that should be run with network enabled
+    files: Packs/ApiModules/Scripts/NGINXApiModule/NGINXApiModule_test.py|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
+    env:
+      COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
+    args:
+    - run
+    - -p
+    - --source=.
+    - -m
+    - pytest
+    - -v
+    - --override-ini='asyncio_mode=auto'
+    - --rootdir=/src
+    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --color=yes
+    copy_files:
+    - Tests/scripts/dev_envs/pytest/conftest.py
+    skip:commit: true
+    pass_docker_extra_args:ci: --rm false 
+    pass_docker_extra_args:nightly: --rm false
+
+    
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
     description: Run powershell tests
@@ -128,8 +162,10 @@ repos:
     copy_files:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
-    isolate_container: true
-    change_working_directory: true
+    run_isolated: true
+    pass_docker_extra_args:ci: --rm false --network none 
+    pass_docker_extra_args:nightly: --rm false --network none
+    pass_extra_docker_args: --network none
     skip:commit: true
 
   - id: pwsh-analyze-in-docker
@@ -148,9 +184,11 @@ repos:
     copy_files:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
-    isolate_container: true
-    change_working_directory: true
+    run-isolated: true
     skip:commit: true
+    pass_docker_extra_args:ci: --rm false --network none 
+    pass_docker_extra_args:nightly: --rm false --network none
+    pass_extra_docker_args: --network none
 
   - id: is-circle-changed
     name: is-circle-changed
@@ -166,6 +204,7 @@ repos:
     language: script
     pass_filenames: false
     skip:commit: true
+    
   - id: validate
     name: validate
     description: validate content
