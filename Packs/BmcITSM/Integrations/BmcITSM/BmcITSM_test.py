@@ -1248,7 +1248,7 @@ def test_list_support_group_command(
     assert result.outputs_prefix == "BmcITSM.SupportGroup"
     assert len(outputs) == expected_outputs_len
     assert outputs[0]["Support Group ID"] == expected_desc
-    
+
 
 @pytest.mark.parametrize(
     "response_file_name,command_arguments,expected_outputs_len,expected_desc",
@@ -1333,8 +1333,8 @@ def test_list_work_order_template_command(
     assert result.outputs_prefix == "BmcITSM.WorkOrderTemplate"
     assert len(outputs) == expected_outputs_len
     assert outputs[0]["GUID"] == expected_desc
-    
-    
+
+
 @pytest.mark.parametrize(
     "response_file_name,command_arguments,expected_outputs_len,expected_id",
     [
@@ -1380,7 +1380,7 @@ def test_work_order_create_command(
     fields = "values(Request ID,WorkOrder_ID,Create Date)"
     url = f"{BASE_URL}/api/arsys/v1/entry/WOI:WorkOrderInterface_Create?fields={fields}"
     requests_mock.post(url=url, json=mock_response)
-    
+
     request_id = "WO0000000000701"
     url = f"{BASE_URL}/api/arsys/v1/entry/WOI:WorkOrderInterface/{request_id}"
     requests_mock.get(url=url, json=load_mock_response("get_work_order.json"))
@@ -1480,4 +1480,4 @@ def test_ticket_list_work_order_command(
     assert result.outputs_prefix == "BmcITSM.Ticket"
     assert len(outputs) == expected_outputs_len
     assert outputs[0]["DisplayID"] == expected_name
-    
+

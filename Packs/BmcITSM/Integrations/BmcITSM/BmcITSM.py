@@ -1313,7 +1313,7 @@ class Client(BaseClient):
         )
 
         return response
-    
+
     def create_work_order_request(
         self,
         template_guid: str,
@@ -1372,7 +1372,7 @@ class Client(BaseClient):
             "Work Order Type": work_order_type,
             "Location Company": location_company,
             "Scheduled Start Date": scedulded_start_date,
-            "Scheduled End Date": scedulded_end_date,            
+            "Scheduled End Date": scedulded_end_date,
             "z1D_Action": "CREATE",
             **additional_fields,
         })
@@ -1449,7 +1449,7 @@ class Client(BaseClient):
             resp_type="text",
         )
 
-        return response    
+        return response
 
 
 def list_command(
@@ -2832,15 +2832,15 @@ def work_order_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     assignee = args.get("assignee")
     support_organization = args.get("support_organization")
     support_group = args.get("support_group")
-    location_company = args.get("location_company")    
+    location_company = args.get("location_company")
     scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))
     schedulded_end_date: datetime = arg_to_datetime(args.get("schedulded_end_date"))
 
     additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
                                                                 "additional_fields")
-    
+
     validate_related_arguments_provided(support_organization=support_organization, support_group=support_group)
-    
+
     client.update_work_order_request(
         request_id,
         summary=summary,
@@ -3936,7 +3936,7 @@ def main() -> None:
             "bmc-itsm-support-group-list": support_group_list_command,
             "bmc-itsm-work-order-template-list": work_order_template_list_command,
             "bmc-itsm-work-order-create": work_order_create_command,
-            "bmc-itsm-work-order-update": work_order_update_command,     
+            "bmc-itsm-work-order-update": work_order_update_command,
         }
 
         if command == "test-module":
