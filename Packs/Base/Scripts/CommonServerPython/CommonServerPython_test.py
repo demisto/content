@@ -3355,6 +3355,21 @@ class TestBaseClient:
         del client
         demisto_results_mock.assert_not_called
 
+    def test_base_client_subclass_without_execution_metrics_initialized(self):
+        """
+        Given: A BaseClient object and a subclass of it that does not initialize execution_metrics
+        When: deleting the client object
+        Then: Ensure the deletion does not raise any exception
+        """
+        from CommonServerPython import BaseClient
+
+        class Client(BaseClient):
+            def __init__(self):
+                pass
+
+        client = Client()
+        del client
+
     @pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
     def test_http_request_params_parser_quote(self, requests_mock):
         """
