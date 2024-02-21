@@ -38,13 +38,15 @@ class Client(BaseClient):
 
     def _http_request(
         self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
-        params=None, data=None, files=None, timeout=None, ok_codes=(200,), **kwargs
+        params=None, data=None, files=None, timeout=None, ok_codes=(200,),
+        catch_unauthorized=True, **kwargs
     ):
         try:
-            demisto.debug(f'http_request to {url_suffix!r} with {data=}')
+            demisto.debug(f'http_request to {url_suffix!r} with {data=}, {self._headers=}')
+            ok_codes += (401,) if catch_unauthorized else ()
             res: requests.Response = super()._http_request(
-                method, url_suffix, full_url, headers, auth, json_data, params, data,
-                files, timeout, 'response', ok_codes + (401,), **kwargs
+                method, url_suffix, full_url, headers, auth, json_data,
+                params, data, files, timeout, 'response', ok_codes, **kwargs
             )
             if res.status_code == 401:
                 demisto.debug('Token expired, 401 status code received.')
@@ -76,17 +78,19 @@ class Client(BaseClient):
         self._headers['Authorization'] = auth
 
     def get_new_token(self) -> str:
+        self._headers.pop('Authorization', None)
         res = self._http_request(
             'POST',
             '/dcs-service/dcscloud/v1/oauth/tokens',
-            json_data=self.credentials
+            json_data=self.credentials,
+            catch_unauthorized=False
         )
         auth = f'{res["token_type"]} {res["access_token"]}'  # type: ignore
         demisto.setIntegrationContext(
             demisto.getIntegrationContext()
             | {AUTH_CONTEXT_KEY: auth}
         )
-        demisto.debug(f'New access token generated: {auth[:-200]}...')
+        demisto.debug(f'New access token generated: {auth[:20]}...')
         return auth
 
     @classmethod
@@ -230,7 +234,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'fetch-events':
 
-            last_run: LastRuns = demisto.getLastRun() or LastRuns(events={}, alerts={})  # type: ignore
+            last_run: LastRuns = demisto.getLastRun() or LastRuns(events=LastRun(), alerts=LastRun())  # type: ignore
 
             events, events_last_run = client.fetch_events(last_run['events'])
             alerts, alerts_last_run = client.fetch_alerts(last_run['alerts'])
