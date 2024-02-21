@@ -124,7 +124,6 @@ Get information about an analysis.
 ```!joe-analysis-info webid=2722073```
 #### Context Example
 
-/doc_files/test.png
 ```json
 {
     "Joe": {
