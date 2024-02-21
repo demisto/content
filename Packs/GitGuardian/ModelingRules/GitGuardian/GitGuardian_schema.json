@@ -75,6 +75,10 @@
         "target_user_email": {
             "type": "string",
             "is_array": false
+        },
+        "url": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
