@@ -31,7 +31,13 @@ def parse_xml(path: Path = Path(".report_pytest.xml")) -> dict[str, float]:
         for case in suite.findall("testcase"):
             pack_name = parse_pack_name(case.attrib["classname"])
             pack_times[pack_name] += float(case.attrib["time"])
-    return dict(pack_times)
+    return dict(
+        sorted(
+            pack_times.items(),
+            key=operator.itemgetter(1),
+            reverse=True, # Sorted by descending duration
+        )
+    )
 
 
 def write_csv(pack_times: dict[str, float], output_path: Path) -> None:
@@ -49,11 +55,7 @@ def write_csv(pack_times: dict[str, float], output_path: Path) -> None:
                         round(duration, 2)
                     ),  # str avoids floating point percision
                 }
-                for pack, duration in sorted(
-                    pack_times.items(),
-                    key=operator.itemgetter(1),
-                    reverse=True,  # Sorted by descending time
-                )
+                for pack, duration in pack_times.items()
             ]
         )
 

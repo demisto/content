@@ -19,13 +19,15 @@ def test_parse_xml(tmp_path):
         '<testcase classname="Packs.ipinfo.Integrations.ipinfo_v2.ipinfo_v2_test" name="test_ipinfo_ip_command" time="0.010"/>'
         '<testcase classname="Packs.ipinfo.Integrations.ipinfo_v2.ipinfo_v2_test" name="test_ipinfo_nultiple_ips_command" time="0.008"/>'  # noqa: E501
         '<testcase classname="Packs.ipinfo.Integrations.ipinfo_v2.ipinfo_v2_test" name="test_check_columns_exists" time="0.005"/></testsuite>'  # noqa: E501
-        '<testsuite name="pytest" errors="0" failures="0" skipped="0" tests="3" time="1.767" timestamp="2024-02-20T15:25:25.799231" hostname="d190b19a16e8">'  # noqa: E501
-        '<testcase classname="Packs.qradar.Integrations.qradar.qradar_test" name="test_ipinfo_ip_command" time="0.010"/>'
+        '<testsuite name="pytest" errors="0" failures="0" skipped="0" tests="3" time="1.967" timestamp="2024-02-20T15:25:25.799231" hostname="d190b19a16e8">'  # noqa: E501
+        '<testcase classname="Packs.qradar.Integrations.qradar.qradar_test" name="test_ipinfo_ip_command" time="0.210"/>'
         '<testcase classname="Packs.ipinfo.Integrations.qradar.qradar_test" name="test_ipinfo_nultiple_ips_command" time="0.007"/>'
         '<testcase classname="Packs.ipinfo.Integrations.qradar.qradar_test" name="test_check_columns_exists" time="0.005"/>'
         "</testsuite></testsuites>"
     )
-    assert parse_xml(xml_path) == {"ipinfo": 0.05, "qradar": 0.01}
+    result = parse_xml(xml_path)
+    assert tuple(result.keys())[0] == "qradar" # test sort
+    assert parse_xml(xml_path) == {"ipinfo": 0.035, "qradar": 0.21}
 
 
 @pytest.mark.parametrize(
