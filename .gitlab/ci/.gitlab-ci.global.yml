@@ -423,12 +423,6 @@
     DOCKER_TLS_CERTDIR: ""
   extends:
     - .default-job-settings
-  script:
-    - section_start "Revoking GCP Auth and Configure Docker"
-    - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-    - gcloud auth configure-docker ${DOCKER_IO_DOMAIN} >> "${ARTIFACTS_FOLDER}/logs/configure_docker_with_registry.log" 2>&1
-    - section_end "Revoking GCP Auth and Configure Docker"
-    
 
 
 .run-unittests-and-lint:
@@ -446,6 +440,10 @@
         ./Tests/scripts/sdk_pylint_check.sh
       fi
     - section_end "Test Infrastructure"
+    - section_start "Revoking GCP Auth and Configure Docker"
+    - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+    - gcloud auth configure-docker ${DOCKER_IO_DOMAIN} >> "${ARTIFACTS_FOLDER}/logs/configure_docker_with_registry.log" 2>&1
+    - section_end "Revoking GCP Auth and Configure Docker"
     - section_start "Run Unit Testing and Lint"
     - |
       if [[ -n $BUCKET_UPLOAD && $TEST_UPLOAD == "true" ]]; then
