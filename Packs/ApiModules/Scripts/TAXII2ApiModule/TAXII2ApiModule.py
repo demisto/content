@@ -1227,8 +1227,7 @@ class Taxii2FeedClient:
         return indicators
 
 
-    @staticmethod
-    def increase_count(counter: dict[str, int], id: str):
+    def increase_count(self, counter: dict[str, int], id: str):
         if id in dict:
             dict[id] = dict[id] + 1
         else:
@@ -1303,9 +1302,9 @@ class Taxii2FeedClient:
                 self.objects_to_fetch.append('relationship')
             kwargs['type'] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
-            demisto.debug(f'Collection is a v20 type collction, {collection_to_fetch}')
+            demisto.debug(f'Collection is a v20 type collction, {self.collection_to_fetch}')
             return v20.as_pages(get_objects, per_request=page_size, **kwargs)
-        demisto.debug(f'Collection is a v21 type collction, {collection_to_fetch}')
+        demisto.debug(f'Collection is a v21 type collction, {self.collection_to_fetch}')
         return v21.as_pages(get_objects, per_request=page_size, **kwargs)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
