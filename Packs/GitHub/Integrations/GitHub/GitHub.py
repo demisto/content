@@ -115,7 +115,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, is_ra
         BASE_URL + url_suffix,
         verify=USE_SSL,
         params=params,
-        data=json.dumps(data),
+        data=json.dumps(data) if data else None,
         headers=headers or HEADERS
     )
     if res.status_code >= 400:
@@ -2243,7 +2243,8 @@ def main():
         return_error("Insert api token or private key")
 
     HEADERS = {
-        'Authorization': "Bearer " + TOKEN
+        'Authorization': "Bearer " + TOKEN,
+        'User-Agent': 'curl/8.4.0'
     }
 
     handle_proxy()
