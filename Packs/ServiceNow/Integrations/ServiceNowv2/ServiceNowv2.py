@@ -10,6 +10,8 @@ import mimetypes
 import urllib3
 urllib3.disable_warnings()
 
+DEFAULT_FETCH_TIME = '10 minutes'
+
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
 
@@ -2218,7 +2220,7 @@ def fetch_incidents(client: Client) -> list:
         look_back=client.look_back,
         created_time_field='occurred',
         id_field='sys_id',
-        date_format=DATE_FORMAT
+        date_format=client.display_date_format or DATE_FORMAT
     )
 
     demisto.debug(f"ServiceNowV2 - Last run after incidents fetching: {json.dumps(last_run)}")
@@ -3026,7 +3028,7 @@ def main():
     cr_server_url = f'{get_server_url(server_url)}{cr_api}'
     server_url = f'{get_server_url(server_url)}{api}'
 
-    fetch_time = params.get('fetch_time', '10 minutes').strip()
+    fetch_time = (params.get('fetch_time') or DEFAULT_FETCH_TIME).strip()
     sysparm_query = params.get('sysparm_query')
     sysparm_limit = int(params.get('fetch_limit', 10))
     timestamp_field = params.get('timestamp_field', 'opened_at')
