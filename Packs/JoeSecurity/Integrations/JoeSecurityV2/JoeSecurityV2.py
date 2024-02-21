@@ -4,7 +4,6 @@ import jbxapi
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import urllib3
-from pathlib import Path
 
 urllib3.disable_warnings()
 
