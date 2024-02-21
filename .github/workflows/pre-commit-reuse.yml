@@ -60,9 +60,9 @@ jobs:
     - name: Create pack-wise pytest report
       run: poetry run Utils/github_workflow_scripts/parse_junit_per_pack.py
       if: |
-      always() && 
-      steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
-      github.event.pull_request.head.repo.fork == false
+        always() && 
+        steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
+        github.event.pull_request.head.repo.fork == false
 
     - name: Upload junit report
       uses: actions/upload-artifact@v4
