@@ -379,8 +379,8 @@ Retrieves information about a specific endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint | A dictionary object with key/value used to create a query string. e.g. endpoint={"endpointName":"test-endpoint1", "ip":"52.72.139.96"}. For complete list of keys check (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1eiqs~1endpoints/get>). | Required | 
-| query_op | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint(s). e.g. query_op=or. Possible values are: and, or. | Required | 
+| endpoint | A dictionary object with key/value used to create a query string. e.g. endpoint={"endpointName":"test-endpoint1", "ip":"52.72.139.96"}. Multiple endpoints can be queried but unique keys need to be supplied (e.g. `endpointName`, `ip`, etc.). For complete list of keys check (<https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1eiqs~1endpoints/get>). | Required | 
+| query_op | Operator used to build request header query that allows you to retrieve a subset of the collected endpoint(s). e.g. query_op=or. Possible values are: and, or. When multiple endpoints are being queried using endpointName and ip, query_op will be used accordingly to build the query. For example, if query_op is `or`, the results retrieved will contain endpoint information for endpoint that matches the endpointName or the ip but if the query_op is `and`, the result will only contain endpoint information that matches both endpointName and ip specified. | Required | 
 
 #### Context Output
 
