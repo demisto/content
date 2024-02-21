@@ -568,7 +568,10 @@ class Client(BaseClient):
             method="POST", url_suffix="/scheduledtasks", json_data=body
         )
 
-
+    def delete_scheduled_task(self, task_id: int):
+        self._http_request(
+            method="DELETE", url_suffix=f"/scheduledtasks/{task_id}"
+        )
 
 
     @no_type_check
@@ -1785,6 +1788,15 @@ def create_once_only_scheduled_task_command(client: Client, name: str, type: str
     )
 
 
+def delete_scheduled_task(client: Client, task_ids: List[int]):
+    for task_id in task_ids:
+        client.delete_scheduled_task(task_id)
+
+    return CommandResults(
+        readable_output=f"Scheduled tasks with IDs {task_ids} have been successfully deleted"
+    )
+
+
 def test_module(client: Client, **_) -> str:
     """
     Testing the Trend Micro API.
@@ -1852,6 +1864,7 @@ def main():
                                      "trendmicro-list-policies": list_policies_command,
                                      "trendmicro-create-policy": create_policy_command,
                                      "trendmicro-create-onceonly-scheduled-task": create_once_only_scheduled_task_command,
+                                     "trendmicro-delete-scheduled-task": delete_scheduled_task,
                                      "test-module": test_module}
 
     error_message = ""

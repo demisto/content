@@ -3994,6 +3994,18 @@ script:
       description: The name of the default policy setting.
     - contextPath: TrendMicro.DefaultPolicySettings.value
       description: The value of the default policy setting.
+  - arguments:
+    - description: a command separated list of task-IDs to delete.
+      name: task_ids
+      required: true
+      isArray: true
+    description: Deletes a list of scheduled tasks.
+    name: trendmicro-delete-scheduled-task
+    outputs:
+      - contextPath: TrendMicro.DefaultPolicySettings.name
+        description: The name of the default policy setting.
+      - contextPath: TrendMicro.DefaultPolicySettings.value
+        description: The value of the default policy setting.
   dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   subtype: python3
