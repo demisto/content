@@ -306,7 +306,7 @@ def get_trail_status(args):
         'LatestCloudWatchLogsDeliveryTime': handle_returning_date_to_string(response.get('LatestCloudWatchLogsDeliveryTime')),
         'LatestDigestDeliveryTime': handle_returning_date_to_string(response.get('LatestDigestDeliveryTime')),
         'LatestDigestDeliveryError': response.get('LatestDigestDeliveryError')
-        }
+    }
 
     ec = {'AWS.CloudTrail.TrailStatus(val.Name == obj.Name)': data}
     human_readable = tableToMarkdown('AWS CloudTrail Trail Status', data)
