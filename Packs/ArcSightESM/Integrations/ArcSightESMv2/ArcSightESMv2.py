@@ -924,6 +924,7 @@ def get_all_query_viewers_command():
 def parse_json_response(response: requests.Response):
     """
     Parse the response to JSON.
+    If the parsing fails due to an invalid escape sequence, the function will attempt to fix the response data.
 
     Args:
         response: The response to parse.
@@ -934,12 +935,25 @@ def parse_json_response(response: requests.Response):
     try:
         return response.json()
 
-    except requests.exceptions.JSONDecodeError:
+    except requests.exceptions.JSONDecodeError as e:
         demisto.debug(f'Failed to parse response to JSON.\n'
                       f'HTTP status code: {response.status_code}\n'
                       f'Headers: {response.headers}\n'
-                      f'Response:\n{response.text}')
-        raise
+                      f'Response:\n{response.text}\n\n'
+                      'Attempting to fix invalid escape sequences and parse the response again.')
+
+        # Replace triple backslashes (where the last one doesn't escape anything) with two backslashes.
+        fixed_response_text = re.sub(r'[^\\]\\\\\\(?P<escaped_char>[^\"\\])', r'\\\\\g<escaped_char>', response.text)
+
+        try:
+            fixed_response_json = json.loads(fixed_response_text)
+
+        except json.JSONDecodeError:
+            demisto.debug('Failed to parse modified response as JSON. Raising original exception.')
+            raise e  # Raise the original exception
+
+        logger.debug('Response successfully parsed after fixing invalid escape sequences.')
+        return json.loads(fixed_data)
 
 AUTH_TOKEN: str
 MAX_UNIQUE: int
