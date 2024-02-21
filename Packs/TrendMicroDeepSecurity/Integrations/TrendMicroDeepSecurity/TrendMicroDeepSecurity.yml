@@ -3959,6 +3959,41 @@ script:
       description: The name of the default policy setting.
     - contextPath: TrendMicro.DefaultPolicySettings.value
       description: The value of the default policy setting.
+  - arguments:
+    - description: The name of the scheduled task.
+      name: name
+      required: true
+    - description: The type of the scheduled task.
+      name: type
+      required: true
+      predefined:
+        - scan-for-open-ports
+        - send-alert-summary
+        - discover-computers
+        - run-script
+        - send-policy
+        - generate-report
+        - synchronize-directory
+        - synchronize-users
+        - scan-for-recommendations
+        - synchronize-vcenter
+        - scan-for-integrity-changes
+        - scan-for-malware
+        - check-for-security-updates
+        - synchronize-cloud-account
+        - check-for-software-updates
+        - update-suspicious-objects-list
+      auto: PREDEFINED
+    - description: The computer ID to create the task on.
+      name: computer_id
+      required: true
+    description: This command creates a once-only scheduled task with a specific computer ID and runs it.
+    name: trendmicro-create-onceonly-scheduled-task
+    outputs:
+    - contextPath: TrendMicro.DefaultPolicySettings.name
+      description: The name of the default policy setting.
+    - contextPath: TrendMicro.DefaultPolicySettings.value
+      description: The value of the default policy setting.
   dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   subtype: python3

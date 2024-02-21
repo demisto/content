@@ -541,6 +541,36 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix="/policies", params={"overrides": overrides},
                                   json_data=policy_properties)
 
+    def create_scheduled_task(self, name: str, _type: str, computer_id: int) -> Dict:
+        body = {
+            "name": name,
+            "type": _type,
+            "scheduleDetails":
+                {
+                    "recurrenceType": "none",
+                    "onceOnlyScheduleParameters": {
+                        "startTime": 0
+                    }
+                },
+            "runNow": True,
+            "enabled": True,
+            "scanForMalwareTaskParameters": {
+            "computerFilter":
+                {
+                    "type": "computer",
+                    "computerID": computer_id
+                },
+            "timeout": "never"
+            }
+        }
+
+        return self._http_request(
+            method="POST", url_suffix="/scheduledtasks", json_data=body
+        )
+
+
+
+
     @no_type_check
     def _http_request(self, method: str, url_suffix: str = "", params: dict = None, json_data: dict = None, **kwargs):
         """
@@ -1736,6 +1766,25 @@ def create_policy_command(client: Client, name: str, overrides: bool, parent_id:
                           readable_output=markdown, raw_response=response)
 
 
+def create_once_only_scheduled_task_command(client: Client, name: str, type: str, computer_id: int):
+    """
+    Creates a scheduled task on a computer ID.
+
+    Args:
+         name (str): the name of the task
+         type (str): the type of the scheduled task
+         computer_id (int): the computer ID to run the scheduled task on
+    """
+    response = client.create_scheduled_task(name, _type=type, computer_id=computer_id)
+    return CommandResults(
+        outputs_key_field="TrendMicro.ScheduledTask",
+        raw_response=response,
+        outputs=response,
+        readable_output=f"Once-only scheduled task, named {name} for the "
+                        f"computer ID {computer_id} has been successfully created and run."
+    )
+
+
 def test_module(client: Client, **_) -> str:
     """
     Testing the Trend Micro API.
@@ -1801,7 +1850,9 @@ def main():
                                      "trendmicro-modify-policy-setting": modify_policy_setting_command,
                                      "trendmicro-reset-policy-setting": reset_policy_setting_command,
                                      "trendmicro-list-policies": list_policies_command,
-                                     "trendmicro-create-policy": create_policy_command, "test-module": test_module}
+                                     "trendmicro-create-policy": create_policy_command,
+                                     "trendmicro-create-onceonly-scheduled-task": create_once_only_scheduled_task_command,
+                                     "test-module": test_module}
 
     error_message = ""
 
