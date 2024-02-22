@@ -134,16 +134,16 @@ Executes an Analytics query for data.
 
 #### Human Readable Output
 
-## Query Results
+>## Query Results
 
-### PrimaryResult
+>### PrimaryResult
 
-|Tenant Id|Computer|Time Generated|Source System|Start Time|End Time|Resource Uri|Data Type|Solution|Batches Within Sla|Batches Outside Sla|Batches Capped|Total Batches|Avg Latency In Seconds|Quantity|Quantity Unit|Is Billable|Meter Id|Linked Meter Id|Type|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T04:00:00Z | OMS | 2020-07-30T03:00:00Z | 2020-07-30T04:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | Operation | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.00714 | MBytes | false | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
-| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T04:00:00Z | OMS | 2020-07-30T03:00:00Z | 2020-07-30T04:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | SigninLogs | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.012602 | MBytes | true | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
-| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T05:00:00Z | OMS | 2020-07-30T04:00:00Z | 2020-07-30T05:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | OfficeActivity | Office365/SecurityInsights | 0 | 0 | 0 | 0 | 0 | 0.00201499908978072 | MBytes | false | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
-| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T05:00:00Z | OMS | 2020-07-30T04:00:00Z | 2020-07-30T05:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | SigninLogs | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.009107 | MBytes | true | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
+>|Tenant Id|Computer|Time Generated|Source System|Start Time|End Time|Resource Uri|Data Type|Solution|Batches Within Sla|Batches Outside Sla|Batches Capped|Total Batches|Avg Latency In Seconds|Quantity|Quantity Unit|Is Billable|Meter Id|Linked Meter Id|Type|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T04:00:00Z | OMS | 2020-07-30T03:00:00Z | 2020-07-30T04:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | Operation | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.00714 | MBytes | false | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
+>| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T04:00:00Z | OMS | 2020-07-30T03:00:00Z | 2020-07-30T04:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | SigninLogs | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.012602 | MBytes | true | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
+>| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T05:00:00Z | OMS | 2020-07-30T04:00:00Z | 2020-07-30T05:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | OfficeActivity | Office365/SecurityInsights | 0 | 0 | 0 | 0 | 0 | 0.00201499908978072 | MBytes | false | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
+>| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T05:00:00Z | OMS | 2020-07-30T04:00:00Z | 2020-07-30T05:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | SigninLogs | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.009107 | MBytes | true | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
 
 
 ### azure-log-analytics-test
@@ -169,7 +169,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-```✅ Success!```
+>```✅ Success!```
 
 
 ### azure-log-analytics-list-saved-searches
@@ -214,13 +214,13 @@ Gets the saved searches of the Log Analytics workspace.
 
 #### Human Readable Output
 
-### Saved searches
+>### Saved searches
 
-|Etag|Id|Category|Display Name|Function Alias|Function Parameters|Query|Tags|Version|Type|
-|---|---|---|---|---|---|---|---|---|---|
-| W/"datetime'2020-07-05T13%3A38%3A41.053438Z'" | test2 | category1 | test2 | heartbeat_func | a:int=1 | Heartbeat \| summarize Count() by Computer \| take a | {'name': 'Group', 'value': 'Computer'} | 2 | Microsoft.OperationalInsights/savedSearches |
-| W/"datetime'2020-07-28T18%3A43%3A56.8625448Z'" | test123 | Saved Search Test Category | test123 | heartbeat_func | a:int=1 | Heartbeat \| summarize Count() by Computer \| take a | {'name': 'Group', 'value': 'Computer'} | 2 | Microsoft.OperationalInsights/savedSearches |
-| W/"datetime'2020-07-30T11%3A41%3A35.1459664Z'" | test1234 | test | test |  |  | 	SecurityAlert<br/>\| summarize arg_max(TimeGenerated, *) by SystemAlertId<br/>\| where SystemAlertId in("TEST_SYSTEM_ALERT_ID") |  | 2 | Microsoft.OperationalInsights/savedSearches |
+>|Etag|Id|Category|Display Name|Function Alias|Function Parameters|Query|Tags|Version|Type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| W/"datetime'2020-07-05T13%3A38%3A41.053438Z'" | test2 | category1 | test2 | heartbeat_func | a:int=1 | Heartbeat \| summarize Count() by Computer \| take a | {'name': 'Group', 'value': 'Computer'} | 2 | Microsoft.OperationalInsights/savedSearches |
+>| W/"datetime'2020-07-28T18%3A43%3A56.8625448Z'" | test123 | Saved Search Test Category | test123 | heartbeat_func | a:int=1 | Heartbeat \| summarize Count() by Computer \| take a | {'name': 'Group', 'value': 'Computer'} | 2 | Microsoft.OperationalInsights/savedSearches |
+>| W/"datetime'2020-07-30T11%3A41%3A35.1459664Z'" | test1234 | test | test |  |  | 	SecurityAlert<br/>\| summarize arg_max(TimeGenerated, *) by SystemAlertId<br/>\| where SystemAlertId in("TEST_SYSTEM_ALERT_ID") |  | 2 | Microsoft.OperationalInsights/savedSearches |
 
 
 ### azure-log-analytics-get-saved-search-by-id
@@ -264,11 +264,11 @@ Gets a specified saved search from the Log Analytics workspace.
 
 #### Human Readable Output
 
-### Saved search `test1234` properties
+>### Saved search `test1234` properties
 
-|Etag|Id|Category|Display Name|Query|Version|
-|---|---|---|---|---|---|
-| W/"datetime'2020-07-30T12%3A21%3A05.3197505Z'" | test1234 | test | test | SecurityAlert &#124; summarize arg_max(TimeGenerated, *) by SystemAlertId &#124; where SystemAlertId in("TEST_SYSTEM_ALERT_ID") | 2 |
+>|Etag|Id|Category|Display Name|Query|Version|
+>|---|---|---|---|---|---|
+>| W/"datetime'2020-07-30T12%3A21%3A05.3197505Z'" | test1234 | test | test | SecurityAlert &#124; summarize arg_max(TimeGenerated, *) by SystemAlertId &#124; where SystemAlertId in("TEST_SYSTEM_ALERT_ID") | 2 |
 
 ### azure-log-analytics-create-or-update-saved-search
 
@@ -322,11 +322,11 @@ Creates or updates a saved search from the Log Analytics workspace.
 
 #### Human Readable Output
 
-### Saved search `test1234` properties
+>### Saved search `test1234` properties
 
-|Etag|Id|Category|Display Name|Query|Version|
-|---|---|---|---|---|---|
-| W/"datetime'2020-07-30T12%3A21%3A05.3197505Z'" | test1234 | test | new display name test | SecurityAlert &#124; summarize arg_max(TimeGenerated, *) by SystemAlertId &#124; where SystemAlertId in("TEST_SYSTEM_ALERT_ID") | 2 |
+>|Etag|Id|Category|Display Name|Query|Version|
+>|---|---|---|---|---|---|
+>| W/"datetime'2020-07-30T12%3A21%3A05.3197505Z'" | test1234 | test | new display name test | SecurityAlert &#124; summarize arg_max(TimeGenerated, *) by SystemAlertId &#124; where SystemAlertId in("TEST_SYSTEM_ALERT_ID") | 2 |
 
 
 ### azure-log-analytics-delete-saved-search
@@ -357,7 +357,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-Successfully deleted the saved search test1234.
+>Successfully deleted the saved search test1234.
 
 
 ### azure-log-analytics-generate-login-url
