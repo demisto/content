@@ -38,3 +38,4 @@
 !trendmicro-reset-default-policy-setting name=antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled
 !trendmicro-list-scheduled-task task_id=1
 !trendmicro-create-onceonly-scheduled-task name=test computer_id=1 type="scan-for-malware"
+!trendmicro-delete-scheduled-task task_id=1

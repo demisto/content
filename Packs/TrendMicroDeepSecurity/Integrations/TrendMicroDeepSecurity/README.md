@@ -24177,3 +24177,26 @@ Creates a once-only scheduled task with a specific computer ID and runs it.
 #### Human Readable Output
 
 >Once-only scheduled task, named test for the computer ID 1 has been successfully created and run.
+### trendmicro-delete-scheduled-task
+
+***
+Deletes a scheduled task.
+
+#### Base Command
+
+`trendmicro-delete-scheduled-task`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | The task-ID to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!trendmicro-delete-scheduled-task task_id=1```
+#### Human Readable Output
+
+>Scheduled task with ID 1 has been successfully deleted.
