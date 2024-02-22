@@ -21,7 +21,7 @@ configuration:
   advanced: true
 - name: defaultRegion
   display: AWS Default Region
-  required: false
+  required: true
   type: 15
   options:
   - us-east-1
