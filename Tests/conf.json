@@ -5840,7 +5840,8 @@
         "ThreatStream-Test": "Issue CRTX-96526",
         "MSG-Threat-Assessment-test": "API limitation",
         "BambenekConsultingFeed_Test": "Issue CRTX-99480",
-        "AWS SNS Listener - Test": "Cant validate mock msg against AWS-SNS in TBP"
+        "AWS SNS Listener - Test": "Cant validate mock msg against AWS-SNS in TBP",
+        "MSG-ediscovery-tpb": "Issue CIAC-9763"
     },
     "skipped_integrations": {
         "EWS Mail Sender": "The integration is deprecated",
