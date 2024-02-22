@@ -2431,7 +2431,7 @@ script:
       contextPath: BmcITSM.WorkOrderTemplate.GUID
       description: The work order template GUID.
   - name: bmc-itsm-work-order-create
-    description: "Creates a new work order ticket."
+    description: Creates a new work order ticket.
     arguments:
     - name: template_guid
       description: The instance GUID of the template to use. The GUID can be retrieved by executing the bmc-itsm-work-order-template-list command.
