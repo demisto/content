@@ -103,6 +103,9 @@ run-unittests-and-lint:
 run-pre-commit:
   extends:
     - .run-pre-commit
+  cache:
+    policy: pull-push
+
   rules:
     - if: '$BUCKET_UPLOAD == "true"'
       when: never

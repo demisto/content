@@ -112,9 +112,9 @@ repos:
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
-    pass_docker_extra_args:ci: --rm false --network none
-    pass_docker_extra_args:nightly: --rm false --network none
-    pass_extra_docker_args: --network none
+    pass_docker_extra_args:ci: --rm=false --network=none
+    pass_docker_extra_args:nightly: --rm=false --network=none
+    pass_extra_docker_args: --network=none
 
   - id: pytest-in-docker-network
     name: pytest-in-docker-network
@@ -143,8 +143,8 @@ repos:
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
-    pass_docker_extra_args:ci: --rm false 
-    pass_docker_extra_args:nightly: --rm false
+    pass_docker_extra_args:ci: --rm=false 
+    pass_docker_extra_args:nightly: --rm=false
 
     
   - id: pwsh-test-in-docker
@@ -163,9 +163,9 @@ repos:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
     run_isolated: true
-    pass_docker_extra_args:ci: --rm false --network none 
-    pass_docker_extra_args:nightly: --rm false --network none
-    pass_extra_docker_args: --network none
+    pass_docker_extra_args:ci: --rm=false --network=none 
+    pass_docker_extra_args:nightly: --rm=false --network=none
+    pass_extra_docker_args: --network=none
     skip:commit: true
 
   - id: pwsh-analyze-in-docker
@@ -186,9 +186,9 @@ repos:
     - Tests/demistomock/demistomock.ps1
     run-isolated: true
     skip:commit: true
-    pass_docker_extra_args:ci: --rm false --network none 
-    pass_docker_extra_args:nightly: --rm false --network none
-    pass_extra_docker_args: --network none
+    pass_docker_extra_args:ci: --rm=false --network=none 
+    pass_docker_extra_args:nightly: --rm=false --network=none
+    pass_extra_docker_args: --network=none
 
   - id: is-circle-changed
     name: is-circle-changed
