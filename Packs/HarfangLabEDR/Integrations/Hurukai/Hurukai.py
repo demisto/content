@@ -1,4 +1,6 @@
 import dataclasses
+from collections.abc import Callable
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -7,7 +9,6 @@ from CommonServerPython import *  # noqa: F401
 import json
 import urllib3
 import time
-import traceback
 
 from enum import Enum
 from typing import Any
@@ -563,12 +564,8 @@ def assign_policy_to_agent(client, args):
     return CommandResults(readable_output=context["Message"], outputs=context)
 
 
-def test_module(client, args):
-    result = client.test_api()
-    if "version" in result:
-        return "ok"
-    else:
-        return "nok"
+def test_module(client: Client, *args: Any, **kwargs: Any) -> str:
+    return "ok" if "version" in client.test_api() else "nope"
 
 
 @dataclasses.dataclass(kw_only=True)
@@ -3529,48 +3526,56 @@ def get_mapping_fields(client, args) -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def main():
-    verify = not demisto.params().get("insecure", False)
-    proxy = demisto.params().get("proxy", False)
-    base_url = demisto.params().get("url").rstrip("/")
-    api_key = demisto.params().get("credentials", {}).get(
-        "password", ""
-    ) or demisto.params().get("apikey", "")
+def main() -> None:
+
+    # keys in "integration_params" are granted to be present (no need to use dict.get())
+    # but the value can still be null/empty
+    integration_params: dict[str, Any] = demisto.params()
+
+    command: str = demisto.command()
+    command_arguments: dict[str, Any] = demisto.args()
+
+    verify: bool = not integration_params["insecure"]
+    proxy: bool = integration_params["proxy"]
+
+    base_url: str = integration_params["url"].rstrip("/").strip()
+    api_token: str = integration_params["credentials"]["password"]
+
+    if not api_token:
+        api_token = integration_params["apikey"]
+
+    headers: dict[str, str] = {"Authorization": f"Token {api_token}"}
 
     try:
-        headers = {"Authorization": f"Token {api_key}"}
+        client = Client(base_url, verify=verify, proxy=proxy, headers=headers)
+    except Exception as error:
+        return_error("fail to instantiate the client", error=error)
+        raise RuntimeError from error  # semantic purpose, should never effectively happen
 
-        client = Client(
-            base_url=base_url,
-            verify=verify,
-            proxy=proxy,
-            headers=headers,
-        )
+    try:
+        target_function: Callable[..., Any] = get_function_from_command_name(command)
+    except KeyError:
+        raise ValueError(f"unknown command: {command}")
 
-        command = demisto.command()
-        target_function = get_function_from_command_name(command)
+    if command == "fetch-incidents":
+        for fetch_arg in (
+            "alert_status",
+            "alert_type",
+            "fetch_types",
+            "first_fetch",
+            "max_fetch",
+            "min_severity",
+            "mirror_direction",
+        ):
+            command_arguments[fetch_arg] = integration_params.get(fetch_arg)
 
-        if target_function is None:
-            raise Exception(f"unknown command : {command}")
+    try:
+        result: Any = target_function(client, command_arguments)
+    except Exception as error:
+        return_error(f"Fail to execute command '{command}'")
+        raise RuntimeError from error  # semantic purpose, should never effectively happen
 
-        args = demisto.args()
-        if command == "fetch-incidents":
-            args["first_fetch"] = demisto.params().get("first_fetch", None)
-            args["alert_status"] = demisto.params().get("alert_status", None)
-            args["alert_type"] = demisto.params().get("alert_type", None)
-            args["min_severity"] = demisto.params().get("min_severity", SEVERITIES[0])
-            if max_fetch_arg := demisto.params().get("max_fetch", None):
-                args["max_fetch"] = int(max_fetch_arg)
-            args["mirror_direction"] = demisto.params().get("mirror_direction", None)
-            args["fetch_types"] = demisto.params().get("fetch_types", None)
-        return_results(target_function(client, args))
-
-    # Log exceptions
-    except Exception as e:
-        demisto.error(traceback.format_exc())
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+    return_results(result)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
