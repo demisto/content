@@ -865,7 +865,7 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
         - List of fetched incidents.
         - List of multiple extra of incidents data response
     When
-        - Running fetch_incident 
+        - Running fetch_incident
     Then
         - Verify the returned result is as we expected
     """

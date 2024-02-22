@@ -313,9 +313,8 @@ class Client(CoreClient):
         )
         return reply.get('reply', {})
 
-    
-    def get_multiple_incidents_extra_data(self, incident_id_list =[], fields_to_exclude=[], gte_creation_time_milliseconds=0,\
-        status=None, starred=None, starred_incidents_fetch_window=None,  page_number=0, limit=100):
+    def get_multiple_incidents_extra_data(self, incident_id_list=[], fields_to_exclude=[], gte_creation_time_milliseconds=0,
+                                          status=None, starred=None, starred_incidents_fetch_window=None, page_number=0, limit=100):
         """
         Returns incident by id
         :param incident_id_list: The list ids of incidents
@@ -324,15 +323,15 @@ class Client(CoreClient):
         """
         global ALERTS_LIMIT_PER_INCIDENTS
         request_data = {}
-        filters= []
+        filters = []
         if incident_id_list:
             filters.append({"field": "incident_id_list", "operator": "in", "value": incident_id_list})
         if gte_creation_time_milliseconds > 0:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'gte',
-                    'value': gte_creation_time_milliseconds
-                })
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': gte_creation_time_milliseconds
+            })
         if status:
             filters.append({
                 'field': 'status',
@@ -359,7 +358,7 @@ class Client(CoreClient):
         if len(filters) > 0:
             request_data['filters'] = filters
         if fields_to_exclude:
-            request_data['fields_to_exclude'] = fields_to_exclude   
+            request_data['fields_to_exclude'] = fields_to_exclude
         reply = self._http_request(
             method='POST',
             url_suffix='/incidents/get_multiple_incidents_extra_data/',
@@ -368,7 +367,7 @@ class Client(CoreClient):
             timeout=self.timeout,
 
         )
-        if ALERTS_LIMIT_PER_INCIDENTS<0:
+        if ALERTS_LIMIT_PER_INCIDENTS < 0:
             ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get('reply', {}).get('alerts_limit_per_incident')) or 50
             demisto.debug(f'Setting alerts limit per incident to {ALERTS_LIMIT_PER_INCIDENTS}')
         incidents = reply.get('reply', {}).get('incidents', [])
@@ -468,7 +467,7 @@ def get_last_mirrored_in_time(args):
 
 def get_incident_extra_data_command(client, args):
     global ALERTS_LIMIT_PER_INCIDENTS
-    incident_id = args.get('incident_id') or 1
+    incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
     fields_to_exclude = argToList(args.get('fields_to_exclude'))
@@ -481,8 +480,8 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-    raw_incident : Dict[str, Any]= client.get_multiple_incidents_extra_data(incident_id_list=[incident_id], \
-        fields_to_exclude=fields_to_exclude)[0]
+    raw_incident: Dict[str, Any] = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id],
+                                                                            fields_to_exclude=fields_to_exclude)[0]
     if raw_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS:
         raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
     incident = raw_incident.get('incident', {})
@@ -497,7 +496,7 @@ def get_incident_extra_data_command(client, args):
             alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
         if len(context_alerts) > 0:
             readable_output.append(tableToMarkdown('Alerts', context_alerts,
-                                               headers=[key for key in context_alerts[0] if key != 'host_ip'], removeNull=True ))
+                                                   headers=[key for key in context_alerts[0] if key != 'host_ip'], removeNull=True))
     else:
         readable_output.append(tableToMarkdown('Alerts', raw_alerts, removeNull=True))
     if raw_alerts and len(raw_alerts) > 0:
@@ -874,7 +873,7 @@ def create_incidents_dictionary(incidents_data: List[Dict[str, Any]]) -> Dict[st
         incidents_data (dict): incidents multiple extra data retrieved by the upgraded api
 
     Returns:
-        dict: dictionary of incidents data 
+        dict: dictionary of incidents data
     """
     result = {}
     for incident_data in incidents_data:
@@ -898,7 +897,7 @@ def create_incidents_dictionary(incidents_data: List[Dict[str, Any]]) -> Dict[st
 
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
-                    statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,\
+                    statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
                     fields_to_exclude: List = []):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
@@ -920,14 +919,14 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             raw_incidents = []
             for status in statuses:
                 raw_incidents += client.get_multiple_incidents_extra_data(gte_creation_time_milliseconds=last_fetch, status=status,
-                                                      limit=max_fetch, starred=starred,
-                                                      starred_incidents_fetch_window=starred_incidents_fetch_window)
+                                                                          limit=max_fetch, starred=starred,
+                                                                          starred_incidents_fetch_window=starred_incidents_fetch_window)
             raw_incidents = sorted(raw_incidents, key=lambda inc: inc['creation_time'])
         else:
             raw_incidents = client.get_multiple_incidents_extra_data(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
-                                                  starred=starred,
-                                                 starred_incidents_fetch_window=starred_incidents_fetch_window)
-            
+                                                                     starred=starred,
+                                                                     starred_incidents_fetch_window=starred_incidents_fetch_window)
+
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
 
