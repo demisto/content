@@ -60,6 +60,7 @@ repos:
   hooks:
 
   - id: mypy
+    name: mypy
     min_py_version: '3.7'
     require_serial: true
     language: system
