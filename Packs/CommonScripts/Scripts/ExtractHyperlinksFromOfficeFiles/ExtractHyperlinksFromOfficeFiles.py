@@ -58,7 +58,6 @@ def extract_hyperlinks_from_pptx(file_path: str) -> Set:
 
 
 def extract_hyperlink_by_file_type(file_name: str, file_path: str) -> CommandResults:
-    result = set()
     if file_name.endswith('.xlsx'):
         result = extract_hyperlinks_from_xlsx(file_path)
     elif file_name.endswith('.docx'):
@@ -68,30 +67,30 @@ def extract_hyperlink_by_file_type(file_name: str, file_path: str) -> CommandRes
     else:
         raise ValueError("Unsupported file type. Supported types are: 'xlsx, docx, pptx'")
     if result:
-        hr = f'### Extracted Hyperlinks\n\n{"\n".join(result)}'
+        urls_str = "\n".join(result)
+        hr = f'### Extracted Hyperlinks\n\n{urls_str}'
     else:
         hr = '**No hyperlinks.**'
 
     output = [{'URL': url, 'FileName': file_name} for url in result]
-    contex = {'ExtractedHyperLink(val.URL == obj.URL && val.FileName == obj.FileName)': output}
-
     return CommandResults(
-        outputs=contex,
+        outputs=output,
+        outputs_prefix='ExtractedHyperLink',
+        outputs_key_field=['URL', 'FileName'],
         readable_output=hr,
         raw_response=list(result)
     )
 
 
 def main():  # pragma: no cover
-    entry_id = demisto.args().get("entry_id")
-    file_result = demisto.getFilePath(entry_id)
-    if not file_result:
-        raise ValueError(f"Couldn't find entry id: {entry_id}")
-    file_name = file_result.get('name')
-    file_path = file_result.get('path')
-    os.rename(f'./{file_path}', file_name)
-
     try:
+        entry_id = demisto.args().get("entry_id")
+        file_result = demisto.getFilePath(entry_id)
+        if not file_result:
+            raise ValueError(f"Couldn't find entry id: {entry_id}")
+        file_name = file_result.get('name')
+        file_path = file_result.get('path')
+        os.rename(f'./{file_path}', file_name)
         return_results(extract_hyperlink_by_file_type(file_name=file_name, file_path=os.path.realpath(file_name)))
     except Exception as ex:
         return_error(f'Failed to execute ExtractHyperlinksFromOfficeFiles. Error: {str(ex)}')
