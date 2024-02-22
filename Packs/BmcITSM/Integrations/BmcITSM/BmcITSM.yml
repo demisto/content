@@ -2607,7 +2607,7 @@ script:
       - Cancelled
       - Closed
     - name: status_reason
-      description: "The reason for changing the ticket status."
+      description: The reason for changing the ticket status.
       defaultValue: ""
       auto: PREDEFINED
       predefined:
