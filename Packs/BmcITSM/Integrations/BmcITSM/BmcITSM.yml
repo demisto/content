@@ -2454,7 +2454,7 @@ script:
       predefined:
       - ""
     - name: customer_first_name
-      description: "Customer first name."
+      description: Customer first name.
       type: String
       required: true
       defaultValue: ""
