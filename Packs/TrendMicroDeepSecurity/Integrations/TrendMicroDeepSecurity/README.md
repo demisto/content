@@ -24040,3 +24040,73 @@ Reset the value of a certain default policy setting
 >|---|---|
 >| antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled | true |
 
+### trendmicro-list-scheduled-task
+
+***
+Get information on all scheduled tasks.
+
+#### Base Command
+
+`trendmicro-list-scheduled-task`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | Retrieve a specific task-ID. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TrendMicro.ScheduledTask.name | String | The name of the scheduled task. | 
+| TrendMicro.ScheduledTask.type | String | The type of the scheduled task. | 
+| TrendMicro.ScheduledTask.scheduleDetails.timeZone | String | The timezone of the scheduled task. | 
+| TrendMicro.ScheduledTask.scheduleDetails.recurrenceType | String | The recurrence type of the scheduled task. | 
+| TrendMicro.ScheduledTask.scheduleDetails.onceOnlyScheduleParameters.startTime | Number | The start time of the scheduled task. | 
+| TrendMicro.ScheduledTask.enabled | Boolean | Whether the scheduled task is enabled. | 
+| TrendMicro.ScheduledTask.nextRunTime | Date | The next run time of the scheduled task. | 
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.type | String | The type of the computer filter of the scheduled task. | 
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.computerID | Number | The computer ID of the scheduled task. | 
+| TrendMicro.ScheduledTask.scanForMalwareTaskParameters.timeout | String | The timeout for the scheduled task. | 
+| TrendMicro.ScheduledTask.ID | Number | The ID of the scheudled task. | 
+
+#### Command example
+```!trendmicro-list-scheduled-task task_id=1```
+#### Context Example
+```json
+{
+    "TrendMicro": {
+        "ScheduledTask": {
+            "ID": 1,
+            "checkForSecurityUpdatesTaskParameters": {
+                "computerFilter": {
+                    "type": "type"
+                },
+                "timeout": "never"
+            },
+            "enabled": true,
+            "lastRunTime": 1687185043521,
+            "name": "Daily check for Security Updates",
+            "nextRunTime": 1687271400000,
+            "scheduleDetails": {
+                "dailyScheduleParameters": {
+                    "frequencyType": "everyday",
+                    "startTime": 1676993400000
+                },
+                "recurrenceType": "daily",
+                "timeZone": "some time zone"
+            },
+            "type": "check-for-security-updates"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Scheduled Tasks
+>|ID|Name|Type|Enabled|Last Run Time|
+>|---|---|---|---|---|
+>| 1 | Daily check for Security Updates | check-for-security-updates | true | 2023-06-19 14:30:43 |
+

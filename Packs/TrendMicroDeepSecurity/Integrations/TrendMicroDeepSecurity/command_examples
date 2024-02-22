@@ -36,3 +36,4 @@
 !trendmicro-get-default-policy-setting name=antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled
 !trendmicro-modify-default-policy-setting name=antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled value=false
 !trendmicro-reset-default-policy-setting name=antiMalwareSettingConnectedThreatDefenseSuspiciousFileDdanSubmissionEnabled
+!trendmicro-list-scheduled-task task_id=1
