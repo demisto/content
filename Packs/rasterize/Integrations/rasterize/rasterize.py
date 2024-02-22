@@ -872,13 +872,13 @@ def rasterize_command():  # pragma: no cover
                                          navigation_timeout=navigation_timeout, include_url=include_url,
                                          full_screen=full_screen)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
-    for current_rasterize_output in rasterize_output:
+    for current_rasterize_output, current_url in zip(rasterize_output, url):
         # demisto.debug(f"rasterize_command response, {current_rasterize_output=}")
 
         if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
             output = {'image_b64': base64.b64encode(current_rasterize_output[0]).decode('utf8'),
-                      'html': current_rasterize_output[1], 'current_url': url}
-            return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {url}"))
+                      'html': current_rasterize_output[1], 'current_url': current_url}
+            return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {current_url}"))
         else:
             res = []
             current_res = fileResult(filename=file_name, data=current_rasterize_output[0], file_type=entryTypes['entryInfoFile'])
