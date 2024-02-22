@@ -33,11 +33,12 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* ExtractIndicatorsFromTextFile
-* ConvertFile
-* ReadPDFFileV2
-* ExtractIndicatorsFromWordFile
+* ReadQRCode
 * SetAndHandleEmpty
+* ExtractIndicatorsFromTextFile
+* ExtractIndicatorsFromWordFile
+* ReadPDFFileV2
+* ConvertFile
 
 ### Commands
 
