@@ -543,34 +543,43 @@ class Client(BaseClient):
 
     def create_scheduled_task(self, name: str, _type: str, computer_id: int) -> Dict:
         body = {
-            "name": name,
-            "type": _type,
-            "scheduleDetails":
-                {
-                    "recurrenceType": "none",
-                    "onceOnlyScheduleParameters": {
-                        "startTime": 0
-                    }
-                },
-            "runNow": True,
-            "enabled": True,
-            "scanForMalwareTaskParameters": {
-            "computerFilter":
-                {
-                    "type": "computer",
-                    "computerID": computer_id
-                },
-            "timeout": "never"
-            }
+           "name":name,
+           "type":_type,
+           "scheduleDetails":{
+              "recurrenceType":"none",
+              "onceOnlyScheduleParameters":{
+                 "startTime":0
+              }
+           },
+           "runNow":True,
+           "enabled":True,
+           "scanForMalwareTaskParameters":{
+              "computerFilter":{
+                 "type":"computer",
+                 "computerID":computer_id
+              },
+              "timeout":"never"
+           }
         }
 
-        return self._http_request(
+        return super()._http_request(
             method="POST", url_suffix="/scheduledtasks", json_data=body
         )
 
     def delete_scheduled_task(self, task_id: int):
-        self._http_request(
-            method="DELETE", url_suffix=f"/scheduledtasks/{task_id}"
+
+        response = super()._http_request(
+            method="DELETE", url_suffix=f"/scheduledtasks/{task_id}", resp_type="response"
+        )
+        response.raise_for_status()
+        return response
+
+    def list_scheduled_tasks(self, task_id: Optional[int] = None) -> Dict[str, Any]:
+        url_suffix = f'/scheduledtasks'
+        if task_id:
+            url_suffix = f'{url_suffix}/{task_id}'
+        return self._http_request(
+            method="GET", url_suffix=url_suffix
         )
 
 
@@ -1780,7 +1789,8 @@ def create_once_only_scheduled_task_command(client: Client, name: str, type: str
     """
     response = client.create_scheduled_task(name, _type=type, computer_id=computer_id)
     return CommandResults(
-        outputs_key_field="TrendMicro.ScheduledTask",
+        outputs_prefix="TrendMicro.ScheduledTask",
+        outputs_key_field="ID",
         raw_response=response,
         outputs=response,
         readable_output=f"Once-only scheduled task, named {name} for the "
@@ -1789,11 +1799,47 @@ def create_once_only_scheduled_task_command(client: Client, name: str, type: str
 
 
 def delete_scheduled_task_command(client: Client, task_ids: List[int]):
+    """
+    Deletes a scheduled task(s)
+
+    Args:
+        task_ids List[int]: a list of task-IDs to delete
+    """
     for task_id in task_ids:
         client.delete_scheduled_task(task_id)
 
     return CommandResults(
         readable_output=f"Scheduled tasks with IDs {task_ids} have been successfully deleted"
+    )
+
+
+def list_scheduled_task_command(client: Client, task_id: Optional[int]):
+    """
+    Lists all the available scheduled tasks
+
+    Args:
+        task_id (int): querying for a specific scheduled task-ID.
+    """
+    raw_response = client.list_scheduled_tasks(task_id)
+
+    context_output = raw_response.get("scheduledTasks") or raw_response
+
+    if isinstance(context_output, Dict):
+        context_output = [context_output]
+
+    return CommandResults(
+        outputs=context_output,
+        raw_response=raw_response,
+        outputs_prefix="TrendMicro.ScheduledTask",
+        outputs_key_field="ID",
+        readable_output=tableToMarkdown(
+            "Scheduled Tasks",
+            context_output,
+            headers=["ID", "name", "type", "enabled", "lastRunTime"],
+            headerTransform=pascalToSpace,
+            date_fields=["lastRunTime", "nextRunTime"],
+            removeNull=True
+        )
     )
 
 
@@ -1865,9 +1911,9 @@ def main():
                                      "trendmicro-create-policy": create_policy_command,
                                      "trendmicro-create-onceonly-scheduled-task": create_once_only_scheduled_task_command,
                                      "trendmicro-delete-scheduled-task": delete_scheduled_task_command,
+                                     "trendmicro-list-scheduled-task": list_scheduled_task_command,
                                      "test-module": test_module}
 
-    error_message = ""
 
     try:
         command = demisto.command()

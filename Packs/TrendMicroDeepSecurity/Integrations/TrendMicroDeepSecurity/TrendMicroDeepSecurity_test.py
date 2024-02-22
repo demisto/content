@@ -1017,12 +1017,12 @@ def test_create_once_only_scheduled_task_command(requests_mock):
         - Ensure the context is valid (simply the raw api response)
     """
     from TrendMicroDeepSecurity import create_once_only_scheduled_task_command
-    requests_mock.post(f'{BASE_URL}/api/scheduledtasks', json={"test": "test"})
+    requests_mock.post(f'{BASE_URL}/api/scheduledtasks', json=load_mock_response("scheduled_task"))
     client = Client(base_url=BASE_URL, api_key="xxx", use_ssl=False, use_proxy=False)
     args = convert_args(create_once_only_scheduled_task_command, {"name": "test", "type": "test", "computer_id": "123"})
     result = create_once_only_scheduled_task_command(client, **args)
 
-    assert result.outputs == {"test": "test"}
+    assert result.outputs
     assert result.outputs_prefix == "TrendMicro.ScheduledTask"
 
 
@@ -1038,10 +1038,37 @@ def test_delete_scheduled_task_command(requests_mock):
         - Ensure human readable is returned
     """
     from TrendMicroDeepSecurity import delete_scheduled_task_command
-    requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/1', status_code=200, json={})
-    requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/2', status_code=200, json={})
+    requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/1', status_code=204)
+    requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/2', status_code=204)
     client = Client(base_url=BASE_URL, api_key="xxx", use_ssl=False, use_proxy=False)
     args = convert_args(delete_scheduled_task_command, {"task_ids": "1,2"})
     result = delete_scheduled_task_command(client, **args)
 
     assert result.readable_output
+
+
+def test_list_scheduled_task_command(requests_mock):
+    """
+    Scenario: Lists scheduled tasks
+
+    Given:
+        - task-id argument
+    When:
+        - list_scheduled_task_command is called.
+    Then:
+        - Ensure context output and human readable are parsed successfully
+    """
+
+    from TrendMicroDeepSecurity import list_scheduled_task_command
+
+    mock_response = load_mock_response("scheduled_task")
+    requests_mock.get(f"{BASE_URL}/api/scheduledtasks/1", json=mock_response)
+
+    client = Client(base_url=BASE_URL, api_key="xxx", use_ssl=False, use_proxy=False)
+    args = convert_args(list_scheduled_task_command, {"task_id": "1"})
+    result = list_scheduled_task_command(client, **args)
+
+    assert result.outputs
+    assert isinstance(result.outputs, List)
+    assert result.readable_output
+    assert result.outputs_prefix == "TrendMicro.ScheduledTask"

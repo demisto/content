@@ -4006,6 +4006,18 @@ script:
         description: The name of the default policy setting.
       - contextPath: TrendMicro.DefaultPolicySettings.value
         description: The value of the default policy setting.
+  - arguments:
+    - description: Retrieve a specific task-ID.
+      name: task_id
+      required: false
+      isArray: true
+    description: Get information on all scheduled tasks.
+    name: trendmicro-list-scheduled-task
+    outputs:
+      - contextPath: TrendMicro.DefaultPolicySettings.name
+        description: The name of the default policy setting.
+      - contextPath: TrendMicro.DefaultPolicySettings.value
+        description: The value of the default policy setting.
   dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   subtype: python3
