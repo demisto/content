@@ -35,4 +35,4 @@ def test_basescript_dummy(file_path, expected_output):
         7. no hyperlinks extracted from power point file
     """
     response = extract_hyperlink_by_file_type(file_name=file_path, file_path=file_path)
-    assert response.raw_response == list(expected_output)
+    assert set(response.raw_response) == expected_output
