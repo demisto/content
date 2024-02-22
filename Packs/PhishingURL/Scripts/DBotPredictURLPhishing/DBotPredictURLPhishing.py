@@ -731,7 +731,6 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
     return model, msg_list
 
 
-@timeit
 def main():
     try:
         args = demisto.args()
