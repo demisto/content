@@ -1179,9 +1179,7 @@ class Taxii2FeedClient:
         try:
             demisto.debug(f"Fetching {page_size} objects from TAXII server")
             envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
-            demisto.debug(f"Fetched {len(list(envelopes))} envelopes from TAXII server")
             indicators = self.load_stix_objects_from_envelope(envelopes, limit)
-            demisto.debug(f"Loaded {len(list(indicators))} indicators from TAXII server")
         except InvalidJSONError as e:
             demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}')
             # raised when the response is empty, because {} is parsed into '筽'
@@ -1221,7 +1219,7 @@ class Taxii2FeedClient:
         if relationships_lst:
             indicators.extend(self.parse_relationships(relationships_lst))
         demisto.debug(
-            f"TAXII 2 Feed has extracted {len(indicators)} indicators"
+            f"TAXII 2 Feed has extracted {len(list(indicators))} indicators"
         )
 
         return indicators
@@ -1236,8 +1234,11 @@ class Taxii2FeedClient:
         indicators = []
         relationships_lst = []
         parsed_objects_counter = {}
+        current_envelope = None
         try:
             for envelope in envelopes:
+                current_envelope = envelope
+                # demisto.debug(f'parse_generator_type_envelope, trying to parse the envelope: {envelope}')
                 self.increase_count(parsed_objects_counter, 'envelope')
                 stix_objects = envelope.get("objects")
                 if not stix_objects:
@@ -1276,18 +1277,18 @@ class Taxii2FeedClient:
 
                     if reached_limit(limit, len(indicators)):
                         demisto.debug(f"Reached the limit ({limit}) of indicators to fetch. Indicators len: {len(indicators)}."
-                                      f' Evelopes len: {len(list(envelopes))}. Got {len(indicators)} indicators'
-                                      f' and {len(relationships_lst)} relationships. Objects counters: {parsed_objects_counter}')
+                                      f' Got {len(indicators)} indicators and {len(list(relationships_lst))} relationships.'
+                                      f' Objects counters: {parsed_objects_counter}')
 
                         return indicators, relationships_lst
         except Exception as e:
+            demisto.debug(f"Exception trying to parse envelope {current_envelope}, {e}")
             if len(indicators) == 0:
                 demisto.debug("No Indicator were parsed")
                 raise e
             demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
-        demisto.debug(f'Finished parsing all objects. Parsed {len(list(envelopes))} envelopes. Got {len(indicators)} indicators '
-                        f'and {len(relationships_lst)} relationships. Parsed objects counters: {parsed_objects_counter}')
-        # demisto.debug("")
+        demisto.debug(f'Finished parsing all objects. Got {len(list(indicators))} indicators '
+                        f'and {len(list(relationships_lst))} relationships. Objects counters: {parsed_objects_counter}')
         return indicators, relationships_lst
 
     def poll_collection(
