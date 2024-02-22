@@ -1,3 +1,4 @@
+import dataclasses
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -570,17 +571,73 @@ def test_module(client, args):
         return "nok"
 
 
+@dataclasses.dataclass(kw_only=True)
+class FetchHistory:
+
+    last_fetch: Optional[int] = None
+    already_fetched: list[int | str] = dataclasses.field(default_factory=list)
+
+
+@dataclasses.dataclass(kw_only=True, frozen=True)
+class LastRun:
+
+    security_event: FetchHistory
+    threat: FetchHistory
+
+    def as_dict(self) -> dict[str, dict[str, Any]]:
+        return dataclasses.asdict(self)
+
+
+def get_last_run() -> LastRun:
+    """Simple wrapper around the 'demisto.getLastRun()' to convert dictionary
+    returned by 'demisto.getLastRun()' to a LastRun object.
+
+    Also handle old format that contain only data for alerts/security events.
+
+    Returns:
+        A LastRun object.
+    """
+
+    stored_last_run: dict[str, Any] = demisto.getLastRun()
+    last_run: dict[str, dict[str, Any]]
+
+    if stored_last_run:
+        # check for the old format that don't have the "threat" support (<1.2.0)
+        if "last_fetch" in stored_last_run:
+            last_run = {
+                "security_event": stored_last_run,
+                "threat": {},
+            }
+        else:
+            last_run = stored_last_run  # already have the correct format
+    else:
+        last_run = {
+            "security_event": {},
+            "threat": {},
+        }
+
+    for history in last_run.values():
+        # Check the use of the old timestamp format and convert it.
+        # It was multiplied by 1_000_000 for real reason except for keeping
+        # microsecond, which has no benefit.
+        try:
+            datetime.fromtimestamp(history["last_fetch"])
+        except (KeyError, TypeError):
+            # last_fetch is not (yet) present in history or was 'None'
+            pass
+        except ValueError:
+            # last_fetch's year is out of range (year > 50_000_000)
+            history["last_fetch"] = history["last_fetch"] // 1_000_000
+
+    return LastRun(**{k: FetchHistory(**v) for k, v in last_run.items()})
+
+
 def fetch_incidents(client, args):
-    last_run = demisto.getLastRun()
 
-    if not last_run:
-        last_run = [{}, {}]
+    last_run: LastRun = get_last_run()
 
-    if not isinstance(last_run, list):
-        last_run = [last_run, {}]
-
-    current_fetch_info_sec_events: dict = last_run[0]
-    current_fetch_info_threats: dict = last_run[1]
+    current_fetch_info_sec_events: dict = dataclasses.asdict(last_run.security_event)
+    current_fetch_info_threats: dict = dataclasses.asdict(last_run.threat)
 
     max_fetch = args.get("max_fetch", None)
     fetch_types = args.get("fetch_types", [])
@@ -758,12 +815,16 @@ def fetch_incidents(client, args):
             "already_fetched": already_fetched_current,
         }
 
-    last_run = [current_fetch_info_sec_events, current_fetch_info_threats]
-    demisto.setLastRun(last_run)
+    last_run = LastRun(
+        security_event=FetchHistory(**current_fetch_info_sec_events),
+        threat=FetchHistory(**current_fetch_info_threats),
+    )
+
+    demisto.setLastRun(last_run.as_dict())
 
     demisto.incidents(incidents)
 
-    return last_run, incidents
+    return last_run.as_dict(), incidents
 
 
 def get_endpoint_info(client, args):
