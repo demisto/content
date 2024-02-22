@@ -2578,7 +2578,7 @@ script:
       predefined:
       - ""
     - name: detailed_description
-      description: "The work order ticket detailed description."
+      description: The work order ticket detailed description.
       type: String
       defaultValue: ""
       predefined:
