@@ -1288,7 +1288,7 @@ class Taxii2FeedClient:
                 raise e
             demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
         demisto.debug(f'Finished parsing all objects. Got {len(list(indicators))} indicators '
-                        f'and {len(list(relationships_lst))} relationships. Objects counters: {parsed_objects_counter}')
+                      f'and {len(list(relationships_lst))} relationships. Objects counters: {parsed_objects_counter}')
         return indicators, relationships_lst
 
     def poll_collection(
