@@ -24,7 +24,6 @@ def should_override_locked_corepacks_file(marketplace: str, last_upload_commit: 
         """
 
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
-    logging.info(last_upload_commit)
     commit = content_repo.commit(last_upload_commit)
 
     # Access the file as a blob from the last commit
