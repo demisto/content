@@ -499,7 +499,7 @@ Update incident ticket.
 | company | The company associated with the requester. By default it is determined by the logged in user. | Optional | 
 | assigned_support_company | The company for the assignee’s support organization. It makes up the first tier of the assignee’s support organization data structure. | Optional | 
 | assigned_support_organization | The organization for the assignee’s support organization. It makes up the second tier of the assignee’s support organization data structure. | Optional | 
-| assigned_group | The group for the assignee’s support organization.  It makes up the third tier of the assignee’s support organization data structure. | Optional | 
+| assigned_group | The group for the assignee’s support organization. It makes up the third tier of the assignee’s support organization data structure. | Optional | 
 | assignee | The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command. | Optional | 
 | assignee_login_id | The login ID of the assignee. The assignee and assignee_login_id arguments must be provided together. | Optional | 
 | region | The region, which makes up the second tier of the customer’s business organization data structure. | Optional | 
