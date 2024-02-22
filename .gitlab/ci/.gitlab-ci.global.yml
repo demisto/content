@@ -427,9 +427,6 @@
 .run-unittests-and-lint:
   extends:
     - .unittests-and-lint-settings
-  variables:
-    KUBERNETES_CPU_REQUEST: 2
-    KUBERNETES_MEMORY_REQUEST: 2Gi
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
@@ -504,8 +501,6 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
-  variables:
-    KUBERNETES_CPU_REQUEST: 1000m
   artifacts:
     expire_in: 30 days
     paths:
