@@ -365,7 +365,6 @@ class Client(CoreClient):
             json_data={'request_data': request_data},
             headers=self.headers,
             timeout=self.timeout,
-
         )
         if ALERTS_LIMIT_PER_INCIDENTS < 0:
             ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get('reply', {}).get('alerts_limit_per_incident')) or 50
