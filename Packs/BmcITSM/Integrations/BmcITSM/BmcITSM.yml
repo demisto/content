@@ -2563,7 +2563,7 @@ script:
       description: The work order ticket creation date time in UTC.
       type: Date
   - name: bmc-itsm-work-order-update
-    description: "Updates the work order ticket."
+    description: Updates the work order ticket.
     arguments:
     - name: request_id
       description: The ID of the work order ticket to update.
