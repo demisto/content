@@ -1845,6 +1845,7 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
+    reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
     view: |-
