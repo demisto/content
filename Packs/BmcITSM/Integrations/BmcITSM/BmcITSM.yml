@@ -2381,7 +2381,7 @@ script:
       contextPath: BmcITSM.SupportGroup.Support Group
       description: The support group.
   - name: bmc-itsm-work-order-template-list
-    description: Lists all work order templates. Useful for creating work orders. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
+    description: Lists all work order templates. Useful for creating work orders. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON, you can use the raw_response=true at the end of the command.
     arguments:
     - name: query
       description: The query to search by. For example, query="Company like \"BMCOpsMonitoring\"". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).
