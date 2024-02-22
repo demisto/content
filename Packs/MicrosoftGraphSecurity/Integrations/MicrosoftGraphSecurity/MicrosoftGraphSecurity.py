@@ -246,7 +246,7 @@ class MsGraphClient:
         url = f'security/cases/ediscoveryCases/{case_id}/searches/{search_id}'
         self.ms_client.http_request(ok_codes=[204], method='DELETE', url_suffix=url, resp_type='text')
 
-    def purge_ediscovery_data(self, case_id, search_id, purge_type, purge_areas): # TEST
+    def purge_ediscovery_data(self, case_id, search_id, purge_type, purge_areas):
         url = f'security/cases/ediscoveryCases/{case_id}/searches/{search_id}/purgeData'
         body = {
             'purgeType': purge_type,
