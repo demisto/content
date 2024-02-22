@@ -2527,7 +2527,7 @@ script:
       - Low
       auto: PREDEFINED
     - name: work_order_type
-      description: "The work order ticket type."
+      description: The work order ticket type.
       defaultValue: ""
       predefined:
       - General
