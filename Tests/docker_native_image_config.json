@@ -29,7 +29,9 @@
                 "chromium",
                 "tesseract",
                 "netutils",
-                "auth-utils"
+                "auth-utils",
+                "openpyxl",
+                "python-pptx"
             ],
             "docker_ref": "demisto/py3-native:8.6.0.88298"
         },
