@@ -144,7 +144,7 @@
                 "Middle Initial": null,
                 "VIP": "No",
                 "Chg Location Address": "Boeing Avenue 245 \r\nSchiphol-Rijk, Amsterdam  1119 PD \r\nNetherlands",
-                "Internet E-mail": "fake@company.com",
+                "Internet E-mail": "info@bmc.com",
                 "Phone Number": "###",
                 "z1D Char01": null,
                 "Categorization Tier 1": null,
@@ -204,7 +204,7 @@
                 "Customer Company": "Calbro Services",
                 "Customer Organization": "Information Technology",
                 "Customer Department": "Customer Service",
-                "Customer Internet E-mail": "fake@company.com",
+                "Customer Internet E-mail": "info@bmc.com",
                 "Customer Phone Number": "###"
             },
             "_links": {
