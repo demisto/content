@@ -6,7 +6,7 @@ from MicrosoftApiModule import *  # noqa: E402
 
 ''' CONSTANTS '''
 
-APP_NAME = 'ms-azure-log-analytics'
+APP_NAME = 'ms-azure-log-analytics'# test
 
 API_VERSION = "2022-10-01"
 ISO_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
