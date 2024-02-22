@@ -1798,18 +1798,17 @@ def create_once_only_scheduled_task_command(client: Client, name: str, type: str
     )
 
 
-def delete_scheduled_task_command(client: Client, task_ids: List[int]):
+def delete_scheduled_task_command(client: Client, task_id: int):
     """
     Deletes a scheduled task(s)
 
     Args:
-        task_ids List[int]: a list of task-IDs to delete
+        task_ids int: task ID to delete
     """
-    for task_id in task_ids:
-        client.delete_scheduled_task(task_id)
+    client.delete_scheduled_task(task_id)
 
     return CommandResults(
-        readable_output=f"Scheduled tasks with IDs {task_ids} have been successfully deleted"
+        readable_output=f"Scheduled task with ID {task_id} has been successfully deleted."
     )
 
 

@@ -1028,10 +1028,10 @@ def test_create_once_only_scheduled_task_command(requests_mock):
 
 def test_delete_scheduled_task_command(requests_mock):
     """
-    Scenario: Deletes scheduled tasks by task-IDs.
+    Scenario: Deletes scheduled task by task-ID
 
     Given:
-        - task-ids argument
+        - task-id argument
     When:
         - delete_scheduled_task_command is called.
     Then:
@@ -1039,9 +1039,8 @@ def test_delete_scheduled_task_command(requests_mock):
     """
     from TrendMicroDeepSecurity import delete_scheduled_task_command
     requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/1', status_code=204)
-    requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/2', status_code=204)
     client = Client(base_url=BASE_URL, api_key="xxx", use_ssl=False, use_proxy=False)
-    args = convert_args(delete_scheduled_task_command, {"task_ids": "1,2"})
+    args = convert_args(delete_scheduled_task_command, {"task_id": "1"})
     result = delete_scheduled_task_command(client, **args)
 
     assert result.readable_output

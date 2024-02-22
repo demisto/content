@@ -4009,26 +4009,25 @@ script:
         description: Whether the scheduled task is enabled.
         type: Boolean
       - contextPath: TrendMicro.ScheduledTask.nextRunTime
-        description: The next run time of the scheudled task.
+        description: The next run time of the scheduled task.
         type: Date
       - contextPath: TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.type
-        description: The type of the computer filter of the scheudled task.
+        description: The type of the computer filter of the scheduled task.
         type: String
       - contextPath: TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.computerID
-        description: The computer ID of the scheudled task.
+        description: The computer ID of the scheduled task.
         type: Number
       - contextPath: TrendMicro.ScheduledTask.scanForMalwareTaskParameters.timeout
         description: The timeout for the scheduled task.
         type: String
       - contextPath: TrendMicro.ScheduledTask.ID
-        description: The ID of the scheudled task.
+        description: The ID of the scheduled task.
         type: Number
   - arguments:
-    - description: a comma separated list of task-IDs to delete.
-      name: task_ids
+    - description: The task-ID to delete.
+      name: task_id
       required: true
-      isArray: true
-    description: Deletes a list of scheduled tasks.
+    description: Deletes a scheduled task.
     name: trendmicro-delete-scheduled-task
     outputs: []
   - arguments:
@@ -4058,13 +4057,13 @@ script:
         description: Whether the scheduled task is enabled.
         type: Boolean
       - contextPath: TrendMicro.ScheduledTask.nextRunTime
-        description: The next run time of the scheudled task.
+        description: The next run time of the scheduled task.
         type: Date
       - contextPath: TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.type
-        description: The type of the computer filter of the scheudled task.
+        description: The type of the computer filter of the scheduled task.
         type: String
       - contextPath: TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.computerID
-        description: The computer ID of the scheudled task.
+        description: The computer ID of the scheduled task.
         type: Number
       - contextPath: TrendMicro.ScheduledTask.scanForMalwareTaskParameters.timeout
         description: The timeout for the scheduled task.
