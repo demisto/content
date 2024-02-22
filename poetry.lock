@@ -806,13 +806,13 @@ crt = ["awscrt (==0.19.19)"]
 
 [[package]]
 name = "botocore-stubs"
-version = "1.34.47"
+version = "1.34.48"
 description = "Type annotations and code completion for botocore"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "botocore_stubs-1.34.47-py3-none-any.whl", hash = "sha256:d95c1eee19ee1a1e2f0813bf572d8d49014a644e6144572f75d4018368909e04"},
-    {file = "botocore_stubs-1.34.47.tar.gz", hash = "sha256:cc1fac318e3b28f4cae4f664daa1598fcd1daa87fe5b312b402137b761ed1c46"},
+    {file = "botocore_stubs-1.34.48-py3-none-any.whl", hash = "sha256:c706dbad07d70d3765eedae8861a4d4eb7e44019302ee76ca931e9c0ba3e3877"},
+    {file = "botocore_stubs-1.34.48.tar.gz", hash = "sha256:6ee199309005b62cabed7d9a8f643bf0b1dcfe8ccb2247595dbe1cf0861dbd3e"},
 ]
 
 [package.dependencies]
@@ -1474,8 +1474,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "95dbbb46c4408952975243d55d3a72241e987f0f"
-resolved_reference = "95dbbb46c4408952975243d55d3a72241e987f0f"
+reference = "62b5d34562ef7ed2bf902814babc22a80275365b"
+resolved_reference = "62b5d34562ef7ed2bf902814babc22a80275365b"
 
 [[package]]
 name = "deprecated"
@@ -6122,13 +6122,13 @@ files = [
 
 [[package]]
 name = "stevedore"
-version = "5.1.0"
+version = "5.2.0"
 description = "Manage dynamic plugins for Python applications"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "stevedore-5.1.0-py3-none-any.whl", hash = "sha256:8cc040628f3cea5d7128f2e76cf486b2251a4e543c7b938f58d9a377f6694a2d"},
-    {file = "stevedore-5.1.0.tar.gz", hash = "sha256:a54534acf9b89bc7ed264807013b505bf07f74dbe4bcfa37d32bd063870b087c"},
+    {file = "stevedore-5.2.0-py3-none-any.whl", hash = "sha256:1c15d95766ca0569cad14cb6272d4d31dae66b011a929d7c18219c176ea1b5c9"},
+    {file = "stevedore-5.2.0.tar.gz", hash = "sha256:46b93ca40e1114cea93d738a6c1e365396981bb6bb78c27045b7587c9473544d"},
 ]
 
 [package.dependencies]
@@ -7253,4 +7253,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "07974149e5d30cc3bf6e19878c956c7c67a87d015751d012aaf68bf7b5847278"
+content-hash = "089858e1eaf0ed3d4b59ffb86e0db0e1cc38bbe7f784147d945cc29cc7988a99"
