@@ -77,6 +77,12 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+- display: Mobile Detections fetch query
+  name: mobile_detections_fetch_query
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
 - display: IOM fetch query
   name: iom_fetch_query
   type: 0
@@ -157,6 +163,7 @@ configuration:
   - Endpoint Detection
   - Indicator of Misconfiguration
   - Indicator of Attack
+  - Mobile Detection
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
