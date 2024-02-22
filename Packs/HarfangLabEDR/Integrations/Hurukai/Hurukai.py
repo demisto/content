@@ -1,5 +1,7 @@
 import dataclasses
+import functools
 from collections.abc import Callable
+from typing import TypeAlias
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -19,6 +21,8 @@ import dateutil.parser
 urllib3.disable_warnings()
 
 """Helper function"""
+
+Fn: TypeAlias = Callable[..., Any]
 
 INTEGRATION_NAME = "Hurukai"
 
@@ -2759,8 +2763,10 @@ class TelemetryBinary(Telemetry):
         return super().telemetry(client, args)
 
 
-def get_function_from_command_name(command):
-    commands = {
+@functools.lru_cache(maxsize=100)
+def get_function_from_command_name(command: str) -> Fn:
+
+    mapping: dict[str, Fn] = {
         "harfanglab-get-endpoint-info": get_endpoint_info,
         "harfanglab-endpoint-search": endpoint_search,
         "harfanglab-job-info": job_info,
@@ -2840,7 +2846,7 @@ def get_function_from_command_name(command):
         "test-module": test_module,
     }
 
-    return commands.get(command)
+    return mapping[command]
 
 
 def get_security_events(
