@@ -737,7 +737,7 @@ Creates a new task ticket. By splitting cases into individual tasks (assignments
 | location_company | The company associated with the task process. | Required | 
 | support_company | The technical support team associated with the company. | Optional | 
 | assigned_support_organization | The organization for the task's support organization. It makes up the second tier of the task’s support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together. | Optional | 
-| assigned_support_group | The group for the task's support organization.  It makes up the third tier of the task's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together. | Optional | 
+| assigned_support_group | The group for the task's support organization. It makes up the third tier of the task's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together. | Optional | 
 | impact | The task ticket impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
 | urgency | The task ticket urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
 | assignee | The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command. | Optional | 
