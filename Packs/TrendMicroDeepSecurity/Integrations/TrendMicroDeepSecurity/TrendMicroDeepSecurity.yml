@@ -3987,25 +3987,50 @@ script:
     - description: The computer ID to create the task on.
       name: computer_id
       required: true
-    description: This command creates a once-only scheduled task with a specific computer ID and runs it.
+    description: Creates a once-only scheduled task with a specific computer ID and runs it.
     name: trendmicro-create-onceonly-scheduled-task
     outputs:
-    - contextPath: TrendMicro.DefaultPolicySettings.name
-      description: The name of the default policy setting.
-    - contextPath: TrendMicro.DefaultPolicySettings.value
-      description: The value of the default policy setting.
+      - contextPath: TrendMicro.ScheduledTask.name
+        description: The name of the scheduled task.
+        type: String
+      - contextPath: TrendMicro.ScheduledTask.type
+        description: The type of the scheduled task.
+        type: String
+      - contextPath: TrendMicro.ScheduledTask.scheduleDetails.timeZone
+        description: The timezone of the scheduled task.
+        type: String
+      - contextPath: TrendMicro.ScheduledTask.scheduleDetails.recurrenceType
+        description: The recurrence type of the scheduled task.
+        type: String
+      - contextPath: TrendMicro.ScheduledTask.scheduleDetails.onceOnlyScheduleParameters.startTime
+        description: The start time of the scheduled task.
+        type: Number
+      - contextPath: TrendMicro.ScheduledTask.enabled
+        description: Whether the scheduled task is enabled.
+        type: Boolean
+      - contextPath: TrendMicro.ScheduledTask.nextRunTime
+        description: The next run time of the scheudled task.
+        type: Date
+      - contextPath: TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.type
+        description: The type of the computer filter of the scheudled task.
+        type: String
+      - contextPath: TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.computerID
+        description: The computer ID of the scheudled task.
+        type: Number
+      - contextPath: TrendMicro.ScheduledTask.scanForMalwareTaskParameters.timeout
+        description: The timeout for the scheduled task.
+        type: String
+      - contextPath: TrendMicro.ScheduledTask.ID
+        description: The ID of the scheudled task.
+        type: Number
   - arguments:
-    - description: a command separated list of task-IDs to delete.
+    - description: a comma separated list of task-IDs to delete.
       name: task_ids
       required: true
       isArray: true
     description: Deletes a list of scheduled tasks.
     name: trendmicro-delete-scheduled-task
-    outputs:
-      - contextPath: TrendMicro.DefaultPolicySettings.name
-        description: The name of the default policy setting.
-      - contextPath: TrendMicro.DefaultPolicySettings.value
-        description: The value of the default policy setting.
+    outputs: []
   - arguments:
     - description: Retrieve a specific task-ID.
       name: task_id
@@ -4014,10 +4039,39 @@ script:
     description: Get information on all scheduled tasks.
     name: trendmicro-list-scheduled-task
     outputs:
-      - contextPath: TrendMicro.DefaultPolicySettings.name
-        description: The name of the default policy setting.
-      - contextPath: TrendMicro.DefaultPolicySettings.value
-        description: The value of the default policy setting.
+      - contextPath: TrendMicro.ScheduledTask.name
+        description: The name of the scheduled task.
+        type: String
+      - contextPath: TrendMicro.ScheduledTask.type
+        description: The type of the scheduled task.
+        type: String
+      - contextPath: TrendMicro.ScheduledTask.scheduleDetails.timeZone
+        description: The timezone of the scheduled task.
+        type: String
+      - contextPath: TrendMicro.ScheduledTask.scheduleDetails.recurrenceType
+        description: The recurrence type of the scheduled task.
+        type: String
+      - contextPath: TrendMicro.ScheduledTask.scheduleDetails.onceOnlyScheduleParameters.startTime
+        description: The start time of the scheduled task.
+        type: Number
+      - contextPath: TrendMicro.ScheduledTask.enabled
+        description: Whether the scheduled task is enabled.
+        type: Boolean
+      - contextPath: TrendMicro.ScheduledTask.nextRunTime
+        description: The next run time of the scheudled task.
+        type: Date
+      - contextPath: TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.type
+        description: The type of the computer filter of the scheudled task.
+        type: String
+      - contextPath: TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.computerID
+        description: The computer ID of the scheudled task.
+        type: Number
+      - contextPath: TrendMicro.ScheduledTask.scanForMalwareTaskParameters.timeout
+        description: The timeout for the scheduled task.
+        type: String
+      - contextPath: TrendMicro.ScheduledTask.ID
+        description: The ID of the scheudled task.
+        type: Number
   dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   subtype: python3
