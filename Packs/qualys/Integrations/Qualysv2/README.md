@@ -21911,3 +21911,155 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Asset tag deleted.
+
+### qualys-update-vmware-record
+
+***
+Update Vmware records for authenticated scans of hosts running on Vmware.
+
+#### Base Command
+
+`qualys-update-vmware-record`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of record IDs to update. Specify record IDs and/or ID ranges. | Required | 
+| add_ips | A comma-separated list of IPs and/or ranges to add to the IPs list for this record. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!qualys-update-vmware-record ids=123 add_ips=5.2.8.9```
+
+#### Human Readable Output
+
+>Successfully Updated
+
+### qualys-update-vcenter-record
+
+***
+Update vCenter records for authenticated scans of hosts running on vCenter.
+
+#### Base Command
+
+`qualys-update-vcenter-record`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of record IDs to update. Specify record IDs and/or ID ranges. | Required | 
+| add_ips | A comma-separated list of IPs and/or ranges to add to the IPs list for this record. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!qualys-update-vmware-record ids=123 add_ips=5.2.8.9```
+
+#### Human Readable Output
+
+>Successfully Updated
+
+### qualys-vcenter-esxi-mapped-record-list
+
+***
+List VCenter ESXi mapping records.
+
+#### Base Command
+
+`qualys-vcenter-esxi-mapped-record-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Specify a positive numeric value to limit the amount of results in the requested list. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Qualys.VcenterToEsxi.ESXI_IP | unknown | The IP address of the ESXi server. | 
+| Qualys.VcenterToEsxi.MAPPING_DATA_SOURCE | unknown | The source of this mapping record. | 
+| Qualys.VcenterToEsxi.VCENTER_IP | unknown | The IP address of the vCenter. | 
+
+#### Command Example
+```!qualys-vcenter-esxi-mapped-record-list```
+
+#### Context Example
+```json
+{
+    "Qualys": {
+        "VcenterToEsxi": {
+            "ESXI_IP": "1.1.1.1",
+            "MAPPING_DATA_SOURCE": "File",
+            "VCENTER_IP": "1.1.1.3"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Vcenter ESXI IP List
+>|ESXI_IP|MAPPING_DATA_SOURCE|VCENTER_IP|
+>|---|---|---|
+>| 1.1.1.1 | FILE | 1.1.1.3 |
+
+### qualys-vcenter-esxi-mapped-record-import
+
+***
+Import vCenter - ESXi mapping records.
+
+#### Base Command
+
+`qualys-vcenter-esxi-mapped-record-import`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| csv_data | The CSV data file containing the vCenter - ESXi mapping records that you want to import. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!qualys-vcenter-esxi-mapped-record-import csv_data=`vCenter IP,ESXi IP 1.1.1.1,1.1.1.2```
+
+#### Human Readable Output
+
+>Successfully imported 1 record
+
+### qualys-vcenter-esxi-mapped-record-purge
+
+***
+Purge vCenter - ESXi mapping records.
+
+#### Base Command
+
+`qualys-vcenter-esxi-mapped-record-purge`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| csv_data | The CSV data file containing the vCenter - ESXi mapping records that you want to purge. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!qualys-vcenter-esxi-mapped-record-purge csv_data=`vCenter IP,ESXi IP 1.1.1.1,1.1.1.2```
+
+#### Human Readable Output
+
+>Successfully purged 1 record
