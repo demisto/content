@@ -5918,12 +5918,12 @@ class TestCSFalconResolveIdentityDetectionCommand:
         Then
             - Validate that the arguments are mapped correctly to the json body.
         """
-        from CrowdStrikeFalcon import resolve_identity_detection_request
+        from CrowdStrikeFalcon import resolve_detections_request
         http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
         ids = ['1,2']
         action_param_values = {'update_status': 'new', 'assign_to_name': 'bot'}
         action_params_http_body = [{'name': 'update_status', 'value': 'new'}, {'name': 'assign_to_name', 'value': 'bot'}]
-        resolve_identity_detection_request(ids=ids, **action_param_values)
+        resolve_detections_request(ids=ids, **action_param_values)
         assert http_request_mocker.call_args_list[0][1].get('json') == {'action_parameters': action_params_http_body,
                                                                         'ids': ids}
 
