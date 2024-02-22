@@ -626,35 +626,100 @@ def handle_incoming_user_unassignment(incident_data):
         incident_data['owner'] = ''
 
 
+def resolve_xsoar_close_reason(xdr_close_reason):
+    """
+    Resolving XSOAR close reason from possible custom XDR->XSOAR close-reason mapping or default mapping.
+    :param xdr_close_reason: XDR raw status/close reason e.g. 'resolved_false_positive'.
+    :return: XSOAR close reason.
+    """
+
+    # Check if incoming XDR close-reason has a non-default mapping to XSOAR close-reason.
+    if demisto.params().get("custom_xdr_to_xsoar_close_reason_mapping"):
+        custom_xdr_to_xsoar_close_reason_mapping = comma_separated_mapping_to_dict(
+            demisto.params().get("custom_xdr_to_xsoar_close_reason_mapping")
+        )
+        # XDR raw status/close-reason is prefixed with 'resolved_' and is given in snake_case format,
+        # e.g. 'resolved_false_positive', whilst custom XDR->XSOAR close-reason mapping
+        # is using natural text format e.g. 'False Positive', therefore we need to adapt it accordingly.
+        xdr_close_reason = (
+            xdr_close_reason.remove("resolved_").replace("_", " ").title()
+        )
+        xsoar_close_reason = custom_xdr_to_xsoar_close_reason_mapping[xdr_close_reason]
+        demisto.debug(
+            # TODO - Remove ççç
+            f"ççç XDR->XSOAR custom close-reason exists, using {xdr_close_reason}={xsoar_close_reason}"
+        )
+
+    # Otherwise, we use default mapping.
+    else:
+        xsoar_close_reason = XDR_RESOLVED_STATUS_TO_XSOAR.get(xdr_close_reason)
+        demisto.debug(
+            # TODO - Remove ççç
+            f"ççç XDR->XSOAR custom close-reason does not exists,"
+            f" using default mapping {xdr_close_reason}={xsoar_close_reason}"
+        )
+    return xsoar_close_reason
+
+
+def comma_separated_mapping_to_dict(raw_text: str) -> dict:
+    """
+    :param raw_text: Comma-separated mapping e.g ('key1=value1', 'key2=value2', ...)
+    :return: Validated dictionary of the raw mapping e.g {'key1': 'value1', 'key2': 'value2', ...}
+    """
+
+    mapping_dict = {}
+    key_value_pairs = raw_text.split(",")
+    for pair in key_value_pairs:
+        # Trimming trailing whitespace
+        pair = pair.strip()
+        key, value = pair.split("=")
+        if key in mapping_dict:
+            demisto.debug(
+                f"Warning: duplicate key provided for {key}: using latter value: {value}"
+            )
+        mapping_dict[key] = value
+
+    demisto.debug(f"Resolved mapping: {mapping_dict}")
+    return mapping_dict
+
+
 def handle_incoming_closing_incident(incident_data):
-    incident_id = incident_data.get('incident_id')
-    demisto.debug(f'handle_incoming_closing_incident {incident_data=} {incident_id=}')
+    incident_id = incident_data.get("incident_id")
+    demisto.debug(f"handle_incoming_closing_incident {incident_data=} {incident_id=}")
     closing_entry = {}  # type: Dict
-    if incident_data.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR:
-        demisto.debug(f"handle_incoming_closing_incident {incident_data.get('status')=} {incident_id=}")
+
+    if incident_data.get("status") in XDR_RESOLVED_STATUS_TO_XSOAR:
+        demisto.debug(
+            f"handle_incoming_closing_incident {incident_data.get('status')=} {incident_id=}"
+        )
         demisto.debug(f"Closing XDR issue {incident_id=}")
+        xsoar_close_reason = resolve_xsoar_close_reason(incident_data.get("status"))
         closing_entry = {
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
-                'closeNotes': incident_data.get('resolve_comment', '')
+            "Type": EntryType.NOTE,
+            "Contents": {
+                "dbotIncidentClose": True,
+                "closeReason": xsoar_close_reason,
+                "closeNotes": incident_data.get("resolve_comment", ""),
             },
-            'ContentsFormat': EntryFormat.JSON
+            "ContentsFormat": EntryFormat.JSON,
         }
-        incident_data['closeReason'] = closing_entry['Contents']['closeReason']
-        incident_data['closeNotes'] = closing_entry['Contents']['closeNotes']
-        demisto.debug(f"handle_incoming_closing_incident {incident_id=} {incident_data['closeReason']=} "
-                      f"{incident_data['closeNotes']=}")
+        incident_data["closeReason"] = closing_entry["Contents"]["closeReason"]
+        incident_data["closeNotes"] = closing_entry["Contents"]["closeNotes"]
+        demisto.debug(
+            f"handle_incoming_closing_incident {incident_id=} {incident_data['closeReason']=} "
+            f"{incident_data['closeNotes']=}"
+        )
 
-        if incident_data.get('status') == 'resolved_known_issue':
+        if incident_data.get("status") == "resolved_known_issue":
             close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
-            closing_entry['Contents']['closeNotes'] = close_notes
-            incident_data['closeNotes'] = close_notes
-            demisto.debug(f"handle_incoming_closing_incident {incident_id=} {close_notes=}")
+            closing_entry["Contents"]["closeNotes"] = close_notes
+            incident_data["closeNotes"] = close_notes
+            demisto.debug(
+                f"handle_incoming_closing_incident {incident_id=} {close_notes=}"
+            )
 
+    # TODO - What happens if XDR close-reason is not identified?
     return closing_entry
-
 
 def get_mapping_fields_command():
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=XDR_INCIDENT_TYPE_NAME)
