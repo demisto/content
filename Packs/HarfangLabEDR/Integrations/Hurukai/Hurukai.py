@@ -554,9 +554,9 @@ def assign_policy_to_agent(client, args):
             break
     if policyid:
         client.assign_policy_to_agent(policyid, args["agentid"])
-        context[
-            "Message"
-        ] = f"Policy {policy_name} successfully assigned to agent {args['agentid']}"
+        context["Message"] = (
+            f"Policy {policy_name} successfully assigned to agent {args['agentid']}"
+        )
     else:
         context["Message"] = f"Unknown policy {policy_name}"
 
@@ -781,9 +781,9 @@ def fetch_incidents(client, args):
                 continue
 
             alert_id = sec_event.get("id", None)
-            sec_event[
-                "incident_link"
-            ] = f"{client._base_url}/security-event/{alert_id}/summary"
+            sec_event["incident_link"] = (
+                f"{client._base_url}/security-event/{alert_id}/summary"
+            )
 
             sec_event["mirror_direction"] = MIRROR_DIRECTION_DICT.get(
                 args.get("mirror_direction")
@@ -1793,9 +1793,9 @@ def global_result_artifact(client, args, artifact_type):
     for i in range(len(data["results"])):
         result = data["results"][i]
         if api_token is not None:
-            result[
-                "download_link"
-            ] = f"{base_url}/api/data/investigation/artefact/Artefact/{result['id']}/download/"
+            result["download_link"] = (
+                f"{base_url}/api/data/investigation/artefact/Artefact/{result['id']}/download/"
+            )
             result["download_link"] += f"?hl_expiring_key={api_token}"
         else:
             result["download_link"] = "N/A"
@@ -2106,7 +2106,9 @@ def add_whitelist(client, args):
             '"orion", "glimps", "cape" or "driver"'
         )
     elif operator not in ["eq", "regex", "contains"]:
-        raise ValueError("Invalid operator - operator must be 'eq', 'regex' or 'contains'")
+        raise ValueError(
+            "Invalid operator - operator must be 'eq', 'regex' or 'contains'"
+        )
     else:
         data = client.add_whitelist(
             comment, sigma_rule_id, target, field, case_insensitive, operator, value
@@ -2129,7 +2131,9 @@ def add_criterion_to_whitelist(client, args):
     data = None
 
     if operator not in ["eq", "regex", "contains"]:
-        raise ValueError("Invalid operator - operator must be 'eq', 'regex' or 'contains'")
+        raise ValueError(
+            "Invalid operator - operator must be 'eq', 'regex' or 'contains'"
+        )
     else:
         data = client.add_criterion_to_whitelist(
             id, field, case_insensitive, operator, value
@@ -2340,9 +2344,9 @@ def isolate_endpoint(client, args) -> CommandResults:
 
     if agentid in data["policy_not_allowed"]:
         context["Status"] = False
-        context[
-            "Message"
-        ] = "Agent isolation request failed (not allowed by the agent policy)"
+        context["Message"] = (
+            "Agent isolation request failed (not allowed by the agent policy)"
+        )
 
     return CommandResults(
         outputs_prefix="Harfanglab.Isolation",
@@ -2404,9 +2408,9 @@ def add_ioc_to_source(client, args):
         client.add_ioc_to_source(
             ioc_value, ioc_type, ioc_comment, ioc_status, source_id
         )
-        context[
-            "Message"
-        ] = f"IOC {ioc_value} of type {ioc_type} added to source {source_name} with {ioc_status} status"
+        context["Message"] = (
+            f"IOC {ioc_value} of type {ioc_type} added to source {source_name} with {ioc_status} status"
+        )
 
     return CommandResults(outputs=context, readable_output=context["Message"])
 
@@ -2937,9 +2941,9 @@ def get_security_events(
 
         for alert in results["results"]:
             alert_id = alert.get("id", None)
-            alert[
-                "incident_link"
-            ] = f"{client._base_url}/security-event/{alert_id}/summary"
+            alert["incident_link"] = (
+                f"{client._base_url}/security-event/{alert_id}/summary"
+            )
 
             # Retrieve additional endpoint information
             groups = []
@@ -3180,9 +3184,9 @@ def set_updated_object(
             elif isinstance(nested_mirrored_data, dict):
                 if nested_mirrored_data.get(field_name_parts[1]):
                     updated_object[field_name_parts[0]] = {}
-                    updated_object[field_name_parts[0]][
-                        field_name_parts[1]
-                    ] = nested_mirrored_data.get(field_name_parts[1])
+                    updated_object[field_name_parts[0]][field_name_parts[1]] = (
+                        nested_mirrored_data.get(field_name_parts[1])
+                    )
 
 
 def get_remote_secevent_data(client, remote_incident_id: str):
@@ -3240,7 +3244,9 @@ def reopen_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: 
     entries.append(
         {
             "Type": EntryType.NOTE,
-            "Contents": {"dbotIncidentReopen": True},
+            "Contents": {
+                "dbotIncidentReopen": True,
+            },
             "ContentsFormat": EntryFormat.JSON,
         }
     )
