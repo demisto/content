@@ -35,7 +35,7 @@ def parse_xml(path: Path = Path(".report_pytest.xml")) -> dict[str, float]:
         sorted(
             pack_times.items(),
             key=operator.itemgetter(1),
-            reverse=True, # Sorted by descending duration
+            reverse=True,  # Sorted by descending duration
         )
     )
 
