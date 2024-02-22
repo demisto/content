@@ -66,9 +66,9 @@ def extract_hyperlink_by_file_type(file_name: str, file_path: str) -> CommandRes
     elif file_name.endswith('.pptx'):
         result = extract_hyperlinks_from_pptx(file_path)
     else:
-        return_error("Not supported file type. Supported types are: 'xlsx, docx, pptx'")
+        raise ValueError("Unsupported file type. Supported types are: 'xlsx, docx, pptx'")
     if result:
-        hr = f'# Extracted hyperlinks are:\n\n{",".join(result)}'
+        hr = f'### Extracted Hyperlinks\n\n{"\n".join(result)}'
     else:
         hr = '**No hyperlinks.**'
 
@@ -86,7 +86,7 @@ def main():  # pragma: no cover
     entry_id = demisto.args().get("entry_id")
     file_result = demisto.getFilePath(entry_id)
     if not file_result:
-        return_error(f"Couldn't find entry id: {entry_id}")
+        raise ValueError(f"Couldn't find entry id: {entry_id}")
     file_name = file_result.get('name')
     file_path = file_result.get('path')
     os.rename(f'./{file_path}', file_name)
