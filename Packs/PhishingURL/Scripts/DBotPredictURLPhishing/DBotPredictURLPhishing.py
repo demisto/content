@@ -13,20 +13,6 @@ import yaml
 
 dill.settings['recurse'] = True
 
-# --------------
-import time
-
-def timeit(func):
-    def timeit_wrapper(*args, **kwargs):
-        start_time = time.perf_counter()
-        result = func(*args, **kwargs)
-        end_time = time.perf_counter()
-        total_time = end_time - start_time
-        return_results(f'Function {func.__name__}({args} {kwargs}) Took {total_time:.4f} seconds')
-        return result
-    return timeit_wrapper
-# ---------------
-
 no_fetch_extract = TLDExtract(suffix_list_urls=None, cache_dir=False)
 
 VERSION = get_demisto_version_as_str()
@@ -499,35 +485,18 @@ def validate_rasterize(res_rasterize: list[dict]):
 
 
 def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
-    # res_rasterize: list[dict] = demisto.executeCommand(  # type: ignore
-    #     'rasterize',
-    #     {
-    #         'type': 'json',
-    #         'url': urls,
-    #         'wait_time': WAIT_TIME_RASTERIZE,
-    #         'execution-timeout': rasterize_timeout
-    #     }
-    # )
-    # demisto.debug(f'Rasterize Data: {res_rasterize}')
-    # validate_rasterize(res_rasterize)
-    # return [res['Contents'] for res in res_rasterize]
-
-    # --- TEMP --- #
-    results = []
-    for url in urls:
-        res = demisto.executeCommand(
-            'rasterize',
-            {
-                'type': 'json',
-                'url': url,
-                'wait_time': WAIT_TIME_RASTERIZE,
-                'execution-timeout': rasterize_timeout
-            }
-        )
-        demisto.debug(f'Rasterize Data: {res}')
-        validate_rasterize(res)
-        results.append(res[0]['Contents'])
-    return results
+    res_rasterize: list[dict] = demisto.executeCommand(  # type: ignore
+        'rasterize',
+        {
+            'type': 'json',
+            'url': urls,
+            'wait_time': WAIT_TIME_RASTERIZE,
+            'execution-timeout': rasterize_timeout
+        }
+    )
+    demisto.debug(f'Rasterize Data: {res_rasterize}')
+    validate_rasterize(res_rasterize)
+    return [res['Contents'] for res in res_rasterize]
 
 
 def get_whois_verdict(domains: list[dict]) -> list:
