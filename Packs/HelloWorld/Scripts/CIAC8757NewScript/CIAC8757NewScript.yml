@@ -1,0 +1,33 @@
+args:
+- default: true
+  defaultValue: dummy
+  description: A mandatory arg.
+  name: arg1
+  required: true
+  type: textArea
+- description: 'A secret arg.'
+  name: arg2
+  secret: true
+  type: textArea
+comment: A dummy script for testing CIAC-8757.
+commonfields:
+  id: CIAC-8757-new-script
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.13.87159
+enabled: true
+engineinfo: {}
+name: CIAC-8757-new-script
+runas: Administrator
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dev
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
