@@ -1235,8 +1235,8 @@ class Taxii2FeedClient:
     def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
         relationships_lst = []
+        parsed_objects_counter = {}
         try:
-            parsed_objects_counter = {}
             for envelope in envelopes:
                 self.increase_count(parsed_objects_counter, 'envelope')
                 stix_objects = envelope.get("objects")
