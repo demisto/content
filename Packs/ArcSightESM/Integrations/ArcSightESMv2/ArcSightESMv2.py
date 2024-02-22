@@ -952,7 +952,7 @@ def parse_json_response(response: requests.Response):
             demisto.debug('Failed to parse modified response as JSON. Raising original exception.')
             raise e  # Raise the original exception
 
-        logger.debug('Response successfully parsed after fixing invalid escape sequences.')
+        demisto.debug('Response successfully parsed after fixing invalid escape sequences.')
         return json.loads(fixed_data)
 
 AUTH_TOKEN: str
