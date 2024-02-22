@@ -1,13 +1,18 @@
+import json
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import requests
+from dateutil import parser
+from gitlab import Gitlab
 from jira import Issue
 from junitparser import TestSuite, JUnitXml
 from Tests.scripts.utils import logging_wrapper as logging
-import gitlab
-from datetime import datetime, timedelta
-from dateutil import parser
+from gitlab.v4.objects.pipelines import ProjectPipeline
+from gitlab.v4.objects.commits import ProjectCommit
+
 
 CONTENT_NIGHTLY = 'Content Nightly'
 CONTENT_PR = 'Content PR'
@@ -18,6 +23,7 @@ PRIVATE_NIGHTLY = 'Private Nightly'
 TEST_NATIVE_CANDIDATE = 'Test Native Candidate'
 SECURITY_SCANS = 'Security Scans'
 BUILD_MACHINES_CLEANUP = 'Build Machines Cleanup'
+SDK_RELEASE = 'Automate Demisto SDK release'
 UNIT_TESTS_WORKFLOW_SUBSTRINGS = {'lint', 'unit', 'demisto sdk nightly', TEST_NATIVE_CANDIDATE.lower()}
 
 WORKFLOW_TYPES = {
@@ -29,7 +35,8 @@ WORKFLOW_TYPES = {
     PRIVATE_NIGHTLY,
     TEST_NATIVE_CANDIDATE,
     SECURITY_SCANS,
-    BUILD_MACHINES_CLEANUP
+    BUILD_MACHINES_CLEANUP,
+    SDK_RELEASE
 }
 BUCKET_UPLOAD_BRANCH_SUFFIX = '-upload_test_branch'
 TOTAL_HEADER = "Total"
@@ -56,6 +63,10 @@ FAILED_TO_MSG = {
     True: "failed",
     False: "succeeded",
 }
+
+# This is the github username of the bot (and its reviewer) that pushes contributions and docker updates to the content repo.
+CONTENT_BOT = 'content-bot'
+CONTENT_BOT_REVIEWER = 'github-actions[bot]'
 
 
 def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
@@ -221,20 +232,19 @@ def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
     return sentence
 
 
-def get_pipelines_and_commits(gitlab_url: str, gitlab_access_token: str, project_id: str, look_back_hours: int):
+def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
+                              look_back_hours: int):
     """
-     Get finished pipelines and commits on the master branch in the last X hours,
-    pipelines are filtered to only include successful and failed pipelines.
+    Get all pipelines and commits on the master branch in the last X hours.
+    The commits and pipelines are in order of creation time.
     Args:
-        gitlab_url - the url of the gitlab instance
-        gitlab_access_token - the access token to use to authenticate with gitlab
+        gitlab_client - the gitlab instance
         project_id - the id of the project to query
         look_back_hours - the number of hours to look back for commits and pipeline
     Return:
-        a list of gitlab pipelines and a list of gitlab commits in ascending order
+        a list of gitlab pipelines and a list of gitlab commits in ascending order (as the way it is in the UI)
     """
-    gl = gitlab.Gitlab(gitlab_url, private_token=gitlab_access_token)
-    project = gl.projects.get(project_id)
+    project = gitlab_client.projects.get(project_id)
 
     # Calculate the timestamp for look_back_hours ago
     time_threshold = (
@@ -242,16 +252,12 @@ def get_pipelines_and_commits(gitlab_url: str, gitlab_access_token: str, project
 
     commits = project.commits.list(all=True, since=time_threshold, order_by='updated_at', sort='asc')
     pipelines = project.pipelines.list(all=True, updated_after=time_threshold, ref='master',
-                                       source='push', order_by='updated_at', sort='asc')
+                                       source='push', order_by='id', sort='asc')
 
-    # Filter out pipelines that are not done
-    filtered_pipelines = [
-        pipeline for pipeline in pipelines if pipeline.status in ('success', 'failed')]
-
-    return filtered_pipelines, commits
+    return pipelines, commits
 
 
-def person_in_charge(commit):
+def get_person_in_charge(commit):
     """
     Returns the name, email, and PR link for the author of the provided commit.
 
@@ -260,67 +266,111 @@ def person_in_charge(commit):
 
     Returns:
         name: The name of the commit author.
-        email: The email of the commit author.
         pr: The GitHub PR link for the Gitlab commit.
     """
     name = commit.author_name
-    email = commit.author_email
-    pr_number = commit.title.split()[-1][2:-1]
-    pr = f"https://github.com/demisto/content/pull/{pr_number}"
-    return name, email, pr
-
-
-def are_pipelines_in_order_as_commits(commits, current_pipeline_sha, previous_pipeline_sha):
-    """
-    This function checks if the commit that triggered the current pipeline was pushed
-    after the commit that triggered the the previous pipeline,
-    to avoid rare condition that pipelines are not in the same order as their commits.
-    Args:
-        commits: list of gitlab commits
-        current_pipeline_sha: string
-        previous_pipeline_sha: string
-
-    Returns:
-        boolean , the commit that triggered the current pipeline
-    """
-    current_pipeline_commit_timestamp = None
-    previous_pipeline_commit_timestamp = None
-    the_triggering_commit = None
-    for commit in commits:
-        if commit.id == previous_pipeline_sha:
-            previous_pipeline_commit_timestamp = parser.parse(commit.created_at)
-        if commit.id == current_pipeline_sha:
-            current_pipeline_commit_timestamp = parser.parse(commit.created_at)
-            the_triggering_commit = commit
-    if not current_pipeline_commit_timestamp or not previous_pipeline_commit_timestamp:
-        return False, None
-    return current_pipeline_commit_timestamp > previous_pipeline_commit_timestamp, the_triggering_commit
-
-
-def is_pivot(single_pipeline_id, list_of_pipelines, commits):
-    """
-    Check if a given pipeline is a pivot,
-    i.e. if the previous pipeline was successful and the current pipeline failed and vise versa
-   Args:
-    single_pipeline_id: gitlab pipeline ID
-    list_of_pipelines: list of gitlab pipelines
-    commits: list of gitlab commits
-    Return:
-        boolean | None, gitlab commit object| None
-    """
-    current_pipeline = next((pipeline for pipeline in list_of_pipelines if pipeline.id == int(single_pipeline_id)), None)
-    pipeline_index = list_of_pipelines.index(current_pipeline) if current_pipeline else 0
-    if pipeline_index == 0:         # either current_pipeline is not in the list , or it is the first pipeline
+    # pr number is always the last id in the commit title, starts with a number sign, may or may not be in parenthesis.
+    pr_number = commit.title.split("#")[-1].strip("()")
+    if pr_number.isnumeric():
+        pr = f"https://github.com/demisto/content/pull/{pr_number}"
+        return name, pr
+    else:
         return None, None
-    previous_pipeline = list_of_pipelines[pipeline_index - 1]
 
-    # if previous pipeline was successful and current pipeline failed, and current pipeline was created after
-    # previous pipeline (n), then it is a negative pivot
-    if current_pipeline:
-        in_order, pivot_commit = are_pipelines_in_order_as_commits(commits, current_pipeline.sha, previous_pipeline.sha)
-        if in_order:
-            if previous_pipeline.status == 'success' and current_pipeline.status == 'failed':
-                return True, pivot_commit
-            if previous_pipeline.status == 'failed' and current_pipeline.status == 'success':
-                return False, pivot_commit
-    return None, None
+
+def are_pipelines_in_order(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool:
+    """
+    This function checks if the current pipeline was created after the previous pipeline, to avoid rare conditions
+    that pipelines are not in the same order as the commits.
+    Args:
+        current_pipeline: The current pipeline object.
+        previous_pipeline: The previous pipeline object.
+    Returns:
+        bool
+    """
+
+    previous_pipeline_timestamp = parser.parse(previous_pipeline.created_at)
+    current_pipeline_timestamp = parser.parse(current_pipeline.created_at)
+    return current_pipeline_timestamp > previous_pipeline_timestamp
+
+
+def is_pivot(current_pipeline: ProjectPipeline, previous_pipeline: ProjectPipeline) -> bool | None:
+    """
+    Is the current pipeline status a pivot from the previous pipeline status.
+    Args:
+        current_pipeline: The current pipeline object.
+        previous_pipeline: The previous pipeline object.
+    Returns:
+        True status changed from success to failed
+        False if the status changed from failed to success
+        None if the status didn't change or the pipelines are not in order of commits
+    """
+
+    in_order = are_pipelines_in_order(current_pipeline, previous_pipeline)
+    if in_order:
+        if previous_pipeline.status == 'success' and current_pipeline.status == 'failed':
+            return True
+        if previous_pipeline.status == 'failed' and current_pipeline.status == 'success':
+            return False
+    return None
+
+
+def get_reviewer(pr_url: str) -> str | None:
+    approved_reviewer = None
+    try:
+        # Extract the owner, repo, and pull request number from the URL
+        _, _, _, repo_owner, repo_name, _, pr_number = pr_url.split("/")
+
+        # Get reviewers
+        reviews_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/reviews"
+        reviews_response = requests.get(reviews_url)
+        reviews_data = reviews_response.json()
+
+        # Find the reviewer who provided approval
+        for review in reviews_data:
+            if review["state"] == "APPROVED":
+                approved_reviewer = review["user"]["login"]
+                break
+    except Exception as e:
+        logging.error(f"Failed to get reviewer for PR {pr_url}: {e}")
+    return approved_reviewer
+
+
+def get_slack_user_name(name: str | None, name_mapping_path: str) -> str:
+    with open(name_mapping_path) as map:
+        mapping = json.load(map)
+    # If the name is the name of the 'docker image update bot' reviewer - return the owner of that bot.
+        if name == CONTENT_BOT_REVIEWER:
+            return mapping["docker_images"]["owner"]
+        else:
+            return mapping["names"].get(name, name)
+
+
+def get_commit_by_sha(commit_sha: str, list_of_commits: list[ProjectCommit]) -> ProjectCommit | None:
+    return next((commit for commit in list_of_commits if commit.id == commit_sha), None)
+
+
+def get_pipeline_by_commit(commit: ProjectCommit, list_of_pipelines: list[ProjectPipeline]) -> ProjectPipeline | None:
+    return next((pipeline for pipeline in list_of_pipelines if pipeline.sha == commit.id), None)
+
+
+def create_shame_message(current_commit: ProjectCommit,
+                         pipeline_changed_status: bool, name_mapping_path: str) -> tuple[str, str, str] | None:
+    """
+    Create a shame message for the person in charge of the commit.
+    """
+    name, pr = get_person_in_charge(current_commit)
+    if name and pr:
+        if name == CONTENT_BOT:
+            name = get_reviewer(pr)
+        name = get_slack_user_name(name, name_mapping_path)
+        msg = "broke" if pipeline_changed_status else "fixed"
+        color = "danger" if pipeline_changed_status else "good"
+        emoji = ":cry:" if pipeline_changed_status else ":muscle:"
+        return (f"Hi @{name},  You {msg} the build! {emoji} ",
+                f" That was done in this {slack_link(pr,'PR.')}", color)
+    return None
+
+
+def slack_link(url: str, text: str) -> str:
+    return f"<{url}|{text}>"

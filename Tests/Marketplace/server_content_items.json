@@ -101,7 +101,7 @@
         "verdict",
         "reputation"
     ],
-    "Script": [
+    "BaseScript": [
         "getAPIKeyFromLicense",
         "handleIndicatorFormatterCache",
         "dockerImageUpdate",

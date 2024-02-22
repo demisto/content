@@ -1,7 +1,7 @@
 {
  "id": "csvDailyIncidentReport",
  "name": "Daily incidents",
- "description": "Daily summary of all current open incidents (CSV format).",
+ "description": "Daily summary of incidents statistics, followed by a list of all current open incidents.",
  "tags": [
 
  ],

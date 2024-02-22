@@ -90,7 +90,8 @@ configuration:
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. For more information, refer to the integration docs."
+  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234.
+  The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to the integration docs."
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -4961,7 +4962,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA Rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.84811
+  dockerimage: demisto/py3-tools:1.0.0.86612
   isfetch: true
   ismappable: true
   isremotesyncin: true
