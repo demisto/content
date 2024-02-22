@@ -1820,13 +1820,13 @@ def list_scheduled_task_command(client: Client, task_id: Optional[int]):
         task_id (int): querying for a specific scheduled task-ID.
     """
     response = client.list_scheduled_tasks(task_id)
-    if response.status_code == requests.codes.not_found:
+    if response.status_code == 404:
         return CommandResults(
             readable_output=f"Could not find scheduled task with ID {task_id}"
         )
 
     raw_response = response.json()
-    context_output = raw_response.get("scheduledTasks") or response
+    context_output = raw_response.get("scheduledTasks") or raw_response
 
     if isinstance(context_output, dict):
         context_output = [context_output]
