@@ -116,7 +116,7 @@ repos:
     skip:commit: true
     pass_docker_extra_args:ci: --rm=false --network=none
     pass_docker_extra_args:nightly: --rm=false --network=none
-    pass_extra_docker_args: --network=none
+    pass_docker_extra_args: --network=none
 
   - id: pytest-in-docker-network
     name: pytest-in-docker-network
@@ -167,7 +167,7 @@ repos:
     run_isolated: true
     pass_docker_extra_args:ci: --rm=false --network=none 
     pass_docker_extra_args:nightly: --rm=false --network=none
-    pass_extra_docker_args: --network=none
+    pass_docker_extra_args: --network=none
     skip:commit: true
 
   - id: pwsh-analyze-in-docker
@@ -190,7 +190,7 @@ repos:
     skip:commit: true
     pass_docker_extra_args:ci: --rm=false --network=none 
     pass_docker_extra_args:nightly: --rm=false --network=none
-    pass_extra_docker_args: --network=none
+    pass_docker_extra_args: --network=none
 
   - id: is-circle-changed
     name: is-circle-changed
