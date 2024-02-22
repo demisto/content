@@ -1179,9 +1179,9 @@ class Taxii2FeedClient:
         try:
             demisto.debug(f"Fetching {page_size} objects from TAXII server")
             envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
-            demisto.debug(f"Fetched {len(envelopes)} envelopes from TAXII server")
+            demisto.debug(f"Fetched {len(list(envelopes))} envelopes from TAXII server")
             indicators = self.load_stix_objects_from_envelope(envelopes, limit)
-            demisto.debug(f"Loaded {len(indicators)} indicators from TAXII server")
+            demisto.debug(f"Loaded {len(list(indicators))} indicators from TAXII server")
         except InvalidJSONError as e:
             demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}')
             # raised when the response is empty, because {} is parsed into '筽'
@@ -1283,7 +1283,7 @@ class Taxii2FeedClient:
                 raise e
             demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
         finally:
-            demisto.debug(f'Finished parsing {len(envelopes)} envelopes. Got {len(indicators)} indicators '
+            demisto.debug(f'Finished parsing {len(list(envelopes))} envelopes. Got {len(indicators)} indicators '
                           f'and {len(relationships_lst)} relationships. Parsed objects counters: {parsed_objects_counter}')
         demisto.debug("Finished parsing all objects")
         return indicators, relationships_lst
@@ -1332,7 +1332,8 @@ class Taxii2FeedClient:
         extracted_objs = [
             item for item in stix_objs if item.get("type") in required_objects
         ]  # retrieve only required type
-        demisto.debug(f'Extracted {len(extracted_objs)} out of {len(stix_objs)} Stix objects with the types: {required_objects}')
+        demisto.debug(f'Extracted {len(list(extracted_objs))} out of {len(list(stix_objs))} Stix objects with the types: '
+                      f'{required_objects}')
 
         return extracted_objs
 
