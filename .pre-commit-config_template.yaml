@@ -133,8 +133,8 @@ repos:
     pass_docker_extra_args:nightly: --rm=false --network=none
     pass_docker_extra_args: --network=none
 
-  - id: pytest-in-docker-network
-    name: pytest-in-docker-network
+  - id: pytest-network-in-docker
+    name: pytest-network-in-docker
     description: Run pytest with network enabled on the code in content packs
     docker_image:nightly: native:ga,native:maintenance,from-yml
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
@@ -201,7 +201,7 @@ repos:
     copy_files:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
-    run-isolated: true
+    run_isolated: true
     skip:commit: true
     pass_docker_extra_args:ci: --rm=false --network=none 
     pass_docker_extra_args:nightly: --rm=false --network=none
