@@ -429,7 +429,7 @@ def test_get_access_token(requests_mock, mock_client):
     Then:
     - Ensure that an access token is returned.
     """
-    
+
     response = {
         "token_type": "bearer",
         "access_token": "Pichu",
@@ -443,4 +443,3 @@ def test_get_access_token(requests_mock, mock_client):
     access_token = CiscoUmbrellaCloudSecurityv2.Client.get_access_token(mock_client)
 
     assert access_token == response.get('access_token')
-    
