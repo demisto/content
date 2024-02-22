@@ -4070,7 +4070,7 @@ script:
       - contextPath: TrendMicro.ScheduledTask.ID
         description: The ID of the scheudled task.
         type: Number
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.13.87159
   runonce: false
   subtype: python3
   type: python

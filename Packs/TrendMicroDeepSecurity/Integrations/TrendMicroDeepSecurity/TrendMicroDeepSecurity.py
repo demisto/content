@@ -2,7 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Any, Dict, List, get_type_hints, get_origin, get_args, Callable, Type, no_type_check
+from typing import Any, get_type_hints, get_origin, get_args, no_type_check
+from collections.abc import Callable
 
 import urllib3
 from requests.exceptions import ConnectionError, InvalidURL, InvalidSchema, HTTPError
@@ -37,7 +38,7 @@ class Client(BaseClient):
         headers = {"api-secret-key": api_key, "api-version": self.API_VERSION}
         super().__init__(f"{base_url}/api", verify=use_ssl, proxy=use_proxy, headers=headers)
 
-    def list_computers(self, expand: List[str], overrides: bool) -> List[Dict[str, Any]]:
+    def list_computers(self, expand: list[str], overrides: bool) -> list[dict[str, Any]]:
         """
         List all registered computers inside Trend Micro.
 
@@ -52,7 +53,7 @@ class Client(BaseClient):
         params = {"expand": expand, "overrides": overrides}
         return self._http_request(method="GET", url_suffix="/computers", params=params).get("computers", [])
 
-    def create_computer(self, expand: list, overrides: bool, **computer_properties) -> Dict[str, Any]:
+    def create_computer(self, expand: list, overrides: bool, **computer_properties) -> dict[str, Any]:
         """
         Create a new computer inside Trend Micro.
 
@@ -68,7 +69,7 @@ class Client(BaseClient):
         params = {"expand": expand, "overrides": overrides}
         return self._http_request(method="POST", url_suffix="/computers", params=params, json_data=computer_properties)
 
-    def get_computer(self, computer_id: int, expand: List[str], overrides: bool) -> Dict[str, Any]:
+    def get_computer(self, computer_id: int, expand: list[str], overrides: bool) -> dict[str, Any]:
         """
         Get information about an existing computer inside Trend Micro.
 
@@ -84,8 +85,8 @@ class Client(BaseClient):
         params = {"expand": expand, "overrides": overrides}
         return self._http_request(method="GET", url_suffix=f"/computers/{computer_id}", params=params)
 
-    def modify_computer(self, computer_id: int, expand: List[str], overrides: bool,
-                        **computer_properties) -> Dict[str, Any]:
+    def modify_computer(self, computer_id: int, expand: list[str], overrides: bool,
+                        **computer_properties) -> dict[str, Any]:
         """
         Modify properties of an existing computer inside Trend Micro.
 
@@ -113,7 +114,7 @@ class Client(BaseClient):
 
         self._http_request(method="DELETE", url_suffix=f"/computers/{computer_id}", resp_type="response")
 
-    def get_computer_setting(self, computer_id: int, setting_name: str, overrides: bool) -> Dict[str, Any]:
+    def get_computer_setting(self, computer_id: int, setting_name: str, overrides: bool) -> dict[str, Any]:
         """
         Get information about a certain setting of an existing computer inside Trend Micro.
 
@@ -131,7 +132,7 @@ class Client(BaseClient):
                                   params=params)
 
     def modify_computer_setting(self, computer_id: int, setting_name: str, overrides: bool,
-                                value: str) -> Dict[str, Any]:
+                                value: str) -> dict[str, Any]:
         """
         Modify the setting of an existing computer inside Trend Micro.
 
@@ -147,7 +148,7 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix=f"/computers/{computer_id}/settings/{setting_name}",
                                   params={"overrides": overrides}, json_data={"value": value})
 
-    def reset_computer_setting(self, computer_id: int, setting_name: str, overrides: bool) -> Dict[str, Any]:
+    def reset_computer_setting(self, computer_id: int, setting_name: str, overrides: bool) -> dict[str, Any]:
         """
         Reset the setting of an existing computer inside Trend Micro.
 
@@ -162,7 +163,7 @@ class Client(BaseClient):
         return self._http_request(method="DELETE", url_suffix=f"/computers/{computer_id}/settings/{setting_name}",
                                   params={"overrides": overrides})
 
-    def list_firewall_rule_ids_of_computer(self, computer_id: int, overrides: bool) -> List[int]:
+    def list_firewall_rule_ids_of_computer(self, computer_id: int, overrides: bool) -> list[int]:
         """
         Get all rule IDs that are assigned to the computer.
 
@@ -177,7 +178,7 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=f"/computers/{computer_id}/firewall/assignments",
                                   params={"overrides": overrides}).get("assignedRuleIDs", [])
 
-    def add_firewall_rule_ids_to_computer(self, computer_id: int, rule_ids: List[int], overrides: bool) -> List[int]:
+    def add_firewall_rule_ids_to_computer(self, computer_id: int, rule_ids: list[int], overrides: bool) -> list[int]:
         """
         Assign more rule IDs to a certain computer.
 
@@ -194,7 +195,7 @@ class Client(BaseClient):
                                   params={"overrides": overrides},
                                   json_data={"rule_ids": rule_ids}).get("assignedRuleIDs", [])
 
-    def set_firewall_rule_ids_to_computer(self, computer_id: int, rule_ids: List[int], overrides: bool) -> List[int]:
+    def set_firewall_rule_ids_to_computer(self, computer_id: int, rule_ids: list[int], overrides: bool) -> list[int]:
         """
         Assign the rule IDs to a certain computer.
 
@@ -223,7 +224,7 @@ class Client(BaseClient):
         self._http_request(method="DELETE",
                            url_suffix=f"/computers/{computer_id}/firewall/assignments/{firewall_rule_id}")
 
-    def list_computer_groups(self) -> List[Dict[str, Any]]:
+    def list_computer_groups(self) -> list[dict[str, Any]]:
         """
         List all computer groups inside Trend Micro.
 
@@ -233,7 +234,7 @@ class Client(BaseClient):
 
         return self._http_request(method="GET", url_suffix="/computergroups").get("computerGroups", [])
 
-    def create_computer_group(self, **computer_group_properties) -> Dict[str, Any]:
+    def create_computer_group(self, **computer_group_properties) -> dict[str, Any]:
         """
         Create a new computer group inside Trend Micro.
 
@@ -246,7 +247,7 @@ class Client(BaseClient):
 
         return self._http_request(method="POST", url_suffix="/computergroups", json_data=computer_group_properties)
 
-    def get_computer_group(self, computer_group_id: int) -> Dict[str, Any]:
+    def get_computer_group(self, computer_group_id: int) -> dict[str, Any]:
         """
         Get information about a certain computer group.
 
@@ -259,7 +260,7 @@ class Client(BaseClient):
 
         return self._http_request(method="GET", url_suffix=f"/computergroups/{computer_group_id}")
 
-    def modify_computer_group(self, computer_group_id: int, **computer_group_properties) -> Dict[str, Any]:
+    def modify_computer_group(self, computer_group_id: int, **computer_group_properties) -> dict[str, Any]:
         """
         Modify a certain computer group properties.
 
@@ -284,7 +285,7 @@ class Client(BaseClient):
 
         self._http_request(method="DELETE", url_suffix=f"/computergroups/{computer_group_id}", resp_type="response")
 
-    def list_firewall_rules(self) -> List[Dict[str, Any]]:
+    def list_firewall_rules(self) -> list[dict[str, Any]]:
         """
         List all firewall rules inside Trend Micro.
 
@@ -294,7 +295,7 @@ class Client(BaseClient):
 
         return self._http_request(method="GET", url_suffix="/firewallrules").get("firewallRules", [])
 
-    def create_firewall_rule(self, **firewall_rule_properties) -> Dict[str, Any]:
+    def create_firewall_rule(self, **firewall_rule_properties) -> dict[str, Any]:
         """
         Create a new firewall rule.
 
@@ -307,7 +308,7 @@ class Client(BaseClient):
 
         return self._http_request(method="POST", url_suffix="/firewallrules", json_data=firewall_rule_properties)
 
-    def get_firewall_rule(self, firewall_rule_id: int) -> Dict[str, Any]:
+    def get_firewall_rule(self, firewall_rule_id: int) -> dict[str, Any]:
         """
         Get information about a certain firewall rule.
 
@@ -320,7 +321,7 @@ class Client(BaseClient):
 
         return self._http_request(method="GET", url_suffix=f"/firewallrules/{firewall_rule_id}")
 
-    def modify_firewall_rule(self, firewall_rule_id: int, **firewall_rule_properties) -> Dict[str, Any]:
+    def modify_firewall_rule(self, firewall_rule_id: int, **firewall_rule_properties) -> dict[str, Any]:
         """
         Modify a certain firewall rule properties.
 
@@ -346,7 +347,7 @@ class Client(BaseClient):
         self._http_request(method="DELETE", url_suffix=f"/firewallrules/{firewall_rule_id}", resp_type="response")
 
     def search(self, resource: str, max_items: int, field_name: str, field_type: str, operation: str, value: str,
-               sort_by_object_id: Optional[bool]) -> List[Dict[str, Any]]:
+               sort_by_object_id: Optional[bool]) -> list[dict[str, Any]]:
         """
         Search a resource, such as computers, by a query on a certain field.
 
@@ -372,7 +373,7 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix=f"/{resource.lower()}/search",
                                   json_data=body).get(resource, [])
 
-    def get_policy(self, policy_id: int, overrides: bool) -> Dict[str, Any]:
+    def get_policy(self, policy_id: int, overrides: bool) -> dict[str, Any]:
         """
         Get information about a certain policy.
 
@@ -386,7 +387,7 @@ class Client(BaseClient):
 
         return self._http_request(method="GET", url_suffix=f"/policies/{policy_id}", params={"overrides": overrides})
 
-    def modify_policy(self, policy_id: int, overrides: bool, **policy_properties) -> Dict[str, Any]:
+    def modify_policy(self, policy_id: int, overrides: bool, **policy_properties) -> dict[str, Any]:
         """
         Modify the properties of a certain policy.
 
@@ -412,7 +413,7 @@ class Client(BaseClient):
 
         self._http_request(method="DELETE", url_suffix=f"/policies/{policy_id}", resp_type="response")
 
-    def get_default_policy_setting(self, name: str) -> Dict[str, Any]:
+    def get_default_policy_setting(self, name: str) -> dict[str, Any]:
         """
         Get information about a certain default setting of Trend Micro's policies.
 
@@ -425,7 +426,7 @@ class Client(BaseClient):
 
         return self._http_request(method="GET", url_suffix=f"/policies/default/settings/{name}")
 
-    def modify_default_policy_setting(self, name: str, value: str) -> Dict[str, Any]:
+    def modify_default_policy_setting(self, name: str, value: str) -> dict[str, Any]:
         """
         Modify a certain default setting of Trend Micro's policies.
 
@@ -440,7 +441,7 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix=f"/policies/default/settings/{name}",
                                   json_data={"value": value})
 
-    def reset_default_policy_setting(self, name: str) -> Dict[str, Any]:
+    def reset_default_policy_setting(self, name: str) -> dict[str, Any]:
         """
         Reset a certain default setting of Trend Micro's policies.
 
@@ -453,7 +454,7 @@ class Client(BaseClient):
 
         return self._http_request(method="DELETE", url_suffix=f"/policies/default/settings/{name}")
 
-    def list_default_policy_settings(self) -> Dict[str, Dict[str, str]]:
+    def list_default_policy_settings(self) -> dict[str, dict[str, str]]:
         """
         Get all default settings of Trend Micro's settings.
 
@@ -479,7 +480,7 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=f"/policies/{policy_id}/settings/{name}",
                                   params={"overrides": overrides})
 
-    def modify_policy_setting(self, policy_id: int, name: str, overrides: bool, value: str) -> Dict[str, Any]:
+    def modify_policy_setting(self, policy_id: int, name: str, overrides: bool, value: str) -> dict[str, Any]:
         """
         Modify the value of a setting of a certain policy.
 
@@ -496,7 +497,7 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix=f"/policies/{policy_id}/settings/{name}",
                                   params={"overrides": overrides}, json_data={"value": value})
 
-    def reset_policy_setting(self, policy_id: int, name: str, overrides: bool) -> Dict[str, Any]:
+    def reset_policy_setting(self, policy_id: int, name: str, overrides: bool) -> dict[str, Any]:
         """
         Reset the value of a setting of a certain policy.
 
@@ -512,7 +513,7 @@ class Client(BaseClient):
         return self._http_request(method="DELETE", url_suffix=f"/policies/{policy_id}/settings/{name}",
                                   params={"overrides": overrides})
 
-    def list_policies(self, overrides: bool) -> List[Dict[str, Any]]:
+    def list_policies(self, overrides: bool) -> list[dict[str, Any]]:
         """
         List all existing policies inside Trend Micro.
 
@@ -526,7 +527,7 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix="/policies",
                                   params={"overrides": overrides}).get("policies", [])
 
-    def create_policy(self, overrides: bool, **policy_properties) -> Dict[str, Any]:
+    def create_policy(self, overrides: bool, **policy_properties) -> dict[str, Any]:
         """
         Create a new policy inside Trend Micro.
 
@@ -541,25 +542,25 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix="/policies", params={"overrides": overrides},
                                   json_data=policy_properties)
 
-    def create_scheduled_task(self, name: str, _type: str, computer_id: int) -> Dict:
+    def create_scheduled_task(self, name: str, _type: str, computer_id: int) -> dict:
         body = {
-           "name":name,
-           "type":_type,
-           "scheduleDetails":{
-              "recurrenceType":"none",
-              "onceOnlyScheduleParameters":{
-                 "startTime":0
-              }
-           },
-           "runNow":True,
-           "enabled":True,
-           "scanForMalwareTaskParameters":{
-              "computerFilter":{
-                 "type":"computer",
-                 "computerID":computer_id
-              },
-              "timeout":"never"
-           }
+            "name": name,
+            "type": _type,
+            "scheduleDetails": {
+                "recurrenceType": "none",
+                "onceOnlyScheduleParameters": {
+                    "startTime": 0
+                }
+            },
+            "runNow": True,
+            "enabled": True,
+            "scanForMalwareTaskParameters": {
+                "computerFilter": {
+                    "type": "computer",
+                    "computerID": computer_id
+                },
+                "timeout": "never"
+            }
         }
 
         return super()._http_request(
@@ -574,14 +575,13 @@ class Client(BaseClient):
         response.raise_for_status()
         return response
 
-    def list_scheduled_tasks(self, task_id: Optional[int] = None) -> Dict[str, Any]:
-        url_suffix = f'/scheduledtasks'
+    def list_scheduled_tasks(self, task_id: Optional[int] = None) -> dict[str, Any]:
+        url_suffix = '/scheduledtasks'
         if task_id:
             url_suffix = f'{url_suffix}/{task_id}'
         return self._http_request(
             method="GET", url_suffix=url_suffix
         )
-
 
     @no_type_check
     def _http_request(self, method: str, url_suffix: str = "", params: dict = None, json_data: dict = None, **kwargs):
@@ -629,7 +629,7 @@ class Client(BaseClient):
         return arg
 
 
-def convert_arg(value: Optional[str], type_hint: Type) -> Any:
+def convert_arg(value: Optional[str], type_hint: type) -> Any:
     """
     Converting a single argument from string into its real type.
 
@@ -644,7 +644,7 @@ def convert_arg(value: Optional[str], type_hint: Type) -> Any:
         Any: The argument after conversion.
     """
 
-    converters: Dict[Type, Callable] = {str: str, bool: argToBoolean, int: arg_to_number, list: argToList}
+    converters: dict[type, Callable] = {str: str, bool: argToBoolean, int: arg_to_number, list: argToList}
 
     origin_type_hint = get_origin(type_hint) or type_hint
     type_hint_args = get_args(type_hint)
@@ -657,7 +657,7 @@ def convert_arg(value: Optional[str], type_hint: Type) -> Any:
         raise ValueError(f"Failed to convert {value} to {origin_type_hint}")
 
 
-def convert_args(command_function: Callable, args: Dict[str, str]) -> Dict[str, Any]:
+def convert_args(command_function: Callable, args: dict[str, str]) -> dict[str, Any]:
     """
     Converting XSOAR string arguments into their real types (according to the requested command).
 
@@ -675,7 +675,7 @@ def convert_args(command_function: Callable, args: Dict[str, str]) -> Dict[str, 
     return {name: convert_arg(args.get(name), hint) for name, hint in type_hints.items()}
 
 
-def list_computers_command(client: Client, expand: List[str], overrides: bool) -> CommandResults:
+def list_computers_command(client: Client, expand: list[str], overrides: bool) -> CommandResults:
     """
     Get list of all computers from Trend Micro.
 
@@ -724,7 +724,7 @@ def search_computers_command(client: Client, max_items: int, field_name: str, fi
                           readable_output=markdown, raw_response=response)
 
 
-def create_computer_command(client: Client, expand: List[str], overrides: bool, host_name: str,
+def create_computer_command(client: Client, expand: list[str], overrides: bool, host_name: str,
                             display_name: Optional[str], description: Optional[str], group_id: Optional[int],
                             policy_id: Optional[int], asset_importance_id: Optional[int],
                             relay_list_id: Optional[int]) -> CommandResults:
@@ -759,7 +759,7 @@ def create_computer_command(client: Client, expand: List[str], overrides: bool, 
                           readable_output=markdown, raw_response=response)
 
 
-def get_computer_command(client: Client, computer_id: int, expand: List[str], overrides: bool) -> CommandResults:
+def get_computer_command(client: Client, computer_id: int, expand: list[str], overrides: bool) -> CommandResults:
     """
     Obtain information about an existing computer inside Trend Micro.
 
@@ -782,7 +782,7 @@ def get_computer_command(client: Client, computer_id: int, expand: List[str], ov
                           readable_output=markdown, raw_response=response)
 
 
-def modify_computer_command(client: Client, computer_id: int, expand: List[str], overrides: bool,
+def modify_computer_command(client: Client, computer_id: int, expand: list[str], overrides: bool,
                             host_name: Optional[str], display_name: Optional[str], description: Optional[str],
                             group_id: Optional[int], policy_id: Optional[int], asset_importance_id: Optional[int],
                             relay_list_id: Optional[int]) -> CommandResults:
@@ -932,7 +932,7 @@ def list_firewall_rule_ids_of_computer_command(client: Client, computer_id: int,
                           readable_output=markdown, raw_response=response)
 
 
-def add_firewall_rule_ids_to_computer_command(client: Client, computer_id: int, rule_ids: List[int],
+def add_firewall_rule_ids_to_computer_command(client: Client, computer_id: int, rule_ids: list[int],
                                               overrides: bool) -> CommandResults:
     """
     Assign more rule IDs to a certain computer.
@@ -955,7 +955,7 @@ def add_firewall_rule_ids_to_computer_command(client: Client, computer_id: int, 
                           readable_output=markdown, raw_response=response)
 
 
-def set_firewall_rule_ids_to_computer_command(client: Client, computer_id: int, rule_ids: List[int],
+def set_firewall_rule_ids_to_computer_command(client: Client, computer_id: int, rule_ids: list[int],
                                               overrides: bool) -> CommandResults:
     """
     Assign rule IDs to a certain computer.
@@ -1179,24 +1179,24 @@ def create_firewall_rule_command(client: Client, name: str, description: Optiona
                                  protocol_number: Optional[int], protocol_not: Optional[bool],
                                  source_ip_type: Optional[str], source_ip_value: Optional[str],
                                  source_ip_mask: Optional[str], source_ip_range_from: Optional[str],
-                                 source_ip_range_to: Optional[str], source_ip_multiple: Optional[List[str]],
+                                 source_ip_range_to: Optional[str], source_ip_multiple: Optional[list[str]],
                                  source_ip_list_id: Optional[int], source_ip_not: Optional[bool],
                                  source_mac_type: Optional[str], source_mac_value: Optional[str],
                                  source_mac_multiple: Optional[list], source_mac_list_id: Optional[int],
                                  source_mac_not: Optional[bool], source_port_type: Optional[str],
-                                 source_port_multiple: Optional[List[str]], source_port_list_id: Optional[int],
+                                 source_port_multiple: Optional[list[str]], source_port_list_id: Optional[int],
                                  source_port_not: Optional[bool], destination_ip_type: Optional[str],
                                  destination_ip_value: Optional[str], destination_ip_mask: Optional[str],
                                  destination_ip_range_from: Optional[str], destination_ip_range_to: Optional[str],
                                  destination_ip_multiple: Optional[list], destination_ip_list_id: Optional[int],
                                  destination_ip_not: Optional[bool], destination_mac_type: Optional[str],
-                                 destination_mac_value: Optional[str], destination_mac_multiple: Optional[List[str]],
+                                 destination_mac_value: Optional[str], destination_mac_multiple: Optional[list[str]],
                                  destination_mac_list_id: Optional[int], destination_mac_not: Optional[bool],
-                                 destination_port_type: Optional[str], destination_port_multiple: Optional[List[str]],
+                                 destination_port_type: Optional[str], destination_port_multiple: Optional[list[str]],
                                  destination_port_list_id: Optional[int], destination_port_not: Optional[bool],
                                  any_flags: Optional[bool], log_disabled: Optional[bool],
                                  include_packet_data: Optional[bool], alert_enabled: Optional[bool],
-                                 schedule_id: Optional[int], context_id: Optional[int], tcp_flags: Optional[List[str]],
+                                 schedule_id: Optional[int], context_id: Optional[int], tcp_flags: Optional[list[str]],
                                  tcp_not: Optional[bool], icmp_type: Optional[int], icmp_code: Optional[int],
                                  icmp_not: Optional[bool]) -> CommandResults:
     """
@@ -1330,24 +1330,24 @@ def modify_firewall_rule_command(client: Client, firewall_rule_id: int, name: Op
                                  protocol: Optional[str], protocol_number: Optional[int], protocol_not: Optional[bool],
                                  source_ip_type: Optional[str], source_ip_value: Optional[str],
                                  source_ip_mask: Optional[str], source_ip_range_from: Optional[str],
-                                 source_ip_range_to: Optional[str], source_ip_multiple: Optional[List[str]],
+                                 source_ip_range_to: Optional[str], source_ip_multiple: Optional[list[str]],
                                  source_ip_list_id: Optional[int], source_ip_not: Optional[bool],
                                  source_mac_type: Optional[str], source_mac_value: Optional[str],
                                  source_mac_multiple: Optional[list], source_mac_list_id: Optional[int],
                                  source_mac_not: Optional[bool], source_port_type: Optional[str],
-                                 source_port_multiple: Optional[List[str]], source_port_list_id: Optional[int],
+                                 source_port_multiple: Optional[list[str]], source_port_list_id: Optional[int],
                                  source_port_not: Optional[bool], destination_ip_type: Optional[str],
                                  destination_ip_value: Optional[str], destination_ip_mask: Optional[str],
                                  destination_ip_range_from: Optional[str], destination_ip_range_to: Optional[str],
                                  destination_ip_multiple: Optional[list], destination_ip_list_id: Optional[int],
                                  destination_ip_not: Optional[bool], destination_mac_type: Optional[str],
-                                 destination_mac_value: Optional[str], destination_mac_multiple: Optional[List[str]],
+                                 destination_mac_value: Optional[str], destination_mac_multiple: Optional[list[str]],
                                  destination_mac_list_id: Optional[int], destination_mac_not: Optional[bool],
-                                 destination_port_type: Optional[str], destination_port_multiple: Optional[List[str]],
+                                 destination_port_type: Optional[str], destination_port_multiple: Optional[list[str]],
                                  destination_port_list_id: Optional[int], destination_port_not: Optional[bool],
                                  any_flags: Optional[bool], log_disabled: Optional[bool],
                                  include_packet_data: Optional[bool], alert_enabled: Optional[bool],
-                                 schedule_id: Optional[int], context_id: Optional[int], tcp_flags: Optional[List[str]],
+                                 schedule_id: Optional[int], context_id: Optional[int], tcp_flags: Optional[list[str]],
                                  tcp_not: Optional[bool], icmp_type: Optional[int], icmp_code: Optional[int],
                                  icmp_not: Optional[bool]) -> CommandResults:
     """
@@ -1823,7 +1823,7 @@ def list_scheduled_task_command(client: Client, task_id: Optional[int]):
 
     context_output = raw_response.get("scheduledTasks") or raw_response
 
-    if isinstance(context_output, Dict):
+    if isinstance(context_output, dict):
         context_output = [context_output]
 
     return CommandResults(
@@ -1870,7 +1870,7 @@ def main():
         return_error('API secret must be provided.')
     client = Client(params.get("server_url"), api_secret, use_ssl, use_proxy)
 
-    commands: Dict[str, Callable] = {"trendmicro-list-computers": list_computers_command,
+    commands: dict[str, Callable] = {"trendmicro-list-computers": list_computers_command,
                                      "trendmicro-create-computer": create_computer_command,
                                      "trendmicro-search-computers": search_computers_command,
                                      "trendmicro-get-computer": get_computer_command,
@@ -1912,7 +1912,6 @@ def main():
                                      "trendmicro-delete-scheduled-task": delete_scheduled_task_command,
                                      "trendmicro-list-scheduled-task": list_scheduled_task_command,
                                      "test-module": test_module}
-
 
     try:
         command = demisto.command()
