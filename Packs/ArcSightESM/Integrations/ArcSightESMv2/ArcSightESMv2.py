@@ -921,6 +921,7 @@ def get_all_query_viewers_command():
     else:
         demisto.results('No Query Viewers were found')
 
+
 def parse_json_response(response: requests.Response):
     """
     Parse the response to JSON.
@@ -953,7 +954,8 @@ def parse_json_response(response: requests.Response):
             raise e  # Raise the original exception
 
         demisto.debug('Response successfully parsed after fixing invalid escape sequences.')
-        return json.loads(fixed_data)
+        return fixed_response_json
+
 
 AUTH_TOKEN: str
 MAX_UNIQUE: int
