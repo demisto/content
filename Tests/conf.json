@@ -809,7 +809,7 @@
         },
         {
             "integrations": "Gmail",
-            "playbookID": "Sanity Test - Playbook with Unmockable Integration",
+            "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration",
             "fromversion": "5.0.0"
         },
         {
@@ -1075,7 +1075,7 @@
         },
         {
             "integrations": "Dell Secureworks",
-            "playbookID": "Secureworks"
+            "playbookID": "SecureWorks"
         },
         {
             "integrations": "ServiceNow v2",
@@ -3025,7 +3025,7 @@
         },
         {
             "integrations": "AWS - CloudTrail",
-            "playbookID": "3da2e31b-f114-4d7f-8702-117f3b498de9"
+            "playbookID": "AWS - CloudTrail Test Playbook"
         },
         {
             "integrations": "DomainTools",
@@ -4011,7 +4011,7 @@
             "is_mockable": false
         },
         {
-            "playbookID": "Export Indicators Performance Test",
+            "playbookID": "EDL Indicator Performance Test",
             "instance_names": "eis_auto",
             "integrations": [
                 "ExportIndicators",
@@ -4307,7 +4307,7 @@
             ]
         },
         {
-            "playbookID": "a60ae34e-7a00-4a06-81ca-2ca6ea1d58ba",
+            "playbookID": "Test-AnsibleHCloud",
             "fromversion": "6.0.0",
             "integrations": [
                 "AnsibleAlibabaCloud"
@@ -4643,7 +4643,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "7d8ac1af-2d1e-4ed9-875c-d3257d2c6830",
+            "playbookID": "Test-AnsibleHCloud",
             "fromversion": "6.0.0",
             "integrations": [
                 "AnsibleHCloud"
@@ -5519,12 +5519,12 @@
             "fromversion": "6.9.0"
         },
         {
-            "integrations": "Secneurx Analysis",
+            "integrations": "SecneurX Analysis",
             "playbookID": "Detonate File - SecneurX Analysis - Test",
             "fromversion": "6.2.0"
         },
         {
-            "integrations": "Secneurx Analysis",
+            "integrations": "SecneurX Analysis",
             "playbookID": "Detonate URL - SecneurX Analysis - Test",
             "fromversion": "6.2.0"
         },
