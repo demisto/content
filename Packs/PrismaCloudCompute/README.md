@@ -4,7 +4,7 @@ This pack includes Cortex XSIAM content.
 <~XSIAM>
 ## Overview
 
-This integration lets you import **Palo Alto Networks - Prisma Cloud Compute** alerts into XSIAM
+This integration lets you import **Palo Alto Networks - Prisma Cloud Compute** alerts into Cortex XSIAM.
 
 ## Use Cases
 
@@ -15,7 +15,7 @@ You can create new playbooks, or extend the default ones, to analyze alerts, ass
 
 Configure Prisma Cloud Compute to send alerts to Cortex XSIAM by creating an alert profile.
 
-1. Login to your Prisma Cloud Compute console, on new Prisma Cloud versions, go to Runtime Security.
+1. Log in to your Prisma Cloud Compute console. On new Prisma Cloud versions, go to **Runtime Security**.
 1. Navigate to **Manage > Alerts**.
 1. Create a new alert profile by clicking **Add Profile**.
 1. Provide a name, select **Cortex** from the provider list, and select **XSOAR** under Application.
@@ -27,14 +27,14 @@ Configure Prisma Cloud Compute to send alerts to Cortex XSIAM by creating an ale
 1. Navigate to **Settings > Integrations > Instances**.
 1. Search for **Prisma Cloud Compute**.
 1. Click **Add instance** to create and configure a new integration.
-* **Name**: Name for the integration.
-* **Fetches incidents**: Configures this integration instance to fetch alerts from Prisma Cloud Compute.
-* **Prisma Cloud Compute Console URL**: URL address of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute, or under **Runtime Security** copy the address from **System > Utilities > Path to Console**.
-* **Prisma Cloud Compute Project Name (if applies)**: If using projects in Prisma Cloud Compute, enter the project name here. Copy the project name from the alert profile created in Prisma Cloud Compute.
-* **Trust any certificate (not secure)**: Skips verification of the CA certificate (not recommended).
-* **Use system proxy settings**: Uses the system's proxy settings.
-* **Credentials**: Prisma Cloud Compute login credentials.
-* **Prisma Cloud Compute CA Certificate**: CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute.
+   * **Name**: Name for the integration.
+   * **Fetches incidents**: Configures this integration instance to fetch alerts from Prisma Cloud Compute.
+   * **Prisma Cloud Compute Console URL**: URL address of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute, or under **Runtime Security** copy the address from **System > Utilities > Path to Console**.
+   * **Prisma Cloud Compute Project Name (if applies)**: If using projects in Prisma Cloud Compute, enter the project name here. Copy the project name from the alert profile created in Prisma Cloud Compute.
+   * **Trust any certificate (not secure)**: Skips verification of the CA certificate (not recommended).
+   * **Use system proxy settings**: Uses the system's proxy settings.
+   * **Credentials**: Prisma Cloud Compute login credentials.
+   * **Prisma Cloud Compute CA Certificate**: CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute.
 4. Click **Test** to validate the integration.
 5. Click **Done** to save the integration.
 
@@ -42,16 +42,16 @@ Configure Prisma Cloud Compute to send alerts to Cortex XSIAM by creating an ale
 ## Using the integration and scripts
 
 The integration ships with four default playbooks:
-* Prisma Cloud Compute - Audit Alert v3
-* Prisma Cloud Compute - Cloud Discovery Alert
-* Prisma Cloud Compute - Compliance Alert
-* Prisma Cloud Compute - Vulnerability Alert
+* **Prisma Cloud Compute - Audit Alert v3**
+* **Prisma Cloud Compute - Cloud Discovery Alert**
+* **Prisma Cloud Compute - Compliance Alert**
+* **Prisma Cloud Compute - Vulnerability Alert**
 
-3 of the above playbooks (all except _Audit Alert v3_) contain a single script. The script in each playbook encode the raw JSON alerts into Cortex XSIAM objects that can then be used in the playbooks. The scripts are:
+Three of the above playbooks (all except _Audit Alert v3_) contain a single script. The script in each playbook encode the raw JSON alerts into Cortex XSIAM objects that can then be used in the playbooks. The scripts are:
 
-* PrismaCloudComputeParseComplianceAlert
-* PrismaCloudComputeParseVulnerabilityAlert
-* PrismaCloudComputeParseCloudDiscoveryAlert
+* **PrismaCloudComputeParseComplianceAlert**
+* **PrismaCloudComputeParseVulnerabilityAlert**
+* **PrismaCloudComputeParseCloudDiscoveryAlert**
 
 To better understand how playbooks and scripts interoperate, consider the _Prisma Cloud Compute - Vulnerability Alert_ playbook.
 
@@ -61,7 +61,7 @@ To better understand how playbooks and scripts interoperate, consider the _Prism
 ![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_raw_input.png)
 
 
-* Click **outputs** to see how the script transformed the raw JSON input into a XSIAM object.
+* Click **outputs** to see how the script transformed the raw JSON input into a Cortex XSIAM object.
 
 
 ![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_outputs.png)
@@ -69,7 +69,7 @@ To better understand how playbooks and scripts interoperate, consider the _Prism
 At this point, you can add tasks that extend the playbook to check and respond to alerts depending on the properties of the Cortex XSIAM object.
 
 ### Audit Alert v3 playbook
-This playbook is not similar to the other 3 playbooks. It is a default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
+This playbook is not similar to the other three playbooks. It is a default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
 
 The playbook has the following sections:
 
@@ -80,7 +80,7 @@ Enrichment:
 - Vulnerabilities
 - Compliance details
 - Forensics
-- Defender logs.
+- Defender logs
 
 Remediation:
 - Block Indicators - Generic v3
@@ -99,7 +99,7 @@ If any alerts are missing in Cortex XSIAM, check the status of the integration:
 <~XSOAR>
 ## Overview
 
-This integration lets you import **Palo Alto Networks - Prisma Cloud Compute** alerts into XSOAR
+This integration lets you import **Palo Alto Networks - Prisma Cloud Compute** alerts into Cortex XSOAR.
 
 ## Use Cases
 
@@ -110,7 +110,7 @@ You can create new playbooks, or extend the default ones, to analyze alerts, ass
 
 Configure Prisma Cloud Compute to send alerts to Cortex XSOAR by creating an alert profile.
 
-1. Login to your Prisma Cloud Compute console. On new Prisma Cloud versions, navigate to **Runtime Security**.
+1. Log in to your Prisma Cloud Compute console. On new Prisma Cloud versions, go to **Runtime Security**.
 1. Navigate to **Manage > Alerts**.
 1. Create a new alert profile by clicking **Add Profile**.
 1. Provide a name, select **Cortex** from the provider list, and select **XSOAR** under Application.
@@ -122,14 +122,14 @@ Configure Prisma Cloud Compute to send alerts to Cortex XSOAR by creating an ale
 1. Navigate to **Settings > Integrations > Instances**.
 1. Search for **Prisma Cloud Compute**.
 1. Click **Add instance** to create and configure a new integration.
-* **Name**: Name for the integration.
-* **Fetches incidents**: Configures this integration instance to fetch alerts from Prisma Cloud Compute.
-* **Prisma Cloud Compute Console URL**: URL address of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute, or under **Runtime Security** copy the address from **System > Utilities > Path to Console**.
-* **Prisma Cloud Compute Project Name (if applies)**: If using projects in Prisma Cloud Compute, enter the project name here. Copy the project name from the alert profile created in Prisma Cloud Compute.
-* **Trust any certificate (not secure)**: Skips verification of the CA certificate (not recommended).
-* **Use system proxy settings**: Uses the system's proxy settings.
-* **Credentials**: Prisma Cloud Compute login credentials.
-* **Prisma Cloud Compute CA Certificate**: CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute.
+   * **Name**: Name for the integration.
+   * **Fetches incidents**: Configures this integration instance to fetch alerts from Prisma Cloud Compute.
+   * **Prisma Cloud Compute Console URL**: URL address of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute, or under **Runtime Security** copy the address from **System > Utilities > Path to Console**.
+   * **Prisma Cloud Compute Project Name (if applies)**: If using projects in Prisma Cloud Compute, enter the project name here. Copy the project name from the alert profile created in Prisma Cloud Compute.
+   * **Trust any certificate (not secure)**: Skips verification of the CA certificate (not recommended).
+   * **Use system proxy settings**: Uses the system's proxy settings.
+   * **Credentials**: Prisma Cloud Compute login credentials.
+   * **Prisma Cloud Compute CA Certificate**: CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute.
 4. Click **Test** to validate the integration.
 5. Click **Done** to save the integration.
 
@@ -137,16 +137,16 @@ Configure Prisma Cloud Compute to send alerts to Cortex XSOAR by creating an ale
 ## Using the integration and scripts
 
 The integration ships with four default playbooks:
-* Prisma Cloud Compute - Audit Alert v3
-* Prisma Cloud Compute - Cloud Discovery Alert
-* Prisma Cloud Compute - Compliance Alert
-* Prisma Cloud Compute - Vulnerability Alert
+* **Prisma Cloud Compute - Audit Alert v3**
+* **Prisma Cloud Compute - Cloud Discovery Alert**
+* **Prisma Cloud Compute - Compliance Alert**
+* **Prisma Cloud Compute - Vulnerability Alert**
 
-3 of the above playbooks (all except _Audit Alert v3_) contain a single script. The script in each playbook encode the raw JSON alerts into Cortex XSOAR objects that can then be used in the playbooks. The scripts are:
+Three of the above playbooks (all except _Audit Alert v3_) contain a single script. The script in each playbook encode the raw JSON alerts into Cortex XSOAR objects that can then be used in the playbooks. The scripts are:
 
-* PrismaCloudComputeParseComplianceAlert
-* PrismaCloudComputeParseVulnerabilityAlert
-* PrismaCloudComputeParseCloudDiscoveryAlert
+* **PrismaCloudComputeParseComplianceAlert**
+* **PrismaCloudComputeParseVulnerabilityAlert**
+* **PrismaCloudComputeParseCloudDiscoveryAlert**
 
 To better understand how playbooks and scripts interoperate, consider the _Prisma Cloud Compute - Vulnerability Alert_ playbook.
 
@@ -156,7 +156,7 @@ To better understand how playbooks and scripts interoperate, consider the _Prism
 ![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_raw_input.png)
 
 
-* Click **outputs** to see how the script transformed the raw JSON input into a XSOAR object.
+* Click **outputs** to see how the script transformed the raw JSON input into a Cortex XSOAR object.
 
 
 ![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_outputs.png)
@@ -164,7 +164,7 @@ To better understand how playbooks and scripts interoperate, consider the _Prism
 At this point, you can add tasks that extend the playbook to check and respond to alerts depending on the properties of the Cortex XSOAR object.
 
 ### Audit Alert v3 playbook
-This playbook is not similar to the other 3 playbooks. It is a default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
+This playbook is not similar to the other three playbooks. It is a default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
 
 The playbook has the following sections:
 
@@ -175,7 +175,7 @@ Enrichment:
 - Vulnerabilities
 - Compliance details
 - Forensics
-- Defender logs.
+- Defender logs
 
 Remediation:
 - Block Indicators - Generic v3
