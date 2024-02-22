@@ -575,12 +575,12 @@ class Client(BaseClient):
         response.raise_for_status()
         return response
 
-    def list_scheduled_tasks(self, task_id: Optional[int] = None) -> dict[str, Any]:
+    def list_scheduled_tasks(self, task_id: Optional[int] = None) -> requests.Response:
         url_suffix = '/scheduledtasks'
         if task_id:
             url_suffix = f'{url_suffix}/{task_id}'
         return self._http_request(
-            method="GET", url_suffix=url_suffix
+            method="GET", url_suffix=url_suffix, resp_type="response", ok_codes=(200, 404)
         )
 
     @no_type_check
@@ -1819,26 +1819,36 @@ def list_scheduled_task_command(client: Client, task_id: Optional[int]):
     Args:
         task_id (int): querying for a specific scheduled task-ID.
     """
-    raw_response = client.list_scheduled_tasks(task_id)
+    response = client.list_scheduled_tasks(task_id)
+    if response.status_code == requests.codes.not_found:
+        return CommandResults(
+            readable_output=f"Could not find scheduled task with ID {task_id}"
+        )
 
-    context_output = raw_response.get("scheduledTasks") or raw_response
+    raw_response = response.json()
+    context_output = raw_response.get("scheduledTasks") or response
 
     if isinstance(context_output, dict):
         context_output = [context_output]
 
-    return CommandResults(
-        outputs=context_output,
-        raw_response=raw_response,
-        outputs_prefix="TrendMicro.ScheduledTask",
-        outputs_key_field="ID",
-        readable_output=tableToMarkdown(
-            "Scheduled Tasks",
-            context_output,
-            headers=["ID", "name", "type", "enabled", "lastRunTime"],
-            headerTransform=pascalToSpace,
-            date_fields=["lastRunTime", "nextRunTime"],
-            removeNull=True
+    if context_output:
+        return CommandResults(
+            outputs=context_output,
+            raw_response=raw_response,
+            outputs_prefix="TrendMicro.ScheduledTask",
+            outputs_key_field="ID",
+            readable_output=tableToMarkdown(
+                "Scheduled Tasks",
+                context_output,
+                headers=["ID", "name", "type", "enabled", "lastRunTime"],
+                headerTransform=pascalToSpace,
+                date_fields=["lastRunTime", "nextRunTime"],
+                removeNull=True
+            )
         )
+
+    return CommandResults(
+        readable_output="There aren't any scheduled tasks available"
     )
 
 
