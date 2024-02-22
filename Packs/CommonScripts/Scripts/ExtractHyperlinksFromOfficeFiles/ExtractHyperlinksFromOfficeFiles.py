@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any
 import openpyxl
 from docx import Document
 from pptx import Presentation
@@ -8,8 +7,7 @@ import zipfile
 import pandas as pd
 
 
-def extract_hyperlinks_from_xlsx(file_path):
-
+def extract_hyperlinks_from_xlsx(file_path: str) -> Set:
     with zipfile.ZipFile(file_path, "r") as zf:
         xmls = [zf.read(fn) for fn in zf.infolist()
                 if fn.filename.startswith("xl/drawings/_rels/")]
@@ -33,7 +31,7 @@ def extract_hyperlinks_from_xlsx(file_path):
     return urls
 
 
-def extract_hyperlinks_from_docx(file_path):
+def extract_hyperlinks_from_docx(file_path: str) -> Set:
     doc = Document(file_path)
     links = set()
     for para in doc.paragraphs:
@@ -43,7 +41,7 @@ def extract_hyperlinks_from_docx(file_path):
     return links
 
 
-def extract_hyperlinks_from_pptx(file_path):
+def extract_hyperlinks_from_pptx(file_path: str) -> Set:
     prs = Presentation(file_path)
     links = set()
     for slide in prs.slides:
@@ -59,14 +57,13 @@ def extract_hyperlinks_from_pptx(file_path):
     return links
 
 
-def extract_hyperlink_by_file_type(file_path: str) -> CommandResults:
-
-    result = []
-    if file_path.endswith('.xlsx'):
+def extract_hyperlink_by_file_type(file_name: str, file_path: str) -> CommandResults:
+    result = set()
+    if file_name.endswith('.xlsx'):
         result = extract_hyperlinks_from_xlsx(file_path)
-    elif file_path.endswith('.docx'):
+    elif file_name.endswith('.docx'):
         result = extract_hyperlinks_from_docx(file_path)
-    elif file_path.endswith('.pptx'):
+    elif file_name.endswith('.pptx'):
         result = extract_hyperlinks_from_pptx(file_path)
     else:
         return_error("Not supported file type. Supported types are: 'xlsx, docx, pptx'")
@@ -75,22 +72,27 @@ def extract_hyperlink_by_file_type(file_path: str) -> CommandResults:
     else:
         hr = '**No hyperlinks.**'
 
+    output = [{'URL': url, 'FileName': file_name} for url in result]
+    contex = {'ExtractedHyperLink(val.URL == obj.URL && val.FileName == obj.FileName)': output}
+
     return CommandResults(
-        outputs_prefix='ExtractHyperlinksFromOfficeFiles',
-        outputs=result,
-        readable_output=hr
+        outputs=contex,
+        readable_output=hr,
+        raw_response=list(result)
     )
 
 
-def main():     # pragma: no cover
+def main():  # pragma: no cover
     entry_id = demisto.args().get("entry_id")
     file_result = demisto.getFilePath(entry_id)
     if not file_result:
-        return_error("Couldn't find entry id: {}".format(entry_id))
+        return_error(f"Couldn't find entry id: {entry_id}")
+    file_name = file_result.get('name')
     file_path = file_result.get('path')
+    os.rename(f'./{file_path}', file_name)
 
     try:
-        return_results(extract_hyperlink_by_file_type(file_path))
+        return_results(extract_hyperlink_by_file_type(file_name=file_name, file_path=os.path.realpath(file_name)))
     except Exception as ex:
         return_error(f'Failed to execute ExtractHyperlinksFromOfficeFiles. Error: {str(ex)}')
 

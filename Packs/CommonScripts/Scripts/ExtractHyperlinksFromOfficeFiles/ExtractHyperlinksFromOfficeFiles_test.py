@@ -1,4 +1,5 @@
 import pytest
+from ExtractHyperlinksFromOfficeFiles import extract_hyperlink_by_file_type
 
 
 @pytest.mark.parametrize('file_path, expected_output', [
@@ -14,10 +15,24 @@ import pytest
 def test_basescript_dummy(file_path, expected_output):
     """
     Given:
+        1. docx file with hyperlinks on a picture and text.
+        2. docx file without hyperlinks
+        3. excel file with hyperlinks on a picture and inside text cell.
+        4. excel file with no hyperlinks.
+        5. excel file with hyperlinks inside text cell.
+        6. power point file with hyperlinks on a picture and text.
+        7. power point file without hyperlinks
     When:
+        Extracting hyperlinks from file using ExtractHyperlinksFromOfficeFiles script.
     Then:
+        Validate that:
+        1. hyperlinks extracted from docx file
+        2. no hyperlinks extracted from docx file
+        3. hyperlinks extracted from excel file
+        4. no hyperlinks extracted from excel file
+        5. hyperlinks extracted from excel file
+        6. hyperlinks extracted from power point file
+        7. no hyperlinks extracted from power point file
     """
-    from ExtractHyperlinksFromOfficeFiles import extract_hyperlink_by_file_type
-
-    response = extract_hyperlink_by_file_type(file_path)
-    assert response.outputs == expected_output
+    response = extract_hyperlink_by_file_type(file_name=file_path, file_path=file_path)
+    assert response.raw_response == list(expected_output)

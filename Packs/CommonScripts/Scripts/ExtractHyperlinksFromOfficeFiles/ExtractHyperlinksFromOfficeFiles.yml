@@ -8,8 +8,12 @@ commonfields:
   version: -1
 name: ExtractHyperlinksFromOfficeFiles
 outputs:
-- contextPath: ExtractHyperlinksFromOfficeFiles
-  description: 'Extracted hyperlinks from the given office file.'
+- contextPath: ExtractedHyperLink.URL
+  description: The extracted hyperlinks URL.
+  type: String
+- contextPath: ExtractedHyperLink.FileName
+  description: The office file that the hyperlinks extracted from.
+  type: String
 script: '-'
 timeout: '0'
 type: python
