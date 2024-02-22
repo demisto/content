@@ -73,7 +73,7 @@ def test_sg_fix(mocker):
     """
     from AWSRecreateSG import sg_fix
     from test_data.sample import SG_INFO
-    new_sg = [{'Type': 1, 'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
+    new_sg = [{'Type': 1, 'Contents': [{'GroupId': 'sg-00000000000000001'}]}]
     mocker.patch.object(demisto, "executeCommand", return_value=new_sg)
     args = {"sg_info": SG_INFO, "port": 22, "protocol": "tcp", "assume_role": "test_role", "instance_to_use": "AWS - EC2",
             "region": "us-east-1"}
@@ -93,14 +93,13 @@ def test_determine_excessive_access(mocker):
     """
     from AWSRecreateSG import determine_excessive_access
     from test_data.sample import SG_INFO
-    new_sg = [{'Type': 1, 'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
+    new_sg = [{'Type': 1, 'Contents': [{'GroupId': 'sg-00000000000000001'}]}]
 
-    def executeCommand(name, args):
-        if name == "aws-ec2-describe-security-groups":
-            return SG_INFO
-        elif name == "aws-ec2-create-security-group":
-            return new_sg
-        return None
+    def executeCommand(name, *_):
+        return {
+            "aws-ec2-describe-security-groups": SG_INFO,
+            "aws-ec2-create-security-group": new_sg
+        }.get(name)
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"int_sg_mapping": {'eni-00000000000000000': ['sg-00000000000000000']}, "port": 22,
@@ -121,37 +120,18 @@ def test_aws_recreate_sg(mocker):
     """
     from AWSRecreateSG import aws_recreate_sg
     from test_data.sample import SG_INFO, INSTANCE_INFO
-    new_sg = [{'Type': 1, 'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
+    new_sg = [{'Type': 1, 'Contents': [{'GroupId': 'sg-00000000000000001'}]}]
 
-    def executeCommand(name, args):
-        if name == "aws-ec2-describe-security-groups":
-            return SG_INFO
-        elif name == "aws-ec2-create-security-group":
-            return new_sg
-        elif name == "aws-ec2-describe-instances":
-            return INSTANCE_INFO
-        return None
+    def execute_command(command, *_):
+        return {
+            "aws-ec2-describe-security-groups": SG_INFO,
+            "aws-ec2-create-security-group": new_sg,
+            "aws-ec2-describe-instances": INSTANCE_INFO
+        }.get(command)
 
-    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    mocker.patch.object(demisto, "executeCommand", side_effect=execute_command)
     args = {"instance_id": "fake-instance-id", "public_ip": "1.1.1.1", "port": "22", "protocol": "tcp"}
     command_results = aws_recreate_sg(args)
     readable_output = command_results.readable_output
     correct_output = "For interface eni-00000000000000000: \r\nreplaced SG sg-00000000000000000 with sg-00000000000000001 \r\n"
     assert readable_output == correct_output
-
-
-def test_get_context_path():
-    """
-    Given:
-        An output from demisto.excuteCommand('some-command')['Context']
-    When:
-        Calling demisto.excuteCommand.
-    Then:
-        Get the context output.
-    """
-    from AWSRecreateSG import get_context_path
-
-    outputs = {'path.to.data(dt_path)': [1, 2, 3, 4]}
-
-    assert get_context_path(outputs, 'path.to.data') == [1, 2, 3, 4]
-    assert get_context_path(outputs, 'wrong.path') is None

@@ -87,13 +87,6 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
                 ):
                     change = True
                 elif (
-                    rule["FromPort"] == port and port == rule["ToPort"]
-                    and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
-                    and rule["IpProtocol"] == protocol
-                ):
-                    # If condition to check for Quad 0 in the rules list for matching port.
-                    change = True
-                elif (
                     rule['FromPort'] <= port and port <= rule['ToPort']
                     and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
                     and rule['IpProtocol'] == protocol
