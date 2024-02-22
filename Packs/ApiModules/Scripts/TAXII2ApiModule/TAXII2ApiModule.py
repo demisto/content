@@ -1275,17 +1275,19 @@ class Taxii2FeedClient:
                         self.update_last_modified_indicator_date(obj.get("modified"))
 
                     if reached_limit(limit, len(indicators)):
-                        demisto.debug(f"Reached the limit ({limit}) of indicators to fetch. Indicators len: {len(indicators)}")
+                        demisto.debug(f"Reached the limit ({limit}) of indicators to fetch. Indicators len: {len(indicators)}."
+                                      f' Evelopes len: {len(list(envelopes))}. Got {len(indicators)} indicators'
+                                      f' and {len(relationships_lst)} relationships. Objects counters: {parsed_objects_counter}')
+
                         return indicators, relationships_lst
         except Exception as e:
             if len(indicators) == 0:
                 demisto.debug("No Indicator were parsed")
                 raise e
             demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
-        finally:
-            demisto.debug(f'Finished parsing {len(list(envelopes))} envelopes. Got {len(indicators)} indicators '
-                          f'and {len(relationships_lst)} relationships. Parsed objects counters: {parsed_objects_counter}')
-        demisto.debug("Finished parsing all objects")
+        demisto.debug(f'Finished parsing all objects. Parsed {len(list(envelopes))} envelopes. Got {len(indicators)} indicators '
+                        f'and {len(relationships_lst)} relationships. Parsed objects counters: {parsed_objects_counter}')
+        # demisto.debug("")
         return indicators, relationships_lst
 
     def poll_collection(
