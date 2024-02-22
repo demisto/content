@@ -1,3 +1,5 @@
+import sys
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
@@ -33,6 +35,18 @@ basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 
 
+async def parse_incidents(request: Request) -> list[dict]:
+    demisto.debug('in modify request middleware')
+    # Read the original request body
+    body_bytes = await request.body()
+    body = body_bytes.decode('utf-8')
+    demisto.debug(f'received body {sys.getsizeof(body)=}')
+    json_body = json.loads(body)
+    incidents = json_body if isinstance(json_body, list) else [json_body]
+    demisto.debug(f'received create incidents request of length {len(incidents)}')
+    return incidents
+
+
 class GenericWebhookAccessFormatter(AccessFormatter):
     def get_user_agent(self, scope: Dict) -> str:
         headers = scope.get('headers', [])
@@ -52,11 +66,12 @@ class GenericWebhookAccessFormatter(AccessFormatter):
 
 @app.post('/')
 async def handle_post(
-        incident: Incident,
-        request: Request,
-        credentials: HTTPBasicCredentials = Depends(basic_auth),
-        token: APIKey = Depends(token_auth)
+    request: Request,
+    credentials: HTTPBasicCredentials = Depends(basic_auth),
+    token: APIKey = Depends(token_auth)
 ):
+    incidents = await parse_incidents(request)
+    demisto.debug('Handling request')
     header_name = None
     request_headers = dict(request.headers)
 
@@ -71,7 +86,7 @@ async def handle_post(
             if not token or not compare_digest(token, password):
                 auth_failed = True
         elif (not credentials) or (not (compare_digest(credentials.username, username)
-                                   and compare_digest(credentials.password, password))):
+                                        and compare_digest(credentials.password, password))):
             auth_failed = True
         if auth_failed:
             secret_header = (header_name or 'Authorization').lower()
@@ -83,28 +98,36 @@ async def handle_post(
     secret_header = (header_name or 'Authorization').lower()
     request_headers.pop(secret_header, None)
 
-    raw_json = incident.raw_json or await request.json()
-    raw_json['headers'] = request_headers
+    for incident in incidents:
+        incident.get('raw_json', {})['headers'] = request_headers
+        demisto.debug(f'{incident=}')
 
-    incident = {
-        'name': incident.name or 'Generic webhook triggered incident',
-        'type': incident.type or demisto.params().get('incidentType'),
-        'occurred': incident.occurred,
-        'rawJSON': json.dumps(raw_json)
-    }
+    demisto.debug(f'{type(incidents[0]["raw_json"])=}')
+    incidents = [{
+        'name': incident.get('name') or 'Generic webhook triggered incident',
+        'type': incident.get('type') or demisto.params().get('incidentType'),
+        'occurred': incident.get('occurred'),
+        'rawJSON': json.dumps(incident.get('raw_json'))
+    } for incident in incidents]
 
+    demisto.debug('returning incidents')
+    return_incidents = demisto.createIncidents(incidents)
+    demisto.debug('returned incidents')
     if demisto.params().get('store_samples'):
         try:
-            sample_events_to_store.append(incident)
+            sample_events_to_store.extend(incidents)
+            demisto.debug(f'old events {len(sample_events_to_store)=}')
             integration_context = get_integration_context()
             sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
             sample_events += sample_events_to_store
+            demisto.debug(f'new events {len(sample_events_to_store)=}')
             integration_context['sample_events'] = list(sample_events)
             set_to_integration_context_with_retries(integration_context)
+            demisto.debug('finished setting sample events')
         except Exception as e:
             demisto.error(f'Failed storing sample events - {e}')
 
-    return demisto.createIncidents([incident])
+    return return_incidents
 
 
 def fetch_samples() -> None:
