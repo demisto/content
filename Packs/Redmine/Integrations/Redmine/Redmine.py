@@ -357,6 +357,7 @@ def main() -> None:
                     'redmine-issue-show': get_issue_by_id_command,
                     'redmine-issue-delete': delete_issue_by_id_command,
                     'redmine-issue-watcher-add': add_issue_watcher_command,
+                    'redmine-issue-watcher-remove': remove_issue_watcher_command,
                     'redmine-project-list': get_project_list_command,
                     'redmine-custom-field-list': get_custom_fields_command,
                     'redmine-user-id-list': get_users_command}
@@ -367,8 +368,8 @@ def main() -> None:
             proxy,
             auth=("", api_key))
         # return_results(get_issues_list_command(client,{'sort':'priority:desc', 'limit':'20'}))
-        return_results(create_issue_command(client,{'project_id':'1','status_id':'1', 'priority_id':'1', 'file_content_type': 'image/png',
-                                        'subject':'createfromcode', 'file_name':'tal.png','entry_id':'/Users/tcarmeli/Downloads/for_test.png'}))
+        # return_results(create_issue_command(client,{'project_id':'1','status_id':'1', 'priority_id':'1', 'file_content_type': 'image/png',
+        #                                 'subject':'createfromcode', 'file_name':'tal.png','entry_id':'/Users/tcarmeli/Downloads/for_test.png'}))
         #return_results(get_users_command(client, {'status':'1'}))
         # return_results(get_users_command(client, {'name':'Redmine'}))
         # return_results(get_custom_fields_command(client))
@@ -382,14 +383,13 @@ def main() -> None:
         #                                              'watcher_user_ids':'[1]'}))
         if command == 'test-module':
             test_module(client)
-        # elif command in commands:
-        #     return_results(commands[command](client,args))
+        elif command in commands:
+            return_results(commands[command](client,args))
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
