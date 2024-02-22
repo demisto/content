@@ -4710,8 +4710,45 @@ script:
       - 'false'
       - 'true'
       auto: PREDEFINED
-    description: Perform actions on alerts.
+    description: Perform actions on identity detection alerts.
     name: cs-falcon-resolve-identity-detection
+  - arguments:
+    - description: IDs of the alerts to update.
+      name: ids
+      isArray: true
+      required: true
+    - description: Assign the specified detections to a user based on their username.
+      name: assign_to_name
+    - description: Assign the specified detections to a user based on their UUID.
+      name: assign_to_uuid
+    - description: Appends a new comment to any existing comments for the specified detections.
+      name: append_comment
+    - description: Add a tag to the specified detections.
+      name: add_tag
+    - description: Remove a tag from the specified detections.
+      name: remove_tag
+    - description: Update status of the alert to the specified value.
+      name: update_status
+      predefined:
+      - 'new'
+      - 'in_progress'
+      - 'closed'
+      - 'reopened'
+      auto: PREDEFINED
+    - description: Whether to unassign any assigned users to the specified detections.
+      name: unassign
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    - description: If true, displays the detection in the UI.
+      name: show_in_ui
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    description: Perform actions on mobile detection alerts.
+    name: cs-falcon-resolve-mobile-detection
   - arguments:
     - description: IDs (UUID) of specific users to list.
       name: id

@@ -6594,7 +6594,7 @@ There is no context output for this command.
 ### cs-falcon-resolve-identity-detection
 
 ***
-Perform actions on alerts.
+Perform actions on identity detection alerts.
 
 #### Base Command
 
@@ -6760,3 +6760,36 @@ Get IOA Rules for Custom IOA rule triggered detections
 | CrowdStrike.IOARules.ruletype_id | String | The IOA Rule's Rule Type ID. | 
 | CrowdStrike.IOARules.ruletype_name | String | The IOA Rule's Rule Type Name. | 
 | CrowdStrike.IOARules.version_ids | String | The IOA Rule's Version ID. | 
+
+### cs-falcon-resolve-mobile-detection
+
+***
+Perform actions on mobile detection alerts.
+
+#### Base Command
+
+`cs-falcon-resolve-mobile-detection`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | IDs of the alerts to update. | Required | 
+| assign_to_name | Assign the specified detections to a user based on their username. | Optional | 
+| assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional | 
+| append_comment | Appends a new comment to any existing comments for the specified detections. | Optional | 
+| add_tag | Add a tag to the specified detections. | Optional | 
+| remove_tag | Remove a tag from the specified detections. | Optional | 
+| update_status | Update status of the alert to the specified value. Possible values are: new, in_progress, closed, reopened. | Optional | 
+| unassign | Whether to unassign any assigned users to the specified detections. Possible values are: false, true. | Optional | 
+| show_in_ui | If true, displays the detection in the UI. Possible values are: false, true. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!cs-falcon-resolve-mobile-detection ids="id_1,id_2" add_tag="Demo tag" append_comment="Demo comment" assign_to_name="morganf" show_in_ui=true update_status=in_progress```
+#### Human Readable Output
+
+>Mobile Detection(s) id_1, id_2 were successfully updated

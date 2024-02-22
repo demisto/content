@@ -6400,9 +6400,9 @@ def cs_falcon_cspm_update_policy_settings_command(args: dict[str, Any]) -> Comma
     return CommandResults(readable_output=f'Policy {policy_id} was updated successfully')
 
 
-def resolve_identity_detection_prepare_body_request(ids: list[str],
+def resolve_detections_prepare_body_request(ids: list[str],
                                                     action_params_values: dict[str, Any]) -> dict[str, Any]:
-    """Create the body of the request to resolve an identity detection.
+    """Create the body of the request to resolve detections.
 
     Args:
         ids (list[str]): The IDs of the detections.
@@ -6425,8 +6425,8 @@ def resolve_identity_detection_prepare_body_request(ids: list[str],
     return {'action_parameters': action_params, 'ids': ids}
 
 
-def resolve_identity_detection_request(ids: list[str], **kwargs) -> dict[str, Any]:
-    """Do an API call to resolve an identity detection.
+def resolve_detections_request(ids: list[str], **kwargs) -> dict[str, Any]:
+    """Do an API call to resolve detections.
 
     Args:
         ids (list[str]): The IDs of the detections.
@@ -6434,12 +6434,34 @@ def resolve_identity_detection_request(ids: list[str], **kwargs) -> dict[str, An
     Returns:
         dict[str, Any]: The raw response of the API.
     """
-    body_payload = resolve_identity_detection_prepare_body_request(ids=ids, action_params_values=kwargs)
+    body_payload = resolve_detections_prepare_body_request(ids=ids, action_params_values=kwargs)
     return http_request(method='PATCH', url_suffix='/alerts/entities/alerts/v2', json=body_payload)
 
 
 def cs_falcon_resolve_identity_detection(args: dict[str, Any]) -> CommandResults:
-    """Command to resolve idenetiy detections.
+    """Command to resolve identity detections.
+
+    Args:
+        args (dict[str, Any]): The arguments of the command.
+
+    Returns:
+        CommandResults: The command results object.
+    """
+    return handle_resolve_detections(args, 'IDP Detection(s) {} were successfully updated')
+
+def cs_falcon_resolve_mobile_detection(args: dict[str, Any]) -> CommandResults:
+    """Command to resolve mobile detections.
+
+    Args:
+        args (dict[str, Any]): The arguments of the command.
+
+    Returns:
+        CommandResults: The command results object.
+    """
+    return handle_resolve_detections(args, 'Mobile Detection(s) {} were successfully updated')
+
+def handle_resolve_detections(args: dict[str, Any], hr_template: str) -> CommandResults:
+    """Handle the mobile & identity detections resolve commands.
 
     Args:
         args (dict[str, Any]): The arguments of the command.
@@ -6463,10 +6485,10 @@ def cs_falcon_resolve_identity_detection(args: dict[str, Any]) -> CommandResults
     show_in_ui = args.get('show_in_ui', '')
     # We pass the arguments in the form of **kwargs, since we also need the arguments' names for the API,
     # and it easier to achieve that using **kwargs
-    resolve_identity_detection_request(ids=ids, update_status=update_status, assign_to_name=assign_to_name,
+    resolve_detections_request(ids=ids, update_status=update_status, assign_to_name=assign_to_name,
                                        assign_to_uuid=assign_to_uuid, unassign=unassign, append_comment=append_comment,
                                        add_tag=add_tag, remove_tag=remove_tag, show_in_ui=show_in_ui)
-    return CommandResults(readable_output=f'IDP Detection(s) {", ".join(ids)} were successfully updated')
+    return CommandResults(readable_output=hr_template.format(", ".join(ids)))
 
 
 def cs_falcon_list_users_command(args: dict[str, Any]) -> CommandResults:
@@ -6800,6 +6822,8 @@ def main():
             return_results(cs_falcon_cspm_update_policy_settings_command(args=args))
         elif command == 'cs-falcon-resolve-identity-detection':
             return_results(cs_falcon_resolve_identity_detection(args=args))
+        elif command == 'cs-falcon-resolve-mobile-detection':
+            return_results(cs_falcon_resolve_mobile_detection(args=args))
         elif command == 'cs-falcon-list-users':
             return_results(cs_falcon_list_users_command(args=args))
         elif command == 'cs-falcon-get-incident-behavior':

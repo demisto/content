@@ -5942,6 +5942,21 @@ class TestCSFalconResolveIdentityDetectionCommand:
         assert isinstance(command_results.readable_output, str)
         assert 'IDP Detection(s) 1, 2 were successfully updated' in command_results.readable_output
 
+    def test_resolve_mobile_detection(self, mocker: MockerFixture):
+        """
+        Given:
+            - Arguments for the command.
+        When
+            - Calling the cs-falcon-resolve-mobile-detection command.
+        Then
+            - Validate the data of the CommandResults object returned.
+        """
+        from CrowdStrikeFalcon import cs_falcon_resolve_mobile_detection
+        mocker.patch('CrowdStrikeFalcon.http_request', return_value=requests.Response())
+        command_results = cs_falcon_resolve_mobile_detection(args={'ids': '1,2'})
+        assert isinstance(command_results.readable_output, str)
+        assert 'Mobile Detection(s) 1, 2 were successfully updated' in command_results.readable_output
+
 
 class TestIOAFetch:
     # Since this integration fetches multiple incidents, the last run object contains a list of
