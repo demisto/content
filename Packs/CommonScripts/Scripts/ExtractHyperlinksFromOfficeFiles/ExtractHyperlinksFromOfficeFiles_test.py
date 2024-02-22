@@ -21,7 +21,7 @@ def test_basescript_dummy(file_path, expected_output):
         4. excel file with no hyperlinks.
         5. excel file with hyperlinks inside text cell.
         6. power point file with hyperlinks on a picture and text.
-        7. power point file without hyperlinks
+        7. power point file without hyperlinks.
     When:
         Extracting hyperlinks from file using ExtractHyperlinksFromOfficeFiles script.
     Then:
