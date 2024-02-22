@@ -1,0 +1,128 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: CIAC-8757-new-pb
+inputs: []
+name: CIAC-8757-new-pb
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6d95b6aa-01f3-4a3b-8baa-562f81b33d85
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 6d95b6aa-01f3-4a3b-8baa-562f81b33d85
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: foo
+      value:
+        simple: bar
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 59cc8b58-b3a8-40f9-86ae-e21366aeba7e
+      iscommand: false
+      name: Set foo bar
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 59cc8b58-b3a8-40f9-86ae-e21366aeba7e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: No real reason to close
+      closeReason:
+        simple: No real reason to close
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 70142bfe-9709-46aa-82c4-9d1034f8793c
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 70142bfe-9709-46aa-82c4-9d1034f8793c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 480
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 525,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
