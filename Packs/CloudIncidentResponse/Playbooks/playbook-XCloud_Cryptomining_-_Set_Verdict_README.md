@@ -8,22 +8,28 @@ This playbook sets the alert's verdict as malicious if one of the following cond
 If none of the conditions is true, the playbook will wait for an analyst's decision.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
+
 * SearchIncidentsV2
+* Set
 
 ### Commands
+
 This playbook does not use any commands.
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -31,6 +37,7 @@ This playbook does not use any commands.
 | sourceIP | The source IP of the attack. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -38,5 +45,7 @@ This playbook does not use any commands.
 | alertVerdict | The alert verdict | string |
 
 ## Playbook Image
+
 ---
+
 ![XCloud Cryptojacking - Set Verdict](../doc_files/XCloud_Cryptomining_-_Set_Verdict.png)

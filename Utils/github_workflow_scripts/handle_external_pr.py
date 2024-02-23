@@ -13,7 +13,7 @@ from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
 
 
-from utils import (
+from Utils.github_workflow_scripts.utils import (
     get_env_var,
     timestamped_print,
     Checkout,
@@ -23,8 +23,9 @@ from utils import (
     get_support_level
 )
 from demisto_sdk.commands.common.tools import get_pack_name
+from urllib3.exceptions import InsecureRequestWarning
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+urllib3.disable_warnings(InsecureRequestWarning)
 print = timestamped_print
 
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
@@ -57,7 +58,9 @@ SECURITY_CONTENT_ITEMS = [
     "IndicatorFields",
     "Layouts",
     "Classifiers",
-    "Wizards"
+    "Wizards",
+    "Dashboards",
+    "Triggers"
 ]
 
 
@@ -193,7 +196,7 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 
     for pr_file in pr_files:
         for item in SECURITY_CONTENT_ITEMS:
-            if item in pr_file:
+            if item in Path(pr_file).parts:
                 return True
 
     return False
@@ -262,7 +265,7 @@ def main():
     payload_str = get_env_var('EVENT_PAYLOAD')
     if not payload_str:
         raise ValueError('EVENT_PAYLOAD env variable not set or empty')
-    payload = json.loads(payload_str)
+    payload: dict = json.loads(payload_str)
     print(f'{t.cyan}Processing PR started{t.normal}')
 
     org_name = 'demisto'
@@ -297,8 +300,8 @@ def main():
         print(f'{t.cyan}Determining name for new base branch{t.normal}')
         branch_prefix = 'contrib/'
         new_branch_name = f'{branch_prefix}{pr.head.label.replace(":", "_")}'
-        existant_branches = content_repo.get_git_matching_refs(f'heads/{branch_prefix}')
-        potential_conflicting_branch_names = [branch.ref.removeprefix('refs/heads/') for branch in existant_branches]
+        existing_branches = content_repo.get_git_matching_refs(f'heads/{branch_prefix}')
+        potential_conflicting_branch_names = [branch.ref.removeprefix('refs/heads/') for branch in existing_branches]
         # make sure new branch name does not conflict with existing branch name
         while new_branch_name in potential_conflicting_branch_names:
             # append or increment digit

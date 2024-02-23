@@ -97,6 +97,7 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  display: ''
 - defaultvalue: connectApi
   display: Services
   name: services
@@ -136,18 +137,24 @@ configuration:
   required: true
   type: 0
 - additionalinfo: |-
-    The minimum score from the feed in order to to determine whether the indicator is malicious. Default is "65". For more information about Recorded Future scoring go to integration details.
+    The minimum score from the feed in order to determine whether the indicator is malicious. Default is "65". For more information about Recorded Future scoring go to integration details.
   defaultvalue: '65'
   display: Malicious Threshold
   name: threshold
   type: 0
   required: false
-- additionalinfo: If selected, will be used to filter out the ingested indicators, and only indicators with equivalent and higher risk score will be ingested into XSOAR.
+- additionalinfo: The minimum score from the feed in order to determine whether the indicator is Suspicious. Ranges up to the Malicious Threshold. Default is "25". For more information about Recorded Future scoring go to integration details.
+  defaultvalue: '25'
+  display: Suspicious Threshold
+  name: suspicious_threshold
+  type: 0
+  required: false
+- additionalinfo: If selected, will be used to filter out the ingested indicators, and only indicators with equivalent and higher risk score will be ingested into XSOAR. Scores greater than the IOC Risk Score Threshold and less than the Suspicious Threshold will have an unknown verdict.
   defaultvalue: '0'
   display: IOC Risk Score Threshold
   name: risk_score_threshold
-  type: 0
   required: false
+  type: 0
 description: Ingests indicators from Recorded Future feeds into Demisto.
 display: Recorded Future RiskList Feed
 name: Recorded Future Feed
@@ -195,10 +202,10 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.86272
   feed: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

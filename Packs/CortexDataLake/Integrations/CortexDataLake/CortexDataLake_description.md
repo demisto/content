@@ -1,14 +1,14 @@
 ## Overview
 ---
 
-Palo Alto Networks Cortex Data Lake XSOAR Connector provides cloud-based, centralized log storage and aggregation for your on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
-This integration was integrated and tested with version 2 of Cortex Data Lake XSOAR Connector.
+Palo Alto Networks Strata Logging Service XSOAR Connector provides cloud-based, centralized log storage and aggregation for your on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
+This integration was integrated and tested with version 2 of Strata Logging Service XSOAR Connector.
 
 
 
 ---
 
-## Configure Cortex Data Lake XSOAR Connector on Cortex XSOAR 
+## Configure Strata Logging Service XSOAR Connector on Cortex XSOAR 
 
 ---
 

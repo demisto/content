@@ -553,7 +553,8 @@ def fetch_incidents(client: "GuardDutyClient", aws_gd_severity: List[str], last_
     latest_created_time = last_run.get('latest_created_time')
     last_incidents_ids = last_run.get('last_incidents_ids', [])
     last_next_token = last_run.get('last_next_token', "")
-    latest_updated_time = dateparser.parse(last_run.get('latest_updated_time', ""))
+    if latest_updated_time := last_run.get('latest_updated_time', ""):
+        latest_updated_time = dateparser.parse(latest_updated_time)
 
     # Handle first time fetch
     if latest_created_time is None:
