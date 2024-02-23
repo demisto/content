@@ -84,3 +84,4 @@ INSTANCE_INFO = [
         ]
     }
 ]
+NEW_SG = [{'Type': 1, 'Contents': {'GroupId': 'sg-00000000000000001'}}]

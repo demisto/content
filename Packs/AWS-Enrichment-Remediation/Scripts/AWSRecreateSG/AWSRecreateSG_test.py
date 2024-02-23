@@ -72,9 +72,8 @@ def test_sg_fix(mocker):
             - Checks the output of the helper function with the expected output.
     """
     from AWSRecreateSG import sg_fix
-    from test_data.sample import SG_INFO
-    new_sg = [{'Type': 1, 'Contents': [{'GroupId': 'sg-00000000000000001'}]}]
-    mocker.patch.object(demisto, "executeCommand", return_value=new_sg)
+    from test_data.sample import SG_INFO, NEW_SG
+    mocker.patch.object(demisto, "executeCommand", return_value=NEW_SG)
     args = {"sg_info": SG_INFO, "port": 22, "protocol": "tcp", "assume_role": "test_role", "instance_to_use": "AWS - EC2",
             "region": "us-east-1"}
     result = sg_fix(**args)
@@ -92,13 +91,12 @@ def test_determine_excessive_access(mocker):
             - Checks the output of the helper function with the expected output.
     """
     from AWSRecreateSG import determine_excessive_access
-    from test_data.sample import SG_INFO
-    new_sg = [{'Type': 1, 'Contents': [{'GroupId': 'sg-00000000000000001'}]}]
+    from test_data.sample import SG_INFO, NEW_SG
 
     def executeCommand(name, *_):
         return {
             "aws-ec2-describe-security-groups": SG_INFO,
-            "aws-ec2-create-security-group": new_sg
+            "aws-ec2-create-security-group": NEW_SG
         }.get(name)
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
@@ -119,13 +117,12 @@ def test_aws_recreate_sg(mocker):
             - Checks the output of the function with the expected output.
     """
     from AWSRecreateSG import aws_recreate_sg
-    from test_data.sample import SG_INFO, INSTANCE_INFO
-    new_sg = [{'Type': 1, 'Contents': [{'GroupId': 'sg-00000000000000001'}]}]
+    from test_data.sample import SG_INFO, INSTANCE_INFO, NEW_SG
 
     def execute_command(command, *_):
         return {
             "aws-ec2-describe-security-groups": SG_INFO,
-            "aws-ec2-create-security-group": new_sg,
+            "aws-ec2-create-security-group": NEW_SG,
             "aws-ec2-describe-instances": INSTANCE_INFO
         }.get(command)
 
