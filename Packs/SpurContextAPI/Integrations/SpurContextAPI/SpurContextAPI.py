@@ -1,22 +1,6 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *  # noqa: F401 # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *   # noqa: F401 # pylint: disable=unused-wildcard-import
 
 import ipaddress
 import urllib3
@@ -35,25 +19,8 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
-
-    def ip(self, ip: str) -> dict[str, str]:
-        """Returns a Spur Context API response as a flattened dictionary for the given input ip.
-
-        :type ip: ``str``
-        :param ip: ip address to enrich
-
-        :return: dict
-        :rtype: ``str``
-        """
-
+    def ip(self, ip: str) -> CommandResults:
         # Validate that the input is a valid IP address
         try:
             ipaddress.ip_address(ip)
@@ -64,43 +31,32 @@ class Client(BaseClient):
         full_url = urljoin(full_url, encoded_ip)
         demisto.debug(f'SpurContextAPI full_url: {full_url}')
 
+        # Make the request
         response = self._http_request(
             method='GET',
             full_url=full_url,
             headers=self._headers,
         )
 
-        # If we get a dict back from the API, we need to flatten it
+        # Make sure the response is a dictionary
         if isinstance(response, dict):
-            response = flatten(response)
+            response = fix_nested_client(response)
+            return CommandResults(
+                outputs_prefix='SpurContextAPI.Context',
+                outputs_key_field='',
+                outputs=response,
+                raw_response=response,
+            )
         else:
             raise ValueError(f'Invalid response from API: {response}')
-        return response
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def flatten(data):
-    """
-    Flatten the data from the API to a format that can be used as outputs
-    """
-    new_dict = {
-        "ip": data.get("ip", ""),
-    }
-    new_dict["organization"] = data.get("organization", "")
-    new_dict["infrastructure"] = data.get("infrastructure", "")
-    new_dict["services"] = data.get("services", "")
-    new_dict["risks"] = data.get("risks", "")
-
-    if "as" in data:
-        if "number" in data["as"]:
-            new_dict["as_number"] = data["as"]["number"]
-        if "organization" in data["as"]:
-            new_dict["as_organization"] = data["as"]["organization"]
-    else:
-        new_dict["as_number"] = ""
-        new_dict["as_organization"] = ""
+def fix_nested_client(data):
+    new_dict = data.copy()
+    del new_dict["client"]
     if "client" in data:
         client = data["client"]
         new_dict["client_behaviors"] = client.get("behaviors", [])
@@ -109,52 +65,8 @@ def flatten(data):
         new_dict["client_proxies"] = client.get("proxies", [])
         new_dict["client_count"] = client.get("count", 0)
         new_dict["client_types"] = client.get("types", [])
-        if "concentration" in data["client"]:
-            concentration = data["client"]["concentration"]
-            new_dict["client_concentration_country"] = concentration.get("country", "")
-            new_dict["client_concentration_city"] = concentration.get("city", "")
-            new_dict["client_concentration_geohash"] = concentration.get("geohash", "")
-            new_dict["client_concentration_density"] = concentration.get("density", 0.0)
-            new_dict["client_concentration_skew"] = concentration.get("skew", 0)
-    else:
-        new_dict["client_behaviors"] = []
-        new_dict["client_countries"] = 0
-        new_dict["client_spread"] = 0
-        new_dict["client_proxies"] = []
-        new_dict["client_count"] = 0
-        new_dict["client_types"] = []
-        new_dict["client_concentration_country"] = ""
-        new_dict["client_concentration_city"] = ""
-        new_dict["client_concentration_geohash"] = ""
-        new_dict["client_concentration_density"] = 0.0
-        new_dict["client_concentration_skew"] = 0
-    if "location" in data:
-        location = data["location"]
-        new_dict["location_country"] = location.get("country", "")
-        new_dict["location_state"] = location.get("state", "")
-        new_dict["location_city"] = location.get("city", "")
-    else:
-        new_dict["location_country"] = ""
-        new_dict["location_state"] = ""
-        new_dict["location_city"] = ""
-    if "tunnels" in data:
-        tunnel_types = []
-        tunnels_anonymous = []
-        tunnels_operator = []
-        for tunnel in data["tunnels"]:
-            if "type" in tunnel:
-                tunnel_types.append(tunnel["type"])
-            if "anonymous" in tunnel:
-                tunnels_anonymous.append(str(tunnel["anonymous"]))
-            if "operator" in tunnel:
-                tunnels_operator.append(tunnel["operator"])
-        new_dict["tunnels_type"] = tunnel_types
-        new_dict["tunnels_anonymous"] = tunnels_anonymous
-        new_dict["tunnels_operator"] = tunnels_operator
-    else:
-        new_dict["tunnels_type"] = ""
-        new_dict["tunnels_anonymous"] = ""
-        new_dict["tunnels_operator"] = ""
+        if "concentration" in client:
+            new_dict["client_concentration"] = data["client"]["concentration"]
 
     return new_dict
 
@@ -195,19 +107,12 @@ def test_module(client: Client) -> str:
     return message
 
 
-def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def enrich_command(client: Client, args: dict[str, Any]) -> CommandResults:
     ip = args.get('ip', None)
     if not ip:
         raise ValueError('IP not specified')
 
-    # Call the Client function and get the raw response
-    result = client.ip(ip)
-
-    return CommandResults(
-        outputs_prefix='SpurContextAPI.IP',
-        outputs_key_field='',
-        outputs=result,
-    )
+    return client.ip(ip)
 
 
 ''' MAIN FUNCTION '''
@@ -243,8 +148,8 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'enrich':
-            return_results(ip_command(client, demisto.args()))
+        elif demisto.command() == 'spur-context-api-enrich':
+            return_results(enrich_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
