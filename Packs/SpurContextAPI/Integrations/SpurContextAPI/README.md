@@ -1,5 +1,5 @@
 Enrich indicators using the Spur Context API.
-This integration was integrated and tested with version v2 of SpurContextAPI.
+This integration was integrated and tested with version 2 of SpurContextAPI.
 
 ## Configure SpurContextAPI on Cortex XSOAR
 
@@ -21,7 +21,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### spur-context-api-enrich
 
 ***
-Enrich an IP address with the Spur Context API
+Enrich indicators using the Spur Context API.
 
 #### Base Command
 
@@ -37,18 +37,18 @@ Enrich an IP address with the Spur Context API
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SpurContextAPI.Context.ip | string |  | 
-| SpurContextAPI.Context.as | unknown |  | 
-| SpurContextAPI.Context.organization | string |  | 
-| SpurContextAPI.Context.infrastructure | string |  | 
-| SpurContextAPI.Context.location | unknown |  | 
-| SpurContextAPI.Context.services | unknown |  | 
-| SpurContextAPI.Context.tunnels | unknown |  | 
-| SpurContextAPI.Context.risks | unknown |  | 
-| SpurContextAPI.Context.client_concentration | number |  | 
-| SpurContextAPI.Context.client_countries | unknown |  | 
-| SpurContextAPI.Context.client_spread | number |  | 
-| SpurContextAPI.Context.client_proxies | unknown |  | 
-| SpurContextAPI.Context.client_count | number |  | 
-| SpurContextAPI.Context.client_behaviors | unknown |  | 
-| SpurContextAPI.Context.client_types | unknown |  | 
+| SpurContextAPI.Context.ip | string | IP that was enriched | 
+| SpurContextAPI.Context.as | object | Autonomous System details for an IP Address. | 
+| SpurContextAPI.Context.organization | string | The organization operating this IP address. | 
+| SpurContextAPI.Context.infrastructure | string | The primary type of infrastructure this IP is supporting. Common tags are MOBILE and DATACENTER. | 
+| SpurContextAPI.Context.location | object | Data-center or IP Hosting location based on MaxMind GeoLite. | 
+| SpurContextAPI.Context.services | array | The different types of proxy or VPN services that are running on this IP address | 
+| SpurContextAPI.Context.tunnels | array | Different VPN or proxy tunnels that are currently in-use on this IP address | 
+| SpurContextAPI.Context.risks | array | Risks that we have determined based on our collection of data. | 
+| SpurContextAPI.Context.client_concentration | object | The strongest location concentration for clients using this IP address. | 
+| SpurContextAPI.Context.client_countries | number | The number of countries that we have observed clients located in for this IP address | 
+| SpurContextAPI.Context.client_spread | number | The total geographic area in kilometers where we have observed users | 
+| SpurContextAPI.Context.client_proxies | array | The different types of callback proxies we have observed on clients using this IP address. | 
+| SpurContextAPI.Context.client_count | number | The average number of clients we observe on this IP address. | 
+| SpurContextAPI.Context.client_behaviors | array | An array of behavior tags for an IP Address. | 
+| SpurContextAPI.Context.client_types | array | The different type of client devices that we have observed on this IP address. | 
