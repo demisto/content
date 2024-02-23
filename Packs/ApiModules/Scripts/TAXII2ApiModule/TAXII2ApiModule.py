@@ -1282,7 +1282,8 @@ class Taxii2FeedClient:
 
                         return indicators, relationships_lst
         except Exception as e:
-            demisto.debug(f"Exception trying to parse envelope {current_envelope}, {e}")
+            demisto.debug(f"Exception trying to parse envelope: {e}")
+            demisto.debug(f"Exception trying to parse envelope {current_envelope=}")
             if len(indicators) == 0:
                 demisto.debug("No Indicator were parsed")
                 raise e
