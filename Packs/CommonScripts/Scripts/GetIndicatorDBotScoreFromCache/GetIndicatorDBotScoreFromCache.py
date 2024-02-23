@@ -16,28 +16,27 @@ def main():
     )
 
     return_entries = []
+    iocs = res.get('iocs') or []
+    for data in iocs:
+        score = data["score"]
+        vendor = "XSOAR"
+        reliability = data.get("aggregatedReliability")
+        indicatorType = data["indicator_type"]
+        expirationStatus = data.get("expirationStatus") != "active"
+        value: str = data["value"]
 
-    if 'iocs' in res and len(res['iocs']) > 0:
-        for data in res['iocs']:
-            score = data["score"]
-            vendor = "XSOAR"
-            reliability = data.get("aggregatedReliability")
-            indicatorType = data["indicator_type"]
-            expirationStatus = data.get("expirationStatus") != "active"
-            value: str = data["value"]
+        dbotscore = {
+            "Indicator": value,
+            "Type": indicatorType,
+            "Vendor": vendor,
+            "Score": score,
+            "Reliability": reliability,
+            "Expired": expirationStatus
+        }
 
-            dbotscore = {
-                "Indicator": value,
-                "Type": indicatorType,
-                "Vendor": vendor,
-                "Score": score,
-                "Reliability": reliability,
-                "Expired": expirationStatus
-            }
-
-            return_entries.append(dbotscore)
-            with contextlib.suppress(KeyError):  # for multiple IOCs with same value but different casing
-                unique_values.remove(value.lower())
+        return_entries.append(dbotscore)
+        with contextlib.suppress(KeyError):  # for multiple IOCs with same value but different casing
+            unique_values.remove(value.lower())
 
     values_not_found = list({v for v in values if v.lower() in unique_values})  # return the values with the original casing
 

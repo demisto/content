@@ -9,7 +9,6 @@ you are implementing with your integration
 """
 
 import json
-import io
 
 import pytest
 
@@ -18,7 +17,7 @@ from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -127,6 +126,8 @@ def test_fetch_incidents(mocker):
 @pytest.mark.parametrize('query, limit, result', [("a | b | limit 5", 10, "a | b | limit 10 "),
                                                   ("a | b ", 10, "a | b | limit 10 "),
                                                   ("a | b | limit 1 | take 1", 10, "a | b | limit 10 | limit 10 "),
+                                                  ("a | where Subject == \"a || b\" | limit  ", 10,
+                                                   "a | where Subject == \"a || b\" | limit 10 ")
                                                   ])
 def test_query_set_limit(query: str, limit: int, result: str):
     assert _query_set_limit(query, limit) == result
