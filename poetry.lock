@@ -1474,8 +1474,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "62b5d34562ef7ed2bf902814babc22a80275365b"
-resolved_reference = "62b5d34562ef7ed2bf902814babc22a80275365b"
+reference = "d7aed2463bcc789a02ca232c703a40d47433e3af"
+resolved_reference = "d7aed2463bcc789a02ca232c703a40d47433e3af"
 
 [[package]]
 name = "deprecated"
@@ -2037,17 +2037,17 @@ tqdm = ["tqdm (>=4.7.4,<5.0.0dev)"]
 
 [[package]]
 name = "google-cloud-compute"
-version = "1.16.1"
+version = "1.17.0"
 description = "Google Cloud Compute API client library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-cloud-compute-1.16.1.tar.gz", hash = "sha256:3ff034f2777764fe06b3249ddd0e9333e92e5d169b7279c8d5a15dfacbcccf91"},
-    {file = "google_cloud_compute-1.16.1-py2.py3-none-any.whl", hash = "sha256:e9760d278150900f4fdfafb28c30ab7087501f750bcf3cfdc7a2b98b2f215fc6"},
+    {file = "google-cloud-compute-1.17.0.tar.gz", hash = "sha256:74fb3b8527b461c0f796e36a1e417a4fc7d31c2e3fbb71cc270b30e931d62f8e"},
+    {file = "google_cloud_compute-1.17.0-py2.py3-none-any.whl", hash = "sha256:f281f1960f236d3be6614002af11becfe088600f2d3fa7da92dade28fac42f0e"},
 ]
 
 [package.dependencies]
-google-api-core = {version = ">=1.34.0,<2.0.dev0 || >=2.11.dev0,<3.0.0dev", extras = ["grpc"]}
+google-api-core = {version = ">=1.34.1,<2.0.dev0 || >=2.11.dev0,<3.0.0dev", extras = ["grpc"]}
 google-auth = ">=2.14.1,<3.0.0dev"
 proto-plus = ">=1.22.3,<2.0.0dev"
 protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
@@ -2072,17 +2072,17 @@ grpc = ["grpcio (>=1.38.0,<2.0dev)", "grpcio-status (>=1.38.0,<2.0.dev0)"]
 
 [[package]]
 name = "google-cloud-secret-manager"
-version = "2.18.1"
+version = "2.18.2"
 description = "Google Cloud Secret Manager API client library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-cloud-secret-manager-2.18.1.tar.gz", hash = "sha256:310555f3c8cb977f4a46d4454eca2c83fed6a09f3c4b35b84f6fa1f8fef55024"},
-    {file = "google_cloud_secret_manager-2.18.1-py2.py3-none-any.whl", hash = "sha256:38e00ece9abf466cb449991b1a141a69690c6d51fe18456e531faf4935fbade3"},
+    {file = "google-cloud-secret-manager-2.18.2.tar.gz", hash = "sha256:a00d62115a70083e86b1d44ca7ebcae041b36a44cc62ea57de4005731f8d3c88"},
+    {file = "google_cloud_secret_manager-2.18.2-py2.py3-none-any.whl", hash = "sha256:bb2f2b23a588f9eeae51df4a028d6198a603231a056f838e6a476b5aecadbbca"},
 ]
 
 [package.dependencies]
-google-api-core = {version = ">=1.34.0,<2.0.dev0 || >=2.11.dev0,<3.0.0dev", extras = ["grpc"]}
+google-api-core = {version = ">=1.34.1,<2.0.dev0 || >=2.11.dev0,<3.0.0dev", extras = ["grpc"]}
 google-auth = ">=2.14.1,<3.0.0dev"
 grpc-google-iam-v1 = ">=0.12.4,<1.0.0dev"
 proto-plus = ">=1.22.3,<2.0.0dev"
@@ -6356,13 +6356,13 @@ test = ["black (>=22.3.0,<23.0.0)", "coverage (>=6.2,<7.0)", "isort (>=5.0.6,<6.
 
 [[package]]
 name = "types-awscrt"
-version = "0.20.3"
+version = "0.20.4"
 description = "Type annotations and code completion for awscrt"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "types_awscrt-0.20.3-py3-none-any.whl", hash = "sha256:f61a120d3e98ee1387bc5ca4b93437f258cc5c2af1f55f8634ec4cee5729f178"},
-    {file = "types_awscrt-0.20.3.tar.gz", hash = "sha256:06a859189a329ca8e66d56ceeef2391488e39b878fbd2141f115eab4d416fe22"},
+    {file = "types_awscrt-0.20.4-py3-none-any.whl", hash = "sha256:73be0a2720d6f76b924df6917d4edf4c9958f83e5c25bf7d9f0c1e9cdf836941"},
+    {file = "types_awscrt-0.20.4.tar.gz", hash = "sha256:10245570c7285e949362b4ae710c54bf285d64a27453d42762477bcee5cd77a3"},
 ]
 
 [[package]]
@@ -7253,4 +7253,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "089858e1eaf0ed3d4b59ffb86e0db0e1cc38bbe7f784147d945cc29cc7988a99"
+content-hash = "1d43c5848ccef86312ae26b41d4199912c03349b9e9a32e82b163681efb87562"
