@@ -62,10 +62,10 @@ repos:
   - id: mypy
     name: mypy
     entry: mypy
+    require_serial: true
     min_py_version: '3.7'
     language: system
-    'types_or': [python, pyi]
-
+    types: python
     args:
     - --ignore-missing-imports
     - --check-untyped-defs
