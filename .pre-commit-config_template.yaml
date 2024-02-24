@@ -65,7 +65,7 @@ repos:
     require_serial: true
     min_py_version: '3.7'
     language: system
-    types: python
+    types: [python]
     args:
     - --ignore-missing-imports
     - --check-untyped-defs
