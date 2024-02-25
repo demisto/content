@@ -870,6 +870,13 @@ class Client(BaseClient):
             url_suffix=endpoint + f'/{id}',
             params=assign_params(fields=fields)
         )
+    
+    def delete_log_source(self, id: str):
+        return self.http_request(
+            method='DELETE',
+            url_suffix=f'/config/event_sources/log_source_management/log_sources/{id}',
+            resp_type='response'
+        )
 
     def test_connection(self):
         """
@@ -4521,6 +4528,35 @@ def qradar_log_source_groups_list_command(client: Client, args: dict) -> Command
         raw_response=response
     )
 
+def qradar_log_source_delete_command(client: Client, args: dict) -> CommandResults:
+    """
+    Deletes a log source by id or by name.
+    Possible arguments:
+    - name: The unique name of the log source to be deleted. If you don't provide this argument, id is required.
+    - id: The ID of the log source to be deleted. If you don't provide this argument, name is required.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+    Returns:
+        CommandResults.
+    """
+    name = args.get('name')
+    id = args.get('id')
+
+    if id is not None:
+        client.delete_log_source(id)
+        return CommandResults(
+            readable_output=f'Log source {id} was deleted successfully'
+        )
+    if name is not None:
+        log_source_list = client.get_resource_list('items=0-0', 'config/event_sources/log_source_management/log_sources', f'name="{name}"')
+        relevant_log_source = log_source_list[0]
+        client.delete_log_source(relevant_log_source.get('id'))
+        return CommandResults(
+            readable_output=f'Log source {name} was deleted successfully'
+        )
+    raise Exception('At least one of the arguments: name, id must be provided.')
+
 def migrate_integration_ctx(ctx: dict) -> dict:
     """Migrates the old context to the current context
 
@@ -4822,6 +4858,9 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'qradar-log-source-groups-list':
             return_results(qradar_log_source_groups_list_command(client, args))
+        
+        elif command == 'qradar-log-source-delete':
+            return_results(qradar_log_source_delete_command(client, args))
         
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
