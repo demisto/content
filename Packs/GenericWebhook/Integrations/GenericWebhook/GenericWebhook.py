@@ -1,4 +1,5 @@
 import sys
+from json import JSONDecodeError
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -22,13 +23,6 @@ from CommonServerUserPython import *
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
 
 
-class Incident(BaseModel):
-    name: Optional[str] = None
-    type: Optional[str] = None
-    occurred: Optional[str] = None
-    raw_json: Optional[Dict] = None
-
-
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 basic_auth = HTTPBasic(auto_error=False)
@@ -36,14 +30,17 @@ token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 
 
 async def parse_incidents(request: Request) -> list[dict]:
-    demisto.debug('in modify request middleware')
-    # Read the original request body
     body_bytes = await request.body()
     body = body_bytes.decode('utf-8')
     demisto.debug(f'received body {sys.getsizeof(body)=}')
     json_body = json.loads(body)
     incidents = json_body if isinstance(json_body, list) else [json_body]
     demisto.debug(f'received create incidents request of length {len(incidents)}')
+    for incindent in incidents:
+        if raw_json := incindent.get('raw_json'):
+            if isinstance(raw_json, str):
+                demisto.debug('raw_json is string, decoding')
+                incindent['raw_json'] = json.loads(raw_json)
     return incidents
 
 
@@ -70,8 +67,12 @@ async def handle_post(
     credentials: HTTPBasicCredentials = Depends(basic_auth),
     token: APIKey = Depends(token_auth)
 ):
-    incidents = await parse_incidents(request)
-    demisto.debug('Handling request')
+    demisto.debug('generic webhook handling request')
+    try:
+        incidents = await parse_incidents(request)
+    except JSONDecodeError as e:
+        demisto.error(f'could not decode request {e}')
+        return Response(status_code=status.HTTP_400_BAD_REQUEST, content='Request, and raw_json field must be in JSON format')
     header_name = None
     request_headers = dict(request.headers)
 
@@ -102,7 +103,6 @@ async def handle_post(
         incident.get('raw_json', {})['headers'] = request_headers
         demisto.debug(f'{incident=}')
 
-    demisto.debug(f'{type(incidents[0]["raw_json"])=}')
     incidents = [{
         'name': incident.get('name') or 'Generic webhook triggered incident',
         'type': incident.get('type') or demisto.params().get('incidentType'),
