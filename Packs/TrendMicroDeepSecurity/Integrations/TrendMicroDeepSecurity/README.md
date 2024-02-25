@@ -24053,7 +24053,7 @@ Get information on all scheduled tasks.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | Retrieve a specific task-ID. | Optional | 
+| task_id | The ID of the task to retrieve. | Optional | 
 
 #### Context Output
 
@@ -24069,7 +24069,7 @@ Get information on all scheduled tasks.
 | TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.type | String | The type of the computer filter of the scheduled task. | 
 | TrendMicro.ScheduledTask.scanForMalwareTaskParameters.computerFilter.computerID | Number | The computer ID of the scheduled task. | 
 | TrendMicro.ScheduledTask.scanForMalwareTaskParameters.timeout | String | The timeout for the scheduled task. | 
-| TrendMicro.ScheduledTask.ID | Number | The ID of the scheudled task. | 
+| TrendMicro.ScheduledTask.ID | Number | The ID of the scheduled task. | 
 
 #### Command example
 ```!trendmicro-list-scheduled-task task_id=1```
@@ -24190,7 +24190,7 @@ Deletes a scheduled task.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | a comma seperated of task-IDs to delete. | Required | 
+| task_ids | A comma seperated of task-IDs to delete. | Required | 
 
 #### Context Output
 
