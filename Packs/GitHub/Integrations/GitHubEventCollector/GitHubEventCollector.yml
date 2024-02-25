@@ -7,7 +7,7 @@ sectionOrder:
 name: Github Event Collector
 display: Github Event Collector
 category: Analytics & SIEM
-description: Github logs event collector integration for XSIAM.
+description: Github logs event collector integration for Cortex XSIAM.
 configuration:
 - display: Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log')
   name: url
@@ -17,7 +17,7 @@ configuration:
   section: Connect
 - display: ""
   displaypassword: API Key
-  name: auth_credendtials
+  name: auth_credentials
   type: 9
   required: true
   hiddenusername: true
@@ -65,7 +65,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Set this argument to True in orfer to create events, otherwise the command will only display them.
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
       name: should_push_events
       predefined:
       - 'True'

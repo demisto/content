@@ -102,7 +102,7 @@ def main():
 
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
 
-    headers = {'Authorization': f"Bearer {demisto_params['auth_credendtials']['password']}",
+    headers = {'Authorization': f"Bearer {demisto_params['auth_credentials']['password']}",
                'Accept': 'application/vnd.github.v3+json'}
 
     demisto_params['headers'] = headers
