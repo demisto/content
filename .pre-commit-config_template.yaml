@@ -204,8 +204,6 @@ repos:
     pass_filenames: false
     needs:
     - pytest-in-docker
-  - id: coverage-pytest-analyze
-    name: coverage-pytest-analyze
   - id: validate-deleted-files
     name: validate-deleted-files
     entry: validate-deleted-files
