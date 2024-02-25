@@ -1180,6 +1180,18 @@ class Taxii2FeedClient(StixParser):
         :param key: TLS Certificate key
         :param default_api_root: The default API Root to use
         """
+        super().__init__(tlp_color=tlp_color,id_to_object={},
+                 field_map=field_map if field_map else {},
+                 cidr_regexes=[
+            re.compile(CIDR_ISSUBSET_VAL_PATTERN),
+            re.compile(CIDR_ISUPPERSET_VAL_PATTERN),
+        ],
+                 skip_complex_mode=skip_complex_mode,
+                 indicator_regexes=[
+            re.compile(INDICATOR_EQUALS_VAL_PATTERN),
+            re.compile(HASHES_EQUALS_VAL_PATTERN),
+        ],
+        update_custom_fields=update_custom_fields,tags=tags if tags else [])
         self._conn = None
         self.server = None
         self.api_root = None
@@ -1187,7 +1199,6 @@ class Taxii2FeedClient(StixParser):
         self.last_fetched_indicator__modified = None
 
         self.collection_to_fetch = collection_to_fetch
-        self.skip_complex_mode = skip_complex_mode
         if not limit_per_request:
             limit_per_request = DFLT_LIMIT_PER_REQUEST
         self.limit_per_request = limit_per_request
@@ -1218,21 +1229,9 @@ class Taxii2FeedClient(StixParser):
         if certificate and key:
             self.crt = (self.build_certificate(certificate), self.build_certificate(key))
 
-        self.field_map = field_map if field_map else {}
-        self.tags = tags if tags else []
-        self.tlp_color = tlp_color
-        self.indicator_regexes = [
-            re.compile(INDICATOR_EQUALS_VAL_PATTERN),
-            re.compile(HASHES_EQUALS_VAL_PATTERN),
-        ]
-        self.cidr_regexes = [
-            re.compile(CIDR_ISSUBSET_VAL_PATTERN),
-            re.compile(CIDR_ISUPPERSET_VAL_PATTERN),
-        ]
         self.id_to_object: dict[str, Any] = {}
         self.objects_to_fetch = objects_to_fetch
         self.default_api_root = default_api_root
-        self.update_custom_fields = update_custom_fields
 
     def init_server(self, version=TAXII_VER_2_1):
         """
