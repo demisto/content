@@ -357,6 +357,21 @@ def test_splunk_submit_event_hec_command(mocker):
     assert err_msg == f"Could not send event to Splunk {text}"
 
 
+def test_splunk_submit_event_hec_command_request_channel(mocker):
+    text = '{"text":"Success","code":0,"ackId":1}'
+
+    class MockRes:
+        def __init__(self, text):
+            self.text = text
+
+    mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=MockRes(text))
+    moc = mocker.patch.object(demisto, 'results')
+    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
+                                           args={"request_channel": "11111111-1111-1111-1111-111111111111"})
+    readable_output = moc.call_args.args[0].get('HumanReadable')
+    assert readable_output == "The event was sent successfully to Splunk. AckID: 1"
+
+
 def test_parse_time_to_minutes_invalid_time_unit(mocker):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 

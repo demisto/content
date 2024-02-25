@@ -2433,7 +2433,12 @@ def splunk_submit_event_hec_command(params: dict, args: dict):
     if 'Success' not in response_info.text:
         return_error(f"Could not send event to Splunk {response_info.text}")
     else:
-        return_results('The event was sent successfully to Splunk.')
+        response_dict = json.loads(response_info.text)
+        if response_dict and 'ackId' in response_dict:
+            return_results(CommandResults(readable_output=f"The event was sent successfully to Splunk. AckID: {response_dict['ackId']}",
+                                          raw_response=response_dict))
+        else:
+            return_results('The event was sent successfully to Splunk.')
 
 
 def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
