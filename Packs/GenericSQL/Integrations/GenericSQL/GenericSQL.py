@@ -133,12 +133,21 @@ class Client:
                      port=arg_to_number(self.port),
                      database=self.dbname,
                      query=self.connect_parameters)
+
         if self.ssl_connect:
             if self.dialect == POSTGRES_SQL:
                 ssl_connection = {'sslmode': 'require'}
             else:
                 ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}  # type: ignore[dict-item]
-        engine: sqlalchemy.engine.Engine | None = None
+
+        # Teradata has a unique connection, unlike the others with URL object
+        if self.dialect == TERADATA:
+            if self.use_ldap:
+                db_url = f'teradatasql://{self.username}:{self.password}@{self.host}:{self.port}/?logmech=LDAP'
+            else:
+                db_url = f'teradatasql://{self.host}:{self.port}/?user={self.username}&password={self.password}'
+            demisto.debug('Initializing engine using the Teradata dialect')
+
         if self.use_pool:
             if 'expiringdict' not in sys.modules:
                 raise ValueError('Usage of connection pool is not support in this docker image')
@@ -148,14 +157,7 @@ class Client:
             if engine is None:  # (first time or expired) need to initialize
                 engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection)
                 cache[cache_key] = engine
-        # Teradata has a unique connection, unlike the others with URL object
-        elif self.dialect == TERADATA:
-            if self.use_ldap:
-                engine_url = f'teradatasql://{self.username}:{self.password}@{self.host}:{self.port}/?logmech=LDAP'
-            else:
-                engine_url = f'teradatasql://{self.host}:{self.port}/?user={self.username}&password={self.password}'
-            demisto.debug('Initializing engine using the Teradata dialect')
-            engine = sqlalchemy.create_engine(engine_url)
+
         else:
             demisto.debug('Initializing engine with no pool (NullPool)')
             engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection,
