@@ -23,7 +23,7 @@ outputs:
 - contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.Cause
   description: Additional information regarding the root cause for the vulnerability.
   type: string
-- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.Compliance ID
+- contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.ComplianceID
   description: ID of the violation.
 - contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.compliance_issues.Severity
   description: Textual representation of the vulnerability's severity.
