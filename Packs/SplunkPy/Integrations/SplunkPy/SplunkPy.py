@@ -2375,7 +2375,8 @@ def splunk_submit_event_hec(
     index: str | None,
     source_type: str | None,
     source: str | None,
-    time_: str | None
+    time_: str | None,
+    request_channel: str | None
 ):
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
@@ -2399,7 +2400,8 @@ def splunk_submit_event_hec(
 
     headers = {
         'Authorization': f'Splunk {hec_token}',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Splunk-Request-Channel': request_channel
     }
 
     return requests.post(
@@ -2423,8 +2425,10 @@ def splunk_submit_event_hec_command(params: dict, args: dict):
     source_type = args.get('source_type')
     source = args.get('source')
     time_ = args.get('time')
+    request_channel = args.get('request_channel')
 
-    response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_)
+    response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_,
+                                            request_channel)
 
     if 'Success' not in response_info.text:
         return_error(f"Could not send event to Splunk {response_info.text}")
