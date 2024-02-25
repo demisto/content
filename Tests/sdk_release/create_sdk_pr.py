@@ -177,6 +177,7 @@ def main():
     ).get('id')
 
     logging.info(f'SDK changelog workflow triggered successfully: {SDK_WORKFLOW_SUFFIX}{workflow_id}')
+    time.sleep(10)
     elapsed: float = 0
     start = time.time()
     while elapsed < TIMEOUT:
