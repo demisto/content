@@ -293,6 +293,26 @@ def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
         return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
 
 
+def get_indicator_publication(indicator):
+    """
+    Build publications grid field from the indicator external_references field
+
+    Args:
+        indicator: The indicator with publication field
+
+    Returns:
+        list. publications grid field
+    """
+    publications = []
+    for external_reference in indicator.get('external_references', []):
+        if external_reference.get('external_id'):
+            continue
+        url = external_reference.get('url')
+        description = external_reference.get('description')
+        source_name = external_reference.get('source_name')
+        publications.append({'link': url, 'title': description, 'source': source_name})
+    return publications
+
 
 def get_attack_id_and_value_from_name(attack_indicator):
     """
@@ -314,6 +334,16 @@ def get_attack_id_and_value_from_name(attack_indicator):
     return ind_id, value
 
 
+def change_attack_pattern_to_stix_attack_pattern(indicator: dict):
+    kill_chain_phases = indicator['fields']['killchainphases']
+    del indicator['fields']['killchainphases']
+    description = indicator['fields']['description']
+    del indicator['fields']['description']
+
+    indicator_type = indicator['type']
+    indicator['type'] = f'STIX {indicator_type}'
+    indicator['fields']['stixkillchainphases'] = kill_chain_phases
+    indicator['fields']['stixdescription'] = description
 
     return indicator
 
@@ -335,7 +365,7 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
 
     for attack_indicator in attack_indicator_objects:
 
-        publications = Taxii2FeedClient.get_indicator_publication(attack_indicator)
+        publications = get_indicator_publication(attack_indicator)
         mitre_id, value = get_attack_id_and_value_from_name(attack_indicator)
 
         kill_chain_mitre = [chain.get('phase_name', '') for chain in attack_indicator.get('kill_chain_phases', [])]
@@ -364,7 +394,7 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
 
         if not is_up_to_6_2:
             # For versions less than 6.2 - that only support STIX and not the newer types - Malware, Tool, etc.
-            indicator = Taxii2FeedClient.change_attack_pattern_to_stix_attack_pattern(indicator)
+            indicator = change_attack_pattern_to_stix_attack_pattern(indicator)
 
         attack_pattern_indicators.append(indicator)
     return attack_pattern_indicators
@@ -385,7 +415,7 @@ def create_course_of_action_indicators(course_of_action_objects, feed_tags, tlp_
 
     for coa_indicator in course_of_action_objects:
 
-        publications = Taxii2FeedClient.get_indicator_publication(coa_indicator)
+        publications = get_indicator_publication(coa_indicator)
 
         indicator = {
             "value": coa_indicator.get('name'),
@@ -414,7 +444,7 @@ def create_intrusion_sets(intrusion_sets_objects, feed_tags, tlp_color):
 
     for intrusion_set in intrusion_sets_objects:
 
-        publications = Taxii2FeedClient.get_indicator_publication(intrusion_set)
+        publications = get_indicator_publication(intrusion_set)
 
         indicator = {
             "value": intrusion_set.get('name'),
@@ -437,6 +467,26 @@ def create_intrusion_sets(intrusion_sets_objects, feed_tags, tlp_color):
 
     return course_of_action_indicators
 
+
+def get_ioc_type(indicator, id_to_object):
+    """
+    Get IOC type by extracting it from the pattern field.
+
+    Args:
+        indicator: the indicator to get information on.
+        id_to_object: a dict in the form of - id: stix_object.
+
+    Returns:
+        str. the IOC type.
+    """
+    ioc_type = ''
+    indicator_obj = id_to_object.get(indicator, {})
+    pattern = indicator_obj.get('pattern', '')
+    for unit42_type in UNIT42_TYPES_TO_DEMISTO_TYPES:
+        if pattern.startswith(f'[{unit42_type}'):
+            ioc_type = UNIT42_TYPES_TO_DEMISTO_TYPES.get(unit42_type)  # type: ignore
+            break
+    return ioc_type
 
 
 def get_ioc_value(ioc, id_to_obj):
@@ -495,14 +545,14 @@ def create_list_relationships(relationships_objects, id_to_object):
         if a_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.keys():
             a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type)  # type: ignore
         elif a_threat_intel_type == 'indicator':
-            a_type = Taxii2FeedClient.get_ioc_type(relationships_object.get('source_ref'), id_to_object)
+            a_type = get_ioc_type(relationships_object.get('source_ref'), id_to_object)
 
         b_threat_intel_type = relationships_object.get('target_ref').split('--')[0]
         b_type = ''
         if b_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.keys():
             b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type)  # type: ignore
         if b_threat_intel_type == 'indicator':
-            b_type = Taxii2FeedClient.get_ioc_type(relationships_object.get('target_ref'), id_to_object)
+            b_type = get_ioc_type(relationships_object.get('target_ref'), id_to_object)
 
         if not a_type or not b_type:
             continue
@@ -687,7 +737,6 @@ def main():  # pragma: no cover
     except Exception as err:
         return_error(str(err))
 
-from TAXII2ApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

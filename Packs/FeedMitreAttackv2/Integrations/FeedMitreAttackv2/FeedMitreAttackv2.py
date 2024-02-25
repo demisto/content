@@ -262,7 +262,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     if indicator_type in ['Tool', 'STIX Tool', 'Malware', 'STIX Malware']:
         tags.extend(indicator_json.get('labels', ''))
 
-    tlp = Taxii2FeedClient.get_tlp(indicator_json)
+    tlp = get_tlp(indicator_json)
     indicator_json['description'] = remove_citations(indicator_json.get('description', ''))
 
     generic_mapping_fields = {
@@ -362,6 +362,17 @@ def extract_date_time_from_description(description: str) -> str:
             date_time_result = datetime.strftime(date_time_parsed, SERVER_DATE_FORMAT)
             break
     return date_time_result
+
+
+def get_tlp(indicator_json: dict) -> str:
+    object_marking_definition_list = indicator_json.get('object_marking_refs', '')
+    tlp_color: str = ''
+    for object_marking_definition in object_marking_definition_list:
+        if MARKING_DEFINITION_TO_TLP.get(object_marking_definition):
+            tlp_color = MARKING_DEFINITION_TO_TLP.get(object_marking_definition, '')
+            break
+    return tlp_color
+
 
 def create_relationship_list(mitre_relationships_list, id_to_name):
     relationships_list = []
