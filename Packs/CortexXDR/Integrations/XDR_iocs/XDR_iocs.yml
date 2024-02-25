@@ -192,6 +192,15 @@ script:
     deprecated: true
   - description: Creates the sync file for the manual process. Run this command when instructed by the XDR support team.
     name: xdr-iocs-create-sync-file
+    arguments:
+    - name: zip
+      description: Whether to zip the output file.
+      defaultValue: false
+      required: true
+    - name: set_time
+      description: Whether to modify the sync time locally.
+      defaultValue: false
+      required: true
   - arguments:
     - description: The indicator to enable.
       isArray: true
@@ -206,7 +215,7 @@ script:
       required: true
     description: Disables IOCs in the XDR server.
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.10.13.80593
+  dockerimage: demisto/python3:3.10.13.87159
   feed: true
   runonce: false
   script: '-'

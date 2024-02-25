@@ -28,7 +28,7 @@ def test_main(mocker):
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args
-    assert results[0][0] == 'EWS Mail Sender,Gmail,Mail Sender (Deprecated),Mail Sender (New)'
+    assert results[0][0] == 'EWS Mail Sender,Gmail,mail-sender,Mail Sender (New)'
 
     mocker.patch.object(demisto, 'args', return_value={
         'command': 'send-mail',
@@ -48,4 +48,4 @@ def test_main(mocker):
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args
-    assert results[0][0] == 'EWS Mail Sender,Gmail,Mail Sender (Deprecated)'
+    assert results[0][0] == 'EWS Mail Sender,Gmail,mail-sender'

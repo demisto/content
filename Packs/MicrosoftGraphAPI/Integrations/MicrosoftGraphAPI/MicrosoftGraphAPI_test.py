@@ -26,6 +26,8 @@ def client(requests_mock):
         verify=False,
         proxy=False,
         azure_cloud=AZURE_WORLDWIDE_CLOUD,
+        auth_code='',
+        redirect_uri='',
     )
 
 

@@ -28,26 +28,26 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* GeneratePassword
 * Set
+* GeneratePassword
 
 ### Commands
 
+* aws-ec2-describe-iam-instance-profile-associations
 * aws-iam-list-attached-role-policies
 * aws-iam-list-role-policies
-* aws-iam-get-instance-profile
+* aws-iam-list-policy-versions
 * aws-iam-create-instance-profile
+* aws-iam-get-policy-version
+* aws-iam-create-role
 * aws-iam-attach-policy
 * aws-iam-put-role-policy
-* aws-iam-get-role-policy
-* aws-iam-create-role
-* aws-iam-get-policy-version
-* aws-ec2-describe-regions
-* aws-ec2-describe-iam-instance-profile-associations
-* aws-iam-list-policy-versions
-* aws-ec2-describe-instances
 * aws-iam-update-login-profile
 * aws-iam-update-access-key
+* aws-iam-get-instance-profile
+* aws-ec2-describe-instances
+* aws-iam-get-role-policy
+* aws-ec2-describe-regions
 
 ## Playbook Inputs
 

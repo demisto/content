@@ -50,6 +50,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - GCP Compute Engine (VM)
   - On-prem asset protected with a Palo Alto Networks Firewall
 - Service owner information found through one of the following:
+  - Active Directory
   - AWS IAM
   - Azure IAM
   - GCP IAM
@@ -72,10 +73,11 @@ Automated remediation is only possible when the right conditions are met.  These
 The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This playbook contains a set of sub-playbooks and automation scripts, which support many different remediation paths that can be taken depending on the types of configured integrations, the type of alert, and input provided by the analyst. After the final stage, the alert is resolved.
 
 - Playbooks
+  - [Cortex ASM - Active Directory Enrichment](#cortex-asm---active-directory-enrichment)
   - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
   - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
   - [Cortex ASM - Azure Enrichment](#cortex-asm---azure-enrichment)
-  - [Cortex ASM - Decision](#cortex-asm---decision)
+  - [Cortex ASM - Cortex Endpoint Enrichment](#cortex-asm---cortex-endpoint-enrichment)
   - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
   - [Cortex ASM - Email Notification](#cortex-asm---email-notification)
   - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
@@ -107,6 +109,12 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
 
 ### Playbooks
 
+#### Cortex ASM - Active Directory Enrichment
+
+A playbook that given the email address enriches Service owner in Azure  and On-Prem directory.
+
+![Cortex ASM - Active Directory Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Active_Directory_Enrichment.png)
+
 #### Cortex ASM - ASM Alert
 
 A playbook that enriches asset information for ASM alerts and provides the means for remediation.
@@ -125,11 +133,11 @@ A playbook that given the IP address enriches Azure information relevant to ASM 
 
 ![Cortex ASM - Azure Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Azure_Enrichment.png)
 
-#### Cortex ASM - Decision
+#### Cortex ASM - Cortex Endpoint Enrichment
 
-A playbook that returns "RemediationAction" options based on meeting "Automated Remediation Requirements" as well as whether ServiceNowV2 integration is set up.
+This playbook is used to pull information from Cortex Endpoint (XSIAM/XDR) systems for enrichment purposes.
 
-![Cortex ASM - Decision](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Decision.png)
+![Cortex ASM - Cortex Endpoint Enrichment](https://raw.githubusercontent.com/demisto/content/935a77339c2b1ecde3b9ea64992018bd625c61ed/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Cortex_Endpoint_Enrichment.png)
 
 #### Cortex ASM - Detect Service
 

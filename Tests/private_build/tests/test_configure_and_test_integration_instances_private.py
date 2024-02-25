@@ -186,7 +186,6 @@ def test_install_packs_private(mocker):
     """
 
     mocker.patch('Tests.Marketplace.search_and_install_packs.open', return_value=StringIO('HelloWorld\nTEST'))
-    mocker.patch('Tests.Marketplace.search_and_install_packs.search_pack_and_its_dependencies')
 
     def mocked_generic_request_func(self, path: str, method, body=None, accept=None,
                                     _request_timeout=None):
