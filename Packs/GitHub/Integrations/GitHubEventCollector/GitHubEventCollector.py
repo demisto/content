@@ -9,23 +9,19 @@ from SiemApiModule import *  # noqa: E402
 urllib3.disable_warnings()
 VENDOR = 'github'
 PRODUCT = 'github-audit'
-DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def get_github_timestamp_format(value):
     """Converting int(epoch), str(3 days) or datetime to github's api time"""
-    timestamp: Optional[datetime] = None
     if isinstance(value, int):
-        value = str(value)
+        value = datetime.utcfromtimestamp(value / 1e3)
+    elif isinstance(value, str):
+        value = dateparser.parse(value)
     if not isinstance(value, datetime):
-        timestamp = dateparser.parse(value)
-    if timestamp is None:
         raise TypeError(f'after is not a valid time {value}')
-    # timestamp_epoch = timestamp.timestamp() * 1000
-    # str_bytes = f'{timestamp_epoch}|'.encode('ascii')
-    # base64_bytes = base64.b64encode(str_bytes)
-    # return base64_bytes.decode('ascii')
-    return f'created:>{timestamp.strftime(DATETIME_FORMAT)}'
+
+    return f'created:>{value.strftime(DATETIME_FORMAT)}'
 
 
 class GithubParams(BaseModel):
