@@ -580,48 +580,32 @@ def test_generate_variable_names_and_mapping(bind_variables_values_list: list, q
     - Ensure the query contains unique variables names instead of the placeholders
     """
     from GenericSQL import generate_variable_names_and_mapping
-    result = generate_variable_names_and_mapping([], bind_variables_values_list, query, dialect)
+    result = generate_variable_names_and_mapping(bind_variables_values_list, query, dialect)
     assert expected_result[0] == result[0]
     assert expected_result[1] == result[1]
 
 
-BIND_VARIABLES_NAMES_LIST = ['ID', 'LastName', 'FirstName']
 BIND_VARIABLES_VALUES_LIST = ['2', 'lname', 'fname']
 QUERY = 'INSERT into TestTable(ID, LastName, FirstName) VALUES (?, ?, ?)'
 EXPECTED_QUERY_WITH_NAMES_LIST = 'INSERT into TestTable(ID, LastName, FirstName) VALUES (:ID, :LastName, :FirstName)'
 EXPECTED_VARIABLES_DICT_WITH_NAMES_LIST = {'ID': '2', 'LastName': 'lname', 'FirstName': 'fname'}
-EXPECTED_QUERY_WITHOUT_NAMES_LIST = ('INSERT into TestTable(ID, LastName, FirstName) VALUES (:bind_variable_1, :bind_variable_2'
-                                     ', :bind_variable_3)')
-EXPECTED_VARIABLES_DICT_WITHOUT_NAMES_LIST = {'bind_variable_1': '2', 'bind_variable_2': 'lname', 'bind_variable_3': 'fname'}
 
 
-@pytest.mark.parametrize("bind_variables_names_list, bind_variables_values_list, query, dialect, expected_query, "
-                         "expected_variables_dict",
-                         [
-                             # with bind_variables_names_list
-                             (BIND_VARIABLES_NAMES_LIST, BIND_VARIABLES_VALUES_LIST, QUERY, 'SAP HANA',
-                              EXPECTED_QUERY_WITH_NAMES_LIST, EXPECTED_VARIABLES_DICT_WITH_NAMES_LIST),
-                             # without bind_variables_names_list
-                             ([], BIND_VARIABLES_VALUES_LIST, QUERY, 'SAP HANA', EXPECTED_QUERY_WITHOUT_NAMES_LIST,
-                              EXPECTED_VARIABLES_DICT_WITHOUT_NAMES_LIST)
-                         ])
-def test_generate_variable_names_and_mapping_sap_hana(bind_variables_names_list, bind_variables_values_list, query, dialect,
-                                                      expected_query, expected_variables_dict):
+def test_generate_variable_names_and_mapping_sap_hana():
     """
     Given
-    - Case A: A bind_variables_names_list along with the other arguments.
-    - Case B: An empty bind_variables_names_list and the other arguments.
+    - A bind_variables_values_list, a query and a dialect (SAP HANA)
     When
     - Executing generate_variable_names_and_mapping function
     Then
-    - Case A: The sql_query and the bind_variables will contain the keys from the given bind_variables_names_list.
-    - Case B: The sql_query and the bind_variables will contain bind_variable_i+1 as the keys.
+    - The sql_query and the bind_variables will be as expected.
     """
     from GenericSQL import generate_variable_names_and_mapping
-    bind_variables, sql_query = generate_variable_names_and_mapping(bind_variables_names_list,
-                                                                    bind_variables_values_list,
-                                                                    query,
-                                                                    dialect)
+    expected_query = ('INSERT into TestTable(ID, LastName, FirstName) VALUES (:bind_variable_1, :bind_variable_2, '
+                      ':bind_variable_3)')
+    expected_variables_dict = {'bind_variable_1': '2', 'bind_variable_2': 'lname', 'bind_variable_3': 'fname'}
+    dialect = 'SAP HANA'
+    bind_variables, sql_query = generate_variable_names_and_mapping(BIND_VARIABLES_VALUES_LIST, QUERY, dialect)
     assert bind_variables == expected_variables_dict
     assert sql_query == expected_query
 
@@ -630,32 +614,37 @@ STR_BIND_VARIABLES_NAMES = 'ID, LastName, FirstName'
 STR_VARIABLES_VALUE = '2, lname, fname'
 
 
-@pytest.mark.parametrize("bind_variables_names, bind_variables_values, expected_bind_variables_names_list, "
-                         "expected_bind_variables_values_list",
-                         [
-                             # with bind_variables_names
-                             (STR_BIND_VARIABLES_NAMES, STR_VARIABLES_VALUE, BIND_VARIABLES_NAMES_LIST,
-                              BIND_VARIABLES_VALUES_LIST),
-                             # without bind_variables_names
-                             ([], STR_VARIABLES_VALUE, [], BIND_VARIABLES_VALUES_LIST)
-                         ])
-def test_generate_bind_vars(mocker, bind_variables_names, bind_variables_values, expected_bind_variables_names_list,
-                            expected_bind_variables_values_list):
+def test_generate_bind_vars(mocker):
     """
     Given
-    - Case A: A bind_variables_names str along with the other arguments.
-    - Case B: An empty bind_variables_names and the other arguments.
+    - An empty string of bind_variables_names, a string of bind_variables_value, a query and a dialect.
     When
     - Executing generate_bind_vars function
     Then
-    - Case A: The generate_bind_vars is called with the correct arguments (bind_variables_names_list isn't empty).
-    - Case B: The generate_bind_vars is called with the correct arguments (bind_variables_names_list is empty).
+    - The generate_bind_vars is called with the correct arguments (bind_variables_names_list is empty).
     """
     from GenericSQL import generate_bind_vars
     mock_call = mocker.patch("GenericSQL.generate_variable_names_and_mapping")
     dialect = 'SAP HANA'
-    generate_bind_vars(bind_variables_names, bind_variables_values, QUERY, dialect)
-    mock_call.assert_called_with(expected_bind_variables_names_list, expected_bind_variables_values_list, QUERY, dialect)
+    generate_bind_vars("", STR_VARIABLES_VALUE, QUERY, dialect)
+    mock_call.assert_called_with(BIND_VARIABLES_VALUES_LIST, QUERY, dialect)
+
+
+def test_generate_bind_vars_with_bind_variables_names():
+    """
+    Given
+    - a string of bind_variables_names, a string of bind_variables_values, a query and a dialect (SAP HANA)
+    When
+    - Executing generate_bind_vars function
+    Then
+    - The sql_query and the bind_variables will be as expected.
+    """
+    from GenericSQL import generate_bind_vars
+    dialect = 'SAP HANA'
+    bind_variables, sql_query = generate_bind_vars(STR_BIND_VARIABLES_NAMES, STR_VARIABLES_VALUE, EXPECTED_QUERY_WITH_NAMES_LIST,
+                                                   dialect)
+    assert bind_variables == EXPECTED_VARIABLES_DICT_WITH_NAMES_LIST
+    assert sql_query == EXPECTED_QUERY_WITH_NAMES_LIST
 
 
 def test_generate_bind_vars_exception():
