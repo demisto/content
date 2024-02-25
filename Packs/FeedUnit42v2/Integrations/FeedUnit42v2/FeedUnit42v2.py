@@ -53,7 +53,7 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 
 
-class Client(BaseClient):
+class Client(StixParser):
 
     def __init__(self, api_key, verify):
         """Implements class for Unit 42 feed.
@@ -444,26 +444,16 @@ def create_intrusion_sets(intrusion_sets_objects, feed_tags, tlp_color):
 
     for intrusion_set in intrusion_sets_objects:
 
-        publications = get_indicator_publication(intrusion_set)
-
-        indicator = {
-            "value": intrusion_set.get('name'),
-            "type": ThreatIntel.ObjectsNames.INTRUSION_SET,
-            "score": ThreatIntel.ObjectsScore.INTRUSION_SET,
-            "fields": {
-                'stixid': intrusion_set.get('id'),
-                "firstseenbysource": handle_multiple_dates_in_one_field('created', intrusion_set.get('created')),
-                "modified": handle_multiple_dates_in_one_field('modified', intrusion_set.get('modified')),
-                'description': intrusion_set.get('description', ''),
-                "publications": publications,
-                "reportedby": 'Unit42',
-                "tags": [tag for tag in feed_tags],
-            }
-        }
+        intrusion_set_list = self.parse_intrusion_set(intrusion_sets_objects)
+        intrusion_set = intrusion_set_list[0]
+        intrusion_set["fields"]["reportedby"] = 'Unit42'
+        intrusion_set["fields"]["firstseenbysource"] = handle_multiple_dates_in_one_field('created', intrusion_set.get('created'))
+        intrusion_set["fields"]["modified"] = handle_multiple_dates_in_one_field('modified', intrusion_set.get('modified'))
+        intrusion_set["fields"]["tags"] = [tag for tag in feed_tags]
         if tlp_color:
-            indicator['fields']['trafficlightprotocol'] = tlp_color
+            intrusion_set['fields']['trafficlightprotocol'] = tlp_color
 
-        course_of_action_indicators.append(indicator)
+        course_of_action_indicators.append(intrusion_set)
 
     return course_of_action_indicators
 
