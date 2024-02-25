@@ -1,7 +1,8 @@
-
+import demistomock as demisto
 from freezegun import freeze_time
 import pytest
-from ScheduleGenericPolling import calculate_end_time, get_command_string, is_command_sanitized, is_value_sanitized, parseIds
+from ScheduleGenericPolling import calculate_end_time, get_command_string, is_command_sanitized, is_value_sanitized, main, \
+     parseIds
 
 
 @pytest.mark.parametrize('value, expected_result',
@@ -61,33 +62,186 @@ def test_is_command_sanitized(command, expected_result):
     assert result == expected_result
 
 
-@pytest.mark.parametrize('ids, pollingCommand, pollingCommandArgName, playbookId, dt, interval, timeout, tag, '
-                         'args_names, args_values, expected_command_String, expected_result',
-                         [
-                             ("123", "jira-get-issue", "issueId", "pi", "Ticket(val.Status != 'Done').Id", "3", "5", "polling",
-                              "my_arg_name", "my_arg_value",
-                              '!GenericPollingScheduledTask ids="123" pollingCommand="jira-get-issue" pollingCommandArgName='
-                              '"issueId"pi               pendingIds="Ticket(val.Status != \'Done\').Id" interval="3" timeout="5" '
-                              'tag="polling" additionalPollingCommandArgNames="my_arg_name"'
-                              '               additionalPollingCommandArgValues="my_arg_value"',
-                              (True, None)),
-                             ("123", "jira-get-issue", "issueId", "pi", "Ticket(val.Status != 'Done').Id", "3", "5", "polling",
-                              "my_arg_name", "hihi\" pollingCommand=\"Set\"  ids=\"payload\" pendingIds=\".='payload'\""
-                              "  pollingCommandArgName=\"key\" additionalPollingCommandArgNames=\"value\""
-                              " additionalPollingCommandArgValues=\"bar",
-                              '!GenericPollingScheduledTask ids="123" pollingCommand="jira-get-issue" pollingCommandArgName='
-                              '"issueId"pi               pendingIds="Ticket(val.Status != \'Done\').Id" interval="3" timeout="5"'
-                              ' tag="polling" additionalPollingCommandArgNames="my_arg_name"'
-                              '               additionalPollingCommandArgValues="hihi" pollingCommand="Set"  ids="payload"'
-                              ' pendingIds=".=\'payload\'"  pollingCommandArgName="key" additionalPollingCommandArgNames="value"'
-                              ' additionalPollingCommandArgValues="bar"',
-                              (False, 'The value of additionalPollingCommandArgValues, additionalPollingCommandArgNames, '
-                               'pollingCommandArgName, pollingCommand is malformed.')),
-                         ])
-def test_get_command_string(ids, pollingCommand, pollingCommandArgName, playbookId, dt, interval, timeout, tag,
-                            args_names, args_values, expected_command_String, expected_result):
-    command_String = get_command_string(ids, pollingCommand, pollingCommandArgName, playbookId, dt, interval, timeout, tag,
-                                        args_names, args_values)
+def test_get_command_string_pass():
+    """
+    Given
+            Sample input values
+    When
+            Calling get_command_string
+    Then
+            Test the command result structure
+    """
+    good_input = {
+                  'ids': "123",
+                  'pollingCommand': "jira-get-issue",
+                  'pollingCommandArgName': "issueId",
+                  'playbookId': "pi",
+                  'dt': "Ticket(val.Status != 'Done').Id",
+                  'interval': "3",
+                  'timeout': "5",
+                  'tag': "polling",
+                  'args_names': "my_arg_name",
+                  'args_values': "my_arg_value",
+    }
+
+    command_String = get_command_string(good_input.get('ids'),
+                                        good_input.get('pollingCommand'),
+                                        good_input.get('pollingCommandArgName'),
+                                        good_input.get('playbookId'),
+                                        good_input.get('dt'),
+                                        good_input.get('interval'),
+                                        good_input.get('timeout'),
+                                        good_input.get('tag'),
+                                        good_input.get('args_names'),
+                                        good_input.get('args_values'),
+                                        )
+
+    expected_command = '!GenericPollingScheduledTask ids="123" pollingCommand="jira-get-issue" pollingCommandArgName=' \
+                       '"issueId"pi               pendingIds="Ticket(val.Status != \'Done\').Id" interval="3"' \
+                       ' timeout="5" tag="polling" additionalPollingCommandArgNames="my_arg_name"' \
+                       '               additionalPollingCommandArgValues="my_arg_value"'
+
+    assert command_String == expected_command
+    result = is_command_sanitized(command_String)
+
+    expected_result = (True, None)
+    assert result == expected_result
+
+
+def test_get_command_string_fail():
+    """
+    Given
+            Sample bad input values
+    When
+            Calling get_command_string
+    Then
+            Test the command result indicates the wrong input
+    """
+    fail_input = {
+        'ids': "123",
+        'pollingCommand': "jira-get-issue",
+        'pollingCommandArgName': "issueId",
+        'playbookId': "pi",
+        'dt': "Ticket(val.Status != 'Done').Id",
+        'interval': "3",
+        'timeout': "5",
+        'tag': "polling",
+        'args_names': "my_arg_name",
+        'args_values': "hihi\" pollingCommand=\"Set\"  ids=\"payload\" pendingIds=\".='payload'\"" \
+        "  pollingCommandArgName=\"key\" additionalPollingCommandArgNames=\"value\"" \
+        " additionalPollingCommandArgValues=\"bar",
+    }
+
+    command_String = get_command_string(fail_input.get('ids'),
+                                        fail_input.get('pollingCommand'),
+                                        fail_input.get('pollingCommandArgName'),
+                                        fail_input.get('playbookId'),
+                                        fail_input.get('dt'),
+                                        fail_input.get('interval'),
+                                        fail_input.get('timeout'),
+                                        fail_input.get('tag,'),
+                                        fail_input.get('args_names'),
+                                        fail_input.get('args_values'),
+                                        )
+
+    expected_command_String = '!GenericPollingScheduledTask ids="123" pollingCommand="jira-get-issue" pollingCommandArgName=' \
+                              '"issueId"pi               pendingIds="Ticket(val.Status != \'Done\').Id" interval="3"' \
+                               ' timeout="5" tag="None" additionalPollingCommandArgNames="my_arg_name"' \
+                              '               additionalPollingCommandArgValues="hihi" pollingCommand="Set"  ids="payload"' \
+                              ' pendingIds=".=\'payload\'"  pollingCommandArgName="key"' \
+                              ' additionalPollingCommandArgNames="value" additionalPollingCommandArgValues="bar"'
+
     assert command_String == expected_command_String
     result = is_command_sanitized(command_String)
+
+    expected_result = (False, 'The value of additionalPollingCommandArgValues, additionalPollingCommandArgNames, ' \
+                      'pollingCommandArgName, pollingCommand is malformed.')
     assert result == expected_result
+
+
+def test_main_pass(mocker):
+    """
+    Given
+            Sample input values
+    When
+            Calling main
+    Then
+            Test the command result structure
+    """
+    from unittest import mock
+    from unittest.mock import patch
+
+    good_input = {
+                  'ids': "123",
+                  'pollingCommand': "jira-get-issue",
+                  'pollingCommandArgName': "issueId",
+                  'playbookId': "pi",
+                  'dt': "Ticket(val.Status != 'Done').Id",
+                  'interval': "3",
+                  'timeout': "5",
+                  'tag': "polling",
+                  'additionalPollingCommandArgNames': "my_arg_name",
+                  'additionalPollingCommandArgValues': "my_arg_value",
+    }
+
+    mocker.patch.object(demisto, 'args', return_value=good_input)
+    # mocker.patch.object(demisto, 'command', return_value='threatstream-import-indicator-without-approval')
+
+    execute_command_mocker = mocker.patch("ScheduleGenericPolling.demisto.executeCommand")
+    mocker.patch("ScheduleGenericPolling.demisto.dt", return_value='abc')
+    main()
+
+    assert execute_command_mocker.call_count == 1
+
+    command = execute_command_mocker.call_args_list[0][0][1]['command']
+
+    expected_command = '!GenericPollingScheduledTask ids="123" pollingCommand="jira-get-issue" pollingCommandArgName=' \
+                       '"issueId" playbookId="pi"               pendingIds="Ticket(val.Status != \'Done\').Id" interval="3"' \
+                       ' timeout="5" tag="polling" additionalPollingCommandArgNames="my_arg_name"' \
+                       '               additionalPollingCommandArgValues="my_arg_value"'
+
+
+    assert command == expected_command
+
+
+def test_main_fail(mocker):
+    """
+    Given
+            Sample bad input values
+    When
+            Calling main
+    Then
+            Test the command result indicates the wrong input
+    """
+
+    fail_input = {
+        'ids': "123",
+        'pollingCommand': "jira-get-issue",
+        'pollingCommandArgName': "issueId",
+        'playbookId': "pi",
+        'dt': "Ticket(val.Status != 'Done').Id",
+        'interval': "3",
+        'timeout': "5",
+        'tag': "polling",
+        'additionalPollingCommandArgNames': "my_arg_name",
+        'additionalPollingCommandArgValues': "hihi\" pollingCommand=\"Set\"  ids=\"payload\" pendingIds=\".='payload'\"" \
+        "  pollingCommandArgName=\"key\" additionalPollingCommandArgNames=\"value\"" \
+        " additionalPollingCommandArgValues=\"bar",
+
+    }
+
+
+    mocker.patch.object(demisto, 'args', return_value=fail_input)
+
+    return_error_mock = mocker.patch("ScheduleGenericPolling.return_error")
+    execute_command_mocker = mocker.patch("ScheduleGenericPolling.demisto.executeCommand")
+    mocker.patch("ScheduleGenericPolling.demisto.dt", return_value='abc')
+    main()
+
+    assert return_error_mock.call_count == 1
+    assert execute_command_mocker.call_count == 1
+
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == 'The value of additionalPollingCommandArgValues, additionalPollingCommandArgNames, ' \
+                      'pollingCommandArgName, pollingCommand is malformed.'
+
