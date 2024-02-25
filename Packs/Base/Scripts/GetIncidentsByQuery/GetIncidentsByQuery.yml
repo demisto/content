@@ -46,9 +46,9 @@ comment: |-
   For more information, see the section about permissions here:
   https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 commonfields:
-  id: GetIncidentsByQuery
+  id: GetIncidentsByQuery_dev
   version: -1
-name: GetIncidentsByQuery
+name: GetIncidentsByQuery_dev
 outputs:
 - contextPath: GetIncidentsByQuery.Filename
   description: The output file name.
