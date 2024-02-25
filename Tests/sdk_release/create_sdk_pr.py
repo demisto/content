@@ -187,14 +187,13 @@ def main():
             logging.error(response.text)
             sys.exit(1)
 
-        job_data = response.json().get('jobs', [])[0]  
+        job_data = response.json().get('jobs', [])[0]
         status = job_data.get('status')
         if status == "completed":
             logging.info("SDK changelog workflow completed")
             break
 
         logging.info(f'waiting to SDK changelog workflow to finish, current status: {status}')
-
 
         elapsed = time.time() - start
         if elapsed >= TIMEOUT:
