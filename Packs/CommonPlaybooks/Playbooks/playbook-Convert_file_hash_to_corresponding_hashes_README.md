@@ -21,8 +21,8 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* file
 * enrichIndicators
+* file
 
 ## Playbook Inputs
 
