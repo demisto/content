@@ -385,7 +385,7 @@ def create_course_of_action_indicators(course_of_action_objects, feed_tags, tlp_
 
     for coa_indicator in course_of_action_objects:
 
-        publications = get_indicator_publication(coa_indicator)
+        publications = Taxii2FeedClient.get_indicator_publication(coa_indicator)
 
         indicator = {
             "value": coa_indicator.get('name'),
@@ -414,7 +414,7 @@ def create_intrusion_sets(intrusion_sets_objects, feed_tags, tlp_color):
 
     for intrusion_set in intrusion_sets_objects:
 
-        publications = get_indicator_publication(intrusion_set)
+        publications = Taxii2FeedClient.get_indicator_publication(intrusion_set)
 
         indicator = {
             "value": intrusion_set.get('name'),
