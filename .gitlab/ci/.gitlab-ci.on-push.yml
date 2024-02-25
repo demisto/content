@@ -132,7 +132,6 @@ validate-content-conf:
   cache:
     policy: pull-push
   variables:
-    KUBERNETES_CPU_REQUEST: 2000m
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: prepare-testing-bucket
   script:
@@ -375,10 +374,6 @@ tests_xsoar_server:
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$NIGHTLY'
-      when: always
-      variables:
-        KUBERNETES_CPU_REQUEST: 2000m
   parallel:
     matrix:
       - INSTANCE_ROLE:
