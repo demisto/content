@@ -4233,7 +4233,7 @@ def test_get_modified_remote_data_command(mocker):
     Given
         - arguments - lastUpdate time
         - raw incidents, detection, and idp_detection (results of get_incidents_ids, get_fetch_detections,
-          and get_idp_detections_ids)
+          and get_detections_ids)
     When
         - running get_modified_remote_data_command
     Then
