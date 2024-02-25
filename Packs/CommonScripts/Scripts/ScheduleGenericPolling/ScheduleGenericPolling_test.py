@@ -40,26 +40,33 @@ def test_is_value_sanitized(value, expected_result):
     assert result == expected_result
 
 
-@pytest.mark.parametrize('command, expected_result',
-                         [
-                             ("1234", (True, None)),
-                             ("additionalPollingCommandArgNames additionalPollingCommandArgNames",
-                              (False, 'The value of additionalPollingCommandArgNames is malformed.')),
-                             ("pollingCommandArgName additionalPollingCommandArgNames", (True, None)),
-                             ("pollingCommandArgName additionalPollingCommandArgValues pollingCommandArgName "
-                              "additionalPollingCommandArgValues",
-                              (False, 'The value of additionalPollingCommandArgValues, pollingCommandArgName is malformed.')),
-                             ("pollingCommandArgName additionalPollingCommandArgValues pollingCommandArgName "
-                              "additionalPollingCommandArgValues",
-                              (False, 'The value of additionalPollingCommandArgValues, pollingCommandArgName is malformed.')),
-                             ("pollingCommand pollingCommandArgName additionalPollingCommandArgValues pollingCommand "
-                              "pollingCommandArgName additionalPollingCommandArgValues",
-                              (False, 'The value of additionalPollingCommandArgValues, pollingCommandArgName, pollingCommand is'
-                               ' malformed.')),
-                         ])
-def test_is_command_sanitized(command, expected_result):
+def test_is_command_sanitized():
+
+    # Trivial - pass
+    command = "1234"
     result = is_command_sanitized(command)
-    assert result == expected_result
+    assert result == (True, None)
+
+    # Twice additionalPollingCommandArgNames - fail
+    command = "additionalPollingCommandArgNames additionalPollingCommandArgNames"
+    result = is_command_sanitized(command)
+    assert result == (False, 'The value of additionalPollingCommandArgNames is malformed.')
+
+    # 2 different args - pass
+    command = "pollingCommandArgName additionalPollingCommandArgNames"
+    result = is_command_sanitized(command)
+    assert result == (True, None)
+
+    # 2 and 2 - fail
+    command = "pollingCommandArgName additionalPollingCommandArgValues pollingCommandArgName additionalPollingCommandArgValues"
+    result = is_command_sanitized(command)
+    assert result == (False, 'The value of additionalPollingCommandArgValues, pollingCommandArgName is malformed.')
+
+    # 2 and 2 and 2 - fail
+    command = "pollingCommand pollingCommandArgName additionalPollingCommandArgValues pollingCommand " \
+              "pollingCommandArgName additionalPollingCommandArgValues"
+    result = is_command_sanitized(command)
+    assert result == (False, 'The value of additionalPollingCommandArgValues, pollingCommandArgName, pollingCommand is malformed.')
 
 
 def test_get_command_string_pass():
