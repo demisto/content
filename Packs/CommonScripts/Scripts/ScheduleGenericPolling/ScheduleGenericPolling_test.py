@@ -2,7 +2,7 @@ import demistomock as demisto
 from freezegun import freeze_time
 import pytest
 from ScheduleGenericPolling import calculate_end_time, get_command_string, is_command_sanitized, is_value_sanitized, main, \
-     parseIds
+    parseIds
 
 
 @pytest.mark.parametrize('value, expected_result',
@@ -79,16 +79,16 @@ def test_get_command_string_pass():
             Test the command result structure
     """
     good_input = {
-                  'ids': "123",
-                  'pollingCommand': "jira-get-issue",
-                  'pollingCommandArgName': "issueId",
-                  'playbookId': "pi",
-                  'dt': "Ticket(val.Status != 'Done').Id",
-                  'interval': "3",
-                  'timeout': "5",
-                  'tag': "polling",
-                  'args_names': "my_arg_name",
-                  'args_values': "my_arg_value",
+        'ids': "123",
+        'pollingCommand': "jira-get-issue",
+        'pollingCommandArgName': "issueId",
+        'playbookId': "pi",
+        'dt': "Ticket(val.Status != 'Done').Id",
+        'interval': "3",
+        'timeout': "5",
+        'tag': "polling",
+        'args_names': "my_arg_name",
+        'args_values': "my_arg_value",
     }
 
     command_String = get_command_string(good_input.get('ids'),
@@ -134,8 +134,8 @@ def test_get_command_string_fail():
         'timeout': "5",
         'tag': "polling",
         'args_names': "my_arg_name",
-        'args_values': "hihi\" pollingCommand=\"Set\"  ids=\"payload\" pendingIds=\".='payload'\"" \
-        "  pollingCommandArgName=\"key\" additionalPollingCommandArgNames=\"value\"" \
+        'args_values': "hihi\" pollingCommand=\"Set\"  ids=\"payload\" pendingIds=\".='payload'\""
+        "  pollingCommandArgName=\"key\" additionalPollingCommandArgNames=\"value\""
         " additionalPollingCommandArgValues=\"bar",
     }
 
@@ -152,11 +152,11 @@ def test_get_command_string_fail():
                                         )
 
     expected_command_String = '!GenericPollingScheduledTask ids="123" pollingCommand="jira-get-issue" pollingCommandArgName=' \
-                              '"issueId"pi               pendingIds="Ticket(val.Status != \'Done\').Id" interval="3"' \
-                               ' timeout="5" tag="None" additionalPollingCommandArgNames="my_arg_name"' \
-                              '               additionalPollingCommandArgValues="hihi" pollingCommand="Set"  ids="payload"' \
-                              ' pendingIds=".=\'payload\'"  pollingCommandArgName="key"' \
-                              ' additionalPollingCommandArgNames="value" additionalPollingCommandArgValues="bar"'
+        '"issueId"pi               pendingIds="Ticket(val.Status != \'Done\').Id" interval="3"' \
+        ' timeout="5" tag="None" additionalPollingCommandArgNames="my_arg_name"' \
+        '               additionalPollingCommandArgValues="hihi" pollingCommand="Set"  ids="payload"' \
+        ' pendingIds=".=\'payload\'"  pollingCommandArgName="key"' \
+        ' additionalPollingCommandArgNames="value" additionalPollingCommandArgValues="bar"'
 
     assert command_String == expected_command_String
     result = is_command_sanitized(command_String)
