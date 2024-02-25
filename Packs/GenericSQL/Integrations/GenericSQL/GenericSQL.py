@@ -196,15 +196,12 @@ def generate_default_port_by_dialect(dialect: str) -> str | None:
     return None
 
 
-def generate_variable_names_and_mapping(bind_variables_names_list: list,
-                                        bind_variables_values_list: list,
-                                        query: str,
-                                        dialect: str) -> tuple[dict[str, Any], str | Any]:
+def generate_variable_names_and_mapping(bind_variables_values_list: list, query: str, dialect: str) ->\
+        tuple[dict[str, Any], str | Any]:
     """
     In case of passing just bind_variables_values, since it's no longer supported in SQL Alchemy v2.,
     this function generates names for those variables and return an edited query with a mapping.
     Args:
-        bind_variables_names_list: The names of the values to put as bind variables.
         bind_variables_values_list: Values to put in the bind variables
         query: The given query which contains chars to replace
         dialect: The DB dialect
@@ -224,18 +221,10 @@ def generate_variable_names_and_mapping(bind_variables_names_list: list,
     # dialect is a configuration parameter with multiple choices, so it should be one of the keys in the mapping
     char_to_count, char_to_replace = mapping_dialect_regex[dialect]
 
-    create_bind_variables_names_list = False
-    if not bind_variables_names_list:
-        bind_variables_names_list = []
-        create_bind_variables_names_list = True
+    bind_variables_names_list = []
     for i in range(len(re.findall(char_to_count, query))):
-        if create_bind_variables_names_list:
-            bind_variable_name = f"bind_variable_{i + 1}"
-            bind_variables_names_list.append(f"bind_variable_{i+1}")
-        else:
-            bind_variable_name = bind_variables_names_list[i]
-        demisto.debug(f'The chosen {bind_variable_name=}')
-        query = query.replace(char_to_replace, f":{bind_variable_name}", 1)
+        query = query.replace(char_to_replace, f":bind_variable_{i + 1}", 1)
+        bind_variables_names_list.append(f"bind_variable_{i + 1}")
     return dict(zip(bind_variables_names_list, bind_variables_values_list)), query
 
 
@@ -255,11 +244,8 @@ def generate_bind_vars(bind_variables_names: str, bind_variables_values: str, qu
     demisto.debug(f'{bind_variables_names_list=} {bind_variables_values_list=}')
 
     if bind_variables_values and not bind_variables_names:
-        return generate_variable_names_and_mapping([], bind_variables_values_list, query, dialect)
+        return generate_variable_names_and_mapping(bind_variables_values_list, query, dialect)
     elif len(bind_variables_names_list) == len(bind_variables_values_list):
-        demisto.debug(f'{dialect=}')
-        if dialect == SAP_HANA:
-            return generate_variable_names_and_mapping(bind_variables_names_list, bind_variables_values_list, query, dialect)
         return dict(zip(bind_variables_names_list, bind_variables_values_list)), query
     else:
         raise Exception("The bind variables lists are not is the same length")
