@@ -78,7 +78,7 @@ references:
         pre-install-steps:
           - run:
               name: Check if pyproject.toml is consistent with poetry.lock
-              command: poetry check --lock
+              command: poetry lock --check
 
   install_node_ci: &install_node_ci
     node/install-packages:
