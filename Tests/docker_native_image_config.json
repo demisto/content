@@ -39,7 +39,7 @@
                 "python3-deb",
                 "python3-ubi",
                 "py3-tools",
-                "py3-tools-ubi",
+                "py3-tools-ubi"
                 "crypto",
                 "readpdf",
                 "parse-emails",
