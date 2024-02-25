@@ -11,6 +11,7 @@ Script Description:
     - Cause
     - Severity
     - Title
+    - Description
 '''
 
 from typing import Any
