@@ -293,26 +293,6 @@ def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
         return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
 
 
-def get_indicator_publication(indicator):
-    """
-    Build publications grid field from the indicator external_references field
-
-    Args:
-        indicator: The indicator with publication field
-
-    Returns:
-        list. publications grid field
-    """
-    publications = []
-    for external_reference in indicator.get('external_references', []):
-        if external_reference.get('external_id'):
-            continue
-        url = external_reference.get('url')
-        description = external_reference.get('description')
-        source_name = external_reference.get('source_name')
-        publications.append({'link': url, 'title': description, 'source': source_name})
-    return publications
-
 
 def get_attack_id_and_value_from_name(attack_indicator):
     """
@@ -355,7 +335,7 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
 
     for attack_indicator in attack_indicator_objects:
 
-        publications = get_indicator_publication(attack_indicator)
+        publications = Taxii2FeedClient.get_indicator_publication(attack_indicator)
         mitre_id, value = get_attack_id_and_value_from_name(attack_indicator)
 
         kill_chain_mitre = [chain.get('phase_name', '') for chain in attack_indicator.get('kill_chain_phases', [])]
