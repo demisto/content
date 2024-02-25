@@ -374,6 +374,8 @@ tests_xsoar_server:
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+      when: always
   parallel:
     matrix:
       - INSTANCE_ROLE:
