@@ -38,15 +38,13 @@ class Client(BaseClient):
 
     def _http_request(
         self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
-        params=None, data=None, files=None, timeout=None, ok_codes=(200,),
-        catch_unauthorized=True, **kwargs
+        params=None, data=None, files=None, timeout=None, ok_codes=(200,), **kwargs
     ):
         try:
             demisto.debug(f'http_request to {url_suffix!r} with {data=}, {self._headers=}')
-            ok_codes += (401,) if catch_unauthorized else ()
             res: requests.Response = super()._http_request(
-                method, url_suffix, full_url, headers, auth, json_data,
-                params, data, files, timeout, 'response', ok_codes, **kwargs
+                method, url_suffix, full_url, headers, auth, json_data, params,
+                data, files, timeout, 'response', ok_codes + (401,), **kwargs
             )
             if res.status_code == 401:
                 demisto.debug('Token expired, 401 status code received.')
@@ -79,11 +77,10 @@ class Client(BaseClient):
 
     def get_new_token(self) -> str:
         self._headers.pop('Authorization', None)
-        res = self._http_request(
+        res = super()._http_request(
             'POST',
             '/dcs-service/dcscloud/v1/oauth/tokens',
             json_data=self.credentials,
-            catch_unauthorized=False
         )
         auth = f'{res["token_type"]} {res["access_token"]}'  # type: ignore
         demisto.setIntegrationContext(
