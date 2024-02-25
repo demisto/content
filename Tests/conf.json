@@ -824,17 +824,6 @@
             "timeout": 400
         },
         {
-            "integrations": "HelloWorldPremium",
-            "playbookID": "HelloWorldPremium_Scan-Test",
-            "fromversion": "5.0.0",
-            "timeout": 400
-        },
-        {
-            "integrations": "HelloWorldPremium",
-            "playbookID": "HelloWorldPremium-Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "ThreatQ v2",
             "playbookID": "ThreatQ - Test",
             "fromversion": "4.5.0"
@@ -5652,7 +5641,7 @@
         {
             "integrations": "Zimperium v2",
             "playbookID": "Zimperiumv2-TestPlaybook"
-        },        
+        },
         {
             "integrations": "AWS-SNS-Listener",
             "playbookID": "AWS SNS Listener - Test",
@@ -6083,7 +6072,6 @@
         "google-vault": "Nightly - Checking",
         "Forcepoint": "Nightly - Checking",
         "Signal Sciences WAF": "error with certificate",
-        "google": "'unsecure' parameter not working",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Recorded Future": "might be dynamic test",
@@ -6191,10 +6179,7 @@
         "ipinfo",
         "ipinfo_v2"
     ],
-    "private_tests": [
-        "HelloWorldPremium_Scan-Test",
-        "HelloWorldPremium-Test"
-    ],
+    "private_tests": [],
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
