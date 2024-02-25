@@ -66,7 +66,9 @@ def test_is_command_sanitized():
     command = "pollingCommand pollingCommandArgName additionalPollingCommandArgValues pollingCommand " \
               "pollingCommandArgName additionalPollingCommandArgValues"
     result = is_command_sanitized(command)
-    assert result == (False, 'The value of additionalPollingCommandArgValues, pollingCommandArgName, pollingCommand is malformed.')
+
+    result_message = 'The value of additionalPollingCommandArgValues, pollingCommandArgName, pollingCommand is malformed.'
+    assert result == (False, result_message)
 
 
 def test_get_command_string_pass():
@@ -175,9 +177,6 @@ def test_main_pass(mocker):
     Then
             Test the command result structure
     """
-    from unittest import mock
-    from unittest.mock import patch
-
     good_input = {
                   'ids': "123",
                   'pollingCommand': "jira-get-issue",
