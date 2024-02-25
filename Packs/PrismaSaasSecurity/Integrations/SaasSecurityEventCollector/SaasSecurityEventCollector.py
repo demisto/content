@@ -197,7 +197,7 @@ def get_events_command(
             try:
                 send_events_to_xsiam(events=events, vendor=vendor, product=product)
             except Exception as e:
-                demisto.setLastRun({'events': events})
+                demisto.setLastRun({'events': events, 'nextTrigger': '0'})
                 raise e
         return CommandResults(
             readable_output=tableToMarkdown(
