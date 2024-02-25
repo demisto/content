@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
-import shutil
 from collections.abc import Callable, Iterable
 
 
@@ -709,8 +708,8 @@ class Client(BaseClient):
                 try:
                     file_entry = file['id']
                     file_name = file['name']
-                    shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
-                    with open(file_name, 'rb') as f:
+                    file_path = demisto.getFilePath(file_entry)['path']
+                    with open(file_path, 'rb') as f:
                         file_info = (file_name, f, self.get_content_type(file_name))
                         if self.use_oauth:
                             access_token = self.snow_client.get_access_token()
@@ -723,7 +722,6 @@ class Client(BaseClient):
                             res = requests.request(method, url, headers=headers, data=body, params=params,
                                                    files={'file': file_info}, auth=self._auth,
                                                    verify=self._verify, proxies=self._proxies)
-                    shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
                 except Exception as err:
                     raise Exception('Failed to upload file - ' + str(err))
             else:
@@ -2402,7 +2400,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     result = client.get(ticket_type, ticket_id)
 
     if not result or 'result' not in result:
-        return 'Ticket was not found.'
+        return f'Ticket {ticket_id=} was not found.'
 
     if isinstance(result['result'], list):
         if len(result['result']) == 0:
@@ -2419,13 +2417,15 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         required=False
     )
 
-    demisto.debug(f'ticket_last_update is {ticket_last_update}')
-
-    if last_update > ticket_last_update:
-        demisto.debug('Nothing new in the ticket')
+    demisto.debug(f'ticket_last_update of {ticket_id=} is {ticket_last_update}')
+    is_fetch = demisto.params().get('isFetch')
+    if is_fetch and last_update > ticket_last_update:
+        demisto.debug(f'Nothing new in the ticket {ticket_id=}')
         ticket = {}
 
     else:
+        # in case we use SNOW just to mirror by setting the incident with mirror fields
+        # is_fetch will be false, so we will update even the XSOAR incident will be updated then SNOW ticket.
         demisto.debug(f'ticket is updated: {ticket}')
 
     parse_dict_ticket_fields(client, ticket)
