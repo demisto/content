@@ -468,26 +468,6 @@ def create_intrusion_sets(intrusion_sets_objects, feed_tags, tlp_color):
     return course_of_action_indicators
 
 
-def get_ioc_type(indicator, id_to_object):
-    """
-    Get IOC type by extracting it from the pattern field.
-
-    Args:
-        indicator: the indicator to get information on.
-        id_to_object: a dict in the form of - id: stix_object.
-
-    Returns:
-        str. the IOC type.
-    """
-    ioc_type = ''
-    indicator_obj = id_to_object.get(indicator, {})
-    pattern = indicator_obj.get('pattern', '')
-    for unit42_type in UNIT42_TYPES_TO_DEMISTO_TYPES:
-        if pattern.startswith(f'[{unit42_type}'):
-            ioc_type = UNIT42_TYPES_TO_DEMISTO_TYPES.get(unit42_type)  # type: ignore
-            break
-    return ioc_type
-
 
 def get_ioc_value(ioc, id_to_obj):
     """
@@ -545,14 +525,14 @@ def create_list_relationships(relationships_objects, id_to_object):
         if a_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.keys():
             a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type)  # type: ignore
         elif a_threat_intel_type == 'indicator':
-            a_type = get_ioc_type(relationships_object.get('source_ref'), id_to_object)
+            a_type = Taxii2FeedClient.get_ioc_type(relationships_object.get('source_ref'), id_to_object)
 
         b_threat_intel_type = relationships_object.get('target_ref').split('--')[0]
         b_type = ''
         if b_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.keys():
             b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type)  # type: ignore
         if b_threat_intel_type == 'indicator':
-            b_type = get_ioc_type(relationships_object.get('target_ref'), id_to_object)
+            b_type = Taxii2FeedClient.get_ioc_type(relationships_object.get('target_ref'), id_to_object)
 
         if not a_type or not b_type:
             continue
@@ -737,6 +717,7 @@ def main():  # pragma: no cover
     except Exception as err:
         return_error(str(err))
 
+from TAXII2ApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
