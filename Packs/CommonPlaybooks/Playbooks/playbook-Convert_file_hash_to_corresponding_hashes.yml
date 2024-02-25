@@ -574,9 +574,9 @@ tasks:
       version: -1
       name: Search indicators
       description: |-
-        Searches Cortex XSOAR Indicators.
+        Searches Cortex XSOAR indicators.
 
-        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+        Searches for Cortex XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
 
         You can add additional fields from the indicators using the add_field_to_context argument.
       scriptName: SearchIndicator
