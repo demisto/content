@@ -5508,12 +5508,12 @@
             "fromversion": "6.9.0"
         },
         {
-            "integrations": "SecneurX Analysis",
+            "integrations": "Secneurx Analysis",
             "playbookID": "Detonate File - SecneurX Analysis - Test",
             "fromversion": "6.2.0"
         },
         {
-            "integrations": "SecneurX Analysis",
+            "integrations": "Secneurx Analysis",
             "playbookID": "Detonate URL - SecneurX Analysis - Test",
             "fromversion": "6.2.0"
         },
