@@ -4024,9 +4024,10 @@ script:
         description: The ID of the scheduled task.
         type: Number
   - arguments:
-    - description: The task-ID to delete.
-      name: task_id
+    - description: a comma seperated of task-IDs to delete.
+      name: task_ids
       required: true
+      isArray: true
     description: Deletes a scheduled task.
     name: trendmicro-delete-scheduled-task
     outputs: []

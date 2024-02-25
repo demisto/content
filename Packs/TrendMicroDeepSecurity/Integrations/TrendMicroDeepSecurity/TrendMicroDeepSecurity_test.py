@@ -2,6 +2,7 @@ import json
 from typing import Any
 
 from TrendMicroDeepSecurity import Client, convert_args
+from CommonServerPython import *
 
 BASE_URL = "https://test.api.deepsecurity.trendmicro.com"
 
@@ -1026,24 +1027,30 @@ def test_create_once_only_scheduled_task_command(requests_mock):
     assert result.outputs_prefix == "TrendMicro.ScheduledTask"
 
 
-def test_delete_scheduled_task_command(requests_mock):
+def test_delete_scheduled_task_command(mocker, requests_mock):
     """
     Scenario: Deletes scheduled task by task-ID
 
     Given:
-        - task-id argument
+        - 1 task ID which was deleted successfully
+        - 1 task ID which wasn't deleted successfully
     When:
         - delete_scheduled_task_command is called.
     Then:
-        - Ensure human readable is returned
+        - Ensure ID 1 has readable output
+        - Ensure ID 2 returns error entry
     """
     from TrendMicroDeepSecurity import delete_scheduled_task_command
     requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/1', status_code=204)
+    requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/2', exc=Exception("error"))
+    mocker.patch.object(demisto, 'error')
     client = Client(base_url=BASE_URL, api_key="xxx", use_ssl=False, use_proxy=False)
-    args = convert_args(delete_scheduled_task_command, {"task_id": "1"})
+    args = convert_args(delete_scheduled_task_command, {"task_ids": "1,2"})
     result = delete_scheduled_task_command(client, **args)
 
-    assert result.readable_output
+    assert result[0].readable_output
+    assert result[0].entry_type == EntryType.NOTE
+    assert result[1].entry_type == EntryType.ERROR
 
 
 def test_list_scheduled_task_command(requests_mock):

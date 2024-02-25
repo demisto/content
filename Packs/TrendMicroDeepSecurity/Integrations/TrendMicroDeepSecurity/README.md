@@ -24190,7 +24190,7 @@ Deletes a scheduled task.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | The task-ID to delete. | Required | 
+| task_id | a comma seperated of task-IDs to delete. | Required | 
 
 #### Context Output
 
