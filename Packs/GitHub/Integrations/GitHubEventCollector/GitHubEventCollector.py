@@ -9,6 +9,7 @@ from SiemApiModule import *  # noqa: E402
 urllib3.disable_warnings()
 VENDOR = 'github'
 PRODUCT = 'github-audit'
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"
 
 
 def get_github_timestamp_format(value):
@@ -20,10 +21,11 @@ def get_github_timestamp_format(value):
         timestamp = dateparser.parse(value)
     if timestamp is None:
         raise TypeError(f'after is not a valid time {value}')
-    timestamp_epoch = timestamp.timestamp() * 1000
-    str_bytes = f'{timestamp_epoch}|'.encode('ascii')
-    base64_bytes = base64.b64encode(str_bytes)
-    return base64_bytes.decode('ascii')
+    # timestamp_epoch = timestamp.timestamp() * 1000
+    # str_bytes = f'{timestamp_epoch}|'.encode('ascii')
+    # base64_bytes = base64.b64encode(str_bytes)
+    # return base64_bytes.decode('ascii')
+    return f'created:>{timestamp.strftime(DATETIME_FORMAT)}'
 
 
 class GithubParams(BaseModel):
@@ -32,9 +34,9 @@ class GithubParams(BaseModel):
     """
     include: str
     order: str = 'asc'
-    after: str
+    phrase: str
     per_page: int = 100  # Maximum is 100
-    _normalize_after = validator('after', pre=True, allow_reuse=True)(
+    _normalize_after = validator('phrase', pre=True, allow_reuse=True)(
         get_github_timestamp_format
     )
 
@@ -48,7 +50,7 @@ class GithubEventsRequestConfig(IntegrationHTTPRequest):
 class GithubClient(IntegrationEventsClient):
     def set_request_filter(self, after: str):
         if self.request.params:
-            self.request.params.after = get_github_timestamp_format(after)  # type: ignore
+            self.request.params.phrase = get_github_timestamp_format(after)  # type: ignore
 
 
 class GithubGetEvents(IntegrationGetEvents):
@@ -68,7 +70,6 @@ class GithubGetEvents(IntegrationGetEvents):
             self.client.set_request_filter(last['@timestamp'])
             events = self.client.call(self.client.request).json()
             try:
-                events.pop(0)
                 assert events
             except (IndexError, AssertionError):
                 LOG('empty list, breaking')
