@@ -1033,24 +1033,27 @@ def test_delete_scheduled_task_command(mocker, requests_mock):
 
     Given:
         - 1 task ID which was deleted successfully
-        - 1 task ID which wasn't deleted successfully
+        - 1 task ID which wasn't deleted successfully (error from the api)
+        - 1 task ID which wasn't deleted successfully (not an integer)
     When:
-        - delete_scheduled_task_command is called.
+        - delete_scheduled_task_command is called
     Then:
         - Ensure ID 1 has readable output
         - Ensure ID 2 returns error entry
+        - Ensure ID c returns error entry
     """
     from TrendMicroDeepSecurity import delete_scheduled_task_command
     requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/1', status_code=204)
     requests_mock.delete(f'{BASE_URL}/api/scheduledtasks/2', exc=Exception("error"))
     mocker.patch.object(demisto, 'error')
     client = Client(base_url=BASE_URL, api_key="xxx", use_ssl=False, use_proxy=False)
-    args = convert_args(delete_scheduled_task_command, {"task_ids": "1,2"})
+    args = convert_args(delete_scheduled_task_command, {"task_ids": "1,2,c"})
     result = delete_scheduled_task_command(client, **args)
 
-    assert result[0].readable_output
+    assert "successfully deleted" in result[0].readable_output
     assert result[0].entry_type == EntryType.NOTE
     assert result[1].entry_type == EntryType.ERROR
+    assert result[2].entry_type == EntryType.ERROR
 
 
 def test_list_scheduled_task_command(requests_mock):

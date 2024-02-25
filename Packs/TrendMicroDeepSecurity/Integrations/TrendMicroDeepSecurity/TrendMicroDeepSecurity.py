@@ -1809,17 +1809,26 @@ def delete_scheduled_task_command(client: Client, task_ids: List[int]):
 
     for task_id in task_ids:
         try:
-            client.delete_scheduled_task(task_id)
+            _task_id = arg_to_number(task_id)
+        except ValueError:
             results.append(
                 CommandResults(
-                    readable_output=f"Scheduled task with ID {task_id} has been successfully deleted."
+                    entry_type=EntryType.ERROR, readable_output=f'task-ID {task_id} provided is invalid, must be integer'
                 )
             )
-        except Exception as error:
-            demisto.error(f'Failed to delete task-ID {task_id}, {error=}')
-            results.append(
-                CommandResults(entry_type=EntryType.ERROR, readable_output=f'Failed to delete {task_id}')
-            )
+        else:
+            try:
+                client.delete_scheduled_task(_task_id)
+                results.append(
+                    CommandResults(
+                        readable_output=f"Scheduled task with ID {task_id} has been successfully deleted."
+                    )
+                )
+            except Exception as error:
+                demisto.error(f'Failed to delete task-ID {task_id}, {error=}')
+                results.append(
+                    CommandResults(entry_type=EntryType.ERROR, readable_output=f'Failed to delete {task_id}')
+                )
 
     return results
 
