@@ -13,7 +13,17 @@ DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def get_github_timestamp_format(value):
-    """Converting int(epoch), str(3 days) or datetime to github's api time"""
+    """Converts int(epoch), str(3 days), or datetime to GitHub's API time format.
+
+    Args:
+        value (Any): The value to convert to GitHub's API time format.
+
+    Returns:
+        str: The value in GitHub's API time format.
+
+    Raises:
+        TypeError: If the input value is not a valid time.
+    """
     if isinstance(value, int):
         value = datetime.utcfromtimestamp(value / 1e3)
     elif isinstance(value, str):
