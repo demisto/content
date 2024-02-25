@@ -364,16 +364,6 @@ def extract_date_time_from_description(description: str) -> str:
     return date_time_result
 
 
-def get_tlp(indicator_json: dict) -> str:
-    object_marking_definition_list = indicator_json.get('object_marking_refs', '')
-    tlp_color: str = ''
-    for object_marking_definition in object_marking_definition_list:
-        if MARKING_DEFINITION_TO_TLP.get(object_marking_definition):
-            tlp_color = MARKING_DEFINITION_TO_TLP.get(object_marking_definition, '')
-            break
-    return tlp_color
-
-
 def create_relationship_list(mitre_relationships_list, id_to_name):
     relationships_list = []
     for mitre_relationship in mitre_relationships_list:
