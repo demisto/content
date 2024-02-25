@@ -55,8 +55,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 1030
+          "x": 530,
+          "y": 950
         }
       }
     note: false
@@ -175,11 +175,14 @@ tasks:
               complex:
                 root: inputs.SHA1
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 520,
-          "y": 230
+          "y": 190
         }
       }
     note: false
@@ -215,7 +218,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
+          "x": 300,
           "y": 750
         }
       }
@@ -254,7 +257,7 @@ tasks:
       {
         "position": {
           "x": -550,
-          "y": 730
+          "y": 750
         }
       }
     note: false
@@ -291,7 +294,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
+          "x": 1180,
           "y": 750
         }
       }
@@ -399,7 +402,7 @@ tasks:
     task:
       id: 336d7e69-334b-490c-81c4-4b48788a56be
       version: -1
-      name: Is the hashes retrieved?
+      name: Have the hashes been retrieved?
       type: condition
       iscommand: false
       brand: ""
@@ -420,6 +423,16 @@ tasks:
             iscontext: true
           right:
             value: {}
+      - - operator: stringHasLength
+          left:
+            value:
+              complex:
+                root: foundIndicators
+                accessor: value
+            iscontext: true
+          right:
+            value:
+              simple: "64"
     continueonerrortype: ""
     view: |-
       {
@@ -454,13 +467,14 @@ tasks:
     scriptarguments:
       indicatorsValues:
         complex:
-          root: inputs.SHA256
+          root: foundIndicators
+          accessor: value
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1580,
+          "x": 1600,
           "y": 750
         }
       }
@@ -598,7 +612,7 @@ tasks:
     task:
       id: 0161e3d5-ca7c-4e0e-86d4-f767f1c7b64c
       version: -1
-      name: Is the hashes retrieved?
+      name: Have the hashes been retrieved?
       type: condition
       iscommand: false
       brand: ""
@@ -617,6 +631,18 @@ tasks:
             value:
               simple: foundIndicators.value
             iscontext: true
+          right:
+            value: {}
+      - - operator: stringHasLength
+          left:
+            value:
+              complex:
+                root: foundIndicators
+                accessor: value
+            iscontext: true
+          right:
+            value:
+              simple: "40"
     continueonerrortype: ""
     view: |-
       {
@@ -639,7 +665,7 @@ tasks:
     task:
       id: 9fb9988f-d614-4a30-8eb9-09c8a05ad461
       version: -1
-      name: Is the hashes retrieved?
+      name: Have the hashes been retrieved?
       type: condition
       iscommand: false
       brand: ""
@@ -658,6 +684,18 @@ tasks:
             value:
               simple: foundIndicators.value
             iscontext: true
+          right:
+            value: {}
+      - - operator: stringHasLength
+          left:
+            value:
+              complex:
+                root: foundIndicators
+                accessor: value
+            iscontext: true
+          right:
+            value:
+              simple: "32"
     continueonerrortype: ""
     view: |-
       {
@@ -692,7 +730,8 @@ tasks:
     scriptarguments:
       indicatorsValues:
         complex:
-          root: inputs.SHA1
+          root: foundIndicators
+          accessor: value
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -728,14 +767,15 @@ tasks:
     scriptarguments:
       indicatorsValues:
         complex:
-          root: inputs.MD5
+          root: foundIndicators
+          accessor: value
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -120,
-          "y": 730
+          "y": 750
         }
       }
     note: false
@@ -752,14 +792,16 @@ view: |-
       "10_45_yes": 0.46,
       "47_15_#default#": 0.44,
       "47_49_yes": 0.41,
+      "48_16_#default#": 0.57,
+      "48_50_yes": 0.61,
       "4_2_#default#": 0.15,
       "9_2_#default#": 0.19,
       "9_46_yes": 0.51
     },
     "paper": {
       "dimensions": {
-        "height": 1195,
-        "width": 2510,
+        "height": 1115,
+        "width": 2530,
         "x": -550,
         "y": -100
       }
