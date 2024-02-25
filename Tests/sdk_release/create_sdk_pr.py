@@ -177,7 +177,6 @@ def main():
     ).get('id')
 
     logging.info(f'SDK changelog workflow triggered successfully: {SDK_WORKFLOW_SUFFIX}{workflow_id}')
-
     elapsed: float = 0
     start = time.time()
     while elapsed < TIMEOUT:
@@ -188,8 +187,7 @@ def main():
             logging.error(response.text)
             sys.exit(1)
 
-        job_data = response.json().get('jobs', [])[0]
-        
+        job_data = response.json().get('jobs', [])[0]  
         status = job_data.get('status')
         if status == "completed":
             logging.info("SDK changelog workflow completed")
