@@ -21,7 +21,7 @@
   "dependencies": {
     "@mdx-js/mdx": "^1.6.22",
     "commander": "^5.1.0",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^11.2.0",
     "markdownlint": "^0.26.2",
     "markdownlint-rule-helpers": "^0.17.2"
   }
