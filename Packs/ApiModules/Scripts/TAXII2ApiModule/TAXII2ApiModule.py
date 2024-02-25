@@ -1,4 +1,5 @@
 import logging
+import traceback
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -1181,7 +1182,7 @@ class Taxii2FeedClient:
             envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
             indicators = self.load_stix_objects_from_envelope(envelopes, limit)
         except InvalidJSONError as e:
-            demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}')
+            demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}, {traceback.format_exc()}')
             # raised when the response is empty, because {} is parsed into '筽'
             indicators = []
 
@@ -1240,11 +1241,16 @@ class Taxii2FeedClient:
                 current_envelope = envelope
                 # demisto.debug(f'parse_generator_type_envelope, trying to parse the envelope: {envelope}')
                 self.increase_count(parsed_objects_counter, 'envelope')
-                stix_objects = envelope.get("objects")
-                if not stix_objects:
-                    # no fetched objects
-                    self.increase_count(parsed_objects_counter, 'not-parsed-envelope-not-stix')
-                    break
+                try:
+                    stix_objects = envelope.get("objects")
+                    if not stix_objects:
+                        # no fetched objects
+                        self.increase_count(parsed_objects_counter, 'not-parsed-envelope-not-stix')
+                        break
+                except Exception as e:
+                    demisto.debug(f"Exception trying to get envelope objects: {e}, {traceback.format_exc()}")
+                    self.increase_count(parsed_objects_counter, 'exception-envelope-get-objects')
+                    continue
 
                 # we should build the id_to_object dict before iteration as some object reference each other
                 self.id_to_object.update(
@@ -1255,7 +1261,12 @@ class Taxii2FeedClient:
                 )
                 # now we have a list of objects, go over each obj, save id with obj, parse the obj
                 for obj in stix_objects:
-                    obj_type = obj.get('type')
+                    try:
+                        obj_type = obj.get('type')
+                    except Exception as e:
+                        demisto.debug(f"Exception trying to get stix_object-type: {e}, {traceback.format_exc()}")
+                        self.increase_count(parsed_objects_counter, 'exception-stix-object-type')
+                        continue
 
                     # we currently don't support extension object
                     if obj_type == 'extension-definition':
@@ -1271,9 +1282,15 @@ class Taxii2FeedClient:
                         demisto.debug(f'There is no parsing function for object type {obj_type}, for object {obj}.')
                         self.increase_count(parsed_objects_counter, f'not-parsed-{obj_type}')
                         continue
-                    if result := parse_objects_func[obj_type](obj):
-                        indicators.extend(result)
-                        self.update_last_modified_indicator_date(obj.get("modified"))
+                    try:
+                        if result := parse_objects_func[obj_type](obj):
+                            indicators.extend(result)
+                            self.update_last_modified_indicator_date(obj.get("modified"))
+                    except Exception as e:
+                        demisto.debug(f"Exception parsing stix_object-type {obj_type}: {e}, {traceback.format_exc()}")
+                        self.increase_count(parsed_objects_counter, f'exception-parsing-{obj_type}')
+                        continue
+                    self.increase_count(parsed_objects_counter, f'parsed-{obj_type}')
 
                     if reached_limit(limit, len(indicators)):
                         demisto.debug(f"Reached the limit ({limit}) of indicators to fetch. Indicators len: {len(indicators)}."
@@ -1282,7 +1299,7 @@ class Taxii2FeedClient:
 
                         return indicators, relationships_lst
         except Exception as e:
-            demisto.debug(f"Exception trying to parse envelope: {e}")
+            demisto.debug(f"Exception trying to parse envelope: {e}, {traceback.format_exc()}")
             demisto.debug(f"Exception trying to parse envelope {current_envelope=}")
             if len(indicators) == 0:
                 demisto.debug("No Indicator were parsed")
