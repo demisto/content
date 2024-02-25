@@ -163,7 +163,7 @@ def test_get_command_string_fail():
     assert command_String == expected_command_String
     result = is_command_sanitized(command_String)
 
-    expected_result = (False, 'The value of additionalPollingCommandArgValues, additionalPollingCommandArgNames, ' \
+    expected_result = (False, 'The value of additionalPollingCommandArgValues, additionalPollingCommandArgNames, '
                        'pollingCommandArgName, pollingCommand is malformed.')
     assert result == expected_result
 
@@ -229,8 +229,8 @@ def test_main_fail(mocker):
         'timeout': "5",
         'tag': "polling",
         'additionalPollingCommandArgNames': "my_arg_name",
-        'additionalPollingCommandArgValues': "hihi\" pollingCommand=\"Set\"  ids=\"payload\" pendingIds=\".='payload'\"" \
-        "  pollingCommandArgName=\"key\" additionalPollingCommandArgNames=\"value\"" \
+        'additionalPollingCommandArgValues': "hihi\" pollingCommand=\"Set\"  ids=\"payload\" pendingIds=\".='payload'\""
+        "  pollingCommandArgName=\"key\" additionalPollingCommandArgNames=\"value\""
         " additionalPollingCommandArgValues=\"bar",
 
     }
