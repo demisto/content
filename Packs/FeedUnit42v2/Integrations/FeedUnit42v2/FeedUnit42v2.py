@@ -334,16 +334,6 @@ def get_attack_id_and_value_from_name(attack_indicator):
     return ind_id, value
 
 
-def change_attack_pattern_to_stix_attack_pattern(indicator: dict):
-    kill_chain_phases = indicator['fields']['killchainphases']
-    del indicator['fields']['killchainphases']
-    description = indicator['fields']['description']
-    del indicator['fields']['description']
-
-    indicator_type = indicator['type']
-    indicator['type'] = f'STIX {indicator_type}'
-    indicator['fields']['stixkillchainphases'] = kill_chain_phases
-    indicator['fields']['stixdescription'] = description
 
     return indicator
 
@@ -394,7 +384,7 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
 
         if not is_up_to_6_2:
             # For versions less than 6.2 - that only support STIX and not the newer types - Malware, Tool, etc.
-            indicator = change_attack_pattern_to_stix_attack_pattern(indicator)
+            indicator = Taxii2FeedClient.change_attack_pattern_to_stix_attack_pattern(indicator)
 
         attack_pattern_indicators.append(indicator)
     return attack_pattern_indicators
