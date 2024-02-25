@@ -197,20 +197,19 @@ def reached_limit(limit: int, element_count: int):
 
 
 class StixParser(BaseClient):
-    
-    def __init__(self,tlp_color,id_to_object,
-                 field_map,cidr_regexes,skip_complex_mode,indicator_regexes,
-                 update_custom_fields,tags):
+
+    def __init__(self,tlp_color,id_to_object, 
+                 field_map,cidr_regexes, skip_complex_mode,indicator_regexes, 
+                 update_custom_fields, tags):
         self.skip_complex_mode = skip_complex_mode
         self.indicator_regexes = indicator_regexes
         self.tlp_color = tlp_color
         self.id_to_object = id_to_object
-        self.cidr_regexes =cidr_regexes
+        self.cidr_regexes = cidr_regexes
         self.field_map = field_map
         self.update_custom_fields = update_custom_fields
         self.tags = tags
 
-        
     @staticmethod
     def get_indicator_publication(indicator: dict[str, Any]):
         """
@@ -283,21 +282,6 @@ class StixParser(BaseClient):
                 break
         return ioc_type
 
-    def update_last_modified_indicator_date(self, indicator_modified_str: str):
-        if not indicator_modified_str:
-            return
-        if self.last_fetched_indicator__modified is None:
-            self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
-        else:
-            last_datetime = self.stix_time_to_datetime(
-                self.last_fetched_indicator__modified
-            )
-            indicator_created_datetime = self.stix_time_to_datetime(
-                indicator_modified_str
-            )
-            if indicator_created_datetime > last_datetime:
-                self.last_fetched_indicator__modified = indicator_modified_str
-
     """ PARSING FUNCTIONS"""
 
     @staticmethod
@@ -323,12 +307,12 @@ class StixParser(BaseClient):
 
         if tlp_color:
             fields['trafficlightprotocol'] = tlp_color
-            
-        if obj_to_parse.get('confidence', ''):
-            fields['confidence'] = obj_to_parse.get('confidence', '')
 
-        if obj_to_parse.get('lang', ''):
-            fields['languages'] = obj_to_parse.get('lang', '')
+        # if obj_to_parse.get('confidence', ''):
+        #     fields['confidence'] = obj_to_parse.get('confidence', '')
+
+        # if obj_to_parse.get('lang', ''):
+        #     fields['languages'] = obj_to_parse.get('lang', '')
 
         return fields
 
@@ -671,7 +655,7 @@ class StixParser(BaseClient):
         campaign["fields"] = fields
 
         return [campaign]
-    
+
     def parse_intrusion_set(self, intrusion_set_obj: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Parses a single intrusion set object
@@ -971,6 +955,7 @@ class StixParser(BaseClient):
             "relationships": relationships_list
         }
         return [dummy_indicator] if dummy_indicator else []
+
     @staticmethod
     def extract_indicators_from_stix_objects(
         stix_objs: list[dict[str, str]], required_objects: list[str]
@@ -1036,7 +1021,8 @@ class StixParser(BaseClient):
             "type": type_,
             "rawJSON": ioc_obj_copy,
         }
-        fields = self.set_default_fields(indicator_obj)
+        fields = {}
+        # fields = self.set_default_fields(indicator_obj)
         tags = list(self.tags)
         # create tags from labels:
         for label in ioc_obj_copy.get("labels", []):
@@ -1070,7 +1056,7 @@ class StixParser(BaseClient):
                 tags.append(field_tag)
 
         fields["tags"] = list(set(tags))
-        fields["publications"] = self.get_indicator_publication(indicator_obj)
+        # fields["publications"] = self.get_indicator_publication(indicator_obj)
 
         indicator["fields"] = fields
         return indicator
@@ -1140,7 +1126,6 @@ class StixParser(BaseClient):
         except AttributeError:
             ioc_value = None
         return ioc_value
-    
 
 
 class Taxii2FeedClient(StixParser):
@@ -1180,18 +1165,22 @@ class Taxii2FeedClient(StixParser):
         :param key: TLS Certificate key
         :param default_api_root: The default API Root to use
         """
-        super().__init__(tlp_color=tlp_color,id_to_object={},
-                 field_map=field_map if field_map else {},
-                 cidr_regexes=[
-            re.compile(CIDR_ISSUBSET_VAL_PATTERN),
-            re.compile(CIDR_ISUPPERSET_VAL_PATTERN),
-        ],
-                 skip_complex_mode=skip_complex_mode,
-                 indicator_regexes=[
-            re.compile(INDICATOR_EQUALS_VAL_PATTERN),
-            re.compile(HASHES_EQUALS_VAL_PATTERN),
-        ],
-        update_custom_fields=update_custom_fields,tags=tags if tags else [])
+        super().__init__(
+            tlp_color=tlp_color,
+            id_to_object={},
+            field_map=field_map if field_map else {},
+            cidr_regexes=[
+                re.compile(CIDR_ISSUBSET_VAL_PATTERN),
+                re.compile(CIDR_ISUPPERSET_VAL_PATTERN),
+            ],
+            skip_complex_mode=skip_complex_mode,
+            indicator_regexes=[
+                re.compile(INDICATOR_EQUALS_VAL_PATTERN),
+                re.compile(HASHES_EQUALS_VAL_PATTERN),
+            ],
+            update_custom_fields=update_custom_fields,
+            tags=tags if tags else [],
+        )
         self._conn = None
         self.server = None
         self.api_root = None
@@ -1415,6 +1404,21 @@ class Taxii2FeedClient(StixParser):
 
         return indicators
 
+    def update_last_modified_indicator_date(self, indicator_modified_str: str):
+        if not indicator_modified_str:
+            return
+        if self.last_fetched_indicator__modified is None:
+            self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
+        else:
+            last_datetime = self.stix_time_to_datetime(
+                self.last_fetched_indicator__modified
+            )
+            indicator_created_datetime = self.stix_time_to_datetime(
+                indicator_modified_str
+            )
+            if indicator_created_datetime > last_datetime:
+                self.last_fetched_indicator__modified = indicator_modified_str
+    
     def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
         relationships_lst = []
