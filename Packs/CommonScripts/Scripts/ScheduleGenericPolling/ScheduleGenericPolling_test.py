@@ -164,7 +164,7 @@ def test_get_command_string_fail():
     result = is_command_sanitized(command_String)
 
     expected_result = (False, 'The value of additionalPollingCommandArgValues, additionalPollingCommandArgNames, ' \
-                      'pollingCommandArgName, pollingCommand is malformed.')
+                       'pollingCommandArgName, pollingCommand is malformed.')
     assert result == expected_result
 
 
@@ -178,16 +178,16 @@ def test_main_pass(mocker):
             Test the command result structure
     """
     good_input = {
-                  'ids': "123",
-                  'pollingCommand': "jira-get-issue",
-                  'pollingCommandArgName': "issueId",
-                  'playbookId': "pi",
-                  'dt': "Ticket(val.Status != 'Done').Id",
-                  'interval': "3",
-                  'timeout': "5",
-                  'tag': "polling",
-                  'additionalPollingCommandArgNames': "my_arg_name",
-                  'additionalPollingCommandArgValues': "my_arg_value",
+        'ids': "123",
+        'pollingCommand': "jira-get-issue",
+        'pollingCommandArgName': "issueId",
+        'playbookId': "pi",
+        'dt': "Ticket(val.Status != 'Done').Id",
+        'interval': "3",
+        'timeout': "5",
+        'tag': "polling",
+        'additionalPollingCommandArgNames': "my_arg_name",
+        'additionalPollingCommandArgValues': "my_arg_value",
     }
 
     mocker.patch.object(demisto, 'args', return_value=good_input)
@@ -205,7 +205,6 @@ def test_main_pass(mocker):
                        '"issueId" playbookId="pi"               pendingIds="Ticket(val.Status != \'Done\').Id" interval="3"' \
                        ' timeout="5" tag="polling" additionalPollingCommandArgNames="my_arg_name"' \
                        '               additionalPollingCommandArgValues="my_arg_value"'
-
 
     assert command == expected_command
 
@@ -236,7 +235,6 @@ def test_main_fail(mocker):
 
     }
 
-
     mocker.patch.object(demisto, 'args', return_value=fail_input)
 
     return_error_mock = mocker.patch("ScheduleGenericPolling.return_error")
@@ -250,4 +248,3 @@ def test_main_fail(mocker):
     err_msg = return_error_mock.call_args[0][0]
     assert err_msg == 'The value of additionalPollingCommandArgValues, additionalPollingCommandArgNames, ' \
                       'pollingCommandArgName, pollingCommand is malformed.'
-
