@@ -12,7 +12,7 @@ args:
 - name: image_id
   required: true
   description: The image ID to be enriched.
-- name: ComplianceIDs
+- name: compliance_ids
   description: A comma separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs.
 scripttarget: 0
 subtype: python3

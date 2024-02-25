@@ -148,7 +148,7 @@ def main() -> None:
     try:
         # Get user-provided arguments
         image_id = demisto.getArg('image_id')
-        compliance_ids = demisto.getArg('ComplianceIDs')
+        compliance_ids = demisto.getArg('compliance_ids')
 
         # Verify and normalize image_id
         if not image_id.startswith('sha256:'):

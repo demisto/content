@@ -8,13 +8,13 @@ from CommonServerPython import *  # noqa: F401
 # Import the script you want to test
 
 TEST_CASES = [
-    ({'id': 'sha256:e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'ComplianceIDs': '6112'}, [
+    ({'id': 'sha256:e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'compliance_ids': '6112'}, [
         {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
          'Description':
              'The /tmp directory is a world-writable directory used for temporary storage by all users\nand some applications.'}
     ]),
-    ({'id': 'sha256:e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'ComplianceIDs': '6112,6116,6117'}, [
+    ({'id': 'sha256:e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'compliance_ids': '6112,6116,6117'}, [
         {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
          'Description':
@@ -27,7 +27,7 @@ TEST_CASES = [
          'Description':
              'Description for compliance ID 6117'}
     ]),
-    ({'id': 'sha256:e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'ComplianceIDs': ''}, [
+    ({'id': 'sha256:e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'compliance_ids': ''}, [
         {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
          'Description':
@@ -68,7 +68,7 @@ def run_prisma_cloud_compute_images_scan_list(mocker, args, expected):
 
     # Run the function
     mocker.patch.object(demisto, 'results')
-    run_prisma_cloud_compute_images_scan_list(args.get('id'), args.get('ComplianceIDs'))
+    run_prisma_cloud_compute_images_scan_list(args.get('id'), args.get('compliance_ids'))
 
     # Check the results
     results = demisto.results.call_args[0][0]

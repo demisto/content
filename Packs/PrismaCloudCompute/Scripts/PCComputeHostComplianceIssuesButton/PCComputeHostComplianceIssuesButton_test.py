@@ -8,13 +8,13 @@ from CommonServerPython import *  # noqa: F401
 # Import the script you want to test
 
 TEST_CASES = [
-    ({'hostname': 'example-host', 'ComplianceIDs': '6112'}, [
+    ({'hostname': 'example-host', 'compliance_ids': '6112'}, [
         {'Compliance ID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
          'Description':
              'The /tmp directory is a world-writable directory used for temporary storage by all users\nand some applications.'}
     ]),
-    ({'hostname': 'example-host', 'ComplianceIDs': '6112,6116,6117'}, [
+    ({'hostname': 'example-host', 'compliance_ids': '6112,6116,6117'}, [
         {'Compliance ID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
          'Description':
@@ -27,7 +27,7 @@ TEST_CASES = [
          'Description':
              'Description for compliance ID 6117'}
     ]),
-    ({'hostname': 'example-host', 'ComplianceIDs': ''}, [
+    ({'hostname': 'example-host', 'compliance_ids': ''}, [
         {'Compliance ID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
          'Description':
@@ -69,7 +69,7 @@ def test_run_prisma_cloud_compute_hosts_scan_list(mocker, args, expected):
 
     # Run the function
     mocker.patch.object(demisto, 'results')
-    run_prisma_cloud_compute_hosts_scan_list(args.get('hostname'), args.get('ComplianceIDs'))
+    run_prisma_cloud_compute_hosts_scan_list(args.get('hostname'), args.get('compliance_ids'))
 
     # Check the results
     results = demisto.results.call_args[0][0]
