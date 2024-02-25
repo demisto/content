@@ -156,6 +156,8 @@ Searches for a device that matches the query.
 | hostname | The host name of the device. Possible values are: . | Optional | 
 | platform_name | The platform name of the device. Possible values are: Windows, Mac, and Linux. Possible values are: Windows, Mac, Linux. | Optional | 
 | site_name | The site name of the device. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
+| offset | The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0. | Optional |
 
 #### Context Output
 
