@@ -2764,29 +2764,142 @@ script:
       description: 'ID of a specific disconnected log collector'
     outputs:
     - contextPath: QRadar.LogSourceGroup.Assignable
-      description: ''
+      description: 'If log sources can be assigned to this group, the condition is set to true; otherwise, the condition is set to false. Log sources cannot be assigned directly to the "Other" group or to the root log source group node.'
       type: Boolean
     - contextPath: QRadar.LogSourceGroup.ChildGroupIDs
-      description: ''
+      description: 'The list of IDs of any child log source groups that belong to this group.'
       type: List
     - contextPath: QRadar.LogSourceGroup.Description
-      description: ''
+      description: 'The description of the group.'
       type: String
     - contextPath: QRadar.LogSourceGroup.ID
-      description: ''
+      description: 'The ID of the group.'
       type: Number
     - contextPath: QRadar.LogSourceGroup.ModificationDate
-      description: ''
+      description: 'The date and time (expressed as milliseconds since epoch) that the group was last modified.'
       type: Number
     - contextPath: QRadar.LogSourceGroup.Name
-      description: ''
+      description: 'The name of the group.'
       type: String
     - contextPath: QRadar.LogSourceGroup.Owner
-      description: ''
+      description: 'The name of the user who owns the group.'
       type: String
     - contextPath: QRadar.LogSourceGroup.ParentID
-      description: ''
+      description: "The ID of the group's parent group. The root node group has a null parent_ID."
       type: Number
+  - name: qradar-log-source-protocol-types-list
+    arguments:
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol_parameters". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html.'
+      isArray: true
+    - name: id
+      description: 'ID of a specific disconnected log collector'
+    outputs:
+    - contextPath: QRadar.LogSourceProtocolTypes.GatewaySupported
+      description: "If this protocol type can be configured for a gateway log source, the condition is set to 'true'; otherwise, the condition is set to 'false'. A gateway log source is a stand-alone protocol configuration. The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to feed other log sources. It acts as a 'gateway' for events from multiple systems to enter the event pipeline. Not all protocol types can be used as a gateway if they don't support collecting event data from multiple sources."
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolTypes.ID
+      description: 'The ID of tge protocol type'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolTypes.Inbound
+      description: 'Indicates whether this is an inbound protocol'
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolTypes.LatestVersion
+      description: 'The latest version available of the protocol type component'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Name
+      description: 'The unique name of the protocol type'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.ParameterGroups.id
+      description: 'The ID of the protocol parameter group.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolTypes.ParameterGroups.name
+      description: 'The name of the protocol parameter group.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.ParameterGroups.required
+      description: 'If at least one parameter in this group must be set, the condition is set to true; otherwise, the condition is set to false.'
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.allowed_values.name
+      description: ''
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.allowed_values.value
+      description: 'The name of the parameter.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.default_value
+      description: ' The optional default parameter value.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.description
+      description: 'The description of the parameter.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.group_id
+      description: 'he ID of the protocol parameter group that this parameter belongs to. The group_id is optional.' 
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.id
+      description: 'The ID of the parameter.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.label
+      description: 'The label of the parameter'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.max_length
+      description: 'The maximum length of the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD, REGEX. The max_length is optional.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.max_value
+      description: 'he maximum of the parameter value for the following parameter types: INTEGER, REAL, DATE, TIME, DATETIME, INTERVAL. The max_value is optional.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.min_length
+      description: 'The minimum length of the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD, REGEX. The max_length is optional.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.min_value
+      description: 'he minimum of the parameter value for the following parameter types: INTEGER, REAL, DATE, TIME, DATETIME, INTERVAL. The max_value is optional.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.name
+      description: 'The name of the parameter.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.pattern
+      description: 'An optional Java regex pattern restriction on the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.pattern_description
+      description: 'The description of the pattern of the parameter.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.required
+      description: 'If the parameter is mandatory, the condition is set to true; otherwise, the condition is set to false.'
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.rules.affected_property
+      description: 'The affected property. For possibile values visit: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.rules.affected_property_value
+      description: ' The value to be applied to the affected parameter when the rule is triggered. For further info visit: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.rules.parameter_id
+      description: 'The ID of the parameter affected by the rule.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.rules.trigger_parameter_id
+      description: 'The ID of the trigger parameter.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.rules.trigger_pattern
+      description: 'The pattern that triggers the rule. For example, if the value of trigger_parameter_id matches the regular expression of this field, the rule triggers.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.Parameters.type
+      description: 'The type of the parameter. Possible values are: STRING, TEXT, INTEGER, REAL, BOOLEAN, DATE, TIME, DATETIME, INTERVAL, HOST, PASSWORD, REGEX'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolTypes.TestingCapabilities.can_accept_sample_events
+      description: 'Indicates whether the protocol type can accept sample events (only applicable to inbound protocol types).'
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolTypes.TestingCapabilities.can_collect_events
+      description: 'Indicates whether the protocol type can collect test events.'
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolTypes.TestingCapabilities.testable
+      description: 'Indicates whether the protocol type is testable.'
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolTypes.Version
+      description: 'The version of the protocol type component.'
+      type: String
+
   script: '-'
   type: python
   subtype: python3
