@@ -525,8 +525,8 @@ class InfoBloxNIOSClient(BaseClient):
 
             # If the extended attributes return field is not specified
             # add it.
-            if INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY not in request_params.get(self.REQUEST_PARAM_RETURN_FIELDS_KEY):
-                request_params[self.REQUEST_PARAM_RETURN_FIELDS_KEY] += f",{INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}"
+            if INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY not in request_params.get(self.REQUEST_PARAM_RETURN_FIELDS_KEY):  # noqa: E501
+                request_params[self.REQUEST_PARAM_RETURN_FIELDS_KEY] += f",{INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}"  # noqa: E501
             extended_attributes_params = transform_ext_attrs(extended_attributes)
 
             for e in extended_attributes_params:
@@ -565,8 +565,8 @@ class InfoBloxNIOSClient(BaseClient):
         if extended_attributes:
             # If the extended attributes return field is not specified
             # add it.
-            if INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY not in request_params.get(self.REQUEST_PARAM_RETURN_FIELDS_KEY):
-                request_params[self.REQUEST_PARAM_RETURN_FIELDS_KEY] += f",{INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}"
+            if INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY not in request_params.get(self.REQUEST_PARAM_RETURN_FIELDS_KEY):  # noqa: E501
+                request_params[self.REQUEST_PARAM_RETURN_FIELDS_KEY] += f",{INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}"  # noqa: E501
             extended_attributes_params = transform_ext_attrs(extended_attributes)
 
             for e in extended_attributes_params:

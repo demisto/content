@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import cast
 import pytest
-from requests_mock import Adapter
 from Infoblox import (
     INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY,
     INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY,
@@ -473,7 +472,7 @@ class TestIPOperations:
                          / "get_ipv4_address_from_ip_address.json").read_text()
 
         requests_mock.get(
-            f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}",
+            f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}",  # noqa: E501
             json=json.loads(mock_response)
         )
 
@@ -512,7 +511,7 @@ class TestIPOperations:
                          / "get_ipv4_address_from_ip_address.json").read_text()
 
         requests_mock.get(
-            f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}&status={IPv4AddressStatus.USED.value}",
+            f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&ip_address={self.VALID_IP_ADDRESS}&status={IPv4AddressStatus.USED.value}",  # noqa: E501
             json=json.loads(mock_response)
         )
 
@@ -632,7 +631,7 @@ class TestIPOperations:
                          / "get_ipv4_addresses_from_network.json").read_text()
 
         requests_mock.get(
-            f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&network={self.VALID_NETMASK}&status={IPv4AddressStatus.USED.value}",
+            f"{client._base_url}ipv4address?{InfoBloxNIOSClient.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY}=1&network={self.VALID_NETMASK}&status={IPv4AddressStatus.USED.value}",  # noqa: E501
             json=json.loads(mock_response)
         )
 
@@ -848,7 +847,7 @@ class TestHostRecordsOperations:
         """
         Given:
         - Running `get_host_records_command`.
-        
+
         When:
         - No `additional_fields` are provided.
 
@@ -860,7 +859,7 @@ class TestHostRecordsOperations:
                          / self.__class__.__name__ / "get_records_extattrs.json").read_text()
 
         requests_mock.get(
-            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}",
+            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}",  # noqa: E501
             json=json.loads(mock_response)
         )
 
@@ -881,7 +880,7 @@ class TestHostRecordsOperations:
         """
         Given:
         - Running `get_host_records_command`.
-        
+
         When:
         - `additional_fields` is set to `extattrs`.
 
@@ -893,7 +892,7 @@ class TestHostRecordsOperations:
                          / self.__class__.__name__ / "get_records_extattrs.json").read_text()
 
         requests_mock.get(
-            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}&*Site=ciac-5843",
+            client._base_url + self.GET_HOST_RECORDS_ENDPOINT + f"?_return_fields%2B={INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}&*Site=ciac-5843",  # noqa: E501
             json=json.loads(mock_response)
         )
 
@@ -946,7 +945,6 @@ class TestNetworkInfoOperations:
 
         actual_hr, actual_context, actual_raw_response = get_network_info_command(client, {})
 
-        
         assert "Network information found" in actual_hr
         assert self.CONTEXT_KEY in actual_context
         actual_output = cast(list, actual_context.get(self.CONTEXT_KEY))
