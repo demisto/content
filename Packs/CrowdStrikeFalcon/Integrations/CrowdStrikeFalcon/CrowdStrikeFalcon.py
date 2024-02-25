@@ -9,7 +9,7 @@ import json
 from enum import Enum
 from threading import Timer
 from collections.abc import Callable
-from typing import Any, Tuple
+from typing import Any
 import requests
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
@@ -2744,16 +2744,18 @@ def fetch_incidents():
     if "IDP Detection" in fetch_incidents_or_detections:
         idp_detections, current_fetch_info_idp_detections = fetch_idp_and_mobile_detections(current_fetch_info_idp_detections,
                                                                                             look_back=look_back,
-                                                                                            fetch_query=params.get('idp_detections_fetch_query', ""),
+                                                                                            fetch_query=params.get(
+                                                                                                'idp_detections_fetch_query', ""),
                                                                                             detections_type=IDP_DETECTION,
                                                                                             product_type='idp')
-    
+
     if "IDP Detection" in fetch_incidents_or_detections:
         mobile_detections, current_fetch_info_mobile_detections = fetch_idp_and_mobile_detections(current_fetch_info_mobile_detections,
-                                                                                                    look_back=look_back,
-                                                                                                    fetch_query=params.get('mobile_detections_fetch_query', ""),
-                                                                                                    detections_type=MOBILE_DETECTION,
-                                                                                                    product_type='mobile')
+                                                                                                  look_back=look_back,
+                                                                                                  fetch_query=params.get(
+                                                                                                      'mobile_detections_fetch_query', ""),
+                                                                                                  detections_type=MOBILE_DETECTION,
+                                                                                                  product_type='mobile')
 
     if 'Indicator of Misconfiguration' in fetch_incidents_or_detections:
         demisto.debug('Fetching Indicator of Misconfiguration incidents')
@@ -2825,8 +2827,9 @@ def fetch_incidents():
                         iom_last_run, ioa_last_run, current_fetch_info_mobile_detections])
     return incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections
 
-def fetch_idp_and_mobile_detections(current_fetch_info: dict, look_back:int, product_type: str,
-                                    fetch_query:str, detections_type: str) -> Tuple[List, dict]:
+
+def fetch_idp_and_mobile_detections(current_fetch_info: dict, look_back: int, product_type: str,
+                                    fetch_query: str, detections_type: str) -> tuple[List, dict]:
     detections: List = []
     offset: int = current_fetch_info.get('offset') or 0
 
@@ -2860,17 +2863,18 @@ def fetch_idp_and_mobile_detections(current_fetch_info: dict, look_back:int, pro
                                                               fetch_limit=INCIDENTS_PER_FETCH, id_field='name')  # validate that this is indeed the right feild for mobile
 
     current_fetch_info = update_last_run_object(last_run=current_fetch_info,
-                                                                incidents=detections,
-                                                                fetch_limit=fetch_limit,
-                                                                start_fetch_time=start_fetch_time,
-                                                                end_fetch_time=end_fetch_time,
-                                                                look_back=look_back,
-                                                                created_time_field='occurred',
-                                                                id_field='name',
-                                                                date_format=IDP_DATE_FORMAT,
-                                                                new_offset=offset)
+                                                incidents=detections,
+                                                fetch_limit=fetch_limit,
+                                                start_fetch_time=start_fetch_time,
+                                                end_fetch_time=end_fetch_time,
+                                                look_back=look_back,
+                                                created_time_field='occurred',
+                                                id_field='name',
+                                                date_format=IDP_DATE_FORMAT,
+                                                new_offset=offset)
     demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch {detections_type}. Fetched {len(detections)}")
     return detections, current_fetch_info
+
 
 def parse_ioa_iom_incidents(fetched_data: list[dict[str, Any]], last_date: str,
                             last_fetched_ids: list[str], date_key: str, id_key: str,
