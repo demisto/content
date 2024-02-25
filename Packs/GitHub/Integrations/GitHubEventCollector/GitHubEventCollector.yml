@@ -17,7 +17,7 @@ configuration:
   section: Connect
 - display: ""
   displaypassword: API Key
-  name: auth_credentials
+  name: auth_credendtials
   type: 9
   required: true
   hiddenusername: true
