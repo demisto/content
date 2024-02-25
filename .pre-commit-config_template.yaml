@@ -211,8 +211,12 @@ repos:
     require_serial: true
     pass_filenames: false
     args:
-    - --protected-dirs
-    - Packs,Tests,Utils
+    - --protected-dir
+    - Packs
+    - --protected-dir
+    - Tests
+    - --protected-dir
+    - Utils
   - id: coverage-analyze
     name: coverage-analyze
     entry: demisto-sdk coverage-analyze
