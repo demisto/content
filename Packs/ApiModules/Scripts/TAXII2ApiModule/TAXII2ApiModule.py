@@ -198,9 +198,9 @@ def reached_limit(limit: int, element_count: int):
 
 class StixParser(BaseClient):
 
-    def __init__(self, tlp_color, id_to_object,
-                 field_map, skip_complex_mode,
-                 tags, update_custom_fields: bool = False):
+    def __init__(self, id_to_object: dict[str, Any], tlp_color: Optional[str] = None,
+                 field_map: Optional[dict] = None, skip_complex_mode: bool = False,
+                 tags: Optional[list] = None, update_custom_fields: bool = False):
         self.skip_complex_mode = skip_complex_mode
         self.indicator_regexes = [
             re.compile(INDICATOR_EQUALS_VAL_PATTERN),
@@ -1263,6 +1263,14 @@ class Taxii2FeedClient(StixParser):
         :param key: TLS Certificate key
         :param default_api_root: The default API Root to use
         """
+        super().__init__(
+            tlp_color=tlp_color,
+            id_to_object={},
+            field_map=field_map if field_map else {},
+            skip_complex_mode=skip_complex_mode,
+            update_custom_fields=update_custom_fields,
+            tags=tags if tags else [],
+        )
         self._conn = None
         self.server = None
         self.api_root = None
