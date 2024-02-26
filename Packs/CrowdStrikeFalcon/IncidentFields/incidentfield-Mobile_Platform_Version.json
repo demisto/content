@@ -1,10 +1,10 @@
 {
-    "id": "incident_mobileplatformversion",
+    "id": "incident_crowdstrikefalconmobileplatformversion",
     "version": -1,
     "modified": "2024-02-25T15:48:24.075185814Z",
-    "name": "Mobile platform version",
+    "name": "CrowdStrike Falcon Mobile platform version",
     "ownerOnly": false,
-    "cliName": "mobileplatformversion",
+    "cliName": "crowdstrikefalconmobileplatformversion",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

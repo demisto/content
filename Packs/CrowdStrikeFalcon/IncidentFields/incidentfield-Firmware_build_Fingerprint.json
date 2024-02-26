@@ -1,10 +1,10 @@
 {
-    "id": "incident_firmwarebuildfingerprint",
+    "id": "incident_crowdstrikefalconfirmwarebuildfingerprint",
     "version": -1,
     "modified": "2024-02-25T15:46:11.027991681Z",
-    "name": "Firmware Build Fingerprint",
+    "name": "CrowdStrike Falcon Firmware Build Fingerprint",
     "ownerOnly": false,
-    "cliName": "firmwarebuildfingerprint",
+    "cliName": "crowdstrikefalconfirmwarebuildfingerprint",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

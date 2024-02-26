@@ -1,10 +1,10 @@
 {
-    "id": "incident_securitypatchlevel",
+    "id": "incident_crowdstrikefalconsecuritypatchlevel",
     "version": -1,
     "modified": "2024-02-25T15:49:12.710595921Z",
-    "name": "Security patch level",
+    "name": "CrowdStrike Falcon Security patch level",
     "ownerOnly": false,
-    "cliName": "securitypatchlevel",
+    "cliName": "crowdstrikefalconsecuritypatchlevel",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
