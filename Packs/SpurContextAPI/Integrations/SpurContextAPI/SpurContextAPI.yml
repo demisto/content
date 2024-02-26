@@ -23,7 +23,7 @@ script:
     outputs:
     - contextPath: SpurContextAPI.Context.ip
       type: string
-      description: IP that was enriched
+      description: IP that was enriched.
     - contextPath: SpurContextAPI.Context.as
       type: object
       description: Autonomous System details for an IP Address.
@@ -38,10 +38,10 @@ script:
       description: Data-center or IP Hosting location based on MaxMind GeoLite.
     - contextPath: SpurContextAPI.Context.services
       type: array
-      description: The different types of proxy or VPN services that are running on this IP address
+      description: The different types of proxy or VPN services that are running on this IP address.
     - contextPath: SpurContextAPI.Context.tunnels
       type: array
-      description: Different VPN or proxy tunnels that are currently in-use on this IP address
+      description: Different VPN or proxy tunnels that are currently in-use on this IP address.
     - contextPath: SpurContextAPI.Context.risks
       type: array
       description: Risks that we have determined based on our collection of data.
@@ -50,10 +50,10 @@ script:
       description: The strongest location concentration for clients using this IP address.
     - contextPath: SpurContextAPI.Context.client_countries
       type: number
-      description: The number of countries that we have observed clients located in for this IP address
+      description: The number of countries that we have observed clients located in for this IP address.
     - contextPath: SpurContextAPI.Context.client_spread
       type: number
-      description: The total geographic area in kilometers where we have observed users
+      description: The total geographic area in kilometers where we have observed users.
     - contextPath: SpurContextAPI.Context.client_proxies
       type: array
       description: The different types of callback proxies we have observed on clients using this IP address.
@@ -71,6 +71,6 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.13.87159
-fromversion: 5.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
