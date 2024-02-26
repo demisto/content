@@ -26,7 +26,7 @@ Follow the steps below:
    - *`Host Name`* - Enter the IP address or hostname of the target Cortex XSIAM Broker VM syslog server.
    - *`Port`* - enter the port number that the target Broker VM Syslog service is listening on for receiving syslog message from BeyondTrust Password Safe.
 8. Select one of the following output formats: *Comma Delimited* or *Tab Delimited*. Other formats are currently unsupported.
-9. Select an optional syslog **Facility** from the list.
+9. Select an optional syslog *Facility* from the list.
 10. Select **Format Specification**.
 11. Select the events that you want to forward to Cortex XSIAM.
 12. Click **Test Connector** to determine if the event forwarding configuration is successful.
