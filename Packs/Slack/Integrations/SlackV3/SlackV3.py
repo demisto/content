@@ -8,6 +8,8 @@ import threading
 from distutils.util import strtobool
 import aiohttp
 import slack_sdk
+from urllib.parse import urlparse
+
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
 from slack_sdk.socket_mode.request import SocketModeRequest
@@ -94,6 +96,21 @@ EXTENSIVE_LOGGING: bool
 
 ''' HELPER FUNCTIONS '''
 
+
+def get_war_room_url(url: str) -> str:
+    # remove after this bug is resolved:
+    if is_xsiam():
+        incident_id = demisto.callingContext.get('context', {}).get('Inv', {}).get('id')
+        incident_url = urlparse(url)
+        war_room_url = f"{incident_url.scheme}://{incident_url.netloc}/incidents"
+        if incident_id and incident_id.startswith('INCIDENT-'):
+            war_room_url += f"/war_room?caseId={incident_id.split('-')[-1]}"
+        else:
+            war_room_url += f"/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
+
+        return war_room_url
+
+    return url
 
 def get_bot_id() -> str:
     """
@@ -2034,6 +2051,14 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
                 if investigation.get('type') != PLAYGROUND_INVESTIGATION_TYPE:
                     link = server_links.get('warRoom')
                     if link:
+                        if is_xsiam():
+                            incident_id = demisto.callingContext.get('context', {}).get('Inv', {}).get('id')
+                            incident_url = urlparse(link)
+                            link = incident_url.scheme + "://" + incident_url.netloc + "/incidents"
+                            if incident_id and incident_id.startswith('INCIDENT-'):
+                                link += f"/war_room?caseId={incident_id.split('-')[-1]}"
+                            else:
+                                link += f"/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
                         if entry:
                             link += '/' + entry
                         message += f'\nView it on: {link}'
