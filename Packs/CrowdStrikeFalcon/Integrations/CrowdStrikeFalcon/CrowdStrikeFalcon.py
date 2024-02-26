@@ -2315,7 +2315,8 @@ def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, r
             reopen_in_xsoar(entries, remote_detection_id, 'Detection')
 
 
-def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], entries: list, remote_idp_detection_id: str, incident_type_name: str):
+def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], entries: list,
+                                              remote_idp_detection_id: str, incident_type_name: str):
     """
         Send the updated object to the relevant status handler
 
@@ -2769,14 +2770,15 @@ def fetch_incidents():
                                                                                             start_time_key='start_time')
 
     if MOBILE_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
-        mobile_detections, current_fetch_info_mobile_detections = fetch_idp_and_mobile_detections(current_fetch_info_mobile_detections,
-                                                                                                  look_back=look_back,
-                                                                                                  fetch_query=params.get(
-                                                                                                      'mobile_detections_fetch_query', ""),
-                                                                                                  detections_type=MOBILE_DETECTION,
-                                                                                                  product_type='mobile',
-                                                                                                  detection_name_prefix=MOBILE_DETECTION_FETCH_TYPE,
-                                                                                                  start_time_key='timestamp')
+        mobile_detections, current_fetch_info_mobile_detections = fetch_idp_and_mobile_detections(
+            current_fetch_info_mobile_detections,
+            look_back=look_back,
+            fetch_query=params.get(
+                'mobile_detections_fetch_query', ""),
+            detections_type=MOBILE_DETECTION,
+            product_type='mobile',
+            detection_name_prefix=MOBILE_DETECTION_FETCH_TYPE,
+            start_time_key='timestamp')
 
     if 'Indicator of Misconfiguration' in fetch_incidents_or_detections:
         demisto.debug('Fetching Indicator of Misconfiguration incidents')
