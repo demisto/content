@@ -283,7 +283,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 class IncidentType(Enum):
     INCIDENT = 'inc'
     DETECTION = 'ldt'
-    IDP_DETECTION = ':ind:'
+    IDP_OR_MOBILE_DETECTION = ':ind:'
     IOM_CONFIGURATIONS = 'iom_configurations'
     IOA_EVENTS = 'ioa_events'
 
@@ -582,15 +582,17 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         :rtype ``dict``
     """
     add_mirroring_fields(detection)
-    if status := detection.get('status'):
-        detection['status'] = status
 
     incident_context = {
-        'name': f'{detection_type} ID: {detection.get("composite_id")}',
         'occurred': detection.get(start_time_key),
-        'last_updated': detection.get('updated_timestamp'),
         'rawJSON': json.dumps(detection)
     }
+    if detection_type == IDP_DETECTION_FETCH_TYPE:
+        incident_context['name'] = f'{detection_type} ID: {detection.get("composite_id")}'
+        incident_context['last_updated'] = detection.get('updated_timestamp')
+    elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
+        incident_context['name'] = f'{detection_type} ID: {detection.get("mobile_detection_id")}'
+        incident_context['severity'] = detection.get('severity')
     return incident_context
 
 
@@ -2200,10 +2202,10 @@ def get_remote_data_command(args: dict[str, Any]):
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
 
-        elif incident_type == IncidentType.IDP_DETECTION:
-            mirrored_data, updated_object = get_remote_idp_detection_data(remote_incident_id)
+        elif incident_type == IncidentType.IDP_OR_MOBILE_DETECTION:
+            mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(remote_incident_id)
             if updated_object:
-                demisto.debug(f'Update IDP detection {remote_incident_id} with fields: {updated_object}')
+                demisto.debug(f'Update {detection_type} detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_idp_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
 
         else:
@@ -2230,8 +2232,8 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.INCIDENT
     if remote_incident_id[0:3] == IncidentType.DETECTION.value:
         return IncidentType.DETECTION
-    if IncidentType.IDP_DETECTION.value in remote_incident_id:
-        return IncidentType.IDP_DETECTION
+    if IncidentType.IDP_OR_MOBILE_DETECTION.value in remote_incident_id:
+        return IncidentType.IDP_OR_MOBILE_DETECTION
     return None
 
 
@@ -2268,27 +2270,33 @@ def get_remote_detection_data(remote_incident_id: str):
     return mirrored_data, updated_object
 
 
-def get_remote_idp_detection_data(remote_incident_id):
+def get_remote_idp_or_mobile_detection_data(remote_incident_id):
     """
-        Gets the relevant IDP detection entity from the remote system (CrowdStrike Falcon).
+        Gets the relevant IDP or Mobile detection entity from the remote system (CrowdStrike Falcon).
 
         :type remote_incident_id: ``str``
         :param remote_incident_id: The incident id to return its information.
 
-        :return: The IDP detection entity.
+        :return: The IDP or Mobile detection entity.
         :rtype ``dict``
         :return: The object with the updated fields.
         :rtype ``dict``
+        :return: The detection type (idp or mobile).
+        :rtype ``str``
     """
     mirrored_data_list = get_detection_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
-
+    detection_type = ''
     if 'status' in mirrored_data:
         mirrored_data['status'] = mirrored_data.get('status')
-
-    updated_object: dict[str, Any] = {'incident_type': IDP_DETECTION}
+    if 'idp' in mirrored_data['product']:
+        updated_object: dict[str, Any] = {'incident_type': IDP_DETECTION}
+        detection_type = 'IDP'
+    if 'mobile' in mirrored_data['product']:
+        updated_object: dict[str, Any] = {'incident_type': MOBILE_DETECTION}
+        detection_type = 'Mobile'
     set_updated_object(updated_object, mirrored_data, ['status'])
-    return mirrored_data, updated_object
+    return mirrored_data, updated_object, detection_type
 
 
 def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, remote_incident_id: str):
@@ -2413,6 +2421,12 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'idp'"
         ).get('resources', [])
+        
+
+    if MOBILE_DETECTION_FETCH_TYPE in fetch_types:
+        raw_ids += get_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'mobile'"
+        ).get('resources', [])
 
     modified_ids_to_mirror = list(map(str, raw_ids))
     demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
@@ -2449,7 +2463,7 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
 
-            elif incident_type == IncidentType.IDP_DETECTION:
+            elif incident_type == IncidentType.IDP_OR_MOBILE_DETECTION:
                 result = update_remote_idp_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'IDP Detection updated successfully. Result: {result}')
