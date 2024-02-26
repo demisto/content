@@ -655,7 +655,6 @@ class MicrosoftClient(BaseClient):
                  command_prefix: str | None = "command_prefix",
                  *args, **kwargs):
         """
-        test
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
         It also provides common logic to handle responses from Microsoft.
         Args:
