@@ -3984,7 +3984,7 @@ script:
         - check-for-software-updates
         - update-suspicious-objects-list
       auto: PREDEFINED
-    - description: The computer ID to create the task on.
+    - description: The computer ID to create the task on. Can be retrieved from the trendmicro-list-computers command.
       name: computer_id
       required: true
     description: Creates a once-only scheduled task with a specific computer ID and runs it.

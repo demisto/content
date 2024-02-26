@@ -24125,7 +24125,7 @@ Creates a once-only scheduled task with a specific computer ID and runs it.
 | --- | --- | --- |
 | name | The name of the scheduled task. | Required | 
 | type | The type of the scheduled task. Possible values are: scan-for-open-ports, send-alert-summary, discover-computers, run-script, send-policy, generate-report, synchronize-directory, synchronize-users, scan-for-recommendations, synchronize-vcenter, scan-for-integrity-changes, scan-for-malware, check-for-security-updates, synchronize-cloud-account, check-for-software-updates, update-suspicious-objects-list. | Required | 
-| computer_id | The computer ID to create the task on. | Required | 
+| computer_id | The computer ID to create the task on. Can be retrieved from the trendmicro-list-computers command. | Required | 
 
 #### Context Output
 
