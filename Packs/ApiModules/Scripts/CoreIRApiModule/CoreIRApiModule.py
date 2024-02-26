@@ -13,7 +13,7 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Other': 'resolved_other',
-    'Duplicate': 'resolved_duplicate',
+    'Duplicate': 'resolved_duplicate_incident',
     'False Positive': 'resolved_false_positive',
     'Resolved': 'resolved_true_positive',
     'Resolved - Security Testing': 'resolved_security_testing',
@@ -21,7 +21,7 @@ XSOAR_RESOLVED_STATUS_TO_XDR = {
 
 XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_known_issue': 'Other',
-    'resolved_duplicate': 'Duplicate',
+    'resolved_duplicate_incident': 'Duplicate',
     'resolved_false_positive': 'False Positive',
     'resolved_true_positive': 'Resolved',
     'resolved_security_testing': 'Resolved - Security Testing',
@@ -346,7 +346,7 @@ class CoreClient(BaseClient):
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
-    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:      # pragma: no cover
+    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:  # pragma: no cover
         """
         This func is used to set the alias name of an endpoint.
 
@@ -935,7 +935,7 @@ class CoreClient(BaseClient):
                                                product_id: list,
                                                serial: list,
                                                hostname: list, violation_ids: list, username: list) \
-            -> Dict[str, Any]:
+        -> Dict[str, Any]:
         arg_list = {'type': type_of_violation,
                     'endpoint_id_list': endpoint_ids,
                     'ip_list': ip_list,
@@ -1444,6 +1444,28 @@ class AlertFilterArg:
         self.option_mapper = option_mapper
 
 
+def comma_separated_mapping_to_dict(raw_text: str) -> dict:
+    """
+    :param raw_text: Comma-separated mapping e.g ('key1=value1', 'key2=value2', ...)
+    :return: Validated dictionary of the raw mapping e.g {'key1': 'value1', 'key2': 'value2', ...}
+    """
+    demisto.debug(f">> Resolving comma-separated input mapping: {raw_text}")
+
+    mapping_dict = {}
+    key_value_pairs = raw_text.split(",")
+    for pair in key_value_pairs:
+        # Trimming trailing whitespace
+        pair = pair.strip()
+        key, value = pair.split("=")
+        if key in mapping_dict:
+            demisto.debug(
+                f"Warning: duplicate key provided for {key}: using latter value: {value}"
+            )
+        mapping_dict[key] = value
+    demisto.debug(f"<< Resolved mapping: {mapping_dict}")
+    return mapping_dict
+
+
 def catch_and_exit_gracefully(e):
     """
 
@@ -1710,11 +1732,11 @@ def validate_args_scan_commands(args):
               'To scan/abort scan some of the endpoints, please use the filter arguments.'
     if all_:
         if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
-                or ip_list or group_name or platform or alias or hostname:
+            or ip_list or group_name or platform or alias or hostname:
             raise Exception(err_msg)
     elif not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
-            and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
-            and not alias and not hostname:
+        and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+        and not alias and not hostname:
         raise Exception(err_msg)
 
 
@@ -2849,8 +2871,8 @@ def handle_outgoing_incident_owner_sync(update_args):
 
 def handle_user_unassignment(update_args):
     if ('assigned_user_mail' in update_args and update_args.get('assigned_user_mail') in ['None', 'null', '', None]) \
-            or ('assigned_user_pretty_name' in update_args
-                and update_args.get('assigned_user_pretty_name') in ['None', 'null', '', None]):
+        or ('assigned_user_pretty_name' in update_args
+            and update_args.get('assigned_user_pretty_name') in ['None', 'null', '', None]):
         update_args['unassign_user'] = 'true'
         update_args['assigned_user_mail'] = None
         update_args['assigned_user_pretty_name'] = None
@@ -2866,13 +2888,25 @@ def handle_outgoing_issue_closure(remote_args):
     # force closing remote incident only if:
     #   The XSOAR incident is closed
     #   and the remote incident isn't already closed
-    if remote_args.inc_status == 2 and \
-       current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR and close_reason:
-
+    if remote_args.inc_status == 2 and current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR and close_reason:
         if close_notes := update_args.get('closeNotes'):
             demisto.debug(f"handle_outgoing_issue_closure {incident_id=} {close_notes=}")
             update_args['resolve_comment'] = close_notes
-        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(close_reason, 'Other')
+
+        xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(close_reason, 'Other')
+
+        # Reading custom XSOAR->XDR close-reason mapping.
+        custom_xsoar_to_xdr_close_reason_mapping = comma_separated_mapping_to_dict(
+            demisto.params().get("custom_xsoar_to_xdr_close_reason_mapping")
+        )
+        # Overriding default close-reason mapping if there exists a custom one.
+        if close_reason in custom_xsoar_to_xdr_close_reason_mapping:
+            xdr_close_reason = custom_xsoar_to_xdr_close_reason_mapping[close_reason]
+            # Transforming resolved close-reason into snake_case format with known prefix to match XDR status format.
+            demisto.debug(f"XSOAR->XDR custom close-reason exists, using {close_reason}={xdr_close_reason}")
+            xdr_close_reason = "resolved_" + "_".join(xdr_close_reason.lower().split(" "))
+
+        update_args['status'] = xdr_close_reason
         demisto.debug(f"handle_outgoing_issue_closure Closing Remote incident {incident_id=} with status {update_args['status']}")
 
 
@@ -3148,7 +3182,6 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
     requires_polling_arg=False  # means it will always be default to poll, poll=true
 )
 def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
-
     if action_id := args.get('action_id'):
         response = client.get_script_execution_status(action_id)
         general_status = response.get('reply', {}).get('general_status') or ''
@@ -3740,7 +3773,6 @@ def create_request_filters(
 
 
 def args_to_request_filters(args):
-
     if set(args.keys()) & {  # check if any filter argument was provided
         'endpoint_id_list', 'dist_name', 'ip_list', 'group_name', 'platform', 'alias_name',
         'isolate', 'hostname', 'status', 'first_seen_gte', 'first_seen_lte', 'last_seen_gte', 'last_seen_lte'
@@ -3814,7 +3846,6 @@ def parse_risky_users_or_hosts(user_or_host_data: dict[str, Any],
                                score_header: str,
                                description_header: str
                                ) -> dict[str, Any]:
-
     reasons = user_or_host_data.get('reasons', [])
     return {
         id_header: user_or_host_data.get('id'),
@@ -4046,13 +4077,14 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         ValueError: If the API connection fails.
 
     """
+
     def _warn_if_module_is_disabled(e: DemistoException) -> None:
         if (
-                e is not None
-                and e.res is not None
-                and e.res.status_code == 500
-                and 'No identity threat' in str(e)
-                and "An error occurred while processing XDR public API" in e.message
+            e is not None
+            and e.res is not None
+            and e.res.status_code == 500
+            and 'No identity threat' in str(e)
+            and "An error occurred while processing XDR public API" in e.message
         ):
             return_warning(f'Please confirm the XDR Identity Threat Module is enabled.\nFull error message: {e}', exit=True)
 

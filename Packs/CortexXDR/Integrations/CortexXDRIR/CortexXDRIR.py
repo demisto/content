@@ -642,45 +642,20 @@ def resolve_xsoar_close_reason(xdr_close_reason):
         # e.g. 'resolved_false_positive', whilst custom XDR->XSOAR close-reason mapping
         # is using natural text format e.g. 'False Positive', therefore we need to adapt it accordingly.
         xdr_close_reason = (
-            xdr_close_reason.remove("resolved_").replace("_", " ").title()
+            xdr_close_reason.replace("resolved_", "").replace("_", " ").title()
         )
         xsoar_close_reason = custom_xdr_to_xsoar_close_reason_mapping[xdr_close_reason]
         demisto.debug(
-            # TODO - Remove ççç
-            f"ççç XDR->XSOAR custom close-reason exists, using {xdr_close_reason}={xsoar_close_reason}"
+            f"XDR->XSOAR custom close-reason exists, using {xdr_close_reason}={xsoar_close_reason}"
         )
 
     # Otherwise, we use default mapping.
     else:
         xsoar_close_reason = XDR_RESOLVED_STATUS_TO_XSOAR.get(xdr_close_reason)
         demisto.debug(
-            # TODO - Remove ççç
-            f"ççç XDR->XSOAR custom close-reason does not exists,"
-            f" using default mapping {xdr_close_reason}={xsoar_close_reason}"
+            f"XDR->XSOAR custom close-reason does not exists, using default mapping {xdr_close_reason}={xsoar_close_reason}"
         )
     return xsoar_close_reason
-
-
-def comma_separated_mapping_to_dict(raw_text: str) -> dict:
-    """
-    :param raw_text: Comma-separated mapping e.g ('key1=value1', 'key2=value2', ...)
-    :return: Validated dictionary of the raw mapping e.g {'key1': 'value1', 'key2': 'value2', ...}
-    """
-
-    mapping_dict = {}
-    key_value_pairs = raw_text.split(",")
-    for pair in key_value_pairs:
-        # Trimming trailing whitespace
-        pair = pair.strip()
-        key, value = pair.split("=")
-        if key in mapping_dict:
-            demisto.debug(
-                f"Warning: duplicate key provided for {key}: using latter value: {value}"
-            )
-        mapping_dict[key] = value
-
-    demisto.debug(f"Resolved mapping: {mapping_dict}")
-    return mapping_dict
 
 
 def handle_incoming_closing_incident(incident_data):
@@ -720,6 +695,7 @@ def handle_incoming_closing_incident(incident_data):
 
     # TODO - What happens if XDR close-reason is not identified?
     return closing_entry
+
 
 def get_mapping_fields_command():
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=XDR_INCIDENT_TYPE_NAME)
