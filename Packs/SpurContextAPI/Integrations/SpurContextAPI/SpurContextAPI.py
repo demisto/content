@@ -5,6 +5,7 @@ from CommonServerUserPython import *   # noqa: F401 # pylint: disable=unused-wil
 import ipaddress
 import urllib3
 import urllib.parse
+import traceback
 from typing import Any
 
 # Disable insecure warnings
@@ -56,8 +57,8 @@ class Client(BaseClient):
 
 def fix_nested_client(data):
     new_dict = data.copy()
-    del new_dict["client"]
     if "client" in data:
+        del new_dict["client"]
         client = data["client"]
         new_dict["client_behaviors"] = client.get("behaviors", [])
         new_dict["client_countries"] = client.get("countries", 0)
@@ -152,8 +153,9 @@ def main() -> None:
             return_results(enrich_command(client, demisto.args()))
 
     # Log exceptions and return errors
-    except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+    except Exception:
+        stacktrace = traceback.format_exc()
+        return_error(f'Error: {stacktrace}')
 
 
 ''' ENTRY POINT '''
