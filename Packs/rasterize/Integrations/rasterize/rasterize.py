@@ -474,13 +474,9 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         return tab_event_handler
 
     except pychrome.exceptions.TimeoutException as ex:
-        message = f'Navigation timeout: {ex} thrown while trying to navigate to {path}'
-        demisto.error(message)
-        return_error(message)
+        return_error(f'Navigation timeout: {ex} thrown while trying to navigate to {path}')
     except pychrome.exceptions.PyChromeException as ex:
-        message = f'Exception: {ex} thrown while trying to navigate to {path}'
-        demisto.error(message)
-        return_error(message)
+        return_error(f'Exception: {ex} thrown while trying to navigate to {path}')
 
 
 def backoff(polled_item, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_POLLING_INTERVAL):
@@ -625,10 +621,7 @@ def rasterize_thread(browser, chrome_port, path: str,
             return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                     full_screen=full_screen, include_url=include_url, include_source=True)
         else:
-            message = f'Unsupported rasterization type: {rasterize_type}.'
-            demisto.error(message)
-            return_error(message)
-            return None
+            raise DemistoException(f'Unsupported rasterization type: {rasterize_type}.')
 
 
 def perform_rasterize(path: str,
