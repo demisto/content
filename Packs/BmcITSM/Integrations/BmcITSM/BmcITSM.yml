@@ -1942,16 +1942,16 @@ script:
       defaultValue: ""
     outputs:
     - type: String
-      contextPath: BmcITSM.SupportGroup.Support Group ID
+      contextPath: BmcITSM.SupportGroup.SupportGroupID
       description: The support group ID.
     - type: String
       contextPath: BmcITSM.SupportGroup.Company
       description: The support company.
     - type: String
-      contextPath: BmcITSM.SupportGroup.Support Organization
+      contextPath: BmcITSM.SupportGroup.SupportOrganization
       description: The support organization.
     - type: String
-      contextPath: BmcITSM.SupportGroup.Support Group
+      contextPath: BmcITSM.SupportGroup.SupportGroupName
       description: The support group.
   - name: bmc-itsm-work-order-template-list
     description: Lists all work order templates. Useful for creating work orders. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON, you can use the raw_response=true at the end of the command.

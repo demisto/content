@@ -2695,10 +2695,10 @@ def support_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
     context_output_mapper = {
-        "Support Group ID": "Support Group ID",
+        "Support Group ID": "SupportGroupID",
         "Company": "Company",
-        "Support Organization": "Support Organization",
-        "Support Group Name": "Support Group Name"
+        "Support Organization": "SupportOrganization",
+        "Support Group Name": "SupportGroupName"
     }
 
     command_results = list_command(
@@ -2708,8 +2708,8 @@ def support_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         context_output_mapper,
         header_prefix="List support groups.",
         outputs_prefix="BmcITSM.SupportGroup",
-        outputs_key_field="Support Group ID",
-        record_id_key="Support Group ID",
+        outputs_key_field="SupportGroupID",
+        record_id_key="SupportGroupID",
     )
     return command_results
 

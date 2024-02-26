@@ -1300,10 +1300,10 @@ Lists all support groups. Useful for getting possible (Company, Support Organiza
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BmcITSM.SupportGroup.Support Group ID | String | The support group ID. | 
+| BmcITSM.SupportGroup.SupportGroupID | String | The support group ID. | 
 | BmcITSM.SupportGroup.Company | String | The support company. | 
-| BmcITSM.SupportGroup.Support Organization | String | The support organization. | 
-| BmcITSM.SupportGroup.Support Group | String | The support group. | 
+| BmcITSM.SupportGroup.SupportOrganization | String | The support organization. | 
+| BmcITSM.SupportGroup.SupportGroupName | String | The support group. | 
 
 #### Command example
 ```!bmc-itsm-support-group-list limit=2```
@@ -1314,15 +1314,15 @@ Lists all support groups. Useful for getting possible (Company, Support Organiza
         "SupportGroup": [
             {
                 "Company": "Apex Global",
-                "Support Group ID": "APX990000000029",
-                "Support Group Name": "Apex Global - Facilities",
-                "Support Organization": "Facilities Support"
+                "SupportGroupID": "APX990000000029",
+                "SupportGroupName": "Apex Global - Facilities",
+                "SupportOrganization": "Facilities Support"
             },
             {
                 "Company": "Calbro Services",
-                "Support Group ID": "SGP000000000110",
-                "Support Group Name": "Application Development / Deployment",
-                "Support Organization": "Application Support"
+                "SupportGroupID": "SGP000000000110",
+                "SupportGroupName": "Application Development / Deployment",
+                "SupportOrganization": "Application Support"
             }
         ]
     }
