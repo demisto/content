@@ -44,7 +44,7 @@ args:
 - name: username
   description: When specified, the provided user will be assigned as the incident owner (optional).
 - name: email
-  description: When specified, the user of provided email will be assigned as the incident owner (optional)
+  description: When specified, the user of provided email will be assigned as the incident owner (optional).
 - name: onCall
   auto: PREDEFINED
   predefined:
