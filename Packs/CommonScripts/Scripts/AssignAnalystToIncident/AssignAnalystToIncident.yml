@@ -14,7 +14,7 @@ comment: |-
   top-user: The user that is most commonly owns this type of incident
   less-busy-user: The less busy analyst will be picked to be the incident owner.
   online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
-  current: The user that executed the command
+  current: The user that executed the command.
 comment:marketplacev2: |-
   Assign analyst to incident.
   Note: the script should be executed from within an alert.
@@ -24,7 +24,7 @@ comment:marketplacev2: |-
   top-user: The user that is most commonly owns this type of incident
   less-busy-user: The less busy analyst will be picked to be the incident owner.
   online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
-  current: The user that executed the command
+  current: The user that executed the command.
 
 enabled: true
 args:
