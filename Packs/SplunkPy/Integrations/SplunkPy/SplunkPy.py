@@ -2435,8 +2435,7 @@ def splunk_submit_event_hec_command(params: dict, args: dict):
     else:
         response_dict = json.loads(response_info.text)
         if response_dict and 'ackId' in response_dict:
-            return_results(CommandResults(readable_output=f"The event was sent successfully to Splunk. AckID: {response_dict['ackId']}",
-                                          raw_response=response_dict))
+            return_results(f"The event was sent successfully to Splunk. AckID: {response_dict['ackId']}")
         else:
             return_results('The event was sent successfully to Splunk.')
 
