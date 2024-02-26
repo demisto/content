@@ -21,6 +21,8 @@ urllib3.disable_warnings()
 INTEGRATION_NAME = 'CrowdStrike Falcon'
 IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
+IDP_DETECTION_FETCH_TYPE = "IDP Detection"
+MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
 PARAMS = demisto.params()
 CLIENT_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('client_id')
 SECRET = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret')
@@ -41,7 +43,7 @@ HEADERS = {
 TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(PARAMS.get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-DETECTION_DATE_FORMAT = IDP_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEFAULT_TIMEOUT = 30
 # Remove proxy if not set to true in params
 handle_proxy()
@@ -569,25 +571,25 @@ def incident_to_incident_context(incident):
     return incident_context
 
 
-def idp_detection_to_incident_context(idp_detection):
+def detection_to_incident_context(detection, detection_type, start_time_key: str = 'start_time'):
     """
-            Creates an incident context of an IDP detection.
+        Creates an incident context of an IDP/Mobile detection.
 
-            :type idp_detection: ``dict``
-            :param idp_detection: Single IDP detection object
+        :type detection: ``dict``
+        :param detection: Single detection object.
 
-            :return: Incident context representation of an IDP detection.
-            :rtype ``dict``
-        """
-    add_mirroring_fields(idp_detection)
-    if status := idp_detection.get('status'):
-        idp_detection['status'] = status
+        :return: Incident context representation of an IDP/Mobile detection.
+        :rtype ``dict``
+    """
+    add_mirroring_fields(detection)
+    if status := detection.get('status'):
+        detection['status'] = status
 
     incident_context = {
-        'name': f'IDP Detection ID: {idp_detection.get("composite_id")}',
-        'occurred': idp_detection.get('start_time'),
-        'last_updated': idp_detection.get('updated_timestamp'),
-        'rawJSON': json.dumps(idp_detection)
+        'name': f'{detection_type} ID: {detection.get("composite_id")}',
+        'occurred': detection.get(start_time_key),
+        'last_updated': detection.get('updated_timestamp'),
+        'rawJSON': json.dumps(detection)
     }
     return incident_context
 
@@ -1399,7 +1401,7 @@ def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int 
     return response
 
 
-def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FETCH):
+def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FETCH, product_type='idp'):
     """
         Send a request to retrieve IDP detections IDs.
 
@@ -1422,7 +1424,7 @@ def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FET
         params['limit'] = limit
     endpoint_url = "/alerts/queries/alerts/v1"
     response = http_request('GET', endpoint_url, params)
-    demisto.debug(f"CrowdStrikeFalconMsg: Getting idp detections from {endpoint_url} with {params=}. {response=}")
+    demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}")
 
     return response
 
@@ -1439,7 +1441,7 @@ def get_incidents_entities(incidents_ids: list):
 
 def get_detection_entities(incidents_ids: list):
     """
-        Send a request to retrieve IDP detection entities.
+        Send a request to retrieve IDP and mobile detection entities.
 
         :type incidents_ids: ``list``
         :param incidents_ids: The list of ids to search their entities.
@@ -2405,9 +2407,9 @@ def get_modified_remote_data_command(args: dict[str, Any]):
     if 'Detections' in fetch_types or "Endpoint Detection" in fetch_types:
         raw_ids += get_fetch_detections(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
 
-    if "IDP Detection" in fetch_types:
+    if IDP_DETECTION_FETCH_TYPE in fetch_types:
         raw_ids += get_detections_ids(
-            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(IDP_DATE_FORMAT)}'+product:'idp'"
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'idp'"
         ).get('resources', [])
 
     modified_ids_to_mirror = list(map(str, raw_ids))
@@ -2741,21 +2743,25 @@ def fetch_incidents():
                                                               new_offset=incidents_offset)
         demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch Incidents. Fetched {len(incidents)}")
 
-    if "IDP Detection" in fetch_incidents_or_detections:
+    if IDP_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
         idp_detections, current_fetch_info_idp_detections = fetch_idp_and_mobile_detections(current_fetch_info_idp_detections,
                                                                                             look_back=look_back,
                                                                                             fetch_query=params.get(
                                                                                                 'idp_detections_fetch_query', ""),
                                                                                             detections_type=IDP_DETECTION,
-                                                                                            product_type='idp')
+                                                                                            product_type='idp',
+                                                                                            detection_name_prefix=IDP_DETECTION_FETCH_TYPE,
+                                                                                            start_time_key='start_time')
 
-    if "IDP Detection" in fetch_incidents_or_detections:
+    if MOBILE_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
         mobile_detections, current_fetch_info_mobile_detections = fetch_idp_and_mobile_detections(current_fetch_info_mobile_detections,
                                                                                                   look_back=look_back,
                                                                                                   fetch_query=params.get(
                                                                                                       'mobile_detections_fetch_query', ""),
                                                                                                   detections_type=MOBILE_DETECTION,
-                                                                                                  product_type='mobile')
+                                                                                                  product_type='mobile',
+                                                                                                  detection_name_prefix=MOBILE_DETECTION_FETCH_TYPE,
+                                                                                                  start_time_key='timestamp')
 
     if 'Indicator of Misconfiguration' in fetch_incidents_or_detections:
         demisto.debug('Fetching Indicator of Misconfiguration incidents')
@@ -2829,20 +2835,35 @@ def fetch_incidents():
 
 
 def fetch_idp_and_mobile_detections(current_fetch_info: dict, look_back: int, product_type: str,
-                                    fetch_query: str, detections_type: str) -> tuple[List, dict]:
+                                    fetch_query: str, detections_type: str, detection_name_prefix: str,
+                                    start_time_key: str) -> tuple[List, dict]:
+    """The fetch logic for idp and mobile detections.
+
+    Args:
+        current_fetch_info (dict): The last run object.
+        look_back (int): The number of minutes to lookback.
+        product_type (str): The product_type, used for debug & query.
+        fetch_query (str): The user's query param.
+        detections_type (str): The detection type, used for debugging and context save.
+        detection_name_prefix (str): The name prefix for the fetched incidents.
+        start_time_key (str): The key to save as the incident occurred time.
+
+    Returns:
+        tuple[List, dict]: The list of the fetched incidents and the updated last object.
+    """
     detections: List = []
     offset: int = current_fetch_info.get('offset') or 0
 
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info,
                                                                 first_fetch=FETCH_TIME,
                                                                 look_back=look_back,
-                                                                date_format=IDP_DATE_FORMAT)
+                                                                date_format=DETECTION_DATE_FORMAT)
     fetch_limit = current_fetch_info.get('limit') or INCIDENTS_PER_FETCH
     filter = f"product:'{product_type}'+created_timestamp:>'{start_fetch_time}'"
 
     if fetch_query:
         filter += f"+{fetch_query}"
-    response = get_detections_ids(filter_arg=filter, limit=fetch_limit, offset=offset)
+    response = get_detections_ids(filter_arg=filter, limit=fetch_limit, offset=offset, product_type=product_type)
     detections_ids: list[dict] = demisto.get(response, "resources", [])
     total_detections = demisto.get(response, "meta.pagination.total")
     offset = calculate_new_offset(offset, len(detections_ids), total_detections)
@@ -2855,12 +2876,12 @@ def fetch_idp_and_mobile_detections(current_fetch_info: dict, look_back: int, pr
             full_detections = demisto.get(raw_res, "resources")
             for detection in full_detections:
                 detection['incident_type'] = detections_type
-                detection_to_context = idp_detection_to_incident_context(detection)
+                detection_to_context = detection_to_incident_context(detection, detection_name_prefix, start_time_key)
                 detections.append(detection_to_context)
 
         detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections,
                                                               last_run=current_fetch_info,
-                                                              fetch_limit=INCIDENTS_PER_FETCH, id_field='name')  # validate that this is indeed the right feild for mobile
+                                                              fetch_limit=INCIDENTS_PER_FETCH, id_field='name')
 
     current_fetch_info = update_last_run_object(last_run=current_fetch_info,
                                                 incidents=detections,
@@ -2870,7 +2891,7 @@ def fetch_idp_and_mobile_detections(current_fetch_info: dict, look_back: int, pr
                                                 look_back=look_back,
                                                 created_time_field='occurred',
                                                 id_field='name',
-                                                date_format=IDP_DATE_FORMAT,
+                                                date_format=DETECTION_DATE_FORMAT,
                                                 new_offset=offset)
     demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch {detections_type}. Fetched {len(detections)}")
     return detections, current_fetch_info
