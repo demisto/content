@@ -2243,7 +2243,7 @@ def main():
         return_error("Insert api token or private key")
 
     HEADERS = {
-        'Authorization': "Bearer " + TOKEN,
+        'Authorization': "Bearer " + TOKEN
     }
 
     handle_proxy()
