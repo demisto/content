@@ -192,13 +192,19 @@ script:
       auto: PREDEFINED
     - description: The query to filter the device.
       name: filter
-    - description: A comma-separated list of device IDs to limit the results.
+    - description: The maximum records to return [1-5000].
+      name: limit
+      defaultValue: 50
+    - description: The offset to start retrieving records from.
+      name: offset
+      defaultValue: 0
+    - description: 'A comma-separated list of device IDs to limit the results.'
       name: ids
     - description: 'The status of the device. Possible values are: "Normal", "containment_pending", "contained", and "lift_containment_pending".'
       name: status
       auto: PREDEFINED
       predefined:
-      - normal
+      - 'normal'
       - containment_pending
       - contained
       - lift_containment_pending
@@ -207,9 +213,9 @@ script:
       auto: PREDEFINED
       predefined:
       - ''
-    - auto: PREDEFINED
-      description: 'The platform name of the device. Possible values are: Windows, Mac, and Linux.'
+    - description: 'The platform name of the device. Possible values are: Windows, Mac, and Linux.'
       name: platform_name
+      auto: PREDEFINED
       predefined:
       - 'Windows'
       - Mac
