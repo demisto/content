@@ -1,5 +1,5 @@
 Amazon Web Services CloudTrail.
-This integration was integrated and tested with version xx of AWS - CloudTrail.
+This integration was integrated and tested with version 1.0.11 of AWS - CloudTrail.
 
 ## Configure AWS - CloudTrail on Cortex XSOAR
 
