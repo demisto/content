@@ -290,6 +290,7 @@ def main() -> None:  # pragma: no cover
                 demisto.info('Fetching events from integration context')
             try:
                 demisto.info(f'Sending the following amount of events into XSIAM: {len(events)}')
+                demisto.setLastRun({'nextTrigger': '0'})
                 send_events_to_xsiam(
                     events=events,
                     vendor=VENDOR,
