@@ -24,7 +24,7 @@ Follow the steps below:
 7. Provide the required details of the target Cortex XSIAM Broker VM syslog server:
    - *`Available Output Pipelines`* - Select the requested transmission protocol for forwarding the syslog messages: *TCP*, *TCP-SSL*, or *UDP*.
    - *`Host Name`* - Enter the IP address or hostname of the target Cortex XSIAM Broker VM syslog server.
-   - *`Port`* - enter the port number that the target Broker VM Syslog service is listening on for receiving syslog message from BeyondTrust Password Safe.
+   - *`Port`* - enter the port number that the target Broker VM Syslog service is listening on for receiving syslog messages from BeyondTrust Password Safe.
 8. Select one of the following output formats: *Comma Delimited* or *Tab Delimited*. Other formats are currently unsupported.
 9. Select an optional syslog *Facility* from the list.
 10. Select **Format Specification**.
@@ -32,7 +32,7 @@ Follow the steps below:
 12. Click **Test Connector** to determine if the event forwarding configuration is successful.
 13. Click **Create Connector**.
 
-See BeyondTrust Password Safe [Enable Syslog Event Forwarding](https://www.beyondtrust.com/docs/beyondinsight-password-safe/bi/integrations/third-party/snmp-trap-and-syslog.htm#:~:text=Enable%20Syslog%20Event%20Forwarding) guide for additional details. Remark: The timestamp extracted from the BeyondTrust Password Safe events are interpreted in UTC timezone. 
+See BeyondTrust Password Safe [Enable Syslog Event Forwarding](https://www.beyondtrust.com/docs/beyondinsight-password-safe/bi/integrations/third-party/snmp-trap-and-syslog.htm#:~:text=Enable%20Syslog%20Event%20Forwarding) guide for additional details. Remark: The timestamps extracted from the BeyondTrust Password Safe events are interpreted in UTC timezone. 
 
 ### Configuration on Cortex XSIAM
 
