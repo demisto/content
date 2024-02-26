@@ -1,6 +1,6 @@
 {
-    "name": "SafeBreach - Breach and Attack Simulation platform (Deprecated)",
-    "description": "Deprecated. No available replacement.",
+    "name": "SafeBreach - Breach and Attack Simulation platform",
+    "description": "Breach and Attack Simulation platform",
     "support": "partner",
     "hidden": true,
     "videos": [

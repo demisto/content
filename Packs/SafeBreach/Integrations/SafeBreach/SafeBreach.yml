@@ -372,7 +372,7 @@ script:
       type: String
   - deprecated: false
     description: This command deletes connector-related errors and warnings for the specified connector_id (retrieved using the get-all-integration-issues command).
-    name: safebreach-delete-integration-issues
+    name: safebreach-clear-integration-issues
     arguments:
     - name: integration_id
       isArray: false
@@ -1617,6 +1617,12 @@ script:
       required: true
       secret: false
       default: false
+    - name: test_name
+      isArray: false
+      description: test name for the given test.
+      required: true
+      secret: false
+      default: false
     outputs:
     - contextPath: changed_data.id
       description: the Id of simulation.
@@ -2037,6 +2043,6 @@ script:
   runonce: false
   longRunning: false
   longRunningPort: false
-fromversion: 6.11.0
-tests:
+fromversion: 6.6.0
+ests:
 - No tests

@@ -1,19 +1,3 @@
-# from CommonServerPython import (
-#     BaseClient,
-#     CommandResults,
-#     ConfKey,
-#     InputArgument,
-#     OutputArgument,
-#     ParameterTypes,
-#     YMLMetadataCollector,
-#     camelize,
-#     datetime,
-#     FeedIndicatorType,
-#     handle_proxy,
-#     return_error,
-#     return_results,
-#     tableToMarkdown,
-# )
 from CommonServerPython import *
 import demistomock as demisto
 from copy import deepcopy
@@ -512,6 +496,8 @@ def format_sb_code_error(errors_data):
                 if error.get("sbcode"):
                     sb_code = error.get("sbcode")
                     fields = error.get("data", {}).get("fields")
+                    if not fields:
+                        return sb_error_string(error_data=None, sb_code=sb_code)
                     for field in fields:
                         error_data = field
                         issue = sb_error_string(error_data=error_data, sb_code=sb_code)
@@ -572,6 +558,20 @@ class Client(BaseClient):
         self.account_id = account_id
         if proxy:
             self.proxies = handle_proxy()
+
+    def validate_email(self, email):
+        """
+        This function is to validate email.
+
+        Args:
+            email (str): Email address which we need to validate.
+
+        Returns:
+            (boo): boolean value
+        """
+        # Regular expression for basic email validation
+        pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        return bool(re.match(pattern, email))
 
     def get_response(self, url: str = "", method: str = "GET", request_params: dict = {}, body: dict = None):
         """
@@ -643,7 +643,7 @@ class Client(BaseClient):
             if response and response.get("data"):
                 return "ok"
             elif response.get("data") == []:
-                return "please check the user details and try again"
+                return "Please check the account Id and try again"
             return "Could not verify the connection"
         except Exception as exc:
             if "Error in API call [404] - Not Found" in str(exc):
@@ -732,7 +732,9 @@ class Client(BaseClient):
         account_id = demisto.params().get("account_id", 0)
         name = demisto.args().get("name", "").strip()
         description = demisto.args().get("description", "").strip()
-        simulators = demisto.args().get("simulators", "").replace('"', "").split(",")
+        simulators = demisto.args().get("simulators", [])
+        if simulators:
+            simulators = simulators.split()
         deployment_payload = {
             "nodes": simulators,
             "name": name,
@@ -761,16 +763,11 @@ class Client(BaseClient):
             raise InputError("Inputs Error: Deployment ID is a required field which has to have a value as input")
 
         name = demisto.args().get("updated_deployment_name", "").strip()
-        simulators = demisto.args().get("updated_simulators_for_deployment", None)
-        description = demisto.args().get("updated_deployment_description.", "").strip()
-        deployment_payload = {}
-        if name:
-            deployment_payload["name"] = name
+        simulators = demisto.args().get("updated_simulators_for_deployment", [])
         if simulators:
-            deployment_payload["nodes"] = simulators.replace('"', "").split(",")
-        if description:
-            deployment_payload["description"] = description
-
+            simulators = simulators.split()
+        description = demisto.args().get("updated_deployment_description", "").strip()
+        deployment_payload = {"nodes": simulators, "name": name, "description": description}
         demisto.info(f"deployment payload is {deployment_payload}")
         method = "PUT"
         url = f"/config/v1/accounts/{account_id}/deployments/{deployment_id}"
@@ -795,21 +792,6 @@ class Client(BaseClient):
         deleted_deployment = self.get_response(url=url, method=method)
         return deleted_deployment
 
-    def get_simulators_versions_list(self):
-        url = "/updater/v2/updates/nodes"
-        return self.get_response(url=url, method="GET")
-
-    def update_simulator_with_id(self):
-        nodeId = demisto.args().get("simulator_id", "")
-        simulator_version = demisto.args().get("simulator_version", "")
-        url = "/updater/v2/simulatorUpdate/"
-        json = {"enableUpdates": True, "nodeId": nodeId, "selectedVersion": simulator_version}
-        return self.get_response(url=url, method="POST", body=json)
-
-    def get_installation_links(self):
-        url = "/updater/v2/installationLinks"
-        return self.get_response(url=url, method="GET")
-
     def get_tests_with_args(self):
         """
             This function calls GET of testsummaries endpoint and returns data related to test
@@ -822,6 +804,7 @@ class Client(BaseClient):
             List[Dict]: Returns test data as a list of dictionaries
         """
 
+        test_summaries = []
         # sort_map = {
         #     "endTime": "endTime",
         #     "startTime": "startTime",
@@ -834,19 +817,21 @@ class Client(BaseClient):
         # include_archived = "false"
         # size = demisto.args().get("entries_per_page")
         # status = demisto.args().get("status","")
-        # scenario_id = demisto.args().get("scenario_id")
+        scenario_id = demisto.args().get("scenario_id")
         simulation_id = demisto.args().get("simulation_id")
         # sort_by = sort_map.get(demisto.args().get("sort_by"), "endTime")
 
         parameters = {}
         method = "GET"
-        url = f"/data/v1/accounts/{account_id}/testsummaries"
-        for param in [("simulationId", simulation_id)]:
-            # [("includeArchived", include_archived), ("size", size), ("status", status), ("planId", scenario_id),
-            #               ("simulationId", simulation_id), ("sortBy", sort_by)]:
-            parameters.update({} if not param[1] else {param[0]: param[1]})
-
-        demisto.info(f"get_test_summary parameters is {parameters}")
+        if scenario_id:
+            url = f"/data/v1/accounts/{account_id}/testsummaries/{scenario_id}"
+        else:
+            url = f"/data/v1/accounts/{account_id}/testsummaries"
+            for param in [("simulationId", simulation_id)]:
+                # [("includeArchived", include_archived), ("size", size), ("status", status), ("planId", scenario_id),
+                #               ("simulationId", simulation_id), ("sortBy", sort_by)]:
+                parameters.update({} if not param[1] else {param[0]: param[1]})
+            demisto.info(f"get_test_summary parameters is {parameters}")
         test_summaries = self.get_response(url=url, method=method, request_params=parameters)
         return test_summaries
 
@@ -855,7 +840,7 @@ class Client(BaseClient):
             This function flattens the test summaries related data for table view
 
         Args:
-            test_summaries (dict): This returns a lit of dictionaries of test summaries
+            test_summaries (dict): This returns a list of dictionaries of test summaries
             which are flattened versions of data retrieved for tests
         """
         for test_summary in test_summaries:
@@ -962,6 +947,22 @@ class Client(BaseClient):
         test_summaries = self.get_response(url=url, method=method, request_params=request_parameters)
         return test_summaries
 
+    def get_all_integration_issues(self, error_logs, connector_map, connector):
+        integration_log = {}
+        if error_logs.get("lastTestConnection").get("error") or error_logs.get("lastTestConnection").get("warning"):
+            integration_log.update(self.map_error_log_data(connector, connector_map))
+        return integration_log
+
+    def map_error_log_data(self, integration_id, connector_map):
+        log = {}
+        integration_data = connector_map.get("result").get("providers")
+        if integration_data:
+            for data in integration_data:
+                if data.get("id", "") == integration_id:
+                    log["integration_name"] = data.get("name", "")
+                    log["connector"] = integration_id  # Assuming integration_id is the correct value
+        return log
+
     def flatten_error_logs_for_table_view(self, error_logs):
         """
             This function flattens error logs into a single leveled dictionary for table view
@@ -974,17 +975,18 @@ class Client(BaseClient):
         """
         flattened_logs_list = []
         error_map = {"ERROR": "error", "WARNING": "warning"}
-        preference = demisto.args().get("error_type")
+        log = {}
+        preference = demisto.args().get("error_type") if demisto else None
         preference = error_map.get(preference, "")
-        connector_map = get_integration_details(self)
+        connector_map = self.get_integration_details()
         for connector in error_logs:
-            if preference == "" or preference == error_logs[connector]["status"]:
-                logs = error_logs[connector]["logs"] if error_logs[connector].get("status") != "ok" else []
-                if logs:
-                    for log in logs:
-                        log["integration_name"] = connector_map.get(connector, "")
-                        log["connector"] = connector
-                        flattened_logs_list.append(log)
+            if preference == "" or error_logs[connector].get("lastTestConnection").get(preference):
+                # if preference is empty means we need to fetch both the errors and warnings.
+                if preference == "":
+                    log = self.get_all_integration_issues(error_logs[connector], connector_map, connector)
+                else:
+                    log = self.map_error_log_data(connector, connector_map)
+                flattened_logs_list.append(log)
         return flattened_logs_list
 
     def get_all_integration_error_logs(self):
@@ -1405,14 +1407,17 @@ class Client(BaseClient):
             deployment_list = list(map(int, deployment_list.split(","))) if deployment_list else []
         except ValueError:
             raise InputError(
-                "Input Error: deployments ids are numbers, please give deployments ids as comma separated values"
+                "Input Error: Deployments ids are numbers, please give deployments ids as comma separated values"
             )
 
         if not email:
             raise InputError(
-                "Inputs Error: email is necessary when creating user, please give a valid email which hasn't \
+                "Inputs Error: Email is necessary when creating user, please give a valid email which hasn't \
                 been used before for user creation"
             )
+
+        if not self.validate_email(email):
+            raise InputError("Inputs Error: Please enter valid email")
 
         user_payload = {
             "name": name,
@@ -1662,7 +1667,7 @@ class Client(BaseClient):
                         enter valid simulation ids"
                     )
             test_data = {
-                "name": demisto.args().get("simulation_name", "Rerun simulations by list").strip(),
+                "name": demisto.args().get("test_name", "").strip(),
                 "steps": [
                     {
                         "attacksFilter": {},
@@ -1722,7 +1727,6 @@ class Client(BaseClient):
         for category in insight_category:
             if category_mapper.get(category):
                 output.append(category_mapper.get(category))
-        # return list(set([y for x in output for y in x]))
         return list({y for x in output if x is not None for y in x})
 
     def get_insights(self, test_id):
@@ -1809,6 +1813,26 @@ class Client(BaseClient):
         if isinstance(value, int):
             value = str(value)
         return re.match(ip_regex, value)
+
+    def get_simulators_versions_list(self):
+        url = "/updater/v2/updates/nodes"
+        return self.get_response(url=url, method="GET")
+
+    def get_installation_links(self):
+        url = "/updater/v2/installationLinks"
+        return self.get_response(url=url, method="GET")
+
+    def update_simulator_with_id(self):
+        nodeId = demisto.args().get("simulator_id", "")
+        simulator_version = demisto.args().get("simulator_version", "")
+        url = "/updater/v2/simulatorUpdate/"
+        body_dict = {
+            "enableUpdates": True,
+            "nodeId": nodeId,
+            "selectedVersion": simulator_version,
+        }
+        simulator_data = self.get_response(url=url, method="POST", body=body_dict)
+        return simulator_data
 
     def get_indicators_command(self):
         indicators: list = []
@@ -3146,7 +3170,7 @@ def get_all_integration_error_logs(client: Client):
     """
     formatted_error_logs = []
     error_logs = client.get_all_integration_error_logs()
-    demisto.info(f"integration logs are {len(error_logs.get('result'))}")
+    demisto.info(f"integration logs are {error_logs}")
 
     formatted_error_logs = client.flatten_error_logs_for_table_view(error_logs.get("result"))
     human_readable = tableToMarkdown(
@@ -3176,7 +3200,7 @@ def get_integration_details(client: Client):
 
 
 @metadata_collector.command(
-    command_name="safebreach-delete-integration-issues",
+    command_name="safebreach-clear-integration-issues",
     inputs_list=[
         InputArgument(
             name="integration_id",
@@ -4519,6 +4543,12 @@ def rerun_test(client):
             description="ids of simulation we want to queue,\
                           please give ids of simulations as comma separated numbers",
         ),
+        InputArgument(
+            name="test_name",
+            required=True,
+            is_array=False,
+            description="test name for the given test",
+        ),
     ],
     outputs_prefix="changed_data",
     outputs_list=[
@@ -4976,7 +5006,7 @@ def main() -> None:
             result = get_indicators_command(client=client)
             return_results(result)
 
-        elif demisto.command() == "safebreach-delete-integration-issues":
+        elif demisto.command() == "safebreach-clear-integration-issues":
             result = delete_integration_error_logs(client=client)
             return_results(result)
 
