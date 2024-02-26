@@ -12,6 +12,7 @@ configuration:
   - Microsoft SQL Server
   - Microsoft SQL Server - MS ODBC Driver
   - Oracle
+  - SAP HANA
   required: true
   type: 15
 - display: Database host
@@ -159,7 +160,7 @@ script:
       name: bind_variables_values
     description: Running a sql query
     name: sql-command
-  dockerimage: demisto/genericsql:1.1.0.87817
+  dockerimage: devdemisto/genericsql:1.1.0.87797
   isfetch: true
   runonce: false
   script: '-'
