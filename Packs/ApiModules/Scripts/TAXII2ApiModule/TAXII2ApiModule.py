@@ -196,212 +196,25 @@ def reached_limit(limit: int, element_count: int):
     return element_count >= limit > -1
 
 
-class Taxii2FeedClient:
-    def __init__(
-        self,
-        url: str,
-        collection_to_fetch,
-        proxies,
-        verify: bool,
-        objects_to_fetch: list[str],
-        skip_complex_mode: bool = False,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        field_map: Optional[dict] = None,
-        tags: Optional[list] = None,
-        tlp_color: Optional[str] = None,
-        limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
-        certificate: str = None,
-        key: str = None,
-        default_api_root: str = None,
-        update_custom_fields: bool = False
-    ):
-        """
-        TAXII 2 Client used to poll and parse indicators in XSOAR formar
-        :param url: discovery service URL
-        :param collection_to_fetch: Collection to fetch objects from
-        :param proxies: proxies used in request
-        :param skip_complex_mode: if set to True will skip complex observations
-        :param verify: verify https
-        :param username: username used for basic authentication OR api_key used for authentication
-        :param password: password used for basic authentication
-        :param field_map: map used to create fields entry ({field_name: field_value})
-        :param tags: custom tags to be added to the created indicator
-        :param limit_per_request: Limit the objects requested per poll request
-        :param tlp_color: Traffic Light Protocol color
-        :param certificate: TLS Certificate
-        :param key: TLS Certificate key
-        :param default_api_root: The default API Root to use
-        """
-        self._conn = None
-        self.server = None
-        self.api_root = None
-        self.collections = None
-        self.last_fetched_indicator__modified = None
+class StixParser(BaseClient):
 
-        self.collection_to_fetch = collection_to_fetch
+    def __init__(self, tlp_color, id_to_object,
+                 field_map, skip_complex_mode,
+                 tags, update_custom_fields: bool = False):
         self.skip_complex_mode = skip_complex_mode
-        if not limit_per_request:
-            limit_per_request = DFLT_LIMIT_PER_REQUEST
-        self.limit_per_request = limit_per_request
-
-        self.base_url = url
-        self.proxies = proxies
-        self.verify = verify
-
-        self.auth = None
-        self.auth_header = None
-        self.auth_key = None
-        self.crt = None
-        if username and password:
-            # authentication methods:
-            # 1. API Token
-            # 2. Authentication Header
-            # 3. Basic
-            if username == API_USERNAME:
-                self.auth = TokenAuth(key=password)
-            elif username.startswith(HEADER_USERNAME):
-                self.auth_header = username.split(HEADER_USERNAME)[1]
-                self.auth_key = password
-            else:
-                self.auth = requests.auth.HTTPBasicAuth(username, password)
-
-        if (certificate and not key) or (not certificate and key):
-            raise DemistoException('Both certificate and key should be provided or neither should be.')
-        if certificate and key:
-            self.crt = (self.build_certificate(certificate), self.build_certificate(key))
-
-        self.field_map = field_map if field_map else {}
-        self.tags = tags if tags else []
-        self.tlp_color = tlp_color
         self.indicator_regexes = [
             re.compile(INDICATOR_EQUALS_VAL_PATTERN),
             re.compile(HASHES_EQUALS_VAL_PATTERN),
         ]
+        self.tlp_color = tlp_color
+        self.id_to_object = id_to_object
         self.cidr_regexes = [
             re.compile(CIDR_ISSUBSET_VAL_PATTERN),
             re.compile(CIDR_ISUPPERSET_VAL_PATTERN),
         ]
-        self.id_to_object: dict[str, Any] = {}
-        self.objects_to_fetch = objects_to_fetch
-        self.default_api_root = default_api_root
+        self.field_map = field_map if field_map else {}
         self.update_custom_fields = update_custom_fields
-
-    def init_server(self, version=TAXII_VER_2_1):
-        """
-        Initializes a server in the requested version
-        :param version: taxii version key (either 2.0 or 2.1)
-        """
-        server_url = urljoin(self.base_url)
-        self._conn = _HTTPConnection(
-            verify=self.verify, proxies=self.proxies, version=version, auth=self.auth, cert=self.crt
-        )
-        if self.auth_header:
-            # add auth_header to the session object
-            self._conn.session.headers = merge_setting(self._conn.session.headers,  # type: ignore[attr-defined]
-                                                       {self.auth_header: self.auth_key},
-                                                       dict_class=CaseInsensitiveDict)
-
-        if version is TAXII_VER_2_0:
-            self.server = v20.Server(
-                server_url, verify=self.verify, proxies=self.proxies, conn=self._conn,
-            )
-        else:
-            self.server = v21.Server(
-                server_url, verify=self.verify, proxies=self.proxies, conn=self._conn,
-            )
-
-    def init_roots(self):
-        """
-        Initializes the api roots (used to get taxii server objects)
-        """
-        if not self.server:
-            self.init_server()
-        try:
-            # disable logging as we might receive client error and try 2.0
-            logging.disable(logging.ERROR)
-            # try TAXII 2.1
-            self.set_api_root()
-        # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
-        except Exception as e:
-            if "406 Client Error" not in str(e) and "version=2.0" not in str(e):
-                raise e
-            # switch to TAXII 2.0
-            self.init_server(version=TAXII_VER_2_0)
-            self.set_api_root()
-        finally:
-            # enable logging
-            logging.disable(logging.NOTSET)
-
-    def set_api_root(self):
-        roots_to_api = {}
-        for api_root in self.server.api_roots:  # type: ignore[attr-defined]
-            # ApiRoots are initialized with wrong _conn because we are not providing auth or cert to Server
-            # closing wrong unused connections
-            api_root_name = str(api_root.url).split('/')[-2]
-            demisto.debug(f'closing api_root._conn for {api_root_name}')
-            api_root._conn.close()
-            roots_to_api[api_root_name] = api_root
-
-        if self.default_api_root:
-            if not roots_to_api.get(self.default_api_root):
-                raise DemistoException(f'The given default API root {self.default_api_root} doesn\'t exist. '
-                                       f'Available API roots are {list(roots_to_api.keys())}.')
-            self.api_root = roots_to_api.get(self.default_api_root)
-
-        elif server_default := self.server.default:  # type: ignore[attr-defined]
-            self.api_root = server_default
-
-        else:
-            self.api_root = self.server.api_roots[0]  # type: ignore[attr-defined]
-
-        # override _conn - api_root isn't initialized with the right _conn
-        self.api_root._conn = self._conn  # type: ignore[union-attr]
-
-    def init_collections(self):
-        """
-        Collects available taxii collections
-        """
-        self.collections = list(self.api_root.collections)  # type: ignore[union-attr, attr-defined, assignment]
-
-    def init_collection_to_fetch(self, collection_to_fetch=None):
-        """
-        Tries to initialize `collection_to_fetch` if possible
-        """
-        if not collection_to_fetch and isinstance(self.collection_to_fetch, str):
-            # self.collection_to_fetch will be changed from str -> Union[v20.Collection, v21.Collection]
-            collection_to_fetch = self.collection_to_fetch
-        if not self.collections:
-            raise DemistoException(ERR_NO_COLL)
-        if collection_to_fetch:
-            collection_found = False
-            for collection in self.collections:
-                if collection.title == collection_to_fetch:
-                    self.collection_to_fetch = collection
-                    collection_found = True
-                    break
-            if not collection_found:
-                raise DemistoException(
-                    "Could not find the provided Collection name in the available collections. "
-                    "Please make sure you entered the name correctly."
-                )
-
-    def initialise(self):
-        self.init_server()
-        self.init_roots()
-        self.init_collections()
-        self.init_collection_to_fetch()
-
-    @staticmethod
-    def build_certificate(cert_var):
-        var_list = cert_var.split('-----')
-        # replace spaces with newline characters
-        certificate_fixed = '-----'.join(
-            var_list[:2] + [var_list[2].replace(' ', '\n')] + var_list[3:])
-        cf = tempfile.NamedTemporaryFile(delete=False)
-        cf.write(certificate_fixed.encode())
-        cf.flush()
-        return cf.name
+        self.tags = tags if tags else []
 
     @staticmethod
     def get_indicator_publication(indicator: dict[str, Any]):
@@ -1158,150 +971,6 @@ class Taxii2FeedClient:
         }
         return [dummy_indicator] if dummy_indicator else []
 
-    def build_iterator(self, limit: int = -1, **kwargs) -> list[dict[str, str]]:
-        """
-        Polls the taxii server and builds a list of cortex indicators objects from the result
-        :param limit: max amount of indicators to fetch
-        :return: Cortex indicators list
-        """
-        if not isinstance(self.collection_to_fetch, (v20.Collection, v21.Collection)):
-            raise DemistoException(
-                "Could not find a collection to fetch from. "
-                "Please make sure you provided a collection."
-            )
-        if limit is None:
-            limit = -1
-
-        page_size = self.get_page_size(limit, limit)
-        if page_size <= 0:
-            return []
-
-        try:
-            demisto.debug(f"Fetching {page_size} objects from TAXII server")
-            envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
-            indicators = self.load_stix_objects_from_envelope(envelopes, limit)
-        except InvalidJSONError as e:
-            demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}')
-            # raised when the response is empty, because {} is parsed into '筽'
-            indicators = []
-
-        return indicators
-
-    def load_stix_objects_from_envelope(self, envelopes: types.GeneratorType, limit: int = -1):
-
-        parse_stix_2_objects = {
-            "indicator": self.parse_indicator,
-            "attack-pattern": self.parse_attack_pattern,
-            "malware": self.parse_malware,
-            "report": self.parse_report,
-            "course-of-action": self.parse_course_of_action,
-            "campaign": self.parse_campaign,
-            "intrusion-set": self.parse_intrusion_set,
-            "tool": self.parse_tool,
-            "threat-actor": self.parse_threat_actor,
-            "infrastructure": self.parse_infrastructure,
-            "domain-name": self.parse_general_sco_indicator,
-            "ipv4-addr": self.parse_general_sco_indicator,
-            "ipv6-addr": self.parse_general_sco_indicator,
-            "email-addr": self.parse_general_sco_indicator,
-            "url": self.parse_general_sco_indicator,
-            "autonomous-system": self.parse_sco_autonomous_system_indicator,
-            "file": self.parse_sco_file_indicator,
-            "mutex": self.parse_sco_mutex_indicator,
-            "user-account": self.parse_sco_account_indicator,
-            "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
-            "identity": self.parse_identity,
-            "location": self.parse_location,
-            "vulnerability": self.parse_vulnerability
-        }
-
-        indicators, relationships_lst = self.parse_generator_type_envelope(envelopes, parse_stix_2_objects, limit)
-        if relationships_lst:
-            indicators.extend(self.parse_relationships(relationships_lst))
-        demisto.debug(
-            f"TAXII 2 Feed has extracted {len(indicators)} indicators"
-        )
-
-        return indicators
-
-    def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
-        indicators = []
-        relationships_lst = []
-        try:
-            for envelope in envelopes:
-                stix_objects = envelope.get("objects")
-                if not stix_objects:
-                    # no fetched objects
-                    break
-
-                # we should build the id_to_object dict before iteration as some object reference each other
-                self.id_to_object.update(
-                    {
-                        obj.get('id'): obj for obj in stix_objects
-                        if obj.get('type') not in ['extension-definition', 'relationship']
-                    }
-                )
-                # now we have a list of objects, go over each obj, save id with obj, parse the obj
-                for obj in stix_objects:
-                    obj_type = obj.get('type')
-
-                    # we currently don't support extension object
-                    if obj_type == 'extension-definition':
-                        demisto.debug(f'There is no parsing function for object type "extension-definition", for object {obj}.')
-                        continue
-                    elif obj_type == 'relationship':
-                        relationships_lst.append(obj)
-                        continue
-
-                    if not parse_objects_func.get(obj_type):
-                        demisto.debug(f'There is no parsing function for object type {obj_type}, for object {obj}.')
-
-                        continue
-                    if result := parse_objects_func[obj_type](obj):
-                        indicators.extend(result)
-                        self.update_last_modified_indicator_date(obj.get("modified"))
-
-                    if reached_limit(limit, len(indicators)):
-                        demisto.debug("Reached limit of indicators to fetch")
-                        return indicators, relationships_lst
-        except Exception as e:
-            if len(indicators) == 0:
-                demisto.debug("No Indicator were parsed")
-                raise e
-            demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
-        demisto.debug("Finished parsing all objects")
-        return indicators, relationships_lst
-
-    def poll_collection(
-        self, page_size: int, **kwargs
-    ) -> types.GeneratorType:
-        """
-        Polls a taxii collection
-        :param page_size: size of the request page
-        """
-        get_objects = self.collection_to_fetch.get_objects
-        if self.objects_to_fetch:
-            if 'relationship' not in self.objects_to_fetch and \
-                    len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
-                self.objects_to_fetch.append('relationship')
-            kwargs['type'] = self.objects_to_fetch
-        if isinstance(self.collection_to_fetch, v20.Collection):
-            return v20.as_pages(get_objects, per_request=page_size, **kwargs)
-        return v21.as_pages(get_objects, per_request=page_size, **kwargs)
-
-    def get_page_size(self, max_limit: int, cur_limit: int) -> int:
-        """
-        Get a page size given the limit on entries `max_limit` and the limit on the current poll
-        :param max_limit: max amount of entries allowed overall
-        :param cur_limit: max amount of entries allowed in a page
-        :return: page size
-        """
-        return (
-            min(self.limit_per_request, cur_limit)
-            if max_limit > -1
-            else self.limit_per_request
-        )
-
     @staticmethod
     def extract_indicators_from_stix_objects(
         stix_objs: list[dict[str, str]], required_objects: list[str]
@@ -1470,3 +1139,347 @@ class Taxii2FeedClient:
         except AttributeError:
             ioc_value = None
         return ioc_value
+
+    def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
+        indicators = []
+        relationships_lst = []
+        try:
+            for envelope in envelopes:
+                stix_objects = envelope.get("objects")
+                if not stix_objects:
+                    # no fetched objects
+                    break
+
+                # we should build the id_to_object dict before iteration as some object reference each other
+                self.id_to_object.update(
+                    {
+                        obj.get('id'): obj for obj in stix_objects
+                        if obj.get('type') not in ['extension-definition', 'relationship']
+                    }
+                )
+                # now we have a list of objects, go over each obj, save id with obj, parse the obj
+                for obj in stix_objects:
+                    obj_type = obj.get('type')
+
+                    # we currently don't support extension object
+                    if obj_type == 'extension-definition':
+                        demisto.debug(f'There is no parsing function for object type "extension-definition", for object {obj}.')
+                        continue
+                    elif obj_type == 'relationship':
+                        relationships_lst.append(obj)
+                        continue
+
+                    if not parse_objects_func.get(obj_type):
+                        demisto.debug(f'There is no parsing function for object type {obj_type}, for object {obj}.')
+
+                        continue
+                    if result := parse_objects_func[obj_type](obj):
+                        indicators.extend(result)
+                        self.update_last_modified_indicator_date(obj.get("modified"))
+
+                    if reached_limit(limit, len(indicators)):
+                        demisto.debug("Reached limit of indicators to fetch")
+                        return indicators, relationships_lst
+        except Exception as e:
+            if len(indicators) == 0:
+                demisto.debug("No Indicator were parsed")
+                raise e
+            demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
+        demisto.debug("Finished parsing all objects")
+        return indicators, relationships_lst
+
+    def load_stix_objects_from_envelope(self, envelopes: types.GeneratorType, limit: int = -1):
+
+        parse_stix_2_objects = {
+            "indicator": self.parse_indicator,
+            "attack-pattern": self.parse_attack_pattern,
+            "malware": self.parse_malware,
+            "report": self.parse_report,
+            "course-of-action": self.parse_course_of_action,
+            "campaign": self.parse_campaign,
+            "intrusion-set": self.parse_intrusion_set,
+            "tool": self.parse_tool,
+            "threat-actor": self.parse_threat_actor,
+            "infrastructure": self.parse_infrastructure,
+            "domain-name": self.parse_general_sco_indicator,
+            "ipv4-addr": self.parse_general_sco_indicator,
+            "ipv6-addr": self.parse_general_sco_indicator,
+            "email-addr": self.parse_general_sco_indicator,
+            "url": self.parse_general_sco_indicator,
+            "autonomous-system": self.parse_sco_autonomous_system_indicator,
+            "file": self.parse_sco_file_indicator,
+            "mutex": self.parse_sco_mutex_indicator,
+            "user-account": self.parse_sco_account_indicator,
+            "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
+            "identity": self.parse_identity,
+            "location": self.parse_location,
+            "vulnerability": self.parse_vulnerability
+        }
+
+        indicators, relationships_lst = self.parse_generator_type_envelope(envelopes, parse_stix_2_objects, limit)
+        if relationships_lst:
+            indicators.extend(self.parse_relationships(relationships_lst))
+        demisto.debug(
+            f"TAXII 2 Feed has extracted {len(indicators)} indicators"
+        )
+
+        return indicators
+
+
+class Taxii2FeedClient(StixParser):
+    def __init__(
+        self,
+        url: str,
+        collection_to_fetch,
+        proxies,
+        verify: bool,
+        objects_to_fetch: list[str],
+        skip_complex_mode: bool = False,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        field_map: Optional[dict] = None,
+        tags: Optional[list] = None,
+        tlp_color: Optional[str] = None,
+        limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
+        certificate: str = None,
+        key: str = None,
+        default_api_root: str = None,
+        update_custom_fields: bool = False
+    ):
+        """
+        TAXII 2 Client used to poll and parse indicators in XSOAR formar
+        :param url: discovery service URL
+        :param collection_to_fetch: Collection to fetch objects from
+        :param proxies: proxies used in request
+        :param skip_complex_mode: if set to True will skip complex observations
+        :param verify: verify https
+        :param username: username used for basic authentication OR api_key used for authentication
+        :param password: password used for basic authentication
+        :param field_map: map used to create fields entry ({field_name: field_value})
+        :param tags: custom tags to be added to the created indicator
+        :param limit_per_request: Limit the objects requested per poll request
+        :param tlp_color: Traffic Light Protocol color
+        :param certificate: TLS Certificate
+        :param key: TLS Certificate key
+        :param default_api_root: The default API Root to use
+        """
+        self._conn = None
+        self.server = None
+        self.api_root = None
+        self.collections = None
+        self.last_fetched_indicator__modified = None
+
+        self.collection_to_fetch = collection_to_fetch
+        self.skip_complex_mode = skip_complex_mode
+        if not limit_per_request:
+            limit_per_request = DFLT_LIMIT_PER_REQUEST
+        self.limit_per_request = limit_per_request
+
+        self.base_url = url
+        self.proxies = proxies
+        self.verify = verify
+
+        self.auth = None
+        self.auth_header = None
+        self.auth_key = None
+        self.crt = None
+        if username and password:
+            # authentication methods:
+            # 1. API Token
+            # 2. Authentication Header
+            # 3. Basic
+            if username == API_USERNAME:
+                self.auth = TokenAuth(key=password)
+            elif username.startswith(HEADER_USERNAME):
+                self.auth_header = username.split(HEADER_USERNAME)[1]
+                self.auth_key = password
+            else:
+                self.auth = requests.auth.HTTPBasicAuth(username, password)
+
+        if (certificate and not key) or (not certificate and key):
+            raise DemistoException('Both certificate and key should be provided or neither should be.')
+        if certificate and key:
+            self.crt = (self.build_certificate(certificate), self.build_certificate(key))
+
+        self.field_map = field_map if field_map else {}
+        self.tags = tags if tags else []
+        self.tlp_color = tlp_color
+        self.id_to_object: dict[str, Any] = {}
+        self.objects_to_fetch = objects_to_fetch
+        self.default_api_root = default_api_root
+        self.update_custom_fields = update_custom_fields
+
+    def init_server(self, version=TAXII_VER_2_1):
+        """
+        Initializes a server in the requested version
+        :param version: taxii version key (either 2.0 or 2.1)
+        """
+        server_url = urljoin(self.base_url)
+        self._conn = _HTTPConnection(
+            verify=self.verify, proxies=self.proxies, version=version, auth=self.auth, cert=self.crt
+        )
+        if self.auth_header:
+            # add auth_header to the session object
+            self._conn.session.headers = merge_setting(self._conn.session.headers,  # type: ignore[attr-defined]
+                                                       {self.auth_header: self.auth_key},
+                                                       dict_class=CaseInsensitiveDict)
+
+        if version is TAXII_VER_2_0:
+            self.server = v20.Server(
+                server_url, verify=self.verify, proxies=self.proxies, conn=self._conn,
+            )
+        else:
+            self.server = v21.Server(
+                server_url, verify=self.verify, proxies=self.proxies, conn=self._conn,
+            )
+
+    def init_roots(self):
+        """
+        Initializes the api roots (used to get taxii server objects)
+        """
+        if not self.server:
+            self.init_server()
+        try:
+            # disable logging as we might receive client error and try 2.0
+            logging.disable(logging.ERROR)
+            # try TAXII 2.1
+            self.set_api_root()
+        # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
+        except Exception as e:
+            if "406 Client Error" not in str(e) and "version=2.0" not in str(e):
+                raise e
+            # switch to TAXII 2.0
+            self.init_server(version=TAXII_VER_2_0)
+            self.set_api_root()
+        finally:
+            # enable logging
+            logging.disable(logging.NOTSET)
+
+    def set_api_root(self):
+        roots_to_api = {}
+        for api_root in self.server.api_roots:  # type: ignore[attr-defined]
+            # ApiRoots are initialized with wrong _conn because we are not providing auth or cert to Server
+            # closing wrong unused connections
+            api_root_name = str(api_root.url).split('/')[-2]
+            demisto.debug(f'closing api_root._conn for {api_root_name}')
+            api_root._conn.close()
+            roots_to_api[api_root_name] = api_root
+
+        if self.default_api_root:
+            if not roots_to_api.get(self.default_api_root):
+                raise DemistoException(f'The given default API root {self.default_api_root} doesn\'t exist. '
+                                       f'Available API roots are {list(roots_to_api.keys())}.')
+            self.api_root = roots_to_api.get(self.default_api_root)
+
+        elif server_default := self.server.default:  # type: ignore[attr-defined]
+            self.api_root = server_default
+
+        else:
+            self.api_root = self.server.api_roots[0]  # type: ignore[attr-defined]
+
+        # override _conn - api_root isn't initialized with the right _conn
+        self.api_root._conn = self._conn  # type: ignore[union-attr]
+
+    def init_collections(self):
+        """
+        Collects available taxii collections
+        """
+        self.collections = list(self.api_root.collections)  # type: ignore[union-attr, attr-defined, assignment]
+
+    def init_collection_to_fetch(self, collection_to_fetch=None):
+        """
+        Tries to initialize `collection_to_fetch` if possible
+        """
+        if not collection_to_fetch and isinstance(self.collection_to_fetch, str):
+            # self.collection_to_fetch will be changed from str -> Union[v20.Collection, v21.Collection]
+            collection_to_fetch = self.collection_to_fetch
+        if not self.collections:
+            raise DemistoException(ERR_NO_COLL)
+        if collection_to_fetch:
+            collection_found = False
+            for collection in self.collections:
+                if collection.title == collection_to_fetch:
+                    self.collection_to_fetch = collection
+                    collection_found = True
+                    break
+            if not collection_found:
+                raise DemistoException(
+                    "Could not find the provided Collection name in the available collections. "
+                    "Please make sure you entered the name correctly."
+                )
+
+    def initialise(self):
+        self.init_server()
+        self.init_roots()
+        self.init_collections()
+        self.init_collection_to_fetch()
+
+    @staticmethod
+    def build_certificate(cert_var):
+        var_list = cert_var.split('-----')
+        # replace spaces with newline characters
+        certificate_fixed = '-----'.join(
+            var_list[:2] + [var_list[2].replace(' ', '\n')] + var_list[3:])
+        cf = tempfile.NamedTemporaryFile(delete=False)
+        cf.write(certificate_fixed.encode())
+        cf.flush()
+        return cf.name
+
+    def build_iterator(self, limit: int = -1, **kwargs) -> list[dict[str, str]]:
+        """
+        Polls the taxii server and builds a list of cortex indicators objects from the result
+        :param limit: max amount of indicators to fetch
+        :return: Cortex indicators list
+        """
+        if not isinstance(self.collection_to_fetch, (v20.Collection, v21.Collection)):
+            raise DemistoException(
+                "Could not find a collection to fetch from. "
+                "Please make sure you provided a collection."
+            )
+        if limit is None:
+            limit = -1
+
+        page_size = self.get_page_size(limit, limit)
+        if page_size <= 0:
+            return []
+
+        try:
+            demisto.debug(f"Fetching {page_size} objects from TAXII server")
+            envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
+            indicators = self.load_stix_objects_from_envelope(envelopes, limit)
+        except InvalidJSONError as e:
+            demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}')
+            # raised when the response is empty, because {} is parsed into '筽'
+            indicators = []
+
+        return indicators
+
+    def poll_collection(
+        self, page_size: int, **kwargs
+    ) -> types.GeneratorType:
+        """
+        Polls a taxii collection
+        :param page_size: size of the request page
+        """
+        get_objects = self.collection_to_fetch.get_objects
+        if self.objects_to_fetch:
+            if 'relationship' not in self.objects_to_fetch and \
+                    len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
+                self.objects_to_fetch.append('relationship')
+            kwargs['type'] = self.objects_to_fetch
+        if isinstance(self.collection_to_fetch, v20.Collection):
+            return v20.as_pages(get_objects, per_request=page_size, **kwargs)
+        return v21.as_pages(get_objects, per_request=page_size, **kwargs)
+
+    def get_page_size(self, max_limit: int, cur_limit: int) -> int:
+        """
+        Get a page size given the limit on entries `max_limit` and the limit on the current poll
+        :param max_limit: max amount of entries allowed overall
+        :param cur_limit: max amount of entries allowed in a page
+        :return: page size
+        """
+        return (
+            min(self.limit_per_request, cur_limit)
+            if max_limit > -1
+            else self.limit_per_request
+        )
