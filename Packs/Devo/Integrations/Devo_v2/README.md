@@ -327,7 +327,7 @@ For more information on the way we write to a table please refer to this documen
 | **Argument Name** | **Description**                                                 | **Required** |
 |-------------------|-----------------------------------------------------------------|--------------|
 | tableName         | Table name to write to                                          | Required     |
-| records           | Records written to specified Devo table.                             | Required     |
+| records           | Records written to specified Devo table.                        | Required     |
 | linqLinkBase      | Overrides the global link base so is able to be set at run time | Optional     |
 
 
