@@ -2818,7 +2818,7 @@ def handle_message(item: results.Message | dict) -> bool:
 
 
 def notable_event_fetch(args: dict, service: client.Service) -> CommandResults:
-    res = service.jobs.oneshot(f'search `notable_by_id({args["entry_id"]})`')
+    res = service.jobs.oneshot(f'search `notable_by_id({args["notable_event_id"]})`')
     return CommandResults(outputs=res)
 
 
@@ -2828,7 +2828,7 @@ def main():  # pragma: no cover
 
     if command == 'splunk-parse-raw':
         splunk_parse_raw_command(args)
-        sys.exit(0)
+        return
     service = None
     proxy = argToBoolean(PARAMS.get('proxy', False))
 
