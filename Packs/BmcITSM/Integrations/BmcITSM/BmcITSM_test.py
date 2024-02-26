@@ -1247,7 +1247,7 @@ def test_list_support_group_command(
 
     assert result.outputs_prefix == "BmcITSM.SupportGroup"
     assert len(outputs) == expected_outputs_len
-    assert outputs[0]["Support Group ID"] == expected_desc
+    assert outputs[0]["SupportGroupID"] == expected_desc
 
 
 @pytest.mark.parametrize(
