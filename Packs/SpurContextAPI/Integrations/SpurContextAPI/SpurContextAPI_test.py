@@ -52,67 +52,71 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 
 """
 
-import json
-from SpurContextAPI import fix_nested_client
+import pytest
+from SpurContextAPI import Client, enrich_command, test_module
 
-TEST_RESPONSE = """
-{
-  "as": {
-    "number": 30083,
-    "organization": "AS-30083-GO-DADDY-COM-LLC"
-  },
-  "client": {
-    "behaviors": ["TOR_PROXY_USER"],
-    "concentration": {
-      "city": "Weldon Spring",
-      "country": "US",
-      "density": 0.202,
-      "geohash": "9yz",
-      "skew": 45,
-      "state": "Missouri"
+# Sample API response for testing
+MOCK_HTTP_RESPONSE = {
+    "as": {
+        "number": 30083,
+        "organization": "AS-30083-GO-DADDY-COM-LLC"
     },
-    "count": 14,
-    "countries": 1,
-    "proxies": ["LUMINATI_PROXY", "SHIFTER_PROXY"],
-    "spread": 4941431,
-    "types": ["MOBILE", "DESKTOP"]
-  },
-  "infrastructure": "DATACENTER",
-  "ip": "192.168.1.1",
-  "location": {
-    "city": "St Louis",
-    "country": "US",
-    "state": "Missouri"
-  },
-  "risks": ["WEB_SCRAPING", "TUNNEL"],
-  "services": ["IPSEC", "OPENVPN"],
-  "tunnels": [
-    {
-      "anonymous": true,
-      "entries": ["192.168.1.1"],
-      "exits": ["192.168.1.1"],
-      "operator": "NORD_VPN",
-      "type": "VPN"
-    }
-  ]
+    "client": {
+        "behaviors": ["TOR_PROXY_USER"],
+        "concentration": {
+            "city": "Weldon Spring",
+            "country": "US",
+            "density": 0.202,
+            "geohash": "9yz",
+            "skew": 45,
+            "state": "Missouri"
+        },
+        "count": 14,
+        "countries": 1,
+        "proxies": ["LUMINATI_PROXY", "SHIFTER_PROXY"],
+        "spread": 4941431,
+        "types": ["MOBILE", "DESKTOP"]
+    },
+    "infrastructure": "DATACENTER",
+    "ip": "192.168.1.1",
+    "location": {
+        "city": "St Louis",
+        "country": "US",
+        "state": "Missouri"
+    },
+    "risks": ["WEB_SCRAPING", "TUNNEL"],
+    "services": ["IPSEC", "OPENVPN"],
+    "tunnels": [
+        {
+            "anonymous": True,
+            "entries": ["192.168.1.1"],
+            "exits": ["192.168.1.1"],
+            "operator": "NORD_VPN",
+            "type": "VPN"
+        }
+    ]
 }
-"""
 
 
-def get_test_response():
-    return json.loads(TEST_RESPONSE)
+@pytest.fixture()
+def client(mocker):
+    client = Client(base_url="https://api.spur.us/", verify=False, headers={"Authorization": "Bearer test"})
+    mocker.patch.object(Client, '_http_request', return_value=MOCK_HTTP_RESPONSE)
+    return client
 
 
-def test_fix_nested_client():
+def test_enrich_command(client):
     """
-        Given:
-            - A context result
-
-        When:
-            - Running the 'fix_nested_client' function.
-
-        Then:
-            - Verify that the client data is flattened
+    Test the enrich_command function to ensure it correctly processes the mock HTTP response.
     """
-    fixed = fix_nested_client(get_test_response())
-    assert fixed["client_countries"] == 1
+    args = {'ip': '192.168.1.1'}
+    result = enrich_command(client, args)
+    assert result.outputs['ip'] == MOCK_HTTP_RESPONSE['ip']
+
+
+def test_test_module(client):
+    """
+    Test the test_module function to ensure it behaves correctly with the mock HTTP response.
+    """
+    result = test_module(client)
+    assert result == 'ok'
