@@ -2206,7 +2206,7 @@ def get_remote_data_command(args: dict[str, Any]):
             mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update {detection_type} detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_idp_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
+                set_xsoar_idp_detection_entries(updated_object, entries, remote_incident_id, detection_type)  # sets in place
 
         else:
             # this is here as prints can disrupt mirroring
@@ -2287,8 +2287,6 @@ def get_remote_idp_or_mobile_detection_data(remote_incident_id):
     mirrored_data_list = get_detection_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
     detection_type = ''
-    if 'status' in mirrored_data:
-        mirrored_data['status'] = mirrored_data.get('status')
     if 'idp' in mirrored_data['product']:
         updated_object: dict[str, Any] = {'incident_type': IDP_DETECTION}
         detection_type = 'IDP'
@@ -2315,7 +2313,7 @@ def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, r
             reopen_in_xsoar(entries, remote_detection_id, 'Detection')
 
 
-def set_xsoar_idp_detection_entries(updated_object: dict[str, Any], entries: list, remote_idp_detection_id: str):
+def set_xsoar_idp_detection_entries(updated_object: dict[str, Any], entries: list, remote_idp_detection_id: str, incident_type_name: str):
     """
         Send the updated object to the relevant status handler
 
@@ -2331,9 +2329,9 @@ def set_xsoar_idp_detection_entries(updated_object: dict[str, Any], entries: lis
     """
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
-            close_in_xsoar(entries, remote_idp_detection_id, IDP_DETECTION)
+            close_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
         elif updated_object.get('status') in (set(IDP_DETECTION_STATUS) - {'closed'}):
-            reopen_in_xsoar(entries, remote_idp_detection_id, IDP_DETECTION)
+            reopen_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
 
 
 def close_in_xsoar(entries: list, remote_incident_id: str, incident_type_name: str):
@@ -2421,7 +2419,6 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'idp'"
         ).get('resources', [])
-        
 
     if MOBILE_DETECTION_FETCH_TYPE in fetch_types:
         raw_ids += get_detections_ids(

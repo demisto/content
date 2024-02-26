@@ -95,7 +95,22 @@
 				},
 				"Last Update Time": {
 					"simple": "updated_timestamp"
-				}
+				},
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "composite_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                },
+                "name": {
+                    "simple": "mobile_detection_id"
+                }
 			}
 		},
         "CrowdStrike Falcon IOA Event": {
