@@ -2818,8 +2818,8 @@ def handle_message(item: results.Message | dict) -> bool:
 
 
 def notable_event_fetch(args: dict, service: client.Service) -> CommandResults:
-    res = service.jobs.oneshot(f'search `notable_by_id({args["entry_id"]})')
-    return CommandResults(readable_output=str(res))
+    res = service.jobs.oneshot(f'search `notable_by_id({args["entry_id"]})`')
+    return CommandResults(outputs=res)
 
 
 def main():  # pragma: no cover
