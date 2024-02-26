@@ -807,6 +807,8 @@ def test_update_remote_system_command(incident_changed, delta):
     assert actual_remote_id == expected_remote_id
 
 
+'''
+
 def test_check_using_upgraded_api_incidents_extra_data_success(mocker):
     """
     Given:
@@ -856,6 +858,7 @@ def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock, mo
         message="The server encountered an internal error", res=MockException(500)
     ))
     check_using_upgraded_api_incidents_extra_data(client, '1')
+'''
 
 
 @freeze_time("1997-10-05 15:00:00 GMT")

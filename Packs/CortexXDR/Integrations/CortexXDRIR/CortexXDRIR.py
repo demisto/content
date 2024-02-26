@@ -18,6 +18,34 @@ INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident Schema'
 INTEGRATION_NAME = 'Cortex XDR - IR'
 ALERTS_LIMIT_PER_INCIDENTS = -1
+FIELDS_TO_EXCLUDE = [
+    "_detection_method",
+    "_type",
+    "activity_first_seen_at",
+    "activity_last_seen_at",
+    "alert_generated_time",
+    "alert_layouts",
+    "association_strength",
+    "bioc_indicator",
+    "comment",
+    "content_version",
+    "detector_api_version",
+    "detector_description",
+    "detector_id",
+    "dst_association_strength",
+    "event_only_full_filter",
+    "group_id",
+    "indicator_predicate",
+    "is_dde_alert",
+    "is_detection",
+    "lcaas_id",
+    "server_version",
+    "silent",
+    "stateful_raw_data",
+    "variation_rule_id",
+    "xdr_log_type",
+    "edrData.action_evtlog_data_fields.content"
+]
 
 
 XDR_INCIDENT_FIELDS = {
@@ -313,7 +341,7 @@ class Client(CoreClient):
         )
         return reply.get('reply', {})
 
-    def get_multiple_incidents_extra_data(self, incident_id_list=[], fields_to_exclude=[], gte_creation_time_milliseconds=0,
+    def get_multiple_incidents_extra_data(self, incident_id_list=[], fields_to_exclude=True, gte_creation_time_milliseconds=0,
                                           status=None, starred=None, starred_incidents_fetch_window=None, page_number=0, limit=100):
         """
         Returns incident by id
@@ -358,7 +386,7 @@ class Client(CoreClient):
         if len(filters) > 0:
             request_data['filters'] = filters
         if fields_to_exclude:
-            request_data['fields_to_exclude'] = fields_to_exclude
+            request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE
         reply = self._http_request(
             method='POST',
             url_suffix='/incidents/get_multiple_incidents_extra_data/',
@@ -469,7 +497,6 @@ def get_incident_extra_data_command(client, args):
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
-    fields_to_exclude = argToList(args.get('fields_to_exclude'))
     if return_only_updated_incident:
         last_mirrored_in_time = get_last_mirrored_in_time(args)
         last_modified_incidents_dict = get_integration_context().get('modified_incidents', {})
@@ -479,8 +506,7 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-    raw_incident: Dict[str, Any] = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id],
-                                                                            fields_to_exclude=fields_to_exclude)[0]
+    raw_incident: Dict[str, Any] = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id])[0]
     if raw_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS:
         raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
     incident = raw_incident.get('incident', {})
@@ -897,7 +923,7 @@ def create_incidents_dictionary(incidents_data: List[Dict[str, Any]]) -> Dict[st
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
-                    fields_to_exclude: List = []):
+                    fields_to_exclude: bool = True):
     global ALERTS_LIMIT_PER_INCIDENTS
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
@@ -917,14 +943,17 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         if statuses:
             raw_incidents = []
             for status in statuses:
-                raw_incidents += client.get_multiple_incidents_extra_data(gte_creation_time_milliseconds=last_fetch, status=status,
+                raw_incidents += client.get_multiple_incidents_extra_data(gte_creation_time_milliseconds=last_fetch,
+                                                                          status=status,
                                                                           limit=max_fetch, starred=starred,
-                                                                          starred_incidents_fetch_window=starred_incidents_fetch_window)
+                                                                          starred_incidents_fetch_window=starred_incidents_fetch_window,
+                                                                          fields_to_exclude=fields_to_exclude)
             raw_incidents = sorted(raw_incidents, key=lambda inc: inc['creation_time'])
         else:
             raw_incidents = client.get_multiple_incidents_extra_data(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
                                                                      starred=starred,
-                                                                     starred_incidents_fetch_window=starred_incidents_fetch_window)
+                                                                     starred_incidents_fetch_window=starred_incidents_fetch_window,
+                                                                     fields_to_exclude=fields_to_exclude)
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -1107,7 +1136,7 @@ def main():  # pragma: no cover
     statuses = params.get('status')
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
-    fields_to_exclude = params.get('fields_to_exclude')
+    fields_to_exclude = params.get('fields_to_exclude', True)
 
     try:
         timeout = int(params.get('timeout', 120))
