@@ -20,14 +20,14 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* AzureFindAvailableNSGPriorities
 * Set
+* AzureFindAvailableNSGPriorities
 
 ### Commands
 
-* azure-nsg-security-rules-list
-* azure-nsg-security-rule-create
 * azure-nsg-security-rule-update
+* azure-nsg-security-rule-create
+* azure-nsg-security-rules-list
 
 ## Playbook Inputs
 
@@ -41,7 +41,7 @@ This playbook does not use any sub-playbooks.
 | RemotePort | The remote port that is publicly exposed. |  | Required |
 | SubscriptionID | The Azure subscription ID \(optional\). |  | Optional |
 | ResourceGroup | The Azure resource group \(optional\). |  | Optional |
-| instance_name | Azure Network Security Groups integration instance to use if you have multiple instances configured \(optional\). |  | Optional |
+| InstanceName | Azure Network Security Groups integration instance to use if you have multiple instances configured \(optional\). |  | Optional |
 | RemediationAllowRanges | Comma-separated list of IPv4 network ranges to be used as source addresses for the \`remediation-allow-port-&lt;port\#&gt;-&lt;tcp\|udp&gt;\` rule to be created.  Typically this will be private IP ranges \(to allow access within the vnet and bastion hosts\) but other networks can be added as needed. | 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16 | Optional |
 
 ## Playbook Outputs
