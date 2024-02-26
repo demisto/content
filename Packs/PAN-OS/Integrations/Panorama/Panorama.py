@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from collections import defaultdict
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
@@ -11819,7 +11821,7 @@ def get_object(
     )
 
 
-def get_device_state(topology: Topology, target: str) -> dict:
+def get_device_state(topology: Topology, target: str, filename: str = None) -> dict:
     """
     Get the device state from the provided device target (serial number). Note that this will attempt to connect directly to the
     firewall as there is no way to get the device state for a firewall via Panorama.
@@ -11827,8 +11829,13 @@ def get_device_state(topology: Topology, target: str) -> dict:
     :param topology: `Topology` instance !no-auto-argument
     :param target: String to filter to only show specific hostnames or serial numbers.
     """
+    if not filename:
+        file_name = f"{target}_device_state.tar.gz"
+    else:
+        file_name = f"{target}_{filename}_device_state.tar.gz"
+
     return fileResult(
-        filename=f"{target}_device_state.tar.gz",
+        filename=file_name,
         data=FirewallCommand.get_device_state(topology, target),
         file_type=EntryType.ENTRY_INFO_FILE
     )
@@ -11936,9 +11943,14 @@ def pan_os_get_running_config(args: dict):
 
     if args.get("target"):
         params["target"] = args.get("target")
-
+    file_name_arg = args.get("filename")
+    target = args.get("target")
+    if file_name_arg != 'running_config' and file_name_arg and target:
+        file_name = target + '_' + file_name_arg + '_running_config'
+    else:
+        file_name = file_name_arg
     result = http_request(URL, 'POST', params=params, is_xml=True)
-    return fileResult("running_config", result)
+    return fileResult(file_name, result)
 
 
 def pan_os_get_merged_config(args: dict):
