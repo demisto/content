@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SlackBot - Create Support Case",
+        "SlackBot - Received Customer Kudos",
+        "SlackBot - Indicator Actions",
+        "SlackBot - Create Ticket"
+    ],
+    "caseInsensitive": true,
+    "cliName": "slackdomain",
+    "closeForm": true,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_slackdomain",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Slack Domain",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}
