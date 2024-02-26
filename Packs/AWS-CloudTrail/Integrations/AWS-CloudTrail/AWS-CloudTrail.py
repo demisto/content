@@ -11,21 +11,20 @@ from datetime import datetime, date
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
-AWS_ROLE_ARN = demisto.params()['roleArn']
-AWS_ROLE_SESSION_NAME = demisto.params()['roleSessionName']
-AWS_ROLE_SESSION_DURATION = demisto.params()['sessionDuration']
+PARAMS = demisto.params()
+AWS_DEFAULT_REGION = PARAMS['defaultRegion']
+AWS_ROLE_ARN = PARAMS['roleArn']
+AWS_ROLE_SESSION_NAME = PARAMS['roleSessionName']
+AWS_ROLE_SESSION_DURATION = PARAMS['sessionDuration']
 AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret_key')
-VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+AWS_ACCESS_KEY_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('access_key')
+AWS_SECRET_ACCESS_KEY = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret_key')
+VERIFY_CERTIFICATE = not PARAMS.get('insecure', True)
 proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 config = Config(
     connect_timeout=1,
-    retries=dict(
-        max_attempts=5
-    ),
-    proxies=proxies
+    retries={"max_attempts": 5},
+    proxies=proxies,
 )
 
 """HELPER FUNCTIONS"""
@@ -139,17 +138,7 @@ def handle_returning_date_to_string(date_obj):
     # If event time is a datetime object, convert it to string
     else:
         return date_obj.isoformat()
-
-# def handle_returning_date_to_string(date_obj):
-#    """Gets date object to string"""
-#    # if the returning date is a string leave it as is.
-#    if isinstance(date_obj, str):
-#        return date_obj
-#
-#    # if event time is datetime object - convert it to string.
-#    else:
-#        return date_obj.isoformat()
-
+        
 
 class DatetimeEncoder(json.JSONEncoder):
     # pylint: disable=method-hidden
