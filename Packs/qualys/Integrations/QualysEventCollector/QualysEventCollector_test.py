@@ -3,7 +3,7 @@ import pytest
 from CommonServerPython import *  # noqa: F401
 
 from QualysEventCollector import get_activity_logs_events_command, \
-    Client, fetch_events, get_host_list_detections_events, get_activity_logs_events
+    Client, fetch_events, get_activity_logs_events, fetch_assets, ASSETS_FETCH_FROM, ASSETS_DATE_FORMAT
 
 ACTIVITY_LOGS_NEWEST_EVENT_DATETIME = 'activity_logs_newest_event_datetime'
 ACTIVITY_LOGS_NEXT_PAGE = 'activity_logs_next_page'
@@ -114,3 +114,35 @@ def test_fetch_logs_events_command(requests_mock, activity_log_last_run, logs_nu
     assert logs_next_run.get(ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN) == activity_log_last_run or first_fetch_str
     assert logs_next_run.get(ACTIVITY_LOGS_NEWEST_EVENT_DATETIME) == "2023-05-24T09:55:35Z"
 
+
+def test_fetch_assets_command(requests_mock):
+    """
+    Given:
+    - fetch_assets_command
+    When:
+    - Want to list all existing incidents
+    Then:
+    - Ensure List assets and vulnerabilities.
+    """
+    base_url = 'https://server_url/'
+    with open('./test_data/host_list_detections_raw.xml') as f:
+        assets = f.read()
+    with open('./test_data/vulnerabilities_raw.xml') as f:
+        vulnerabilities = f.read()
+    requests_mock.get(f'{base_url}api/2.0/fo/asset/host/vm/detection/'
+                      f'?action=list&truncation_limit=3&vm_scan_date_after={arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}', text=assets)
+
+    requests_mock.post(f'{base_url}api/2.0/fo/knowledge_base/vuln/'
+                       f'?action=list&last_modified_after={arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}', text=vulnerabilities)
+
+    client = Client(base_url=base_url,
+                    verify=True,
+                    headers={},
+                    proxy=False,
+                    username='demisto',
+                    password='demisto',
+                    )
+    assets, vulnerabilities = fetch_assets(client=client)
+
+    assert len(assets) == 8
+    assert len(vulnerabilities) == 2

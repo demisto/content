@@ -221,7 +221,7 @@ def handle_vulnerabilities_result(raw_response: requests.Response) -> tuple[Opti
     """
     formatted_response = parse_raw_response(raw_response)
 
-    vulnerabilities = dict_safe_get(formatted_response, ['KNOWLEDGE_BASE_VULN_LIST_OUTPUT', 'RESPONSE', 'VULN_LIST', 'Vuln'])
+    vulnerabilities = dict_safe_get(formatted_response, ['KNOWLEDGE_BASE_VULN_LIST_OUTPUT', 'RESPONSE', 'VULN_LIST', 'VULN'])
     if isinstance(vulnerabilities, dict):
         vulnerabilities = [vulnerabilities]
 
@@ -531,16 +531,8 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
         next_page_field=ACTIVITY_LOGS_NEXT_PAGE,
         previous_run_time_field=ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN,
     )
-    fetch_events(
-        client=client,
-        last_run={},
-        first_fetch_time=first_fetch_time,
-        max_fetch=1,
-        fetch_function=get_host_list_detections_events,
-        newest_event_field=HOST_DETECTIONS_NEWEST_EVENT_DATETIME,
-        next_page_field=HOST_DETECTIONS_NEXT_PAGE,
-        previous_run_time_field=HOST_DETECTIONS_SINCE_DATETIME_PREV_RUN,
-    )
+
+    fetch_assets(client=client)
 
     return 'ok'
 
