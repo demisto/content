@@ -1,0 +1,740 @@
+commonfields:
+  id: Redmine
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Redmine
+display: Redmine (Developer Contribution)
+category: Utilities
+description: 'A project management and issue tracking system that provides a web-based platform for managing projects, tracking tasks, and handling various types of project-related activities. '
+configuration:
+- section: Connect
+  display: Server URL (e.g. https://1.1.1.1)
+  name: url
+  defaultvalue: https://1.1.1.1
+  type: 0
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- section: Connect
+  display: ''
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- display: Project id
+  name: Project id
+  type: 0
+  required: false
+script:
+  type: python
+  commands:
+  - name: redmine-issue-create
+    description: Create an issue
+    arguments:
+    - name: project_id
+      description: Add a project id for this issue
+      type: textArea
+      required: true
+    - name: tracker_id
+      description: Add a tracker id for this issue
+      type: textArea
+    - name: status_id
+      required: true
+      description: Add a status id for this issue
+      type: textArea
+    - name: priority_id
+      required: true
+      description: Add a priority id for this issue
+      type: textArea
+    - name: subject
+      required: true
+      description: Add a subject for this issue
+      type: textArea
+    - name: description
+      description: Add a description for this issue
+      type: textArea
+    - name: category_id
+      description: Add a category id for this issue
+      type: textArea
+    - name: fixed_version_id
+      description: Add a target version id for this issue
+      type: textArea
+    - name: assigned_to_id
+      description: Add an ID of the user to assign the issue to
+      type: textArea
+    - name: parent_issue_id
+      description: Add the ID of the parent issue
+      type: textArea
+    - name: custom_fields
+      auto: PREDEFINED
+      predefined:
+      - '["key":"value"'
+      - '...]'
+      description: Add an array of Key:value pairs as custom fields for this issue
+      isArray: true
+    - name: watcher_user_ids
+      description: Add an array with watchers user ids for this issue
+      isArray: true
+    - name: is_private
+      description: Is the issue private? (True/False)
+      defaultValue: 'True'
+      type: textArea
+    - name: estimated_hours
+      description: Add number of hours estimated for this issue
+      type: textArea
+    - name: file_entry_id
+      description: Add the entry ID of the file to upload
+      type: textArea
+    - name: file_name
+      description: Add the name of the file to attach
+      type: textArea
+    - name: file_description
+      description: Add the description of the file you attached
+      type: textArea
+    - name: file_content_type
+      description: Add the file content of the file you attached
+      type: textArea
+    outputs:
+    - contextPath: Redmine.issue
+      description: kmsjnak
+  - name: redmine-issue-list
+    description: Show a list of issues
+    arguments:
+    - name: page_number
+      description: Add a page number
+      type: textArea
+    - name: page_size
+      description: Add page size (default is 50)
+      type: textArea
+    - name: limit
+      description: Add the number of issues to show in the response (default 50 maximum 100)
+      type: textArea
+    - name: sort
+      description: Add a field to sort according to. Append :desc to invert the order
+      type: textArea
+    - name: include
+      description: Add an array of extra fields to fetch (possible value- attachments/relations)
+      isArray: true
+    - name: issue_id
+      description: Add an array of issues' ids to show
+      isArray: true
+    - name: project_id
+      description: Add a project id to show issues of this project
+      type: textArea
+    - name: subproject_id
+      description: Add a subproject id to show issues of this subproject_id (use project_id=someID and subproject_id=!* to exclude subproject)
+      type: textArea
+    - name: tracker_id
+      description: Add a tracker id to show issues of this tracker id
+      type: textArea
+    - name: status_id
+      description: Add a status id to show issues of this status id
+      type: textArea
+    - name: assigned_to_id
+      description: Add a assigned-to id to show issues which are assigned to this user id
+      type: textArea
+    - name: parent_id
+      description: Add a parent id to show issues which are under to this parent id
+      type: textArea
+    - name: cf_x
+      description: Add this field to get issues with the given value for a custom field with an id of x
+      type: textArea
+    outputs:
+    - contextPath: Redmine.issue
+      description: Show a list of issues
+  - name: redmine-issue-update
+    description: Update an issue
+    arguments:
+    - name: issue_id
+      description: Add the id of the issue you want to change
+      type: textArea
+      required: true
+    - name: project_id
+      description: Add a project id to update for this issue
+      type: textArea
+    - name: tracker_id
+      description: Add a tracker id to update for this issue
+      type: textArea
+    - name: status_id
+      description: Add a status id to update for this issue
+      type: textArea
+    - name: priority_id
+      description: Add a priority id to update for this issue
+      type: textArea
+    - name: subject
+      description: Add a subject to update for this issue
+      type: textArea
+    - name: description
+      description: Add a project id to update for this issue
+      type: textArea
+    - name: category_id
+      description: Add a category id to update for this issue
+      type: textArea
+    - name: fixed_version_id
+      description: Add a fixed version id to update for this issue
+      type: textArea
+    - name: assigned_to_id
+      description: Add an id of the user to assign the issue to
+      type: textArea
+    - name: parent_issue_id
+      description: Add an id of the parent issue to update for this issue
+      type: textArea
+    - name: custom_fields
+      description: Add an array of [{key:value}] to update for this issue
+      isArray: true
+    - name: watcher_user_ids
+      description: Add an array of user ids to add as watchers
+      isArray: true
+    - name: is_private
+      description: Is the issue private? (True/False)
+      type: textArea
+    - name: estimated_hours
+      description: Add number of hours estimated for this issue
+      type: textArea
+    - name: notes
+      description: Add comment about the update
+      type: textArea
+    - name: private_notes
+      description: Add True is the notes are private
+      type: textArea
+    - name: file_entry_id
+      description: Add the entry ID of the file to upload
+      type: textArea
+    - name: file_name
+      description: Add the name of the file to attach
+      type: textArea
+    - name: file_description
+      description: Add the description of the file you attached
+      type: textArea
+    - name: file_content_type
+      description: Add the file content of the file you attached
+      type: textArea
+    outputs:
+    - contextPath: Redmine.issue
+      description: kmsjnak
+  - name: redmine-issue-show
+    description: Show an issue by id
+    arguments:
+    - name: issue_id
+      description: Add the id of the issue you want to show
+      type: textArea
+      required: true
+    - name: include
+      description: fields to add to the response (possible values- children/attachments/relations/changesets/journals/watchers/allowed_statuses)
+      isArray: true
+    outputs:
+    - contextPath: Redmine.Issue
+      description: Show the issue with specified id
+  - name: redmine-issue-delete
+    description: Delete an issue by id
+    arguments:
+    - name: issue_id
+      description: Add the id of the issue you want to remove
+      type: textArea
+      required: true
+    outputs:
+    - contextPath:
+      description: kmlm
+  - name: redmine-issue-watcher-add
+    description: Add a watcher to your wanted issue
+    arguments:
+    - name: issue_id
+      description: Add the id of the issue you want to add a watcher to
+      type: textArea
+      required: true
+    - name: watcher_id
+      description: Add the id of the watcher to append to the issue
+      type: textArea
+      required: true
+    outputs:
+    - contextPath:
+      description: jknlo
+  - name: redmine-issue-watcher-remove
+    description: Remove a watcher of an issue
+    arguments:
+    - name: issue_id
+      description: Enter the id of the issue you want to update
+      type: textArea
+      required: true
+    - name: watcher_id
+      description: Enter the id of the watcher to remove from this issue
+      type: textArea
+      required: true
+    outputs:
+    - contextPath:
+      description: kiinon
+  - name: redmine-project-list
+    description: Return all projects (public and private, the user has access to)
+    arguments:
+    - name: include
+      description: Add which fields to add to the response (possible values- trackers/issue_categories/enabled_modules/time_entry_activities/issue_custom_fields)
+      isArray: true
+      type: textArea
+    outputs:
+    - contextPath: Redmine.Project
+      description: All projects the user has access to
+  - name: redmine-custom-field-list
+    description: Returns all custom fields definitions
+    arguments:
+    outputs:
+    - contextPath: Redmine.CustomField
+      description: Returns all custom fields which are being used
+  - name: redmine-user-id-list
+    description: Returns a list of users
+    arguments:
+    - name: status
+      description: Get only users with a specific status (possible values-1/2/3; 1-Active, 2-Registered, 3-Locked)
+      type: textArea
+    - name: name
+      description: Get only users with a specific name (search for a match in firstname,lastname and email)
+      type: textArea
+    - name: group_id
+      description: Get only users with a specific group id
+      type: textArea
+    outputs:
+    - contextPath: Redmine.Users
+      description: Returns a list of all users
+  dockerimage: demisto/python3:3.10.9.42476
+  runonce: false
+  subtype: python3
+  script: >
+    register_module_line('Redmine', 'start', __line__())
+
+    ### pack version: 1.0.0
+
+
+
+
+
+
+    from typing import Any
+
+
+    ''' CONSTANTS '''
+
+
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+
+    POST_PUT_HEADER = {'Content-Type': 'application/json'}
+
+    GET_HEADER = {}
+
+    UPLOAD_FILE_HEADER = {'Content-Type': 'application/octet-stream'}
+
+
+    ''' CLIENT CLASS '''
+
+    class Client(BaseClient):
+        def __init__(self, server_url, verify=True, proxy=False, headers=None, auth=None):
+            super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
+
+        def create_issue_request(self, args):
+            try:
+                subject = args.pop('subject', None)
+                uploads = args.pop('uploads', None)
+                if subject:
+                    body_for_request = {'issue': {'subject': subject}}
+                if uploads:
+                    body_for_request['issue']['uploads'] = uploads
+                response = self._http_request('POST', '/issues.json', params=args,
+                                              json_data=body_for_request, headers=POST_PUT_HEADER)
+            except Exception as e:
+                raise DemistoException(f'Could not create an issue with error: {e}')
+            return response
+
+        def create_file_token_request(self, args, file_address_arg):
+            response = self._http_request('POST', '/uploads.json', params=args, headers=UPLOAD_FILE_HEADER,
+                                          json_data=file_address_arg)
+            return response
+
+        def update_issue_request(self, args):
+            issue_id = args.pop('issue_id')
+            file_token = args.pop('token', None)
+            file_name = args.pop('file_name', '')
+            description = args.pop('description', '')
+            content_type = args.pop('content_type', '')
+            if file_token:
+                args['uploads'] = [{'token': file_token, 'file_name': file_name,
+                                    'description': description, 'content_type': content_type}]
+            response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": args}, headers=POST_PUT_HEADER)
+            return response
+
+        def get_issues_list_request(self, args: dict[str, Any]):
+            response = self._http_request('GET', '/issues.json', params=args, headers=GET_HEADER)
+            return response
+
+        def delete_issue_by_id_request(self, issue_id):
+            response = self._http_request('DELETE', f'/issues/{issue_id}.json', headers=POST_PUT_HEADER)
+            return response
+
+        def get_issue_by_id_request(self, args, issue_id):
+            response = self._http_request('GET', f'/issues/{issue_id}.json', params=args, headers=POST_PUT_HEADER)
+            return response
+
+        def add_issue_watcher_request(self, issue_id, watcher_id):
+            args_to_add = {'user_id': watcher_id}
+            response = self._http_request('POST', f'/issues/{issue_id}/watchers.json', params=args_to_add, headers=POST_PUT_HEADER)
+            return response
+
+        def remove_issue_watcher_request(self, issue_id, watcher_id):
+            response = self._http_request('DELETE', f'/issues/{issue_id}/watchers/{watcher_id}.json', headers=POST_PUT_HEADER)
+            return response
+
+        def get_project_list_request(self, args: dict[str, Any]):
+            response = self._http_request('GET', '/projects.json', params=args, headers=GET_HEADER)
+            return response
+
+        def get_custom_fields_request(self):
+            response = self._http_request('GET', '/custom_fields.json', headers=GET_HEADER)
+            return response
+
+        def get_users_request(self, args: dict[str, Any]):
+            response = self._http_request('GET', 'users.json', params=args, headers=GET_HEADER)
+            return response
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def create_paging_header(page_size: int, page_number: int):
+        return '#### Showing' + (f' {page_size}') + ' results' + (f' from page {page_number}') + ':\n'
+
+    def adjust_paging_to_request(args: dict[str,Any]):
+        page_number = args.pop('page_number', None)
+        page_size = args.pop('page_size', None)
+        limit = args.pop('limit', None)
+        offset_to_dict = None
+        limit_to_dict = None
+        page_header = None
+        if page_number or page_size:
+            if page_size:
+                page_size = int(page_size)
+            else:
+                page_size = 50
+            if page_number:
+                page_number = int(page_number)
+            else:
+                page_number = 1
+            offset_to_dict = (page_number - 1) * page_size
+            limit_to_dict = page_size
+            page_header = create_paging_header(page_size, page_number)
+        elif limit:
+            offset_to_dict = 0
+            limit_to_dict = limit
+            page_header = create_paging_header(limit_to_dict, 1)
+        return offset_to_dict, limit_to_dict, page_header
+
+    def map_header(header_string: str):
+        header_mapping = {
+            'id': 'ID',
+            'login': 'Login',
+            'admin': 'Admin',
+            'firstname': 'First Name',
+            'lastname': 'Last Name',
+            'mail': 'Email',
+            'created_on': 'Created On',
+            'last_login_on': 'Last Login On'
+        }
+        return header_mapping.get(header_string, header_string)
+
+    def split_comma_to_array(string: str):
+        return string.split(',')
+
+    ''' COMMAND FUNCTIONS '''
+
+
+    def test_module(client: Client) -> None:
+        message: str = ''
+        try:
+            if (get_issues_list_command(client, {'limit':'1'})):
+                message = 'ok'
+        except DemistoException as e:
+            if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+                message = 'Authorization Error: make sure API Key is correctly set'
+            else:
+                raise e
+        return return_results(message)
+
+
+    def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
+        required_fields = ['status_id', 'priority_id', 'subject', 'project_id']
+        missing_fields = [field for field in required_fields if not args.get(field)]
+        if missing_fields:
+            raise DemistoException('One or more required arguments not specified: {}'.format(', '.join(missing_fields)))
+        
+        '''Checks if a file needs to be added'''
+        entry_id = args.get('entry_id')
+        if entry_id:
+            file_name = args.get('file_name', '')
+            file_description = args.get('file_description', '')
+            content_type = args.get('file_content_type', '')
+
+            args_for_file = assign_params(file_name=file_name)
+            response = client.create_file_token_request(args_for_file, entry_id)
+
+            if 'upload' not in response:
+                raise DemistoException(f"Could not upload file with entry id {entry_id}")
+
+            uploads = assign_params(token=response['upload'].get('token', ''),
+                                    content_type=content_type,
+                                    file_name=file_name,
+                                    description=file_description)
+            args['uploads'] = [uploads]
+            
+        response = client.create_issue_request(args)['issue']
+
+        headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'estimated_hours', 'created_on',
+                   'subject', 'description', 'start_date', 'estimated_hours', 'custom fields']
+        response['id'] = str(response['id'])
+        
+        command_results = CommandResults(
+            outputs_prefix='Redmine.Issue',
+            outputs_key_field='id',
+            outputs=response,
+            raw_response=response,
+            readable_output=tableToMarkdown('The issue you created:', response, headers=headers,
+                                            removeNull=True, is_auto_json_transform=True, headerTransform=pascalToSpace)
+        )
+        # print(command_results.readable_output)
+        return command_results
+
+
+    def update_issue_command(client: Client, args: dict[str, Any]):
+        # need to deal with watchers,customfields,attachments
+        issue_id = args.get('issue_id')
+        if issue_id:
+            entry_id = args.pop('entry_id', None)
+            file_name = args.pop('entry_id', '')
+            if (entry_id):
+                file_token = client.create_file_token_request(assign_params(file_name=file_name), entry_id)['upload']['token']
+                args = assign_params(token=file_token, **args)
+            response = client.update_issue_request(args)
+            command_results = CommandResults(
+                readable_output=f'Issue with id {issue_id} was successfully updated.')
+            # print(command_results.readable_output)
+            return (command_results)
+        else:
+            raise DemistoException('Issue_id is missing- in order to update this issue')
+
+    def get_issues_list_command(client: Client, args: dict[str, Any]):
+        offset_to_dict, limit_to_dict, page_header = adjust_paging_to_request(args)
+        args = assign_params(offset=offset_to_dict, limit=limit_to_dict, **args)
+        response = client.get_issues_list_request(args)['issues']
+        if not page_header:
+            page_header = create_paging_header(len(response), 1)
+        for issue in response:
+            issue['id']=str(issue['id'])
+        headers = ['id', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date', 'due_date', 'done_ratio',
+                   'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'updated_on',
+                   'closed_on', 'attachments', 'relations']
+        command_results = CommandResults(
+            outputs_prefix='Redmine.Issue',
+            outputs_key_field='id',
+            outputs=response,
+            raw_response=response,
+            readable_output=page_header + tableToMarkdown('Issues Results:',
+                                                          response,
+                                                          headers=headers,
+                                                          removeNull=True,
+                                                          headerTransform=pascalToSpace,
+                                                          is_auto_json_transform=True))
+        # print(command_results.readable_output)
+        return command_results
+
+    def get_issue_by_id_command(client: Client, args: dict[str, Any]):
+        issue_id = args.pop('issue_id', None)
+        if issue_id:
+            include_possible_values = {'children', 'attachments', 'relations', 'changesets', 'journals', 'watchers', 'allowed_statuses'}
+            included_fields = args.get('include')
+            if included_fields and not all(field_value in include_possible_values for field_value in included_fields.split(',')):
+                raise DemistoException(f"You can only include the following values {include_possible_values}")
+            response = client.get_issue_by_id_request(args, issue_id)['issue']
+            headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date',
+                       'due_date', 'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'closed_on',
+                       'attachments', 'watchers', 'children', 'relations', 'changesets', 'journals', 'allowed_statuses']
+            response['id'] = str(response['id'])
+            command_results = CommandResults(outputs_prefix='Redmine.Issue',
+                                             outputs_key_field='id',
+                                             outputs=response,
+                                             raw_response=response,
+                                             readable_output=tableToMarkdown('Issues List:', response,
+                                                                            headers=headers,
+                                                                            removeNull=True,
+                                                                            headerTransform=underscoreToCamelCase,
+                                                                            is_auto_json_transform=True))
+            return command_results
+        else:
+            raise DemistoException('Issue_id is missing- in order to get this issue')
+
+
+    def delete_issue_by_id_command(client: Client, args: dict[str, Any]):
+        # if issue_id doesnt exist application crashes due to api 404
+        issue_id = args.get('issue_id')
+        if issue_id:
+            client.delete_issue_by_id_request(issue_id)
+            command_results = CommandResults(
+                readable_output=f'Issue with id {issue_id} was deleted successfully.')
+            # print(command_results.readable_output)
+            return (command_results)
+        else:
+            raise DemistoException('Issue_id is missing')
+
+
+    def add_issue_watcher_command(client: Client, args: dict[str, Any]):
+        issue_id = args.get('issue_id')
+        watcher_id = args.get('watcher_id')
+        if issue_id:
+            if watcher_id:
+                client.add_issue_watcher_request(issue_id, watcher_id)
+                command_results = CommandResults(
+                    readable_output=f'Watcher with id {watcher_id} was added successfully to issue with id {issue_id}.')
+                # print(command_results.readable_output)
+                return (command_results)
+            else:
+                raise DemistoException('watcher_id is missing in order to add this watcher')
+        else:
+            raise DemistoException('Issue_id is missing in order to add a watcher to this issue')
+
+
+    def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
+        issue_id = args.get('issue_id')
+        watcher_id = args.get('watcher_id')
+        if issue_id:
+            if watcher_id:
+                client.remove_issue_watcher_request(issue_id, watcher_id)
+                command_results = CommandResults(
+                    readable_output=f'Watcher with id {watcher_id} was removed successfully from issue with id {issue_id}.')
+                # print(command_results.readable_output)
+                return (command_results)
+            else:
+                raise DemistoException('watcher_id is missing in order to remove watcher from this issue')
+        else:
+            raise DemistoException('Issue_id is missing in order to remove watcher from this issue')
+
+
+    def get_project_list_command(client: Client, args: dict[str, Any]):
+        # sub field are as dictionary- ui not well
+        response = client.get_project_list_request(args)['projects']
+        headers = ['id', 'name', 'identifier', 'description', 'status', 'is_public', 'time_entry_activities', 'created_on',
+                   'updated_on', 'default_value', 'visible', 'roles']
+        command_results = CommandResults(outputs_prefix='Redmine.Project',
+                                        outputs_key_field='id',
+                                        outputs=response,
+                                        raw_response=response,
+                                        readable_output=tableToMarkdown('Projects List:', response,
+                                                                        headers=headers,
+                                                                        removeNull=True,
+                                                                        headerTransform=underscoreToCamelCase),
+                                        )
+        # print(command_results.readable_output)
+        return command_results
+
+
+    def get_custom_fields_command(client: Client, args):
+        #prints ugly the trackers
+        response = client.get_custom_fields_request()['custom_fields']
+        headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter', 'searchable',
+                   'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields']
+        command_results = CommandResults(outputs_prefix='Redmine.CustomField',
+                                        outputs_key_field='id',
+                                        outputs=response,
+                                        raw_response=response,
+                                        readable_output=tableToMarkdown('Custom Fields List:', response,
+                                                                        headers=headers,
+                                                                        removeNull=True,
+                                                                        headerTransform=underscoreToCamelCase,
+                                                                        is_auto_json_transform=True
+                                                                    )
+                                        )
+        # print(command_results.readable_output)
+        return command_results
+
+
+    def get_users_command(client: Client, args: dict[str, Any]):
+        possible_values_for_status = ['1','2','3']
+        status_for_request = args.get('status')
+        if status_for_request and status_for_request not in possible_values_for_status:
+            raise DemistoException(f'Status value for get users request must be one of the following {possible_values_for_status}')
+        response = client.get_users_request(args)['users']
+        headers = ['id', 'login', 'admin', 'firstname', 'lastname', 'mail', 'created_on', 'last_login_on']
+        command_results = CommandResults(outputs_prefix='Redmine.Users',
+                                         outputs_key_field='id',
+                                         outputs=response,
+                                         raw_response=response,
+                                         readable_output=tableToMarkdown('Users List:', response, headers=headers,
+                                                                        removeNull=True,headerTransform=map_header,
+                                                                        json_transform_mapping=True))
+        return command_results
+
+
+    def main() -> None:
+        params = demisto.params()
+        args = demisto.args()
+        base_url = params.get('url')
+        verify_certificate = not demisto.params().get('insecure', False)
+        proxy = params.get('proxy', False)
+
+        api_key = params['credentials']['password']
+
+        command = demisto.command()
+
+        POST_PUT_HEADER['X-Redmine-API-Key'] = api_key
+        UPLOAD_FILE_HEADER['X-Redmine-API-Key'] = api_key
+        GET_HEADER['X-Redmine-API-Key'] = api_key
+        
+        try:
+            commands = {'redmine-issue-create': create_issue_command,
+                        'redmine-issue-update': update_issue_command,
+                        'redmine-issue-show': get_issue_by_id_command,
+                        'redmine-issue-delete': delete_issue_by_id_command,
+                        'redmine-issue-watcher-add': add_issue_watcher_command,
+                        'redmine-issue-watcher-remove': remove_issue_watcher_command,
+                        'redmine-issue-list': get_issues_list_command,
+                        'redmine-project-list': get_project_list_command,
+                        'redmine-custom-field-list': get_custom_fields_command,
+                        'redmine-user-id-list': get_users_command}
+
+            client = Client(
+                base_url,
+                verify_certificate,
+                proxy,
+                auth=("", api_key))
+            # return_results(get_issues_list_command(client,{'sort':'priority:desc', 'limit':'20'}))
+            # return_results(get_issues_list_command(client,{'page'}))
+            # return_results(get_issues_list_command(client,{'sort':'priority:desc', 'limit':'20'}))
+            # return_results(create_issue_command(client,{'project_id':'1','status_id':'1', 'priority_id':'1', 'file_content_type': 'image/png',
+            #                                 'subject':'createfromcode', 'file_name':'tal.png','entry_id':'/Users/tcarmeli/Downloads/for_test.png'}))
+            # return_results(get_users_command(client, {}))
+            # return_results(get_users_command(client, {'name':'Redmine'}))
+            # return_results(get_custom_fields_command(client,{}))
+            # return_results(get_project_list_command(client,{'include':'time_entry_activities'}))
+            # return_results(remove_issue_watcher_command(client,{'issue_id':'44','watcher_id':'1'}))
+            # return_results(add_issue_watcher_command(client,{'issue_id':'58','watcher_id':'1'}))
+            # return_results(delete_issue_by_id_command(client, {'issue_id':'41'}))
+            return_results(get_issue_by_id_command(client, {'issue_id' : '44', 'include':'watchers,attachments'}))
+            # return_results(update_issue_command(client, {'issue_id' : '49', 'subject':'changeFromCode','tracker_id':'1',
+            #                                              'content_type':'image/png', 'entry_id':'/Users/tcarmeli/Downloads/for_test11.png',
+            #                                              'watcher_user_ids':'[1]'}))
+            if command == 'test-module':
+                return_results(test_module(client))
+            elif command in commands:
+                return_results(commands[command](client, args))
+        except Exception as e:
+            return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
+
+    ''' ENTRY POINT '''
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+
+    register_module_line('Redmine', 'end', __line__())
+  nativeimage:
+  - '8.3'
+  - '8.4'
+image: data:image/png;base64,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
+detaileddescription: "**This integration is supported by Palo Alto Networks.**\n***\n## Redmine Integration\n- Redmine is a flexible project management web application. Written using the Ruby on Rails framework, it is cross-platform and cross-database.\n- Redmine is open source and released under the terms of the GNU General Public License v2 (GPL).\n\n### Connent Using url server and an API key\n\n### Read the instruction to execute a call to api\n\n         \n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/redmine)"
