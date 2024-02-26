@@ -232,7 +232,7 @@ STATUS_NUM_TO_TEXT = {20: 'New',
 ''' MIRRORING DICTIONARIES & PARAMS '''
 
 DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'}
-IDP_DETECTION_STATUS = {'new', 'in_progress', 'closed', 'reopened'}
+IDP_AND_MOBILE_DETECTION_STATUS = {'new', 'in_progress', 'closed', 'reopened'}
 
 CS_FALCON_DETECTION_OUTGOING_ARGS = {'status': f'Updated detection status, one of {"/".join(DETECTION_STATUS)}'}
 
@@ -1850,9 +1850,9 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
     return http_request('PATCH', '/detects/entities/detects/v2', data=data)
 
 
-def resolve_idp_detection(ids, status):
+def resolve_idp_or_mobile_detection(ids, status):
     """
-        Send a request to update IDP detection status.
+        Send a request to update IDP/Mobile detection status.
         :type ids: ``list``
         :param ids: The list of ids to update.
         :type status: ``str``
@@ -2000,9 +2000,9 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None)
 
 
-def update_idp_detection_request(ids: list[str], status: str) -> dict:
+def update_idp_or_mobile_detection_request(ids: list[str], status: str) -> dict:
     """
-        Manage the status to send to update to for IDP detections.
+        Manage the status to send to update to for IDP/Mobile detections.
         :type ids: ``list``
         :param ids: The list of ids to update.
         :type status: ``str``
@@ -2010,10 +2010,10 @@ def update_idp_detection_request(ids: list[str], status: str) -> dict:
         :return: The response.
         :rtype ``dict``
     """
-    if status not in IDP_DETECTION_STATUS:
+    if status not in IDP_AND_MOBILE_DETECTION_STATUS:
         raise DemistoException(f'CrowdStrike Falcon Error: '
-                               f'Status given is {status} and it is not in {IDP_DETECTION_STATUS}')
-    return resolve_idp_detection(ids=ids, status=status)
+                               f'Status given is {status} and it is not in {IDP_AND_MOBILE_DETECTION_STATUS}')
+    return resolve_idp_or_mobile_detection(ids=ids, status=status)
 
 
 def list_host_groups(filter: str | None, limit: str | None, offset: str | None) -> dict:
@@ -2206,7 +2206,7 @@ def get_remote_data_command(args: dict[str, Any]):
             mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update {detection_type} detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_idp_detection_entries(updated_object, entries, remote_incident_id, detection_type)  # sets in place
+                set_xsoar_idp_or_mobile_detection_entries(updated_object, entries, remote_incident_id, detection_type)  # sets in place
 
         else:
             # this is here as prints can disrupt mirroring
@@ -2313,7 +2313,7 @@ def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, r
             reopen_in_xsoar(entries, remote_detection_id, 'Detection')
 
 
-def set_xsoar_idp_detection_entries(updated_object: dict[str, Any], entries: list, remote_idp_detection_id: str, incident_type_name: str):
+def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], entries: list, remote_idp_detection_id: str, incident_type_name: str):
     """
         Send the updated object to the relevant status handler
 
@@ -2330,7 +2330,7 @@ def set_xsoar_idp_detection_entries(updated_object: dict[str, Any], entries: lis
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
-        elif updated_object.get('status') in (set(IDP_DETECTION_STATUS) - {'closed'}):
+        elif updated_object.get('status') in (set(IDP_AND_MOBILE_DETECTION_STATUS) - {'closed'}):
             reopen_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
 
 
@@ -2461,9 +2461,9 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
 
             elif incident_type == IncidentType.IDP_OR_MOBILE_DETECTION:
-                result = update_remote_idp_detection(delta, parsed_args.inc_status, remote_incident_id)
+                result = update_remote_idp_or_mobile_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
-                    demisto.debug(f'IDP Detection updated successfully. Result: {result}')
+                    demisto.debug(f'IDP/Mobile Detection updated successfully. Result: {result}')
 
             else:
                 raise Exception(f'Executed update-remote-system command with undefined id: {remote_incident_id}')
@@ -2504,25 +2504,25 @@ def update_remote_detection(delta, inc_status: IncidentStatus, detection_id: str
     return ''
 
 
-def update_remote_idp_detection(delta, inc_status: IncidentStatus, detection_id: str) -> str:
+def update_remote_idp_or_mobile_detection(delta, inc_status: IncidentStatus, detection_id: str) -> str:
     """
-        Sends the request the request to update the relevant IDP detection entity.
+        Sends the request the request to update the relevant IDP/Mobile detection entity.
 
         :type delta: ``dict``
         :param delta: The modified fields.
         :type inc_status: ``IncidentStatus``
-        :param inc_status: The IDP detection status.
+        :param inc_status: The IDP/Mobile detection status.
         :type detection_id: ``str``
-        :param detection_id: The IDP detection ID to update.
+        :param detection_id: The IDP/Mobile detection ID to update.
     """
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
-        demisto.debug(f'Closing IDP detection with remote ID {detection_id} in remote system.')
-        return str(update_idp_detection_request([detection_id], 'closed'))
+        demisto.debug(f'Closing IDP/Mobile detection with remote ID {detection_id} in remote system.')
+        return str(update_idp_or_mobile_detection_request([detection_id], 'closed'))
 
     # status field in CS Falcon is mapped to State field in XSOAR
     elif 'status' in delta:
         demisto.debug(f'Detection with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
-        return str(update_idp_detection_request([detection_id], delta.get('status')))
+        return str(update_idp_or_mobile_detection_request([detection_id], delta.get('status')))
 
     return ''
 
@@ -6828,7 +6828,6 @@ def main():
             return_results(get_modified_remote_data_command(args))
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(args))
-
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
         elif command == 'cs-falcon-spotlight-search-vulnerability':
