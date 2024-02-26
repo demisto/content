@@ -47,7 +47,7 @@ class Client:
                  database: str, connect_parameters: str, ssl_connect: bool, use_pool=False, verify_certificate=True,
                  pool_ttl: int = DEFAULT_POOL_TTL, use_ldap: bool = False):
         if use_ldap and dialect != TERADATA:
-            raise ValueError(f"use_ldap is only supported with {TERADATA}")
+            raise ValueError(f"The LDAP parameter is only supported with {TERADATA}")
         self.dialect = dialect
         self.host = host
         self.username = username
@@ -119,13 +119,15 @@ class Client:
             setattr(sqlalchemy, GLOBAL_CACHE_ATTR, cache)
         return cache
 
-    def _create_engine_and_connect(self) -> sqlalchemy.engine.base.Connection:
+    def _generate_db_url(self, module):
         """
-        Creating and engine according to the instance preferences and connecting
-        :return: a connection object that will be used in order to execute SQL queries
+        This method generates the db url object for creating the engine later.
+        Args:
+            module:
+                The appropriate module according to the db.
+        Returns:
+                The URL object, in case of Teradata is an url string.
         """
-        ssl_connection = {}
-        module = self._convert_dialect_to_module(self.dialect)
         db_url = URL(drivername=module,
                      username=self.username,
                      password=self.password,
@@ -134,12 +136,6 @@ class Client:
                      database=self.dbname,
                      query=self.connect_parameters)
 
-        if self.ssl_connect:
-            if self.dialect == POSTGRES_SQL:
-                ssl_connection = {'sslmode': 'require'}
-            else:
-                ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}  # type: ignore[dict-item]
-
         # Teradata has a unique connection, unlike the others with URL object
         if self.dialect == TERADATA:
             if self.use_ldap:
@@ -147,6 +143,23 @@ class Client:
             else:
                 db_url = f'teradatasql://{self.host}:{self.port}/?user={self.username}&password={self.password}'
             demisto.debug('Initializing engine using the Teradata dialect')
+
+        return db_url
+
+    def _create_engine_and_connect(self) -> sqlalchemy.engine.base.Connection:
+        """
+        Creating and engine according to the instance preferences and connecting
+        :return: a connection object that will be used in order to execute SQL queries
+        """
+        ssl_connection = {}
+        module = self._convert_dialect_to_module(self.dialect)
+        db_url = self._generate_db_url(module)
+
+        if self.ssl_connect:
+            if self.dialect == POSTGRES_SQL:
+                ssl_connection = {'sslmode': 'require'}
+            else:
+                ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}  # type: ignore[dict-item]
 
         if self.use_pool:
             if 'expiringdict' not in sys.modules:
@@ -188,6 +201,7 @@ class Client:
 
         headers = []
         if results:
+            # Teradata's response structure differs from those of other databases
             if self.dialect == TERADATA:
                 headers = list(result.keys())
             else:
