@@ -7,7 +7,8 @@
     - Problem investigation
     - Known error
     - Task
-    - Incident    
+    - Incident
+    - Work order  
 
 **Note:**  
 To delete a ticket the user must have an Admin role. 
