@@ -610,7 +610,6 @@ def test_generate_variable_names_and_mapping_sap_hana():
     assert sql_query == expected_query
 
 
-STR_BIND_VARIABLES_NAMES = 'ID, LastName, FirstName'
 STR_VARIABLES_VALUE = '2, lname, fname'
 
 
@@ -641,7 +640,8 @@ def test_generate_bind_vars_with_bind_variables_names():
     """
     from GenericSQL import generate_bind_vars
     dialect = 'SAP HANA'
-    bind_variables, sql_query = generate_bind_vars(STR_BIND_VARIABLES_NAMES, STR_VARIABLES_VALUE, EXPECTED_QUERY_WITH_NAMES_LIST,
+    str_bind_variables_names = 'ID, LastName, FirstName'
+    bind_variables, sql_query = generate_bind_vars(str_bind_variables_names, STR_VARIABLES_VALUE, EXPECTED_QUERY_WITH_NAMES_LIST,
                                                    dialect)
     assert bind_variables == EXPECTED_VARIABLES_DICT_WITH_NAMES_LIST
     assert sql_query == EXPECTED_QUERY_WITH_NAMES_LIST
