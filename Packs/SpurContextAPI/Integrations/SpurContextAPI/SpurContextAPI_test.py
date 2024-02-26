@@ -53,7 +53,7 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 import pytest
-from SpurContextAPI import Client, enrich_command, test_module
+from SpurContextAPI import Client, enrich_command, test_module, main
 
 # Sample API response for testing
 MOCK_HTTP_RESPONSE = {
@@ -106,17 +106,21 @@ def client(mocker):
 
 
 def test_enrich_command(client):
-    """
-    Test the enrich_command function to ensure it correctly processes the mock HTTP response.
-    """
     args = {'ip': '192.168.1.1'}
     result = enrich_command(client, args)
     assert result.outputs['ip'] == MOCK_HTTP_RESPONSE['ip']
 
 
 def test_test_module(client):
-    """
-    Test the test_module function to ensure it behaves correctly with the mock HTTP response.
-    """
     result = test_module(client)
     assert result == 'ok'
+
+
+def test_main_enrich_command(mocker):
+    mocker.patch('SpurContextAPI.demisto.command', return_value='spur-context-api-enrich')
+    mocker.patch('SpurContextAPI.demisto.args', return_value={'ip': '192.168.1.1'})
+    mock_enrich = mocker.patch('SpurContextAPI.enrich_command')
+    mocker.patch('SpurContextAPI.return_results')
+    main()
+
+    mock_enrich.assert_called_once_with(mocker.ANY, {'ip': '192.168.1.1'})
