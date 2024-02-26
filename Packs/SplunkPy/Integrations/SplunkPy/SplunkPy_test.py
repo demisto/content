@@ -404,7 +404,7 @@ def test_splunk_submit_event_hec_command_without_request_channel(mocker):
     """
     args = {}
     mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=check_request_channel(args))
-    
+
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
                                            args=args)
