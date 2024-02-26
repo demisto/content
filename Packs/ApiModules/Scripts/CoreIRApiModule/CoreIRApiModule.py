@@ -934,8 +934,7 @@ class CoreClient(BaseClient):
                                                ip_list: list, vendor: list, vendor_id: list, product: list,
                                                product_id: list,
                                                serial: list,
-                                               hostname: list, violation_ids: list, username: list) \
-        -> Dict[str, Any]:
+                                               hostname: list, violation_ids: list, username: list) -> Dict[str, Any]:
         arg_list = {'type': type_of_violation,
                     'endpoint_id_list': endpoint_ids,
                     'ip_list': ip_list,
@@ -1731,12 +1730,12 @@ def validate_args_scan_commands(args):
               'and without any other filters. This may cause performance issues.\n' \
               'To scan/abort scan some of the endpoints, please use the filter arguments.'
     if all_:
-        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
-            or ip_list or group_name or platform or alias or hostname:
+        if (endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen
+                or ip_list or group_name or platform or alias or hostname):
             raise Exception(err_msg)
     elif not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
-        and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
-        and not alias and not hostname:
+            and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+            and not alias and not hostname:
         raise Exception(err_msg)
 
 
