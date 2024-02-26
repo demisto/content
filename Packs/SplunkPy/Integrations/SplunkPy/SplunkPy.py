@@ -2401,8 +2401,9 @@ def splunk_submit_event_hec(
     headers = {
         'Authorization': f'Splunk {hec_token}',
         'Content-Type': 'application/json',
-        'X-Splunk-Request-Channel': request_channel
     }
+    if request_channel:
+        headers['X-Splunk-Request-Channel'] = request_channel
 
     return requests.post(
         f'{baseurl}/services/collector/event',
