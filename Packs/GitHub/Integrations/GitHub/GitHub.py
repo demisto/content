@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -2244,7 +2246,6 @@ def main():
 
     HEADERS = {
         'Authorization': "Bearer " + TOKEN,
-        'User-Agent': 'curl/8.4.0'
     }
 
     handle_proxy()
