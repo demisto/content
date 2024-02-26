@@ -25,7 +25,7 @@ def get_github_timestamp_format(value):
         TypeError: If the input value is not a valid time.
     """
     if isinstance(value, int):
-        value = datetime.utcfromtimestamp(value / 1e3)
+        value = datetime.utcfromtimestamp(value / 1000)
     elif isinstance(value, str):
         value = dateparser.parse(value)
     if not isinstance(value, datetime):
