@@ -1,4 +1,4 @@
-# Beyond Trust Password Safe
+# BeyondTrust Password Safe
 Unified password and session management for seamless accountability and control over privileged accounts.
 
 <~XSIAM>
@@ -32,7 +32,7 @@ Follow the steps below:
 12. Click **Test Connector** to determine if the event forwarding configuration is successful.
 13. Click **Create Connector**.
 
-See BeyondTrust Password Safe [Enable Syslog Event Forwarding](https://www.beyondtrust.com/docs/beyondinsight-password-safe/bi/integrations/third-party/snmp-trap-and-syslog.htm#:~:text=Enable%20Syslog%20Event%20Forwarding) guide for additional details. Remark: The timestamp extracted from the BeyondTrust Beyond Safe events are interpreted in UTC timezone. 
+See BeyondTrust Password Safe [Enable Syslog Event Forwarding](https://www.beyondtrust.com/docs/beyondinsight-password-safe/bi/integrations/third-party/snmp-trap-and-syslog.htm#:~:text=Enable%20Syslog%20Event%20Forwarding) guide for additional details. Remark: The timestamp extracted from the BeyondTrust Password Safe events are interpreted in UTC timezone. 
 
 ### Configuration on Cortex XSIAM
 
