@@ -4029,7 +4029,7 @@ def test_pan_os_get_running_config(mocker):
     <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
     """
     mocker.patch("Panorama.http_request", return_value=return_mock)
-    created_file = pan_os_get_running_config({"target": "SOME_SERIAL_NUMBER"})
+    created_file = pan_os_get_running_config({"target": "SOME_SERIAL_NUMBER", "filename": "running_config"})
     assert created_file['File'] == 'running_config'
 
 
