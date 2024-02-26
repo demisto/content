@@ -1810,6 +1810,8 @@ def delete_scheduled_task_command(client: Client, task_ids: List[int]):
     for task_id in task_ids:
         try:
             _task_id = arg_to_number(task_id)
+            if not _task_id:
+                raise ValueError(f"Could not parse {_task_id} into integer")
         except ValueError:
             results.append(
                 CommandResults(
