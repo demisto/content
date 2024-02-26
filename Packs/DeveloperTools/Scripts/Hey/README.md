@@ -16,6 +16,7 @@ Use rakyll/hey to test a web application with a load of requests.
 | results_map | Additional information to add to the result. Comma separated list of "key=value". e.g. Content-Type=text/plain,Accept=\*/\*. |
 | body | HTTP request body. |
 | proxy | HTTP Proxy address as host:port. |
+| user | Server user and password as user:password. |
 | enable_http2 | Enable HTTP/2. |
 | disable_redirects | Disable following of HTTP redirects. |
 

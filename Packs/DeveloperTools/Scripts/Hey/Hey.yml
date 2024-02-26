@@ -45,6 +45,8 @@ args:
   description: HTTP request body.
 - name: proxy
   description: HTTP Proxy address as host:port.
+- name: user
+  description: Server user and password as user:password.
 - name: enable_http2
   auto: PREDEFINED
   predefined:

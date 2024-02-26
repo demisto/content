@@ -53,8 +53,9 @@ def construct_hey_query(url: str,
                         headers: Optional[str] = None,
                         body: Optional[str] = None,
                         proxy: Optional[str] = None,
+                        user: Optional[str] = None,
                         enable_http2: Optional[str] = None,
-                        disable_redirects: Optional[str] = None):
+                        disable_redirects: Optional[str] = None) -> tuple[dict, str]:
     hey_map = assign_params(
         t=timeout,
         n=requests_number,
@@ -62,7 +63,8 @@ def construct_hey_query(url: str,
         m=method,
         z=duration + 's' if duration else None,
         d=body,
-        x=proxy
+        x=proxy,
+        u=user
     )
     hey_query = "hey "
     if disable_compression == 'true':
@@ -75,7 +77,7 @@ def construct_hey_query(url: str,
         for header_key, header_val in name_value_arg_to_dict(headers).items():
             hey_query += f' -H {header_key}:{header_val} '
     hey_query += " ".join(f"-{k} {v}" for k, v in hey_map.items()) + f' {url}'
-    hey_query = hey_query.replace("  ", " ")  # remove double spaces
+    hey_query = re.sub('\s{2,}', ' ', hey_query).strip()  # remove double spaces
     return hey_map, hey_query
 
 
@@ -168,9 +170,10 @@ def run_hey_test(url: str,
                  headers: Optional[str] = None,
                  body: Optional[str] = None,
                  proxy: Optional[str] = None,
+                 user: Optional[str] = None,
                  enable_http2: Optional[str] = None,
                  disable_redirects: Optional[str] = None,
-                 *_args, **_kwargs) -> CommandResults:
+                 **_) -> CommandResults:
     hey_map, hey_query = construct_hey_query(url,
                                              requests_number,
                                              timeout,
@@ -181,6 +184,7 @@ def run_hey_test(url: str,
                                              headers,
                                              body,
                                              proxy,
+                                             user,
                                              enable_http2,
                                              disable_redirects)
     result = subprocess.check_output(hey_query.split(), stderr=subprocess.STDOUT, text=True)
@@ -188,12 +192,10 @@ def run_hey_test(url: str,
 
 
 def main() -> None:  # pragma: no cover
-    args = demisto.args()
     try:
-        return_results(run_hey_test(**args))
-    # Log exceptions and return errors
+        return_results(run_hey_test(**demisto.args()))
     except Exception as e:
-        return_error(f'Error:\n{str(e)}')
+        return_error(f'Error in Hey:\n{e}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

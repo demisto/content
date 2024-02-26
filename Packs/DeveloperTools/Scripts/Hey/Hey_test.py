@@ -90,6 +90,11 @@ def test_construct_hey_query():
     assert res[0] == {'x': proxy}
     assert res[1] == f'hey -x {proxy} {url}'
 
+    user = "b:2"
+    res = hey.construct_hey_query(url, user=user)
+    assert res[0] == {'u': user}
+    assert res[1] == f'hey -u {user} {url}'
+
     enable_http2 = "true"
     res = hey.construct_hey_query(url, enable_http2=enable_http2)
     assert res[0] == {}
@@ -111,6 +116,7 @@ def test_construct_hey_query():
         headers=headers,
         body=body,
         proxy=proxy,
+        user=user,
         enable_http2=enable_http2,
         disable_redirects=disable_redirects
     )
@@ -121,10 +127,13 @@ def test_construct_hey_query():
         'm': method,
         'z': duration + 's',
         'd': body,
-        'x': proxy
+        'x': proxy,
+        'u': user
     }
-    assert res[1] == 'hey --disable-compression -h2 -disable-redirects -H a:1 -H b:2 -t 2 -n 2 -c 2 -m POST -z' \
-                     ' 2s -d {} -x a:1 http://mock.com'
+    assert res[1] == (
+        'hey --disable-compression -h2 -disable-redirects -H a:1 -H b:2 '
+        '-t 2 -n 2 -c 2 -m POST -z 2s -d {} -x a:1 -u b:2 http://mock.com'
+    )
 
 
 def test_run_hey_test(mocker):
