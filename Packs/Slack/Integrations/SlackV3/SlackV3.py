@@ -2051,14 +2051,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
                 if investigation.get('type') != PLAYGROUND_INVESTIGATION_TYPE:
                     link = server_links.get('warRoom')
                     if link:
-                        if is_xsiam():
-                            incident_id = demisto.callingContext.get('context', {}).get('Inv', {}).get('id')
-                            incident_url = urlparse(link)
-                            link = incident_url.scheme + "://" + incident_url.netloc + "/incidents"
-                            if incident_id and incident_id.startswith('INCIDENT-'):
-                                link += f"/war_room?caseId={incident_id.split('-')[-1]}"
-                            else:
-                                link += f"/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
+                        link = get_war_room_url(link)
                         if entry:
                             link += '/' + entry
                         message += f'\nView it on: {link}'
