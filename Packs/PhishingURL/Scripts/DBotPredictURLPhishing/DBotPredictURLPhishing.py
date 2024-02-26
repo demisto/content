@@ -43,7 +43,6 @@ MSG_NO_ACTION_ON_MODEL = "Use current model"
 MSG_WHITE_LIST = "White List"
 MSG_REDIRECT = 'Prediction will be made on the last URL'
 MSG_NEED_TO_UPDATE_RASTERIZE = "Please install and/or update rasterize pack"
-EMPTY_STRING = ""
 URL_PHISHING_MODEL_NAME = "url_phishing_model"
 OUT_OF_THE_BOX_MODEL_PATH = '/model/model_docker.pkl'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
@@ -118,6 +117,13 @@ MAPPING_VERDICT_TO_DISPLAY_VERDICT = {
                      None: None}
 }  # type: Dict
 
+VERDICT_TO_INT = {
+    MALICIOUS_VERDICT: 3,
+    BENIGN_VERDICT: 1,
+    BENIGN_VERDICT_WHITELIST: 1,
+    SUSPICIOUS_VERDICT: 2
+}
+
 TIMEOUT_REQUESTS = 5
 WAIT_TIME_RASTERIZE = 5
 TIMEOUT_RASTERIZE = 120
@@ -149,7 +155,7 @@ def decode_model_data(model_data: str):
     :param model_data: string of the encoded based 64 model
     :return: Model
     """
-    return dill.loads(base64.b64decode(model_data.encode('utf-8')))  # guardrails-disable-line
+    return dill.loads(base64.b64decode(model_data.encode('utf-8')))
 
 
 def load_oob(path=OUT_OF_THE_BOX_MODEL_PATH):
@@ -160,13 +166,11 @@ def load_oob(path=OUT_OF_THE_BOX_MODEL_PATH):
     """
     with open(path, 'rb') as f:
         model_b = f.read()
-        model_64 = base64.b64encode(model_b)
-    return model_64
+    return base64.b64encode(model_b)
 
 
 def load_model_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH):
-    model = dill.load(open(path, 'rb'))  # guardrails-disable-line
-    return model
+    return dill.load(open(path, 'rb'))  # guardrails-disable-line
 
 
 def load_oob_model(path: str):
@@ -213,9 +217,7 @@ def image_from_base64_to_bytes(base64_message: str):
     :param base64_message:
     :return:
     """
-    base64_bytes = base64_message.encode('utf-8')
-    message_bytes = base64.b64decode(base64_bytes)
-    return message_bytes
+    return base64.b64decode(base64_message.encode('utf-8'))
 
 
 def extract_domainv2(url):
@@ -239,14 +241,12 @@ def get_colored_pred_json(pred_json: dict) -> dict:
     :param pred_json: json to color
     :return: json
     """
-    pred_json_colored = copy.deepcopy(pred_json)
-    pred_json_colored[MODEL_KEY_SEO] = MAPPING_VERDICT_TO_DISPLAY_VERDICT[MODEL_KEY_SEO][pred_json[MODEL_KEY_SEO]]
-    pred_json_colored[MODEL_KEY_LOGO_FOUND] = MAPPING_VERDICT_TO_DISPLAY_VERDICT[MODEL_KEY_LOGO_FOUND][
-        pred_json[MODEL_KEY_LOGO_FOUND]]
-    pred_json_colored[MODEL_KEY_LOGIN_FORM] = MAPPING_VERDICT_TO_DISPLAY_VERDICT[MODEL_KEY_LOGIN_FORM][
-        pred_json[MODEL_KEY_LOGIN_FORM]]
-    pred_json_colored[DOMAIN_AGE_KEY] = MAPPING_VERDICT_TO_DISPLAY_VERDICT[DOMAIN_AGE_KEY][pred_json[DOMAIN_AGE_KEY]]
-    return pred_json_colored
+    return copy.deepcopy(pred_json) | {
+        MODEL_KEY_SEO: MAPPING_VERDICT_TO_DISPLAY_VERDICT[MODEL_KEY_SEO][pred_json[MODEL_KEY_SEO]],
+        MODEL_KEY_LOGO_FOUND: MAPPING_VERDICT_TO_DISPLAY_VERDICT[MODEL_KEY_LOGO_FOUND][pred_json[MODEL_KEY_LOGO_FOUND]],
+        MODEL_KEY_LOGIN_FORM: MAPPING_VERDICT_TO_DISPLAY_VERDICT[MODEL_KEY_LOGIN_FORM][pred_json[MODEL_KEY_LOGIN_FORM]],
+        DOMAIN_AGE_KEY: MAPPING_VERDICT_TO_DISPLAY_VERDICT[DOMAIN_AGE_KEY][pred_json[DOMAIN_AGE_KEY]],
+    }
 
 
 def create_x_pred(output_rasterize: dict, url: str) -> pd.DataFrame:
@@ -279,17 +279,10 @@ def prepend_protocol(url: str, protocol: str, www: bool = True) -> str:
     return p.geturl()
 
 
-def verdict_to_int(verdict):
-    return {
-        MALICIOUS_VERDICT: 3,
-        BENIGN_VERDICT: 1,
-        BENIGN_VERDICT_WHITELIST: 1,
-        SUSPICIOUS_VERDICT: 2
-    }.get(verdict)
-
-
-def return_entry_summary(pred_json: dict, url: str, whitelist: bool, output_rasterize: dict, verdict: str,
-                         reliability: str = DBotScoreReliability.A_PLUS):
+def return_entry_summary(
+    pred_json: dict, url: str, is_white_listed: bool, output_rasterize: dict,
+    verdict: str, reliability: str = DBotScoreReliability.A_PLUS, **_
+):
     """
     Return entry to demisto
     :param pred_json: json with output of the model
@@ -324,7 +317,7 @@ def return_entry_summary(pred_json: dict, url: str, whitelist: bool, output_rast
     dbot_score = Common.DBotScore(indicator=url,
                                   indicator_type=DBotScoreType.URL,
                                   integration_name='DBotPhishingURL',
-                                  score=verdict_to_int(verdict),
+                                  score=VERDICT_TO_INT.get(verdict),
                                   reliability=reliability)
     context_DBot_score = dbot_score.to_context().get(dbot_score.get_context_path())
 
@@ -447,9 +440,10 @@ def get_verdict(pred_json: dict, is_white_listed: bool) -> tuple[float, str]:
 
 
 def create_dict_context(url, last_url, verdict, pred_json, score, is_white_listed, output_rasterize):
-    return {'url_redirect': url, 'url': last_url, 'verdict': verdict, 'pred_json': pred_json, 'score': score,
-            'is_white_listed': is_white_listed,
-            'output_rasterize': output_rasterize}
+    return {
+        'url_redirect': url, 'url': last_url, 'verdict': verdict, 'pred_json': pred_json,
+        'score': score, 'is_white_listed': is_white_listed, 'output_rasterize': output_rasterize
+    }
 
 
 def extract_created_date(entry: dict):
@@ -459,7 +453,7 @@ def extract_created_date(entry: dict):
     :return: bool
     """
     if not is_error(entry):
-        date_str = dict_safe_get(entry, ['EntryContext', 'Domain(val.Name && val.Name == obj.Name)', 'WHOIS', 'CreationDate'])
+        date_str = dict_safe_get(entry, ('EntryContext', 'Domain(val.Name && val.Name == obj.Name)', 'WHOIS', 'CreationDate'))
         if date_str:
             date = datetime.strptime(date_str, '%d-%m-%Y')
             threshold_date = datetime.now() - timedelta(days=THRESHOLD_NEW_DOMAIN_MONTHS * 30)
@@ -472,8 +466,7 @@ def validate_rasterize(res_rasterize: list[dict]):
         error = yaml.safe_dump(get_error(res_rasterize))
         raise DemistoException(f'Rasterize on URLs returned an error:\n{error}')
     if any(
-        isinstance(res['Contents'], str)
-        or not (
+        isinstance(res['Contents'], str) or not (
             res['Contents'].get(KEY_IMAGE_RASTERIZE)
             and res['Contents'].get(KEY_IMAGE_HTML)
         )
@@ -579,22 +572,16 @@ def return_general_summary(results, tag="Summary"):
     return df_summary_json
 
 
-def return_detailed_summary(results, reliability: str):
+def return_detailed_summary(results: list, reliability: str):
     outputs = []
-    severity_list = [x.get('score') for x in results]
-    indice_descending_severity = np.argsort(-np.array(severity_list), kind='mergesort')
-    for i in range(len(results)):
-        index = indice_descending_severity[i]
-        if results[index].get('score') == SCORE_INVALID_URL:
+    results.sort(key=lambda x: x['score'])
+    for result in results:
+        if result.get('score') == SCORE_INVALID_URL:
             continue
-        verdict = results[index].get('verdict')
-        pred_json = results[index].get('pred_json')
-        url = results[index].get('url')
-        is_white_listed = results[index].get('is_white_listed')
-        output_rasterize = results[index].get('output_rasterize')
-        summary_json = return_entry_summary(pred_json, url, is_white_listed, output_rasterize, verdict, reliability)
-        outputs.append(summary_json)
-    return list(filter(None, outputs))
+        summary_json = return_entry_summary(**result, reliability=reliability)
+        if summary_json:
+            outputs.append(summary_json)
+    return outputs
 
 
 def save_model_in_demisto(model):
@@ -621,8 +608,7 @@ def extract_urls(text):
 
 def load_demisto_model():
     model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
-    model = decode_model_data(model_64_str)
-    return model
+    return decode_model_data(model_64_str)
 
 
 def get_final_urls(urls, max_urls, model):
@@ -667,9 +653,8 @@ def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_
     if isinstance(urls_argument, list):
         urls_only = urls_argument
     else:
-        urls_only = [x.strip() for x in urls_argument.split(' ') if x]
-    urls = urls_email_body + urls_only + urls_email_html
-    urls = list(set(urls))
+        urls_only = urls_argument.split()
+    urls = list(set(urls_email_body + urls_only + urls_email_html))
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
         return_results(MSG_NO_URL_GIVEN)
@@ -715,7 +700,7 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
         model = decode_model_data(model_data)
         msg_list.append(MSG_NO_ACTION_ON_MODEL)
 
-    elif (demisto_major_version < MAJOR_VERSION) and (demisto_minor_version > MINOR_DEFAULT_VERSION):
+    elif MINOR_DEFAULT_VERSION < demisto_major_version < MAJOR_VERSION:
         model_docker = load_model_from_docker()
         model_docker_minor = model_docker.minor
         model = load_demisto_model()
@@ -734,9 +719,9 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
 def main():
     try:
         args = demisto.args()
-        reset_model = args.get('resetModel', 'False') == 'True'
-        debug = args.get('debug', 'False') == 'True'
-        force_model = args.get('forceModel', 'False') == 'True'
+        reset_model = args.get('resetModel') == 'True'
+        debug = args.get('debug') == 'True'
+        force_model = args.get('forceModel') == 'True'
         email_body = args.get('emailBody', "")
         email_html = args.get('emailHTML', "")
         max_urls = int(args.get('maxNumberOfURL', 5))
@@ -762,13 +747,12 @@ def main():
 
         # Run the model and get predictions
         results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
-        # demisto.debug(f'Results: {json.dumps(results, indent=4)}')
         # Return outputs
         general_summary = return_general_summary(results)
         detailed_summary = return_detailed_summary(results, reliability)
         if debug:
             return_results(msg_list)
-        return general_summary, detailed_summary, msg_list
+        return general_summary, detailed_summary, msg_list  # TODO
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute URL Phishing script. Error: {ex}')
