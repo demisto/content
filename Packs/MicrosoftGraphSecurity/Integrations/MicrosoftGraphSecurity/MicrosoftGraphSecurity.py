@@ -1680,7 +1680,7 @@ def main():
                                               managed_identities_client_id=managed_identities_client_id,
                                               api_version=api_version,
                                               grant_type=grant_type)
-        if command == "fetch-incidents": # test
+        if command == "fetch-incidents":
             fetch_time = params.get('fetch_time', '1 day')
             fetch_limit = params.get('fetch_limit', 10) or 10
             fetch_providers = params.get('fetch_providers', '')
