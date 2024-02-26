@@ -22,9 +22,9 @@ Follow the steps below:
 5. Click **Create Connector** to open the *Syslog Event Forwarder* pane.
 6. Leave **Active (yes)** enabled.
 7. Provide the required details of the target Cortex XSIAM Broker VM syslog server:
-   - **`Available Output Pipelines`** - Select the requested transmission protocol for forwarding the syslog messages: *TCP*, *TCP-SSL*, or *UDP*.
-   - **`Host Name`** - Enter the IP address or hostname of the target Cortex XSIAM Broker VM syslog server.
-   - **`Port`** - enter the port number that the target Broker VM Syslog service is listening on for receiving syslog message from BeyondTrust Password Safe.
+   - *`Available Output Pipelines`* - Select the requested transmission protocol for forwarding the syslog messages: *TCP*, *TCP-SSL*, or *UDP*.
+   - *`Host Name`* - Enter the IP address or hostname of the target Cortex XSIAM Broker VM syslog server.
+   - *`Port`* - enter the port number that the target Broker VM Syslog service is listening on for receiving syslog message from BeyondTrust Password Safe.
 8. Select one of the following output formats: *Comma Delimited* or *Tab Delimited*. Other formats are currently unsupported.
 9. Select an optional syslog **Facility** from the list.
 10. Select **Format Specification**.
