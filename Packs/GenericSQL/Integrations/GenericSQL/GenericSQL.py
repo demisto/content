@@ -27,7 +27,6 @@ try:
 except Exception:  # noqa: S110
     pass
 
-
 # In order to use and convert from pymysql to MySQL this line is necessary
 pymysql.install_as_MySQLdb()
 
@@ -121,30 +120,28 @@ class Client:
 
     def _generate_db_url(self, module):
         """
-        This method generates the db url object for creating the engine later.
-        Args:
-            module:
-                The appropriate module according to the db.
-        Returns:
-                The URL object, in case of Teradata is an url string.
-        """
-        db_url = URL(drivername=module,
-                     username=self.username,
-                     password=self.password,
-                     host=self.host,
-                     port=arg_to_number(self.port),
-                     database=self.dbname,
-                     query=self.connect_parameters)
+            This method generates the db url object for creating the engine later.
+            Args:
+                module:
+                    The appropriate module according to the db.
+            Returns:
+                    The URL object, in case of Teradata is an url string.
+            """
 
         # Teradata has a unique connection, unlike the others with URL object
         if self.dialect == TERADATA:
             if self.use_ldap:
-                db_url = f'teradatasql://{self.username}:{self.password}@{self.host}:{self.port}/?logmech=LDAP'
+                return f'teradatasql://{self.username}:{self.password}@{self.host}:{self.port}/?logmech=LDAP'
             else:
-                db_url = f'teradatasql://{self.host}:{self.port}/?user={self.username}&password={self.password}'
-            demisto.debug('Initializing engine using the Teradata dialect')
+                return f'teradatasql://{self.host}:{self.port}/?user={self.username}&password={self.password}'
 
-        return db_url
+        return URL(drivername=module,
+                   username=self.username,
+                   password=self.password,
+                   host=self.host,
+                   port=arg_to_number(self.port),
+                   database=self.dbname,
+                   query=self.connect_parameters)
 
     def _create_engine_and_connect(self) -> sqlalchemy.engine.base.Connection:
         """
@@ -223,7 +220,7 @@ def generate_default_port_by_dialect(dialect: str) -> str | None:
     }.get(dialect)
 
 
-def generate_variable_names_and_mapping(bind_variables_values_list: list, query: str, dialect: str) ->\
+def generate_variable_names_and_mapping(bind_variables_values_list: list, query: str, dialect: str) -> \
         tuple[dict[str, Any], str | Any]:
     """
     In case of passing just bind_variables_values, since it's no longer supported in SQL Alchemy v2.,
@@ -249,8 +246,8 @@ def generate_variable_names_and_mapping(bind_variables_values_list: list, query:
 
     bind_variables_names_list = []
     for i in range(len(re.findall(char_to_count, query))):
-        query = query.replace(char_to_replace, f":bind_variable_{i+1}", 1)
-        bind_variables_names_list.append(f"bind_variable_{i+1}")
+        query = query.replace(char_to_replace, f":bind_variable_{i + 1}", 1)
+        bind_variables_names_list.append(f"bind_variable_{i + 1}")
     return dict(zip(bind_variables_names_list, bind_variables_values_list)), query
 
 
@@ -300,7 +297,7 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
 
         if params.get('fetch_parameters') == 'ID and timestamp' and not (params.get('column_name') and params.get('id_column')):
             msg += 'Missing Fetch Column or ID Column name (when ID and timestamp are chosen,' \
-                ' fill in both). '
+                   ' fill in both). '
 
         if params.get('fetch_parameters') in ['Unique ascending', 'Unique timestamp']:
             if not params.get('column_name'):
