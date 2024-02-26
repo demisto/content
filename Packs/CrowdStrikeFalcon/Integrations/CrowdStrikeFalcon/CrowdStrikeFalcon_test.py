@@ -85,9 +85,9 @@ def test_incident_to_incident_context():
     assert res == incident_context
 
 
-def test_idp_detectionin_to_incident_context():
-    from CrowdStrikeFalcon import idp_detection_to_incident_context
-    res = idp_detection_to_incident_context(input_data.response_idp_detection.copy())
+def test_detection_to_incident_context():
+    from CrowdStrikeFalcon import detection_to_incident_context
+    res = detection_to_incident_context(input_data.response_idp_detection.copy(), "IDP Detection")
     assert res == input_data.context_idp_detection
 
 
@@ -2220,7 +2220,7 @@ class TestFetch:
                                           })
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == [
-            {'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}, {}, {}]
+            {'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}, {}, {}, {}]
 
     @freeze_time("2020-09-04T09:16:10Z")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
