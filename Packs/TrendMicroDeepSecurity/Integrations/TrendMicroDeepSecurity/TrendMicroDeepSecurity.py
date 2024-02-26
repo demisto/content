@@ -1871,7 +1871,7 @@ def list_scheduled_task_command(client: Client, task_id: Optional[int]):
         )
 
     return CommandResults(
-        readable_output="There aren't any scheduled tasks available"
+        readable_output="There are no existing scheduled tasks."
     )
 
 
