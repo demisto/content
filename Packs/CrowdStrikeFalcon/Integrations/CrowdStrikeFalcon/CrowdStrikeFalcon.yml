@@ -186,24 +186,30 @@ script:
       auto: PREDEFINED
     - description: The query to filter the device.
       name: filter
-    - description: A comma-separated list of device IDs to limit the results.
+    - description: The maximum records to return [1-5000].
+      name: limit
+      defaultValue: 50
+    - description: The offset to start retrieving records from.
+      name: offset
+      defaultValue: 0
+    - description: 'A comma-separated list of device IDs to limit the results.'
       name: ids
     - auto: PREDEFINED
       description: 'The status of the device. Possible values are: "Normal", "containment_pending", "contained", and "lift_containment_pending".'
       name: status
       predefined:
-      - normal
+      - 'normal'
       - containment_pending
       - contained
       - lift_containment_pending
     - auto: PREDEFINED
-      description: The host name of the device.
+      description: 'The host name of the device.'
       name: hostname
       predefined:
       - ''
-    - auto: PREDEFINED
-      description: 'The platform name of the device. Possible values are: Windows, Mac, and Linux.'
+    - description: 'The platform name of the device. Possible values are: Windows, Mac, and Linux.'
       name: platform_name
+      auto: PREDEFINED
       predefined:
       - Windows
       - Mac
@@ -4962,7 +4968,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA Rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.86612
+  dockerimage: demisto/py3-tools:1.0.0.88283
   isfetch: true
   ismappable: true
   isremotesyncin: true
