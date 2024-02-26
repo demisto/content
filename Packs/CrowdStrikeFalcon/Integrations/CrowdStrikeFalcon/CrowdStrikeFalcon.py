@@ -2206,7 +2206,8 @@ def get_remote_data_command(args: dict[str, Any]):
             mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update {detection_type} detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_idp_or_mobile_detection_entries(updated_object, entries, remote_incident_id, detection_type)  # sets in place
+                set_xsoar_idp_or_mobile_detection_entries(
+                    updated_object, entries, remote_incident_id, detection_type)  # sets in place
 
         else:
             # this is here as prints can disrupt mirroring
