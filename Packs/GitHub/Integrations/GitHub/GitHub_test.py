@@ -507,8 +507,17 @@ def test_github_list_workflow(mocker):
 
 
 def test_http_request():
+    """
+    Given:
+      - A body of a post request
+    When:
+      - Calling the 'http_request' function
+    Then:
+      - Ensure the correctness of the request body.
+    """
+
     GitHub.BASE_URL = REGULAR_BASE_URL
-    GitHub.TOKEN, GitHub.USE_SSL = '', ''
+    GitHub.USE_SSL = ''
     GitHub.HEADERS = {}
 
     # Test HTTP request with data equal to 'dictionary'
