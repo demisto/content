@@ -368,19 +368,21 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             res_json = res.json()
             reason = res.reason
             resources = res_json.get('resources', {})
+            extracted_error_message = ''
             if resources:
                 if isinstance(resources, list):
-                    reason += f'\n{str(resources)}'
+                    extracted_error_message += f'\n{str(resources)}'
                 else:
                     for host_id, resource in resources.items():
-                        errors = resource.get('errors', [])
+                        errors = resource.get('errors', []) if isinstance(resource, dict) else ''
                         if errors:
                             error_message = errors[0].get('message')
-                            reason += f'\nHost ID {host_id} - {error_message}'
-            elif res_json.get('errors'):
+                            extracted_error_message += f'\nHost ID {host_id} - {error_message}'
+            elif res_json.get('errors') and not extracted_error_message:
                 errors = res_json.get('errors', [])
                 for error in errors:
-                    reason += f"\n{error.get('message')}"
+                    extracted_error_message += f"\n{error.get('message')}"
+            reason += extracted_error_message
             err_msg = 'Error in API call to CrowdStrike Falcon: code: {code} - reason: {reason}'.format(
                 code=res.status_code,
                 reason=reason
@@ -1761,6 +1763,8 @@ def search_device(filter_operator='AND'):
         'site_name': str(args.get('site_name', '')).split(','),
         'local_ip': str(args.get('ip', '')).split(',')
     }
+    limit = int(args.get('limit', 50))
+    offset = int(args.get('offset', 0))
     url_filter = '{}'.format(str(args.get('filter', '')))
     op = ',' if filter_operator == 'OR' else '+'
     # In Falcon Query Language, '+' stands for AND and ',' for OR
@@ -1781,7 +1785,7 @@ def search_device(filter_operator='AND'):
                 # All args should be a list. this is a fallback
                 url_filter = "{url_filter}{operator}{inp_arg}:'{arg_val}'".format(url_filter=url_filter, operator=op,
                                                                                   inp_arg=k, arg_val=arg)
-    raw_res = http_request('GET', '/devices/queries/devices/v1', params={'filter': url_filter})
+    raw_res = http_request('GET', '/devices/queries/devices/v1', params={'filter': url_filter, 'limit': limit, 'offset': offset})
     device_ids = raw_res.get('resources')
     if not device_ids:
         return None
@@ -5236,7 +5240,7 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
                           outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
 
 
-def get_cve_command(args: dict) -> list[CommandResults]:
+def get_cve_command(args: dict) -> list[dict[str, Any]]:
     """
         Get a list of vulnerabilities by spotlight
         : args: filter which include params or filter param.
@@ -5267,10 +5271,10 @@ def get_cve_command(args: dict) -> list[CommandResults]:
                               'Base Score': cve.get('base_score')}
         human_readable = tableToMarkdown('CrowdStrike Falcon CVE', cve_human_readable,
                                          headers=['ID', 'Description', 'Published Date', 'Base Score'])
-        command_results_list.append(CommandResults(raw_response=cve,
-                                                   readable_output=human_readable,
-                                                   relationships=relationships_list,
-                                                   indicator=cve_indicator))
+        command_results = CommandResults(raw_response=cve, readable_output=human_readable, relationships=relationships_list,
+                                         indicator=cve_indicator).to_context()
+        if command_results not in command_results_list:
+            command_results_list.append(command_results)
     return command_results_list
 
 

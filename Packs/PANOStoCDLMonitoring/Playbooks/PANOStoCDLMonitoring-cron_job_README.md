@@ -1,4 +1,4 @@
-This playbook verifies that your FWs sent logs to the Cortex Data Lake in the last 12 hours. An email notification will be sent if it's not the case.
+This playbook verifies that your FWs sent logs to the Strata Logging Service in the last 12 hours. An email notification will be sent if it's not the case.
 This playbook is designed to run as a job.
 
 ## Dependencies

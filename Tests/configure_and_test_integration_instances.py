@@ -345,7 +345,7 @@ class Build(ABC):
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None) -> tuple[bool, list[Any]]:
         raise NotImplementedError
 
-    def install_packs(self, pack_ids: list | None = None, multithreading=True, production_bucket: bool = True) -> bool:
+    def install_packs(self, pack_ids: list | None = None, install_packs_in_batches=False, production_bucket: bool = True) -> bool:
         """
         Install packs using 'pack_ids' or "$ARTIFACTS_FOLDER_SERVER_TYPE/content_packs_to_install.txt" file,
         and their dependencies.
@@ -364,11 +364,11 @@ class Build(ABC):
         for server in self.servers:
             try:
                 hostname = self.cloud_machine if self.is_cloud else ''
-                multithreading = False if self.is_cloud else multithreading
+                install_packs_in_batches = True if self.is_cloud else install_packs_in_batches
                 _, flag = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
                                                                           client=server.client,
                                                                           hostname=hostname,
-                                                                          multithreading=multithreading,
+                                                                          install_packs_in_batches=install_packs_in_batches,
                                                                           production_bucket=production_bucket)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
@@ -847,7 +847,7 @@ class CloudBuild(Build):
         Collects all existing test playbooks, saves them to test_pack.zip
         Uploads test_pack.zip to server
         """
-        success = self.install_packs(multithreading=False, production_bucket=True)
+        success = self.install_packs(install_packs_in_batches=True, production_bucket=True)
         if not success:
             logging.error("Failed to install nightly packs")
 

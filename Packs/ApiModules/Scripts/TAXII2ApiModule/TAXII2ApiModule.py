@@ -1,3 +1,5 @@
+import logging
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # pylint: disable=E9010, E9011
@@ -16,6 +18,20 @@ import tempfile
 
 # disable insecure warnings
 urllib3.disable_warnings()
+
+
+class SuppressWarningFilter(logging.Filter):    # pragma: no cover
+    def filter(self, record):
+        # Suppress all logger records, but send the important ones to demisto logger
+        if record.levelno == logging.WARNING:
+            demisto.debug(record.getMessage())
+        elif record.levelno in [logging.ERROR, logging.CRITICAL]:
+            demisto.error(record.getMessage())
+        return False
+
+
+v21_logger = logging.getLogger("taxii2client.v21")
+v21_logger.addFilter(SuppressWarningFilter())
 
 # CONSTANTS
 TAXII_VER_2_0 = "2.0"
@@ -182,23 +198,23 @@ def reached_limit(limit: int, element_count: int):
 
 class Taxii2FeedClient:
     def __init__(
-            self,
-            url: str,
-            collection_to_fetch,
-            proxies,
-            verify: bool,
-            objects_to_fetch: list[str],
-            skip_complex_mode: bool = False,
-            username: Optional[str] = None,
-            password: Optional[str] = None,
-            field_map: Optional[dict] = None,
-            tags: Optional[list] = None,
-            tlp_color: Optional[str] = None,
-            limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
-            certificate: str = None,
-            key: str = None,
-            default_api_root: str = None,
-            update_custom_fields: bool = False
+        self,
+        url: str,
+        collection_to_fetch,
+        proxies,
+        verify: bool,
+        objects_to_fetch: list[str],
+        skip_complex_mode: bool = False,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        field_map: Optional[dict] = None,
+        tags: Optional[list] = None,
+        tlp_color: Optional[str] = None,
+        limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
+        certificate: str = None,
+        key: str = None,
+        default_api_root: str = None,
+        update_custom_fields: bool = False
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -282,7 +298,7 @@ class Taxii2FeedClient:
         )
         if self.auth_header:
             # add auth_header to the session object
-            self._conn.session.headers = merge_setting(self._conn.session.headers,    # type: ignore[attr-defined]
+            self._conn.session.headers = merge_setting(self._conn.session.headers,  # type: ignore[attr-defined]
                                                        {self.auth_header: self.auth_key},
                                                        dict_class=CaseInsensitiveDict)
 
@@ -879,7 +895,7 @@ class Taxii2FeedClient:
         return [intrusion_set]
 
     def parse_general_sco_indicator(
-            self, sco_object: dict[str, Any], value_mapping: str = 'value'
+        self, sco_object: dict[str, Any], value_mapping: str = 'value'
     ) -> list[dict[str, Any]]:
         """
         Parses a single SCO indicator.
@@ -1161,6 +1177,7 @@ class Taxii2FeedClient:
             return []
 
         try:
+            demisto.debug(f"Fetching {page_size} objects from TAXII server")
             envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
             indicators = self.load_stix_objects_from_envelope(envelopes, limit)
         except InvalidJSONError as e:
@@ -1210,46 +1227,53 @@ class Taxii2FeedClient:
     def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
         relationships_lst = []
-        for envelope in envelopes:
-            stix_objects = envelope.get("objects")
-            if not stix_objects:
-                # no fetched objects
-                break
+        try:
+            for envelope in envelopes:
+                stix_objects = envelope.get("objects")
+                if not stix_objects:
+                    # no fetched objects
+                    break
 
-            # we should build the id_to_object dict before iteration as some object reference each other
-            self.id_to_object.update(
-                {
-                    obj.get('id'): obj for obj in stix_objects
-                    if obj.get('type') not in ['extension-definition', 'relationship']
-                }
-            )
+                # we should build the id_to_object dict before iteration as some object reference each other
+                self.id_to_object.update(
+                    {
+                        obj.get('id'): obj for obj in stix_objects
+                        if obj.get('type') not in ['extension-definition', 'relationship']
+                    }
+                )
+                # now we have a list of objects, go over each obj, save id with obj, parse the obj
+                for obj in stix_objects:
+                    obj_type = obj.get('type')
 
-            # now we have a list of objects, go over each obj, save id with obj, parse the obj
-            for obj in stix_objects:
-                obj_type = obj.get('type')
+                    # we currently don't support extension object
+                    if obj_type == 'extension-definition':
+                        demisto.debug(f'There is no parsing function for object type "extension-definition", for object {obj}.')
+                        continue
+                    elif obj_type == 'relationship':
+                        relationships_lst.append(obj)
+                        continue
 
-                # we currently don't support extension object
-                if obj_type == 'extension-definition':
-                    continue
-                elif obj_type == 'relationship':
-                    relationships_lst.append(obj)
-                    continue
+                    if not parse_objects_func.get(obj_type):
+                        demisto.debug(f'There is no parsing function for object type {obj_type}, for object {obj}.')
 
-                if not parse_objects_func.get(obj_type):
-                    demisto.debug(f'There is no parsing function for object type {obj_type}, '
-                                  f'available parsing functions are for types: {",".join(parse_objects_func.keys())}.')
-                    continue
-                if result := parse_objects_func[obj_type](obj):
-                    indicators.extend(result)
-                    self.update_last_modified_indicator_date(obj.get("modified"))
+                        continue
+                    if result := parse_objects_func[obj_type](obj):
+                        indicators.extend(result)
+                        self.update_last_modified_indicator_date(obj.get("modified"))
 
-                if reached_limit(limit, len(indicators)):
-                    return indicators, relationships_lst
-
+                    if reached_limit(limit, len(indicators)):
+                        demisto.debug("Reached limit of indicators to fetch")
+                        return indicators, relationships_lst
+        except Exception as e:
+            if len(indicators) == 0:
+                demisto.debug("No Indicator were parsed")
+                raise e
+            demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
+        demisto.debug("Finished parsing all objects")
         return indicators, relationships_lst
 
     def poll_collection(
-            self, page_size: int, **kwargs
+        self, page_size: int, **kwargs
     ) -> types.GeneratorType:
         """
         Polls a taxii collection
@@ -1280,7 +1304,7 @@ class Taxii2FeedClient:
 
     @staticmethod
     def extract_indicators_from_stix_objects(
-            stix_objs: list[dict[str, str]], required_objects: list[str]
+        stix_objs: list[dict[str, str]], required_objects: list[str]
     ) -> list[dict[str, str]]:
         """
         Extracts indicators from taxii objects
@@ -1294,11 +1318,11 @@ class Taxii2FeedClient:
         return extracted_objs
 
     def get_indicators_from_indicator_groups(
-            self,
-            indicator_groups: list[tuple[str, str]],
-            indicator_obj: dict[str, str],
-            indicator_types: dict[str, str],
-            field_map: dict[str, str],
+        self,
+        indicator_groups: list[tuple[str, str]],
+        indicator_obj: dict[str, str],
+        indicator_types: dict[str, str],
+        field_map: dict[str, str],
     ) -> list[dict[str, str]]:
         """
         Get indicators from indicator regex groups
@@ -1383,7 +1407,7 @@ class Taxii2FeedClient:
 
     @staticmethod
     def extract_indicator_groups_from_pattern(
-            pattern: str, regexes: list
+        pattern: str, regexes: list
     ) -> list[tuple[str, str]]:
         """
         Extracts indicator [`type`, `indicator`] groups from pattern
