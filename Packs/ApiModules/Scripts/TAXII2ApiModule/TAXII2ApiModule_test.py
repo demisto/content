@@ -1,7 +1,7 @@
 from taxii2client.exceptions import TAXIIServiceException, InvalidJSONError
 
 from CommonServerPython import *
-from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, HEADER_USERNAME, StixParser
+from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, HEADER_USERNAME
 from taxii2client import v20, v21
 import pytest
 import json
@@ -531,7 +531,8 @@ class TestFetchingStixObjects:
 
         """
         expected = CORTEX_COMPLEX_20_IOCS_19_OBJS
-        mock_client = StixParser(tlp_color='GREEN', id_to_object={})
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN',
+                                       objects_to_fetch=[])
 
         actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS, -1)
 
@@ -554,7 +555,8 @@ class TestFetchingStixObjects:
 
         """
         expected = CORTEX_COMPLEX_14_IOCS_19_OBJS
-        mock_client = StixParser(id_to_object={})
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, skip_complex_mode=True,
+                                       objects_to_fetch=[])
 
         actual = mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS, -1)
 
