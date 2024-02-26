@@ -411,7 +411,7 @@ script:
       description: Specifies the most recent date and time when CloudTrail stopped recording API calls for an Amazon Web Services account.
       type: date
     - contextPath: AWS.CloudTrail.TrailStatus.LatestCloudWatchLogsDeliveryError
-      description:  Displays any CloudWatch Logs error that CloudTrail encountered when attempting to deliver logs to CloudWatch Logs.
+      description: Displays any CloudWatch Logs error that CloudTrail encountered when attempting to deliver logs to CloudWatch Logs.
       type: string
     - contextPath: AWS.CloudTrail.TrailStatus.LatestCloudWatchLogsDeliveryTime
       description: Displays the most recent date and time when CloudTrail delivered logs to CloudWatch Logs.
@@ -422,7 +422,7 @@ script:
     - contextPath: AWS.CloudTrail.TrailStatus.LatestDigestDeliveryError
       description: Displays any Amazon S3 error that CloudTrail encountered when attempting to deliver a digest file to the designated bucket.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.86958
+  dockerimage: demisto/boto3py3:1.0.0.88448
   runonce: false
   script: ''
   subtype: python3
