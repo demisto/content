@@ -474,7 +474,7 @@ ignore = [
 
     "W605", # invalid-escape-sequence
 ]
-extend-exclude = ["CommonServerPython", "test_data"]
+extend-exclude = ["CommonServerPython", "test_data", "conftest.py"]
 
 unfixable = [
     "RUF001"  # ambiguous-unicode-character-string

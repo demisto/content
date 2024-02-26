@@ -253,16 +253,7 @@ repos:
     - --ignore-entropy
     pass_filenames: false
     language: system
-  - id: update-additional-dependencies
-    name: update-additional-dependencies
-    entry: update-additional-dependencies
-    language: system
-    files: poetry.lock
-    require_serial: true
-    pass_filenames: false
-    args:
-    - --pre_commit_config
-    - .pre-commit-config_template.yaml
+
   - id: merge-pytest-reports
     name: merge-pytest-reports
     entry: merge-pytest-reports
@@ -297,6 +288,7 @@ repos:
     - '100'
     needs:
     - pytest-in-docker
+    
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:

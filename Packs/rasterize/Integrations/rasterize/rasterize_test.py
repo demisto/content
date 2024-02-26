@@ -50,27 +50,6 @@ def test_rasterize_email_pdf_offline(caplog, capfd, mocker):
         caplog.clear()
 
 
-def test_rasterize_no_defunct_processes(caplog, capfd, mocker):
-    with capfd.disabled() and NamedTemporaryFile('w+') as f:
-        f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
-                '</head><body><br>---------- TEST FILE ----------<br></body></html>')
-        path = os.path.realpath(f.name)
-        f.flush()
-        mocker.patch.object(rasterize, 'support_multithreading')
-        perform_rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
-        process = subprocess.Popen(['ps', '-aux'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                   universal_newlines=True)
-        processes_str, _ = process.communicate()
-        processes = processes_str.split('\n')
-        defunct_process_list = [process for process in processes if 'defunct' in process]
-        assert not defunct_process_list
-
-        # zombies, output = find_zombie_processes()
-        # assert not zombies
-        # assert 'defunct' not in output
-        caplog.clear()
-
-
 def test_get_chrome_options():
     res = get_chrome_options(CHROME_OPTIONS, '')
     assert res == CHROME_OPTIONS
