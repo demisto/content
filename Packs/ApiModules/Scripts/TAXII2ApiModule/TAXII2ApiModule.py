@@ -198,9 +198,14 @@ def reached_limit(limit: int, element_count: int):
 
 class StixParser(BaseClient):
 
-    def __init__(self, id_to_object: dict[str, Any], tlp_color: Optional[str] = None,
+    def __init__(self, id_to_object: dict[str, Any], verify: bool = True,
+                 base_url: Optional[str] = None, proxy: bool = False,
+                 tlp_color: Optional[str] = None,
                  field_map: Optional[dict] = None, skip_complex_mode: bool = False,
                  tags: Optional[list] = None, update_custom_fields: bool = False):
+
+        super().__init__(base_url=base_url, verify=verify,
+                         proxy=proxy)
         self.skip_complex_mode = skip_complex_mode
         self.indicator_regexes = [
             re.compile(INDICATOR_EQUALS_VAL_PATTERN),
@@ -215,6 +220,7 @@ class StixParser(BaseClient):
         self.field_map = field_map if field_map else {}
         self.update_custom_fields = update_custom_fields
         self.tags = tags if tags else []
+        self.last_fetched_indicator__modified = None
 
     @staticmethod
     def get_indicator_publication(indicator: dict[str, Any]):
@@ -287,21 +293,6 @@ class StixParser(BaseClient):
                 ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(stix_type)  # type: ignore
                 break
         return ioc_type
-
-    def update_last_modified_indicator_date(self, indicator_modified_str: str):
-        if not indicator_modified_str:
-            return
-        if self.last_fetched_indicator__modified is None:
-            self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
-        else:
-            last_datetime = self.stix_time_to_datetime(
-                self.last_fetched_indicator__modified
-            )
-            indicator_created_datetime = self.stix_time_to_datetime(
-                indicator_modified_str
-            )
-            if indicator_created_datetime > last_datetime:
-                self.last_fetched_indicator__modified = indicator_modified_str
 
     """ PARSING FUNCTIONS"""
 
@@ -1140,6 +1131,21 @@ class StixParser(BaseClient):
             ioc_value = None
         return ioc_value
 
+    def update_last_modified_indicator_date(self, indicator_modified_str: str):
+        if not indicator_modified_str:
+            return
+        if self.last_fetched_indicator__modified is None:
+            self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
+        else:
+            last_datetime = self.stix_time_to_datetime(
+                self.last_fetched_indicator__modified
+            )
+            indicator_created_datetime = self.stix_time_to_datetime(
+                indicator_modified_str
+            )
+            if indicator_created_datetime > last_datetime:
+                self.last_fetched_indicator__modified = indicator_modified_str
+
     def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
         relationships_lst = []
@@ -1275,10 +1281,8 @@ class Taxii2FeedClient(StixParser):
         self.server = None
         self.api_root = None
         self.collections = None
-        self.last_fetched_indicator__modified = None
 
         self.collection_to_fetch = collection_to_fetch
-        self.skip_complex_mode = skip_complex_mode
         if not limit_per_request:
             limit_per_request = DFLT_LIMIT_PER_REQUEST
         self.limit_per_request = limit_per_request
