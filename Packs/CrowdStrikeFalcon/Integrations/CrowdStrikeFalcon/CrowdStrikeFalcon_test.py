@@ -3517,7 +3517,7 @@ def test_get_endpoint_command(requests_mock, mocker):
      - The user is running cs-falcon-search-device with an id
     Then
      - Return an Endpoint context output
-     """
+    """
     from CrowdStrikeFalcon import get_endpoint_command
     response = {'resources': {'meta': {'query_time': 0.010188508, 'pagination': {'offset': 1, 'limit': 100, 'total': 1},
                                        'powered_by': 'device-api', 'trace_id': 'c876614b-da71-4942-88db-37b939a78eb3'},
@@ -3560,13 +3560,14 @@ def test_get_endpoint_command(requests_mock, mocker):
         status_code=200,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe', 'hostname': 'falcon-crowdstr'})
+    mocker.patch.object(demisto, 'args', return_value={'id': 'identifier_numbe', 'hostname': 'falcon-crowdstr'})
 
     outputs = get_endpoint_command()
     result = outputs[0].to_context()
     context = result.get('EntryContext')
 
-    assert unquote(query_mocker.last_request.query) == "filter=device_id:'dentifier_numbe',hostname:'falcon-crowdstr'"
+    api_query = "filter=device_id:'identifier_numbe',hostname:'falcon-crowdstr'&limit=50&offset=0"
+    assert unquote(query_mocker.last_request.query) == api_query
     assert context['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [endpoint_context]
 
 
