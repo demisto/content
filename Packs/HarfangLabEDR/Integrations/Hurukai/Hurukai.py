@@ -155,6 +155,10 @@ def _construct_output(results: list, keys: list):
     return output
 
 
+def utcnow() -> datetime:
+    return datetime.now(tz=timezone.utc)
+
+
 class Client(BaseClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -1020,196 +1024,121 @@ def _fetch_threat_incidents(
         fetch_history.already_fetched.extend(fetched)
 
 
-def fetch_incidents(client, args):
+def fetch_incidents(client: Client, args: dict[str, Any]) -> tuple[dict, list[dict]]:
+
+    # temporary setup - need to move from 'args' to pure kw + **kwargs
+    # * mandatory:
+    fetch_types: list[FetchType] = args["fetch_types"]
+
+    # * mandatory (w/ default):
+    min_severity: Severity = args.get("min_severity", DEFAULT_SEVERITY)
+    mirror_direction: str = args.get("mirror_direction", "None")
+
+    # * optional:
+    alert_status: Optional[AlertStatus] = args.get("alert_status")
+    alert_type: Optional[list[str]] = args.get("alert_type")
+    first_fetch: Optional[int | str] = args.get("first_fetch")
+    max_fetch: Optional[int | str] = args.get("max_fetch")
+
+    # need to be explicitly convert to int
+    # default value is hardcoded (check the value in 'Hurukai.yml' definition)
+    max_fetch = int(max_fetch or 1000)
+
+    mirror_instance: str = demisto.integrationInstance()
+
+    # check if 'fetch_types' as been set (as it's a mandatory argument)
+    if not fetch_types:
+        raise ValueError("Missing value for 'fetch_types' argument")
+
+    # check if values present in 'fetch_types' are valid
+    for value in fetch_types:
+        if value not in typing.get_args(FetchType):
+            raise ValueError(
+                f"Invalid value for 'fetch_types' argument: "
+                f"expected one of {typing.get_args(FetchType)}, get '{value}'"
+            )
+
+    if min_severity not in SEVERITIES:
+        raise ValueError(
+            f"Invalid value for 'min_severity' argument: "
+            f"expected one of {SEVERITIES}, get '{min_severity}'"
+        )
+
+    if mirror_direction not in MIRROR_DIRECTION_MAPPING:
+        raise ValueError(
+            f"Invalid value for 'mirror_direction' argument: "
+            f"expected one of {tuple(MIRROR_DIRECTION_MAPPING)}, get '{mirror_direction}'"
+        )
+
+    if alert_status and alert_status not in typing.get_args(AlertStatus):
+        raise ValueError(
+            f"Invalid value for 'alert_status' argument: "
+            f"expected one of {typing.get_args(AlertStatus)}, get '{alert_status}'"
+        )
+
+    if max_fetch < 0:
+        raise ValueError(
+            f"Invalid value for 'max_fetch' argument: "
+            f"expected a positive integer, get '{max_fetch}'"
+        )
 
     last_run: LastRun = get_last_run()
 
-    current_fetch_info_sec_events: dict = dataclasses.asdict(last_run.security_event)
-    current_fetch_info_threats: dict = dataclasses.asdict(last_run.threat)
-
-    max_fetch = args.get("max_fetch", None)
-    fetch_types = args.get("fetch_types", [])
-
-    days = (
-        int(args["first_fetch"]) if "first_fetch" in args and args["first_fetch"] else 0
-    )
-    first_fetch_time = int(
-        datetime.timestamp(datetime.utcnow() - timedelta(days=days)) * 1000000
+    # how many past days should be fetched (on first fetch only)
+    past_days_to_fetch = int(first_fetch or 0)
+    past_days_to_fetch_timestamp: int = math.floor(
+        (utcnow() - timedelta(days=past_days_to_fetch)).timestamp()
     )
 
-    alert_status = args.get("alert_status", None)
-    if alert_status == "ACTIVE":
-        status = ["new", "probable_false_positive", "investigating"]
-    elif alert_status == "CLOSED":
-        status = ["closed", "false_positive"]
-    else:
-        status = None
+    # incident's status to fetch
+    status_to_fetch: list[str] | None
 
-    incidents = []
-
-    if "Threats" in fetch_types:
-        already_fetched_previous = []
-        already_fetched_current = []
-
-        last_fetch = None
-        if current_fetch_info_threats:
-            last_fetch = current_fetch_info_threats.get("last_fetch", None)
-            already_fetched_previous = current_fetch_info_threats.get(
-                "already_fetched", []
+    match alert_status:  # 'alert_status' can be renamed 'incident_status'
+        case "ACTIVE":
+            status_to_fetch = ["new", "probable_false_positive", "investigating"]
+        case "CLOSED":
+            status_to_fetch = ["closed", "false_positive"]
+        case None:
+            status_to_fetch = None
+        case _:
+            raise ValueError(
+                f"Invalid value for 'alert_status': "
+                f"expected 'ACTIVE', 'CLOSED' or None, get '{alert_status}'"
             )
 
-        if last_fetch is None:
-            # if missing, use what provided via first_fetch_time
-            last_fetch = first_fetch_time
-        else:
-            # otherwise use the stored last fetch
-            last_fetch = int(last_fetch)
-
-        latest_created_time_us = int(last_fetch)
-        cursor = (
-            datetime.fromtimestamp(latest_created_time_us / 1000000)
-            .replace(tzinfo=timezone.utc)
-            .strftime("%Y-%m-%dT%H:%M:%SZ")
-        )
-
-        threats = get_threats(
-            client,
-            min_created_timestamp=cursor,
-            threat_status=status,
-            min_severity=args.get("min_severity", SEVERITIES[0]),
-        )
-
-        for threat in threats:
-            incident_created_time_us = int(
-                datetime.timestamp(
-                    dateutil.parser.isoparse(threat.get("first_seen", "0"))
-                )
-                * 1000000
-            )
-
-            # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-            if incident_created_time_us <= latest_created_time_us:
-                continue
-
-            alert_id = threat.get("id", None)
-            threat["incident_link"] = f"{client._base_url}/threat/{alert_id}/summary"
-
-            threat["mirror_direction"] = MIRROR_DIRECTION_DICT.get(
-                args.get("mirror_direction")
-            )
-            threat["mirror_instance"] = demisto.integrationInstance()
-            threat["mirror_tags"] = ["comments", "work_notes"]
-            threat["incident_type"] = "Hurukai threat"
-
-            if alert_id not in already_fetched_previous:
-                incident = {
-                    "name": threat.get("slug", None),
-                    "occurred": threat.get("first_seen", None),
-                    "severity": SEVERITIES.index(threat.get("level", "").capitalize())
-                    + 1,
-                    "rawJSON": json.dumps(threat),
-                }
-                incidents.append(incident)
-                already_fetched_current.append(alert_id)
-
-            if incident_created_time_us > latest_created_time_us:
-                latest_created_time_us = incident_created_time_us
-
-            if max_fetch and len(incidents) >= max_fetch:
-                break
-
-        current_fetch_info_threats = {
-            "last_fetch": latest_created_time_us,
-            "already_fetched": already_fetched_current,
-        }
+    incidents: list[dict] = []
 
     if "Security Events" in fetch_types:
-        already_fetched_previous = []
-        already_fetched_current = []
-
-        last_fetch = None
-        if current_fetch_info_sec_events:
-            last_fetch = current_fetch_info_sec_events.get("last_fetch", None)
-            already_fetched_previous = current_fetch_info_sec_events.get(
-                "already_fetched", []
-            )
-
-        if last_fetch is None:
-            # if missing, use what provided via first_fetch_time
-            last_fetch = first_fetch_time
-        else:
-            # otherwise use the stored last fetch
-            last_fetch = int(last_fetch)
-
-        latest_created_time_us = int(last_fetch)
-        cursor = (
-            datetime.fromtimestamp(latest_created_time_us / 1000000)
-            .replace(tzinfo=timezone.utc)
-            .strftime("%Y-%m-%dT%H:%M:%SZ")
+        _fetch_security_event_incidents(
+            client=client,
+            fetch_history=last_run.security_event,
+            minimum_severity_to_fetch=min_severity,
+            max_fetch=max_fetch,
+            first_fetch_timestamp=past_days_to_fetch_timestamp,
+            mirror_instance=mirror_instance,
+            mirror_direction=MIRROR_DIRECTION_MAPPING[mirror_direction],
+            alert_type=alert_type,
+            alert_status=status_to_fetch,
+            incidents=incidents,  # the list will mutate (list.append(...))
         )
 
-        sec_events = get_security_events(
-            client,
-            min_created_timestamp=cursor,
-            alert_status=status,
-            alert_type=args.get("alert_type"),
-            min_severity=args.get("min_severity", SEVERITIES[0]),
-        )
+    # fetch threats only if every security events has been fetched first
+    if len(incidents) < max_fetch:
 
-        for sec_event in sec_events:
-            incident_created_time_us = int(
-                datetime.timestamp(
-                    dateutil.parser.isoparse(sec_event.get("alert_time", "0"))
-                )
-                * 1000000
+        if "Threats" in fetch_types:
+            _fetch_threat_incidents(
+                client=client,
+                fetch_history=last_run.threat,
+                minimum_severity_to_fetch=min_severity,
+                max_fetch=max_fetch,
+                first_fetch_timestamp=past_days_to_fetch_timestamp,
+                mirror_instance=mirror_instance,
+                mirror_direction=MIRROR_DIRECTION_MAPPING[mirror_direction],
+                threat_status=status_to_fetch,
+                incidents=incidents,  # the list will mutate (list.append(...))
             )
-
-            # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-            if incident_created_time_us <= latest_created_time_us:
-                continue
-
-            alert_id = sec_event.get("id", None)
-            sec_event["incident_link"] = (
-                f"{client._base_url}/security-event/{alert_id}/summary"
-            )
-
-            sec_event["mirror_direction"] = MIRROR_DIRECTION_DICT.get(
-                args.get("mirror_direction")
-            )
-            sec_event["mirror_instance"] = demisto.integrationInstance()
-            sec_event["incident_type"] = "Hurukai alert"
-
-            if alert_id not in already_fetched_previous:
-                incident = {
-                    "name": sec_event.get("rule_name", None),
-                    "occurred": sec_event.get("alert_time", None),
-                    "severity": SEVERITIES.index(
-                        sec_event.get("level", "").capitalize()
-                    )
-                    + 1,
-                    "rawJSON": json.dumps(sec_event),
-                }
-                incidents.append(incident)
-                already_fetched_current.append(alert_id)
-
-            if incident_created_time_us > latest_created_time_us:
-                latest_created_time_us = incident_created_time_us
-
-            if max_fetch and len(incidents) >= max_fetch:
-                break
-
-        current_fetch_info_sec_events = {
-            "last_fetch": latest_created_time_us,
-            "already_fetched": already_fetched_current,
-        }
-
-    last_run = LastRun(
-        security_event=FetchHistory(**current_fetch_info_sec_events),
-        threat=FetchHistory(**current_fetch_info_threats),
-    )
 
     demisto.setLastRun(last_run.as_dict())
-
     demisto.incidents(incidents)
 
     return last_run.as_dict(), incidents
