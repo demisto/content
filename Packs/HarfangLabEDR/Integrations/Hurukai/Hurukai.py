@@ -831,6 +831,195 @@ def _fetch_security_event_incidents(
         fetch_history.already_fetched.extend(fetched)
 
 
+def _fetch_threat_incidents(
+    client: Client,
+    *,
+    fetch_history: FetchHistory,
+    minimum_severity_to_fetch: Severity,
+    max_fetch: int,
+    first_fetch_timestamp: int,
+    mirror_instance: str,
+    mirror_direction: str | None,  # None is a valid value
+    threat_status: Optional[list[str]],
+    incidents: list[dict],
+) -> None:
+    """Wrapper for fetching threats on remote HarfangLab EDR instance.
+
+    Args:
+        client: Demisto client to use. Initialized in the 'main' function.
+        fetch_history: Fetch history object for threats.
+        minimum_severity_to_fetch: Minimum level to fetch. Can be "Low",
+          "Medium", "High" or "Critical" (see 'Severity' type).
+        max_fetch: Maximum count of threat to fetch per call of this
+          function.
+        first_fetch_timestamp: Timestamp to use on first fetch.
+        mirror_instance: Name of the mirrored instance.
+        mirror_direction: In which direction action should be mirrored. Can be
+          "In", "Out", "Both" or None (see 'MIRROR_DIRECTION_MAPPING' values).
+        threat_status: Threat status that should be fetched. Can be
+          ["new", "probable_false_positive", "investigating"] for "ACTIVE" status,
+          ["closed", "false_positive"] for "CLOSED" status,
+          or None.
+        incidents: List to use for append the fetched threats.
+
+    Raises:
+        ValueError: Can occur both in case of invalid user/configuration data
+          or invalid/unexpected data type on fetched security events.
+        KeyError: Can occur if there are missing keys in the fetched security
+          events.
+
+        In both case, those errors are not expected and should be reported.
+
+    Returns:
+        Nothing, the 'incidents' list is updated.
+    """
+
+    fetched: list[int] = []
+    fetched_from_last_fetch: list[int] = []
+
+    if fetch_history.last_fetch:
+        fetched_from_last_fetch.extend(fetch_history.already_fetched)
+    else:
+        fetch_history.last_fetch = first_fetch_timestamp
+
+    # exclude every threats that has been already fetched
+    exclude_fetched_from_last_fetch_filter = {
+        # On first fetch, use 0 as floor id - threat's id should always start at 1.
+        "id__gt": max(fetched_from_last_fetch or [0]),
+        # Order by 'creation_date' rather than 'last_seen' to avoid to fetch
+        # continuously over the same triggered threats.
+        # Also, 'creation_date' will be closer to sequential id rather
+        # than 'first_seen'.
+        "ordering": "creation_date",
+    }
+
+    fetching_cursor = datetime.fromtimestamp(
+        # minus 1sec to overlap with previous fetch and ensure to miss nothing
+        fetch_history.last_fetch - 1,
+        tz=timezone.utc,
+    )
+
+    demisto.info(f"Fetch threats created after {fetching_cursor}... (max. {max_fetch})")
+
+    threats: Collection[dict] = get_threats(
+        client=client,
+        min_created_timestamp=fetching_cursor.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        threat_status=threat_status,
+        min_severity=minimum_severity_to_fetch,
+        max_fetch=max_fetch,
+        extra_filters={
+            **exclude_fetched_from_last_fetch_filter,
+        },
+    )
+
+    demisto.info(f"{len(threats)} threats fetched from {mirror_instance}")
+
+    # define 'count' before the 'for' loop to ensure semantic in
+    # case of empty 'for' loop.
+    count: int = 0
+    threat: dict[str, Any]
+
+    # fetched threats are expected to be already sorted by time creation,
+    # but better be safe
+    for count, threat in enumerate(
+        sorted(threats, key=lambda d: d["creation_date"]), start=1
+    ):
+
+        threat_id: int = threat["id"]  # id should be always present
+
+        threat_creation_timestamp: int = math.floor(
+            dateutil.parser.isoparse(threat["creation_date"]).timestamp()
+        )
+
+        # Skip threats that has been already fetched in the current fetch.
+        # In fact, that should never happen and this statement can be replaced
+        # by a simple raise error.
+        if threat_id in fetched:
+            demisto.error(
+                f"'{threat_id}' was already fetched from current fetch: "
+                f"this threat shouldn't have been present twice in the "
+                f"same fetching processing"
+            )
+            continue
+
+        # Skip threats that has been fetched in previous fetch.
+        # In fact, that should never happen and this statement can be replaced
+        # by a simple raise error.
+        if threat_id in fetched_from_last_fetch:
+            demisto.error(
+                f"'{threat_id}' was already fetched from a previous fetch: "
+                f"this threat shouldn't have been re-fetched"
+            )
+            continue
+
+        # Skip threats that are prior to the given timestamp.
+        # In fact, that should never happen and this statement can be replaced
+        # by a simple raise error.
+        # note: time in remote instance are stored in UTC
+        if threat_creation_timestamp < fetching_cursor.timestamp():
+            demisto.error(
+                f"'{threat_id}' has been created before the given timestamp: "
+                f"expected only threat created after {fetching_cursor}, "
+                f"get one created at "
+                f"{datetime.fromtimestamp(threat_creation_timestamp, tz=timezone.utc)}"
+            )
+            continue
+
+        incident_type = f"{INTEGRATION_NAME} threat"
+        incident_link = f"{client._base_url}/threat/{threat_id}/summary"
+
+        threat["incident_type"] = incident_type
+        threat["incident_link"] = incident_link
+        threat["mirror_instance"] = mirror_instance
+        threat["mirror_direction"] = mirror_direction
+        # what is that? that was present in the old implementation...
+        # threat["mirror_tags"] = ["comments", "work_notes"]
+
+        severity_as_str: Severity = threat["level"].capitalize()
+
+        # no need -> 'SEVERITIES.index(...)' will already raise a ValueError
+        # if severity_as_str not in typing.get_args(Severity):
+        #     raise ValueError
+
+        incident_name: str = threat["slug"]
+        occurred: str = threat["first_seen"]
+        severity: int = SEVERITIES.index(severity_as_str) + 1
+        json_dump: str = json.dumps(threat, ensure_ascii=True)
+
+        incident: dict[str, Any] = {
+            "name": incident_name,
+            "occurred": occurred,
+            "severity": severity,
+            "rawJSON": json_dump,
+        }
+
+        incidents.append(incident)
+        fetched.append(threat_id)
+
+        fetch_history.last_fetch = max(
+            (fetch_history.last_fetch, threat_creation_timestamp)
+        )
+
+        if len(incidents) >= max_fetch:
+            break
+
+    demisto.info(f"{len(fetched)}/{len(threats)} new threats send to XSOAR")
+
+    if sorted(fetched) != fetched:
+        demisto.debug("There is something wrong in threats fetching order")
+
+    if fetched:
+        if fetch_history.last_fetch > fetching_cursor.timestamp() + 1:
+            # Only clear previously fetched threats if the last_fetch
+            # timestamp have changed.
+            # Otherwise, that can conduct to a deadlock if there are more
+            # than 'max_fetch' threats that are generated in less
+            # than 1 second.
+            fetch_history.already_fetched.clear()
+
+        fetch_history.already_fetched.extend(fetched)
+
+
 def fetch_incidents(client, args):
 
     last_run: LastRun = get_last_run()
@@ -3231,6 +3420,7 @@ def get_threats(
     fields=None,
     limit=MAX_NUMBER_OF_ALERTS_PER_CALL,
     ordering="last_seen",
+    extra_filters: dict[str, Any] = None,
 ):
     threats = []
 
@@ -3255,6 +3445,9 @@ def get_threats(
 
         if min_updated_timestamp:
             args["last_update__gte"] = min_updated_timestamp
+
+        if extra_filters:
+            args.update(extra_filters)
 
         args["fields"] = "id"
 
