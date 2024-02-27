@@ -3,7 +3,7 @@ import dataclasses
 import functools
 import math
 from collections.abc import Callable, Collection
-from typing import Literal, TypeAlias
+from typing import Literal, TypeAlias, TypeVar
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -29,6 +29,8 @@ AlertStatus: TypeAlias = Literal["ACTIVE", "CLOSED"]
 Severity: TypeAlias = Literal["Low", "Medium", "High", "Critical"]
 
 Fn: TypeAlias = Callable[..., Any]
+
+IncidentId = TypeVar("IncidentId", str, int)
 
 INTEGRATION_NAME = "Hurukai"
 
@@ -644,6 +646,71 @@ def get_last_run() -> LastRun:
     return LastRun(**{k: FetchHistory(**v) for k, v in last_run.items()})
 
 
+def _incident_should_be_fetched(
+    incident_type: Literal["security event", "threat"],
+    incident_id: IncidentId,
+    incident_timestamp: int,
+    fetched: list[IncidentId],
+    fetched_from_last_fetch: list[IncidentId],
+    fetching_cursor: datetime,
+) -> bool:
+    """Check if an incident should be sent to the XSOAR instance or not.
+
+    Args:
+        incident_type: Type of the incident: "security event" or "threat".
+        incident_id: ID of the incident. A string for security events, integer
+          for threats.
+        incident_timestamp: Creation timestamp of the incident, will be compared
+          with the 'fetching_cursor'.
+        fetched: List of already fetched ID for the current fetching process.
+        fetched_from_last_fetch: List of already fetched ID from previous
+          fetching processes.
+        fetching_cursor: Timestamp used for querying the remote HarfangLab EDR
+          API instance.
+
+    Returns:
+        True: The incident should be sent to the XSOAR instance.
+        False: The incident shouldn't send to the XSOAR instance. Also, that
+          probably mean there are some semantic error in the code.
+    """
+
+    # Skip incidents that has been already fetched in the current fetch.
+    # In fact, that should never happen and this statement can be replaced
+    # by a simple raise error.
+    if incident_id in fetched:
+        demisto.error(
+            f"'{incident_id}' was already fetched from current fetch: "
+            f"this {incident_type} shouldn't have been present twice in the "
+            f"same fetching processing"
+        )
+        return False
+
+    # Skip incidents that has been fetched in previous fetch.
+    # In fact, that should never happen and this statement can be replaced
+    # by a simple raise error.
+    if incident_id in fetched_from_last_fetch:
+        demisto.error(
+            f"'{incident_id}' was already fetched from a previous fetch: "
+            f"this {incident_type} shouldn't have been re-fetched"
+        )
+        return False
+
+    # Skip incidents that are prior to the given timestamp.
+    # In fact, that should never happen and this statement can be replaced
+    # by a simple raise error.
+    # note: time in remote instance are stored in UTC
+    if incident_timestamp < fetching_cursor.timestamp():
+        demisto.error(
+            f"'{incident_id}' has been created before the given timestamp: "
+            f"expected only {incident_type}s created after {fetching_cursor}, "
+            f"get one created at "
+            f"{datetime.fromtimestamp(incident_timestamp, tz=timezone.utc)}"
+        )
+        return False
+
+    return True
+
+
 def _fetch_security_event_incidents(
     client: Client,
     *,
@@ -746,38 +813,14 @@ def _fetch_security_event_incidents(
             dateutil.parser.isoparse(security_event["alert_time"]).timestamp()
         )
 
-        # Skip security events that has been already fetched in the current fetch.
-        # In fact, that should never happen and this statement can be replaced
-        # by a simple raise error.
-        if security_event_id in fetched:
-            demisto.error(
-                f"'{security_event_id}' was already fetched from current fetch: "
-                f"this security event shouldn't have been present twice in the "
-                f"same fetching processing"
-            )
-            continue
-
-        # Skip security events that has been fetched in previous fetch.
-        # In fact, that should never happen and this statement can be replaced
-        # by a simple raise error.
-        if security_event_id in fetched_from_last_fetch:
-            demisto.error(
-                f"'{security_event_id}' was already fetched from a previous fetch: "
-                f"this security event shouldn't have been re-fetched"
-            )
-            continue
-
-        # Skip security events that are prior to the given timestamp.
-        # In fact, that should never happen and this statement can be replaced
-        # by a simple raise error.
-        # note: time in remote instance are stored in UTC
-        if security_event_creation_timestamp < fetching_cursor.timestamp():
-            demisto.error(
-                f"'{security_event_id}' has been created before the given timestamp: "
-                f"expected only security events created after {fetching_cursor}, "
-                f"get one created at "
-                f"{datetime.fromtimestamp(security_event_creation_timestamp, tz=timezone.utc)}"
-            )
+        if not _incident_should_be_fetched(
+            incident_type="security event",
+            incident_id=security_event_id,
+            incident_timestamp=security_event_creation_timestamp,
+            fetched=fetched,
+            fetched_from_last_fetch=fetched_from_last_fetch,
+            fetching_cursor=fetching_cursor,
+        ):
             continue
 
         # note: 'alert' is the legacy name for 'security event'
@@ -935,38 +978,14 @@ def _fetch_threat_incidents(
             dateutil.parser.isoparse(threat["creation_date"]).timestamp()
         )
 
-        # Skip threats that has been already fetched in the current fetch.
-        # In fact, that should never happen and this statement can be replaced
-        # by a simple raise error.
-        if threat_id in fetched:
-            demisto.error(
-                f"'{threat_id}' was already fetched from current fetch: "
-                f"this threat shouldn't have been present twice in the "
-                f"same fetching processing"
-            )
-            continue
-
-        # Skip threats that has been fetched in previous fetch.
-        # In fact, that should never happen and this statement can be replaced
-        # by a simple raise error.
-        if threat_id in fetched_from_last_fetch:
-            demisto.error(
-                f"'{threat_id}' was already fetched from a previous fetch: "
-                f"this threat shouldn't have been re-fetched"
-            )
-            continue
-
-        # Skip threats that are prior to the given timestamp.
-        # In fact, that should never happen and this statement can be replaced
-        # by a simple raise error.
-        # note: time in remote instance are stored in UTC
-        if threat_creation_timestamp < fetching_cursor.timestamp():
-            demisto.error(
-                f"'{threat_id}' has been created before the given timestamp: "
-                f"expected only threat created after {fetching_cursor}, "
-                f"get one created at "
-                f"{datetime.fromtimestamp(threat_creation_timestamp, tz=timezone.utc)}"
-            )
+        if not _incident_should_be_fetched(
+            incident_type="threat",
+            incident_id=threat_id,
+            incident_timestamp=threat_creation_timestamp,
+            fetched=fetched,
+            fetched_from_last_fetch=fetched_from_last_fetch,
+            fetching_cursor=fetching_cursor,
+        ):
             continue
 
         incident_type = f"{INTEGRATION_NAME} threat"
