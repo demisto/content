@@ -3046,7 +3046,7 @@ def get_threats(
             args["status"] = ",".join(["closed", "false_positive"])
 
         if min_created_timestamp:
-            args["from"] = min_created_timestamp
+            args["creation_date__gte"] = min_created_timestamp
 
         if min_updated_timestamp:
             args["last_update__gte"] = min_updated_timestamp
