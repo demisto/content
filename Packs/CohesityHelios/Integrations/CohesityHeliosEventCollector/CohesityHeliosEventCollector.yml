@@ -19,7 +19,8 @@ configuration:
   section: Connect
   hiddenusername: true
   type: 9
-- display: The maximum number of events per fetch. Default is 50000.
+- display: The maximum number of events per type. Default is 50000.
+  additionalinfo: The collector pulls both Audit Logs and Alerts, this parameter sets the limit to maximal fetch number for each type.
   name: max_fetch
   required: false
   advanced: false
@@ -41,6 +42,7 @@ configuration:
 description: This is the Cohesity Helios Event Collector integration for XSIAM.
 display: Cohesity Helios Event Collector
 name: Cohesity Helios Event Collector
+supportlevelheader: xsoar
 marketplaces:
 - marketplacev2
 fromversion: '8.2.0'
