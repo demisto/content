@@ -1577,8 +1577,17 @@ def test_module(eiq_api):
         ok if getting observable successfully
 
     """
+    try:
+        eiq_api.lookup_observable("123.123.123.123", "ipv4")
+    except Exception as exception:
+        if 'Unauthorized' in str(exception) or 'authentication' in str(exception):
+            return 'Authorization Error: make sure API Credentials are correctly set'
 
-    eiq_api.lookup_observable("8.8.8.8", "ipv4")
+        if 'connection' in str(exception):
+            return 'Connection Error: make sure Server URL is correctly set'
+        raise exception
+
+    return 'ok'
 
 
 def ip_command(eiq_api):
@@ -2422,9 +2431,8 @@ def fetch_indicators(eiq_api):
                 context[item["id"]]["last_ingested"] = block
                 demisto.setLastRun(context)
 
-            demisto.info(
-                "Feed id={} was fully ingested/updated.".format(str(item["id"]))
-            )
+            demisto.info("Feed id={} was fully ingested/updated.".format(str(item["id"])))
+
             return indicators_to_add
     else:
         demisto.error("Fetching enabled but Feed IDs not configured.")
@@ -2588,13 +2596,15 @@ def main():
         )
 
         LOG(f"Command being called is {demisto.command()}")
-        command_func = COMMANDS.get(demisto.command())
+        command = demisto.command()
+        command_func = COMMANDS.get(command)
 
-        if command_func == "fetch-indicators":
-            for b in batch(fetch_indicators(eiq), batch_size=2000):
+        if command == "fetch-indicators":
+            indicators_to_add = fetch_indicators(eiq)
+            for b in batch(indicators_to_add, batch_size=500):
                 demisto.createIndicators(b)
-        elif command_func is not None:
-            command_func(eiq)
+        elif command is not None:
+            return_results(command_func(eiq))
 
     except Exception as e:
         return_error(f"Error has occurred in EclecticIQ integration: {str(e)}.")
