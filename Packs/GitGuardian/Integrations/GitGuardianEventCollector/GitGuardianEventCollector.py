@@ -44,8 +44,9 @@ class Client(BaseClient):
         Args:
             last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
             max_events_per_fetch (int): number of events per fetch
+            get_events (bool, optional): running the function through the get-events command. Defaults to False.
 
-        Returns:zxx
+        Returns:
             List: A list of events that were fetched
             str: The time to start the next incident fetch.
         """
@@ -63,17 +64,20 @@ class Client(BaseClient):
         return incidents, audit_logs, last_fetched_incident_ids, last_fetched_audit_log_ids, next_run_from_fetch_time
 
     def retrieve_events(
-        self, from_fetch_time: str, to_fetch_time: str, max_events_per_fetch: int, prev_run_fetched_event_ids: List[int], event_type: str, get_events: bool = False
+        self, from_fetch_time: str, to_fetch_time: str, max_events_per_fetch: int, prev_run_fetched_event_ids: List[int],
+        event_type: str, get_events: bool = False
     ) -> tuple[List[Dict], List[int]]:
-        """Searching the API for new incidents.
+        """retrieve events from the API
 
         Args:
-            from_fetch_time (str): The time we starting to fetch events.
-            max_events_per_fetch (int): Max number of events to fetch.
+            from_fetch_time (str): the time to start the fetch from
+            to_fetch_time (str): the time to end the fetch
+            max_events_per_fetch (int): maximum number of events to fetch in each fetch
+            prev_run_fetched_event_ids (List[int]): the ids of the events that were fetch in the last fetch that
+                                                    could be duplicated (the same time as to_fetch_time)
+            event_type (str): the type of the event.
+            get_events (bool, optional): running the function through the get-events command. Defaults to False.
 
-        Returns:
-            List: A list of events that were fetched
-            str: The time to start the next incident fetch.
         """
         next_url = ""
         events = []
@@ -127,7 +131,18 @@ class Client(BaseClient):
 
         return all_fetched_events, fetched_event_ids
 
-    def handle_events(self, events_to_send: list, max_events_per_fetch: int, event_type: str, to_fetch_time: str, get_events: bool = False) -> tuple[List[Dict], List[int]]:
+    def handle_events(self, events_to_send: list, max_events_per_fetch: int, event_type: str,
+                      to_fetch_time: str, get_events: bool = False) -> tuple[List[Dict], List[int]]:
+        """_summary_
+
+        Args:
+            events_to_send (list): events fetched.
+            max_events_per_fetch (int): maximum number of events to send to xsiam.
+            event_type (str): the type of the event.
+            to_fetch_time (str): the end time of the fetch
+            get_events (bool, optional): running the function through the get-events command. Defaults to False.
+
+        """
         events_to_send_to_xsiam, events_to_keep = events_to_send[:max_events_per_fetch], events_to_send[max_events_per_fetch:]
         last_fetched_incidents_ids = self.extract_event_ids_with_same_to_fetch_time(
             events_to_send_to_xsiam, to_fetch_time, event_type)
@@ -186,7 +201,7 @@ class Client(BaseClient):
         """
         def format_date_string(date_string, event_type):
             if event_type == "audit_log":
-                return datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%dT%H:%M:%SZ")
+                return datetime.strptime(date_string, DATE_FORMAT).strftime("%Y-%m-%dT%H:%M:%SZ")
             return date_string
 
         ids_with_same_occurrence_date = [event["id"] for event in events if format_date_string(event[EVENT_TYPE_TO_TIME_MAPPING[event_type]], event_type) == to_fetch_time]  # noqa: E501
@@ -324,7 +339,6 @@ def main() -> None:  # pragma: no cover
         last_run["to_fetch_time"] = current_fetch_time
 
     demisto.debug(f"Command being called is {command}")
-    demisto.debug(f"GG: Last run before starting the command: {last_run}")
     try:
         headers = {"Authorization": f"Token {api_key}"}
         client = Client(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
