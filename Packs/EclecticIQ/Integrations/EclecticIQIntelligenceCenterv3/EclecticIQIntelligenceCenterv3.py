@@ -2604,7 +2604,7 @@ def main():
             for b in batch(indicators_to_add, batch_size=500):
                 demisto.createIndicators(b)
         elif command is not None:
-            return_results(command_func(eiq))
+            return_results(command_func(eiq))  # type: ignore[misc]
 
     except Exception as e:
         return_error(f"Error has occurred in EclecticIQ integration: {str(e)}.")
