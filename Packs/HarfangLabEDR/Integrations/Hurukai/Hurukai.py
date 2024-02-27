@@ -2904,7 +2904,9 @@ def get_security_events(
         "offset": 0,
     }  # type: Dict[str,Any]
 
-    if alert_status == "ACTIVE":
+    if isinstance(alert_status, list):
+        args["status"] = ",".join(alert_status)
+    elif alert_status == "ACTIVE":
         args["status"] = ",".join(["new", "probable_false_positive", "investigating"])
     elif alert_status == "CLOSED":
         args["status"] = ",".join(["closed", "false_positive"])
@@ -3036,7 +3038,9 @@ def get_threats(
             "offset": 0,
         }  # type: Dict[str,Any]
 
-        if threat_status == "ACTIVE":
+        if isinstance(threat_status, list):
+            args["status"] = ",".join(threat_status)
+        elif threat_status == "ACTIVE":
             args["status"] = ",".join(["new", "investigating"])
         elif threat_status == "CLOSED":
             args["status"] = ",".join(["closed", "false_positive"])
