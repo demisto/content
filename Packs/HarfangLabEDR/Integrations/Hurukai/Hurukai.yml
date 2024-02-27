@@ -59,7 +59,7 @@ configuration:
 - additionalinfo: Fetch maximum <max_fetch> security events and/or threats per call (leave empty if unlimited).
   display: Maximum number of incidents to fetch per call
   name: max_fetch
-  defaultvalue: 1000
+  defaultvalue: 200
   required: false
   type: 0
 - additionalinfo: Start fetching alerts and/or threats whose creation date is higher than now minus <first_fetch> days.

@@ -1042,7 +1042,7 @@ def fetch_incidents(client: Client, args: dict[str, Any]) -> tuple[dict, list[di
 
     # need to be explicitly convert to int
     # default value is hardcoded (check the value in 'Hurukai.yml' definition)
-    max_fetch = int(max_fetch or 1000)
+    max_fetch = int(max_fetch or 200)
 
     mirror_instance: str = demisto.integrationInstance()
 
