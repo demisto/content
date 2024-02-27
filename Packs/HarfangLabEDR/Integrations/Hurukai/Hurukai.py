@@ -3,7 +3,7 @@ import dataclasses
 import functools
 import math
 from collections.abc import Callable, Collection
-from typing import Literal, TypeAlias, TypeVar
+from typing import Generic, Literal, TypeAlias, TypeVar
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -586,10 +586,10 @@ def test_module(client: Client, *args: Any, **kwargs: Any) -> str:
 
 
 @dataclasses.dataclass(kw_only=True)
-class FetchHistory:
+class FetchHistory(Generic[IncidentId]):
 
     last_fetch: Optional[int] = None
-    already_fetched: list[int | str] = dataclasses.field(default_factory=list)
+    already_fetched: list[IncidentId] = dataclasses.field(default_factory=list)
 
 
 @dataclasses.dataclass(kw_only=True, frozen=True)
