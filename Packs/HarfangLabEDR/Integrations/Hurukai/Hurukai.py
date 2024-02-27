@@ -1,7 +1,9 @@
+import typing
 import dataclasses
 import functools
-from collections.abc import Callable
-from typing import TypeAlias
+import math
+from collections.abc import Callable, Collection
+from typing import Literal, TypeAlias
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -21,6 +23,10 @@ import dateutil.parser
 urllib3.disable_warnings()
 
 """Helper function"""
+
+FetchType: TypeAlias = Literal["Security Events", "Threats"]
+AlertStatus: TypeAlias = Literal["ACTIVE", "CLOSED"]
+Severity: TypeAlias = Literal["Low", "Medium", "High", "Critical"]
 
 Fn: TypeAlias = Callable[..., Any]
 
@@ -43,7 +49,8 @@ TACTICS = {
     "impact": "Impact",
 }
 
-SEVERITIES = ["Low", "Medium", "High", "Critical"]
+SEVERITIES: tuple[str, ...] = typing.get_args(Severity)
+DEFAULT_SEVERITY: str = SEVERITIES[0]
 
 MAX_NUMBER_OF_ALERTS_PER_CALL = 25
 
@@ -96,7 +103,7 @@ HFL_SECURITY_EVENT_OUTGOING_ARGS = {
     "status": f"Updated security event status, one of {'/'.join(STATUS_HFL_TO_XSOAR.keys())}"
 }
 
-MIRROR_DIRECTION_DICT = {
+MIRROR_DIRECTION_MAPPING = {
     "None": None,
     "Incoming": "In",
     "Outgoing": "Out",
@@ -631,6 +638,197 @@ def get_last_run() -> LastRun:
             history["last_fetch"] = history["last_fetch"] // 1_000_000
 
     return LastRun(**{k: FetchHistory(**v) for k, v in last_run.items()})
+
+
+def _fetch_security_event_incidents(
+    client: Client,
+    *,
+    fetch_history: FetchHistory,
+    minimum_severity_to_fetch: Severity,
+    max_fetch: int,
+    first_fetch_timestamp: int,
+    mirror_instance: str,
+    mirror_direction: str | None,  # None is a valid value
+    alert_type: Optional[list[str]],
+    alert_status: Optional[list[str]],
+    incidents: list[dict],
+) -> None:
+    """Wrapper for fetching security events on remote HarfangLab EDR instance.
+
+    Args:
+        client: Demisto client to use. Initialized in the 'main' function.
+        fetch_history: Fetch history object for security events.
+        minimum_severity_to_fetch: Minimum level to fetch. Can be "Low",
+          "Medium", "High" or "Critical" (see 'Severity' type).
+        max_fetch: Maximum count of security event to fetch per call of this
+          function.
+        first_fetch_timestamp: Timestamp to use on first fetch.
+        mirror_instance: Name of the mirrored instance.
+        mirror_direction: In which direction action should be mirrored. Can be
+          "In", "Out", "Both" or None (see 'MIRROR_DIRECTION_MAPPING' values).
+        alert_type: Security event type that should be fetched. Comma separated
+          string/list (eg.: "sigma,yara,vt").
+        alert_status: Security event status that should be fetched. Can be
+          ["new", "probable_false_positive", "investigating"] for "ACTIVE" status,
+          ["closed", "false_positive"] for "CLOSED" status,
+          or None.
+        incidents: List to use for append the fetched security events.
+
+    Raises:
+        ValueError: Can occur both in case of invalid user/configuration data
+          or invalid/unexpected data type on fetched security events.
+        KeyError: Can occur if there are missing keys in the fetched security
+          events.
+
+        In both case, those errors are not expected and should be reported.
+
+    Returns:
+        Nothing, the 'incidents' list is updated.
+    """
+
+    fetched: list[str] = []
+    fetched_from_last_fetch: list[str] = []
+
+    if fetch_history.last_fetch:
+        fetched_from_last_fetch.extend(fetch_history.already_fetched)
+    else:
+        fetch_history.last_fetch = first_fetch_timestamp
+
+    # exclude every security events that has been already fetched
+    exclude_fetched_from_last_fetch_filter = {
+        "id__exact!": ",".join(fetched_from_last_fetch)
+    }
+
+    fetching_cursor = datetime.fromtimestamp(
+        # minus 1sec to overlap with previous fetch and ensure to miss nothing
+        fetch_history.last_fetch - 1,
+        tz=timezone.utc,
+    )
+
+    demisto.info(
+        f"Fetch security events created after {fetching_cursor}... (max. {max_fetch})"
+    )
+
+    security_events: Collection[dict] = get_security_events(
+        client=client,
+        min_created_timestamp=fetching_cursor.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        alert_status=alert_status,
+        alert_type=alert_type,
+        min_severity=minimum_severity_to_fetch,
+        max_fetch=max_fetch,
+        extra_filters={
+            **exclude_fetched_from_last_fetch_filter,
+        },
+    )
+
+    demisto.info(
+        f"{len(security_events)} security events fetched from {mirror_instance}"
+    )
+
+    # define 'count' before the 'for' loop to ensure semantic in
+    # case of empty 'for' loop.
+    count: int = 0
+    security_event: dict[str, Any]
+
+    # fetched security events are expected to be already sorted by time creation,
+    # but better be safe
+    for count, security_event in enumerate(
+        sorted(security_events, key=lambda d: d["alert_time"]), start=1
+    ):
+
+        security_event_id: str = security_event["id"]  # id should be always present
+
+        security_event_creation_timestamp: int = math.floor(
+            dateutil.parser.isoparse(security_event["alert_time"]).timestamp()
+        )
+
+        # Skip security events that has been already fetched in the current fetch.
+        # In fact, that should never happen and this statement can be replaced
+        # by a simple raise error.
+        if security_event_id in fetched:
+            demisto.error(
+                f"'{security_event_id}' was already fetched from current fetch: "
+                f"this security event shouldn't have been present twice in the "
+                f"same fetching processing"
+            )
+            continue
+
+        # Skip security events that has been fetched in previous fetch.
+        # In fact, that should never happen and this statement can be replaced
+        # by a simple raise error.
+        if security_event_id in fetched_from_last_fetch:
+            demisto.error(
+                f"'{security_event_id}' was already fetched from a previous fetch: "
+                f"this security event shouldn't have been re-fetched"
+            )
+            continue
+
+        # Skip security events that are prior to the given timestamp.
+        # In fact, that should never happen and this statement can be replaced
+        # by a simple raise error.
+        # note: time in remote instance are stored in UTC
+        if security_event_creation_timestamp < fetching_cursor.timestamp():
+            demisto.error(
+                f"'{security_event_id}' has been created before the given timestamp: "
+                f"expected only security events created after {fetching_cursor}, "
+                f"get one created at "
+                f"{datetime.fromtimestamp(security_event_creation_timestamp, tz=timezone.utc)}"
+            )
+            continue
+
+        # note: 'alert' is the legacy name for 'security event'
+        # for retro-compatibility purpose, the name 'alert' is still used here,
+        # but in the end, should be replaced by 'security event'
+        incident_type = f"{INTEGRATION_NAME} alert"
+        incident_link = f"{client._base_url}/security-event/{security_event_id}/summary"
+
+        security_event["incident_type"] = incident_type
+        security_event["incident_link"] = incident_link
+        security_event["mirror_instance"] = mirror_instance
+        security_event["mirror_direction"] = mirror_direction
+
+        severity_as_str: Severity = security_event["level"].capitalize()
+
+        # no need -> 'SEVERITIES.index(...)' will already raise a ValueError
+        # if severity_as_str not in typing.get_args(Severity):
+        #     raise ValueError
+
+        incident_name: str = security_event["rule_name"]
+        occurred: str = security_event["alert_time"]
+        severity: int = SEVERITIES.index(severity_as_str) + 1
+        json_dump: str = json.dumps(security_event, ensure_ascii=True)
+
+        incident: dict[str, Any] = {
+            "name": incident_name,
+            "occurred": occurred,
+            "severity": severity,
+            "rawJSON": json_dump,
+        }
+
+        incidents.append(incident)
+        fetched.append(security_event_id)
+
+        fetch_history.last_fetch = max(
+            (fetch_history.last_fetch, security_event_creation_timestamp)
+        )
+
+        if len(incidents) >= max_fetch:
+            break
+
+    demisto.info(
+        f"{len(fetched)}/{len(security_events)} new security events send to XSOAR"
+    )
+
+    if fetched:
+        if fetch_history.last_fetch > fetching_cursor.timestamp() + 1:
+            # Only clear previously fetched security events if the last_fetch
+            # timestamp have changed.
+            # Otherwise, that can conduct to a deadlock if there are more
+            # than 'max_fetch' security events that are generated in less
+            # than 1 second.
+            fetch_history.already_fetched.clear()
+
+        fetch_history.already_fetched.extend(fetched)
 
 
 def fetch_incidents(client, args):
@@ -2862,6 +3060,7 @@ def get_security_events(
     limit=MAX_NUMBER_OF_ALERTS_PER_CALL,
     ordering="alert_time",
     threat_id=None,
+    extra_filters: dict[str, Any] = None,
 ):
     security_events = []
 
@@ -2934,6 +3133,9 @@ def get_security_events(
 
     if min_updated_timestamp:
         args["last_update__gte"] = min_updated_timestamp
+
+    if extra_filters:
+        args.update(extra_filters)
 
     demisto.debug(f"Args for fetch_security_events: {args}")
 
