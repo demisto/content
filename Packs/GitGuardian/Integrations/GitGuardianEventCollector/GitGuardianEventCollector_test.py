@@ -52,7 +52,8 @@ def test_extract_event_ids_with_same_to_fetch_time(client):
     incidents = [{"id": 1, "last_occurrence_date": "2024-01-03T21:05:38Z"},
                  {"id": 2, "last_occurrence_date": "2024-02-03T21:05:38Z"},
                  {"id": 3, "last_occurrence_date": "2024-01-03T21:05:38Z"}]
-    ids_with_same_occurrence_date = client.extract_event_ids_with_same_to_fetch_time(incidents, '2024-01-03T21:05:38Z', 'incident')
+    ids_with_same_occurrence_date = client.extract_event_ids_with_same_to_fetch_time(
+        incidents, '2024-01-03T21:05:38Z', 'incident')
     assert ids_with_same_occurrence_date == [1, 3]
 
 

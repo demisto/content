@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 from typing import Any
-import math
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -51,18 +50,20 @@ class Client(BaseClient):
             str: The time to start the next incident fetch.
         """
         incidents, last_fetched_incident_ids = self.retrieve_events(
-            last_run.get("from_fetch_time", ""), last_run.get("to_fetch_time", ""), max_events_per_fetch, last_run.get("last_fetched_incident_ids", []), 'incident', get_events
+            last_run.get("from_fetch_time", ""), last_run.get("to_fetch_time", ""), max_events_per_fetch, last_run.get(
+                "last_fetched_incident_ids", []), 'incident', get_events
         )
         audit_logs, last_fetched_audit_log_ids = self.retrieve_events(
-            last_run.get("from_fetch_time", ""), last_run.get("to_fetch_time", ""), max_events_per_fetch, last_run.get("last_fetched_audit_log_ids", []), 'audit_log', get_events
+            last_run.get("from_fetch_time", ""), last_run.get("to_fetch_time", ""), max_events_per_fetch, last_run.get(
+                "last_fetched_audit_log_ids", []), 'audit_log', get_events
         )
-        
+
         next_run_from_fetch_time = last_run.get("to_fetch_time", "")
 
         return incidents, audit_logs, last_fetched_incident_ids, last_fetched_audit_log_ids, next_run_from_fetch_time
 
     def retrieve_events(
-        self, from_fetch_time: str, to_fetch_time: str,max_events_per_fetch: int, prev_run_fetched_event_ids: List[int], event_type: str, get_events: bool = False
+        self, from_fetch_time: str, to_fetch_time: str, max_events_per_fetch: int, prev_run_fetched_event_ids: List[int], event_type: str, get_events: bool = False
     ) -> tuple[List[Dict], List[int]]:
         """Searching the API for new incidents.
 
@@ -104,10 +105,10 @@ class Client(BaseClient):
             if num_of_fetched_events >= max_events_per_fetch or not next_url:
                 # Fetched the max number of events or no more events, sending them to xsiam
                 events, last_fetched_incidents_ids = self.handle_events(events,
-                                                                           max_events_per_fetch,
-                                                                           event_type,
-                                                                           to_fetch_time,
-                                                                           get_events)
+                                                                        max_events_per_fetch,
+                                                                        event_type,
+                                                                        to_fetch_time,
+                                                                        get_events)
                 fetched_event_ids.extend(last_fetched_incidents_ids)
                 num_of_fetched_events = len(events)
 
@@ -126,17 +127,16 @@ class Client(BaseClient):
 
         return all_fetched_events, fetched_event_ids
 
-
     def handle_events(self, events_to_send: list, max_events_per_fetch: int, event_type: str, to_fetch_time: str, get_events: bool = False) -> tuple[List[Dict], List[int]]:
         events_to_send_to_xsiam, events_to_keep = events_to_send[:max_events_per_fetch], events_to_send[max_events_per_fetch:]
-        last_fetched_incidents_ids = self.extract_event_ids_with_same_to_fetch_time(events_to_send_to_xsiam, to_fetch_time, event_type)
+        last_fetched_incidents_ids = self.extract_event_ids_with_same_to_fetch_time(
+            events_to_send_to_xsiam, to_fetch_time, event_type)
 
         if events_to_send_to_xsiam and not get_events:
             self.add_time_to_events(events_to_send_to_xsiam, event_type)
             send_events_to_xsiam(events_to_send_to_xsiam, vendor=VENDOR, product=PRODUCT)
 
         return events_to_keep, last_fetched_incidents_ids
-
 
     @staticmethod
     def add_time_to_events(events: List[Dict] | None, event_type: str):
@@ -243,7 +243,7 @@ def get_events(
     incidents, audit_logs, _, _, _ = client.search_events(last_run, limit, get_events=True)
     incidents = incidents[:limit]
     audit_logs = audit_logs[:limit]
-    
+
     hr = tableToMarkdown(
         name="Test Event - incidents",
         t=incidents,
