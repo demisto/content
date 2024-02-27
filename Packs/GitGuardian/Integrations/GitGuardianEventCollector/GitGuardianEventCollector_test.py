@@ -42,65 +42,7 @@ def test_get_events_command_limit(client):
     assert len(audit_logs) == 1
 
 
-def test_search_incidents(client):
-    """
-    Given: A mock GitGuardian client.
-    When: Running search_incidents with a limit of 1
-    Then: Ensure only one event is returned.
-    """
-
-    max_events_per_fetch = 1
-    from_fetch_time = "2024-01-03T21:10:40Z"
-    last_fetched_incident_ids = []
-    incidents, next_run_incidents_from_fetch, _ = client.search_incidents(
-        from_fetch_time, max_events_per_fetch, last_fetched_incident_ids
-    )
-    assert len(incidents) == 1
-    assert next_run_incidents_from_fetch == "2024-01-03T21:05:38Z"
-
-
-def test_search_audit_log(client):
-    """
-    Given: A mock GitGuardian client.
-    When: Running search_incidents with a limit of 1, while there are two events.
-    Then: Ensure only one event is returned.
-    """
-
-    max_events_per_fetch = 1
-    from_fetch_time = "2024-01-09T12:24:30Z"
-    incidents, next_run_incidents_from_fetch = client.search_audit_logs(
-        from_fetch_time, max_events_per_fetch
-    )
-    assert len(incidents) == 1
-    assert next_run_incidents_from_fetch == "2024-01-09T12:24:40.089758Z"
-
-
-def test_get_last_page(client):
-    """
-    Given: A mock GitGuardian client.
-    When: Running get_last_page.
-    Then: Ensure when there is only one page, the last page number is 1 and not 0
-    """
-
-    params = {}
-    url_suffix = "/audit_logs"
-    number_of_last_page = client.get_last_page(params, url_suffix)
-    assert number_of_last_page == 1
-
-
-def test_alter_next_fetch_time(client):
-    """
-    Given: A mock GitGuardian client.
-    When: Running alter_next_fetch_time.
-    Then: Ensure the time is incremented by 1 milisecond
-    """
-
-    time_str_to_alter = "2024-01-08T18:12:15.035562Z"
-    next_fetch_time = client.alter_next_fetch_time(time_str_to_alter)
-    assert next_fetch_time == "2024-01-08T18:12:15.035563Z"
-
-
-def test_extract_incident_ids_with_same_last_occurrence_date(client):
+def test_extract_event_ids_with_same_to_fetch_time(client):
     """
     Given: A mock GitGuardian client.
     When: Running extract_incident_ids_with_same_last_occurrence_date.
@@ -110,24 +52,8 @@ def test_extract_incident_ids_with_same_last_occurrence_date(client):
     incidents = [{"id": 1, "last_occurrence_date": "2024-01-03T21:05:38Z"},
                  {"id": 2, "last_occurrence_date": "2024-02-03T21:05:38Z"},
                  {"id": 3, "last_occurrence_date": "2024-01-03T21:05:38Z"}]
-    ids_with_same_occurrence_date = client.extract_incident_ids_with_same_last_occurrence_date(incidents, '2024-01-03T21:05:38Z')
+    ids_with_same_occurrence_date = client.extract_event_ids_with_same_to_fetch_time(incidents, '2024-01-03T21:05:38Z', 'incident')
     assert ids_with_same_occurrence_date == [1, 3]
-
-
-def test_sort_incidents_based_on_last_occurrence_date(client):
-    """
-    Given: A mock GitGuardian client.
-    When: Running extract_incident_ids_with_same_last_occurrence_date.
-    Then: Ensure the indicators returned sorted by last_occurence_date
-    """
-
-    incidents = [{"id": 1, "last_occurrence_date": "2024-02-03T21:05:38Z"},
-                 {"id": 2, "last_occurrence_date": "2024-01-03T21:05:38Z"},
-                 {"id": 3, "last_occurrence_date": "2024-03-03T21:05:38Z"}]
-    sorted_incidents = client.sort_incidents_based_on_last_occurrence_date(incidents)
-    assert sorted_incidents == [{"id": 2, "last_occurrence_date": "2024-01-03T21:05:38Z"},
-                                {"id": 1, "last_occurrence_date": "2024-02-03T21:05:38Z"},
-                                {"id": 3, "last_occurrence_date": "2024-03-03T21:05:38Z"}]
 
 
 def test_remove_duplicated_incidents(client):
@@ -141,12 +67,12 @@ def test_remove_duplicated_incidents(client):
                  {"id": 2, "last_occurrence_date": "2024-01-03T21:05:38Z"},
                  {"id": 3, "last_occurrence_date": "2024-03-03T21:05:38Z"}]
     last_fetched_ids = [1]
-    sorted_incidents = client.remove_duplicated_incidents(incidents, last_fetched_ids)
+    sorted_incidents = client.remove_duplicated_events(incidents, last_fetched_ids)
     assert sorted_incidents == [{"id": 2, "last_occurrence_date": "2024-01-03T21:05:38Z"},
                                 {"id": 3, "last_occurrence_date": "2024-03-03T21:05:38Z"}]
 
 
-def test_fetch_events(client):
+def test_fetch_events(client, mocker):
     """
     Given: A mock GitGuardian client.
     When: Running fetch_events with a limit of 3
@@ -155,16 +81,16 @@ def test_fetch_events(client):
 
     max_events_per_fetch = 3
     last_run = {
-        "incident_from_fetch_time": "2024-01-03T21:10:40Z",
-        "audit_log_from_fetch_time": "2024-01-03T21:10:40Z",
-        "last_fetched_incident_ids": []
+        "from_fetch_time": "2024-01-03T21:10:40Z",
+        "to_fetch_time": "2024-01-03T21:10:40Z",
+        "last_fetched_incident_ids": [],
+        "last_fetched_audit_log_ids": []
     }
-
+    mocker.patch('GitGuardianEventCollector.send_events_to_xsiam')
     next_run, incidents, audit_logs = fetch_events(
         client, last_run, max_events_per_fetch
     )
     assert len(incidents) == 2
     assert len(audit_logs) == 1
-    assert next_run.get("incident_from_fetch_time") == "2024-01-09T17:00:00Z"
-    assert next_run.get("audit_log_from_fetch_time") == "2024-01-09T12:24:40.089758Z"
-    assert next_run.get("last_fetched_incident_ids") == [2]
+    assert next_run.get("from_fetch_time") == "2024-01-03T21:10:40Z"
+    assert next_run.get("last_fetched_incident_ids") == []

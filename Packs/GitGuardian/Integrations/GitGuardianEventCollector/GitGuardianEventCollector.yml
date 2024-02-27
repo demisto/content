@@ -29,11 +29,13 @@ configuration:
   required: false
   type: 8
   section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   section: Connect
+  advanced: true
 description: This is the GitGuardian event collector integration for Cortex XSIAM.
 display: GitGuardian Event Collector
 name: GitGuardianEventCollector
