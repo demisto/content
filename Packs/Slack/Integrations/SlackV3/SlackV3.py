@@ -112,6 +112,7 @@ def get_war_room_url(url: str) -> str:
 
     return url
 
+
 def get_bot_id() -> str:
     """
     Gets the app bot ID
