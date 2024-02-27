@@ -1,0 +1,42 @@
+{
+    "successful_update_just_name":{
+        "args":{
+            "deployment_id":122,
+            "deployment_name":"acme",
+            "updated_deployment_description":"updated_deployment_description",
+            "updated_deployment_name" : "updated_deployment_name",
+            "updated_simulators_for_deployment": "'152993a2-3712-4730-8483-b4ba07e4f0af,32c3b42f-fe65-438c-8178-0c1565e07511'"
+        },
+        "command":"safebreach-update-deployment"
+    },
+    "successful_update_just_ID":{
+        "args":{
+            "deployment_id":122,
+            "deployment_name":"",
+            "updated_deployment_description":"updated_deployment_description",
+            "updated_deployment_name" : "updated_deployment_name",
+            "updated_simulators_for_deployment": "'152993a2-3712-4730-8483-b4ba07e4f0af,32c3b42f-fe65-438c-8178-0c1565e07511'"
+        },
+        "command":"safebreach-update-deployment"
+    },
+    "successful_update_both_name_and_id":{
+        "args":{
+            "deployment_id":122,
+            "deployment_name":"acme",
+            "updated_deployment_description":"updated_deployment_description",
+            "updated_deployment_name" : "updated_deployment_name",
+            "updated_simulators_for_deployment": "'152993a2-3712-4730-8483-b4ba07e4f0af,32c3b42f-fe65-438c-8178-0c1565e07511'"
+        },
+        "command":"safebreach-update-deployment"
+    },
+    "failed_update":{
+        "args":{
+            "deployment_id":128,
+            "deployment_name":"acme1234",
+            "updated_deployment_description":"updated_deployment_description",
+            "updated_deployment_name" : "updated_deployment_name",
+            "updated_simulators_for_deployment": "'152993a2-3712-4730-8483-b4ba07e4f0af,32c3b42f-fe65-438c-8178-0c1565e07511'"
+        },
+        "command":"safebreach-update-deployment"
+    }
+}

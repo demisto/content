@@ -1,0 +1,9 @@
+{
+    "success_errors":{
+        "args":{},
+        "command":"safebreach-get-integration-issues"
+    },"success_without_errors":{
+        "args":{},
+        "command":"safebreach-get-integration-issues"
+    }
+}
