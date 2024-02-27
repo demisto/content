@@ -646,6 +646,21 @@ def get_last_run() -> LastRun:
     return LastRun(**{k: FetchHistory(**v) for k, v in last_run.items()})
 
 
+def _get_fetching_cursor(fetch_history: FetchHistory) -> datetime:
+
+    if not isinstance(fetch_history.last_fetch, (int, float)):
+        raise ValueError(
+            f"Expected an integer value for 'fetch_history.last_fetch', "
+            f"get '{fetch_history.last_fetch}'"
+        )
+
+    return datetime.fromtimestamp(
+        # minus 1sec to overlap with previous fetch and ensure to miss nothing
+        fetch_history.last_fetch - 1,
+        tz=timezone.utc,
+    )
+
+
 def _incident_should_be_fetched(
     incident_type: Literal["security event", "threat"],
     incident_id: IncidentId,
@@ -770,11 +785,7 @@ def _fetch_security_event_incidents(
         "id__exact!": ",".join(fetched_from_last_fetch)
     }
 
-    fetching_cursor = datetime.fromtimestamp(
-        # minus 1sec to overlap with previous fetch and ensure to miss nothing
-        fetch_history.last_fetch - 1,
-        tz=timezone.utc,
-    )
+    fetching_cursor: datetime = _get_fetching_cursor(fetch_history)
 
     demisto.info(
         f"Fetch security events created after {fetching_cursor}... (max. {max_fetch})"
@@ -940,11 +951,7 @@ def _fetch_threat_incidents(
         "ordering": "creation_date",
     }
 
-    fetching_cursor = datetime.fromtimestamp(
-        # minus 1sec to overlap with previous fetch and ensure to miss nothing
-        fetch_history.last_fetch - 1,
-        tz=timezone.utc,
-    )
+    fetching_cursor: datetime = _get_fetching_cursor(fetch_history)
 
     demisto.info(f"Fetch threats created after {fetching_cursor}... (max. {max_fetch})")
 
