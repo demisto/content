@@ -1097,6 +1097,7 @@ def fetch_incidents(client: Client, args: dict[str, Any]) -> tuple[dict, list[di
     # temporary setup - need to move from 'args' to pure kw + **kwargs
     # * mandatory:
     fetch_types: list[FetchType] = args["fetch_types"]
+    last_run: LastRun = args["last_run"]
 
     # * mandatory (w/ default):
     min_severity: Severity = args.get("min_severity", DEFAULT_SEVERITY)
@@ -1149,8 +1150,6 @@ def fetch_incidents(client: Client, args: dict[str, Any]) -> tuple[dict, list[di
             f"Invalid value for 'max_fetch' argument: "
             f"expected a positive integer, get '{max_fetch}'"
         )
-
-    last_run: LastRun = get_last_run()
 
     # how many past days should be fetched (on first fetch only)
     past_days_to_fetch = int(first_fetch or 0)
@@ -1205,9 +1204,6 @@ def fetch_incidents(client: Client, args: dict[str, Any]) -> tuple[dict, list[di
                 threat_status=status_to_fetch,
                 incidents=incidents,  # the list will mutate (list.append(...))
             )
-
-    demisto.setLastRun(last_run.as_dict())
-    demisto.incidents(incidents)
 
     return last_run.as_dict(), incidents
 
@@ -3956,6 +3952,9 @@ def main() -> None:
         raise ValueError(f"unknown command: {command}")
 
     if command == "fetch-incidents":
+
+        command_arguments["last_run"] = get_last_run()
+
         for fetch_arg in (
             "alert_status",
             "alert_type",
@@ -3972,6 +3971,10 @@ def main() -> None:
     except Exception as error:
         return_error(f"Fail to execute command '{command}'")
         raise RuntimeError from error  # semantic purpose, should never effectively happen
+
+    if command == "fetch-incidents":
+        demisto.setLastRun(result[0])  # result[0] -> last_run object as dict
+        demisto.incidents(result[1])  # result[1] -> incidents list
 
     return_results(result)
 
