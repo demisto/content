@@ -426,6 +426,7 @@ def main():
     options = options_handler()
     storage_client = storage.Client.from_service_account_json(options.service_account)
     storage_bucket = storage_client.bucket(LOCKS_BUCKET)
+    logging.info(f"job_id={options.ci_job_id} pipeline_id= {options.ci_pipeline_id}")
     if options.ci_job_id:
         options.ci_job_id = f"{options.ci_pipeline_id}_{options.ci_job_id}"
     else:
