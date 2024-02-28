@@ -848,7 +848,6 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
             max_results=max_results,
             extended_attributes=extended_attributes
         )
-        mode = f"{ip=}"
     elif network:
         status = args.get('status', IPv4AddressStatus.USED.value)
         raw_response = client.get_ipv4_address_from_netmask(
@@ -857,7 +856,6 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
             max_results=max_results,
             extended_attributes=extended_attributes
         )
-        mode = f"{network=}"
     elif from_ip and to_ip:
         raw_response = client.get_ipv4_address_range(
             from_ip,
@@ -865,7 +863,6 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
             max_results=max_results,
             extended_attributes=extended_attributes
         )
-        mode = f"{from_ip=} - {to_ip=}"
 
     ip_list = raw_response.get('result')
 
@@ -874,7 +871,7 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
         context = {}
     else:
         output = transform_ip_context(ip_list)
-        title = f'{INTEGRATION_NAME} - {mode}'
+        title = f'{INTEGRATION_NAME}'
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}': output
         }
@@ -1464,8 +1461,6 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
     demisto.debug(f"Found {len(records)} host records")
 
     title = "Host records"
-    if hostname:
-        title = f"Host records for {hostname} (first {max_results})"
 
     if records:
         outputs = transform_host_records_context(records)
@@ -1515,7 +1510,7 @@ def get_network_info_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
         context = {}
     else:
         output = transform_network_info_context(network_info)
-        hr = tableToMarkdown("Network information found", output)
+        hr = tableToMarkdown("Network information", output)
         context = {
             f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_NETWORK_INFO_CONTEXT_KEY}": output
         }
