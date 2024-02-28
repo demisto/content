@@ -1,5 +1,5 @@
 id: PrismaSASE Test
-version: 6
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: PrismaSASE Test
 description: Test playbook for Prisma SASE integration
@@ -2607,3 +2607,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
