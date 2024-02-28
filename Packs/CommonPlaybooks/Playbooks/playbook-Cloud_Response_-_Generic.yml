@@ -528,6 +528,7 @@ tasks:
       id: d22ac09b-779f-424b-8a75-44095a40c450
       iscommand: false
       name: Choose manually the cloud provider
+      description: Choose which cloud provider XSOAR should handle this incident.
       type: collection
       version: -1
     taskid: d22ac09b-779f-424b-8a75-44095a40c450
@@ -598,6 +599,7 @@ tasks:
       id: 12e4a818-0377-4886-8f78-9462202ede0a
       iscommand: false
       name: Which Cloud provider was selected
+      description: Which Cloud provider was selected
       type: condition
       version: -1
     taskid: 12e4a818-0377-4886-8f78-9462202ede0a
@@ -628,6 +630,7 @@ tasks:
       id: 1906fc40-41a9-42e6-8315-5ce64fd2a493
       iscommand: false
       name: No cloud provider was selected
+      description: No cloud provider was selected
       type: title
       version: -1
     taskid: 1906fc40-41a9-42e6-8315-5ce64fd2a493

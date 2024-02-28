@@ -1753,11 +1753,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: identity_invoked_by_type
+              simple: inputs.accountType
             iscontext: true
           right:
             value:
-              simple: service_account
+              simple: service account
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -1958,7 +1958,7 @@ inputs:
   required: false
   description: The source IP address of the attacker.
   playbookInputQuery:
-- description: "The GCP Project ID. Will be used for handling service accound"
+- description: "The GCP Project ID. Will be used for handling service account"
   key: GCPprojectID
   playbookInputQuery:
   required: false
