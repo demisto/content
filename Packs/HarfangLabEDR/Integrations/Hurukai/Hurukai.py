@@ -646,6 +646,18 @@ def get_last_run() -> LastRun:
     return LastRun(**{k: FetchHistory(**v) for k, v in last_run.items()})
 
 
+def _adjust_max_fetch_value(max_fetch: int, already_fetched_count: int) -> int:
+    """Adjust the max_fetch value from how many incidents have been already fetched."""
+    if max_fetch <= already_fetched_count:
+        raise RuntimeError(
+            f"Too many incidents have been already fetched: Get {max_fetch=}, "
+            f"but {already_fetched_count} incidents have been already fetched "
+            f"(that probably mean there are semantic errors in the code)"
+        )
+
+    return max_fetch - already_fetched_count
+
+
 def _get_fetching_cursor(fetch_history: FetchHistory) -> datetime:
 
     if not isinstance(fetch_history.last_fetch, (int, float)):
@@ -822,7 +834,7 @@ def _fetch_security_event_incidents(
         minimum_severity_to_fetch: Minimum level to fetch. Can be "Low",
           "Medium", "High" or "Critical" (see 'Severity' type).
         max_fetch: Maximum count of security event to fetch per call of this
-          function.
+          function (will be adjusted).
         first_fetch_timestamp: Timestamp to use on first fetch.
         mirror_instance: Name of the mirrored instance.
         mirror_direction: In which direction action should be mirrored. Can be
@@ -854,6 +866,8 @@ def _fetch_security_event_incidents(
         fetched_from_last_fetch.extend(fetch_history.already_fetched)
     else:
         fetch_history.last_fetch = first_fetch_timestamp
+
+    max_fetch = _adjust_max_fetch_value(max_fetch, len(incidents))
 
     # exclude every security events that has been already fetched
     exclude_fetched_from_last_fetch_filter = {
@@ -967,7 +981,7 @@ def _fetch_threat_incidents(
         minimum_severity_to_fetch: Minimum level to fetch. Can be "Low",
           "Medium", "High" or "Critical" (see 'Severity' type).
         max_fetch: Maximum count of threat to fetch per call of this
-          function.
+          function (will be adjusted).
         first_fetch_timestamp: Timestamp to use on first fetch.
         mirror_instance: Name of the mirrored instance.
         mirror_direction: In which direction action should be mirrored. Can be
@@ -997,6 +1011,8 @@ def _fetch_threat_incidents(
         fetched_from_last_fetch.extend(fetch_history.already_fetched)
     else:
         fetch_history.last_fetch = first_fetch_timestamp
+
+    max_fetch = _adjust_max_fetch_value(max_fetch, len(incidents))
 
     # exclude every threats that has been already fetched
     exclude_fetched_from_last_fetch_filter = {
