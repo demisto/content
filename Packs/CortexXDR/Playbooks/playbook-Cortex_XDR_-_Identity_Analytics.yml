@@ -111,6 +111,16 @@ tasks:
             value:
               complex:
                 root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
                 accessor: tags
             iscontext: true
           right:
@@ -157,7 +167,7 @@ tasks:
       {
         "position": {
           "x": 980,
-          "y": 50
+          "y": 40
         }
       }
     note: false
@@ -275,8 +285,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -60,
-          "y": 60
+          "x": -80,
+          "y": 40
         }
       }
     note: false
@@ -590,8 +600,7 @@ tasks:
             iscontext: true
           right:
             value:
-              complex:
-                root: inputs.OktaSuspiciousEventsThreshold
+              simple: inputs.OktaSuspiciousActivitiesThreshold
             iscontext: true
         - operator: greaterThan
           left:
@@ -1223,7 +1232,7 @@ tasks:
       - "24"
     scriptarguments:
       AutoCommit:
-        simple: "No"
+        simple: ${inputs.FWAutoCommit}
       CustomBlockRule:
         simple: "True"
       Folder:
@@ -1255,12 +1264,14 @@ tasks:
           - operator: uniq
       InputEnrichment:
         simple: "False"
+      InternalRange:
+        simple: ${inputs.InternalRange}
       RuleDirection:
         simple: outbound
       RuleName:
         simple: XSOAR - Block IP playbook - ${incident.id}
       UserVerification:
-        simple: "True"
+        simple: ${inputs.UserVerification}
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1692,6 +1703,16 @@ view: |-
     }
   }
 inputs:
+- key: AlertName
+  value: {}
+  required: false
+  description: Alert Name.
+  playbookInputQuery:
+- key: alert_id
+  value: {}
+  required: false
+  description: Alert ID.
+  playbookInputQuery:
 - key: IPAddress
   value: {}
   required: false
@@ -1718,7 +1739,7 @@ inputs:
     example: If this input is set to '30', and the 'Okta - User Investigation' or the 'Azure - User Investigation' sub-playbooks have found 31 failed login attempts - It will classify this behavior as malicious activity.
     The default value is '30'.
   playbookInputQuery:
-- key: OktaSuspiciousEventsThreshold
+- key: OktaSuspiciousActivitiesThreshold
   value:
     simple: "5"
   required: false
@@ -1739,32 +1760,71 @@ inputs:
   value:
     simple: Revoke
   required: false
-  description: |
-    The response on 'Cloud Credentials Rotation - Azure' sub-playbook provides the following remediation actions using MSGraph Users:
+  description: |-
+    The response playbook provides the following remediation actions using MSGraph Users:
+
+    Reset: By entering "Reset" in the input, the playbook will execute password reset.
+
+    Revoke: By entering "Revoke" in the input, the playbook will revoke the user's session.
+
+    ALL: By entering "ALL" in the input, the playbook will execute the reset password and revoke session tasks.
   playbookInputQuery:
-- key: alert_id
-  value: {}
+- key: FWAutoCommit
+  value:
+    simple: "Yes"
   required: false
-  description: Alert ID.
+  description: "This input determines whether to commit the configuration automatically on PAN-OS devices and other FWs. \nYes - Commit automatically.\nNo - Commit manually."
   playbookInputQuery:
-- key: AlertName
-  value: {}
+- key: UserVerification
+  value:
+    simple: "False"
   required: false
-  description: Alert Name.
+  description: "Possible values: True/False.  Default: True.\nWhether to provide user verification for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  playbookInputQuery:
+- key: InternalRange
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexReplace
+        args:
+          action_dt: {}
+          ignore_case: {}
+          multi_line: {}
+          output_format: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: IANA_Private_Address
+  required: false
+  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
   playbookInputQuery:
 inputSections:
 - inputs:
+  - AlertName
+  - alert_id
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, user engagements and ticketing methods.
+- inputs:
   - IPAddress
   - Username
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
   - RelatedAlertsThreshold
   - FailedLogonThreshold
-  - OktaSuspiciousEventsThreshold
+  - OktaSuspiciousActivitiesThreshold
+  name: Investigation
+  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
   - AutoRemediation
   - IAMRemediationType
-  - alert_id
-  - AlertName
-  name: General (Inputs group)
-  description: Generic group for inputs
+  - FWAutoCommit
+  - UserVerification
+  - InternalRange
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
 outputSections:
 - outputs: []
   name: General (Outputs group)

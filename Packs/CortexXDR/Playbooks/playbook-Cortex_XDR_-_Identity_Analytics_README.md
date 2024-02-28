@@ -24,30 +24,29 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Azure - User Investigation
 * Cloud Credentials Rotation - Azure
+* Okta - User Investigation
+* Cortex XDR - Get entity alerts by MITRE tactics
+* Block IP - Generic v3
 * Cloud IAM Enrichment - Generic
 * Account Enrichment - Generic v2.1
-* Block IP - Generic v3
-* Azure - User Investigation
-* Cortex XDR - Get entity alerts by MITRE tactics
-* Okta - User Investigation
 
 ### Integrations
 
-* XQLQueryingEngine
 * XDR_iocs
 * CortexXDRIR
+* XQLQueryingEngine
 
 ### Scripts
 
-* LoadJSON
 * SetAndHandleEmpty
 
 ### Commands
 
-* setIncident
 * okta-clear-user-sessions
 * xdr-get-cloud-original-alerts
+* setIncident
 * ip
 
 ## Playbook Inputs
@@ -56,15 +55,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
+| AlertName | Alert Name. |  | Optional |
+| alert_id | Alert ID. |  | Optional |
 | IPAddress | IP Address from the XDR Alert. |  | Optional |
 | Username | User name. |  | Optional |
 | RelatedAlertsThreshold | This is the minimum threshold for XDR related alerts, based on MITRE tactics used to identify malicious activity by the user in the last 1 day.<br/> | 5 | Optional |
 | FailedLogonThreshold | This is the minimum threshold for user login failures within the last 1 day.<br/>example: If this input is set to '30', and the 'Okta - User Investigation' or the 'Azure - User Investigation' sub-playbooks have found 31 failed login attempts - It will classify this behavior as malicious activity.<br/>The default value is '30'. | 30 | Optional |
-| OktaSuspiciousEventsThreshold | This is the minimum threshold for suspicious Okta activity events by the user in the last 1 day.<br/>example: If this input is set to '5', and the 'Okta - User Investigation' sub-playbooks have found 6 events of suspicious activity by the user - It will classify this behavior as malicious activity.<br/>The default value is '5'. | 5 | Optional |
+| OktaSuspiciousActivitiesThreshold | This is the minimum threshold for suspicious Okta activity events by the user in the last 1 day.<br/>example: If this input is set to '5', and the 'Okta - User Investigation' sub-playbooks have found 6 events of suspicious activity by the user - It will classify this behavior as malicious activity.<br/>The default value is '5'. | 5 | Optional |
 | AutoRemediation | Whether to execute the remediation flow automatically.<br/>Possible values are: "True" and "False". | False | Optional |
-| IAMRemediationType | The response on 'Cloud Credentials Rotation - Azure' sub-playbook provides the following remediation actions using MSGraph Users:<br/> | Revoke | Optional |
-| alert_id | Alert ID. |  | Optional |
-| AlertName | Alert Name. |  | Optional |
+| IAMRemediationType | The response playbook provides the following remediation actions using MSGraph Users:<br/><br/>Reset: By entering "Reset" in the input, the playbook will execute password reset.<br/><br/>Revoke: By entering "Revoke" in the input, the playbook will revoke the user's session.<br/><br/>ALL: By entering "ALL" in the input, the playbook will execute the reset password and revoke session tasks. | Revoke | Optional |
+| FWAutoCommit | This input determines whether to commit the configuration automatically on PAN-OS devices and other FWs. <br/>Yes - Commit automatically.<br/>No - Commit manually. | Yes | Optional |
+| UserVerification | Possible values: True/False.  Default: True.<br/>Whether to provide user verification for blocking those IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | lists.PrivateIPs | Optional |
 
 ## Playbook Outputs
 

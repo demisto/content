@@ -112,6 +112,29 @@ tasks:
             value:
               simple: Port Scan
           ignorecase: true
+    - label: Identity Analytics
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.alert_id
+                      iscontext: true
+                accessor: tags
+            iscontext: true
+          right:
+            value:
+              simple: DT:Identity Analytics
+          ignorecase: true
     - label: Cloud
       condition:
       - - operator: containsGeneral
@@ -212,29 +235,6 @@ tasks:
           right:
             value:
               simple: Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service
-          ignorecase: true
-    - label: Identity Analytics
-      condition:
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-                      iscontext: true
-                    right:
-                      value:
-                        simple: inputs.alert_id
-                      iscontext: true
-                accessor: tags
-            iscontext: true
-          right:
-            value:
-              simple: DT:Identity Analytics
           ignorecase: true
     continueonerrortype: ""
     view: |-
