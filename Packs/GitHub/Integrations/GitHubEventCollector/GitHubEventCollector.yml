@@ -29,14 +29,7 @@ configuration:
   section: Collect
   required: false
 - display: First fetch time interval
-  hidden: true
   name: after
-  type: 0
-  defaultvalue: 3 days
-  section: Collect
-  required: false
-- display: First fetch time interval
-  name: phrase
   type: 0
   defaultvalue: 3 days
   section: Collect

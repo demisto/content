@@ -18,11 +18,11 @@ def test_last_run(mocker):
     """
 
     # get some events
-    events = [{'@timestamp': 1619510400000}, {'@timestamp': 1619510400000}, {'@timestamp': 1619510400000}]
+    events = [{'@timestamp': 1619510200000}, {'@timestamp': 1619510300000}, {'@timestamp': 1619510400000}]
     last_run = GithubGetEvents.get_last_run(events)
 
     # make sure the last run is the last event in isoformat
-    assert last_run == {'after': '2021-04-27T08:00:01'}
+    assert last_run == {'after': 1619510400000}
 
     # now get no events, and make sure the last run is not changed
     mocker.patch.object(demisto, "getLastRun", return_value=last_run)

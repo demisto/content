@@ -34,13 +34,17 @@ def get_github_timestamp_format(value):
     return f'created:>{value.strftime(DATETIME_FORMAT)}'
 
 
+def prepare_demisto_params(params: dict):
+    params['phrase'] = params.get('after')
+    del params['after']
+
+
 class GithubParams(BaseModel):
     """
     A class that stores the request query params
     """
     include: str
     order: str = 'asc'
-    after: str
     phrase: str
     per_page: int = 100  # Maximum is 100
     _normalize_after = validator('phrase', pre=True, allow_reuse=True)(
@@ -90,11 +94,7 @@ class GithubGetEvents(IntegrationGetEvents):
         if not events:
             return demisto.getLastRun()
         last_timestamp = events[-1]['@timestamp']
-        last_time = last_timestamp / 1000
-        next_fetch_time = datetime.fromtimestamp(last_time) + timedelta(
-            seconds=1
-        )
-        return {'after': next_fetch_time.isoformat()}
+        return {'after': last_timestamp}
 
 
 def main():
@@ -107,6 +107,8 @@ def main():
                'Accept': 'application/vnd.github.v3+json'}
 
     demisto_params['headers'] = headers
+
+    prepare_demisto_params(demisto_params)
     demisto_params['params'] = GithubParams(**demisto_params)
 
     request = GithubEventsRequestConfig(**demisto_params)
