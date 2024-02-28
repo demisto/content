@@ -36,7 +36,7 @@ configuration:
   advanced: true
   required: false
 description: Provides commands for interaction with Prisma SASE API.
-display: Palo Alto Networks - Prisma SASE
+display: Palo Alto Networks - Strata Cloud Manager
 name: Palo Alto Networks - Prisma SASE
 script:
   commands:
