@@ -2818,7 +2818,11 @@ def handle_message(item: results.Message | dict) -> bool:
 
 
 def notable_event_fetch(args: dict, service: client.Service) -> CommandResults:
-    res = service.jobs.oneshot(f'search `notable_by_id({args["notable_event_id"]})`')
+    res = list(
+        results.JSONResultsReader(
+            service.jobs.oneshot(f'search `notable_by_id({args["notable_event_id"]})`', output_mode=OUTPUT_MODE_JSON)
+        )
+    )
     return CommandResults(outputs=res)
 
 
