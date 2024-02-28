@@ -33,9 +33,10 @@ class Client(BaseClient):
             raise DemistoException(f'Could not create an issue with error: {e}')
         return response
 
-    def create_file_token_request(self, args, file_address_arg):
+    def create_file_token_request(self, args, entry_id):
+        file_content = get_file_name_and_content(entry_id)
         response = self._http_request('POST', '/uploads.json', params=args, headers=UPLOAD_FILE_HEADER,
-                                      json_data=file_address_arg)
+                                      data=file_content)
         return response
 
     def update_issue_request(self, args):
@@ -45,9 +46,10 @@ class Client(BaseClient):
         description = args.pop('description', '')
         content_type = args.pop('content_type', '')
         if file_token:
-            args['uploads'] = [{'token': file_token, 'file_name': file_name,
+            args['uploads'] = [{'token': file_token, 'filename': file_name,
                                 'description': description, 'content_type': content_type}]
-        response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": args}, headers=POST_PUT_HEADER)
+        response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": args}, headers=POST_PUT_HEADER,
+                                      empty_valid_codes=[200], return_empty_response=True)
         return response
 
     def get_issues_list_request(self, args: dict[str, Any]):
@@ -55,7 +57,8 @@ class Client(BaseClient):
         return response
 
     def delete_issue_by_id_request(self, issue_id):
-        response = self._http_request('DELETE', f'/issues/{issue_id}.json', headers=POST_PUT_HEADER)
+        response = self._http_request('DELETE', f'/issues/{issue_id}.json', headers=POST_PUT_HEADER, empty_valid_codes=[200],
+                                      return_empty_response=True)
         return response
 
     def get_issue_by_id_request(self, args, issue_id):
@@ -64,11 +67,13 @@ class Client(BaseClient):
 
     def add_issue_watcher_request(self, issue_id, watcher_id):
         args_to_add = {'user_id': watcher_id}
-        response = self._http_request('POST', f'/issues/{issue_id}/watchers.json', params=args_to_add, headers=POST_PUT_HEADER)
+        response = self._http_request('POST', f'/issues/{issue_id}/watchers.json', params=args_to_add, headers=POST_PUT_HEADER,
+                                      empty_valid_codes=[200], return_empty_response=True)
         return response
 
     def remove_issue_watcher_request(self, issue_id, watcher_id):
-        response = self._http_request('DELETE', f'/issues/{issue_id}/watchers/{watcher_id}.json', headers=POST_PUT_HEADER)
+        response = self._http_request('DELETE', f'/issues/{issue_id}/watchers/{watcher_id}.json', headers=POST_PUT_HEADER,
+                                      empty_valid_codes=[200], return_empty_response=True)
         return response
 
     def get_project_list_request(self, args: dict[str, Any]):
@@ -134,9 +139,24 @@ def map_header(header_string: str):
     }
     return header_mapping.get(header_string, header_string)
 
+def get_file_name_and_content(entry_id: str) -> bytes:
+    """Returns the XSOAR file entry's content.
+
+    Args:
+        entry_id (str): The entry id inside XSOAR.
+
+    Returns:
+        Tuple[str, bytes]: A tuple, where the first value is the file name, and the second is the
+        content of the file in bytes.
+    """
+    get_file_path_res = demisto.getFilePath(entry_id)
+    file_path = get_file_path_res.pop('path')
+    file_bytes: bytes = b''
+    with open(file_path, 'rb') as f:
+        file_bytes = f.read()
+    return file_bytes
 
 ''' COMMAND FUNCTIONS '''
-
 
 def test_module(client: Client) -> None:
     message: str = ''
@@ -158,13 +178,12 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
         raise DemistoException('One or more required arguments not specified: {}'.format(', '.join(missing_fields)))
 
     '''Checks if a file needs to be added'''
-    entry_id = args.get('entry_id')
+    entry_id = args.pop('file_entry_id')
     if entry_id:
-        file_name = args.get('file_name', '')
-        file_description = args.get('file_description', '')
-        content_type = args.get('file_content_type', '')
-
-        args_for_file = assign_params(file_name=file_name)
+        file_name = args.pop('file_name', '')
+        file_description = args.pop('file_description', '')
+        content_type = args.pop('file_content_type', '')
+        args_for_file = assign_params(file_name=file_name, content_type=content_type)
         response = client.create_file_token_request(args_for_file, entry_id)
 
         if 'upload' not in response:
@@ -172,7 +191,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
 
         uploads = assign_params(token=response['upload'].get('token', ''),
                                 content_type=content_type,
-                                file_name=file_name,
+                                filename=file_name,
                                 description=file_description)
         args['uploads'] = [uploads]
 
@@ -190,7 +209,6 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
         readable_output=tableToMarkdown('The issue you created:', response, headers=headers,
                                         removeNull=True, is_auto_json_transform=True, headerTransform=pascalToSpace)
     )
-    # print(command_results.readable_output)
     return command_results
 
 
@@ -206,10 +224,9 @@ def update_issue_command(client: Client, args: dict[str, Any]):
         client.update_issue_request(args)
         command_results = CommandResults(
             readable_output=f'Issue with id {issue_id} was successfully updated.')
-        # print(command_results.readable_output)
         return (command_results)
     else:
-        raise DemistoException('Issue_id is missing- in order to update this issue')
+        raise DemistoException('Issue_id is missing in order to update this issue')
 
 
 def get_issues_list_command(client: Client, args: dict[str, Any]):
@@ -234,7 +251,6 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
                                                       removeNull=True,
                                                       headerTransform=pascalToSpace,
                                                       is_auto_json_transform=True))
-    # print(command_results.readable_output)
     return command_results
 
 
@@ -262,7 +278,7 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                                                                          is_auto_json_transform=True))
         return command_results
     else:
-        raise DemistoException('Issue_id is missing- in order to get this issue')
+        raise DemistoException('Issue_id is missing in order to get this issue')
 
 
 def delete_issue_by_id_command(client: Client, args: dict[str, Any]):
@@ -272,10 +288,9 @@ def delete_issue_by_id_command(client: Client, args: dict[str, Any]):
         client.delete_issue_by_id_request(issue_id)
         command_results = CommandResults(
             readable_output=f'Issue with id {issue_id} was deleted successfully.')
-        # print(command_results.readable_output)
         return (command_results)
     else:
-        raise DemistoException('Issue_id is missing')
+        raise DemistoException('Issue_id is missing in order to delete')
 
 
 def add_issue_watcher_command(client: Client, args: dict[str, Any]):
@@ -286,7 +301,6 @@ def add_issue_watcher_command(client: Client, args: dict[str, Any]):
             client.add_issue_watcher_request(issue_id, watcher_id)
             command_results = CommandResults(
                 readable_output=f'Watcher with id {watcher_id} was added successfully to issue with id {issue_id}.')
-            # print(command_results.readable_output)
             return (command_results)
         else:
             raise DemistoException('watcher_id is missing in order to add this watcher to the issue')
@@ -302,7 +316,6 @@ def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
             client.remove_issue_watcher_request(issue_id, watcher_id)
             command_results = CommandResults(
                 readable_output=f'Watcher with id {watcher_id} was removed successfully from issue with id {issue_id}.')
-            # print(command_results.readable_output)
             return (command_results)
         else:
             raise DemistoException('watcher_id is missing in order to remove watcher from this issue')
@@ -324,15 +337,15 @@ def get_project_list_command(client: Client, args: dict[str, Any]):
                                                                      removeNull=True,
                                                                      headerTransform=underscoreToCamelCase),
                                      )
-    # print(command_results.readable_output)
     return command_results
 
 
 def get_custom_fields_command(client: Client, args):
-    # prints ugly the trackers
     response = client.get_custom_fields_request()['custom_fields']
     headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter', 'searchable',
                'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields']
+    for custom in response:
+        custom['id'] = str(custom['id'])
     command_results = CommandResults(outputs_prefix='Redmine.CustomField',
                                      outputs_key_field='id',
                                      outputs=response,
@@ -344,7 +357,6 @@ def get_custom_fields_command(client: Client, args):
                                                                      is_auto_json_transform=True
                                                                      )
                                      )
-    # print(command_results.readable_output)
     return command_results
 
 

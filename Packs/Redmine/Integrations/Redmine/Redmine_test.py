@@ -46,7 +46,22 @@ def test_create_issue_command_with_file(mocker, redmine_client):
                                     json_data={'issue': {'subject': 'newSubject', 'uploads': [{'token': 'token123'}]}},
                                     headers={'Content-Type': 'application/json'})
 
-
+def test_create_issue_command_missing_status_id(redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-issue-delete command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Redmine import create_issue_command
+    from CommonServerPython import DemistoException
+    args = {}
+    with pytest.raises(DemistoException) as e:
+        create_issue_command(redmine_client, args)
+    assert e.value.message == 'One or more required arguments not specified: status_id, priority_id, subject, project_id'
+    
 def test_update_issue_command(mocker, redmine_client):
     """
     Given:
@@ -63,7 +78,22 @@ def test_update_issue_command(mocker, redmine_client):
     http_request.assert_called_with('PUT', '/issues/1.json', json_data={'issue': {'subject': 'changeFromCode',
                                                                                   'tracker_id': '1', 'watcher_user_ids': '[1]'}}, headers={'Content-Type': 'application/json'})
 
-
+def test_update_issue_command_no_issue_id(redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-issue-delete command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Redmine import update_issue_command
+    from CommonServerPython import DemistoException
+    args = {}
+    with pytest.raises(DemistoException) as e:
+        update_issue_command(redmine_client, args)
+    assert e.value.message == "Issue_id is missing in order to update this issue"
+    
 def test_update_issue_command_with_file(mocker, redmine_client):
     """
     Given:
@@ -117,6 +147,21 @@ def test_get_issue_by_id_command(mocker, redmine_client):
     http_request.assert_called_with('GET', '/issues/1.json', params={'include': 'watchers,attachments'},
                                     headers={'Content-Type': 'application/json'})
 
+def test_get_issue_by_id_command_no_issue_id(redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-issue-delete command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Redmine import get_issue_by_id_command
+    from CommonServerPython import DemistoException
+    args = {}
+    with pytest.raises(DemistoException) as e:
+        get_issue_by_id_command(redmine_client, args)
+    assert e.value.message == "Issue_id is missing in order to get this issue"
 
 def test_delete_issue_by_id_command(mocker, redmine_client):
     """
@@ -133,6 +178,21 @@ def test_delete_issue_by_id_command(mocker, redmine_client):
     delete_issue_by_id_command(redmine_client, args)
     http_request.assert_called_with('DELETE', '/issues/41.json', headers={'Content-Type': 'application/json'})
 
+def test_delete_issue_by_id_command_no_issue_id(redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-issue-delete command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Redmine import delete_issue_by_id_command
+    from CommonServerPython import DemistoException
+    args = {}
+    with pytest.raises(DemistoException) as e:
+        delete_issue_by_id_command(redmine_client, args)
+    assert e.value.message == "Issue_id is missing in order to delete"
 
 def test_add_issue_watcher_command(mocker, redmine_client):
     """
