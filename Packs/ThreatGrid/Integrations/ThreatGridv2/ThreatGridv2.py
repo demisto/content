@@ -992,14 +992,17 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
         command_results = upload_sample_command(client, args)
         sample_id = command_results.raw_response["id"]  # type: ignore[index]
         args["sample_id"] = sample_id
+        demisto.debug(f"{sample_id=}")
     else:
         command_results = sample_state_get_command(client, args)
+        demisto.debug(f"{command_results.raw_response=}")
 
     sample_state = dict_safe_get(command_results.raw_response, ["state"])
     sample_id = args["sample_id"]
     args_for_next_run = {"sample_id": sample_id, **args}
 
     if sample_state == "succ":
+        demisto.debug(f"the sample state is succ")
         command_results = get_sample_command(client, args)
         return PollResult(
             response=command_results,
@@ -1008,7 +1011,7 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
 
     if sample_state == "fail":
         # In case the upload not succeeded raise the error
-        raise DemistoException(f"Uploading {args['sample_id']} to ThreatGrid failed")
+        raise DemistoException(f"Uploading {args['sample_id']} to ThreatGrid failed Error: {command_results.raw_response}")
 
     return PollResult(
         response=command_results,
@@ -1534,9 +1537,8 @@ def parse_file_to_sample(file_id: str) -> dict[str, Any]:
         Dict[str, Any]: Dict with file data.
     """
     file_data = demisto.getFilePath(file_id)
-    file_name = file_data["name"]
     with open(file_data["path"], "rb") as f:
-        file = {"sample": (file_name, f.read())}
+        file = {"sample": f.read()}
     return file
 
 
