@@ -105,5 +105,27 @@ def test_get_earliest_event_ids_with_the_same_time():
 
 
 def test_hash_fields_to_create_id():
+    """
+    Given: Dummy audit log event with the relevant fields
+    """
+    from CohesityHeliosEventCollector import hash_fields_to_create_id
+    event = {
+        'details': 'dummy_details',
+        'username': 'dummy_username',
+        'domain': 'dummy_domain',
+        'sourceType': 'dummy_sourceType',
+        'entityName': 'dummy_entityName',
+        'entityType': 'dummy_entityType',
+        'action': 'dummy_action',
+        'timestampUsecs': 'dummy_timestampUsecs',
+        'ip': 'dummy_ip',
+        'isImpersonation': 'dummy_isImpersonation',
+        'tenantId': 'dummy_tenantId',
+        'originalTenantId': 'dummy_originalTenantId',
+        'serviceContext': 'dummy_serviceContext'
+    }
+    _id = hash_fields_to_create_id(event)
+    assert _id == '460794c8a04bdae82f688da286ac0b3eb62be74f'
 
-def test_fetch
+# def test_fetch
+

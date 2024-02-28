@@ -120,28 +120,15 @@ def hash_fields_to_create_id(event: dict) -> str:
     Return:
         str: hash created from the event properties
     """
-    details = str(event.get('details', ''))
-    username = str(event.get('username', ''))
-    domain = str(event.get('domain', ''))
-    source_type = str(event.get('sourceType', ''))
-    entity_name = str(event.get('entityName', ''))
-    entity_type = str(event.get('entityType', ''))
-    action = str(event.get('action', ''))
-    timestamp_usecs = str(event.get('timestampUsecs', ''))
-    ip = str(event.get('ip', ''))
-    is_impersonation = str(event.get('isImpersonation', ''))
-    tenant_id = str(event.get('tenantId', ''))
-    original_tenant_id = str(event.get('originalTenantId', ''))
-    service_context = str(event.get('serviceContext', ''))
-    s = details + username + domain + source_type + entity_name + entity_type + action + timestamp_usecs + ip + is_impersonation \
-        + tenant_id + original_tenant_id + service_context
-
-    _id = hashlib.sha1(str.encode(s)).hexdigest()
+    string = ''
+    for val in event.values():
+        string += val
+    _id = hashlib.sha1(str.encode(string)).hexdigest()
     return _id
 
 
 def fetch_events_per_type(client: Client, event_type: EventType, fetch_start_timestamp: int, fetch_end_timestamp: int) -> \
-        list[dict]:
+    list[dict]:
     """
     Given the event type to pull and the relevant start and end time, call the relevant function to pull the given event type.
     Args:
@@ -162,7 +149,7 @@ def fetch_events_per_type(client: Client, event_type: EventType, fetch_start_tim
         event_pulling_function = client.get_audit_logs
         data_field = 'auditLogs'
     else:
-        raise DemistoException(f'Event Type: {event_type} is not supported bu the integration')
+        raise DemistoException(f'Event Type: {event_type} is not supported by the integration')
 
     res = event_pulling_function(fetch_start_timestamp, fetch_end_timestamp)
     events = res.get(data_field, [])
@@ -224,6 +211,7 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
             fetch_end_timestamp
         demisto.debug(f'latest_fetched_event_timestamp is empty, setting it to \'{latest_fetched_event_timestamp}\'')
 
+    in_progress_pagination: bool = False
     # In case the last events list has less than PAGE_SIZE events we know there are no more events to pull using the current
     # fetch_start_timestamp and fetch_end_timestamp, so next round is basically a new search. In that case we will:
     #   1. Update the next_start_timestamp to latest_event_fetched_timestamp
@@ -243,6 +231,7 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
     # update the next_end_timestamp to fetch_end_timestamp (the oldest alert fetched). We will also save the list of
     # ids_for_dedup to be used in the next round
     else:
+        in_progress_pagination = True
         next_start_timestamp = fetch_start_timestamp
         next_end_timestamp = fetch_end_timestamp
         demisto.debug(f'Last events list has {len(temp_events)} events. The aggregated events list has {len(aggregated_events)} '
@@ -256,7 +245,7 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
     }
 
     demisto.debug(f'Returning {len(aggregated_events)=} events, and a new {new_cache=}')
-    return aggregated_events, new_cache
+    return aggregated_events, new_cache, in_progress_pagination
 
 
 ''' COMMAND FUNCTIONS '''
@@ -268,10 +257,14 @@ def test_module_command(client, max_fetch):
 
 
 def fetch_events_command(client: Client, last_run: dict, max_fetch: int):
-    audit_logs, audit_cache = fetch_events_loop(client, EventType.audit_log, last_run.get('audit_cache', {}), max_fetch)
+    audit_logs, audit_cache, in_progress_pagination_audit_log = fetch_events_loop(client, EventType.audit_log,
+                                                                                  last_run.get('audit_cache', {}), max_fetch)
     last_run['audit_cache'] = audit_cache
-    alerts, alerts_cache = fetch_events_loop(client, EventType.alert, last_run.get('alert_cache', {}), max_fetch)
+    alerts, alerts_cache, in_progress_pagination_alert = fetch_events_loop(client, EventType.alert,
+                                                                           last_run.get('alert_cache', {}), max_fetch)
     last_run['alert_cache'] = alerts_cache
+    if in_progress_pagination_audit_log or in_progress_pagination_alert:
+        last_run["nextTrigger"]: '0'
 
     return alerts + audit_logs, last_run
 
