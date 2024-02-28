@@ -106,8 +106,7 @@ def get_machines_locks_details(storage_client: storage.Client, bucket_name: str,
                 lock_file_name = blob.name.split('/')[-1]
                 if lock_file_name:
                     files.append({'machine_name': lock_file_name.split('-lock-')[0],
-                                  'pipeline_id': lock_file_name.split('-lock-')[1].split('_')[0],
-                                  'job_id': lock_file_name.split('-lock-')[1].split('_')[1]})
+                                  'job_id': lock_file_name.split('-lock-')[1]})
         elif found:
             break
     return files
@@ -126,12 +125,9 @@ def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval:
     Returns: the status of the job.
 
     """
-    pipeline_id = None
     logging.info(f"test job_id= {job_id}")
-    if len(job_id.split('_')) > 1:
-        pipeline_id = job_id.split('_')[0]
+    if job_id.find("_"):
         job_id = job_id.split('_')[1]
-    if pipeline_id:
         user_endpoint = JOB_STATUS_URL.format(GITLAB_SERVER_URL, CONTENT_GITLAB_PROJECT_ID, job_id)
     else:
         user_endpoint = PIPELINE_STATUS_URL.format(GITLAB_SERVER_URL, CONTENT_GITLAB_PROJECT_ID, job_id)
@@ -140,7 +136,8 @@ def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval:
 
     for attempt_num in range(1, num_of_retries + 1):
         try:
-            logging.debug(f'Try to get the status of job ID {job_id} in attempt number {attempt_num}')
+            logging.debug(
+                f'Try to get the status of job ID {job_id} in attempt number {attempt_num},user_endpoint: {user_endpoint}')
             response = requests.get(user_endpoint, headers=headers)
             response_as_json = response.json()
             logging.debug(f'{user_endpoint=} raw response={response_as_json} for {job_id=}')
