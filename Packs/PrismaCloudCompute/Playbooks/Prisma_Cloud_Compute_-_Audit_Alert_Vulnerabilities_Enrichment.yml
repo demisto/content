@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 410,
-          "y": 180
+          "y": 190
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: cd146f2c-6adb-4865-871d-2b8ebdf77223
+    taskid: 86b1e524-e5ad-4039-82fd-6201e064178d
     type: regular
     task:
-      id: cd146f2c-6adb-4865-871d-2b8ebdf77223
+      id: 86b1e524-e5ad-4039-82fd-6201e064178d
       version: -1
       name: Create Indicators from Image Vulnerabilities
       description: commands.local.cmd.new.indicator
@@ -55,30 +55,96 @@ tasks:
         complex:
           root: inputs.ImageVulnerabilities
           accessor: description
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.ImageVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
       cvss:
         complex:
           root: inputs.ImageVulnerabilities
           accessor: cvss
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.ImageVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
       cvssscore:
         complex:
           root: inputs.ImageVulnerabilities
           accessor: cvss
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.ImageVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
       description:
         complex:
           root: inputs.ImageVulnerabilities
           accessor: description
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.ImageVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
       source:
         simple: Prisma Cloud Compute
       tags:
         complex:
           root: inputs.ImageVulnerabilities
           accessor: packageName
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.ImageVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
       type:
         simple: CVE
       value:
         complex:
           root: inputs.ImageVulnerabilities
           accessor: cve
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.ImageVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -138,7 +204,6 @@ tasks:
     nexttasks:
       '#default#':
       - "5"
-      - "2"
       "yes":
       - "1"
       - "4"
@@ -267,7 +332,7 @@ tasks:
       {
         "position": {
           "x": -30,
-          "y": 555
+          "y": 560
         }
       }
     note: false
@@ -279,10 +344,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 41110f75-0dab-4ba9-8f7e-1a23ee4ae6f4
+    taskid: 85b195e3-2e5e-43bf-8be0-b1d21c8d4f9b
     type: regular
     task:
-      id: 41110f75-0dab-4ba9-8f7e-1a23ee4ae6f4
+      id: 85b195e3-2e5e-43bf-8be0-b1d21c8d4f9b
       version: -1
       name: Create Indicators from host Vulnerabilities
       description: commands.local.cmd.new.indicator
@@ -298,30 +363,96 @@ tasks:
         complex:
           root: inputs.HostVulnerabilities
           accessor: description
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.HostVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
       cvss:
         complex:
           root: inputs.HostVulnerabilities
           accessor: cvss
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.HostVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
       cvssscore:
         complex:
           root: inputs.HostVulnerabilities
           accessor: cvss
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.HostVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
       description:
         complex:
           root: inputs.HostVulnerabilities
           accessor: description
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.HostVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
       source:
         simple: Prisma Cloud Compute
       tags:
         complex:
           root: inputs.HostVulnerabilities
           accessor: packageName
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.HostVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
       type:
         simple: CVE
       value:
         complex:
           root: inputs.HostVulnerabilities
           accessor: cve
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.HostVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -391,17 +522,15 @@ view: |-
   {
     "linkLabelsPosition": {
       "3_1_yes": 0.28,
-      "3_2_#default#": 0.22,
       "3_4_yes": 0.61,
-      "3_5_#default#": 0.47,
       "5_2_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 835,
+        "height": 825,
         "width": 1680,
         "x": -250,
-        "y": 180
+        "y": 190
       }
     }
   }
@@ -416,9 +545,29 @@ inputs:
   required: false
   description: Host vulnerabilities that were retrieved.
   playbookInputQuery:
+- key: CVEsIndicatorsSeverities
+  value:
+    simple: High, Critical
+  required: false
+  description: |-
+    A list of the image or host CVE severities that the playbook creates indicators from.
+    Available options (not case sensitive):
+    - Critical
+    - High
+    - Medium
+    - moderate
+    - Important
+    - Low
+    - Negligible
+
+    Default value: High, Critical.
+  playbookInputQuery:
 outputs:
 - contextPath: CVEReport
   description: CVE report.
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
