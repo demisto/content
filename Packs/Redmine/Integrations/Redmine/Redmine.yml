@@ -92,7 +92,7 @@ script:
       description: Add the entry ID of the file to upload
       type: textArea
     - name: file_name
-      description: Add the name of the file to attach
+      description: Add the name of the file to attach, make sure file name ends with .jpg/png/txt
       type: textArea
     - name: file_description
       description: Add the description of the file you attached
