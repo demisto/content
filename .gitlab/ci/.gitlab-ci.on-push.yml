@@ -132,7 +132,6 @@ validate-content-conf:
   cache:
     policy: pull-push
   variables:
-    KUBERNETES_CPU_REQUEST: 2000m
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: prepare-testing-bucket
   script:
@@ -140,7 +139,8 @@ validate-content-conf:
     - !reference [.create-release-notes-and-common-docs]
     - !reference [.secrets-fetch]
     - section_start "Create or update content graph" --collapsed
-
+    - echo "Staging the repo to include the private packs in the graph"
+    - git add Packs
     - echo "Updating the content graph"
     - mkdir "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
     - demisto-sdk update-content-graph -g --marketplace "${MARKETPLACE_VERSION}" -o "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
@@ -375,9 +375,6 @@ tests_xsoar_server:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
-      when: always
-      variables:
-        KUBERNETES_CPU_REQUEST: 2000m
   parallel:
     matrix:
       - INSTANCE_ROLE:
