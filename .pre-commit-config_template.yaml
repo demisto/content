@@ -430,6 +430,8 @@ repos:
     language: system
     require_serial: true
     skip:commit: true
+    skip:nightly: true
+
   - id: format
     name: format
     description: Format non-code files, to comply with XSOAR standards.
@@ -441,6 +443,7 @@ repos:
     language: system
     pass_filenames: false
     require_serial: true
+
   - id: secrets
     name: secrets
     description: Check for secrets in files.
@@ -449,6 +452,8 @@ repos:
     - --ignore-entropy
     pass_filenames: false
     language: system
+    skip:ci: true
+    skip:nightly: true
 
   - id: merge-pytest-reports
     name: merge-pytest-reports

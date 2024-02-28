@@ -512,11 +512,11 @@
     - |
       if [[ -n "${SHOULD_LINT_ALL}" ]]; then
         echo "Pre Commit all files";
-        demisto-sdk pre-commit -a --mode=nightly --skip validate,secrets
+        demisto-sdk pre-commit -a --mode=nightly
       fi
       else
         echo "Pre Commit only changed files";
-        demisto-sdk pre-commit --mode=ci --skip validate,secrets
+        demisto-sdk pre-commit --mode=ci
       fi
     - job-done
 

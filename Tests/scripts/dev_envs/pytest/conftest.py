@@ -28,7 +28,7 @@ def check_logging(caplog):
     ]
     if messages:
         pytest.fail(
-            f"warning messages encountered during testing: {messages}"
+            "warning messages encountered during testing: {messages}".format(messages=messages)
         )
 
 

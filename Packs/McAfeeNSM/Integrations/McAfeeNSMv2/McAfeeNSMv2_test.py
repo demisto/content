@@ -1154,7 +1154,8 @@ def test_list_interface_policy_request__with_and_without_intereface_id(mocker, m
                                             {'IPV4RangeList': [{'FromAddress': '1.1.1.1',
                                                                 'ToAddress': '2.2.2.2', 'state': 1}]}))),
                                            (({"from_to_list": [{'FromAddress': None, 'ToAddress': None}],
-                                             "rule_type": 'HOST_IPV_4', "address": ["1.1.1.1"], "number": 4, "state": "Disabled"}),
+                                             "rule_type":
+                                                 'HOST_IPV_4', "address": ["1.1.1.1"], "number": 4, "state": "Disabled"}),
                                            ('HostIPv4', {'hostIPv4AddressList': [{'value': '1.1.1.1', 'state': 0}]})),
                                            (({"from_to_list": [{'FromAddress': None, 'ToAddress': None, 'state': 1}],
                                              "rule_type": 'NETWORK_IPV_6', "address": ['Network IP V.6'],

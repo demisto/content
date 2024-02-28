@@ -3,7 +3,6 @@ from rasterize import *
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
-import subprocess
 import os
 import logging
 import http.server
