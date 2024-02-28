@@ -9,7 +9,7 @@ import pytest
 
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
-from CoreIRApiModule import CoreClient
+from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, list_user_groups_command, parse_user_groups, list_users_command, list_roles_command, \
     change_user_role_command, list_risky_users_or_host_command, enrich_error_message_id_group_role, get_incidents_command
@@ -845,6 +845,27 @@ def test_get_update_args_unassgning_user(mocker):
     assert update_args.get('assigned_user_mail') is None
     assert update_args.get('assigned_user_pretty_name') is None
     assert update_args.get('unassign_user') == 'true'
+
+
+def test_handle_outgoing_issue_closure_close_reason(mocker):
+    """
+    Given:
+        -  a dict indicating changed fields (delta)
+        - the incident status - set to set to 2 == Closed
+    When
+        - running handle_outgoing_issue_closure
+    Then
+        - Closing the issue with the resolved_security_testing status
+    """
+    from CoreIRApiModule import handle_outgoing_issue_closure
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({'delta': {'assigned_user_mail': 'None', 'closeReason': 'Resolved - Security Testing'},
+                                          'status': 2, 'inc_status': 2, 'data': {'status': 'other'}})
+    request_data_log = mocker.patch.object(demisto, 'debug')
+    handle_outgoing_issue_closure(remote_args)
+
+    assert "handle_outgoing_issue_closure Closing Remote incident incident_id=None with status resolved_security_testing" in request_data_log.call_args[  # noqa: E501
+        0][0]
 
 
 def test_get_update_args_close_incident():
@@ -3789,3 +3810,37 @@ class TestGetIncidents:
         _, outputs, _ = get_incidents_command(client, args)
 
         assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
+
+
+INPUT_test_handle_outgoing_issue_closure = load_test_data('./test_data/handle_outgoing_issue_closure_input.json')
+
+
+@pytest.mark.parametrize("args, expected_delta",
+                         [
+                             # close an incident from xsoar ui, and the incident type isn't cortex xdr incident
+                             (INPUT_test_handle_outgoing_issue_closure["xsoar_ui_common_mapping"]["args"],
+                              INPUT_test_handle_outgoing_issue_closure["xsoar_ui_common_mapping"]["expected_delta"]),
+                             # close an incident from xsoar ui, and the incident type is cortex xdr incident
+                             (INPUT_test_handle_outgoing_issue_closure["xsoar_ui_cortex_xdr_incident"]["args"],
+                              INPUT_test_handle_outgoing_issue_closure["xsoar_ui_cortex_xdr_incident"]["expected_delta"]),
+                             # close an incident from XDR
+                             (INPUT_test_handle_outgoing_issue_closure["xdr"]["args"],
+                              INPUT_test_handle_outgoing_issue_closure["xdr"]["expected_delta"])
+                         ])
+def test_handle_outgoing_issue_closure(args, expected_delta):
+    """
+    Given: An UpdateRemoteSystemArgs object.
+    - case A: data & delta that match a case of closing an incident from xsoar ui, and the incident type isn't cortex xdr incident
+    - case B: data & delta that match a case of closing an incident from xsoar ui, and the incident type is cortex xdr incident
+    - case C: data & delta that match a case of closing an incident from XDR.
+    When: Closing an incident.
+    Then: Ensure the update_args has the expected value.
+    - case A: a status is added with the correct value.
+    - case B: a status is added with the correct value.
+    - case C: a status isn't added. (If the closing status came from XDR, there is no need to update it again)
+    """
+    from CommonServerPython import UpdateRemoteSystemArgs
+
+    remote_args = UpdateRemoteSystemArgs(args)
+    handle_outgoing_issue_closure(remote_args)
+    assert remote_args.delta == expected_delta
