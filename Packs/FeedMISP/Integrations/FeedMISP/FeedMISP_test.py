@@ -99,9 +99,9 @@ def test_clean_user_query_success():
     Then
         - create a dict from json string
     """
-    querystr = '{"returnFormat": "json", "type": {"OR": ["ip-src"]}, "tags": {"OR": ["tlp:%"]}}'
-    params = clean_user_query(querystr)
-    assert len(params) == 3
+    querystr = '{"returnFormat": "json","limit": "3", "type": {"OR": ["ip-src"]}, "tags": {"OR": ["tlp:%"]}}'
+    params = clean_user_query(querystr, limit=40000)
+    assert len(params) == 5
 
 
 def test_clean_user_query_bad_query():
@@ -115,7 +115,7 @@ def test_clean_user_query_bad_query():
     """
     with pytest.raises(DemistoException):
         querystr = '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]'
-        clean_user_query(querystr)
+        clean_user_query(querystr, limit=4)
 
 
 def test_clean_user_query_change_format():
@@ -128,7 +128,7 @@ def test_clean_user_query_change_format():
         - change return format to json
     """
     querystr = '{"returnFormat": "xml", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
-    params = clean_user_query(querystr)
+    params = clean_user_query(querystr, limit=4)
     assert params["returnFormat"] == "json"
 
 
@@ -141,9 +141,9 @@ def test_clean_user_query_remove_timestamp():
     Then
         - Return query without the timestamp parameter
     """
-    good_query = '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
+    good_query = '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1, "limit": 2}'
     querystr = '{"returnFormat": "json", "timestamp": "1617875568", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
-    params = clean_user_query(querystr)
+    params = clean_user_query(querystr, limit=2)
     assert good_query == json.dumps(params)
 
 
