@@ -3326,19 +3326,13 @@ def get_security_events(
         args["alert_time__gte"] = min_created_timestamp
 
     if min_updated_timestamp:
-        if not fields:
-            fields = []
-        if "last_update" not in fields:
-            fields.append("last_update")
+        args["last_update__gte"] = min_updated_timestamp
 
     if fields:
         args["fields"] = ",".join(fields)
 
     if threat_id:
         args["threat_key"] = threat_id
-
-    if min_updated_timestamp:
-        args["last_update__gte"] = min_updated_timestamp
 
     if extra_filters:
         args.update(extra_filters)
@@ -3353,11 +3347,6 @@ def get_security_events(
         demisto.debug(f"Got {len(results['results'])} security events")
 
         for alert in results["results"]:
-            alert_id = alert.get("id", None)
-            alert["incident_link"] = (
-                f"{client._base_url}/security-event/{alert_id}/summary"
-            )
-
             # Retrieve additional endpoint information
             groups = []
             agent = None
@@ -3495,10 +3484,6 @@ def get_threats(
             method="GET", url_suffix=f"/api/data/alert/alert/Threat/{threat_id}/"
         )
         enrich_threat(client, threat)
-
-        threat_id = threat.get("id", None)
-        threat["incident_link"] = f"{client._base_url}/threat/{threat_id}/summary"
-
         threats.append(threat)
 
     return threats
