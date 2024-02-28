@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Cortex XDR - IOC
+  id: Cortex XDR - IOC_MAI_TEST
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.net)
@@ -135,10 +135,15 @@ configuration:
   defaultvalue: 'sourceoriginalseverity'
   required: false
 - defaultvalue: 'comments'
-  additionalinfo: The Cortex XSOAR field where comments are stored. Default is `comments`. Expecting a Cortex XSOAR IOC format of a comment (nested dictionary). Specifying a different field name assumes the field has a list of strings to be used as comments, or a comma-separated string.
+  additionalinfo: 'The Cortex XSOAR field where comments are stored. Default is `comments`. Expecting a Cortex XSOAR IOC format of a comment (nested dictionary).'
   display: XSOAR Comment Field
   name: xsoar_comments_field
-  type: 0
+  options:
+  - indicator_link
+  - comments
+  type: 16
+  section: Collect
+  advanced: true
   required: false
 - defaultvalue: 'false'
   additionalinfo: Whether to consider the value at `xsoar_comments_field` as CSV. Requires specifying a xsoar_comments_field value different than the default `comments`.
@@ -158,8 +163,8 @@ configuration:
   type: 8
   required: false
 description: Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
-display: Cortex XDR - IOC
-name: Cortex XDR - IOC
+display: Cortex XDR - IOC_MAI_TEST
+name: Cortex XDR - IOC_MAI_TEST
 script:
   commands:
   - description: Create a file with all the IOCs that are going to sync to Cortex XDR.
