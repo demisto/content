@@ -831,7 +831,7 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
     # Input validation
 
     # If too many arguments are supplied, return an error
-    if sum(bool(arg) for arg in [ip, network, from_ip and to_ip]) > 1:
+    if sum(arg is not None for arg in [ip, network, from_ip and to_ip]) > 1:
         raise ValueError("Please specify only one of the `ip`, `network` or `from_ip`/`to_ip` arguments")
 
     # If neither ip, network nor from/to_ip were specified, return an error.
@@ -1430,9 +1430,6 @@ def delete_rpz_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str
     title = f'{INTEGRATION_NAME} - A rule with the following id was deleted: \n {rule_reference_id}'
     return title, {}, raw_response
 
-# TODO check why this doesn't return an error
-# !infoblox-list-host-info extattrs="atr" additional_return_fields="none"
-
 
 def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict[str, Any]]:
     """
@@ -1481,9 +1478,6 @@ def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
         context = {}
 
     return human_readable, context, raw
-
-# TODO check why this doesn't return an error
-# !infoblox-list-network-info additional_return_fields=alias extattrs="a"
 
 
 def get_network_info_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict[str, Any]]:
