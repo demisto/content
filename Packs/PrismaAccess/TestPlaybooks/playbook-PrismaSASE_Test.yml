@@ -1,5 +1,5 @@
 id: PrismaSASE Test
-version: -1
+version: 6
 vcShouldKeepItemLegacyProdMachine: false
 name: PrismaSASE Test
 description: Test playbook for Prisma SASE integration
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -150
         }
       }
     note: false
@@ -2260,7 +2260,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 15
         }
       }
     note: false
@@ -2294,7 +2294,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 340
+          "y": 160
         }
       }
     note: false
@@ -2582,8 +2582,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 225
+          "x": 50,
+          "y": 335
         }
       }
     note: false
@@ -2598,10 +2598,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9740,
-        "width": 850,
+        "height": 9940,
+        "width": 380,
         "x": 50,
-        "y": 50
+        "y": -150
       }
     }
   }
