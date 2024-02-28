@@ -317,6 +317,7 @@ def test_search_query_indicators_pagination(mocker):
         'type': 'attribute',
         'filters': {'category': ['Payload delivery']},
     }
+    mocker.patch("FeedMISP.LIMIT", new=2000)
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'createIndicators')
     fetch_attributes_command(client, params_dict)

@@ -113,6 +113,8 @@ GALAXY_MAP = {
     'misp-galaxy:mitre-course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
 }
 
+LIMIT: int = 2000
+
 
 class Client(BaseClient):
 
@@ -235,23 +237,24 @@ def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, pa
     return params
 
 
-def clean_user_query(query: str, limit: int, page: int = 1, timestamp: str | None = None) -> Dict[str, Any]:
+def clean_user_query(query: str, limit: int, page: int = 1) -> Dict[str, Any]:
     """
     Takes the query string created by the user, adds necessary argument and removes unnecessary arguments
     Args:
         query: User's query string
     Returns: Dict which has only needed arguments to be sent to MISP
     """
+    global LIMIT
     try:
         params = json.loads(query)
         params["returnFormat"] = "json"
         params.pop("timestamp", None)
-        if timestamp:
-            params['timestamp'] = timestamp
         if 'page' not in params:
             params["page"] = page
         if 'limit' not in params:
             params["limit"] = limit
+        else:
+            LIMIT = params["limit"]
     except Exception as err:
         demisto.debug(str(err))
         raise DemistoException(f'Could not parse user query. \nError massage: {err}')
@@ -515,29 +518,34 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     Returns: List of indicators.
 
     """
+    global LIMIT
     tlp_color = params.get('tlp_color')
     reputation = params.get('feedReputation')
     tags = argToList(params.get('attribute_tags', ''))
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
-    limit = arg_to_number(params.get('feedFetchLimit')) or 2000
+    if params.get('feedFetchLimit'):
+        LIMIT = arg_to_number(params.get('feedFetchLimit')) or 2000
     last_run = demisto.getLastRun().get('timestamp') if demisto.getLastRun() else ''
-    params_dict = clean_user_query(query, limit, timestamp=last_run) if query else\
-        build_params_dict(tags=tags, attribute_type=attribute_types, limit=limit, page=1, from_timestamp=last_run)
+    params_dict = clean_user_query(query, LIMIT) if query else\
+        build_params_dict(tags=tags, attribute_type=attribute_types, limit=LIMIT, page=1, from_timestamp=last_run)
     search_query_per_page = client.search_query(params_dict)
+    demisto.debug(f'query: {params_dict}')
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
         demisto.debug(f'search_query_per_page number of attributes:\
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))} page: {params_dict["page"]}')
         indicators = build_indicators(search_query_per_page, attribute_types, tlp_color, params.get('url'), reputation, feed_tags)
-        demisto.createIndicators(indicators)
+        if LIMIT > 2000:
+            for iter_ in batch(indicators, batch_size=2000):
+                demisto.createIndicators(iter_)
+        else:
+            demisto.createIndicators(indicators)
         params_dict['page'] += 1
         last_run = search_query_per_page['response']['Attribute'][-1]['timestamp']
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
-    params_dict.pop("limit", None)
-    params_dict.pop("page", None)
     demisto.setLastRun({'timestamp': last_run, 'params': params_dict})
 
 
