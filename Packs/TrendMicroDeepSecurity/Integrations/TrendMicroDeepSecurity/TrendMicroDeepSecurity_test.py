@@ -1020,7 +1020,10 @@ def test_create_once_only_scheduled_task_command(requests_mock):
     from TrendMicroDeepSecurity import create_once_only_scheduled_task_command
     requests_mock.post(f'{BASE_URL}/api/scheduledtasks', json=load_mock_response("scheduled_task"))
     client = Client(base_url=BASE_URL, api_key="xxx", use_ssl=False, use_proxy=False)
-    args = convert_args(create_once_only_scheduled_task_command, {"name": "test", "type": "test", "computer_id": "123"})
+    args = convert_args(
+        create_once_only_scheduled_task_command,
+        {"name": "test", "type": "scan-for-open-ports", "computer_id": "123"}
+    )
     result = create_once_only_scheduled_task_command(client, **args)
 
     assert result.outputs
