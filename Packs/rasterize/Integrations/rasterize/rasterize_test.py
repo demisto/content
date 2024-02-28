@@ -310,10 +310,25 @@ class TestRasterizeIncludeUrl:
 def test_log_warning():
     """
     Given   pypdf's logger instance
-    When    checking the logger's leve.
+    When    checking the logger's level.
     Then    make sure the level is ERROR
     """
     import logging
     from rasterize import pypdf_logger
     assert pypdf_logger.level == logging.ERROR
     assert pypdf_logger.level == logging.ERROR
+
+
+def test_excepthook_recv_loop(mocker):
+    """
+    Given   Exceptions that might happen after the tab was closed.
+    When    A chromium tab is closed.
+    Then    make sure the right info is logged.
+    """
+    mock_args = type('mock_args', (), dict.fromkeys(('exc_type', 'exc_value')))
+    demisto_info = mocker.patch.object(demisto, 'info')
+
+    excepthook_recv_loop(mock_args)
+
+    demisto_info.assert_any_call('Unsuppressed Exception in _recv_loop: args.exc_type=None')
+    demisto_info.assert_any_call('Unsuppressed Exception in _recv_loop: args.exc_type=None, empty exc_value')

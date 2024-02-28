@@ -474,13 +474,9 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         return tab_event_handler
 
     except pychrome.exceptions.TimeoutException as ex:
-        message = f'Navigation timeout: {ex} thrown while trying to navigate to {path}'
-        demisto.error(message)
-        return_error(message)
+        return_error(f'Navigation timeout: {ex} thrown while trying to navigate to {path}')
     except pychrome.exceptions.PyChromeException as ex:
-        message = f'Exception: {ex} thrown while trying to navigate to {path}'
-        demisto.error(message)
-        return_error(message)
+        return_error(f'Exception: {ex} thrown while trying to navigate to {path}')
 
 
 def backoff(polled_item, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_POLLING_INTERVAL):
@@ -625,10 +621,7 @@ def rasterize_thread(browser, chrome_port, path: str,
             return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
                                     full_screen=full_screen, include_url=include_url, include_source=True)
         else:
-            message = f'Unsupported rasterization type: {rasterize_type}.'
-            demisto.error(message)
-            return_error(message)
-            return None
+            raise DemistoException(f'Unsupported rasterization type: {rasterize_type}.')
 
 
 def perform_rasterize(path: str,
@@ -872,13 +865,13 @@ def rasterize_command():  # pragma: no cover
                                          navigation_timeout=navigation_timeout, include_url=include_url,
                                          full_screen=full_screen)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
-    for current_rasterize_output in rasterize_output:
+    for current_rasterize_output, current_url in zip(rasterize_output, url):
         # demisto.debug(f"rasterize_command response, {current_rasterize_output=}")
 
         if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
             output = {'image_b64': base64.b64encode(current_rasterize_output[0]).decode('utf8'),
-                      'html': current_rasterize_output[1], 'current_url': url}
-            return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {url}"))
+                      'html': current_rasterize_output[1], 'current_url': current_url}
+            return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {current_url}"))
         else:
             res = []
             current_res = fileResult(filename=file_name, data=current_rasterize_output[0], file_type=entryTypes['entryInfoFile'])
