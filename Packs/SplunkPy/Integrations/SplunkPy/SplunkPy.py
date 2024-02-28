@@ -245,6 +245,7 @@ def remove_irrelevant_incident_ids(last_run_fetched_ids: dict[str, dict[str, str
     """
     new_last_run_fetched_ids: dict[str, dict[str, str]] = {}
     window_start_datetime = datetime.strptime(window_start_time, SPLUNK_TIME_FORMAT)
+    demisto.debug(f'Beginning to filter irrelevant IDs with respect to window {window_start_time} - {window_end_time}')
     for incident_id, incident_occurred_time in last_run_fetched_ids.items():
         # We divided the handling of the last fetched IDs since we changed the handling of them
         # The first implementation caused IDs to be removed from the cache, even though they were still relevant
@@ -257,8 +258,10 @@ def remove_irrelevant_incident_ids(last_run_fetched_ids: dict[str, dict[str, str
             incident_start_datetime = datetime.strptime(incident_occurred_time.get('occurred_time', ''), SPLUNK_TIME_FORMAT)
             if incident_start_datetime >= window_start_datetime:
                 # We keep the incident, since it is still in the fetch window
-                extensive_log(f'[SplunkPy] Keeping {incident_id} as part of the last fetched IDs')
+                extensive_log(f'[SplunkPy] Keeping {incident_id} as part of the last fetched IDs. {incident_start_datetime=}')
                 new_last_run_fetched_ids[incident_id] = incident_occurred_time
+            else:
+                extensive_log(f'[SplunkPy] Removing {incident_id} from the last fetched IDs')
         else:
             # To handle last fetched IDs before version 3_1_20
             # Last fetched IDs held the epoch time of their appearance, they will now hold the
