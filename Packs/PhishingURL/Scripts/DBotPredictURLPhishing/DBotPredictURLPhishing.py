@@ -525,7 +525,10 @@ def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
         if in_white_list(model, final_url):
             is_white_listed = True
             if not force_model:
-                results.append(create_dict_context(url_redirect, final_url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {}))
+                results.append(create_dict_context(
+                    url_redirect, final_url, BENIGN_VERDICT_WHITELIST,
+                    {}, SCORE_BENIGN, is_white_listed, {}
+                ))
                 continue
         else:
             is_white_listed = False
@@ -730,7 +733,7 @@ def main():
             args.get("reliability", DBotScoreReliability.A_PLUS)
         )
 
-        msg_list = []
+        msg_list: list = []
 
         # Check existing version of the model in demisto
         exist, demisto_major_version, demisto_minor_version, model_data = oob_model_exists_and_updated()
