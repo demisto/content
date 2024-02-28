@@ -2,7 +2,7 @@ import typing
 import dataclasses
 import functools
 import math
-from collections.abc import Callable, Collection
+from collections.abc import Callable, Collection, Mapping, MutableMapping
 from typing import Generic, Literal, TypeAlias, TypeVar
 
 import demistomock as demisto  # noqa: F401
@@ -29,6 +29,12 @@ AlertStatus: TypeAlias = Literal["ACTIVE", "CLOSED"]
 Severity: TypeAlias = Literal["Low", "Medium", "High", "Critical"]
 
 Fn: TypeAlias = Callable[..., Any]
+
+Incident: TypeAlias = MutableMapping[str, Any]
+SecurityEvent: TypeAlias = Incident
+Threat: TypeAlias = Incident
+
+XSOARIncident: TypeAlias = Mapping[str, Any]
 
 IncidentId = TypeVar("IncidentId", str, int)
 
@@ -739,16 +745,16 @@ def _incident_should_be_fetched(
 
 
 def _generate_xsoar_incident(
-    incident: dict[str, Any],  # some additional data will be added
+    incident: Incident,  # some additional data will be added
     incident_name: str,
-    incident_type: Literal["alert", "threat"],
+    incident_type: Literal["alert", "threat"],  # <!> use 'alert', not 'security event'
     incident_id: str | int,
     incident_severity: Severity,
     incident_time: str,
     mirror_instance: str,
     mirror_direction: str | None,
     integration_base_url: str,
-) -> dict[str, Any]:
+) -> XSOARIncident:
     """Create an XSOAR compatible incident object.
 
     Args:
@@ -824,7 +830,7 @@ def _fetch_security_event_incidents(
     mirror_direction: str | None,  # None is a valid value
     alert_type: Optional[list[str]],
     alert_status: Optional[list[str]],
-    incidents: list[dict],
+    incidents: list[XSOARIncident],
 ) -> None:
     """Wrapper for fetching security events on remote HarfangLab EDR instance.
 
@@ -880,7 +886,7 @@ def _fetch_security_event_incidents(
         f"Fetch security events created after {fetching_cursor}... (max. {max_fetch})"
     )
 
-    security_events: Collection[dict] = get_security_events(
+    security_events: list[SecurityEvent] = get_security_events(
         client=client,
         min_created_timestamp=fetching_cursor.strftime("%Y-%m-%dT%H:%M:%SZ"),
         alert_status=alert_status,
@@ -899,7 +905,7 @@ def _fetch_security_event_incidents(
     # define 'count' before the 'for' loop to ensure semantic in
     # case of empty 'for' loop.
     count: int = 0
-    security_event: dict[str, Any]
+    security_event: SecurityEvent
 
     # fetched security events are expected to be already sorted by time creation,
     # but better be safe
@@ -923,7 +929,7 @@ def _fetch_security_event_incidents(
         ):
             continue
 
-        incident = _generate_xsoar_incident(
+        incident: XSOARIncident = _generate_xsoar_incident(
             incident=security_event,
             incident_name=security_event["rule_name"],
             incident_type="alert",
@@ -971,7 +977,7 @@ def _fetch_threat_incidents(
     mirror_instance: str,
     mirror_direction: str | None,  # None is a valid value
     threat_status: Optional[list[str]],
-    incidents: list[dict],
+    incidents: list[XSOARIncident],
 ) -> None:
     """Wrapper for fetching threats on remote HarfangLab EDR instance.
 
@@ -1029,7 +1035,7 @@ def _fetch_threat_incidents(
 
     demisto.info(f"Fetch threats created after {fetching_cursor}... (max. {max_fetch})")
 
-    threats: Collection[dict] = get_threats(
+    threats: list[Threat] = get_threats(
         client=client,
         min_created_timestamp=fetching_cursor.strftime("%Y-%m-%dT%H:%M:%SZ"),
         threat_status=threat_status,
@@ -1045,7 +1051,7 @@ def _fetch_threat_incidents(
     # define 'count' before the 'for' loop to ensure semantic in
     # case of empty 'for' loop.
     count: int = 0
-    threat: dict[str, Any]
+    threat: Threat
 
     # fetched threats are expected to be already sorted by time creation,
     # but better be safe
@@ -1069,7 +1075,7 @@ def _fetch_threat_incidents(
         ):
             continue
 
-        incident = _generate_xsoar_incident(
+        incident: XSOARIncident = _generate_xsoar_incident(
             incident=threat,
             incident_name=threat["slug"],
             incident_type="threat",
@@ -1108,7 +1114,9 @@ def _fetch_threat_incidents(
         fetch_history.already_fetched.extend(fetched)
 
 
-def fetch_incidents(client: Client, args: dict[str, Any]) -> tuple[dict, list[dict]]:
+def fetch_incidents(
+    client: Client, args: dict[str, Any]
+) -> tuple[dict, list[XSOARIncident]]:
 
     # temporary setup - need to move from 'args' to pure kw + **kwargs
     # * mandatory:
@@ -1189,7 +1197,7 @@ def fetch_incidents(client: Client, args: dict[str, Any]) -> tuple[dict, list[di
                 f"expected 'ACTIVE', 'CLOSED' or None, get '{alert_status}'"
             )
 
-    incidents: list[dict] = []
+    incidents: list[XSOARIncident] = []
 
     if "Security Events" in fetch_types:
         _fetch_security_event_incidents(
