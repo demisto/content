@@ -640,25 +640,26 @@ def resolve_xsoar_close_reason(xdr_close_reason):
         )
         # XDR raw status/close-reason is prefixed with 'resolved_' and is given in snake_case format,
         # e.g. 'resolved_false_positive', whilst custom XDR->XSOAR close-reason mapping
-        # is using natural text format e.g. 'False Positive', therefore we need to adapt it accordingly.
-        xdr_close_reason = (
+        # is using title case format e.g. 'False Positive', therefore we need to adapt it accordingly.
+        title_cased_xdr_close_reason = (
             xdr_close_reason.replace("resolved_", "").replace("_", " ").title()
         )
-        xsoar_close_reason = custom_xdr_to_xsoar_close_reason_mapping[xdr_close_reason]
-        demisto.debug(
-            f"XDR->XSOAR custom close-reason exists, using {xdr_close_reason}={xsoar_close_reason}"
-        )
+        xsoar_close_reason = custom_xdr_to_xsoar_close_reason_mapping.get(title_cased_xdr_close_reason)
+        if xsoar_close_reason in XSOAR_RESOLVED_STATUS_TO_XDR.keys():
+            demisto.debug(
+                f"XDR->XSOAR custom close-reason exists, using {xdr_close_reason}={xsoar_close_reason}"
+            )
+            return xsoar_close_reason
 
     # Otherwise, we use default mapping.
-    else:
-        xsoar_close_reason = XDR_RESOLVED_STATUS_TO_XSOAR.get(xdr_close_reason)
-        demisto.debug(
-            f"XDR->XSOAR custom close-reason does not exists, using default mapping {xdr_close_reason}={xsoar_close_reason}"
-        )
+    xsoar_close_reason = XDR_RESOLVED_STATUS_TO_XSOAR.get(xdr_close_reason)
+    demisto.debug(
+        f"XDR->XSOAR custom close-reason does not exists, using default mapping {xdr_close_reason}={xsoar_close_reason}"
+    )
     return xsoar_close_reason
 
 
-def handle_incoming_closing_incident(incident_data):
+def handle_incoming_closing_incident(incident_data) -> dict:
     incident_id = incident_data.get("incident_id")
     demisto.debug(f"handle_incoming_closing_incident {incident_data=} {incident_id=}")
     closing_entry = {}  # type: Dict
@@ -693,7 +694,6 @@ def handle_incoming_closing_incident(incident_data):
                 f"handle_incoming_closing_incident {incident_id=} {close_notes=}"
             )
 
-    # TODO - What happens if XDR close-reason is not identified?
     return closing_entry
 
 

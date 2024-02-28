@@ -1443,27 +1443,6 @@ class AlertFilterArg:
         self.option_mapper = option_mapper
 
 
-def comma_separated_mapping_to_dict(raw_text: str) -> dict:
-    """
-    :param raw_text: Comma-separated mapping e.g ('key1=value1', 'key2=value2', ...)
-    :return: Validated dictionary of the raw mapping e.g {'key1': 'value1', 'key2': 'value2', ...}
-    """
-    demisto.debug(f">> Resolving comma-separated input mapping: {raw_text}")
-
-    mapping_dict = {}
-    key_value_pairs = raw_text.split(",")
-    for pair in key_value_pairs:
-        # Trimming trailing whitespace
-        pair = pair.strip()
-        key, value = pair.split("=")
-        if key in mapping_dict:
-            demisto.debug(
-                f"Warning: duplicate key provided for {key}: using latter value: {value}"
-            )
-        mapping_dict[key] = value
-    demisto.debug(f"<< Resolved mapping: {mapping_dict}")
-    return mapping_dict
-
 
 def catch_and_exit_gracefully(e):
     """
@@ -2877,6 +2856,36 @@ def handle_user_unassignment(update_args):
         update_args['assigned_user_pretty_name'] = None
 
 
+def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
+    """
+    Resolving XDR close reason from possible custom XSOAR->XDR close-reason mapping or default mapping.
+    :param xsoar_close_reason: XSOAR raw status/close reason e.g. 'False Positive'.
+    :return: XDR close-reason in snake_case format e.g. 'resolved_false_positive'.
+    """
+    # Initially setting the close reason according to the default mapping.
+    xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(xsoar_close_reason, 'Other')
+    # Reading custom XSOAR->XDR close-reason mapping.
+    custom_xsoar_to_xdr_close_reason_mapping = comma_separated_mapping_to_dict(
+        demisto.params().get("custom_xsoar_to_xdr_close_reason_mapping")
+    )
+
+    # Overriding default close-reason mapping if there exists a custom one.
+    if xsoar_close_reason in custom_xsoar_to_xdr_close_reason_mapping:
+        xdr_close_reason_candidate = custom_xsoar_to_xdr_close_reason_mapping[xsoar_close_reason]
+        # Transforming resolved close-reason into snake_case format with known prefix to match XDR status format.
+        demisto.debug(f"resolve_xdr_close_reason XSOAR->XDR custom close-reason exists, using {xsoar_close_reason}={xdr_close_reason}")
+        xdr_close_reason_candidate = "resolved_" + "_".join(xdr_close_reason_candidate.lower().split(" "))
+
+        if xdr_close_reason_candidate not in XDR_RESOLVED_STATUS_TO_XSOAR.keys():
+            demisto.debug("Warning: Provided XDR close-reason does not exist. Using default XDR close-reason mapping. ")
+        else:
+            xdr_close_reason = xdr_close_reason_candidate
+    else:
+        demisto.debug(f"resolve_xdr_close_reason using default mapping {xsoar_close_reason}={xdr_close_reason}")
+
+    return xdr_close_reason
+
+
 def handle_outgoing_issue_closure(remote_args):
     incident_id = remote_args.remote_incident_id
     demisto.debug(f"handle_outgoing_issue_closure {incident_id=}")
@@ -2892,19 +2901,7 @@ def handle_outgoing_issue_closure(remote_args):
             demisto.debug(f"handle_outgoing_issue_closure {incident_id=} {close_notes=}")
             update_args['resolve_comment'] = close_notes
 
-        xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(close_reason, 'Other')
-
-        # Reading custom XSOAR->XDR close-reason mapping.
-        custom_xsoar_to_xdr_close_reason_mapping = comma_separated_mapping_to_dict(
-            demisto.params().get("custom_xsoar_to_xdr_close_reason_mapping")
-        )
-        # Overriding default close-reason mapping if there exists a custom one.
-        if close_reason in custom_xsoar_to_xdr_close_reason_mapping:
-            xdr_close_reason = custom_xsoar_to_xdr_close_reason_mapping[close_reason]
-            # Transforming resolved close-reason into snake_case format with known prefix to match XDR status format.
-            demisto.debug(f"XSOAR->XDR custom close-reason exists, using {close_reason}={xdr_close_reason}")
-            xdr_close_reason = "resolved_" + "_".join(xdr_close_reason.lower().split(" "))
-
+        xdr_close_reason = resolve_xdr_close_reason(close_reason)
         update_args['status'] = xdr_close_reason
         demisto.debug(f"handle_outgoing_issue_closure Closing Remote incident {incident_id=} with status {update_args['status']}")
 
