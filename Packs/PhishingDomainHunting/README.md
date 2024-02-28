@@ -3,6 +3,7 @@ Phishing domains impersonating an organization's brand are a persistent threat t
 The Phishing Domain Hunting pack equips analysts with automation to proactively hunt for phishing domains targeting their organization. CertStream integration ingests newly issued SSL certificates in real-time, while WHOIS data and threat intel feeds are checked for domain registrations using the company brand. Analysts save hours of manual effort and can disrupt phishing campaigns before emails reach users.
 
 This pack includes playbooks that:
+
 - Ingest and enrich certificate transparency events in real-time. 
 - Correlate new SSL certs with WHOIS domain registration data.
 - Check domain reputation against threat intel feeds.  
