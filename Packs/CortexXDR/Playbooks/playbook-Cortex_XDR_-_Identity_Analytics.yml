@@ -260,20 +260,6 @@ tasks:
         complex:
           root: inputs.Username
           transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: \
-              fields:
-                value:
-                  simple: "2"
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: inputs.Username
-                iscontext: true
           - operator: uniq
     separatecontext: true
     continueonerrortype: ""
