@@ -443,6 +443,12 @@ tasks:
       username:
         complex:
           root: inputs.username
+      sourceIP:
+        complex:
+          root: inputs.sourceIP
+      accountType:
+        complex:
+          root: inputs.accountType
     separatecontext: false
     continueonerrortype: ""
     loop:
