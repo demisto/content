@@ -210,7 +210,7 @@ def handle_file_type_fields(raw_type: str, indicator_obj: Dict[str, Any]) -> Non
     indicator_obj['fields'][raw_type.upper()] = hash_value
 
 
-def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, page: int, from_timestamp: str = ''
+def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, page: int, from_timestamp: str|None= None
                       ) -> Dict[str, Any]:
     """
     Creates a dictionary in the format required by MISP to be used as a query.
@@ -235,7 +235,7 @@ def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, pa
     return params
 
 
-def clean_user_query(query: str) -> Dict[str, Any]:
+def clean_user_query(query: str, limit: int, timestamp: str|None = None) -> Dict[str, Any]:
     """
     Takes the query string created by the user, adds necessary argument and removes unnecessary arguments
     Args:
@@ -246,6 +246,12 @@ def clean_user_query(query: str) -> Dict[str, Any]:
         params = json.loads(query)
         params["returnFormat"] = "json"
         params.pop("timestamp", None)
+        if timestamp:
+            params['timestamp']= timestamp
+        if 'page' not in params:
+            params["page"] = 1
+        if 'limit' not in params:
+            params["limit"] = limit
     except Exception as err:
         demisto.debug(str(err))
         raise DemistoException(f'Could not parse user query. \nError massage: {err}')
@@ -475,8 +481,8 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
     page = arg_to_number(args.get('page')) or 1
-    params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type=attribute_type, limit=limit,
-                                                                          page=page)
+    params_dict = clean_user_query(query, limit) if query else build_params_dict(tags=tags, attribute_type=attribute_type,\
+                                                                        limit=limit, page=page)
     response = client.search_query(params_dict)
     if error_message := response.get('Error'):
         raise DemistoException(error_message)
@@ -517,9 +523,8 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     query = params.get('query', None)
     limit = arg_to_number(params.get('feedFetchLimit')) or 2000
     last_run = demisto.getLastRun().get('timestamp') if demisto.getLastRun() else ''
-    params_dict = clean_user_query(query) if query else build_params_dict(tags=tags, attribute_type=attribute_types, limit=limit,
-                                                                          page=1, from_timestamp=last_run)
-
+    params_dict = clean_user_query(query, limit, last_run) if query else\
+        build_params_dict(tags=tags, attribute_type=attribute_types, limit=limit, page=1, from_timestamp=last_run)
     search_query_per_page = client.search_query(params_dict)
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
         demisto.debug(f'search_query_per_page number of attributes:\
