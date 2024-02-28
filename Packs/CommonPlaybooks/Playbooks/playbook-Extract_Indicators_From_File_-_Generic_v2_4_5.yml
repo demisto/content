@@ -1566,6 +1566,7 @@ tasks:
       - "10"
       "yes":
       - "13"
+      - "25"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1757,6 +1758,130 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 24cf566c-31da-4e3d-8f3d-16b19d61af64
+    type: condition
+    task:
+      id: 24cf566c-31da-4e3d-8f3d-16b19d61af64
+      version: -1
+      name: Is Image ReadQRCode available?
+      description: Checks whether there is an active instance of the Image OCR integration. enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules.commands.name
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.commands.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ReadQRCode
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2550,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: eefdeebf-4065-4f99-8511-c7da64e5a6fe
+    type: regular
+    task:
+      id: eefdeebf-4065-4f99-8511-c7da64e5a6fe
+      version: -1
+      name: Extract Text from QR Codes
+      description: Extracts the text from a QR code. The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
+      scriptName: ReadQRCode
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: image/png
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: image/jpg
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: image/jpeg
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: image/gif
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2550,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1777,7 +1902,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1485,
-        "width": 3085,
+        "width": 3485,
         "x": -555,
         "y": -10
       }
