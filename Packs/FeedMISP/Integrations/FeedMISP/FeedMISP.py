@@ -533,7 +533,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     params_dict = clean_user_query(query, LIMIT, from_timestamp=last_run) if query else\
         build_params_dict(tags=tags, attribute_type=attribute_types, limit=LIMIT, page=1, from_timestamp=last_run)
     search_query_per_page = client.search_query(params_dict)
-    demisto.debug(f'query: {params_dict}')
+    demisto.debug(f'params_dict: {params_dict}')
     while len(search_query_per_page.get("response", {}).get("Attribute", [])):
         demisto.debug(f'search_query_per_page number of attributes:\
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))} page: {params_dict["page"]}')
