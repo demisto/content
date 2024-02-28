@@ -1,11 +1,11 @@
 commonfields:
-  id: Github Event Collector -test
+  id: Github Event Collector
   version: -1
 sectionOrder:
 - Connect
 - Collect
-name: Github Event Collector -test
-display: Github Event Collector -test
+name: Github Event Collector
+display: Github Event Collector
 category: Analytics & SIEM
 description: Github logs event collector integration for Cortex XSIAM.
 configuration:
