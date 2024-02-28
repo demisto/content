@@ -122,7 +122,7 @@ def hash_fields_to_create_id(event: dict) -> str:
     """
     string = ''
     for val in event.values():
-        string += val
+        string += str(val)
     _id = hashlib.sha256(str.encode(string)).hexdigest()
     return _id
 
