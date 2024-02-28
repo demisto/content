@@ -308,7 +308,7 @@ repos:
     # this is the list of test files that should be run with network enabled, so we need to exclude them from here
     exclude: test_data|Packs/ApiModules/Scripts/NGINXApiModule/NGINXApiModule_test.py|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
     env:
-      COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
+      COVERAGE_FILE: /.pre-commit/coverage/.coverage
     args:
     - /src/Tests/scripts/script_runner.py
     - coverage
@@ -320,7 +320,7 @@ repos:
     - -v
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
-    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --junitxml=/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
     - --files
     copy_files:
@@ -342,7 +342,7 @@ repos:
     # this is the list of test files that should be run with network enabled
     files: Packs/ApiModules/Scripts/NGINXApiModule/NGINXApiModule_test.py|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
     env:
-      COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
+      COVERAGE_FILE: /.pre-commit/coverage/.coverage
     args:
     - run
     - -p
@@ -352,7 +352,7 @@ repos:
     - -v
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
-    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --junitxml=/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
