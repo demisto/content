@@ -546,20 +546,11 @@ class Client(BaseClient):
         _type_to_parameter = {
             "scan-for-open-ports": "scanForOpenPortsTaskParameters",
             "send-alert-summary": "sendAlertSummaryTaskParameters",
-            # "discover-computers": "discoverComputersTaskParameters",
-            # "run-script": "runScriptTaskParameters",
             "send-policy": "sendPolicyTaskParameters",
-            # "generate-report": "generateReportTaskParameters",
-            # "synchronize-directory": "synchronizeDirectoryTaskParameters",
-            # "synchronize-users": "synchronizeUsersTaskParameters",
             "scan-for-recommendations": "scanForRecommendationsTaskParameters",
-            # "synchronize-vcenter": "synchronizeVCenterTaskParameters",
             "scan-for-integrity-changes": "scanForIntegrityChangesTaskParameters",
             "scan-for-malware": "scanForMalwareTaskParameters",
-            # "check-for-security-updates": "checkForSecurityUpdatesTaskParameters",
-            # "synchronize-cloud-account": "synchronizeCloudAccountTaskParameters",
             "check-for-software-updates": "checkForSoftwareUpdatesTaskParameters",
-            # "update-suspicious-objects-list": "updateSuspiciousObjectsListTaskParameters"
         }
 
         body = {
