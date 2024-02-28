@@ -91,7 +91,7 @@ def test_get_earliest_event_ids_with_the_same_time():
     assert earliest_event_fetched_ids == ['a']
 
     """
-    Case 4: list of Audit Log events where there are two "earliest" events  
+    Case 4: list of Audit Log events where there are two "earliest" events
     Ensure the ID of the TWO earliest Audit logs is returned
     """
     events = [
@@ -125,7 +125,7 @@ def test_hash_fields_to_create_id():
         'serviceContext': 'dummy_serviceContext'
     }
     _id = hash_fields_to_create_id(event)
-    assert _id == '460794c8a04bdae82f688da286ac0b3eb62be74f'
+    assert _id == '8bb89cb674035796b755e9e1db5022dc750e904f520eb290d18e134b12656bf2'
 
 # def test_fetch
 
