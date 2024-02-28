@@ -126,6 +126,8 @@ def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval:
     Returns: the status of the job.
 
     """
+    pipeline_id = None
+    logging.info(f"test job_id= {job_id}")
     if len(job_id.split('_')) > 1:
         pipeline_id = job_id.split('_')[0]
         job_id = job_id.split('_')[1]
