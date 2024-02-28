@@ -1948,7 +1948,7 @@ def main():
                                      "trendmicro-reset-policy-setting": reset_policy_setting_command,
                                      "trendmicro-list-policies": list_policies_command,
                                      "trendmicro-create-policy": create_policy_command,
-                                     "trendmicro-create-onceonly-scan-scheduled-task": create_once_only_scan_scheduled_task_command,
+                                     "trendmicro-create-onceonly-scan-scheduled-task": create_once_only_scan_scheduled_task_command,  # noqa: E501
                                      "trendmicro-delete-scheduled-task": delete_scheduled_task_command,
                                      "trendmicro-list-scheduled-task": list_scheduled_task_command,
                                      "test-module": test_module}
