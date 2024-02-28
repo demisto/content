@@ -1050,9 +1050,27 @@ def test_parse_demisto_comments_url__default(mocker):
     """
     from XDR_iocs import _parse_demisto_comments
     inc_id = '111111'
-    mocker.patch.object(demisto, 'demistoUrls', return_value='url')
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
     assert _parse_demisto_comments(
         ioc={'id': inc_id},
         comment_field_name='indicator_link',
         comments_as_tags=False
-    ) == [f'https://url/#/indicator/{comment_value}']
+    ) == [f'url/#/indicator/{inc_id}']
+
+
+def test_parse_demisto_list_of_comments_default(mocker):
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    parsing a comment of the url indicator field
+    Then    check the output values
+    """
+    from XDR_iocs import _parse_demisto_comments
+    inc_id = '111111'
+    comment_value = 'here be comment'
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    assert _parse_demisto_comments(
+        ioc={Client.xsoar_comments_field: [{'type': 'IndicatorCommentRegular', 'content': comment_value}],
+             'id': inc_id},
+        comment_field_name=['indicator_link', Client.xsoar_comments_field],
+        comments_as_tags=False
+    ) == [f'url/#/indicator/{inc_id}', comment_value]
