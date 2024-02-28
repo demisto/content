@@ -40,6 +40,7 @@ class GithubParams(BaseModel):
     """
     include: str
     order: str = 'asc'
+    after: str
     phrase: str
     per_page: int = 100  # Maximum is 100
     _normalize_after = validator('phrase', pre=True, allow_reuse=True)(

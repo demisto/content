@@ -1,11 +1,11 @@
 commonfields:
-  id: Github Event Collector
+  id: Github Event Collector -test
   version: -1
 sectionOrder:
 - Connect
 - Collect
-name: Github Event Collector
-display: Github Event Collector
+name: Github Event Collector -test
+display: Github Event Collector -test
 category: Analytics & SIEM
 description: Github logs event collector integration for Cortex XSIAM.
 configuration:
@@ -29,7 +29,14 @@ configuration:
   section: Collect
   required: false
 - display: First fetch time interval
+  hidden: true
   name: after
+  type: 0
+  defaultvalue: 3 days
+  section: Collect
+  required: false
+- display: First fetch time interval
+  name: phrase
   type: 0
   defaultvalue: 3 days
   section: Collect
