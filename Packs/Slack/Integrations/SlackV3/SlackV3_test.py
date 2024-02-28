@@ -2835,6 +2835,44 @@ def test_send_request_with_entitlement(mocker):
     assert demisto.getIntegrationContext()['questions'] == js.dumps(questions)
 
 
+def test_slack_send_with_mirrored_file(mocker):
+    """
+    Given:
+      - mirror entry which is basically a file
+
+    When:
+      - running send-notification triggered from mirroring
+
+    Then:
+      - Validate that the file is sent successfully
+    """
+    import SlackV3
+
+    mocker.patch.object(demisto, 'params', return_value={'enable_outbound_file_mirroring': True})
+
+    SlackV3.init_globals()
+
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            "message": "test",
+            "channel_id": "1234",
+            "channel": "channel",
+            "entry": "1234",
+            "messageType": SlackV3.MIRROR_TYPE,
+            "entryObject": {}
+        }
+    )
+    slack_send_request = mocker.patch.object(SlackV3, 'slack_send_request', return_value='file-sent')
+    demisto_results = mocker.patch.object(demisto, 'results')
+
+    SlackV3.slack_send()
+    assert slack_send_request.call_args_list[0].kwargs["file_dict"]
+    assert slack_send_request.call_args_list[0].kwargs["channel_id"] == "1234"
+    assert demisto_results.call_args_list[0][0][0] == 'File sent to Slack successfully.'
+
+
 def test_send_request_with_entitlement_blocks(mocker):
     import SlackV3
 
