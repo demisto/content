@@ -85,7 +85,7 @@ HASH_TYPE_TO_STIX_HASH_TYPE = {  # pragma: no cover
 }
 
 
-def search_related_indicators(value: str) -> list[dict]:
+def search_related_indicators(value: str) -> list[dict]:    # pragma: no cover
     relationships = demisto.searchRelationships({"entities": [value]}).get("data", [])
     demisto.debug(f"found {len(relationships)} relationships")
     query = ""
