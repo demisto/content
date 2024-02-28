@@ -1,10 +1,10 @@
 Provides commands for interaction with Prisma SASE API.
 This integration was integrated and tested with version v1 of Palo Alto Networks - Prisma SASE
 
-## Configure Palo Alto Networks - Prisma SASE on Cortex XSOAR
+## Configure Palo Alto Networks - Strata Cloud Manager on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Palo Alto Networks - Prisma SASE.
+2. Search for Palo Alto Networks - Strata Cloud Manager.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
