@@ -376,7 +376,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
                     break
 
     except Exception as e:
-        demisto.error(f'Error in parsing the indicators, error: {e}')
+        demisto.error(f'Error in parsing the indicators, error: {str(e)}')
         # 429 error can only be raised when the Elasticsearch instance encountered an error
         if '[429] Failed with error' in str(e):
             version = demisto.demistoVersion()
