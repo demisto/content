@@ -233,11 +233,11 @@ def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, pa
         'page': page
     }
     if from_timestamp:
-        params['timestamp'] = from_timestamp
+        params['from'] = from_timestamp
     return params
 
 
-def clean_user_query(query: str, limit: int, page: int = 1) -> Dict[str, Any]:
+def clean_user_query(query: str, limit: int, page: int = 1, from_timestamp: str | None = None) -> Dict[str, Any]:
     """
     Takes the query string created by the user, adds necessary argument and removes unnecessary arguments
     Args:
@@ -255,6 +255,8 @@ def clean_user_query(query: str, limit: int, page: int = 1) -> Dict[str, Any]:
             params["limit"] = limit
         else:
             LIMIT = params["limit"]
+        if from_timestamp:
+            params['from'] = from_timestamp
     except Exception as err:
         demisto.debug(str(err))
         raise DemistoException(f'Could not parse user query. \nError massage: {err}')
@@ -528,7 +530,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     if params.get('feedFetchLimit'):
         LIMIT = arg_to_number(params.get('feedFetchLimit')) or 2000
     last_run = demisto.getLastRun().get('timestamp') if demisto.getLastRun() else ''
-    params_dict = clean_user_query(query, LIMIT) if query else\
+    params_dict = clean_user_query(query, LIMIT, from_timestamp=last_run) if query else\
         build_params_dict(tags=tags, attribute_type=attribute_types, limit=LIMIT, page=1, from_timestamp=last_run)
     search_query_per_page = client.search_query(params_dict)
     demisto.debug(f'query: {params_dict}')
