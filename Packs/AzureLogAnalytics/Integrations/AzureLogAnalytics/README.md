@@ -12,13 +12,13 @@ Depending on the authentication method that you use, the integration parameters 
 - Application developer
 - Cloud application administrator
 
-In addition, the user that granted the authorization needs to be assigned the [**Log Analytics Reader** role](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/manage-access?tabs=portal#log-analytics-reader). 
+In addition, the user that granted the authorization needs to be assigned the [**Log Analytics Reader** role](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/manage-access?tabs=portal#log-analytics-reader).  
 For the search job commands the user needs to be assigned the [**Log Analytics Contributor** role](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/manage-access?tabs=portal#log-analytics-contributor).
 
     To add these roles:
-     - In the Azure portal, go to `Log Analytics workspace` and select the workspace you are using -> Access control (IAM).
-     - From Access control (IAM) select: Add role assignment
-     - Select the user that granted the authorization and assign the Roles.
+     1. In the Azure portal, go to `Log Analytics workspace` and select the workspace you are using -> Access control (IAM).
+     2. From Access control (IAM) select: Add role assignment
+     3. Select the user that granted the authorization and assign the Roles.
 
 For more information, refer to the following [Microsoft article](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/api/access-api#set-up-authentication).
 
@@ -46,7 +46,7 @@ In the self-deployed mode you can authenticate, by using one of the following fl
 ---
 
 1. In the instance configuration, select the **Use a self-deployed Azure application - Authorization Code flow** checkbox.
-2. Enter your client ID in the **ID \ Client ID** parameter (credentials username). 
+2. Enter your client ID in the **ID / Client ID** parameter (credentials username). 
 3. Enter your client secret in the **Key / Client Secret** parameter (credentials password).
 4. Enter your tenant ID in the **Token** parameter.
 5. Enter your redirect URI in the **Redirect URI** parameter.
