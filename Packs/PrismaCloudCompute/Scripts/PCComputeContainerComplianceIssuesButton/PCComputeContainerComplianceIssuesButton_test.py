@@ -1,4 +1,4 @@
-from PCComputeImageComplianceIssuesButton import run_prisma_cloud_compute_images_scan_list
+from PCComputeContainerComplianceIssuesButton import run_prisma_cloud_compute_containers_scan_list
 import pytest
 import json
 import io
@@ -8,13 +8,13 @@ from CommonServerPython import *  # noqa: F401
 # Import the script you want to test
 
 TEST_CASES = [
-    ({'id': 'sha256:e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'compliance_ids': '6112'}, [
+    ({'id': 'e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'compliance_ids': '6112'}, [
         {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
          'Description':
              'The /tmp directory is a world-writable directory used for temporary storage by all users\nand some applications.'}
     ]),
-    ({'id': 'sha256:e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'compliance_ids': '6112,6116,6117'}, [
+    ({'id': 'e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'compliance_ids': '6112,6116,6117'}, [
         {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
          'Description':
@@ -27,7 +27,7 @@ TEST_CASES = [
          'Description':
              'Description for compliance ID 6117'}
     ]),
-    ({'id': 'sha256:e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'compliance_ids': ''}, [
+    ({'id': 'e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'compliance_ids': ''}, [
         {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
          'Description':
@@ -60,24 +60,24 @@ compliance_issues = util_load_json('test_data/compliance_issues.json')
 
 
 @pytest.mark.parametrize('args, expected', TEST_CASES)
-def test_run_prisma_cloud_compute_images_scan_list(mocker, args, expected):
+def test_run_prisma_cloud_compute_containers_scan_list(mocker, args, expected):
     # Mock the executeCommand function
     mocker.patch.object(demisto, 'executeCommand', return_value=[{'Type': EntryType.NOTE,
-                                                                  'Contents': [{'complianceIssues': compliance_issues}]
+                                                                  'Contents': [{"info":{'complianceIssues': compliance_issues}}]
                                                                   }])
 
     # Run the function
     mocker.patch.object(demisto, 'results')
-    run_prisma_cloud_compute_images_scan_list(args.get('id'), args.get('compliance_ids'))
+    run_prisma_cloud_compute_containers_scan_list(args.get('id'), args.get('compliance_ids'))
 
     # Check the results
     results = demisto.results.call_args[0][0]
     assert results.get('Tags') == ['ComplianceIssuesResults']
 
     outputs = results['EntryContext']
-    assert outputs.get('PrismaCloudCompute.PCC_ImageComplianceIssues', []).get('compliance_issues') == expected
+    assert outputs.get('PrismaCloudCompute.PCC_ContainerComplianceIssues', []).get('compliance_issues') == expected
 
     readable_output = results['HumanReadable']
-    assert f'Compliance Issues of image {args.get("id")}' in readable_output
+    assert f'Compliance Issues of container {args.get("id")}' in readable_output
 
 # Add more tests as needed

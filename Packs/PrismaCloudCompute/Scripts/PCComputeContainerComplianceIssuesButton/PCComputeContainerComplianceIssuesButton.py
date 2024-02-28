@@ -3,10 +3,8 @@ from CommonServerPython import *  # noqa: F401
 
 '''
 Script Description:
-    This script runs the 'prisma-cloud-compute-images-scan-list' command for a specific image id and returns details about its 
-    compliance issues, if found.
-    If any compliance issues found, it will create a new tab in the layout called "Detailed Compliance Issues" showing the 
-    issues details.
+    This script runs the "prisma-cloud-compute-hosts-scan-list" command for a specific container id and returns details about its compliance issues, if found.
+    If any compliance issues found, it will create a new tab in the layout called "Detailed Compliance Issues" showing the issues details.
     Returns the following fields for each compliance ID:
     - Compliance ID
     - Cause
@@ -18,54 +16,54 @@ Script Description:
 from typing import Any, Dict
 
 
+# Script Name: PCC_ContainerComplianceIssues
+# Script Description: This script runs the "prisma-cloud-compute-container-scan-results-list" command and returns specific details.
+
 # Command Function
-def run_prisma_cloud_compute_images_scan_list(image_id: str, compliance_ids: str) -> None:
+def run_prisma_cloud_compute_containers_scan_list(container_id: str, compliance_ids: str) -> None:
     """
-    Runs the 'prisma-cloud-compute-images-scan-list' command with specified arguments and returns specific details about its
-    compliance issues, if found.
+    Runs the "prisma-cloud-compute-container-scan-results-list" command with specified arguments and returns specific details.
 
     Args:
-        image_id: ID of the image to scan.
+        container_id: The ID of the container.
         compliance_ids: Comma-separated list of compliance IDs to filter the results.
 
     Returns:
         None
     """
-    preconfigured_args = {
-        'compact': 'false',
-        'all_results': 'true'
-    }
 
-    args = {'id': image_id}
-    args.update(preconfigured_args)
+    # Validate container_id length
+    if len(container_id) != 64:
+        return_error("Invalid container_id. Please verify that you entered a valid 64-character container id.")
 
-    # Run the 'prisma-cloud-compute-images-scan-list' command
-    result = demisto.executeCommand("prisma-cloud-compute-images-scan-list", args)
+    args = {'container_ids': container_id}
+
+    # Run the prisma-cloud-compute-container-scan-results-list command
+    result = demisto.executeCommand("prisma-cloud-compute-container-scan-results-list", args)
     if isError(result):
-        return_error(f"Failed to run 'prisma-cloud-compute-images-scan-list': {get_error(result)}")
+        return_error(f"Failed to run 'prisma-cloud-compute-container-scan-results-list': {get_error(result)}")
 
     # Check if the result is a list and contains 'Contents'
     if not result or not isinstance(result, list) or not result[0].get('Contents'):
         return_error("No valid results found in the command output.")
 
     # Extract specific details from the command results
-    contents_list = result[0]['Contents']
+    contents_info = result[0]['Contents'][0]['info']
+    compliance_issues = contents_info.get('complianceIssues')
 
-    # Process each element in the list
-    for contents in contents_list:
-        # Extract compliance issues
-        compliance_issues = contents.get('complianceIssues')
-        if not compliance_issues:
-            return_results(f"No compliance issues found for image {image_id}")
-            sys.exit()
+    # Check if compliance_issues is empty
+    if not compliance_issues:
+        return_results(f"No compliance issues found for container {container_id}")
+        sys.exit(0)
 
-        # Filter compliance issues based on provided IDs
-        filtered_compliance_issues = filter_compliance_issues(compliance_issues, compliance_ids)
+    # Filter compliance issues based on provided IDs
+    filtered_compliance_issues = filter_compliance_issues(compliance_issues, compliance_ids)
 
-        # Process the filtered compliance_issues and output details
-        process_and_output_compliance_issues(filtered_compliance_issues, image_id)
+    # Process the filtered compliance_issues and output details
+    process_and_output_compliance_issues(filtered_compliance_issues, container_id)
 
 
+# Function to filter compliance issues based on provided IDs
 def filter_compliance_issues(compliance_issues: list, compliance_ids: str) -> list:
     """
     Filter compliance issues based on provided IDs.
@@ -81,7 +79,7 @@ def filter_compliance_issues(compliance_issues: list, compliance_ids: str) -> li
         return compliance_issues  # Return all issues if no IDs provided
 
     # Split comma-separated IDs into a list
-    ids_to_filter = [compliance_id.strip() for compliance_id in compliance_ids.split(',')]
+    ids_to_filter = [id.strip() for id in compliance_ids.split(',')]
 
     # Filter issues based on provided IDs
     filtered_compliance_issues = [issue for issue in compliance_issues if str(issue.get('id', '')) in ids_to_filter]
@@ -89,13 +87,14 @@ def filter_compliance_issues(compliance_issues: list, compliance_ids: str) -> li
     return filtered_compliance_issues
 
 
-def process_and_output_compliance_issues(compliance_issues: list, image_id: str) -> None:
+# Function to process and output compliance issues
+def process_and_output_compliance_issues(compliance_issues: list, container_id: str) -> None:
     """
     Process the compliance issues and output specific details to the War Room.
 
     Args:
         compliance_issues: List of compliance issues.
-        image_id: ID of the image.
+        container_id: The ID of the container.
 
     Returns:
         None
@@ -115,20 +114,20 @@ def process_and_output_compliance_issues(compliance_issues: list, image_id: str)
 
     # Build CommandResults object
     command_results = CommandResults(
-        outputs_prefix='PrismaCloudCompute.PCC_ImageComplianceIssues',
+        outputs_prefix='PrismaCloudCompute.PCC_ContainerComplianceIssues',
         outputs={
-            'image_id': image_id,
+            'container_id': container_id,
             'compliance_issues': rows
         },
         tags=['ComplianceIssuesResults'],
         readable_output=tableToMarkdown(
-            f'Compliance Issues of image {image_id}',
+            f'Compliance Issues of container {container_id}',
             rows,
             headers=['ComplianceID', 'Cause', 'Severity', 'Title', 'Description']
         )
     )
     incident_id = demisto.incidents()[0]['id']
-    demisto.executeCommand('setIncident', {'id': incident_id, 'prismacloudcomputeshowcompliancetab': 'image-detailed'})
+    demisto.executeCommand('setIncident', {'id': incident_id, 'prismacloudcomputeshowcompliancetab': 'container-detailed'})
 
     # Output to War Room
     return_results(command_results)
@@ -147,20 +146,11 @@ def main() -> None:
     """
     try:
         # Get user-provided arguments
-        image_id = demisto.getArg('image_id')
+        container_id = demisto.getArg('container_id')
         compliance_ids = demisto.getArg('compliance_ids')
 
-        # Verify and normalize image_id
-        if not image_id.startswith('sha256:'):
-            if len(image_id) == 64:
-                image_id = f'sha256:{image_id}'
-            else:
-                return_error("Invalid image_id. It should be in the format 'sha256:{64 characters}'.")
-        elif len(image_id) != 71:
-            return_error("Invalid image_id length. It should be in the format 'sha256:{64 characters}'.")
-
         # Run the command with the provided arguments
-        run_prisma_cloud_compute_images_scan_list(image_id, compliance_ids)
+        run_prisma_cloud_compute_containers_scan_list(container_id, compliance_ids)
     except Exception as e:
         return_error(f"Error in script: {str(e)}")
 
