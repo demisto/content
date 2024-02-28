@@ -177,7 +177,6 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
@@ -203,7 +202,6 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
@@ -227,7 +225,6 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
@@ -250,7 +247,6 @@ demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
