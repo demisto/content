@@ -2760,14 +2760,15 @@ def fetch_incidents():
         demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch Incidents. Fetched {len(incidents)}")
 
     if IDP_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
-        idp_detections, current_fetch_info_idp_detections = fetch_idp_and_mobile_detections(current_fetch_info_idp_detections,
-                                                                                            look_back=look_back,
-                                                                                            fetch_query=params.get(
-                                                                                                'idp_detections_fetch_query', ""),
-                                                                                            detections_type=IDP_DETECTION,
-                                                                                            product_type='idp',
-                                                                                            detection_name_prefix=IDP_DETECTION_FETCH_TYPE,
-                                                                                            start_time_key='start_time')
+        idp_detections, current_fetch_info_idp_detections = fetch_idp_and_mobile_detections(
+            current_fetch_info_idp_detections,
+            look_back=look_back,
+            fetch_query=params.get(
+                'idp_detections_fetch_query', ""),
+            detections_type=IDP_DETECTION,
+            product_type='idp',
+            detection_name_prefix=IDP_DETECTION_FETCH_TYPE,
+            start_time_key='start_time')
 
     if MOBILE_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
         mobile_detections, current_fetch_info_mobile_detections = fetch_idp_and_mobile_detections(
