@@ -24117,7 +24117,7 @@ Creates a once-only scheduled task with a specific computer ID and runs it.
 
 #### Base Command
 
-`trendmicro-create-onceonly-scheduled-task`
+`trendmicro-create-onceonly-scan-scheduled-task`
 
 #### Input
 

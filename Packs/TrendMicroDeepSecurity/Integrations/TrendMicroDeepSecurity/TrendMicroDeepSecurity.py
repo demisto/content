@@ -545,12 +545,9 @@ class Client(BaseClient):
     def create_scheduled_task(self, name: str, _type: str, computer_id: int) -> dict:
         _type_to_parameter = {
             "scan-for-open-ports": "scanForOpenPortsTaskParameters",
-            "send-alert-summary": "sendAlertSummaryTaskParameters",
-            "send-policy": "sendPolicyTaskParameters",
             "scan-for-recommendations": "scanForRecommendationsTaskParameters",
             "scan-for-integrity-changes": "scanForIntegrityChangesTaskParameters",
             "scan-for-malware": "scanForMalwareTaskParameters",
-            "check-for-software-updates": "checkForSoftwareUpdatesTaskParameters",
         }
 
         body = {
@@ -1788,9 +1785,9 @@ def create_policy_command(client: Client, name: str, overrides: bool, parent_id:
                           readable_output=markdown, raw_response=response)
 
 
-def create_once_only_scheduled_task_command(client: Client, name: str, type: str, computer_id: int):
+def create_once_only_scan_scheduled_task_command(client: Client, name: str, type: str, computer_id: int):
     """
-    Creates a scheduled task on a computer ID.
+    Creates a scan scheduled task on a computer ID.
 
     Args:
          name (str): the name of the task
@@ -1951,7 +1948,7 @@ def main():
                                      "trendmicro-reset-policy-setting": reset_policy_setting_command,
                                      "trendmicro-list-policies": list_policies_command,
                                      "trendmicro-create-policy": create_policy_command,
-                                     "trendmicro-create-onceonly-scheduled-task": create_once_only_scheduled_task_command,
+                                     "trendmicro-create-onceonly-scan-scheduled-task": create_once_only_scan_scheduled_task_command,
                                      "trendmicro-delete-scheduled-task": delete_scheduled_task_command,
                                      "trendmicro-list-scheduled-task": list_scheduled_task_command,
                                      "test-module": test_module}

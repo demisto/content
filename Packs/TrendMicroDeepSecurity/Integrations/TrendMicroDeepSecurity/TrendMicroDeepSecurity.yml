@@ -3968,27 +3968,15 @@ script:
       required: true
       predefined:
         - scan-for-open-ports
-        - send-alert-summary
-        - discover-computers
-        - run-script
-        - send-policy
-        - generate-report
-        - synchronize-directory
-        - synchronize-users
         - scan-for-recommendations
-        - synchronize-vcenter
         - scan-for-integrity-changes
         - scan-for-malware
-        - check-for-security-updates
-        - synchronize-cloud-account
-        - check-for-software-updates
-        - update-suspicious-objects-list
       auto: PREDEFINED
     - description: The computer ID to create the task on. Can be retrieved from the trendmicro-list-computers command.
       name: computer_id
       required: true
     description: Creates a once-only scheduled task with a specific computer ID and runs it.
-    name: trendmicro-create-onceonly-scheduled-task
+    name: trendmicro-create-onceonly-scan-scheduled-task
     outputs:
       - contextPath: TrendMicro.ScheduledTask.name
         description: The name of the scheduled task.
