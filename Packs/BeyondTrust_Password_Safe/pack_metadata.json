@@ -12,7 +12,12 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "BeyondTrust",
+        "Password",
+        "Safe",
+        "Password Safe"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

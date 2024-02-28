@@ -58,7 +58,7 @@ You can configure the specific vendor and product for this instance.
 
 
 ### Sample XQL Queries 
-After completing the configurations above, the forwarded event logs are searchable on Cortex XSIAM via an XQL Search using on the *beyondtrust_passwordsafe_raw* dataset. 
+After completing the configurations above, the forwarded event logs are searchable on Cortex XSIAM via an XQL Search on the *beyondtrust_passwordsafe_raw* dataset. 
 
 The following XQL Queries demonstrate the parsing and XDM modeling for the BeyondTrust Password Safe events:
 
