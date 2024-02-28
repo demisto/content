@@ -2582,6 +2582,9 @@ def download_custom_script(
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
+        demisto.results(
+            f"The script was not found. Please check script id: {script_id} and try again."
+        )
         return_error(message=f"{err.message}", error=str(err))
     resp_text: pytmv1.TextResp = unwrap(resp.response)
     text: str = resp_text.text
@@ -2671,6 +2674,9 @@ def delete_custom_script(
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
+        demisto.results(
+            f"The script was not found. Please check script id: {script_id} and try again."
+        )
         return_error(message=f"{err.message}", error=str(err))
     resp_code: ResultCode = unwrap(resp.result_code)
     val: str = resp_code.value

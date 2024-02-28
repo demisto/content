@@ -1210,6 +1210,10 @@ script:
       required: true
     - description: 'Conditional operator used to build request that allows user to retrieve a subset of custom scripts. Possible values: and/or. Ex. `or`: the results retrieved will contain custom script(s) matching FileName OR FileType. `and`: the result retrieved will contain custom script matching FileName AND FileType. Defaults to `and`.'
       name: query_op
+      auto: PREDEFINED
+      predefined:
+      - and
+      - or
     outputs:
     - contextPath: VisionOne.Get_Custom_Script_List.id
       description: The ID for custom script.
