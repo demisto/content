@@ -6,7 +6,6 @@ import pandas as pd
 import base64
 import dill
 import copy
-import numpy as np
 from tldextract import TLDExtract
 from bs4 import BeautifulSoup
 import yaml
@@ -291,11 +290,11 @@ def return_entry_summary(
     :param reliability: reliability of the source providing the intelligence data.
     :return: entry to demisto
     """
-    if whitelist:
+    if is_white_listed:
         return None
     if verdict == BENIGN_VERDICT_WHITELIST:
         verdict = BENIGN_VERDICT
-    if whitelist or not pred_json:
+    if is_white_listed or not pred_json:
         url_score = SCORE_BENIGN
         url_score_colored = GREEN_COLOR.format(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR.format(
             url_score)
@@ -312,7 +311,7 @@ def return_entry_summary(
         KEY_CONTENT_URL_SCORE: url_score,
         KEY_CONTENT_SEO: str(pred_json.get(MODEL_KEY_SEO, UNKNOWN)),
         KEY_CONTENT_VERDICT: verdict,
-        KEY_CONTENT_IS_WHITELISTED: str(whitelist)
+        KEY_CONTENT_IS_WHITELISTED: str(is_white_listed)
     }
     dbot_score = Common.DBotScore(indicator=url,
                                   indicator_type=DBotScoreType.URL,
