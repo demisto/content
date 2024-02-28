@@ -831,7 +831,7 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
     # Input validation
 
     # If too many arguments are supplied, return an error
-    if sum(arg is not None for arg in [ip, network, from_ip and to_ip]) > 1:
+    if sum(bool(arg) for arg in [ip, network, from_ip or to_ip]) > 1:
         raise ValueError("Please specify only one of the `ip`, `network` or `from_ip`/`to_ip` arguments")
 
     # If neither ip, network nor from/to_ip were specified, return an error.
