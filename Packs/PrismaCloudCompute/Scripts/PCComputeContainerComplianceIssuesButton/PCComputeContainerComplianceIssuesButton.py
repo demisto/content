@@ -4,9 +4,9 @@ from CommonServerPython import *  # noqa: F401
 '''
 Script Description:
     This script runs the "prisma-cloud-compute-hosts-scan-list" command for a specific container id and returns details about its 
-    compliance issues, if found.
+compliance issues, if found.
     If any compliance issues found, it will create a new tab in the layout called "Detailed Compliance Issues" showing the issues 
-    details.
+details.
     Returns the following fields for each compliance ID:
     - Compliance ID
     - Cause
