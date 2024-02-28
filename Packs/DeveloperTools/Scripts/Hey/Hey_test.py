@@ -92,8 +92,8 @@ def test_construct_hey_query():
 
     user = "b:2"
     res = hey.construct_hey_query(url, user=user)
-    assert res[0] == {'u': user}
-    assert res[1] == f'hey -u {user} {url}'
+    assert res[0] == {'a': user}
+    assert res[1] == f'hey -a {user} {url}'
 
     enable_http2 = "true"
     res = hey.construct_hey_query(url, enable_http2=enable_http2)
@@ -128,11 +128,11 @@ def test_construct_hey_query():
         'z': duration + 's',
         'd': body,
         'x': proxy,
-        'u': user
+        'a': user
     }
     assert res[1] == (
         'hey --disable-compression -h2 -disable-redirects -H a:1 -H b:2 '
-        '-t 2 -n 2 -c 2 -m POST -z 2s -d {} -x a:1 -u b:2 http://mock.com'
+        '-t 2 -n 2 -c 2 -m POST -z 2s -d {} -x a:1 -a b:2 http://mock.com'
     )
 
 

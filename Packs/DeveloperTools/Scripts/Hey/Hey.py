@@ -1,14 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import re
 import subprocess
-from typing import Tuple
 
-import urllib3
-
-
-# disable insecure warnings
-urllib3.disable_warnings()
 
 # ---------- CONSTANTS ---------- #
 
@@ -64,7 +57,7 @@ def construct_hey_query(url: str,
         z=duration + 's' if duration else None,
         d=body,
         x=proxy,
-        u=user
+        a=user
     )
     hey_query = "hey "
     if disable_compression == 'true':
@@ -92,7 +85,7 @@ class HeyPerformanceResult:
                  c: Optional[str] = None,
                  n: Optional[str] = None,
                  z: Optional[str] = None,
-                 **args):
+                 **_):
         self._t = int(t or 20)
         self._c = int(c or 50)
         self._z = int(z[:-1]) if z else None  # remove 's' from z before parsing int
@@ -101,7 +94,7 @@ class HeyPerformanceResult:
         self._result = result or ''
         self._ext_outputs = name_value_arg_to_dict(results_map)
 
-    def _get_summary(self, result: List[str]) -> Tuple[dict, int]:
+    def _get_summary(self, result: List[str]) -> tuple[dict, int]:
         """Returns summary dictionary and index after the summary"""
         summary = {}
         i = 0
