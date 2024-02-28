@@ -726,6 +726,81 @@ def _incident_should_be_fetched(
     return True
 
 
+def _generate_xsoar_incident(
+    incident: dict[str, Any],  # some additional data will be added
+    incident_name: str,
+    incident_type: Literal["alert", "threat"],
+    incident_id: str | int,
+    incident_severity: Severity,
+    incident_time: str,
+    mirror_instance: str,
+    mirror_direction: str | None,
+    integration_base_url: str,
+) -> dict[str, Any]:
+    """Create an XSOAR compatible incident object.
+
+    Args:
+        incident: The actual incident object, the on fetch from remote EDR instance.
+        incident_name: Name of the incident.
+        incident_type: Type of the incident: "alert" (for security-event) or "threat".
+        incident_id: ID of the incident. A string for security events, integer
+          for threats.
+        incident_severity: Severity of the incident.
+        incident_time: ISO representation of the timestamps when the incident
+          occurred.
+        mirror_instance: Name of the mirrored instance.
+        mirror_direction: Mirrored direction for action. Can be "In", "Out",
+          "Both" or None (see 'MIRROR_DIRECTION_MAPPING' values).
+        integration_base_url: Base URL of the remote EDR instance, set in the
+          configuration of the connector.
+
+    Returns:
+        An XSOAR compatible incident object.
+    """
+
+    # note: 'alert' is the legacy name for 'security event'
+    # for retro-compatibility purpose, the name 'alert' is still used here,
+    # but in the end, should be replaced by 'security event'
+
+    additional_data: dict[str, Any] = {}
+
+    match incident_type:
+        case "alert":
+            additional_data["incident_type"] = f"{INTEGRATION_NAME} alert"
+            additional_data["incident_link"] = (
+                f"{integration_base_url}/security-event/{incident_id}/summary"
+            )
+        case "threat":
+            additional_data["incident_type"] = f"{INTEGRATION_NAME} threat"
+            additional_data["incident_link"] = (
+                f"{integration_base_url}/threat/{incident_id}/summary"
+            )
+        case _:
+            raise ValueError(
+                f"Invalid value for 'incident_type' argument: "
+                f"expected 'alert' or 'threat', get '{incident_type}'"
+            )
+
+    additional_data["mirror_instance"] = mirror_instance
+    additional_data["mirror_direction"] = mirror_direction
+
+    # what is that? that was present in the old threat implementation
+    # threat["mirror_tags"] = ["comments", "work_notes"]
+
+    incident.update(additional_data)
+
+    occurred: str = incident_time
+    severity: int = SEVERITIES.index(incident_severity) + 1
+    json_dump: str = json.dumps(incident, ensure_ascii=True)
+
+    return {
+        "name": incident_name,
+        "occurred": occurred,
+        "severity": severity,
+        "rawJSON": json_dump,
+    }
+
+
 def _fetch_security_event_incidents(
     client: Client,
     *,
@@ -834,34 +909,17 @@ def _fetch_security_event_incidents(
         ):
             continue
 
-        # note: 'alert' is the legacy name for 'security event'
-        # for retro-compatibility purpose, the name 'alert' is still used here,
-        # but in the end, should be replaced by 'security event'
-        incident_type = f"{INTEGRATION_NAME} alert"
-        incident_link = f"{client._base_url}/security-event/{security_event_id}/summary"
-
-        security_event["incident_type"] = incident_type
-        security_event["incident_link"] = incident_link
-        security_event["mirror_instance"] = mirror_instance
-        security_event["mirror_direction"] = mirror_direction
-
-        severity_as_str: Severity = security_event["level"].capitalize()
-
-        # no need -> 'SEVERITIES.index(...)' will already raise a ValueError
-        # if severity_as_str not in typing.get_args(Severity):
-        #     raise ValueError
-
-        incident_name: str = security_event["rule_name"]
-        occurred: str = security_event["alert_time"]
-        severity: int = SEVERITIES.index(severity_as_str) + 1
-        json_dump: str = json.dumps(security_event, ensure_ascii=True)
-
-        incident: dict[str, Any] = {
-            "name": incident_name,
-            "occurred": occurred,
-            "severity": severity,
-            "rawJSON": json_dump,
-        }
+        incident = _generate_xsoar_incident(
+            incident=security_event,
+            incident_name=security_event["rule_name"],
+            incident_type="alert",
+            incident_id=security_event_id,
+            incident_severity=security_event["level"].capitalize(),
+            incident_time=security_event["alert_time"],
+            mirror_instance=mirror_instance,
+            mirror_direction=mirror_direction,
+            integration_base_url=client._base_url,
+        )
 
         incidents.append(incident)
         fetched.append(security_event_id)
@@ -995,33 +1053,17 @@ def _fetch_threat_incidents(
         ):
             continue
 
-        incident_type = f"{INTEGRATION_NAME} threat"
-        incident_link = f"{client._base_url}/threat/{threat_id}/summary"
-
-        threat["incident_type"] = incident_type
-        threat["incident_link"] = incident_link
-        threat["mirror_instance"] = mirror_instance
-        threat["mirror_direction"] = mirror_direction
-        # what is that? that was present in the old implementation...
-        # threat["mirror_tags"] = ["comments", "work_notes"]
-
-        severity_as_str: Severity = threat["level"].capitalize()
-
-        # no need -> 'SEVERITIES.index(...)' will already raise a ValueError
-        # if severity_as_str not in typing.get_args(Severity):
-        #     raise ValueError
-
-        incident_name: str = threat["slug"]
-        occurred: str = threat["first_seen"]
-        severity: int = SEVERITIES.index(severity_as_str) + 1
-        json_dump: str = json.dumps(threat, ensure_ascii=True)
-
-        incident: dict[str, Any] = {
-            "name": incident_name,
-            "occurred": occurred,
-            "severity": severity,
-            "rawJSON": json_dump,
-        }
+        incident = _generate_xsoar_incident(
+            incident=threat,
+            incident_name=threat["slug"],
+            incident_type="threat",
+            incident_id=threat_id,
+            incident_severity=threat["level"].capitalize(),
+            incident_time=threat["first_seen"],
+            mirror_instance=mirror_instance,
+            mirror_direction=mirror_direction,
+            integration_base_url=client._base_url,
+        )
 
         incidents.append(incident)
         fetched.append(threat_id)
