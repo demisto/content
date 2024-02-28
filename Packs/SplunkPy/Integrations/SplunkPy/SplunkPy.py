@@ -246,15 +246,24 @@ def remove_irrelevant_incident_ids(last_run_fetched_ids: dict[str, dict[str, str
     new_last_run_fetched_ids: dict[str, dict[str, str]] = {}
     window_start_datetime = datetime.strptime(window_start_time, SPLUNK_TIME_FORMAT)
     for incident_id, incident_occurred_time in last_run_fetched_ids.items():
+        # We divided the handling of the last fetched IDs since we changed the handling of them
+        # The first implementation caused IDs to be removed from the cache, even though they were still relevant
+        # The second implementation now only removes the cached IDs that are not relevant to the fetch window
+        extensive_log(f'[SplunkPy] Checking if {incident_id} is relevant to fetch window')
         if isinstance(incident_occurred_time, dict):
+            # To handle last fetched IDs
+            # Last fetched IDs hold the occurred time that they were seen, and will be deleted from
+            # the last fetched IDs once they pass the fetch window
             incident_start_datetime = datetime.strptime(incident_occurred_time.get('occurred_time', ''), SPLUNK_TIME_FORMAT)
             if incident_start_datetime >= window_start_datetime:
                 # We keep the incident, since it is still in the fetch window
+                extensive_log(f'[SplunkPy] Keeping {incident_id} as part of the last fetched IDs')
                 new_last_run_fetched_ids[incident_id] = incident_occurred_time
         else:
-            # To handle last fetched IDs before version 3_1_19
+            # To handle last fetched IDs before version 3_1_20
             # Last fetched IDs held the epoch time of their appearance, they will now hold the
             # new format, with an occurred time equal to the end of the window
+            extensive_log(f'[SplunkPy] {incident_id} was saved using old implementation, keeping')
             new_last_run_fetched_ids[incident_id] = {'occurred_time': window_end_time}
     return new_last_run_fetched_ids
 
