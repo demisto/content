@@ -543,6 +543,25 @@ class Client(BaseClient):
                                   json_data=policy_properties)
 
     def create_scheduled_task(self, name: str, _type: str, computer_id: int) -> dict:
+        _type_to_parameter = {
+            "scan-for-open-ports": "scanForOpenPortsTaskParameters",
+            "send-alert-summary": "sendAlertSummaryTaskParameters",
+            # "discover-computers": "discoverComputersTaskParameters",
+            # "run-script": "runScriptTaskParameters",
+            "send-policy": "sendPolicyTaskParameters",
+            # "generate-report": "generateReportTaskParameters",
+            # "synchronize-directory": "synchronizeDirectoryTaskParameters",
+            # "synchronize-users": "synchronizeUsersTaskParameters",
+            "scan-for-recommendations": "scanForRecommendationsTaskParameters",
+            # "synchronize-vcenter": "synchronizeVCenterTaskParameters",
+            "scan-for-integrity-changes": "scanForIntegrityChangesTaskParameters",
+            "scan-for-malware": "scanForMalwareTaskParameters",
+            # "check-for-security-updates": "checkForSecurityUpdatesTaskParameters",
+            # "synchronize-cloud-account": "synchronizeCloudAccountTaskParameters",
+            "check-for-software-updates": "checkForSoftwareUpdatesTaskParameters",
+            # "update-suspicious-objects-list": "updateSuspiciousObjectsListTaskParameters"
+        }
+
         body = {
             "name": name,
             "type": _type,
@@ -554,7 +573,7 @@ class Client(BaseClient):
             },
             "runNow": True,
             "enabled": True,
-            "scanForMalwareTaskParameters": {
+            _type_to_parameter[_type]: {
                 "computerFilter": {
                     "type": "computer",
                     "computerID": computer_id
