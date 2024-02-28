@@ -110,9 +110,13 @@ def adjust_paging_to_request(args: dict[str, Any]):
         offset_to_dict = (page_number - 1) * page_size
         limit_to_dict = page_size
         page_header = create_paging_header(page_size, page_number)
-    elif limit:
-        offset_to_dict = 0
-        limit_to_dict = limit
+    else:
+        if limit:
+            offset_to_dict = 0
+            limit_to_dict = limit
+        else:
+            offset_to_dict = 0
+            limit_to_dict = 25
         page_header = create_paging_header(limit_to_dict, 1)
     return offset_to_dict, limit_to_dict, page_header
 
@@ -285,7 +289,7 @@ def add_issue_watcher_command(client: Client, args: dict[str, Any]):
             # print(command_results.readable_output)
             return (command_results)
         else:
-            raise DemistoException('watcher_id is missing in order to add this watcher')
+            raise DemistoException('watcher_id is missing in order to add this watcher to the issue')
     else:
         raise DemistoException('Issue_id is missing in order to add a watcher to this issue')
 
@@ -348,7 +352,7 @@ def get_users_command(client: Client, args: dict[str, Any]):
     possible_values_for_status = ['1', '2', '3']
     status_for_request = args.get('status')
     if status_for_request and status_for_request not in possible_values_for_status:
-        raise DemistoException(f'Status value for get users request must be one of the following {possible_values_for_status}')
+        raise DemistoException(f'Status value for get users request must be one of the following {possible_values_for_status}.')
     response = client.get_users_request(args)['users']
     headers = ['id', 'login', 'admin', 'firstname', 'lastname', 'mail', 'created_on', 'last_login_on']
     command_results = CommandResults(outputs_prefix='Redmine.Users',
@@ -393,22 +397,6 @@ def main() -> None:
             verify_certificate,
             proxy,
             auth=("", api_key))
-        # return_results(get_issues_list_command(client,{'sort':'priority:desc', 'limit':'20'}))
-        # return_results(get_issues_list_command(client,{'page'}))
-        # return_results(get_issues_list_command(client,{'sort':'priority:desc', 'limit':'20'}))
-        # return_results(create_issue_command(client,{'project_id':'1','status_id':'1', 'priority_id':'1', 'file_content_type': 'image/png',
-        #                                 'subject':'createfromcode', 'file_name':'tal.png','entry_id':'/Users/tcarmeli/Downloads/for_test.png'}))
-        # return_results(get_users_command(client, {}))
-        # return_results(get_users_command(client, {'name':'Redmine'}))
-        # return_results(get_custom_fields_command(client,{}))
-        # return_results(get_project_list_command(client,{'include':'time_entry_activities'}))
-        # return_results(remove_issue_watcher_command(client,{'issue_id':'44','watcher_id':'1'}))
-        # return_results(add_issue_watcher_command(client,{'issue_id':'58','watcher_id':'1'}))
-        # return_results(delete_issue_by_id_command(client, {'issue_id':'41'}))
-        # return_results(get_issue_by_id_command(client, {'issue_id' : '44', 'include':'watchers,attachments'}))
-        # return_results(update_issue_command(client, {'issue_id' : '49', 'subject':'changeFromCode','tracker_id':'1',
-        #                                              'content_type':'image/png', 'entry_id':'/Users/tcarmeli/Downloads/for_test11.png',
-        #                                              'watcher_user_ids':'[1]'}))
         if command == 'test-module':
             return_results(test_module(client))
         elif command in commands:

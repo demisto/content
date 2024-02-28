@@ -1,8 +1,5 @@
 import pytest
-
 from Redmine import Client
-# from test_data import input_data
-
 
 @pytest.fixture
 def redmine_client(url: str = 'url', verify_certificate: bool = True, proxy: bool = False, auth=('username', 'password')):
@@ -10,7 +7,6 @@ def redmine_client(url: str = 'url', verify_certificate: bool = True, proxy: boo
 
 
 ''' COMMAND FUNCTIONS TESTS '''
-
 
 def test_create_issue_command_without_file(mocker, redmine_client):
     """
@@ -89,7 +85,6 @@ def test_update_issue_command_with_file(mocker, redmine_client):
                                                                                   [{'token': 'token123', 'file_name': '', 'description': '',
                                                                                    'content_type': ''}]}}, headers={'Content-Type': 'application/json'})
 
-
 def test_get_issues_list_command(mocker, redmine_client):
     """
     Given:
@@ -105,7 +100,6 @@ def test_get_issues_list_command(mocker, redmine_client):
     get_issues_list_command(redmine_client, args)
     http_request.assert_called_with('GET', '/issues.json', params={'offset': 0, 'limit': '1', 'sort': 'priority:desc'},
                                     headers={})
-
 
 def test_get_issue_by_id_command(mocker, redmine_client):
     """
@@ -156,7 +150,37 @@ def test_add_issue_watcher_command(mocker, redmine_client):
     http_request.assert_called_with('POST', '/issues/1/watchers.json', params={'user_id': '1'},
                                     headers={'Content-Type': 'application/json'})
 
+def test_add_issue_watcher_command_no_watcher(redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-issue-watcher-add command is executed
+    Then:
+        - No watcher id raises a DemistoException
+    """
+    from Redmine import add_issue_watcher_command
+    from CommonServerPython import DemistoException
+    args = {'issue_id': '1'}
+    with pytest.raises(DemistoException) as e:
+        add_issue_watcher_command(redmine_client, args)
+    assert e.value.message == "watcher_id is missing in order to add this watcher to the issue"
 
+def test_add_issue_watcher_command_no_issue_id(redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-issue-watcher-add command is executed
+    Then:
+        - No issue id raises a DemistoException
+    """
+    from Redmine import add_issue_watcher_command
+    from CommonServerPython import DemistoException
+    args = {'watcher_id': '1'}
+    with pytest.raises(DemistoException) as e:
+        add_issue_watcher_command(redmine_client, args)
+    assert e.value.message == "Issue_id is missing in order to add a watcher to this issue"
 def test_remove_issue_watcher_command(mocker, redmine_client):
     """
     Given:
@@ -171,8 +195,39 @@ def test_remove_issue_watcher_command(mocker, redmine_client):
     args = {'issue_id': '1', 'watcher_id': '1'}
     remove_issue_watcher_command(redmine_client, args)
     http_request.assert_called_with('DELETE', '/issues/1/watchers/1.json', headers={'Content-Type': 'application/json'})
+    
+def test_remove_issue_watcher_command_no_watcher(redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-issue-watcher-remove command is executed
+    Then:
+        - No watcher id raises a DemistoException
+    """
+    from Redmine import remove_issue_watcher_command
+    from CommonServerPython import DemistoException
+    args = {'issue_id': '1'}
+    with pytest.raises(DemistoException) as e:
+        remove_issue_watcher_command(redmine_client, args)
+    assert e.value.message == "watcher_id is missing in order to remove watcher from this issue"
 
-
+def test_remove_issue_watcher_command_no_issue_id(redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-issue-watcher-remove command is executed
+    Then:
+        - No issue id raises a DemistoException
+    """
+    from Redmine import remove_issue_watcher_command
+    from CommonServerPython import DemistoException
+    args = {'watcher_id': '1'}
+    with pytest.raises(DemistoException) as e:
+        remove_issue_watcher_command(redmine_client, args)
+    assert e.value.message == "Issue_id is missing in order to remove watcher from this issue"
+    
 def test_get_project_list_command(mocker, redmine_client):
     """
     Given:
@@ -200,11 +255,11 @@ def test_get_custom_fields_command(mocker, redmine_client):
     """
     from Redmine import get_custom_fields_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
-    get_custom_fields_command(redmine_client)
+    get_custom_fields_command(redmine_client, {})
     http_request.assert_called_with('GET', '/custom_fields.json', headers={})
 
 
-def test_get_users_command(mocker, redmine_client):
+def test_get_users_command_not_valid_status(mocker, redmine_client):
     """
     Given:
         - All relevant arguments for the command that is executed
@@ -214,14 +269,14 @@ def test_get_users_command(mocker, redmine_client):
         - The http request is called with the right arguments
     """
     from Redmine import get_users_command
-    http_request = mocker.patch.object(redmine_client, '_http_request')
-    args = {'name': 'Redmine', 'status': '1'}
-    get_users_command(redmine_client, args)
-    http_request.assert_called_with('GET', 'users.json', params={'name': 'Redmine', 'status': '1'}, headers={})
-
+    from CommonServerPython import DemistoException
+    # demisto_exception = mocker.patch(redmine_client, 'DemistoException')
+    args = {'status': '4'}
+    with pytest.raises(DemistoException) as e:
+        get_users_command(redmine_client, args)
+    assert e.value.message == "Status value for get users request must be one of the following ['1', '2', '3']."
 
 ''' HELPER FUNCTIONS TESTS '''
-
 
 @pytest.mark.parametrize('page_size, page_number, expected_output',
                          [(1, 10, '#### Showing 1 results from page 10:\n')])
@@ -236,3 +291,32 @@ def test_create_paging_header(page_size, page_number, expected_output):
     """
     from Redmine import create_paging_header
     assert create_paging_header(page_size, page_number) == expected_output
+    
+@pytest.mark.parametrize('args, expected_output',
+                         [({'page_number':'2','page_size':'20'}, '20, 20, #### Showing 20 results from page 2:\n')])
+def test_adjust_paging_to_request(args, expected_output):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-user-id-list command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    expected_output = expected_output.split(', ')
+    from Redmine import adjust_paging_to_request
+    assert adjust_paging_to_request(args) == (int(expected_output[0]), int(expected_output[1]), expected_output[2])
+    
+@pytest.mark.parametrize('header_name, expected_output',
+                         [('id', '#### Showing 1 results from page 10:\n')])
+def test_map_header(header_name, expected_output):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-user-id-list command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Redmine import map_header
+    assert map_header(header_name) == 'ID'

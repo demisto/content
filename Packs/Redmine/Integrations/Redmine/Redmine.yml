@@ -113,7 +113,7 @@ script:
       description: Add page size (default is 50)
       type: textArea
     - name: limit
-      description: Add the number of issues to show in the response (default 50 maximum 100)
+      description: Add the number of issues to show in the response (default 25 maximum 100)
       type: textArea
     - name: sort
       description: Add a field to sort according to. Append :desc to invert the order
