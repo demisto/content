@@ -1091,6 +1091,7 @@ def create_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
     demisto.debug(f'sending security rule to the API. Rule: {rule}')
     raw_response = client.create_security_rule(rule=rule, query_params=query_params, tsg_id=tsg_id)  # type: ignore
     outputs = raw_response
+    outputs["position"] = query_params["position"]
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}SecurityRule',
