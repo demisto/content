@@ -1,0 +1,82 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Jamf Protect Event Collector
+  version: -1
+configuration:
+- name: base_url
+  display: Server URL (e.g., https://example.protect.jamfcloud.com)
+  required: true
+  defaultvalue:
+  type: 0
+  additionalinfo: 'REST API Endpoint of Jamf Protect server.'
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- additionalinfo: The unique identifier for the client application, provided by Jamf when the application is registered. This is used to authenticate the client with the Jamf Protect server.
+  displaypassword: Client ID
+  hiddenusername: true
+  name: client_id
+  required: true
+  type: 9
+  section: Connect
+- additionalinfo: The password for the client application. This is used to authenticate the client with the Jamf Protect server.
+  displaypassword: Password
+  hiddenusername: true
+  name: client_password
+  required: true
+  type: 9
+  section: Connect
+- additionalinfo: Maximum number of events to fetch at a time.
+  defaultvalue: '10000'
+  display: Max events per fetch
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+description: Use this integration to fetch Audits and Alerts from Jamf Protect as events in XSIAM.
+display: Jamf Protect Event Collector
+name: Jamf Protect Event Collector
+script:
+  commands:
+  - arguments:
+    - description: The number of events to return.
+      name: limit
+      defaultValue: 10
+    - description: The start date from which to filter events.
+      name: start_date
+    - description: The end date to which to filter events.
+      name: end_date
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    description: Gets events from Jamf Protect.
+    name: jamf-protect-get-events
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  isfetchevents: true
+  dockerimage: demisto/python3:3.10.13.87159
+marketplaces:
+- marketplacev2
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
