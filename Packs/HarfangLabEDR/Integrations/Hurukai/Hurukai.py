@@ -3452,10 +3452,11 @@ def get_threats(
         if min_updated_timestamp:
             args["last_update__gte"] = min_updated_timestamp
 
+        if fields:
+            args["fields"] = ",".join(fields)
+
         if extra_filters:
             args.update(extra_filters)
-
-        args["fields"] = "id"
 
         demisto.debug(f"Args for get_threats: {args}")
 
