@@ -1,18 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-'''
-Script Description:
-    This script runs the "prisma-cloud-compute-hosts-scan-list" command for a specific hostname and returns details about its 
-    compliance issues, if found.
-    If any compliance issues found, it will create a new tab in the layout called "Detailed Compliance Issues" showing the issues 
-    details.
-    Returns the following fields for each compliance ID:
-    - Compliance ID
-    - Cause
-    - Severity
-    - Title
-    - Description
-'''
+'''Script Description: This script runs the "prisma-cloud-compute-hosts-scan-list" command for a specific hostname and returns 
+details about its compliance issues, if found. If any compliance issues found, it will create a new tab in the layout called 
+"Detailed Compliance Issues" showing the issues details. Returns the following fields for each compliance ID: - Compliance ID - 
+Cause - Severity - Title - Description '''
 
 from typing import Any
 

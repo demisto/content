@@ -1,12 +1,11 @@
 commonfields:
-  id: 35b12127-b374-4961-882d-86b8ab8a10d3
-  version: 79
-vcShouldKeepItemLegacyProdMachine: false
+  id: PCComputeImageComplianceIssuesButton
+  version: -1
 name: PCComputeImageComplianceIssuesButton
 script: ''
 type: python
 tags: []
-comment: "This script runs the \"prisma-cloud-compute-images-scan-list\" command for a specific container id and returns details about its compliance issues, if found. If any compliance issues found, it will create a new tab in the layout called \"Detailed Compliance Issues\" showing the issues details.\nReturns the following fields for each compliance ID:\n- Compliance ID\n- Cause\n- Severity\n- Title\n- Description"
+comment: "This script runs the \"prisma-cloud-compute-images-scan-list\" command for a specific container id and returns details about its compliance issues, if found. If any compliance issues found, it will create a new tab in the layout called \"Detailed Compliance Issues\" showing the issues details.\nReturns the following fields for each compliance ID:\n- Compliance ID\n- Cause\n- Severity\n- Title\n- Description."
 enabled: true
 args:
 - name: image_id
@@ -16,9 +15,10 @@ args:
   description: A comma separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs.
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.13.87159
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
