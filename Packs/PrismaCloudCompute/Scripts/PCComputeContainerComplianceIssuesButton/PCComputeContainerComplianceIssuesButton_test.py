@@ -1,7 +1,6 @@
 from PCComputeContainerComplianceIssuesButton import run_prisma_cloud_compute_containers_scan_list
 import pytest
 import json
-import io
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -52,7 +51,7 @@ TEST_CASES = [
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -63,7 +62,7 @@ compliance_issues = util_load_json('test_data/compliance_issues.json')
 def test_run_prisma_cloud_compute_containers_scan_list(mocker, args, expected):
     # Mock the executeCommand function
     mocker.patch.object(demisto, 'executeCommand', return_value=[{'Type': EntryType.NOTE,
-                                                                  'Contents': [{"info":{'complianceIssues': compliance_issues}}]
+                                                                  'Contents': [{"info": {'complianceIssues': compliance_issues}}]
                                                                   }])
 
     # Run the function

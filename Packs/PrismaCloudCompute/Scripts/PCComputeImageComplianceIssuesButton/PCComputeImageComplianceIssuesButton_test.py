@@ -1,7 +1,6 @@
 from PCComputeImageComplianceIssuesButton import run_prisma_cloud_compute_images_scan_list
 import pytest
 import json
-import io
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -52,7 +51,7 @@ TEST_CASES = [
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 

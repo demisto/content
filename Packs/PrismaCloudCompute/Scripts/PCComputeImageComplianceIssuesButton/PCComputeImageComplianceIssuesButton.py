@@ -15,8 +15,6 @@ issues details.
     - Description
 '''
 
-from typing import Any, Dict
-
 
 # Command Function
 def run_prisma_cloud_compute_images_scan_list(image_id: str, compliance_ids: str) -> None:
