@@ -1149,7 +1149,7 @@ Msg: Export to .msg message files."
       predefined:
       - 'true'
       - 'false'
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.88371
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.80547
   runonce: true
   script: '-'
   type: powershell
