@@ -527,8 +527,6 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
-    if params.get('feedFetchLimit'):
-        LIMIT = arg_to_number(params.get('feedFetchLimit')) or 2000
     last_run = demisto.getLastRun().get('timestamp') if demisto.getLastRun() else ''
     params_dict = clean_user_query(query, LIMIT, from_timestamp=last_run) if query else\
         build_params_dict(tags=tags, attribute_type=attribute_types, limit=LIMIT, page=1, from_timestamp=last_run)
