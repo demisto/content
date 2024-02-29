@@ -823,7 +823,9 @@ def test_update_remote_system_command(incident_changed, delta):
                               ["Other", "Other", "False Positive", "Resolved", "Resolved - Security Testing", "Other",
                                "Resolved"]),
 
-                         ]
+                         ],
+                         ids=["case-1", "case-2", "case-3", "empty-case", "improper-input-case-1", "improper-input-case-2",
+                              "improper-input-case-3", "improper-input-case-4"]
                          )
 def test_xdr_to_xsoar_flexible_close_reason_mapping(capfd, mocker, custom_mapping, expected_resolved_status):
     """

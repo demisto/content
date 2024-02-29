@@ -79,7 +79,7 @@ def test_get_endpoints(requests_mock):
 
     res = get_endpoints_command(client, args)
     assert get_endpoints_response.get('reply').get('endpoints') == \
-        res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
+           res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
@@ -3875,7 +3875,9 @@ def test_handle_outgoing_issue_closure(args, expected_delta):
                               ["resolved_true_positive", "resolved_other", "resolved_false_positive",
                                "resolved_true_positive", "resolved_security_testing"]),
 
-                         ]
+                         ],
+                         ids=["case-1", "case-2", "case-3", "empty-case", "improper-input-case-1", "improper-input-case-2",
+                              "improper-input-case-3", "improper-input-case-4"]
                          )
 def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mapping, expected_resolved_status):
     """
