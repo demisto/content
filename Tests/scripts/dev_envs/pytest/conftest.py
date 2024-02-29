@@ -48,9 +48,9 @@ def check_std_out_err(capfd):
     yield
     (out, err) = capfd.readouterr()
     if out:
-        pytest.fail("Found output in stdout: [{out}]".format(out=out.strip())
+        pytest.fail("Found output in stdout: [{}]".format(out.strip()))
     if err:
-        pytest.fail("Found output in stderr: [{err}]".format(err=err.strip())
+        pytest.fail("Found output in stderr: [{}]".format(err.strip()))
 
 
 def pytest_sessionfinish(session, exitstatus):
