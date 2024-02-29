@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -2196,7 +2198,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     cc = argToList(args.get('cc'))
     bcc = argToList(args.get('bcc'))
     html_body = args.get('htmlBody')
-    force_handle_htmlBody = argToBoolean(args.get('force_handle_htmlBody', False))
+    force_handle_htmlBody = argToBoolean(args.get('force_handle_htmlBody', True))
     reply_to = args.get('replyTo')
     attach_names = argToList(args.get('attachNames'))
     attach_cids = argToList(args.get('attachCIDs'))
