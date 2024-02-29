@@ -1,6 +1,6 @@
 {
-    "outputs":{
-        "not_deleted_with_name":{
+    "outputs": {
+        "not_deleted_with_name": {
             "data": [
                 {
                     "extendedData": null,
@@ -28,7 +28,7 @@
                 }
             ]
         },
-        "not_deleted_without_name":{
+        "not_deleted_without_name": {
             "data": [
                 {
                     "extendedData": null,
@@ -56,7 +56,7 @@
                 }
             ]
         },
-        "deleted_with_name":{
+        "deleted_with_name": {
             "data": [
                 {
                     "extendedData": null,
@@ -84,7 +84,7 @@
                 }
             ]
         },
-        "deleted_without_name":{
+        "deleted_without_name": {
             "data": [
                 {
                     "extendedData": null,

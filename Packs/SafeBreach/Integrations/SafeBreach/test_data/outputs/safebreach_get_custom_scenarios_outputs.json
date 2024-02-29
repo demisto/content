@@ -1,11 +1,11 @@
 {
-    "outputs":{
-        "success_with_details":{
+    "outputs": {
+        "success_with_details": {
             "data": [
                 {
                     "id": 74,
                     "name": "(#1263) Data asset exfiltration over TCP",
-                    "accountId": 3470636202,
+                    "accountId": 1234567890,
                     "description": "",
                     "successCriteria": null,
                     "originalScenarioId": null,
@@ -14,7 +14,7 @@
                             "id": 1,
                             "type": "multiAttack",
                             "data": {
-                                "uuid": "a0252e8c-e48e-4262-8ef6-0eb5bbef4253"
+                                "uuid": "0000000-0000-0000-0000-00000000"
                             }
                         }
                     ],
@@ -29,7 +29,7 @@
                     "steps": [
                         {
                             "id": 109,
-                            "uuid": "a0252e8c-e48e-4262-8ef6-0eb5bbef4253",
+                            "uuid": "0000000-0000-0000-0000-00000000",
                             "attacksFilter": {
                                 "playbook": {
                                     "operator": "is",
@@ -43,7 +43,7 @@
                                 "simulators": {
                                     "operator": "is",
                                     "values": [
-                                        "4fb81e0c-232f-4a52-a8b1-d5d5d9ebfa8a"
+                                        "0000000-0000-0000-0000-00000000"
                                     ],
                                     "name": "simulators"
                                 }
@@ -79,8 +79,8 @@
                 {
                     "id": 72,
                     "name": "usm -anywhere",
-                    "accountId": 3470636202,
-                    "description": "The Endpoint-Baseline scenario includes representative attacks from each of the relevant attack types expected to be prevented by endpoint controls, such as credential collection, information gathering, and file manipulation. Use this scenario as a quick and consistent way to validate the overall endpoint security control effectiveness over time. For a more comprehensive check, use the \"Full coverage\" scenario.",
+                    "accountId": 1234567890,
+                    "description": ".",
                     "successCriteria": null,
                     "originalScenarioId": "baa50109-deb7-466b-86b1-8049c270cd9a",
                     "actions": [
@@ -88,7 +88,7 @@
                             "id": 1,
                             "type": "multiAttack",
                             "data": {
-                                "uuid": "7c12cb0e-9517-49a6-bdd0-8475d87cccf0"
+                                "uuid": "0000000-0000-0000-0000-00000000"
                             }
                         },
                         {
@@ -102,7 +102,7 @@
                             "id": 3,
                             "type": "multiAttack",
                             "data": {
-                                "uuid": "b71c5057-4d28-463b-9f4a-f0f43494292d"
+                                "uuid": "0000000-0000-0000-0000-00000000"
                             }
                         }
                     ],
@@ -125,7 +125,7 @@
                     "steps": [
                         {
                             "id": 105,
-                            "uuid": "7c12cb0e-9517-49a6-bdd0-8475d87cccf0",
+                            "uuid": "0000000-0000-0000-0000-00000000",
                             "attacksFilter": {
                                 "tags": {
                                     "Security Controls": {
@@ -153,7 +153,7 @@
                                 "simulators": {
                                     "operator": "is",
                                     "values": [
-                                        "a6e0e53a-5684-4120-9370-6522756251d6"
+                                        "0000000-0000-0000-0000-00000000"
                                     ],
                                     "name": "simulators"
                                 }
@@ -162,7 +162,7 @@
                                 "simulators": {
                                     "operator": "is",
                                     "values": [
-                                        "a6e0e53a-5684-4120-9370-6522756251d6"
+                                        "0000000-0000-0000-0000-00000000"
                                     ],
                                     "name": "simulators"
                                 }
@@ -214,7 +214,7 @@
                                 "simulators": {
                                     "operator": "is",
                                     "values": [
-                                        "a6e0e53a-5684-4120-9370-6522756251d6"
+                                        "0000000-0000-0000-0000-00000000"
                                     ],
                                     "name": "simulators"
                                 }
@@ -223,7 +223,7 @@
                                 "simulators": {
                                     "operator": "is",
                                     "values": [
-                                        "a6e0e53a-5684-4120-9370-6522756251d6"
+                                        "0000000-0000-0000-0000-00000000"
                                     ],
                                     "name": "simulators"
                                 }
@@ -247,7 +247,7 @@
                         },
                         {
                             "id": 107,
-                            "uuid": "b71c5057-4d28-463b-9f4a-f0f43494292d",
+                            "uuid": "0000000-0000-0000-0000-00000000",
                             "attacksFilter": {
                                 "tags": {
                                     "Security Controls": {
@@ -291,7 +291,7 @@
                                 "simulators": {
                                     "operator": "is",
                                     "values": [
-                                        "a6e0e53a-5684-4120-9370-6522756251d6"
+                                        "0000000-0000-0000-0000-00000000"
                                     ],
                                     "name": "simulators"
                                 }
@@ -300,7 +300,7 @@
                                 "simulators": {
                                     "operator": "is",
                                     "values": [
-                                        "a6e0e53a-5684-4120-9370-6522756251d6"
+                                        "0000000-0000-0000-0000-00000000"
                                     ],
                                     "name": "simulators"
                                 }
@@ -327,23 +327,23 @@
                 {
                     "id": 80,
                     "name": "Data Leak - Full Coverage",
-                    "accountId": 3470636202,
+                    "accountId": 1234567890,
                     "description": "The Data Leak - Full Coverage scenario includes data exfiltration attack types that DLP controls should prevent. Use this scenario to validate the overall coverage of DLP security controls.",
                     "successCriteria": null,
-                    "originalScenarioId": "c8cc1099-3f52-4f52-a5ee-d625b06d8193",
+                    "originalScenarioId": "0000000-0000-0000-0000-00000000",
                     "actions": [
                         {
                             "id": 1,
                             "type": "multiAttack",
                             "data": {
-                                "uuid": "391ac98f-3eb6-47d2-befe-56e12257e11a"
+                                "uuid": "0000000-0000-0000-0000-00000000"
                             }
                         },
                         {
                             "id": 2,
                             "type": "multiAttack",
                             "data": {
-                                "uuid": "3e4b8cc2-bf61-4495-9cf1-1c10677cd909"
+                                "uuid": "0000000-0000-0000-0000-00000000"
                             }
                         }
                     ],
@@ -362,7 +362,7 @@
                     "steps": [
                         {
                             "id": 121,
-                            "uuid": "391ac98f-3eb6-47d2-befe-56e12257e11a",
+                            "uuid": "0000000-0000-0000-0000-00000000",
                             "attacksFilter": {
                                 "tags": {
                                     "Security Controls": {
@@ -385,7 +385,7 @@
                                 "simulators": {
                                     "operator": "is",
                                     "values": [
-                                        "4fb81e0c-232f-4a52-a8b1-d5d5d9ebfa8a"
+                                        "0000000-0000-0000-0000-00000000"
                                     ],
                                     "name": "simulators"
                                 }
@@ -418,7 +418,7 @@
                         },
                         {
                             "id": 122,
-                            "uuid": "3e4b8cc2-bf61-4495-9cf1-1c10677cd909",
+                            "uuid": "0000000-0000-0000-0000-00000000",
                             "attacksFilter": {
                                 "tags": {
                                     "Security Controls": {
@@ -441,7 +441,7 @@
                                 "simulators": {
                                     "operator": "is",
                                     "values": [
-                                        "4fb81e0c-232f-4a52-a8b1-d5d5d9ebfa8a"
+                                        "0000000-0000-0000-0000-00000000"
                                     ],
                                     "name": "simulators"
                                 }
@@ -477,7 +477,7 @@
                 {
                     "id": 104,
                     "name": "Endpoint - MITRE Discovery Techniques - Baseline(Splunk-Safebreach Int 3)",
-                    "accountId": 3470636202,
+                    "accountId": 1234567890,
                     "description": "The Endpoint - Discovery Techniques - Baseline scenario covers various techniques used by attackers to discover system information and configuration. This includes the discovery of users, processes, devices, and other system configuration techniques mapped to the MITRE ATT&CK framework. Usually, attackers leverage the information gathered via discovery techniques later to proceed to the next stages of the kill chain. Run this scenario to validate the visibility- and detection rules of your Endpoint Detection and Response (EDR) controls.",
                     "successCriteria": null,
                     "originalScenarioId": "81113b58-a6a8-4738-8cb6-40a5f18580e4",
@@ -557,7 +557,7 @@
                 {
                     "id": 109,
                     "name": "Endpoint - Credential Harvesting Techniques(SentinelOne)",
-                    "accountId": 3470636202,
+                    "accountId": 1234567890,
                     "description": "The Endpoint - Credential Harvesting Techniques scenario covers various techniques used by attackers to harvest credentials from the target hosts. The tools simulated in this scenario include Mimikatz, Lazagne, and other legitimate and malicious techniques mapped to the MITRE ATT&CK framework. Run this scenario to validate the detection and prevention capabilities of your endpoint security controls against popular credential harvesting techniques.",
                     "successCriteria": null,
                     "originalScenarioId": "b5d44a6d-4e1d-415f-b6d5-e0a7b8ee3be5",
@@ -642,7 +642,7 @@
                 {
                     "id": 110,
                     "name": "Endpoint - Defense Evasion(SewntinalOne Old vrn)",
-                    "accountId": 3470636202,
+                    "accountId": 1234567890,
                     "description": "This scenario simulates different attempts to avoid being detected locally by security controls, using different Defense Evasion techniques.\r\nDefense Evasion consists of techniques that adversaries use to avoid detection throughout their compromise. Techniques used for defense evasion include evading ML-enabled security software such as malware detectors.\r\nRun this scenario to make sure your security controls cannot be evaded or bypassed.",
                     "successCriteria": null,
                     "originalScenarioId": "b1f4a46b-8b05-4997-adb6-a4da214af8eb",
@@ -957,7 +957,7 @@
                 {
                     "id": 15,
                     "name": "Network - C2 Web Communication - Baseline",
-                    "accountId": 3470636202,
+                    "accountId": 1234567890,
                     "description": "The Network - C2 Web Communication - This baseline scenario focuses on the post exploitation phase of a malicious web navigation. This scenario includes attacks simulating a web-shell and backdoor malware communication between the compromised target simulator and the C2 servers. Run this scenario to validate how effectively your network inspection (IPS) controls prevent or detect C2 communication of some known malware.\r\n",
                     "successCriteria": null,
                     "originalScenarioId": null,
@@ -999,7 +999,7 @@
                                 "simulators": {
                                     "operator": "is",
                                     "values": [
-                                        "4fb81e0c-232f-4a52-a8b1-d5d5d9ebfa8a"
+                                        "0000000-0000-0000-0000-00000000"
                                     ],
                                     "name": "simulators"
                                 }
@@ -1018,9 +1018,9 @@
                         }
                     ]
                 }
-             ]
+            ]
         },
-        "success_without_details":{
+        "success_without_details": {
             "data": [
                 {
                     "id": 76,
@@ -1496,6 +1496,6 @@
                 }
             ]
         },
-        "fail":{}
+        "fail": {}
     }
 }

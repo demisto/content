@@ -1,6 +1,6 @@
 {
-    "outputs":{
-        "successful_creation":{
+    "outputs": {
+        "successful_creation": {
             "data": {
                 "mustReadTerms": true,
                 "showStudioDisclaimer": true,
@@ -26,12 +26,11 @@
                 "deployments": []
             }
         },
-        "weak_password":{
-            "data":{}
+        "weak_password": {
+            "data": {}
         },
-        "failed_creation":{
-            "data":{}
+        "failed_creation": {
+            "data": {}
         }
     }
 }
-

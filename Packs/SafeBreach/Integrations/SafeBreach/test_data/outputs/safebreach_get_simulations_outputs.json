@@ -11,7 +11,7 @@
                         "MITRE_Tactic": [],
                         "attackerOSType": "LINUX",
                         "targetSimulatorStartTime": "2024-01-07T15:45:22.380Z",
-                        "destNodeName": "cisco Firewall Inside",
+                        "destNodeName": "Firewall Inside",
                         "planName": "Network - C2 Web Communication - Baseline",
                         "Security_Controls": [
                             {
@@ -45,7 +45,7 @@
                             "Client Node Headers": ""
                         },
                         "deploymentId": [],
-                        "attackerNodeName": "cisco Firewall Outside",
+                        "attackerNodeName": "Firewall Outside",
                         "targetOSType": "LINUX",
                         "id": "198862",
                         "sector": [
@@ -134,7 +134,7 @@
                                 "value": "Transportation"
                             }
                         ],
-                        "srcNodeName": "cisco Firewall Outside",
+                        "srcNodeName": "Firewall Outside",
                         "moveId": 1028,
                         "testName": "Network - C2 Web Communication - Baseline",
                         "originalExecutionId": "720a935fb10528109b59905185621fce",
@@ -179,7 +179,7 @@
                                     "displayType": "Proxy",
                                     "displayName": "Proxy Name",
                                     "name": "Proxy",
-                                    "nodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506"
+                                    "nodeId": "0000000-0000-0000-0000-00000000"
                                 }
                             ],
                             "PORT": [
@@ -250,17 +250,17 @@
                         "simulationEvents": [
                             {
                                 "action": "CREATE",
-                                "dirPath": "/tmp/sb-sim-temp-w90qyyzw/sb_198862_bs_redlr42u_pf",
+                                "dirPath": "/dummy/sb_000000_bs_redlr42u_pf",
                                 "type": "DIRECTORY",
-                                "nodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506",
+                                "nodeId": "0000000-0000-0000-0000-00000000",
                                 "timestamp": "2024-01-07T15:45:22.212Z"
                             },
                             {
-                                "fileName": "/opt/safebreach/simulator/app/sbsimulation/sbsimulation_sb_198862_bs_194623_red",
-                                "sha256": "5824f6bbd3e391691ee399bf7c4cd19ffbe159720f64dc26b84d9ef3c959712c",
+                                "fileName": "/dummy/sbsimulation_sb_s198862_bs_194623_red",
+                                "sha256": "",
                                 "action": "CREATE",
                                 "type": "FILE",
-                                "nodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506",
+                                "nodeId": "0000000-0000-0000-0000-00000000",
                                 "timestamp": "2024-01-07T15:45:22.380Z"
                             },
                             {
@@ -271,33 +271,33 @@
                                 "action": "START",
                                 "pid": 1,
                                 "type": "PROCESS",
-                                "nodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506",
+                                "nodeId": "0000000-0000-0000-0000-00000000",
                                 "timestamp": "2024-01-07T15:17:54.320Z",
                                 "ppid": 0,
                                 "username": "root"
                             },
                             {
-                                "cmdline": "/opt/safebreach/simulator/app/sbsimulator/sbsimulator",
-                                "exe": "/opt/safebreach/simulator/app/sbsimulator/sbsimulator",
+                                "cmdline": "/dummy/app/sbsimulator/sbsimulator",
+                                "exe": "/dummy/app/sbsimulator/sbsimulator",
                                 "job_id": null,
                                 "name": "sbsimulator",
                                 "action": "START",
                                 "pid": 3115,
                                 "type": "PROCESS",
-                                "nodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506",
+                                "nodeId": "0000000-0000-0000-0000-00000000",
                                 "timestamp": "2024-01-07T15:34:26.380Z",
                                 "ppid": 1,
                                 "username": "root"
                             },
                             {
-                                "cmdline": "/opt/safebreach/simulator/app/sbsimulation/sbsimulation_sb_198862_bs_194623_red sb_198862_bs",
-                                "exe": "/opt/safebreach/simulator/app/sbsimulation/sbsimulation_sb_198862_bs_194623_red",
+                                "cmdline": "/dummy/sbsimulation_sb_198862_bs_194623_red sb_198862_bs",
+                                "exe": "/dummy/sbsimulation_sb_198862_bs_194623_red",
                                 "job_id": 198862,
                                 "name": "sbsimulation_sb_198862_bs_194623_red",
                                 "action": "START",
                                 "pid": 3981,
                                 "type": "PROCESS",
-                                "nodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506",
+                                "nodeId": "0000000-0000-0000-0000-00000000",
                                 "timestamp": "2024-01-07T15:45:21.660Z",
                                 "ppid": 3115,
                                 "username": "root"
@@ -311,7 +311,7 @@
                                 "action": "CONNECT",
                                 "srcPort": 51496,
                                 "type": "NETWORK",
-                                "nodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506",
+                                "nodeId": "0000000-0000-0000-0000-00000000",
                                 "timestamp": "2024-01-07T15:45:24.332Z",
                                 "status": "OPEN"
                             },
@@ -328,13 +328,13 @@
                                 "ip": null,
                                 "type": "HTTP",
                                 "uri": "/panel/gate.php",
-                                "url": "https://10.0.200.207:80/panel/gate.php",
+                                "url": "https://00.0.200.000:00/panel/gate.php",
                                 "proxy": null,
                                 "protocol": "https",
                                 "port": 80,
                                 "host": "10.0.200.207",
                                 "action": "REQUEST",
-                                "nodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506",
+                                "nodeId": "0000000-0000-0000-0000-00000000",
                                 "timestamp": "2024-01-07T15:45:24.360Z"
                             },
                             {
@@ -346,7 +346,7 @@
                                 "action": "CONNECT",
                                 "srcPort": 51506,
                                 "type": "NETWORK",
-                                "nodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506",
+                                "nodeId": "0000000-0000-0000-0000-00000000",
                                 "timestamp": "2024-01-07T15:45:25.341Z",
                                 "status": "OPEN"
                             },
@@ -363,48 +363,48 @@
                                 "ip": null,
                                 "type": "HTTP",
                                 "uri": "/panel/gate.php",
-                                "url": "https://10.0.200.207:80/panel/gate.php",
+                                "url": "https://00.0.200.000:00/panel/gate.php",
                                 "proxy": null,
                                 "protocol": "https",
                                 "port": 80,
                                 "host": "10.0.200.207",
                                 "action": "REQUEST",
-                                "nodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506",
+                                "nodeId": "0000000-0000-0000-0000-00000000",
                                 "timestamp": "2024-01-07T15:45:25.378Z"
                             },
                             {
-                                "fileName": "/opt/safebreach/simulator/app/sbsimulation/sbsimulation_sb_198862_bs_194623_red",
-                                "sha256": "5824f6bbd3e391691ee399bf7c4cd19ffbe159720f64dc26b84d9ef3c959712c",
+                                "fileName": "/dummy/sbsimulation_sb_198862_bs_194623_red",
+                                "sha256": "",
                                 "action": "DELETE",
                                 "type": "FILE",
-                                "nodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506",
+                                "nodeId": "0000000-0000-0000-0000-00000000",
                                 "timestamp": "2024-01-07T15:45:25.566Z"
                             },
                             {
                                 "action": "DELETE",
-                                "dirPath": "/tmp/sb-sim-temp-w90qyyzw/sb_198862_bs_redlr42u_pf",
+                                "dirPath": "/dummy/sb_000000_bs_redlr42u_pf",
                                 "type": "DIRECTORY",
-                                "nodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506",
+                                "nodeId": "0000000-0000-0000-0000-00000000",
                                 "timestamp": "2024-01-07T15:45:25.577Z"
                             },
                             {
                                 "action": "CREATE",
-                                "dirPath": "/tmp/sb-sim-temp-o9d4sb5f/sb_198862_bs_greenqb6nibbc",
+                                "dirPath": "/dummy/path/",
                                 "type": "DIRECTORY",
                                 "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
                                 "timestamp": "2024-01-07T15:45:22.188Z"
                             },
                             {
-                                "fileName": "/opt/safebreach/simulator/app/sbsimulation/sbsimulation_sb_198862_bs_194623_green",
-                                "sha256": "89d8c821f17af8abd6d9e0923da97254e8d15cef3329d4ead1f060ff34817d10",
+                                "fileName": "/dummy/sbsimulation_sb_198862_bs_194623_green",
+                                "sha256": "",
                                 "action": "CREATE",
                                 "type": "FILE",
                                 "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
                                 "timestamp": "2024-01-07T15:45:22.337Z"
                             },
                             {
-                                "cmdline": "/opt/safebreach/simulator/app/sbsimulator/sbsimulator",
-                                "exe": "/opt/safebreach/simulator/app/sbsimulator/sbsimulator",
+                                "cmdline": "/dummy/app/sbsimulator/sbsimulator",
+                                "exe": "/dummy/app/sbsimulator/sbsimulator",
                                 "job_id": null,
                                 "name": "sbsimulator",
                                 "action": "START",
@@ -416,8 +416,8 @@
                                 "username": "root"
                             },
                             {
-                                "cmdline": "/opt/safebreach/simulator/app/sbsimulation/sbsimulation_sb_198862_bs_194623_green sb_198862_bs",
-                                "exe": "/opt/safebreach/simulator/app/sbsimulation/sbsimulation_sb_198862_bs_194623_green",
+                                "cmdline": "/dummy/sbsimulation_sb_198862_bs_194623_green sb_198862_bs",
+                                "exe": "/dummy/sbsimulation_sb_198862_bs_194623_green",
                                 "job_id": 198862,
                                 "name": "sbsimulation_sb_198862_bs_194623_green",
                                 "action": "START",
@@ -442,23 +442,23 @@
                                 "username": "root"
                             },
                             {
-                                "fileName": "/tmp/sb-sim-temp-o9d4sb5f/sb_198862_bs_greenqb6nibbc/cert_file_VIcEFuUyuU",
-                                "sha256": "b0f34e9088b8771321067a3c589ee784eb6cd495b29865935dc3b1ae7eee1a15",
+                                "fileName": "/dummy/path//cert_file_VIcEFuUyuU",
+                                "sha256": "",
                                 "action": "CREATE",
                                 "type": "FILE",
                                 "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
                                 "timestamp": "2024-01-07T15:45:23.350Z"
                             },
                             {
-                                "fileName": "/tmp/sb-sim-temp-o9d4sb5f/sb_198862_bs_greenqb6nibbc/cert_file_radISyWYtV",
-                                "sha256": "b0f34e9088b8771321067a3c589ee784eb6cd495b29865935dc3b1ae7eee1a15",
+                                "fileName": "/dummy/path//cert_file_radISyWYtV",
+                                "sha256": "",
                                 "action": "CREATE",
                                 "type": "FILE",
                                 "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
                                 "timestamp": "2024-01-07T15:45:24.417Z"
                             },
                             {
-                                "fileName": "/tmp/sb-sim-temp-o9d4sb5f/sb_198862_bs_greenqb6nibbc/cert_file_radISyWYtV",
+                                "fileName": "/dummy/path//cert_file_radISyWYtV",
                                 "sha256": null,
                                 "action": "DELETE",
                                 "type": "FILE",
@@ -466,7 +466,7 @@
                                 "timestamp": "2024-01-07T15:45:25.385Z"
                             },
                             {
-                                "fileName": "/tmp/sb-sim-temp-o9d4sb5f/sb_198862_bs_greenqb6nibbc/cert_file_VIcEFuUyuU",
+                                "fileName": "/dummy/path//cert_file_VIcEFuUyuU",
                                 "sha256": null,
                                 "action": "DELETE",
                                 "type": "FILE",
@@ -474,8 +474,8 @@
                                 "timestamp": "2024-01-07T15:45:25.387Z"
                             },
                             {
-                                "fileName": "/opt/safebreach/simulator/app/sbsimulation/sbsimulation_sb_198862_bs_194623_green",
-                                "sha256": "89d8c821f17af8abd6d9e0923da97254e8d15cef3329d4ead1f060ff34817d10",
+                                "fileName": "/dummy/sbsimulation_sb_198862_bs_194623_green",
+                                "sha256": "",
                                 "action": "DELETE",
                                 "type": "FILE",
                                 "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
@@ -483,7 +483,7 @@
                             },
                             {
                                 "action": "DELETE",
-                                "dirPath": "/tmp/sb-sim-temp-o9d4sb5f/sb_198862_bs_greenqb6nibbc",
+                                "dirPath": "/dummy/path/",
                                 "type": "DIRECTORY",
                                 "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
                                 "timestamp": "2024-01-07T15:45:25.584Z"
@@ -512,7 +512,7 @@
                         "stepName": "Network - C2 Web Communication - Baseline",
                         "attackTypesCounter": 1,
                         "securityAction": "not_logged",
-                        "targetNodeName": "cisco Firewall Inside",
+                        "targetNodeName": "Firewall Inside",
                         "assetId": -1,
                         "behavioral": [
                             {
@@ -525,7 +525,7 @@
                         "targetSimulatorEndTime": "2024-01-07T15:45:25.575Z",
                         "deploymentName": [],
                         "packageName": "Infiltration",
-                        "targetNodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506",
+                        "targetNodeId": "0000000-0000-0000-0000-00000000",
                         "lastStatusChangeDate": "2024-01-07T15:45:26.601Z",
                         "direction": "outbound",
                         "remediationData": [
@@ -549,7 +549,7 @@
                         "packageId": 2,
                         "attackerOSVersion": "22",
                         "stepRunId": "1704642251554.5",
-                        "destNodeId": "9cbf18b5-8dd3-478c-ab11-22eda4f1c506",
+                        "destNodeId": "0000000-0000-0000-0000-00000000",
                         "executionTime": "2024-01-07T15:45:26.601Z",
                         "targetOSVersion": "22",
                         "attackProtocol": "HTTPS",

@@ -1,12 +1,12 @@
 {
-    "outputs":{
-        "successful_delete_just_name":{
+    "outputs": {
+        "successful_delete_just_name": {
             "data": {
                 "id": 59,
                 "name": "acme1234",
                 "description": "description",
-                "accountId": 3470636202,
-                "createdBy": 347063620200002,
+                "accountId": 1234567890,
+                "createdBy": 123456789000002,
                 "updatedAt": "2023-09-09T15:10:26.592Z",
                 "createdAt": "2023-09-09T15:10:26.592Z",
                 "lastUsed": "2023-09-19T15:10:26.592Z",
@@ -16,9 +16,6 @@
                 "role": "administrator"
             }
         },
-        "failed_deletion_due_to_no_name":{
-            
-            
-        }
+        "failed_deletion_due_to_no_name": {}
     }
 }

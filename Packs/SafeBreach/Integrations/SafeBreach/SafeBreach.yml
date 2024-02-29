@@ -2043,6 +2043,6 @@ script:
   runonce: false
   longRunning: false
   longRunningPort: false
-fromversion: 6.6.0
-ests:
-- No tests
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

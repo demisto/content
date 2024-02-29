@@ -1,8 +1,8 @@
 {
-    "outputs":{
-        "success":[
+    "outputs": {
+        "success": [
             {
-                "id": "443847f8-9d66-44b0-8760-76e680493bd6",
+                "id": "0000000-0000-0000-0000-00000000",
                 "name": "Lazarus Group",
                 "description": null,
                 "createdBy": "SafeBreach",
@@ -487,7 +487,7 @@
                 "minApiVer": null
             },
             {
-                "id": "3e70399a-6b65-44c3-a10a-e2727e62f3ba",
+                "id": "0000000-0000-0000-0000-00000000",
                 "name": "MITRE ATT&CK Cloud - Full Coverage",
                 "description": "The MITRE ATT&CK Cloud - Full coverage scenario includes attacks that assess the environment's risk in the face of various cloud TTPs, as detailed in the MITRE ATT&CK Cloud matrix framework. It includes representative attacks that are mapped to the cloud-related techniques within the MITRE ATT&CK enterprise framework. Use this scenario as a comprehensive way to benchmark your cloud-related security posture.",
                 "createdBy": "SafeBreach",
@@ -900,7 +900,7 @@
                 "minApiVer": null
             },
             {
-                "id": "81afbf1f-e22f-4c74-bcbf-ab59dbe5ef67",
+                "id": "0000000-0000-0000-0000-00000000",
                 "name": "Enterprise Baseline",
                 "description": "The Enterprise Baseline scenario includes attacks that validate the security posture of enterprise networks, including a variety of attack techniques, spread across the MITRE ATT&CK framework and a selection of top 10 malware threats. Use this scenario as a quick and consistent way to validate your enterprise network security posture.",
                 "createdBy": "SafeBreach",
@@ -1273,6 +1273,6 @@
                 "minApiVer": null
             }
         ],
-        "fail":[]
+        "fail": []
     }
 }

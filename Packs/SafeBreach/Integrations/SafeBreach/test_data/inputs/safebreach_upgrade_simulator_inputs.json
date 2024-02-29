@@ -1,7 +1,7 @@
 {
     "success": {
         "args": {
-            "simulator_id": "6faa5e9c-d0b6-43dd-bb6f-bfd32bff78cb",
+            "simulator_id": "0000000-0000-0000-0000-00000000",
             "simulator_version": "latest"
         },
         "command": "safebreach-get-simulators-versions-list"

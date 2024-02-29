@@ -1,391 +1,302 @@
 {
-    "outputs": {
-        "fail":{},
-        "success":{
+  "outputs": {
+    "fail": {},
+    "success": {
+      "data": {
+        "id": 105,
+        "name": "Test Queued From XSOAR",
+        "accountId": 123455678,
+        "description": "This scenario consists of discovery and collection techniques for gathering information and metadata using AWS' native API. The scenario is divided into three steps, each collecting different information: (1) through AWS’ API related to EC2 information, (2) through Amazon S3 and RDS APIs for storage-related information, and (3) general AWS data. Use this scenario to validate privilege management and access-control across your AWS control plane.",
+        "successCriteria": null,
+        "originalScenarioId": null,
+        "actions": [
+          {
+            "id": 1,
+            "type": "multiAttack",
             "data": {
-              "id": 105,
-              "name": "Test Queued From XSOAR",
-              "accountId": 123455678,
-              "description": "This scenario consists of discovery and collection techniques for gathering information and metadata using AWS' native API. The scenario is divided into three steps, each collecting different information: (1) through AWS’ API related to EC2 information, (2) through Amazon S3 and RDS APIs for storage-related information, and (3) general AWS data. Use this scenario to validate privilege management and access-control across your AWS control plane.",
-              "successCriteria": null,
-              "originalScenarioId": null,
-              "actions": [
-                {
-                  "id": 1,
-                  "type": "multiAttack",
-                  "data": {
-                    "uuid": "cb17c012-9c4e-4749-947d-8971764d1066"
-                  }
-                },
-                {
-                  "id": 2,
-                  "type": "multiAttack",
-                  "data": {
-                    "uuid": "7063f315-193b-4d5c-81db-468a11d227cf"
-                  }
-                },
-                {
-                  "id": 3,
-                  "type": "multiAttack",
-                  "data": {
-                    "uuid": "3c2272cd-b3c0-472e-bb16-d69974bb4f5a"
-                  }
-                }
-              ],
-              "edges": [
-                {
-                  "from": 0,
-                  "to": 1
-                },
-                {
-                  "from": 1,
-                  "to": 2
-                },
-                {
-                  "from": 2,
-                  "to": 3
-                }
-              ],
-              "createdAt": "2022-12-29T20:33:28.512Z",
-              "updatedAt": "2022-12-29T20:33:28.512Z",
-              "steps": [
-                {
-                  "id": 61,
-                  "uuid": "cb17c012-9c4e-4749-947d-8971764d1066",
-                  "attacksFilter": {
-                    "playbook": {
-                      "operator": "is",
-                      "values": [
-                        6158,
-                        6159,
-                        4884,
-                        5324
-                      ],
-                      "name": "playbook"
-                    }
-                  },
-                  "attackerFilter": {
-                    "simulators": {
-                      "operator": "is",
-                      "values": [
-                        "bdf867a5-fecb-41d2-8f0f-64a0b1d17100"
-                      ],
-                      "name": "simulators"
-                    }
-                  },
-                  "targetFilter": {
-                    "simulators": {
-                      "operator": "is",
-                      "values": [
-                        "0fac6d41-2297-470c-9dc4-3a8e88e6054a"
-                      ],
-                      "name": "simulators"
-                    }
-                  },
-                  "systemFilter": {
-                    "bypassProxy": {
-                      "operator": "is",
-                      "values": [
-                        false
-                      ],
-                      "name": "bypassproxy"
-                    }
-                  },
-                  "name": "EC2 Discovery & Collection",
-                  "wait": 0,
-                  "stepRunId": "1695786332909.301",
-                  "planRunId": "1695786332769.300"
-                },
-                {
-                  "id": 62,
-                  "uuid": "7063f315-193b-4d5c-81db-468a11d227cf",
-                  "attacksFilter": {
-                    "playbook": {
-                      "operator": "is",
-                      "values": [
-                        4882,
-                        5327,
-                        6241
-                      ],
-                      "name": "playbook"
-                    }
-                  },
-                  "attackerFilter": {
-                    "simulators": {
-                      "operator": "is",
-                      "values": [
-                        "bdf867a5-fecb-41d2-8f0f-64a0b1d17100"
-                      ],
-                      "name": "simulators"
-                    }
-                  },
-                  "targetFilter": {
-                    "simulators": {
-                      "operator": "is",
-                      "values": [
-                        "0fac6d41-2297-470c-9dc4-3a8e88e6054a"
-                      ],
-                      "name": "simulators"
-                    }
-                  },
-                  "systemFilter": {
-                    "bypassProxy": {
-                      "operator": "is",
-                      "values": [
-                        false
-                      ],
-                      "name": "bypassproxy"
-                    }
-                  },
-                  "name": "Storage Discovery & Collection",
-                  "wait": 0,
-                  "stepRunId": "1695786332909.302",
-                  "planRunId": "1695786332769.300"
-                },
-                {
-                  "id": 63,
-                  "uuid": "3c2272cd-b3c0-472e-bb16-d69974bb4f5a",
-                  "attacksFilter": {
-                    "playbook": {
-                      "operator": "is",
-                      "values": [
-                        6160,
-                        6245,
-                        6243,
-                        6242
-                      ],
-                      "name": "playbook"
-                    }
-                  },
-                  "attackerFilter": {
-                    "simulators": {
-                      "operator": "is",
-                      "values": [
-                        "bdf867a5-fecb-41d2-8f0f-64a0b1d17100"
-                      ],
-                      "name": "simulators"
-                    }
-                  },
-                  "targetFilter": {
-                    "simulators": {
-                      "operator": "is",
-                      "values": [
-                        "0fac6d41-2297-470c-9dc4-3a8e88e6054a"
-                      ],
-                      "name": "simulators"
-                    }
-                  },
-                  "systemFilter": {
-                    "bypassProxy": {
-                      "operator": "is",
-                      "values": [
-                        false
-                      ],
-                      "name": "bypassproxy"
-                    }
-                  },
-                  "name": "AWS API Discovery & Collection",
-                  "wait": 0,
-                  "stepRunId": "1695786332909.303",
-                  "planRunId": "1695786332769.300"
-                }
-              ],
-              "planId": 51,
-              "originalPlan": {
-                "id": 105,
-                "name": "Rerun simulations by list",
-                "accountId": 3470636202,
-                "description": "This scenario consists of discovery and collection techniques for gathering information and metadata using AWS' native API. The scenario is divided into three steps, each collecting different information: (1) through AWS’ API related to EC2 information, (2) through Amazon S3 and RDS APIs for storage-related information, and (3) general AWS data. Use this scenario to validate privilege management and access-control across your AWS control plane.",
-                "successCriteria": null,
-                "originalScenarioId": null,
-                "actions": [
-                  {
-                    "id": 1,
-                    "type": "multiAttack",
-                    "data": {
-                      "uuid": "cb17c012-9c4e-4749-947d-8971764d1066"
-                    }
-                  },
-                  {
-                    "id": 2,
-                    "type": "multiAttack",
-                    "data": {
-                      "uuid": "7063f315-193b-4d5c-81db-468a11d227cf"
-                    }
-                  },
-                  {
-                    "id": 3,
-                    "type": "multiAttack",
-                    "data": {
-                      "uuid": "3c2272cd-b3c0-472e-bb16-d69974bb4f5a"
-                    }
-                  }
-                ],
-                "edges": [
-                  {
-                    "from": 0,
-                    "to": 1
-                  },
-                  {
-                    "from": 1,
-                    "to": 2
-                  },
-                  {
-                    "from": 2,
-                    "to": 3
-                  }
-                ],
-                "createdAt": "2022-12-29T20:33:28.512Z",
-                "updatedAt": "2022-12-29T20:33:28.512Z",
-                "steps": [
-                  {
-                    "id": 61,
-                    "uuid": "cb17c012-9c4e-4749-947d-8971764d1066",
-                    "attacksFilter": {
-                      "playbook": {
-                        "operator": "is",
-                        "values": [
-                          6158,
-                          6159,
-                          4884,
-                          5324
-                        ],
-                        "name": "playbook"
-                      }
-                    },
-                    "attackerFilter": {
-                      "simulators": {
-                        "operator": "is",
-                        "values": [
-                          "bdf867a5-fecb-41d2-8f0f-64a0b1d17100"
-                        ],
-                        "name": "simulators"
-                      }
-                    },
-                    "targetFilter": {
-                      "simulators": {
-                        "operator": "is",
-                        "values": [
-                          "0fac6d41-2297-470c-9dc4-3a8e88e6054a"
-                        ],
-                        "name": "simulators"
-                      }
-                    },
-                    "systemFilter": {
-                      "bypassProxy": {
-                        "operator": "is",
-                        "values": [
-                          false
-                        ],
-                        "name": "bypassproxy"
-                      }
-                    },
-                    "name": "EC2 Discovery & Collection",
-                    "wait": 0
-                  },
-                  {
-                    "id": 62,
-                    "uuid": "7063f315-193b-4d5c-81db-468a11d227cf",
-                    "attacksFilter": {
-                      "playbook": {
-                        "operator": "is",
-                        "values": [
-                          4882,
-                          5327,
-                          6241
-                        ],
-                        "name": "playbook"
-                      }
-                    },
-                    "attackerFilter": {
-                      "simulators": {
-                        "operator": "is",
-                        "values": [
-                          "bdf867a5-fecb-41d2-8f0f-64a0b1d17100"
-                        ],
-                        "name": "simulators"
-                      }
-                    },
-                    "targetFilter": {
-                      "simulators": {
-                        "operator": "is",
-                        "values": [
-                          "0fac6d41-2297-470c-9dc4-3a8e88e6054a"
-                        ],
-                        "name": "simulators"
-                      }
-                    },
-                    "systemFilter": {
-                      "bypassProxy": {
-                        "operator": "is",
-                        "values": [
-                          false
-                        ],
-                        "name": "bypassproxy"
-                      }
-                    },
-                    "name": "Storage Discovery & Collection",
-                    "wait": 0
-                  },
-                  {
-                    "id": 63,
-                    "uuid": "3c2272cd-b3c0-472e-bb16-d69974bb4f5a",
-                    "attacksFilter": {
-                      "playbook": {
-                        "operator": "is",
-                        "values": [
-                          6160,
-                          6245,
-                          6243,
-                          6242
-                        ],
-                        "name": "playbook"
-                      }
-                    },
-                    "attackerFilter": {
-                      "simulators": {
-                        "operator": "is",
-                        "values": [
-                          "bdf867a5-fecb-41d2-8f0f-64a0b1d17100"
-                        ],
-                        "name": "simulators"
-                      }
-                    },
-                    "targetFilter": {
-                      "simulators": {
-                        "operator": "is",
-                        "values": [
-                          "0fac6d41-2297-470c-9dc4-3a8e88e6054a"
-                        ],
-                        "name": "simulators"
-                      }
-                    },
-                    "systemFilter": {
-                      "bypassProxy": {
-                        "operator": "is",
-                        "values": [
-                          false
-                        ],
-                        "name": "bypassproxy"
-                      }
-                    },
-                    "name": "AWS API Discovery & Collection",
-                    "wait": 0
-                  }
-                ],
-                "planId": 51
-              },
-              "ranBy": 347063620200002,
-              "ranFrom": "UI",
-              "enableFeedbackLoop": true,
-              "planRunId": "1695786332769.300",
-              "priority": "low",
-              "retrySimulations": false,
-              "flowControl": {
-                "pointer": 0,
-                "conditionResults": {}
-              }
+              "uuid": "0000000-0000-0000-0000-00000000"
+            }
+          },
+          {
+            "id": 2,
+            "type": "multiAttack",
+            "data": {
+              "uuid": "0000000-0000-0000-0000-00000000"
+            }
+          },
+          {
+            "id": 3,
+            "type": "multiAttack",
+            "data": {
+              "uuid": "0000000-0000-0000-0000-00000000"
             }
           }
+        ],
+        "edges": [
+          {
+            "from": 0,
+            "to": 1
+          },
+          {
+            "from": 1,
+            "to": 2
+          },
+          {
+            "from": 2,
+            "to": 3
+          }
+        ],
+        "createdAt": "2022-12-29T20:33:28.512Z",
+        "updatedAt": "2022-12-29T20:33:28.512Z",
+        "steps": [
+          {
+            "id": 61,
+            "uuid": "0000000-0000-0000-0000-00000000",
+            "attacksFilter": {
+              "playbook": {
+                "operator": "is",
+                "values": [
+                  6158,
+                  6159,
+                  4884,
+                  5324
+                ],
+                "name": "playbook"
+              }
+            },
+            "attackerFilter": {
+              "simulators": {
+                "operator": "is",
+                "values": [
+                  "0000000-0000-0000-0000-00000000"
+                ],
+                "name": "simulators"
+              }
+            },
+            "targetFilter": {
+              "simulators": {
+                "operator": "is",
+                "values": [
+                  "0000000-0000-0000-0000-00000000"
+                ],
+                "name": "simulators"
+              }
+            },
+            "systemFilter": {
+              "bypassProxy": {
+                "operator": "is",
+                "values": [
+                  false
+                ],
+                "name": "bypassproxy"
+              }
+            },
+            "name": "EC2 Discovery & Collection",
+            "wait": 0,
+            "stepRunId": "1695786332909.301",
+            "planRunId": "1695786332769.300"
+          },
+          {
+            "id": 62,
+            "uuid": "0000000-0000-0000-0000-00000000",
+            "attacksFilter": {
+              "playbook": {
+                "operator": "is",
+                "values": [
+                  4882,
+                  5327,
+                  6241
+                ],
+                "name": "playbook"
+              }
+            },
+            "attackerFilter": {
+              "simulators": {
+                "operator": "is",
+                "values": [
+                  "0000000-0000-0000-0000-00000000"
+                ],
+                "name": "simulators"
+              }
+            },
+            "targetFilter": {
+              "simulators": {
+                "operator": "is",
+                "values": [
+                  "0000000-0000-0000-0000-00000000"
+                ],
+                "name": "simulators"
+              }
+            },
+            "systemFilter": {
+              "bypassProxy": {
+                "operator": "is",
+                "values": [
+                  false
+                ],
+                "name": "bypassproxy"
+              }
+            },
+            "name": "Storage Discovery & Collection",
+            "wait": 0,
+            "stepRunId": "1695786332909.302",
+            "planRunId": "1695786332769.300"
+          },
+          {
+            "id": 63,
+            "uuid": "0000000-0000-0000-0000-00000000",
+            "attacksFilter": {
+              "playbook": {
+                "operator": "is",
+                "values": [
+                  6160,
+                  6245,
+                  6243,
+                  6242
+                ],
+                "name": "playbook"
+              }
+            },
+            "attackerFilter": {
+              "simulators": {
+                "operator": "is",
+                "values": [
+                  "0000000-0000-0000-0000-00000000"
+                ],
+                "name": "simulators"
+              }
+            },
+            "targetFilter": {
+              "simulators": {
+                "operator": "is",
+                "values": [
+                  "0000000-0000-0000-0000-00000000"
+                ],
+                "name": "simulators"
+              }
+            },
+            "systemFilter": {
+              "bypassProxy": {
+                "operator": "is",
+                "values": [
+                  false
+                ],
+                "name": "bypassproxy"
+              }
+            },
+            "name": "AWS API Discovery & Collection",
+            "wait": 0,
+            "stepRunId": "1695786332909.303",
+            "planRunId": "1695786332769.300"
+          }
+        ],
+        "planId": 51,
+        "originalPlan": {
+          "id": 105,
+          "name": "Rerun simulations by list",
+          "accountId": 1234567890,
+          "description": "This scenario consists of discovery and collection techniques for gathering information and metadata using AWS' native API. The scenario is divided into three steps, each collecting different information: (1) through AWS’ API related to EC2 information, (2) through Amazon S3 and RDS APIs for storage-related information, and (3) general AWS data. Use this scenario to validate privilege management and access-control across your AWS control plane.",
+          "successCriteria": null,
+          "originalScenarioId": null,
+          "actions": [
+            {
+              "id": 1,
+              "type": "multiAttack",
+              "data": {
+                "uuid": "0000000-0000-0000-0000-00000000"
+              }
+            },
+            {
+              "id": 2,
+              "type": "multiAttack",
+              "data": {
+                "uuid": "0000000-0000-0000-0000-00000000"
+              }
+            },
+            {
+              "id": 3,
+              "type": "multiAttack",
+              "data": {
+                "uuid": "0000000-0000-0000-0000-00000000"
+              }
+            }
+          ],
+          "edges": [
+            {
+              "from": 0,
+              "to": 1
+            },
+            {
+              "from": 1,
+              "to": 2
+            },
+            {
+              "from": 2,
+              "to": 3
+            }
+          ],
+          "createdAt": "2022-12-29T20:33:28.512Z",
+          "updatedAt": "2022-12-29T20:33:28.512Z",
+          "steps": [
+            {
+              "id": 61,
+              "uuid": "0000000-0000-0000-0000-00000000",
+              "attacksFilter": {
+                "playbook": {
+                  "operator": "is",
+                  "values": [
+                    6158,
+                    6159,
+                    4884,
+                    5324
+                  ],
+                  "name": "playbook"
+                }
+              },
+              "attackerFilter": {
+                "simulators": {
+                  "operator": "is",
+                  "values": [
+                    "0000000-0000-0000-0000-00000000"
+                  ],
+                  "name": "simulators"
+                }
+              },
+              "targetFilter": {
+                "simulators": {
+                  "operator": "is",
+                  "values": [
+                    "0000000-0000-0000-0000-00000000"
+                  ],
+                  "name": "simulators"
+                }
+              },
+              "systemFilter": {
+                "bypassProxy": {
+                  "operator": "is",
+                  "values": [
+                    false
+                  ],
+                  "name": "bypassproxy"
+                }
+              },
+              "name": "EC2 Discovery & Collection",
+              "wait": 0
+            }
+          ],
+          "planId": 51
+        },
+        "ranBy": 123456789000002,
+        "ranFrom": "UI",
+        "enableFeedbackLoop": true,
+        "planRunId": "1695786332769.300",
+        "priority": "low",
+        "retrySimulations": false,
+        "flowControl": {
+          "pointer": 0,
+          "conditionResults": {}
+        }
+      }
     }
+  }
 }

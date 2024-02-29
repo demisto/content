@@ -3,13 +3,13 @@
         "success": {
             "data": [
                 {
-                    "md5": "84f63b407f90e1cd4adeb620bc3b7415",
+                    "md5": "123fdsfdfgkdfmnkdnkdnfhfkh",
                     "os": "simulator",
-                    "sha1": "ad09cd8bc5a5ad7f2106aafecb6a02d34ec81c2c",
-                    "sha256": "89f3fccfcb95bfdf19d4e6f20179e1c40c0e684e2b1f66d0c49c4fcd91134fd3",
-                    "sha512": "93e74f7989ce182efa1429ede97288339ff031802032e3e612c05817688066e18ea2fd3f3c198ad4334dfa64e42fa84c6235bd84a9f418efeef0c7ca2dacf070",
-                    "url": "https://cdn.safebreach.com/master/RELEASE-24.1.3/sb-simulator-upgrade-24.1.3-7889.run?response-content-disposition=attachment%3B%20filename%3Dsb-simulator-upgrade-24.1.3-7889.run&AWSAccessKeyId=AKIAYBCE547IZJ55AELP&Signature=ofCIK2fcfmJy2mHavm4%2BBiues0Q%3D&Expires=1738056516",
-                    "version": "2024Q1.3"
+                    "sha1": "admnskdfdkjgnfggkbmfgbf21233mewkdmfi",
+                    "sha256": "133rsmdfklmdfklgmngfbmfgkvbnfncklmbkjvnb455",
+                    "sha512": "123emwlkfmv54uhjt98rgjtuienfeji34urnfejng45ijy6hmnb65hm5tuibnv3etrhfumdwemdkelrmgi4rjygmrmgrthm56mrtgi6hrtkhmrihymrthkmhiityhm",
+                    "url": "https://acme.com/",
+                    "version": ""
                 }
             ]
         },

@@ -1,9 +1,9 @@
 {
-    "outputs":{
-        "successful_creation":{
+    "outputs": {
+        "successful_creation": {
             "data": {
                 "id": 123,
-                "accountId": 3470636202,
+                "accountId": 1234556785,
                 "name": "acme",
                 "updatedAt": "2023-09-09T10:12:46.219Z",
                 "createdAt": "2023-09-09T10:12:46.219Z",
@@ -12,7 +12,7 @@
                 "nodes": []
             }
         },
-        "failed_creation":{
+        "failed_creation": {
             "error": {
                 "errors": [
                     {
@@ -28,4 +28,3 @@
         }
     }
 }
-

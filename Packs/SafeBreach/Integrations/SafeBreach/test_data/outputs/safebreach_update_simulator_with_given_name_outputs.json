@@ -4,9 +4,9 @@
             "data": {
                 "isEnabled": false,
                 "isProxySupported": true,
-                "id": "84dad523-4a14-4ec0-8543-b06e2971500a",
+                "id": "0000000-0000-0000-0000-00000000",
                 "name": "DesktopXWindowsCrowd",
-                "accountId": 3470636202,
+                "accountId": 1234567890,
                 "isCritical": false,
                 "isExfiltration": true,
                 "isInfiltration": true,
@@ -324,7 +324,7 @@
                                 "default"
                             ],
                             "publicIpv4": "111.111.111.111",
-                            "publicHostname": "ec2-3-20-117-32.us-east-2.compute.amazonaws.com",
+                            "publicHostname": "dummy.amazonaws.com",
                             "privateIpv4": "111.111.111.111",
                             "privateHostname": "hostaddress.internal",
                             "availabilityZone": "us-east-2b",
@@ -377,7 +377,7 @@
                                     "privateIpv4s": [
                                         "111.111.111.111"
                                     ],
-                                    "publicHostname": "ec2-3-20-117-32.us-east-2.compute.amazonaws.com",
+                                    "publicHostname": "dummy.amazonaws.com",
                                     "publicIpv4s": [
                                         "111.111.111.111"
                                     ],
@@ -538,7 +538,7 @@
                         "SIMULATION_IDENTIFIER_STRING": "sb_{}_bs",
                         "EXIT_WAIT_TIME": 3,
                         "PROCESS_POLL_TIME": 3,
-                        "NODE_ID": "84dad523-4a14-4ec0-8543-b06e2971500a",
+                        "NODE_ID": "0000000-0000-0000-0000-00000000",
                         "VERIFICATION_CODE": "13043f2041c0f33ab8e0f4b4",
                         "MAX_CONNECTION_ATTEMPT_RETRIES": 10,
                         "REST_REQUEST_TIMEOUT": 10,

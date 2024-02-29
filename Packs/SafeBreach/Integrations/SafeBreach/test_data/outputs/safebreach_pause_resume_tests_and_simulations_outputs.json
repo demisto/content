@@ -1,17 +1,15 @@
 {
-    "outputs":{
-        "pause":{
+    "outputs": {
+        "pause": {
             "data": {
                 "status": "OK"
             }
         },
-        "resume":{
+        "resume": {
             "data": {
                 "status": "OK"
             }
         },
-        "fail":{
-            
-        }
+        "fail": {}
     }
 }

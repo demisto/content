@@ -1,11 +1,11 @@
 {
-    "success":{
-        "args":{
+    "success": {
+        "args": {
             "details": "true",
-            "deleted":"true",
-            "node_name":"DesktopXWindowsCrowd",
-            "should_force_delete":"false"
+            "deleted": "true",
+            "node_name": "DummyName",
+            "should_force_delete": "false"
         },
-        "command":"safebreach-delete-simulator"
+        "command": "safebreach-delete-simulator"
     }
 }

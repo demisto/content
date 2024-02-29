@@ -1,6 +1,6 @@
 {
-    "outputs":{
-        "details_and_deleted":{
+    "outputs": {
+        "details_and_deleted": {
             "data": [
                 {
                     "id": 123432,
@@ -52,12 +52,12 @@
                 }
             ]
         },
-        "just_details":{
+        "just_details": {
             "data": [
                 {
                     "id": 13433,
                     "name": "user1",
-                    "accountId": 3470636202,
+                    "accountId": 1234567890,
                     "email": "acme1@acme.com",
                     "mustChangePassword": true,
                     "roles": {
@@ -104,7 +104,7 @@
                 }
             ]
         },
-        "just_deleted":{
+        "just_deleted": {
             "data": [
                 {
                     "id": 123456789,

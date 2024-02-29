@@ -1,20 +1,20 @@
 {
-    "success_with_details":{
-        "args":{
+    "success_with_details": {
+        "args": {
             "schedule_details": "true"
         },
-        "command":"safebreach-get-custom-scenarios"
+        "command": "safebreach-get-custom-scenarios"
     },
-    "success_without_details":{
-        "args":{
-            "schedule_details":"false"
+    "success_without_details": {
+        "args": {
+            "schedule_details": "false"
         },
-        "command":"safebreach-get-custom-scenarios"
+        "command": "safebreach-get-custom-scenarios"
     },
-    "fail":{
-        "args":{
-            "schedule_details":"false"
+    "fail": {
+        "args": {
+            "schedule_details": "false"
         },
-        "command":"safebreach-get-custom-scenarios"
+        "command": "safebreach-get-custom-scenarios"
     }
 }

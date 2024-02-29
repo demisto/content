@@ -1,16 +1,16 @@
 {
-    "success":{
-        "args":{
+    "success": {
+        "args": {
             "test_id": 123456,
-            "soft_delete":"true"
+            "soft_delete": "true"
         },
-        "command":"safebreach-delete-test-with-id"
+        "command": "safebreach-delete-test-with-id"
     },
-    "fail":{
-        "args":{
+    "fail": {
+        "args": {
             "test_id": null,
-            "soft_delete":"true"
+            "soft_delete": "true"
         },
-        "command":"safebreach-delete-test-with-id"
+        "command": "safebreach-delete-test-with-id"
     }
 }

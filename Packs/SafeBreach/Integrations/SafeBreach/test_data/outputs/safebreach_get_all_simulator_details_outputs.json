@@ -1,8 +1,8 @@
 {
-    "outputs":{
-        "success":{
-            "data":{
-                "rows":[
+    "outputs": {
+        "success": {
+            "data": {
+                "rows": [
                     {
                         "planName": "Endpoint - Baseline_api_testing_changed_to_one_step",
                         "planId": 123,
@@ -34,7 +34,7 @@
                         "totalNumberOfSimulators": 12,
                         "simulatorExecutions": [
                             {
-                                "simulatorId": "159c391d-ac4d-4764-b2bf-69416a305b51"
+                                "simulatorId": "0000000-0000-0000-0000-00000000"
                             }
                         ],
                         "ranBy": 1234567654,
@@ -98,10 +98,10 @@
                                 "simulatorId": "152993a2-3712-4730-8483-b4ba07e4f0af"
                             },
                             {
-                                "simulatorId": "4fb81e0c-232f-4a52-a8b1-d5d5d9ebfa8a"
+                                "simulatorId": "0000000-0000-0000-0000-00000000"
                             }
                         ],
-                        "ranBy": 347063620200002,
+                        "ranBy": 123456789000002,
                         "moveExecutions": [
                             {
                                 "moveId": "7766"
@@ -170,10 +170,10 @@
                                 "simulatorId": "152993a2-3712-4730-8483-b4ba07e4f0af"
                             },
                             {
-                                "simulatorId": "4fb81e0c-232f-4a52-a8b1-d5d5d9ebfa8a"
+                                "simulatorId": "0000000-0000-0000-0000-00000000"
                             }
                         ],
-                        "ranBy": 347063620200002,
+                        "ranBy": 123456789000002,
                         "moveExecutions": [
                             {
                                 "moveId": "1586"
@@ -212,10 +212,10 @@
                     {
                         "planName": "Testing>> Data Assets Exfiltration over HTTP - Baseline",
                         "planId": 91,
-                        "originalScenarioId": "3301aa0b-6e2c-4ac0-9953-9b972d62b964",
+                        "originalScenarioId": "0000000-0000-0000-0000-00000000",
                         "securityActionPerControl": [],
-                        "planRunId": "1687512796342.102",
-                        "runId": "1687512796342.102",
+                        "planRunId": "1111111111111.1",
+                        "runId": "1111111111111.1",
                         "status": "CANCELED",
                         "blocked": 18,
                         "plannedSimulationsAmount": 40,
@@ -240,13 +240,13 @@
                         "totalNumberOfSimulators": 12,
                         "simulatorExecutions": [
                             {
-                                "simulatorId": "4fb81e0c-232f-4a52-a8b1-d5d5d9ebfa8a"
+                                "simulatorId": "0000000-0000-0000-0000-00000000"
                             },
                             {
-                                "simulatorId": "ccfe7842-a1f5-4772-b35e-c098ee8ce594"
+                                "simulatorId": "0000000-0000-0000-0000-00000000"
                             }
                         ],
-                        "ranBy": 347063620200008,
+                        "ranBy": 123456789000008,
                         "moveExecutions": [
                             {
                                 "moveId": "105"
@@ -271,10 +271,10 @@
                             }
                         ],
                         "tags": [],
-                        "id": "1687512796342.102"
+                        "id": "1111111111111.1"
                     }
-                    ],
-                "count":4
+                ],
+                "count": 4
             }
         }
     }

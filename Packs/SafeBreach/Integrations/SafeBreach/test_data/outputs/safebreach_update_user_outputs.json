@@ -1,6 +1,6 @@
 {
-    "outputs":{
-        "successful_update_just_email":{
+    "outputs": {
+        "successful_update_just_email": {
             "data": {
                 "mustReadTerms": true,
                 "showStudioDisclaimer": true,
@@ -26,7 +26,7 @@
                 "deployments": []
             }
         },
-        "successful_update_id_and_email":{
+        "successful_update_id_and_email": {
             "data": {
                 "mustReadTerms": true,
                 "showStudioDisclaimer": true,
@@ -52,12 +52,11 @@
                 "deployments": []
             }
         },
-        "weak_password":{
-            "data":{}
+        "weak_password": {
+            "data": {}
         },
-        "failed_update":{
-            "data":{}
+        "failed_update": {
+            "data": {}
         }
     }
 }
-

@@ -1,12 +1,12 @@
 {
-    "outputs":{
-        "success":{
+    "outputs": {
+        "success": {
             "data": [
                 {
                     "id": 123,
                     "name": "Endpoint - Baseline_api_testing_changed_to_one_step",
-                    "accountId": 3470636202,
-                    "description": "The Endpoint-Baseline scenario includes representative attacks from each of the relevant attack types expected to be prevented by endpoint controls, such as credential collection, information gathering, and file manipulation. Use this scenario as a quick and consistent way to validate the overall endpoint security control effectiveness over time. For a more comprehensive check, use the \"Full coverage\" scenario.",
+                    "accountId": 1234567890,
+                    "description": ".",
                     "successCriteria": null,
                     "originalScenarioId": "baa50109-deb7-466b-86b1-8049c270cd9a",
                     "actions": [
@@ -74,7 +74,7 @@
                                 "simulators": {
                                     "operator": "is",
                                     "values": [
-                                        "159c391d-ac4d-4764-b2bf-69416a305b51"
+                                        "0000000-0000-0000-0000-00000000"
                                     ]
                                 }
                             },
@@ -82,7 +82,7 @@
                                 "simulators": {
                                     "operator": "is",
                                     "values": [
-                                        "159c391d-ac4d-4764-b2bf-69416a305b51"
+                                        "0000000-0000-0000-0000-00000000"
                                     ]
                                 }
                             },
@@ -102,8 +102,8 @@
                             },
                             "name": "Host actions",
                             "wait": 0,
-                            "stepRunId": "1694608987914.120",
-                            "planRunId": "1694608987879.119",
+                            "stepRunId": "1111111111111.1",
+                            "planRunId": "1111111111111.1",
                             "pausedDate": "2023-09-13T12:43:59.572Z",
                             "pauseDuration": 0,
                             "totalJobs": 31,
@@ -112,7 +112,7 @@
                             "startTime": "2023-09-13T12:43:21.185Z",
                             "pausePeriods": [],
                             "ranFrom": "UI",
-                            "ranBy": 347063620200002,
+                            "ranBy": 123456789000002,
                             "expectedSimulationsAmount": 19,
                             "dispatchedSimulationsAmount": 0,
                             "blockedSimulationsAmount": 0,
@@ -121,7 +121,7 @@
                             "failedSimulationsAmount": 0,
                             "constraints": null,
                             "nodeIds": [
-                                "159c391d-ac4d-4764-b2bf-69416a305b51"
+                                "0000000-0000-0000-0000-00000000"
                             ],
                             "proxies": [],
                             "bypassProxy": true,
@@ -131,8 +131,8 @@
                             "originalPlan": {
                                 "id": 123,
                                 "name": "Endpoint - Baseline_api_testing_changed_to_one_step",
-                                "accountId": 3470636202,
-                                "description": "The Endpoint-Baseline scenario includes representative attacks from each of the relevant attack types expected to be prevented by endpoint controls, such as credential collection, information gathering, and file manipulation. Use this scenario as a quick and consistent way to validate the overall endpoint security control effectiveness over time. For a more comprehensive check, use the \"Full coverage\" scenario.",
+                                "accountId": 1234567890,
+                                "description": ".",
                                 "successCriteria": null,
                                 "originalScenarioId": "baa50109-deb7-466b-86b1-8049c270cd9a",
                                 "actions": [
@@ -199,7 +199,7 @@
                                             "simulators": {
                                                 "operator": "is",
                                                 "values": [
-                                                    "159c391d-ac4d-4764-b2bf-69416a305b51"
+                                                    "0000000-0000-0000-0000-00000000"
                                                 ],
                                                 "name": "simulators"
                                             }
@@ -208,7 +208,7 @@
                                             "simulators": {
                                                 "operator": "is",
                                                 "values": [
-                                                    "159c391d-ac4d-4764-b2bf-69416a305b51"
+                                                    "0000000-0000-0000-0000-00000000"
                                                 ],
                                                 "name": "simulators"
                                             }
@@ -242,8 +242,8 @@
                     "originalPlan": {
                         "id": 123,
                         "name": "Endpoint - Baseline_api_testing_changed_to_one_step",
-                        "accountId": 3470636202,
-                        "description": "The Endpoint-Baseline scenario includes representative attacks from each of the relevant attack types expected to be prevented by endpoint controls, such as credential collection, information gathering, and file manipulation. Use this scenario as a quick and consistent way to validate the overall endpoint security control effectiveness over time. For a more comprehensive check, use the \"Full coverage\" scenario.",
+                        "accountId": 1234567890,
+                        "description": ".",
                         "successCriteria": null,
                         "originalScenarioId": "baa50109-deb7-466b-86b1-8049c270cd9a",
                         "actions": [
@@ -310,7 +310,7 @@
                                     "simulators": {
                                         "operator": "is",
                                         "values": [
-                                            "159c391d-ac4d-4764-b2bf-69416a305b51"
+                                            "0000000-0000-0000-0000-00000000"
                                         ],
                                         "name": "simulators"
                                     }
@@ -319,7 +319,7 @@
                                     "simulators": {
                                         "operator": "is",
                                         "values": [
-                                            "159c391d-ac4d-4764-b2bf-69416a305b51"
+                                            "0000000-0000-0000-0000-00000000"
                                         ],
                                         "name": "simulators"
                                     }
@@ -344,10 +344,10 @@
                         ],
                         "planId": 123
                     },
-                    "ranBy": 347063620200002,
+                    "ranBy": 123456789000002,
                     "ranFrom": "UI",
                     "enableFeedbackLoop": true,
-                    "planRunId": "1694608987879.119",
+                    "planRunId": "1111111111111.1",
                     "priority": "low",
                     "retrySimulations": false,
                     "flowControl": {
@@ -372,8 +372,6 @@
                 }
             ]
         },
-        "fail":{
-            
-        }
+        "fail": {}
     }
 }

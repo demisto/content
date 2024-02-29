@@ -1,12 +1,12 @@
 {
-    "outputs":{
-        "success":{
+    "outputs": {
+        "success": {
             "data": {
                 "isEnabled": false,
                 "isProxySupported": true,
-                "id": "84dad523-4a14-4ec0-8543-b06e2971500a",
+                "id": "0000000-0000-0000-0000-00000000",
                 "name": "DesktopXWindowsCrowd",
-                "accountId": 3470636202,
+                "accountId": 1234567890,
                 "isCritical": false,
                 "isExfiltration": true,
                 "isInfiltration": true,
@@ -70,42 +70,42 @@
                                     "USED": 4145901568
                                 },
                                 {
-                                    "MOUNT": "/snap/amazon-ssm-agent/495",
+                                    "MOUNT": "/dummy/path//495",
                                     "DEVICE": "/dev/loop0",
                                     "TOTAL": 13369344,
                                     "FREE": 0,
                                     "USED": 13369344
                                 },
                                 {
-                                    "MOUNT": "/snap/core/13425",
+                                    "MOUNT": "/dummy/path/core/13425",
                                     "DEVICE": "/dev/loop4",
                                     "TOTAL": 119537664,
                                     "FREE": 0,
                                     "USED": 119537664
                                 },
                                 {
-                                    "MOUNT": "/snap/amazon-ssm-agent/5656",
+                                    "MOUNT": "/dummy/path//5656",
                                     "DEVICE": "/dev/loop5",
                                     "TOTAL": 26345472,
                                     "FREE": 0,
                                     "USED": 26345472
                                 },
                                 {
-                                    "MOUNT": "/snap/core18/2560",
+                                    "MOUNT": "/dummy/path/core18/2560",
                                     "DEVICE": "/dev/loop1",
                                     "TOTAL": 58327040,
                                     "FREE": 0,
                                     "USED": 58327040
                                 },
                                 {
-                                    "MOUNT": "/snap/core/13741",
+                                    "MOUNT": "/dummy/path/core/13741",
                                     "DEVICE": "/dev/loop2",
                                     "TOTAL": 120586240,
                                     "FREE": 0,
                                     "USED": 120586240
                                 },
                                 {
-                                    "MOUNT": "/snap/core18/2566",
+                                    "MOUNT": "/dummy/path/core18/2566",
                                     "DEVICE": "/dev/loop6",
                                     "TOTAL": 58327040,
                                     "FREE": 0,
@@ -313,7 +313,7 @@
                             "more-itertools": "8.14.0"
                         },
                         "CLOUD": {
-                            "accountId": "358886500530",
+                            "accountId": "12345678997",
                             "region": "us-east-2",
                             "instanceId": "i-0ab526857c56c6c09",
                             "instanceType": "t3a.medium",
@@ -324,14 +324,14 @@
                                 "default"
                             ],
                             "publicIpv4": "111.111.111.111",
-                            "publicHostname": "ec2-3-20-117-32.us-east-2.compute.amazonaws.com",
+                            "publicHostname": "dummy.aws.com",
                             "privateIpv4": "111.111.111.111",
                             "privateHostname": "hostaddress.internal",
                             "availabilityZone": "us-east-2b",
                             "iamInfo": null,
                             "instanceAction": "none",
                             "instanceIdentityDocument": {
-                                "accountId": "358886500530",
+                                "accountId": "12345678997",
                                 "architecture": "x86_64",
                                 "availabilityZone": "us-east-2b",
                                 "billingProducts": null,
@@ -372,12 +372,12 @@
                                         ]
                                     },
                                     "ipv6s": [],
-                                    "ownerId": "358886500530",
+                                    "ownerId": "12345678997",
                                     "privateHostname": "hostaddress.internal",
                                     "privateIpv4s": [
                                         "111.111.111.111"
                                     ],
-                                    "publicHostname": "ec2-3-20-117-32.us-east-2.compute.amazonaws.com",
+                                    "publicHostname": "dummy.aws.com",
                                     "publicIpv4s": [
                                         "111.111.111.111"
                                     ],
@@ -466,22 +466,22 @@
                         }
                     },
                     "CURRENT_CONFIGURATION": {
-                        "_config_file": "/home/safebreach/simulator/config/sbsimulator.conf",
+                        "_config_file": "/dummy/path/config/sbsimulator.conf",
                         "IS_REMOTE_NODE": true,
                         "REMOTE_NODE_LISTEN_PORT": 65010,
                         "EXECUTION_HOSTNAME": "safebreach.loc",
                         "EXECUTION_PORT": 443,
-                        "REST_SERVER_ENDPOINT": ".*/api/agent/v[2-3]/messages",
-                        "REST_SERVER_STATUS_ENDPOINT": ".*/api/agent/v2/status",
-                        "SIGNUP_ENDPOINT": ".*/api/agent/v2/signup",
+                        "REST_SERVER_ENDPOINT": ".*/dummy/agent/v[2-3]/messages",
+                        "REST_SERVER_STATUS_ENDPOINT": ".*/dummy/agent/v2/status",
+                        "SIGNUP_ENDPOINT": ".*/dummy/agent/v2/signup",
                         "SIGNUP_ACK_ENDPOINT": "/somepath/",
-                        "SIGNUP_FIN_ENDPOINT": ".*/api/agent/v2/signup-fin",
+                        "SIGNUP_FIN_ENDPOINT": ".*/dummy/agent/v2/signup-fin",
                         "IS_EXECUTION_COMMUNICATION_SECURED": true,
-                        "HTTPS_CERTIFICATE_PATH": "/home/safebreach/simulator/resources/server.cert",
-                        "HTTPS_KEY_PATH": "/home/safebreach/simulator/resources/server.key",
+                        "HTTPS_CERTIFICATE_PATH": "/dummy/path/resources/server.cert",
+                        "HTTPS_KEY_PATH": "/dummy/path/resources/server.key",
                         "PROTOCOL_VERSION": "3.0.0",
                         "LOGGER_NAME": "SBSimulator",
-                        "LOG_FILE_PATH": "/home/safebreach/simulator/logs/sbsimulator.log",
+                        "LOG_FILE_PATH": "/dummy/path/logs/sbsimulator.log",
                         "ASYNCIO_DEBUG": false,
                         "LOG_TO_CONSOLE": false,
                         "TORNADO_LOG_LEVEL": "WARNING",
@@ -499,15 +499,15 @@
                         "LOG_DATEFMT": "%Y-%m-%d %H:%M:%S",
                         "UUID_VERSION": 4,
                         "USE_NODE_ID_FILE": true,
-                        "NODE_ID_FILE": "/home/safebreach/simulator/resources/node_id.txt",
+                        "NODE_ID_FILE": "/dummy/path/resources/node_id.txt",
                         "NODE_NAME": "ip-172-31-25-165",
                         "DEFAULT_NODE_ID": "00000000-0000-0000-0000-000000000000",
                         "SIMULATOR_VERSION_FILE": null,
                         "CONFIGURATION_WATCHER": false,
                         "EXECUTION_API": "api/execution/v1/messages/",
-                        "EMPTY_BUFFERS_ENDPOINT": "/api/execution/v3/messages/",
-                        "REST_CLIENT_ENDPOINT": "/api/execution/v3/node_communication/",
-                        "GET_CONFIG_ENDPOINT": "/api/execution/v3/configuration",
+                        "EMPTY_BUFFERS_ENDPOINT": "/dummy/path/messages/",
+                        "REST_CLIENT_ENDPOINT": "/dummy/path/node_communication/",
+                        "GET_CONFIG_ENDPOINT": "/dummy/path/configuration",
                         "RETRIES": 3,
                         "RETRIES_INTERVAL": 5,
                         "USE_PROXY": false,
@@ -518,16 +518,16 @@
                         "STATUS_REPORT_PORT": 65003,
                         "TASKS_ROUTER_PORT": 65004,
                         "TASK_EXECUTABLE": [
-                            "/home/safebreach/simulator/app/sbsimulation/sbsimulation"
+                            "/dummy/path/app/sbsimulation/sbsimulation"
                         ],
                         "POST_ACTION_EXECUTABLE": [
-                            "/home/safebreach/simulator/app/sbsimulation/sbpostaction"
+                            "/dummy/path/app/sbsimulation/sbpostaction"
                         ],
-                        "SQLITE_DATABASE": "/home/safebreach/simulator/resources/sbsimulator.db",
+                        "SQLITE_DATABASE": "/dummy/path/resources/sbsimulator.db",
                         "STORE_POST_ACTIONS": true,
                         "SQLITE_LIMIT": 100,
                         "APPEND_REVERT": true,
-                        "AUTHENTICATION_ENDPOINT": "/api/authentication/v2/simulator/",
+                        "AUTHENTICATION_ENDPOINT": "/dummy/authentication/v2/simulator/",
                         "SKIP_EXECUTION_SIGNUP": false,
                         "SECRET_LENGTH": 64,
                         "MIN_KEY_SIZE": 32,
@@ -538,7 +538,7 @@
                         "SIMULATION_IDENTIFIER_STRING": "sb_{}_bs",
                         "EXIT_WAIT_TIME": 3,
                         "PROCESS_POLL_TIME": 3,
-                        "NODE_ID": "84dad523-4a14-4ec0-8543-b06e2971500a",
+                        "NODE_ID": "0000000-0000-0000-0000-00000000",
                         "VERIFICATION_CODE": "13043f2041c0f33ab8e0f4b4",
                         "MAX_CONNECTION_ATTEMPT_RETRIES": 10,
                         "REST_REQUEST_TIMEOUT": 10,
@@ -604,17 +604,17 @@
                         "NUM_OF_REQUESTS_FOR_REPORTING": 60,
                         "MAXIMUM_PACKETS_PER_CAPTURE": 800,
                         "SERVICES_SSL_VERIFY": true,
-                        "CA_BUNDLE": "/home/safebreach/simulator/resources/.cacert.pem",
-                        "CUSTOM_CA": "/home/safebreach/simulator/resources/custom_certificates.pem",
+                        "CA_BUNDLE": "/dummy/path/resources/.cacert.pem",
+                        "CUSTOM_CA": "/dummy/path/resources/custom_certificates.pem",
                         "USE_RELAY": false,
                         "_ORIGINAL_LOG_LEVEL": "INFO",
-                        "SIMULATION_LOG_FILE_PATH": "/home/safebreach/simulator/logs/sbsimulator_tasks.log",
-                        "COMMANDS_LOG_FILE_PATH": "/home/safebreach/simulator/logs/sbsimulator_commands.log",
+                        "SIMULATION_LOG_FILE_PATH": "/dummy/path/logs/sbsimulator_tasks.log",
+                        "COMMANDS_LOG_FILE_PATH": "/dummy/path/logs/sbsimulator_commands.log",
                         "SIMULATOR_VERSION": "Orion.2022Q3.8 v20220908_083801",
                         "SECRET": "***** (len=128)",
                         "IS_UNIX": true,
                         "FRAMEWORK_VERSION": "3.58.0",
-                        "JSON_LOG_FILE_PATH": "/home/safebreach/simulator/logs/_sbsimulator.json",
+                        "JSON_LOG_FILE_PATH": "/dummy/path/logs/_sbsimulator.json",
                         "CENTRAL_LOGGING": false,
                         "CHARDET_LOG_LEVEL": "WARNING",
                         "LOGOUT_ON_EXIT": false,
@@ -623,8 +623,8 @@
                         "SIMULATION_EVENTS": true,
                         "SUPPORTED_CLOUD_PROVIDERS": null,
                         "ANTIVIRUS_DETECTION": true,
-                        "SIMULATION_JSON_LOG_FILE_PATH": "/home/safebreach/simulator/logs/_sbsimulator_tasks.json",
-                        "COMMANDS_JSON_LOG_FILE_PATH": "/home/safebreach/simulator/logs/_sbsimulator_commands.json"
+                        "SIMULATION_JSON_LOG_FILE_PATH": "/dummy/path/logs/_sbsimulator_tasks.json",
+                        "COMMANDS_JSON_LOG_FILE_PATH": "/dummy/path/logs/_sbsimulator_commands.json"
                     }
                 },
                 "tunnel": "",

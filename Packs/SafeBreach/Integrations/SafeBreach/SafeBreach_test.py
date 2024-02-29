@@ -621,19 +621,6 @@ def test_get_all_integration_error_logs(client, mocker):
         assert len(test_output["outputs"][key].keys()) == 2
 
 
-# def test_get_all_integration_error_logs(client, mocker):
-#     # Mocking the response of the API call
-#     expected_result = util_load_json(path="./test_data/outputs/safebreach_get_integration_logs_outputs.json")
-#     mocker.patch.object(client, "get_all_integration_error_logs", return_value=expected_result)
-
-#     # Running the command
-#     result = get_all_integration_error_logs(client)
-
-#     # Verifying the result
-#     assert result.outputs == expected_result
-#     assert result.outputs_prefix == "integration_errors"
-
-
 def test_delete_integration_error_logs(client, mocker):
     test_input = util_load_json(
         path="./test_data/inputs/safebreach_delete_integration_connector_logs_inputs.json"

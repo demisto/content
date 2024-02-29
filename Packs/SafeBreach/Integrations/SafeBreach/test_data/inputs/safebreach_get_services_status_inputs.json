@@ -1,10 +1,10 @@
 {
-    "success":{
-        "args":{},
-        "command":"safebreach-get-services-status"
+    "success": {
+        "args": {},
+        "command": "safebreach-get-services-status"
     },
-    "fail":{
-        "args":{},
-        "command":"safebreach-get-services-status"
+    "fail": {
+        "args": {},
+        "command": "safebreach-get-services-status"
     }
 }
