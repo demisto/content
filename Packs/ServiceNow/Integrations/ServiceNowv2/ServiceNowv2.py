@@ -2137,6 +2137,25 @@ def get_mirroring():
     }
 
 
+def format_incidents_response_with_display_values(incidents_res: dict) -> list[dict]:
+    format_incidents = []
+
+    for incident in incidents_res:
+        format_incident = {}
+
+        for item in incident:
+            if item in ("opened_by", "sys_domain", "assignment_group"):
+                format_incident[item] = incident[item]
+            elif item == "opened_at":
+                format_incident[item] = incident[item]["value"]
+            else:
+                format_incident[item] = incident[item]["display_value"]
+
+        format_incidents.append(format_incident)
+
+    return format_incidents
+
+
 def fetch_incidents(client: Client) -> list:
     query_params = {}
     incidents = []
@@ -2161,7 +2180,7 @@ def fetch_incidents(client: Client) -> list:
         query_params['sysparm_query'] = query
     query_params['sysparm_limit'] = fetch_limit  # type: ignore[assignment]
     if client.use_display_value:
-        query_params['sysparm_display_value'] = True  # type: ignore[assignment]
+        query_params['sysparm_display_value'] = "all"
 
     demisto.debug(f"ServiceNowV2 - Last run: {json.dumps(last_run)}")
     demisto.debug(f"ServiceNowV2 - Query sent to the server: {str(query_params)}")
@@ -2170,6 +2189,9 @@ def fetch_incidents(client: Client) -> list:
     skipped_incidents = 0
 
     severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
+
+    if client.use_display_value:
+        tickets_response = format_incidents_response_with_display_values(incidents_res=tickets_response)
 
     # remove duplicate incidents which were already fetched
     tickets_response = filter_incidents_by_duplicates_and_limit(
@@ -2220,7 +2242,7 @@ def fetch_incidents(client: Client) -> list:
         look_back=client.look_back,
         created_time_field='occurred',
         id_field='sys_id',
-        date_format=client.display_date_format or DATE_FORMAT
+        date_format=DATE_FORMAT
     )
 
     demisto.debug(f"ServiceNowV2 - Last run after incidents fetching: {json.dumps(last_run)}")
