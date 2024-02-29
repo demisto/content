@@ -450,7 +450,7 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = params.get('proxy', False)
 
-    api_key = params['credentials']['password']
+    api_key = params.get('credentials', {}).get('password', '')
 
     command = demisto.command()
 
