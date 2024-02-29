@@ -3345,7 +3345,7 @@ def get_security_events(
             method="GET", url_suffix="/api/data/alert/alert/Alert/", params=args
         )
 
-        demisto.debug(f"Got {len(results['results'])} security events")
+        demisto.debug(f"{len(results['results'])} security events fetched...")
 
         for alert in results["results"]:
             # Retrieve additional endpoint information
@@ -3372,8 +3372,6 @@ def get_security_events(
 
             if max_fetch and len(security_events) >= max_fetch:
                 break
-
-        demisto.debug(f"Got eventually {len(security_events)} security events")
 
         args["offset"] += len(results["results"])
         if (
@@ -3465,7 +3463,8 @@ def get_threats(
             results = client._http_request(
                 method="GET", url_suffix="/api/data/alert/alert/Threat/", params=args
             )
-            demisto.debug(f"Got {len(results['results'])} threats")
+
+            demisto.debug(f"{len(results['results'])} threats fetched...")
 
             for threat in results["results"]:
                 threat_ids.append(threat["id"])
