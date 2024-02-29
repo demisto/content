@@ -321,9 +321,7 @@ class Taxii2FeedClient:
         Initializes the api roots (used to get taxii server objects)
         """
         if not self.server:
-            demisto.debug(f'init_roots, {self.server=}, calling init_server')
             self.init_server()
-            demisto.debug(f'init_roots, {self.server=}, after init_server')
         try:
             # disable logging as we might receive client error and try 2.0
             logging.disable(logging.ERROR)
@@ -331,7 +329,6 @@ class Taxii2FeedClient:
             self.set_api_root()
         # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
         except Exception as e:
-            demisto.debug(f'init_roots, {self.server=}, Exception, {e}')
             if "406 Client Error" not in str(e) and "version=2.0" not in str(e):
                 raise e
             # switch to TAXII 2.0
@@ -1255,7 +1252,7 @@ class Taxii2FeedClient:
                         self.increase_count(parsed_objects_counter, 'not-parsed-envelope-not-stix')
                         break
                 except Exception as e:
-                    demisto.debug(f"Exception trying to get envelope objects: {e}, {traceback.format_exc()}")
+                    demisto.info(f"Exception trying to get envelope objects: {e}, {traceback.format_exc()}")
                     self.increase_count(parsed_objects_counter, 'exception-envelope-get-objects')
                     continue
 
@@ -1271,7 +1268,7 @@ class Taxii2FeedClient:
                     try:
                         obj_type = obj.get('type')
                     except Exception as e:
-                        demisto.debug(f"Exception trying to get stix_object-type: {e}, {traceback.format_exc()}")
+                        demisto.info(f"Exception trying to get stix_object-type: {e}, {traceback.format_exc()}")
                         self.increase_count(parsed_objects_counter, 'exception-stix-object-type')
                         continue
 
@@ -1294,7 +1291,7 @@ class Taxii2FeedClient:
                             indicators.extend(result)
                             self.update_last_modified_indicator_date(obj.get("modified"))
                     except Exception as e:
-                        demisto.debug(f"Exception parsing stix_object-type {obj_type}: {e}, {traceback.format_exc()}")
+                        demisto.info(f"Exception parsing stix_object-type {obj_type}: {e}, {traceback.format_exc()}")
                         self.increase_count(parsed_objects_counter, f'exception-parsing-{obj_type}')
                         continue
                     self.increase_count(parsed_objects_counter, f'parsed-{obj_type}')
@@ -1306,8 +1303,7 @@ class Taxii2FeedClient:
 
                         return indicators, relationships_lst
         except Exception as e:
-            demisto.debug(f"Exception trying to parse envelope: {e}, {traceback.format_exc()}")
-            demisto.debug(f"Exception trying to parse envelope {current_envelope=}")
+            demisto.info(f"Exception trying to parse envelope: {e}, {traceback.format_exc()}")
             if len(indicators) == 0:
                 demisto.debug("No Indicator were parsed")
                 raise e
