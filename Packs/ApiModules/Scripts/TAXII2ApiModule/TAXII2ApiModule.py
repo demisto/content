@@ -1,5 +1,3 @@
-import logging
-import traceback
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -10,6 +8,8 @@ from typing import Optional, Tuple
 from requests.sessions import merge_setting, CaseInsensitiveDict
 import re
 import copy
+import logging
+import traceback
 import types
 import urllib3
 from taxii2client import v20, v21
@@ -31,8 +31,18 @@ class SuppressWarningFilter(logging.Filter):    # pragma: no cover
         return False
 
 
+# Make sure we have only one SuppressWarningFilter
 v21_logger = logging.getLogger("taxii2client.v21")
+demisto.debug(f'*** Filters before: {v21_logger.filters=}')
+for current_filter in list(v21_logger.filters):
+    demisto.debug(f'{current_filter=}, {type(current_filter)=}, {type(current_filter).__name__=}')
+    demisto.debug(f'{isinstance(current_filter, SuppressWarningFilter)=}')
+    if 'SuppressWarningFilter' in type(current_filter).__name__:
+        demisto.debug(f'Removing {current_filter=}')
+        v21_logger.removeFilter(current_filter)
+demisto.debug(f'*** Filters after removal, before add: {v21_logger.filters=}')
 v21_logger.addFilter(SuppressWarningFilter())
+demisto.debug(f'*** Filters after add: {v21_logger.filters=}')
 
 # CONSTANTS
 TAXII_VER_2_0 = "2.0"
@@ -317,7 +327,9 @@ class Taxii2FeedClient:
         Initializes the api roots (used to get taxii server objects)
         """
         if not self.server:
+            demisto.debug(f'init_roots, {self.server=}, calling init_server')
             self.init_server()
+            demisto.debug(f'init_roots, {self.server=}, after init_server')
         try:
             # disable logging as we might receive client error and try 2.0
             logging.disable(logging.ERROR)
@@ -325,6 +337,7 @@ class Taxii2FeedClient:
             self.set_api_root()
         # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
         except Exception as e:
+            demisto.debug(f'init_roots, {self.server=}, Exception, {e}')
             if "406 Client Error" not in str(e) and "version=2.0" not in str(e):
                 raise e
             # switch to TAXII 2.0

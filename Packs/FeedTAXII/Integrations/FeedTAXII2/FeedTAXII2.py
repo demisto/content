@@ -178,6 +178,7 @@ def get_indicators_command(
     client, raw="false", limit=10, added_after=None
 ):
     """
+    
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
     :param raw: When set to "true" will return only rawJSON
