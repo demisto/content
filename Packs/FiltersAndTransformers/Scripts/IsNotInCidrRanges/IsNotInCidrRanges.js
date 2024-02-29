@@ -1,3 +1,3 @@
-var res = executeCommand("IsInCidrRanges", args)[0].Contents;
+var res = executeCommand("IsInCidrRanges", args);
 res = Array.isArray(res) ? res : [res];
-return res.map(val => val == "True" ? "False" : "True");
+return res.map(val => val.Contents == "True" ? "False" : "True");
