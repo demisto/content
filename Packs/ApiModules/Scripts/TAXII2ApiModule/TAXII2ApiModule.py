@@ -33,7 +33,7 @@ class SuppressWarningFilter(logging.Filter):    # pragma: no cover
 
 # Make sure we have only one SuppressWarningFilter
 v21_logger = logging.getLogger("taxii2client.v21")
-for current_filter in list(v21_logger.filters):
+for current_filter in list(v21_logger.filters):    # pragma: no cover
     if 'SuppressWarningFilter' in type(current_filter).__name__:
         v21_logger.removeFilter(current_filter)
 v21_logger.addFilter(SuppressWarningFilter())
