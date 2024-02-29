@@ -70,6 +70,7 @@ def main():  # pragma: no cover
     playbookId = f' playbookId="{args.get("playbookId", "")}"'
     interval = int(args.get('interval'))
     timeout = int(args.get('timeout'))
+    extract_mode = args.get("extractMode")
 
     args_names = args.get('additionalPollingCommandArgNames').strip() \
         if args.get('additionalPollingCommandArgNames') else None
@@ -93,6 +94,8 @@ def main():  # pragma: no cover
                                                                          pollingCommandArgName, playbookId,
                                                                          dt.replace('"', r'\"'), interval, timeout,
                                                                          tag, args_names, args_values)
+    if extract_mode:
+        command_string += f" auto-extract={extract_mode}"
     schedule_command_args = {
         'command': command_string,
         'cron': f'*/{interval} * * * *',
