@@ -356,7 +356,7 @@ def create_attack_pattern_indicator(client: Client, attack_indicator_objects, fe
 
     for attack_indicator in attack_indicator_objects:
 
-        publications = client.get_indicator_publication(attack_indicator)
+        publications = client.get_indicator_publication(attack_indicator,ignore_external_id=True)
         mitre_id, value = get_attack_id_and_value_from_name(attack_indicator)
 
         kill_chain_mitre = [chain.get('phase_name', '') for chain in attack_indicator.get('kill_chain_phases', [])]

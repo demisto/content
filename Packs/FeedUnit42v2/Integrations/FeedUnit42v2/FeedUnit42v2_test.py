@@ -178,8 +178,7 @@ def test_get_indicator_publication():
     - run the get_indicator_publication
     Validate The grid field extracted successfully.
     """
-    result = StixParser.get_indicator_publication(ATTACK_PATTERN_DATA[0], ignore_external_id=True)
-    assert result == PUBLICATIONS
+    assert StixParser.get_indicator_publication(ATTACK_PATTERN_DATA[0], ignore_external_id=True) == PUBLICATIONS
 
 
 @pytest.mark.parametrize('indicator_name, expected_result', [
@@ -242,8 +241,7 @@ def test_parse_campaigns():
     Validate The campaigns list extracted successfully.
     """
     client = Client(api_key='1234', verify=False)
-    result = parse_campaigns(client, CAMPAIGN_RESPONSE, [], '')
-    assert result[0] == CAMPAIGN_INDICATOR[0]
+    assert parse_campaigns(client, CAMPAIGN_RESPONSE, [], '') == CAMPAIGN_INDICATOR
 
 
 def test_create_attack_pattern_indicator():
@@ -273,8 +271,7 @@ def test_create_course_of_action_indicators():
     Validate The course of action list extracted successfully.
     """
     client = Client(api_key='1234', verify=False)
-    result = create_course_of_action_indicators(client, COURSE_OF_ACTION_DATA, [], '')
-    assert result == COURSE_OF_ACTION_INDICATORS
+    assert create_course_of_action_indicators(client, COURSE_OF_ACTION_DATA, [], '') == COURSE_OF_ACTION_INDICATORS
 
 
 def test_get_ioc_type():
