@@ -1,6 +1,7 @@
 import typing
 import dataclasses
 import functools
+import itertools
 import math
 from collections.abc import Callable, Collection, Mapping, MutableMapping
 from typing import Generic, Literal, TypeAlias, TypeVar
@@ -3490,61 +3491,109 @@ def get_threats(
     return threats
 
 
-def get_modified_remote_data(client, args):
-    """
-    Gets the modified remote security events and threat IDs.
+def get_modified_remote_data(
+    client: Client,
+    args: dict[str, Any],
+) -> GetModifiedRemoteDataResponse:
+    """Get list of modified/updated security events/threat ids on remote instance.
+
     Args:
+        client: Demisto client to use. Initialized in the 'main' function.
         args:
-            last_update: the last time we retrieved modified security events and threats.
+            last_update: the last time this function as been executed.
 
     Returns:
-        GetModifiedRemoteDataResponse object, which contains a list of the retrieved security events and threat IDs.
+        GetModifiedRemoteDataResponse object, which contains the list of
+          modified/updated security events and threats ids on remote instance.
     """
-    demisto.debug("In get_modified_remote_data")
-    remote_args = GetModifiedRemoteDataArgs(args)
+    modified_remote_data_args = GetModifiedRemoteDataArgs(args)
 
-    last_update_utc = dateparser.parse(
-        remote_args.last_update, settings={"TIMEZONE": "UTC"}
-    )  # convert to utc format
-
-    if not last_update_utc:
-        raise ValueError(f"Unable to parse '{remote_args.last_update}'")
-
-    last_update_timestamp = last_update_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
-    demisto.debug(f"Remote arguments last_update in UTC is {last_update_timestamp}")
-
-    modified_ids_to_mirror = list()
-
-    # Fetch the latest security events and retrieve those whose last update fields is more recent than the last update timestamp
-    sec_events = get_security_events(
-        client,
-        min_updated_timestamp=last_update_timestamp,
-        alert_type=args.get("alert_type"),
-        min_severity=args.get("min_severity", SEVERITIES[0]),
-        fields=["id", "last_update"],
-        limit=10000,
-        ordering="-alert_time",
+    # every timestamp in remote instance are stored as UTC
+    last_update: Optional[datetime] = dateparser.parse(
+        modified_remote_data_args.last_update, settings={"TIMEZONE": "UTC"}
     )
 
-    for sec_event in sec_events:
-        modified_ids_to_mirror.append(
-            f"{IncidentType.SEC_EVENT.value}:{sec_event['id']}"
+    if not last_update:
+        raise ValueError(f"Unable to parse '{modified_remote_data_args.last_update}'")
+
+    if last_update.tzname() != "UTC":
+        raise ValueError(
+            f"Expect an 'UTC' datetime, get an '{last_update.tzname()}' one ({last_update})"
         )
 
-    threats = get_threats(
-        client,
-        min_updated_timestamp=last_update_timestamp,
-        min_severity=args.get("min_severity", SEVERITIES[0]),
-        fields=["id"],
-        limit=10000,
-        ordering="-last_seen",
+    fetch_limit: int
+    fetch_base_limit = 10000
+
+    modified_incident_ids: list[str] = []
+
+    security_events_to_update: list[SecurityEvent] = []
+    threats_to_update: list[Threat] = []
+
+    # Both for security events and threats, the 'fetch_limit' value will be
+    # increase until everything that has been updated in the remote instance are
+    # effectively fetched
+
+    # Most of the time, only one 'for' loop will be enough
+    # In rare case, two will be needed
+    # In extreme case, more (e.g. the XSOAR haven't been synch. with the remote
+    # instance for age)
+
+    # A more clever way to fetch data, should be to use 'offset' and 'next' values
+
+    for fetch_limit in (fetch_base_limit * i for i in itertools.count(start=1)):
+
+        security_events_to_update.clear()
+        security_events_to_update.extend(
+            get_security_events(
+                client=client,
+                min_updated_timestamp=last_update.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                alert_type=args.get("alert_type"),
+                min_severity=args.get("min_severity", DEFAULT_SEVERITY),
+                fields=["id"],
+                limit=fetch_limit,
+                ordering="last_update",
+            )
+        )
+
+        if len(security_events_to_update) < fetch_limit:
+            break
+
+    demisto.debug(f"Found {len(security_events_to_update)} security events to update")
+
+    modified_incident_ids.extend(
+        f"{IncidentType.SEC_EVENT.value}:{s['id']}" for s in security_events_to_update
     )
 
-    for threat in threats:
-        modified_ids_to_mirror.append(f"{IncidentType.THREAT.value}:{threat['id']}")
+    for fetch_limit in (fetch_base_limit * i for i in itertools.count(start=1)):
 
-    demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
-    return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
+        threats_to_update.clear()
+        threats_to_update.extend(
+            get_threats(
+                client=client,
+                min_updated_timestamp=last_update.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                min_severity=args.get("min_severity", DEFAULT_SEVERITY),
+                fields=["id"],
+                limit=fetch_limit,
+                ordering="last_update",
+            )
+        )
+
+        if len(threats_to_update) < fetch_limit:
+            break
+
+    demisto.debug(f"Found {len(threats_to_update)} threats to update")
+
+    modified_incident_ids.extend(
+        f"{IncidentType.THREAT.value}:{t['id']}" for t in threats_to_update
+    )
+
+    demisto.info(
+        f"Found {len(modified_incident_ids)} incidents to update "
+        f"({len(security_events_to_update)} security events, "
+        f"{len(threats_to_update)} threats)"
+    )
+
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
 
 
 def find_incident_type(remote_incident_id: str):
