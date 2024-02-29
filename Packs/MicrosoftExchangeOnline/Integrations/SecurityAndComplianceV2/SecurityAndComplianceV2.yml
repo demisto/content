@@ -536,7 +536,7 @@ Msg: Export to .msg message files."
       - 'FxStream'
       - 'Mime'
       - 'Msg'
-    - description: 'Specifies whether to export previous versions of the document when you use the Export switch.'
+    - description: Specifies whether to export previous versions of the document when you use the Export switch.
       name: include_sharepoint_document_versions
       auto: PREDEFINED
       predefined:
@@ -548,7 +548,7 @@ Msg: Export to .msg message files."
     - description: Specifies the cc email address target for the search results when you use the export switch.
       name: notify_email_cc
       required: false
-    - description: 'Specifies the scenario type when you use the Export switch.'
+    - description: Specifies the scenario type when you use the Export switch.
       name: scenario
       auto: PREDEFINED
       predefined:
@@ -558,7 +558,7 @@ Msg: Export to .msg message files."
       - 'Inventory'
       - 'RetentionReports'
       - 'TriagePreview'
-    - description: 'Specifies the items to include when the action is Export'
+    - description: Specifies the items to include when the action is Export.
       name: scope
       auto: PREDEFINED
       predefined:
