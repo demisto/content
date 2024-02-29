@@ -409,19 +409,19 @@ def test_map_header(header_name, expected_output):
     When:
         - map header command is executed
     Then:
-        - The http request is called with the right arguments
+        - The header is being converted
     """
     from Redmine import map_header
     assert map_header(header_name) == 'ID'
 
-def test_adjust_name_to_id_in_dict():
+def test_convert_args_to_request_format():
     """
     Given:
         - All relevant arguments for the command that is executed
     When:
-        - redmine-user-id-list command is executed
+        - adjust_name_to_id_in_dict command is executed
     Then:
-        - The http request is called with the right arguments
+        - The key or value is being converted
     """
     from Redmine import convert_args_to_request_format
-    convert_args_to_request_format({'priority_id':'Immediate'})
+    convert_args_to_request_format({'watcher_user_ids':'1,2,3'})

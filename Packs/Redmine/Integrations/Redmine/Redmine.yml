@@ -38,116 +38,121 @@ script:
     description: Create an issue
     arguments:
     - name: project_id
-      description: Add a project id for this issue
+      description: Enter the project ID for this issue
       type: textArea
       required: true
     - name: tracker_id
-      description: Add a tracker id for this issue
+      description: Enter the tracker ID for this issue
       type: textArea
     - name: status_id
       required: true
-      description: Add a status id for this issue
+      description: Enter the status ID for this issue
       type: textArea
     - name: priority_id
       required: true
-      description: Add a priority id for this issue
+      description: Enter the priority ID for this issue
       type: textArea
     - name: subject
       required: true
-      description: Add a subject for this issue
+      description: Enter the subject for this issue
       type: textArea
     - name: description
-      description: Add a description for this issue
+      description: Enter a description for this issue
       type: textArea
     - name: category_id
-      description: Add a category id for this issue
+      description: Enter the category ID for this issue
       type: textArea
     - name: fixed_version_id
-      description: Add a target version id for this issue
+      description: Enter the target version ID for this issue
       type: textArea
     - name: assigned_to_id
-      description: Add an ID of the user to assign the issue to
+      description: Enter the ID of the user to assign the issue to
       type: textArea
     - name: parent_issue_id
-      description: Add the ID of the parent issue
+      description: Enter the ID of the parent issue
       type: textArea
     - name: custom_fields
-      auto: PREDEFINED
-      predefined:
-      - '["key":"value"'
-      - '...]'
-      description: Add an array of Key:value pairs as custom fields for this issue
+      description: Insert the custom field to update, THE FORMAT is costumFieldID:Value,costumFieldID:Value etc...
       isArray: true
     - name: watcher_user_ids
-      description: Add an array with watchers user ids for this issue
+      description: Add an array with watcher user IDs for this issue -> 1,2,3
       isArray: true
     - name: is_private
       description: Is the issue private? (True/False)
-      defaultValue: "True"
       type: textArea
     - name: estimated_hours
-      description: Add number of hours estimated for this issue
+      description: Enter the number of hours estimated for this issue
       type: textArea
     - name: file_entry_id
-      description: Add the entry ID of the file to upload
+      description: Enter the entry ID of the file to upload
       type: textArea
     - name: file_name
-      description: Add the name of the file to attach, make sure file name ends with .jpg/png/txt
+      description: Enter the name of the file to attach. Make sure the file name ends with .jpg/png/txt
       type: textArea
     - name: file_description
-      description: Add the description of the file you attached
+      description: Enter the description of the file you attached
       type: textArea
     - name: file_content_type
-      description: Add the file content of the file you attached
+      description:  Enter the file content type of the file you attached
       type: textArea
     outputs:
       - contextPath: Redmine.issue
-        description: kmsjnak
+        description: Create a new issue
   - name: redmine-issue-list
-    description: Show a list of issues
+    description: Display a list of issues
     arguments:
     - name: page_number
-      description: Add a page number
+      description: Enter the page number
       type: textArea
     - name: page_size
-      description: Add page size (default is 50)
+      description: Enter the page size (default is 50)
       type: textArea
     - name: limit
-      description: Add the number of issues to show in the response (default 25 maximum 100)
+      description: Specify the number of issues to display in the response (default is 25, maximum is 100)
       type: textArea
     - name: sort
-      description: Add a field to sort according to. Append :desc to invert the order
+      description: Specify a field to sort according to. Append ":desc" to invert the order
       type: textArea
     - name: include
-      description: Add an array of extra fields to fetch (possible value- attachments/relations)
+      description: Specify an array of extra fields to fetch (possible values- attachments, relations)
       isArray: true
     - name: issue_id
-      description: Add an array of issues' ids to show
+      description: Specify an array of issue IDs to display -> 1,2,3
       isArray: true
     - name: project_id
-      description: Add a project id to show issues of this project
+      description: Specify a project ID to display issues of this project
       type: textArea
     - name: subproject_id
-      description: Add a subproject id to show issues of this subproject_id (use project_id=someID and subproject_id=!* to exclude subproject)
+      description: Specify a subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!*" to exclude subprojects)
       type: textArea
     - name: tracker_id
-      description: Add a tracker id to show issues of this tracker id
+      description: Specify a tracker ID to display issues of this tracker ID
       type: textArea
     - name: status_id
-      description: Add a status id to show issues of this status id
-      type: textArea
+      auto: PREDEFINED
+      description: Specify a status ID to display issues of this status ID
+      predefined:
+      - open
+      - closed
+      - '*'
+      - New
+      - In progress
+      - Resolved
+      - Feedback
+      - Closed
+      - Rejected
     - name: assigned_to_id
-      description: Add a assigned-to id to show issues which are assigned to this user id
+      description: Specify an assigned-to ID to display issues assigned to this user ID
       type: textArea
     - name: parent_id
-      description: Add a parent id to show issues which are under to this parent id
+      description: Specify a parent ID to display issues that are under this parent ID
       type: textArea
     - name: cf_x
-      description: Add this field to get issues with the given value for a custom field with an id of x
+      description: Add this field to get issues with the given value for a custom field with an ID of x
       type: textArea
     outputs:
       - contextPath: Redmine.issue
-        description: Show a list of issues
+        description: Display a list of issues
   - name: redmine-issue-update
     description: Update an existing issue
     arguments:
@@ -207,7 +212,7 @@ script:
       predefined:
       isArray: true
     - name: watcher_user_ids
-      description: Add an array of watcher ids seperated with comma (1,2,3)
+      description: Add an array of watcher ids seperated with comma -> 1,2,3
       isArray: true
     - name: is_private
       auto: PREDEFINED
@@ -231,7 +236,7 @@ script:
       description: The entry ID of the file to upload
       type: textArea
     - name: file_name
-      description: The name of the file to 
+      description: The name of the file to upload (should end with .jpg/.png/.txt etc...)
       type: textArea
     - name: file_description
       description: The description of the attached file

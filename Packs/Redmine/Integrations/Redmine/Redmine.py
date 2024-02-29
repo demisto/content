@@ -29,7 +29,10 @@ ISSUE_STATUS_DICT = {
     'Resolved': '3',
     'Feedback': '4',
     'Closed': '5',
-    'Rejected': '6'
+    'Rejected': '6',
+    'open': 'open',
+    'closed': 'closed',
+    '*': '*'
 }
 
 ISSUE_PRIORITY_DICT = {
@@ -119,7 +122,7 @@ class Client(BaseClient):
 
 
 def create_paging_header(page_size: int, page_number: int):
-    return '#### Showing' + (f' {page_size}') + ' results' + (f' from page {page_number}') + ':\n'
+    return '#### Showing' + (f' {page_size}') + ' results (or less)' + (f' from page {page_number}') + ':\n'
 
 
 def adjust_paging_to_request(args: dict[str, Any]):
@@ -144,7 +147,7 @@ def adjust_paging_to_request(args: dict[str, Any]):
     else:
         if limit:
             offset_to_dict = 0
-            limit_to_dict = limit
+            limit_to_dict = int(limit) if int(limit) <= 100 else 100
         else:
             offset_to_dict = 0
             limit_to_dict = 25
@@ -217,6 +220,7 @@ def test_module(client: Client) -> None:
 
 
 def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    # is it redundant
     required_fields = ['status_id', 'priority_id', 'subject', 'project_id']
     missing_fields = [field for field in required_fields if not args.get(field)]
     if missing_fields:
@@ -239,6 +243,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
                                 filename=file_name,
                                 description=file_description)
         args['uploads'] = [uploads]
+        convert_args_to_request_format(args)
 
     response = client.create_issue_request(args)['issue']
 
@@ -276,7 +281,10 @@ def update_issue_command(client: Client, args: dict[str, Any]):
 
 def get_issues_list_command(client: Client, args: dict[str, Any]):
     offset_to_dict, limit_to_dict, page_header = adjust_paging_to_request(args)
-    args = assign_params(offset=offset_to_dict, limit=limit_to_dict, **args)
+    status_id = args.pop('status_id', None)
+    if status_id:
+        status_id = ISSUE_STATUS_DICT[status_id]
+    args = assign_params(status_id=status_id, offset=offset_to_dict, limit=limit_to_dict, **args)
     response = client.get_issues_list_request(args)['issues']
     if not page_header:
         page_header = create_paging_header(len(response), 1)
