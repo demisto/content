@@ -160,7 +160,7 @@ def test_get_issue_by_id_command(mocker, redmine_client):
     """
     from Redmine import get_issue_by_id_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
-    args = {'issue_id': '1', 'include': ['watchers', 'attachments']}
+    args = {'issue_id': '1', 'include': 'watchers,attachments'}
     get_issue_by_id_command(redmine_client, args)
     http_request.assert_called_with('GET', '/issues/1.json', params={'include': 'watchers,attachments'},
                                     headers={'Content-Type': 'application/json'})
@@ -194,7 +194,8 @@ def test_delete_issue_by_id_command(mocker, redmine_client):
     http_request = mocker.patch.object(redmine_client, '_http_request')
     args = {'issue_id': '41'}
     delete_issue_by_id_command(redmine_client, args)
-    http_request.assert_called_with('DELETE', '/issues/41.json', headers={'Content-Type': 'application/json'})
+    http_request.assert_called_with('DELETE', '/issues/41.json', headers={'Content-Type': 'application/json'}, 
+                                    empty_valid_codes=[200, 204, 201], return_empty_response=True)
 
 def test_delete_issue_by_id_command_no_issue_id(redmine_client):
     """
@@ -226,7 +227,8 @@ def test_add_issue_watcher_command(mocker, redmine_client):
     args = {'issue_id': '1', 'watcher_id': '1'}
     add_issue_watcher_command(redmine_client, args)
     http_request.assert_called_with('POST', '/issues/1/watchers.json', params={'user_id': '1'},
-                                    headers={'Content-Type': 'application/json'})
+                                    headers={'Content-Type': 'application/json'},
+                                    empty_valid_codes=[200, 204, 201], return_empty_response=True)
 
 def test_add_issue_watcher_command_no_watcher(redmine_client):
     """
@@ -272,7 +274,8 @@ def test_remove_issue_watcher_command(mocker, redmine_client):
     http_request = mocker.patch.object(redmine_client, '_http_request')
     args = {'issue_id': '1', 'watcher_id': '1'}
     remove_issue_watcher_command(redmine_client, args)
-    http_request.assert_called_with('DELETE', '/issues/1/watchers/1.json', headers={'Content-Type': 'application/json'})
+    http_request.assert_called_with('DELETE', '/issues/1/watchers/1.json', headers={'Content-Type': 'application/json'},
+                                    empty_valid_codes=[200, 204, 201], return_empty_response=True)
     
 def test_remove_issue_watcher_command_no_watcher(redmine_client):
     """
@@ -321,6 +324,23 @@ def test_get_project_list_command(mocker, redmine_client):
     get_project_list_command(redmine_client, args)
     http_request.assert_called_with('GET', '/projects.json', params={'include': 'time_entry_activities'}, headers={})
 
+def test_get_project_list_command_include_not_in_predefined_values(redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-issue-watcher-remove command is executed
+    Then:
+        - No issue id raises a DemistoException
+    """
+    from Redmine import get_project_list_command
+    from CommonServerPython import DemistoException
+    args = {'include': 'time_entry_activities,jissue_categories'}
+    with pytest.raises(DemistoException) as e:
+        get_project_list_command(redmine_client, args)
+    assert e.value.message == "The 'include' argument should only contain values from trackers/issue_categories/enabled_modules/time_entry_activities/issue_custom_fields, separated by commas. These values are not in options ['jissue_categories']"
+
+
 def test_get_custom_fields_command(mocker, redmine_client):
     """
     Given:
@@ -344,10 +364,10 @@ def test_get_users_command(mocker, redmine_client):
     Then:
         - The http request is called with the right arguments
     """
-    from Redmine import get_custom_fields_command
+    from Redmine import get_users_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
-    get_custom_fields_command(redmine_client, {})
-    http_request.assert_called_with('GET', '/custom_fields.json', headers={}) 
+    get_users_command(redmine_client, {'status': 'Active'})
+    http_request.assert_called_with('GET', 'users.json', headers= {}, params= {'status': '1'})
 
 ''' HELPER FUNCTIONS TESTS '''
 
@@ -387,9 +407,21 @@ def test_map_header(header_name, expected_output):
     Given:
         - All relevant arguments for the command that is executed
     When:
-        - redmine-user-id-list command is executed
+        - map header command is executed
     Then:
         - The http request is called with the right arguments
     """
     from Redmine import map_header
     assert map_header(header_name) == 'ID'
+
+def test_adjust_name_to_id_in_dict():
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-user-id-list command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Redmine import convert_args_to_request_format
+    convert_args_to_request_format({'priority_id':'Immediate'})

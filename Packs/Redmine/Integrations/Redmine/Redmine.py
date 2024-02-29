@@ -6,15 +6,38 @@ from CommonServerUserPython import *  # noqa
 from typing import Any
 
 ''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 POST_PUT_HEADER = {'Content-Type': 'application/json'}
+
 GET_HEADER = {}
+
 UPLOAD_FILE_HEADER = {'Content-Type': 'application/octet-stream'}
-STATUS_DICT = {
+
+USER_STATUS_DICT = {
     'Active' : '1',
     'Registered': '2',
     'Locked': '3',
+}
+
+ISSUE_TRACKER_DICT = {
+    'Bug': '1',
+    'Feature': '2',
+    'Support': '3'}
+
+ISSUE_STATUS_DICT = {
+    'New': '1',
+    'In progress': '2',
+    'Resolved': '3',
+    'Feedback': '4',
+    'Closed': '5',
+    'Rejected': '6'
+}
+
+ISSUE_PRIORITY_DICT = {
+    'Low': '1',
+    'Normal': '2',
+    'High': '3',
+    'Urgent': '4',
+    'Immediate': '5'
 }
 ''' CLIENT CLASS '''
 
@@ -52,7 +75,7 @@ class Client(BaseClient):
             args['uploads'] = [{'token': file_token, 'filename': file_name,
                                 'description': description, 'content_type': content_type}]
         response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": args}, headers=POST_PUT_HEADER,
-                                      empty_valid_codes=[200], return_empty_response=True)
+                                      empty_valid_codes=[204], return_empty_response=True)
         return response
 
     def get_issues_list_request(self, args: dict[str, Any]):
@@ -60,8 +83,8 @@ class Client(BaseClient):
         return response
 
     def delete_issue_by_id_request(self, issue_id):
-        response = self._http_request('DELETE', f'/issues/{issue_id}.json', headers=POST_PUT_HEADER, empty_valid_codes=[200],
-                                      return_empty_response=True)
+        response = self._http_request('DELETE', f'/issues/{issue_id}.json', headers=POST_PUT_HEADER,
+                                      empty_valid_codes=[200,204,201],return_empty_response=True)
         return response
 
     def get_issue_by_id_request(self, args, issue_id):
@@ -71,12 +94,12 @@ class Client(BaseClient):
     def add_issue_watcher_request(self, issue_id, watcher_id):
         args_to_add = {'user_id': watcher_id}
         response = self._http_request('POST', f'/issues/{issue_id}/watchers.json', params=args_to_add, headers=POST_PUT_HEADER,
-                                      empty_valid_codes=[200], return_empty_response=True)
+                                      empty_valid_codes=[200,204,201], return_empty_response=True)
         return response
 
     def remove_issue_watcher_request(self, issue_id, watcher_id):
         response = self._http_request('DELETE', f'/issues/{issue_id}/watchers/{watcher_id}.json', headers=POST_PUT_HEADER,
-                                      empty_valid_codes=[200], return_empty_response=True)
+                                      empty_valid_codes=[200,204,201], return_empty_response=True)
         return response
 
     def get_project_list_request(self, args: dict[str, Any]):
@@ -129,7 +152,7 @@ def adjust_paging_to_request(args: dict[str, Any]):
     return offset_to_dict, limit_to_dict, page_header
 
 
-def map_header(header_string: str):
+def map_header(header_string: str) -> str:
     header_mapping = {
         'id': 'ID',
         'login': 'Login',
@@ -141,6 +164,25 @@ def map_header(header_string: str):
         'last_login_on': 'Last Login On'
     }
     return header_mapping.get(header_string, header_string)
+
+def convert_args_to_request_format(args):
+    tracker_id = args.pop('tracker_id', None)
+    status_id = args.pop('status_id', None)
+    priority_id = args.pop('priority_id', None)
+    custom_fields = args.pop('custom_fields', None)
+    watcher_user_ids = args.pop('custom_fields', None)
+    if tracker_id:
+        args['tracker_id'] = ISSUE_TRACKER_DICT[tracker_id]
+    if status_id:
+        args['status_id'] = ISSUE_STATUS_DICT[status_id]
+    if priority_id:
+        args['priority_id'] = ISSUE_PRIORITY_DICT[priority_id]
+    if custom_fields:
+        custom_fields = custom_fields.split(',')
+        args['custom_fields'] = [dict(zip(('id', 'value'), field.split(':'))) for field in custom_fields]
+    if watcher_user_ids:
+        args['watcher_user_ids'] = [watcher_user_ids]
+
 
 def get_file_name_and_content(entry_id: str) -> bytes:
     """Returns the XSOAR file entry's content.
@@ -213,17 +255,17 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
                                         removeNull=True, is_auto_json_transform=True, headerTransform=pascalToSpace)
     )
     return command_results
-
-
+        
 def update_issue_command(client: Client, args: dict[str, Any]):
     # need to deal with watchers,customfields,attachments
     issue_id = args.get('issue_id')
     if issue_id:
-        entry_id = args.pop('entry_id', None)
-        file_name = args.pop('entry_id', '')
+        entry_id = args.pop('file_entry_id', None)
         if (entry_id):
+            file_name = args.pop('file_name', '')
             file_token = client.create_file_token_request(assign_params(file_name=file_name), entry_id)['upload']['token']
             args = assign_params(token=file_token, **args)
+        convert_args_to_request_format(args)
         client.update_issue_request(args)
         command_results = CommandResults(
             readable_output=f'Issue with id {issue_id} was successfully updated.')
@@ -297,6 +339,7 @@ def delete_issue_by_id_command(client: Client, args: dict[str, Any]):
 
 
 def add_issue_watcher_command(client: Client, args: dict[str, Any]):
+    # is it redandent?
     issue_id = args.get('issue_id')
     watcher_id = args.get('watcher_id')
     if issue_id:
@@ -312,6 +355,7 @@ def add_issue_watcher_command(client: Client, args: dict[str, Any]):
 
 
 def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
+    # is it redandent?
     issue_id = args.get('issue_id')
     watcher_id = args.get('watcher_id')
     if issue_id:
@@ -319,7 +363,7 @@ def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
             client.remove_issue_watcher_request(issue_id, watcher_id)
             command_results = CommandResults(
                 readable_output=f'Watcher with id {watcher_id} was removed successfully from issue with id {issue_id}.')
-            return (command_results)
+            return command_results
         else:
             raise DemistoException('watcher_id is missing in order to remove watcher from this issue')
     else:
@@ -327,10 +371,20 @@ def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
 
 
 def get_project_list_command(client: Client, args: dict[str, Any]):
-    # sub field are as dictionary- ui not well
+    INCLUDE_SET = {'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities','issue_custom_fields'}
+    include_arg = args['include']
+    if include_arg:
+        included_values = include_arg.split(',')
+        invalid_values = [value for value in included_values if value not in INCLUDE_SET]
+        if invalid_values:
+            raise DemistoException("The 'include' argument should only contain values from trackers/issue_categories/"\
+                                   "enabled_modules/time_entry_activities/issue_custom_fields, separated by commas. "\
+                                f"These values are not in options {invalid_values}")
     response = client.get_project_list_request(args)['projects']
     headers = ['id', 'name', 'identifier', 'description', 'status', 'is_public', 'time_entry_activities', 'created_on',
                'updated_on', 'default_value', 'visible', 'roles']
+    for project in response:
+        project['id'] = str(project['id'])
     command_results = CommandResults(outputs_prefix='Redmine.Project',
                                      outputs_key_field='id',
                                      outputs=response,
@@ -338,7 +392,8 @@ def get_project_list_command(client: Client, args: dict[str, Any]):
                                      readable_output=tableToMarkdown('Projects List:', response,
                                                                      headers=headers,
                                                                      removeNull=True,
-                                                                     headerTransform=underscoreToCamelCase),
+                                                                     headerTransform=underscoreToCamelCase,
+                                                                     is_auto_json_transform=True),
                                      )
     return command_results
 
@@ -364,9 +419,9 @@ def get_custom_fields_command(client: Client, args):
 
 
 def get_users_command(client: Client, args: dict[str, Any]):
-    status_string = args['status']
+    status_string = args.get('status')
     if status_string:
-        args['status'] = STATUS_DICT[status_string]
+        args['status'] = USER_STATUS_DICT[status_string]
     response = client.get_users_request(args)['users']
     headers = ['id', 'login', 'admin', 'firstname', 'lastname', 'mail', 'created_on', 'last_login_on']
     for user in response:
