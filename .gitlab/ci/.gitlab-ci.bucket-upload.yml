@@ -332,42 +332,56 @@ upload-packs-to-marketplace:
     - *check_user_permissions_to_upload_packs
     - section_start "Upload Packs To Marketplace Storage"
     - |
-      if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "$GCS_PRODUCTION_BUCKET" ]]; then
-        EXTRACT_FOLDER=$(mktemp -d)
-        PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
-        PACKS_DEPENDENCIES="${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json"
-        CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
-        GCS_BUILD_BUCKET="marketplace-ci-build"
-        if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
-          STORAGE_BASE_PATH="content"
-        fi
+      if [[ "$CI_COMMIT_BRANCH" != "master" ]] && [[ "$GCS_MARKET_BUCKET" == "$GCS_PRODUCTION_BUCKET" ]]; then
+        echo "Running Upload-Flow for production from private branch is not allowed"
+        exit 1
+      fi
 
-        if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
-         STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
-        fi
+      EXTRACT_FOLDER=$(mktemp -d)
+      PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
+      PACKS_DEPENDENCIES="${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json"
+      CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
+      GCS_BUILD_BUCKET="marketplace-ci-build"
+      if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="content"
+      fi
 
-        if [[ -z "${PACKS_TO_UPLOAD}" ]]; then
-          PACKS_TO_UPLOAD="All"
-        fi
-        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
-        
-        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-        if [[ $TEST_UPLOAD == "false" ]] && [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" ]]; then
-          gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" "gs://xsoar-ci-artifacts/content/$CI_COMMIT_SHA/$MARKETPLACE_VERSION/packs_results_upload.json"
-          echo "packs_results_upload.json upload successfully"
-        fi
-        
-        core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
-        if [ "${core_packs_files_count}" -eq 0 ]; then
-          echo "No core packs files were found, skipping uploading."
-        else
-          echo "Uploading ${core_packs_files_count} core packs files."
-          # Copy core packs files from the artifacts folder to the build bucket:
-          find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" -exec gsutil cp -z json "{}" "gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/packs" \;
-          echo "Successfully uploaded core packs files."
-        fi
+      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+      fi
+
+      if [[ -z "${PACKS_TO_UPLOAD}" ]]; then
+        PACKS_TO_UPLOAD="All"
+      fi
+      python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
+      
+      gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+      if [[ $TEST_UPLOAD == "false" ]] && [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" ]]; then
+        gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" "gs://xsoar-ci-artifacts/content/$CI_COMMIT_SHA/$MARKETPLACE_VERSION/packs_results_upload.json"
+        echo "packs_results_upload.json upload successfully"
+      fi
+      
+      core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
+      if [ "${core_packs_files_count}" -eq 0 ]; then
+        echo "No core packs files were found, skipping uploading."
+      else
+        echo "Uploading ${core_packs_files_count} core packs files."
+        # Copy core packs files from the artifacts folder to the build bucket:
+        find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" -exec gsutil cp -z json "{}" "gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/packs" \;
+        echo "Successfully uploaded core packs files."
       fi
     - section_end "Upload Packs To Marketplace Storage"
+
+    - section_start "Upload Packs To Marketplace Storage V2 (dev)"
+    - |
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+      gsutil -m rsync -r gs://marketplace-ci-build/content/builds/${CI_COMMIT_BRANCH}/${CI_PIPELINE_ID}/${MARKETPLACE_VERSION} gs://marketplace-dist-dev/upload-flow/builds/${CI_COMMIT_BRANCH}-dev/$CI_PIPELINE_ID
+    - section_end "Upload Packs To Marketplace Storage V2 (dev)"
+
+    - section_start "Dry Run Sync For Testing"
+    - |
+      gsutil -m rsync -n -r gs://${GCS_MARKET_BUCKET} gs://marketplace-dist-dev/upload-flow/builds/${CI_COMMIT_BRANCH}-dev/$CI_PIPELINE_ID
+    - section_end "Dry Run Sync For Testing"
 
     - section_start "Download packs from GCP"
     - |
