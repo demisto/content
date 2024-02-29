@@ -1475,7 +1475,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "solve_neo4j_memory_limit_on_nightly"
-resolved_reference = "531260f52615f463dc4f56ccc7ddd998a2e764e7"
+resolved_reference = "0cf7d6a258a8902c80267b9e238f5f1067e13468"
 
 [[package]]
 name = "deprecated"
@@ -3509,12 +3509,12 @@ PyOpenSSL = "*"
 
 [[package]]
 name = "neo4j"
-version = "5.17.0"
+version = "5.18.0"
 description = "Neo4j Bolt driver for Python"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "neo4j-5.17.0.tar.gz", hash = "sha256:dcd7150a0c3834a89a6e27505e614f340376f31c97c48ba60dc70a220ee85e3b"},
+    {file = "neo4j-5.18.0.tar.gz", hash = "sha256:4014406ae5b8b485a8ba46c9f00b6f5b4aaf88e7c3a50603445030c2aab701c9"},
 ]
 
 [package.dependencies]
