@@ -751,7 +751,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ""
       description: This operation verifies aliases and matches display names to the correct mailbox user. It handles one ambiguous name at a time. If there are multiple potential matches, all will be returned, but limited to a maximum of 100 candidates.
