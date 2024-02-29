@@ -820,7 +820,8 @@ def test_update_remote_system_command(incident_changed, delta):
 
                              # Expecting default mapping to be used for when improper key-value pair *format* is provided.
                              ("Duplicate Incident=Other, False Positive=Other True Positive=Other",
-                              ["Other", "Other", "False Positive", "Resolved", "Resolved - Security Testing", "Other", "Resolved"]),
+                              ["Other", "Other", "False Positive", "Resolved", "Resolved - Security Testing", "Other",
+                               "Resolved"]),
 
                          ]
                          )
@@ -834,19 +835,19 @@ def test_xdr_to_xsoar_flexible_close_reason_mapping(capfd, mocker, custom_mappin
     Then
         - The resolved XSOAR statuses match the expected statuses for all possible XDR close-reasons.
     """
-    # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
-    with capfd.disabled():
-        from CortexXDRIR import handle_incoming_closing_incident
-        mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
-                                                             "custom_xdr_to_xsoar_close_reason_mapping": custom_mapping})
+    from CortexXDRIR import handle_incoming_closing_incident
+    mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
+                                                         "custom_xdr_to_xsoar_close_reason_mapping": custom_mapping})
 
-        all_xdr_close_reasons = XDR_RESOLVED_STATUS_TO_XSOAR.keys()
+    all_xdr_close_reasons = XDR_RESOLVED_STATUS_TO_XSOAR.keys()
 
-        for i, xdr_close_reason in enumerate(all_xdr_close_reasons):
-            # Mock an xdr incident with "resolved" status.
-            incident_data = load_test_data('./test_data/resolved_incident_data.json')
-            # Set incident status to be tested close-reason.
-            incident_data["status"] = xdr_close_reason
+    for i, xdr_close_reason in enumerate(all_xdr_close_reasons):
+        # Mock an xdr incident with "resolved" status.
+        incident_data = load_test_data('./test_data/resolved_incident_data.json')
+        # Set incident status to be tested close-reason.
+        incident_data["status"] = xdr_close_reason
 
+        # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
+        with capfd.disabled():
             close_entry = handle_incoming_closing_incident(incident_data)
-            assert close_entry["Contents"]["closeReason"] == expected_resolved_status[i]
+        assert close_entry["Contents"]["closeReason"] == expected_resolved_status[i]

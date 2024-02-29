@@ -11764,7 +11764,7 @@ def comma_separated_mapping_to_dict(raw_text):
 
     mapping_dict = {}
     # If a proper mapping was not provided, return an empty dict.
-    if raw_text == '':
+    if not raw_text:
         return mapping_dict
 
     key_value_pairs = raw_text.split(',')

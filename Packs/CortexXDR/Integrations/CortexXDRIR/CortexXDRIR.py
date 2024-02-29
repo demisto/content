@@ -645,7 +645,7 @@ def resolve_xsoar_close_reason(xdr_close_reason):
             xdr_close_reason.replace("resolved_", "").replace("_", " ").title()
         )
         xsoar_close_reason = custom_xdr_to_xsoar_close_reason_mapping.get(title_cased_xdr_close_reason)
-        if xsoar_close_reason in XSOAR_RESOLVED_STATUS_TO_XDR.keys():
+        if xsoar_close_reason in XSOAR_RESOLVED_STATUS_TO_XDR:
             demisto.debug(
                 f"XDR->XSOAR custom close-reason exists, using {xdr_close_reason}={xsoar_close_reason}"
             )

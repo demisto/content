@@ -3877,7 +3877,7 @@ def test_handle_outgoing_issue_closure(args, expected_delta):
 
                          ]
                          )
-def test_xsoar_to_xdr_flexible_close_reason_mapping(mocker, custom_mapping, expected_resolved_status):
+def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mapping, expected_resolved_status):
     """
     Given:
         - A custom XSOAR->XDR close-reason mapping
@@ -3894,14 +3894,15 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(mocker, custom_mapping, expe
                                                          "custom_xsoar_to_xdr_close_reason_mapping": custom_mapping})
 
     all_xsoar_close_reasons = XSOAR_RESOLVED_STATUS_TO_XDR.keys()
-
     for i, close_reason in enumerate(all_xsoar_close_reasons):
         remote_args = UpdateRemoteSystemArgs({'delta': {'closeReason': close_reason},
                                               'status': 2,
                                               'inc_status': 2,
                                               'data': {'status': 'other'}
                                               })
-        handle_outgoing_issue_closure(remote_args)
+        # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
+        with capfd.disabled():
+            handle_outgoing_issue_closure(remote_args)
 
         assert remote_args.delta.get('status')
         assert remote_args.delta['status'] == expected_resolved_status[i]
