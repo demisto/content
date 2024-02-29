@@ -7,7 +7,7 @@ import demistomock as demisto
 from CommonServerPython import CommandResults
 from GitHub import main, list_branch_pull_requests, list_all_projects_command, \
     add_issue_to_project_board_command, get_path_data, github_releases_list_command, get_branch_command, \
-    list_issue_comments
+    list_issue_comments, http_request
 import GitHub
 
 REGULAR_BASE_URL = 'https://api.github.com'
@@ -504,3 +504,46 @@ def test_github_list_workflow(mocker):
 
     mocker_results.assert_called_once()
     assert mocker_results.call_args[0][0].outputs[0]['head_branch'] == 'master'
+
+
+def test_http_request():
+    """
+    Given:
+      - A body of a post request
+    When:
+      - Calling the 'http_request' function
+    Then:
+      - Ensure the correctness of the request body.
+    """
+
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USE_SSL = ''
+    GitHub.HEADERS = {}
+
+    # Test HTTP request with data equal to 'dictionary'
+    with requests_mock.Mocker() as m:
+        mock_req = m.post(f'{REGULAR_BASE_URL}/test', json={})
+        response = http_request('POST', '/test', data={'test_key': 'test_value'})
+    assert response == {}
+    assert mock_req.last_request.text == '{"test_key": "test_value"}'
+
+    # Test HTTP request with data equal to empty 'dictionary'
+    with requests_mock.Mocker() as m:
+        mock_req = m.post(f'{REGULAR_BASE_URL}/test', json={})
+        response = http_request('POST', '/test', data={})
+    assert response == {}
+    assert not mock_req.last_request.text
+
+    # Test HTTP request with data equal to 'null'
+    with requests_mock.Mocker() as m:
+        mock_req = m.post(f'{REGULAR_BASE_URL}/test', json={})
+        response = http_request('POST', '/test', data='null')
+    assert response == {}
+    assert mock_req.last_request.text == '"null"'
+
+    # Test HTTP request with data equal to 'None'
+    with requests_mock.Mocker() as m:
+        mock_req = m.post(f'{REGULAR_BASE_URL}/test', json={})
+        response = http_request('POST', '/test', data=None)
+    assert response == {}
+    assert not mock_req.last_request.text
