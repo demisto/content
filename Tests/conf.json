@@ -3997,6 +3997,10 @@
             "is_mockable": false
         },
         {
+            "integrations": "CarbonBlackProtectionV2",
+            "playbookID": "CbP-PlayBook"
+        },
+        {
             "playbookID": "EDL Indicator Performance Test",
             "instance_names": "eis_auto",
             "integrations": [
@@ -5640,6 +5644,10 @@
             "playbookID": "Zimperiumv2-TestPlaybook"
         },
         {
+            "integrations": "JoeSecurityV2",
+            "playbookID": "testplaybook-JoeSecuirtyV2"
+        },
+        {
             "integrations": "AWS-SNS-Listener",
             "playbookID": "AWS SNS Listener - Test",
             "instance_names": "AWS-SNS-Listener"
@@ -5678,7 +5686,7 @@
         "NetWitness Endpoint Test": "Issue 19878",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "ArcSight Logger test": "Issue 19117",
-        "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
+        "AWS - CloudTrail Test Playbook": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "IntSights Mssp Test": "Issue #16351",
         "AWS - SQS Test Playbook": "Issue 19854",
@@ -5752,7 +5760,7 @@
         "cisco-ise-test-playbook": "Issue 44351",
         "GuardiCoreV2-Test": "Issue 43822",
         "ExtractAttackPattern-Test": "Issue 44095",
-        "playbook-EWS_O365_Extension_test": "Issue 25605",
+        "playbook-EWS_O365_Extension_test": "Issue 25605, Issue 39008",
         "Cherwell - test": "Issue 26780",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
@@ -5958,7 +5966,8 @@
         "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
         "ThreatExchange v2": "No instance",
         "PhishLabs IOC EIR": "No instance, CRTX-91214",
-        "fortimail": "No instance"
+        "fortimail": "No instance",
+        "JoeSecurityV2": "CRTX-107692"
     },
     "nightly_packs": [
         "CommonScripts",
