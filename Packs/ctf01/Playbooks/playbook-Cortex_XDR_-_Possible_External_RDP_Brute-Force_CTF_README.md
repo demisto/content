@@ -7,11 +7,11 @@ This playbook investigates a “Possible External RDP Brute Force” XDR Alert b
 -  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after "Credential Access", were found.
 
 Set verdict method:
-* Critical Element - The "Critical Element" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a "True Positive".
+- Critical Element - The "Critical Element" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a "True Positive".
 
-* Final Verdict -  Each suspicious element is being added to an array called "Suspicious Elements", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a "True Positive".
+- Final Verdict -  Each suspicious element is being added to an array called "Suspicious Elements", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a "True Positive".
 
-* User Engagement - The "UserEngagementThreshold" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a "True Positive".
+- User Engagement - The "UserEngagementThreshold" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a "True Positive".
 
 
 ## Dependencies
@@ -20,25 +20,25 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Get entity alerts by MITRE tactics CTF
-* Threat Hunting - Generic
-* TIM - Indicator Relationships Analysis
-* Cortex XDR - Possible External RDP Brute-Force - Set Verdict
-* Account Enrichment - Generic v2.1
+- Cortex XDR - Get entity alerts by MITRE tactics CTF
+- Threat Hunting - Generic
+- TIM - Indicator Relationships Analysis
+- Cortex XDR - Possible External RDP Brute-Force - Set Verdict
+- Account Enrichment - Generic v2.1
 
 ### Integrations
 
-* CortexXDRIRCTF
-* OHMYVTCTF
+- CortexXDRIRCTF
+- OHMYVTCTF
 
 ### Scripts
 
-* Set
+- Set
 
 ### Commands
 
-* setIncident
-* ip
+- setIncident
+- ip
 
 ## Playbook Inputs
 
