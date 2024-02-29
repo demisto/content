@@ -1475,7 +1475,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "solve_neo4j_memory_limit_on_nightly"
-resolved_reference = "17a0c8095dc9c31f0b52a4a2b50d098e6612cf90"
+resolved_reference = "531260f52615f463dc4f56ccc7ddd998a2e764e7"
 
 [[package]]
 name = "deprecated"
