@@ -11,7 +11,7 @@ description: |-
   - Terminate/Shut down/Power off an instance
   - Delete/Disable a user
   - Delete/Revoke/Disable credentials
-  - Block indicators
+  - Block indicators.
 starttaskid: "0"
 tasks:
   "0":
@@ -449,6 +449,9 @@ tasks:
       accountType:
         complex:
           root: inputs.accountType
+      GCPprojectID:
+        complex:
+          root: inputs.GCPprojectID
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -502,13 +505,13 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
+      bcc:
       body:
         simple: |-
           No Cloud Provider was specified to handle Cloud Response - Generic. Please Choose from the following list.
 
           Note that only GCP / Azure / AWS is supported in this flow.
-      cc: null
+      cc:
       format: html
       methods:
       - email
@@ -828,19 +831,19 @@ inputs:
   playbookInputQuery:
 - description: The source IP address of the attacker.
   key: sourceIP
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The GCP Project ID for the event scope.
   key: GCPprojectID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: |-
     The account type
     GCP - "User" / "Service Account"
   key: accountType
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 outputs: []
