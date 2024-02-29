@@ -288,9 +288,13 @@ script:
   - name: redmine-user-id-list
     description: Returns a list of users
     arguments:
-    - name: status
-      description: Get only users with a specific status (possible values-1/2/3; 1-Active, 2-Registered, 3-Locked)
-      type: textArea
+    - auto: PREDEFINED 
+      name: status
+      description: Get only users with a specific status
+      predefined:
+        - 'Active'
+        - 'Registered'
+        - 'Locked'
     - name: name
       description: Get only users with a specific name (search for a match in firstname,lastname and email)
       type: textArea

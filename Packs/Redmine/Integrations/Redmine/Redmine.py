@@ -11,9 +11,12 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 POST_PUT_HEADER = {'Content-Type': 'application/json'}
 GET_HEADER = {}
 UPLOAD_FILE_HEADER = {'Content-Type': 'application/octet-stream'}
-
+STATUS_DICT = {
+    'Active' : '1',
+    'Registered': '2',
+    'Locked': '3',
+}
 ''' CLIENT CLASS '''
-
 
 class Client(BaseClient):
     def __init__(self, server_url, verify=True, proxy=False, headers=None, auth=None):
@@ -164,7 +167,7 @@ def test_module(client: Client) -> None:
         if (get_issues_list_command(client, {'limit': '1'})):
             message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
@@ -361,19 +364,20 @@ def get_custom_fields_command(client: Client, args):
 
 
 def get_users_command(client: Client, args: dict[str, Any]):
-    possible_values_for_status = ['1', '2', '3']
-    status_for_request = args.get('status')
-    if status_for_request and status_for_request not in possible_values_for_status:
-        raise DemistoException(f'Status value for get users request must be one of the following {possible_values_for_status}.')
+    status_string = args['status']
+    if status_string:
+        args['status'] = STATUS_DICT[status_string]
     response = client.get_users_request(args)['users']
     headers = ['id', 'login', 'admin', 'firstname', 'lastname', 'mail', 'created_on', 'last_login_on']
+    for user in response:
+        user['id'] = str(user['id'])
     command_results = CommandResults(outputs_prefix='Redmine.Users',
                                      outputs_key_field='id',
                                      outputs=response,
                                      raw_response=response,
                                      readable_output=tableToMarkdown('Users List:', response, headers=headers,
                                                                      removeNull=True, headerTransform=map_header,
-                                                                     json_transform_mapping=True))
+                                                                     is_auto_json_transform=True))
     return command_results
 
 

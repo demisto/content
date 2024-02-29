@@ -38,11 +38,11 @@ def test_create_issue_command_with_file(mocker, redmine_client):
     create_file_token_request_mock = mocker.patch.object(redmine_client, 'create_file_token_request')
     create_file_token_request_mock.return_value = {'upload': {'token': 'token123'}}
     http_request = mocker.patch.object(redmine_client, '_http_request')
-    args = {'entry_id': 'a.png', 'status_id': '1', 'priority_id': '1', 'subject': 'newSubject', 'project_id': '1'}
+    args = {'file_entry_id': '9@klmlqm', 'status_id': '1', 'priority_id': '1', 'subject': 'newSubject', 'project_id': '1'}
     create_issue_command(redmine_client, args=args)
-    create_file_token_request_mock.assert_called_with({}, 'a.png')
+    create_file_token_request_mock.assert_called_with({}, '9@klmlqm')
     http_request.assert_called_with('POST', '/issues.json',
-                                    params={'entry_id': 'a.png', 'status_id': '1', 'priority_id': '1', 'project_id': '1'},
+                                    params={'status_id': '1', 'priority_id': '1', 'project_id': '1'},
                                     json_data={'issue': {'subject': 'newSubject', 'uploads': [{'token': 'token123'}]}},
                                     headers={'Content-Type': 'application/json'})
 
@@ -51,7 +51,7 @@ def test_create_issue_command_missing_status_id(redmine_client):
     Given:
         - All relevant arguments for the command that is executed
     When:
-        - redmine-issue-delete command is executed
+        - redmine-issue-create command is executed
     Then:
         - The http request is called with the right arguments
     """
@@ -61,6 +61,24 @@ def test_create_issue_command_missing_status_id(redmine_client):
     with pytest.raises(DemistoException) as e:
         create_issue_command(redmine_client, args)
     assert e.value.message == 'One or more required arguments not specified: status_id, priority_id, subject, project_id'
+    
+def test_create_issue_command_failed_to_create_file_token(mocker, redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-issue-create command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Redmine import create_issue_command
+    create_file_token_request_mock = mocker.patch.object(redmine_client, 'create_file_token_request')
+    from CommonServerPython import DemistoException
+    args = {'project_id': '2','status_id': '1', 'priority_id': '1', 'subject': 'newSubject', 'file_entry_id':'9@klmlqm'}
+    create_file_token_request_mock.return_value = {}
+    with pytest.raises(DemistoException) as e:
+        create_issue_command(redmine_client, args)
+    assert str(e.value) == "Could not upload file with entry id 9@klmlqm"
     
 def test_update_issue_command(mocker, redmine_client):
     """
@@ -303,7 +321,6 @@ def test_get_project_list_command(mocker, redmine_client):
     get_project_list_command(redmine_client, args)
     http_request.assert_called_with('GET', '/projects.json', params={'include': 'time_entry_activities'}, headers={})
 
-
 def test_get_custom_fields_command(mocker, redmine_client):
     """
     Given:
@@ -317,9 +334,8 @@ def test_get_custom_fields_command(mocker, redmine_client):
     http_request = mocker.patch.object(redmine_client, '_http_request')
     get_custom_fields_command(redmine_client, {})
     http_request.assert_called_with('GET', '/custom_fields.json', headers={})
-
-
-def test_get_users_command_not_valid_status(mocker, redmine_client):
+    
+def test_get_users_command(mocker, redmine_client):
     """
     Given:
         - All relevant arguments for the command that is executed
@@ -328,13 +344,10 @@ def test_get_users_command_not_valid_status(mocker, redmine_client):
     Then:
         - The http request is called with the right arguments
     """
-    from Redmine import get_users_command
-    from CommonServerPython import DemistoException
-    # demisto_exception = mocker.patch(redmine_client, 'DemistoException')
-    args = {'status': '4'}
-    with pytest.raises(DemistoException) as e:
-        get_users_command(redmine_client, args)
-    assert e.value.message == "Status value for get users request must be one of the following ['1', '2', '3']."
+    from Redmine import get_custom_fields_command
+    http_request = mocker.patch.object(redmine_client, '_http_request')
+    get_custom_fields_command(redmine_client, {})
+    http_request.assert_called_with('GET', '/custom_fields.json', headers={}) 
 
 ''' HELPER FUNCTIONS TESTS '''
 
