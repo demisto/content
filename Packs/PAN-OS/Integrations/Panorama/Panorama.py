@@ -13834,7 +13834,7 @@ def pan_os_delete_security_profile_group_command(args: dict) -> CommandResults:
     raw_response = http_request(URL, "GET", params=params)
     return CommandResults(
         raw_response=raw_response,
-        readable_output=f'Successfull deleted Security Profile Group: "{group_name}"',
+        readable_output=f'Successfully deleted Security Profile Group: "{group_name}"',
     )
 
 
