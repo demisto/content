@@ -1999,7 +1999,7 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
     results = client.list_endpoint(
         argToList(args.get("health_status")),
         argToList(args.get("endpoint_type")),
-        args.get("tamper_protection_enabled") == "true",
+        args.get("tamper_protection_enabled") == "true" if args.get("tamper_protection_enabled") else None,
         argToList(args.get("lockdown_status")),
         args.get("last_seen_before"),
         args.get("last_seen_after"),
