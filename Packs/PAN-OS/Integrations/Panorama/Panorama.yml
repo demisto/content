@@ -5148,7 +5148,7 @@ script:
       - bottom
     - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument.
       name: dst
-    - description: A audit comment for the rule.
+    - description: An audit comment for the rule.
       name: audit_comment
     description: Creates a policy rule.
     execution: true
@@ -8676,7 +8676,7 @@ script:
       predefined:
       - forward
       - reverse
-    - description: A audit comment for the rule.
+    - description: An audit comment for the rule.
       name: audit_comment
     description: Creates a new NAT rule in a Panorama/firewall instance.
     name: pan-os-create-nat-rule
@@ -9118,7 +9118,7 @@ script:
     - description: The nexthop addresses list for the symmetric return.
       isArray: true
       name: nexthop_address_list
-    - description: A audit comment for the rule.
+    - description: An audit comment for the rule.
       name: audit_comment
     description: Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance.
     name: pan-os-create-pbf-rule

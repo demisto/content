@@ -13743,7 +13743,7 @@ def pan_os_get_audit_comment_command(args: dict) -> CommandResults:
             headerTransform=string_to_table_header,
         ),
         outputs_prefix='Panorama.AuditComment',
-        outputs_key_field='rule_name'
+        outputs_key_field=['rule_name', 'rule_type']
     )
 
 
