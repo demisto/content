@@ -244,7 +244,7 @@ def test_parse_campaigns():
     assert parse_campaigns(client, CAMPAIGN_RESPONSE, [], '') == CAMPAIGN_INDICATOR
 
 
-def test_create_attack_pattern_indicator():
+def test_create_attack_pattern_indicator(mocker):
     """
     Given
     - list of IOCs in STIX format.
@@ -254,7 +254,9 @@ def test_create_attack_pattern_indicator():
     - run the attack_pattern_indicator
     Validate The attack pattern list extracted successfully.
     """
+    import TAXII2ApiModule
     client = Client(api_key='1234', verify=False)
+    mocker.patch.object(TAXII2ApiModule, 'is_demisto_version_ge', side_effect=[True, False, True])
     assert create_attack_pattern_indicator(client, ATTACK_PATTERN_DATA, [], '', True) == ATTACK_PATTERN_INDICATOR
     assert create_attack_pattern_indicator(client, ATTACK_PATTERN_DATA, [], '', False) == STIX_ATTACK_PATTERN_INDICATOR
     assert create_attack_pattern_indicator(client, SUB_TECHNIQUE_DATA, [], '', True) == SUB_TECHNIQUE_INDICATOR

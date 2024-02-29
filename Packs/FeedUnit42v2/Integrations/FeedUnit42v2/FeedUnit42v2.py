@@ -284,27 +284,6 @@ def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
         return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
 
 
-# def get_indicator_publication(indicator):
-#     """
-#     Build publications grid field from the indicator external_references field
-
-#     Args:
-#         indicator: The indicator with publication field
-
-#     Returns:
-#         list. publications grid field
-#     """
-#     publications = []
-#     for external_reference in indicator.get('external_references', []):
-#         if external_reference.get('external_id'):
-#             continue
-#         url = external_reference.get('url')
-#         description = external_reference.get('description')
-#         source_name = external_reference.get('source_name')
-#         publications.append({'link': url, 'title': description, 'source': source_name})
-#     return publications
-
-
 def get_attack_id_and_value_from_name(attack_indicator):
     """
     Split indicator name into MITRE ID and indicator value: 'T1108: Redundant Access' -> MITRE ID = T1108,
@@ -325,20 +304,6 @@ def get_attack_id_and_value_from_name(attack_indicator):
     return ind_id, value
 
 
-# def change_attack_pattern_to_stix_attack_pattern(indicator: dict):
-#     kill_chain_phases = indicator['fields']['killchainphases']
-#     del indicator['fields']['killchainphases']
-#     description = indicator['fields']['description']
-#     del indicator['fields']['description']
-
-#     indicator_type = indicator['type']
-#     indicator['type'] = f'STIX {indicator_type}'
-#     indicator['fields']['stixkillchainphases'] = kill_chain_phases
-#     indicator['fields']['stixdescription'] = description
-
-#     return indicator
-
-
 def create_attack_pattern_indicator(client: Client, attack_indicator_objects, feed_tags, tlp_color, is_up_to_6_2) -> List:
     """Parse the Attack Pattern objects retrieved from the feed.
 
@@ -354,40 +319,25 @@ def create_attack_pattern_indicator(client: Client, attack_indicator_objects, fe
 
     attack_pattern_indicators = []
 
-    for attack_indicator in attack_indicator_objects:
+    for attack_indicator_object in attack_indicator_objects:
+        attack_indicator_list = client.parse_attack_pattern(attack_indicator_object, ignore_external_id=True)
+        attack_indicator = attack_indicator_list[0]
+        mitre_id, value = get_attack_id_and_value_from_name(attack_indicator_object)
 
-        publications = client.get_indicator_publication(attack_indicator,ignore_external_id=True)
-        mitre_id, value = get_attack_id_and_value_from_name(attack_indicator)
+        attack_indicator["value"] = value
+        attack_indicator["fields"]["reportedby"] = 'Unit42'
+        attack_indicator["fields"]["firstseenbysource"] = handle_multiple_dates_in_one_field(
+            'created', attack_indicator_object.get('created'))
+        attack_indicator["fields"]["modified"] = handle_multiple_dates_in_one_field(
+            'modified', attack_indicator_object.get('modified'))
+        attack_indicator["fields"]["tags"] = list(feed_tags)
+        attack_indicator['fields']['mitreid'] = mitre_id
+        attack_indicator['fields']['tags'].extend([mitre_id])
 
-        kill_chain_mitre = [chain.get('phase_name', '') for chain in attack_indicator.get('kill_chain_phases', [])]
-        kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
-
-        indicator = {
-            "value": value,
-            "type": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-            "score": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
-            "fields": {
-                'stixid': attack_indicator.get('id'),
-                "killchainphases": kill_chain_phases,
-                "firstseenbysource": handle_multiple_dates_in_one_field('created', attack_indicator.get('created')),
-                "modified": handle_multiple_dates_in_one_field('modified', attack_indicator.get('modified')),
-                'description': attack_indicator.get('description'),
-                'operatingsystemrefs': attack_indicator.get('x_mitre_platforms'),
-                "publications": publications,
-                "mitreid": mitre_id,
-                "reportedby": 'Unit42',
-                "tags": list(feed_tags),
-            }
-        }
-        indicator['fields']['tags'].extend([mitre_id])
         if tlp_color:
-            indicator['fields']['trafficlightprotocol'] = tlp_color
+            attack_indicator['fields']['trafficlightprotocol'] = tlp_color
 
-        if not is_up_to_6_2:
-            # For versions less than 6.2 - that only support STIX and not the newer types - Malware, Tool, etc.
-            indicator = client.change_attack_pattern_to_stix_attack_pattern(indicator)
-
-        attack_pattern_indicators.append(indicator)
+        attack_pattern_indicators.append(attack_indicator)
     return attack_pattern_indicators
 
 

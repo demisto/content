@@ -174,20 +174,64 @@ SUB_TECHNIQUE_DATA = [
     }
 ]
 
-SUB_TECHNIQUE_INDICATOR = [{'fields': {'description': 'Adversaries may employ various time-based methods '
-                                                      'to detect and avoid virtualization.',
-                                       'firstseenbysource': '2020-03-06T21:11:11.225Z',
-                                       'killchainphases': [],
-                                       'mitreid': 'T1497.003',
-                                       'modified': '2021-04-01T15:48:28.345Z',
-                                       'operatingsystemrefs': ['Linux', 'macOS', 'Windows'],
-                                       'publications': [],
-                                       'reportedby': 'Unit42',
-                                       'stixid': 'attack-pattern--4bed873f-0b7d-41d4-b93a-b6905d1f90b0',
-                                       'tags': ['T1497.003']},
-                            'score': 2,
-                            'type': 'Attack Pattern',
-                            'value': 'Virtualization/Sandbox Evasion: Time Based Evasion'}]
+SUB_TECHNIQUE_INDICATOR = [
+    {
+        "fields": {
+            "description": "Adversaries may employ various time-based methods "
+            "to detect and avoid virtualization.",
+            "firstseenbysource": "2020-03-06T21:11:11.225Z",
+            "killchainphases": [],
+            "mitreid": "T1497.003",
+            "modified": "2021-04-01T15:48:28.345Z",
+            "operatingsystemrefs": ["Linux", "macOS", "Windows"],
+            "publications": [],
+            "reportedby": "Unit42",
+            "stixid": "attack-pattern--4bed873f-0b7d-41d4-b93a-b6905d1f90b0",
+            "tags": ["T1497.003"],
+        },
+        "rawJSON": {
+            "type": "attack-pattern",
+            "id": "attack-pattern--4bed873f-0b7d-41d4-b93a-b6905d1f90b0",
+            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+            "created": "2020-03-06T21:11:11.225Z",
+            "modified": "2021-04-01T15:48:28.345Z",
+            "name": "T1497.003: Time Based Evasion",
+            "description": "Adversaries may employ various time-based methods to detect and avoid virtualization.",
+            "kill_chain_phases": [],
+            "external_references": [
+                {
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1497/003",
+                    "external_id": "T1497.003",
+                }
+            ],
+            "object_marking_refs": [
+                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+            ],
+            "x_mitre_detection": "Time-based evasion will likely occur in the first steps of an operation.",
+            "x_mitre_platforms": ["Linux", "macOS", "Windows"],
+            "x_mitre_data_sources": [
+                "Command: Command Execution",
+                "Process: OS API Execution",
+                "Process: Process Creation",
+            ],
+            "x_mitre_is_subtechnique": "true",
+            "x_mitre_defense_bypassed": [
+                "Anti-virus",
+                "Host forensic analysis",
+                "Signature-based detection",
+                "Static File Analysis",
+            ],
+            "x_mitre_contributors": ["Deloitte Threat Library Team"],
+            "x_mitre_version": "1.1",
+            "x_panw_parent_technique": "Virtualization/Sandbox Evasion",
+            "x_panw_parent_technique_subtechnique": "Virtualization/Sandbox Evasion: Time Based Evasion",
+        },
+        "score": 2,
+        "type": "Attack Pattern",
+        "value": "Virtualization/Sandbox Evasion: Time Based Evasion",
+    }
+]
 
 MALWARE_DATA = [
     {"created": "2019-10-11T16:13:15.086Z",
@@ -438,70 +482,207 @@ PUBLICATIONS = [{'link': 'example.com', 'source': 'FireEye WMI 2015', 'title': '
                  'title': 'Wikipedia. (2016, June 12). Server Message Block. Retrieved June '
                           '12, 2016.'}]
 
-ATTACK_PATTERN_INDICATOR = [{'fields': {'description': 'Windows Management',
-                                        'firstseenbysource': '2018-08-03T19:54:02.821Z',
-                                        'killchainphases': ['Installation', 'Execution'],
-                                        'mitreid': 'T1047',
-                                        'modified': '2020-05-12T13:02:30.000Z',
-                                        'operatingsystemrefs': ['Windows'],
-                                        'publications': [{'link': 'example.com',
-                                                          'source': 'FireEye WMI 2015',
-                                                          'title': 'Ballenthin'},
-                                                         {
-                                                             'link': 'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
-                                                             'source': 'MSDN WMI',
-                                                             'title': 'Microsoft. (n.d.). Windows Management '
-                                                                      'Instrumentation. Retrieved April 27, '
-                                                                      '2016.'},
-                                                         {
-                                                             'link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
-                                                             'source': 'TechNet RPC',
-                                                             'title': 'Microsoft. (2003, March 28). What Is '
-                                                                      'RPC?. Retrieved June 12, 2016.'},
-                                                         {'link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
-                                                          'source': 'Wikipedia SMB',
-                                                          'title': 'Wikipedia. (2016, June 12). Server '
-                                                                   'Message Block. Retrieved June 12, '
-                                                                   '2016.'}],
-                                        'reportedby': 'Unit42',
-                                        'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
-                                        'tags': ['T1047']},
-                             'type': 'Attack Pattern',
-                             "score": 2,
-                             'value': 'Windows Management Instrumentation'}]
+ATTACK_PATTERN_INDICATOR = [
+    {
+        "fields": {
+            "description": "Windows Management",
+            "firstseenbysource": "2018-08-03T19:54:02.821Z",
+            "killchainphases": ["Installation", "Execution"],
+            "mitreid": "T1047",
+            "modified": "2020-05-12T13:02:30.000Z",
+            "operatingsystemrefs": ["Windows"],
+            "publications": [
+                {
+                    "link": "example.com",
+                    "source": "FireEye WMI 2015",
+                    "title": "Ballenthin",
+                },
+                {
+                    "link": "https://msdn.microsoft.com/en-us/library/aa394582.aspx",
+                    "source": "MSDN WMI",
+                    "title": "Microsoft. (n.d.). Windows Management "
+                    "Instrumentation. Retrieved April 27, "
+                    "2016.",
+                },
+                {
+                    "link": "https://technet.microsoft.com/en-us/library/cc787851.aspx",
+                    "source": "TechNet RPC",
+                    "title": "Microsoft. (2003, March 28). What Is "
+                    "RPC?. Retrieved June 12, 2016.",
+                },
+                {
+                    "link": "https://en.wikipedia.org/wiki/Server_Message_Block",
+                    "source": "Wikipedia SMB",
+                    "title": "Wikipedia. (2016, June 12). Server "
+                    "Message Block. Retrieved June 12, "
+                    "2016.",
+                },
+            ],
+            "reportedby": "Unit42",
+            "stixid": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+            "tags": ["T1047"],
+        },
+        "type": "Attack Pattern",
+        "score": 2,
+        "value": "Windows Management Instrumentation",
+        "rawJSON": {
+            "created": "2018-08-03T19:54:02.821Z",
+            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+            "description": "Windows Management",
+            "external_references": [
+                {
+                    "description": "Ballenthin",
+                    "source_name": "FireEye WMI 2015",
+                    "url": "example.com",
+                },
+                {
+                    "external_id": "T1047",
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1047",
+                },
+                {
+                    "description": "Microsoft. (n.d.). Windows Management Instrumentation. Retrieved April 27, 2016.",
+                    "source_name": "MSDN WMI",
+                    "url": "https://msdn.microsoft.com/en-us/library/aa394582.aspx",
+                },
+                {
+                    "description": "Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.",
+                    "source_name": "TechNet RPC",
+                    "url": "https://technet.microsoft.com/en-us/library/cc787851.aspx",
+                },
+                {
+                    "description": "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
+                    "source_name": "Wikipedia SMB",
+                    "url": "https://en.wikipedia.org/wiki/Server_Message_Block",
+                },
+            ],
+            "id": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+            "kill_chain_phases": [
+                {"kill_chain_name": "lockheed", "phase_name": "installation"},
+                {"kill_chain_name": "mitre-attack", "phase_name": "execution"},
+            ],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "T1047: Windows Management Instrumentation",
+            "object_marking_refs": [
+                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+            ],
+            "type": "attack-pattern",
+            "x_mitre_data_sources": [
+                "Authentication logs",
+                "Netflow/Enclave netflow",
+                "Process command-line parameters",
+                "Process monitoring",
+            ],
+            "x_mitre_detection": ["Monitor network traffic"],
+            "x_mitre_permissions_required": ["Administrator", "User"],
+            "x_mitre_platforms": ["Windows"],
+            "x_mitre_remote_support": "true",
+            "x_mitre_system_requirements": ["WMI service"],
+            "x_mitre_version": "1.0",
+        },
+    }
+]
 
-STIX_ATTACK_PATTERN_INDICATOR = [{'fields': {'stixdescription': 'Windows Management',
-                                             'firstseenbysource': '2018-08-03T19:54:02.821Z',
-                                             'stixkillchainphases': ['Installation', 'Execution'],
-                                             'mitreid': 'T1047',
-                                             'modified': '2020-05-12T13:02:30.000Z',
-                                             'operatingsystemrefs': ['Windows'],
-                                             'publications': [{'link': 'example.com',
-                                                               'source': 'FireEye WMI 2015',
-                                                               'title': 'Ballenthin'},
-                                                              {
-                                                                  'link': 'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
-                                                                  'source': 'MSDN WMI',
-                                                                  'title': 'Microsoft. (n.d.). Windows Management '
-                                                                           'Instrumentation. Retrieved April 27, '
-                                                                           '2016.'},
-                                                              {
-                                                                  'link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
-                                                                  'source': 'TechNet RPC',
-                                                                  'title': 'Microsoft. (2003, March 28). What Is '
-                                                                           'RPC?. Retrieved June 12, 2016.'},
-                                                              {
-                                                                  'link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
-                                                                  'source': 'Wikipedia SMB',
-                                                                  'title': 'Wikipedia. (2016, June 12). Server '
-                                                                           'Message Block. Retrieved June 12, '
-                                                                           '2016.'}],
-                                             'reportedby': 'Unit42',
-                                             'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
-                                             'tags': ['T1047']},
-                                  'type': 'STIX Attack Pattern',
-                                  "score": 2,
-                                  'value': 'Windows Management Instrumentation'}]
+STIX_ATTACK_PATTERN_INDICATOR = [
+    {
+        "fields": {
+            "stixdescription": "Windows Management",
+            "firstseenbysource": "2018-08-03T19:54:02.821Z",
+            "stixkillchainphases": ["Installation", "Execution"],
+            "mitreid": "T1047",
+            "modified": "2020-05-12T13:02:30.000Z",
+            "operatingsystemrefs": ["Windows"],
+            "publications": [
+                {
+                    "link": "example.com",
+                    "source": "FireEye WMI 2015",
+                    "title": "Ballenthin",
+                },
+                {
+                    "link": "https://msdn.microsoft.com/en-us/library/aa394582.aspx",
+                    "source": "MSDN WMI",
+                    "title": "Microsoft. (n.d.). Windows Management "
+                    "Instrumentation. Retrieved April 27, "
+                    "2016.",
+                },
+                {
+                    "link": "https://technet.microsoft.com/en-us/library/cc787851.aspx",
+                    "source": "TechNet RPC",
+                    "title": "Microsoft. (2003, March 28). What Is "
+                    "RPC?. Retrieved June 12, 2016.",
+                },
+                {
+                    "link": "https://en.wikipedia.org/wiki/Server_Message_Block",
+                    "source": "Wikipedia SMB",
+                    "title": "Wikipedia. (2016, June 12). Server "
+                    "Message Block. Retrieved June 12, "
+                    "2016.",
+                },
+            ],
+            "reportedby": "Unit42",
+            "stixid": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+            "tags": ["T1047"],
+        },
+        "rawJSON": {
+            "created": "2018-08-03T19:54:02.821Z",
+            "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+            "description": "Windows Management",
+            "external_references": [
+                {
+                    "description": "Ballenthin",
+                    "source_name": "FireEye WMI 2015",
+                    "url": "example.com",
+                },
+                {
+                    "external_id": "T1047",
+                    "source_name": "mitre-attack",
+                    "url": "https://attack.mitre.org/techniques/T1047",
+                },
+                {
+                    "description": "Microsoft. (n.d.). Windows Management Instrumentation. Retrieved April 27, 2016.",
+                    "source_name": "MSDN WMI",
+                    "url": "https://msdn.microsoft.com/en-us/library/aa394582.aspx",
+                },
+                {
+                    "description": "Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.",
+                    "source_name": "TechNet RPC",
+                    "url": "https://technet.microsoft.com/en-us/library/cc787851.aspx",
+                },
+                {
+                    "description": "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
+                    "source_name": "Wikipedia SMB",
+                    "url": "https://en.wikipedia.org/wiki/Server_Message_Block",
+                },
+            ],
+            "id": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+            "kill_chain_phases": [
+                {"kill_chain_name": "lockheed", "phase_name": "installation"},
+                {"kill_chain_name": "mitre-attack", "phase_name": "execution"},
+            ],
+            "modified": "2020-05-12T13:02:30.000000Z",
+            "name": "T1047: Windows Management Instrumentation",
+            "object_marking_refs": [
+                "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"
+            ],
+            "type": "attack-pattern",
+            "x_mitre_data_sources": [
+                "Authentication logs",
+                "Netflow/Enclave netflow",
+                "Process command-line parameters",
+                "Process monitoring",
+            ],
+            "x_mitre_detection": ["Monitor network traffic"],
+            "x_mitre_permissions_required": ["Administrator", "User"],
+            "x_mitre_platforms": ["Windows"],
+            "x_mitre_remote_support": "true",
+            "x_mitre_system_requirements": ["WMI service"],
+            "x_mitre_version": "1.0",
+        },
+        "type": "STIX Attack Pattern",
+        "score": 2,
+        "value": "Windows Management Instrumentation",
+    }
+]
 
 COURSE_OF_ACTION_DATA = [{
     "type": "course-of-action",
@@ -551,14 +732,14 @@ COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                 'score': 0,
                                 'type': 'Course of Action',
                                 'value': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2'},
-                                {'fields': {'description': 'Enable all three scan options in a Zone '
-                                                          'Protection profile.',
+                               {'fields': {'description': 'Enable all three scan options in a Zone '
+                                           'Protection profile.',
                                            'firstseenbysource': '2020-06-23T19:50:31.722Z',
                                            'modified': '2020-06-26T19:00:21.151Z',
                                            'publications': [],
                                            'reportedby': 'Unit42',
                                            'stixid': 'course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2',
-                                           'tags': [],'action_type': ''},
+                                           'tags': [], 'action_type': ''},
                                 'rawJSON': {'type': 'course-of-action',
                                             'id': 'course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2',
                                             'name': 'Ensure that all zones have Zone Protection Profiles with all Reconnaissance Protection settings enabled.',
@@ -580,7 +761,7 @@ COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                 'score': 0,
                                 'type': 'Course of Action',
                                 'value': 'Ensure that all zones have Zone Protection Profiles with all '
-                                         'Reconnaissance Protection settings enabled.'}]
+                                'Reconnaissance Protection settings enabled.'}]
 
 DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST = {
     'relationships': [{'entityA': '0f11fb955df07afc1912312f276c7fa3794ab85cd9f03b197c8bdbefb215fe92',
