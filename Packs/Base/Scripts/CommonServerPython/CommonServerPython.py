@@ -11789,6 +11789,7 @@ def comma_separated_mapping_to_dict(raw_text):
     demisto.debug("comma_separated_mapping_to_dict << Resolved mapping: {mapping_dict}".format(mapping_dict=mapping_dict))
     return mapping_dict
 
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################
