@@ -965,12 +965,12 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         count_incidents = 0
 
         for raw_incident in raw_incidents:
-            incident_id = raw_incident.get('incident_id')
             incident_data: dict[str, Any] = raw_incident.get('incident', {})
-            alert_count = arg_to_number(raw_incident.get('incident', {}).get('alert_count')) or 0
+            incident_id = incident_data.get('incident_id')
+            alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
-                incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
-                                                                         "alerts_limit": 1000})[2].get('incident') or {}
+                incident_data = client.get_incident_extra_data(client, {"incident_id": incident_id,
+                                                                         "alerts_limit": 1000})[0].get('incident') or {}
 
             sort_all_list_incident_fields(incident_data)
 
@@ -979,7 +979,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             incident_data['mirror_instance'] = integration_instance
             incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
             demisto.debug(f'incident_data{incident_data}')
-            description = raw_incident.get('description')
+            description = incident_data.get('description')
             occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
             incident: Dict[str, Any] = {
                 'name': f'XDR Incident {incident_id} - {description}',

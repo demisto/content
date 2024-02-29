@@ -52,7 +52,7 @@ def test_fetch_incidents(requests_mock, mocker):
     from CortexXDRIR import fetch_incidents, Client, sort_all_list_incident_fields
     import copy
 
-    get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
+    # get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
     modified_raw_incident = raw_incident['reply']['incident'].copy()
     modified_raw_incident['alerts'] = copy.deepcopy(raw_incident['reply'].get('alerts').get('data'))
@@ -62,7 +62,7 @@ def test_fetch_incidents(requests_mock, mocker):
     modified_raw_incident['mirror_instance'] = 'MyInstance'
     modified_raw_incident['last_mirrored_in'] = 740314800000
 
-    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+    # requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
 
@@ -72,8 +72,7 @@ def test_fetch_incidents(requests_mock, mocker):
     modified_raw_incident.get('alerts')[0]['host_ip_list'] = \
         modified_raw_incident.get('alerts')[0].get('host_ip').split(',')
     mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
-    mocker.patch("CortexXDRIR.UPGRADED_GET_EXTRA_DATA", new=False)
-    mocker.patch("CortexXDRIR.IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET", new=True)
+
     next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance')
     sort_all_list_incident_fields(modified_raw_incident)
 
@@ -807,60 +806,6 @@ def test_update_remote_system_command(incident_changed, delta):
     assert actual_remote_id == expected_remote_id
 
 
-'''
-
-def test_check_using_upgraded_api_incidents_extra_data_success(mocker):
-    """
-    Given:
-     - Mock response from API with valid incident data
-     - Valid client object
-
-    When:
-     - Calling check_using_upgraded_api_incidents_extra_data with valid args
-
-    Then:
-     - Returns the incident data and use_get_incident_extra_data == True
-    """
-    import CortexXDRIR
-    client = CortexXDRIR.Client(
-        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
-    incident_id = "1"
-    http_response = {"replay": {"number_in_config": 10, "alert_count": 5, "incidents": [{"id": "1", "created_time":
-                                                                                         "2021-12-15T12:00:00Z"}]}}
-    mocker.patch.object(client, '_http_request', return_value=http_response)
-
-    CortexXDRIR.check_using_upgraded_api_incidents_extra_data(client, incident_id)
-    assert CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS == 50
-    assert CortexXDRIR.UPGRADED_GET_EXTRA_DATA
-
-
-def test_check_using_upgraded_api_incidents_extra_data_failure(requests_mock, mocker):
-    """
-    Given:
-     - Mock 500 response from API
-
-    When:
-     - Calling check_using_upgraded_api_incidents_extra_data with valid args
-
-    Then:
-     - Returns empty dict and use_get_incident_extra_data == False
-    """
-    from CommonServerPython import DemistoException
-    from CortexXDRIR import check_using_upgraded_api_incidents_extra_data, Client
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
-
-    class MockException:
-        def __init__(self, status_code) -> None:
-            self.status_code = status_code
-
-    mocker.patch.object(client, "get_multiple_incidents_extra_data", side_effect=DemistoException(
-        message="The server encountered an internal error", res=MockException(500)
-    ))
-    check_using_upgraded_api_incidents_extra_data(client, '1')
-'''
-
-
 @freeze_time("1997-10-05 15:00:00 GMT")
 def test_fetch_incidents_extra_data(requests_mock, mocker):
     """
@@ -873,21 +818,22 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
         - Verify the returned result is as we expected
     """
     from CortexXDRIR import fetch_incidents, Client
-    get_incidents_list_response = load_test_data('./test_data/get_incidents_list_multiple_incidents_extra_data.json')
+    # get_incidents_list_response = load_test_data('./test_data/get_incidents_list_multiple_incidents_extra_data.json')
     raw_multiple_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
+    raw_all_alerts_incident_2 = load_test_data('./test_data/get_extra_data_all_alerts.json').get('reply', {}).get('incidents', [])
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
-    mocker.patch.object(Client, 'get_incidents', return_value=get_incidents_list_response.get('reply', {}).get('incidents', []))
-    mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=raw_multiple_extra_data)
+    #mocker.patch('CortexXDRIR.get_incident_extra_data_command', side_effect=raw_all_alerts_incident_2)
+    mocker.patch.object(Client, 'get_incident_extra_data', return_value=raw_all_alerts_incident_2)
+    mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=raw_multiple_extra_data.get('reply', {})\
+        .get('incidents', []))
     mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
     mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
-    mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
-    mocker.patch("CortexXDRIR.UPGRADED_GET_EXTRA_DATA", new=True)
-    mocker.patch("CortexXDRIR.IF_CHECKING_UPGRADED_GET_EXTRA_DATA_HAVING_BEEN_SET", new=True)
+    mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=2)
     next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance')
     assert len(incidents) == 2
     assert incidents[0]['name'] == 'XDR Incident 1 - desc1'
-    assert json.loads(incidents[0]['rawJSON']).get('incident', {}).get('incident_id') == '1'
-    assert json.loads(incidents[1]['rawJSON']).get('incident', {}).get('incident_id') == '2'
+    assert json.loads(incidents[0]['rawJSON']).get('incident_id') == '1'
+    assert json.loads(incidents[1]['rawJSON']).get('incident_id') == '2'
