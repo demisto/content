@@ -11753,6 +11753,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
 def comma_separated_mapping_to_dict(raw_text):
     """
+     Transforming a textual comma-separated mapping into a dictionary object.
+
     :type raw_text: ``str``
     :param raw_text: Comma-separated mapping e.g ('key1=value1', 'key2=value2', ...)
 
