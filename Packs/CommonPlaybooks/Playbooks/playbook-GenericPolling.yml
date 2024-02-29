@@ -77,6 +77,8 @@ tasks:
         simple: ${inputs.PollingCommandArgName}
       timeout:
         simple: ${inputs.Timeout}
+      extractMode:
+        simple: ${inputs.ExtractMode}
     separatecontext: false
     view: |-
       {
