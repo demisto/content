@@ -1,23 +1,22 @@
-import typing
-import dataclasses
-import functools
-import itertools
-import math
-from collections.abc import Callable, Collection, Mapping, MutableMapping
-from typing import Generic, Literal, TypeAlias, TypeVar
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
 
+import dataclasses
+import functools
+import itertools
 import json
-import urllib3
+import math
 import time
+import typing
+import urllib3
 
-from enum import Enum
-from typing import Any
+from collections.abc import Callable, Mapping, MutableMapping
 from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, Generic, Literal, TypeAlias, TypeVar
+
 import dateutil.parser
 
 # Disable insecure warnings
