@@ -1239,10 +1239,8 @@ class Taxii2FeedClient:
         indicators = []
         relationships_lst = []
         parsed_objects_counter: dict[str, int] = {}
-        current_envelope = None
         try:
             for envelope in envelopes:
-                current_envelope = envelope
                 # demisto.debug(f'parse_generator_type_envelope, trying to parse the envelope: {envelope}')
                 self.increase_count(parsed_objects_counter, 'envelope')
                 try:
