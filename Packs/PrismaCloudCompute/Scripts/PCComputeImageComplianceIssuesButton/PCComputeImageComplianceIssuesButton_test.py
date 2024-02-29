@@ -87,8 +87,5 @@ def test_main_function_with_error(mocker):
     mocker.patch.object(demisto, 'getArg', side_effect='invalid_image_id')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     main()
-    # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args_list[0][0][0]
     assert 'Invalid image_id. It should be in the format \'sha256:{64 characters}\'.' in err_msg
-
-# Add more tests as needed
