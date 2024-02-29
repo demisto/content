@@ -593,14 +593,14 @@
         }
     ],
     "name": "CTF 1 And 2 Dashboard",
-	"period": {
-		"by": "",
-		"byTo": "",
-		"byFrom": "days",
-		"toValue": null,
-		"fromValue": 0,
-		"field": ""
-	},
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 0,
+        "field": ""
+    },
     "toDate": "0001-01-01T00:00:00Z",
     "version": -1,
     "fromVersion": "8.2.0",
