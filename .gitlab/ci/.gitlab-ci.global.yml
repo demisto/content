@@ -547,8 +547,6 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
-  variables:
-    KUBERNETES_CPU_REQUEST: 1000m
   artifacts:
     expire_in: 30 days
     paths:
