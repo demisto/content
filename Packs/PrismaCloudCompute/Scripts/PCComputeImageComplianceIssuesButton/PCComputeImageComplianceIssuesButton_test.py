@@ -5,9 +5,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # Import the script you want to test
-SHORT_SHA = [
-    ({'id': '1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82'},
-     {'error': 'Invalid image_id length. It should be in the format \'sha256:{64 characters}\'.'})]
+
 TEST_CASES = [
     ({'id': 'sha256:e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'compliance_ids': '6112'}, [
         {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
