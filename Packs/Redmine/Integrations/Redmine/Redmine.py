@@ -120,7 +120,7 @@ class Client(BaseClient):
 
 
 def create_paging_header(page_size: int, page_number: int):
-    return '#### Showing' + (f' {page_size}') + ' results (or less)' + (f' from page {page_number}') + ':\n'
+    return '#### Showing' + (f' {page_size}') + ' results' + (f' from page {page_number}') + ':\n'
 
 
 def adjust_paging_to_request(args: dict[str, Any]):
