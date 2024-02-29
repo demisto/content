@@ -1,11 +1,13 @@
-from PCComputeImageComplianceIssuesButton import run_prisma_cloud_compute_images_scan_list
+from PCComputeImageComplianceIssuesButton import run_prisma_cloud_compute_images_scan_list, main
 import pytest
 import json
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # Import the script you want to test
-
+SHORT_SHA = [
+    ({'id': '1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82'},
+     {'error': 'Invalid image_id length. It should be in the format \'sha256:{64 characters}\'.'})]
 TEST_CASES = [
     ({'id': 'sha256:e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82', 'compliance_ids': '6112'}, [
         {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
@@ -49,6 +51,7 @@ TEST_CASES = [
     ])
 ]
 
+RETURN_ERROR_TARGET = 'PCComputeImageComplianceIssuesButton.return_error'
 
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
@@ -78,5 +81,15 @@ def test_run_prisma_cloud_compute_images_scan_list(mocker, args, expected):
 
     readable_output = results['HumanReadable']
     assert f'Compliance Issues of image {args.get("id")}' in readable_output
+
+
+def test_main_function_with_error(mocker):
+    # Mock the necessary components
+    mocker.patch.object(demisto, 'getArg', side_effect='invalid_image_id')
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    main()
+    # call_args last call with a tuple of args list and kwargs
+    err_msg = return_error_mock.call_args_list[0][0][0]
+    assert 'Invalid image_id. It should be in the format \'sha256:{64 characters}\'.' in err_msg
 
 # Add more tests as needed
