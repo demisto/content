@@ -2,6 +2,8 @@ import json
 import unittest
 from typing import Any
 from unittest.mock import patch
+
+import pytest
 from freezegun import freeze_time
 
 from CommonServerPython import DemistoException
@@ -627,3 +629,35 @@ def test_main_fetch_events() -> None:
             mock_events, vendor=VENDOR, product=PRODUCT
         )
         mock_set_last_run.assert_called_with(mock_new_last_run)
+
+
+@pytest.mark.parametrize(
+    "username, escaped_username, password, escaped_password",
+    [
+        ("username&", "username&amp;", "pass&", "pass&amp;"),
+        ("username>", "username&gt;", "pass>", "pass&gt;"),
+        ("username<", "username&lt;", "pass<", "pass&lt;"),
+        ("username", "username", "pass", "pass")
+    ]
+)
+def test_escaping_user_name(username, escaped_username, password, escaped_password):
+    """
+    Given:
+        A Client object initialized with a base URL, verification settings, a tenant name, and login credentials.
+        In the first 3 cases the credentials contains a special character that needs to be escaped, and the last case checks
+        that in a case of a credentials without special characters, they don't change.
+    When:
+        Creating a new Workday Sign Ons client.
+    Then:
+        Check that the credentials are escaped correctly.
+    """
+    client = Client(
+        "mock_url",
+        False,
+        False,
+        "mock_tenant",
+        username,
+        password,
+    )
+    assert client.username == escaped_username
+    assert client.password == escaped_password

@@ -15,11 +15,13 @@ API_ERRORS = {1: 'Quota', 2: 'MissingParameterError', 3: 'InvalidParameterError'
 
 
 class Client(jbxapi.JoeSandbox):
-    def __init__(self, apikey: str = '', base_url: str = '', accept_tac: bool = True, verify_ssl: bool = True,
-                 proxy: bool = False, create_relationships: bool = False, reliability: str = DBotScoreReliability.C):
+    def __init__(self, apikey: str = '', on_premise: bool = True, base_url: str = '', accept_tac: bool = True,
+                 verify_ssl: bool = True, proxy: bool = False, create_relationships: bool = False,
+                 reliability: str = DBotScoreReliability.C):
         proxies = {}
         self.reliability = reliability
         self.create_relationships = create_relationships
+        self.on_premise = on_premise
         if proxy:
             proxies = handle_proxy()
         super().__init__(apikey=apikey, apiurl=base_url, accept_tac=accept_tac, verify_ssl=verify_ssl, proxies=proxies)
@@ -446,7 +448,7 @@ def build_submission_command_result(client: Client, res: Dict[str, Any], args: D
     return command_results
 
 
-def build_submission_params(args: Dict[str, Any]) -> Dict[str, Any]:
+def build_submission_params(args: Dict[str, Any], on_premise: bool) -> Dict[str, Any]:
     """
          Helper function that builds the submission parameters.
 
@@ -455,7 +457,7 @@ def build_submission_params(args: Dict[str, Any]) -> Dict[str, Any]:
          Returns:
              result: (Dict[str, Any]): The submission parameters.
      """
-    params = {'comments': args.get('comment', None), 'systems': argToList(args.get('systems')),
+    params = {'comments': args.get('comments', None), 'systems': argToList(args.get('systems')),
               'tags': argToList(args.get('tags')), 'internet-access': argToBoolean(args.get('internet_access', True)),
               'archive-no-unpack': argToBoolean(args.get('archive_no_unpack', False)),
               'ssl-inspection': argToBoolean(args.get('ssl_inspection', False)),
@@ -478,8 +480,10 @@ def build_submission_params(args: Dict[str, Any]) -> Dict[str, Any]:
               'language-and-locale': args.get('language_and_locale'),
               'delete-after-days': arg_to_number(args.get('delete_after_days', 30)),
               'encrypt-with-password': args.get('encrypt_with_password'),
-              'export-to-jbxview': argToBoolean(args.get('export_to_jbxview', False)),
               'email-notification': argToBoolean(args.get('email_notification', False))}
+
+    if on_premise:
+        params.pop('delete-after-days', None)
 
     return params
 
@@ -500,8 +504,12 @@ def file_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any]
              result: (PollResult): The parsed PollResult object.
      """
     file_path = demisto.getFilePath(file)
+    name = file_path['name']
+    demisto.debug(f"Trying to upload file {name=} from entry= {file_path['path']}")
+
     with open(file_path['path'], 'rb') as f:
-        res = client.submit_sample(sample=f, params=params, cookbook=args.get('cookbook'))
+        file_to_send = (args.get('file_name') or name, f)
+        res = client.submit_sample(sample=file_to_send, params=params, cookbook=args.get('cookbook'))
         exe_metrics.success += 1
         partial_res = CommandResults(
             readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...')
@@ -849,8 +857,19 @@ def submit_sample_command(client: Client, args: Dict[str, Any], exe_metrics: Exe
          Returns:
              result: (CommandResults) The CommandResults object.
     """
-    params = build_submission_params(args)
-    return polling_submit_command(args, client, params, exe_metrics)
+    params = build_submission_params(args, client.on_premise)
+    try:
+        return polling_submit_command(args, client, params, exe_metrics)
+    except jbxapi.InvalidParameterError as e:
+        if e.message == 'Unknown parameter delete-after-days.':
+            raw = {"code": 3,
+                   "message":
+                       ('The parameter delete-after-days is only available in the cloud version.\n'
+                        'Check the "On-Premise" option in the integration settings for on-premise setups to avoid this error')
+                   }
+            raise jbxapi.ApiError(raw)
+        else:
+            raise
 
 
 def submit_url_command(client: Client, args: Dict[str, Any], exe_metrics: ExecutionMetrics) -> PollResult:
@@ -863,7 +882,7 @@ def submit_url_command(client: Client, args: Dict[str, Any], exe_metrics: Execut
          Returns:
              result: (CommandResults) The CommandResults object.
     """
-    params = build_submission_params(args)
+    params = build_submission_params(args, client.on_premise)
     params.update({'url-reputation': argToBoolean(args.get('url_reputation', False))})
     return polling_submit_command(args, client, params, exe_metrics)
 
@@ -883,14 +902,15 @@ def main() -> None:  # pragma: no cover
     proxy = demisto.params().get('proxy', False)
     reliability = demisto.params().get('Reliability', DBotScoreReliability.C)
     create_relationships = demisto.params().get('create_relationships', False)
+    on_premise = demisto.params().get('onprem', False)
     command = demisto.command()
     args = demisto.args()
     exe_metrics = ExecutionMetrics()
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        client = Client(apikey=api_key, base_url=base_url, accept_tac=True, verify_ssl=verify_certificate, proxy=proxy,
-                        reliability=reliability, create_relationships=create_relationships)
+        client = Client(apikey=api_key, on_premise=on_premise, base_url=base_url, accept_tac=True, verify_ssl=verify_certificate,
+                        proxy=proxy, reliability=reliability, create_relationships=create_relationships)
 
         if command == 'test-module':
             return_results(test_module(client))

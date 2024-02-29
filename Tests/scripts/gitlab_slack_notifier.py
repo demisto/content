@@ -237,7 +237,7 @@ def get_playbook_tests_data(artifact_folder: Path) -> tuple[set[str], set[str], 
     failed_tests = set()
     skipped_tests = set()
     skipped_integrations = set(split_results_file(get_artifact_data(artifact_folder, 'skipped_integrations.txt')))
-    xml = JUnitXml.fromfile(artifact_folder / TEST_PLAYBOOKS_REPORT_FILE_NAME)
+    xml = JUnitXml.fromfile(str(artifact_folder / TEST_PLAYBOOKS_REPORT_FILE_NAME))
     for test_suite in xml.iterchildren(TestSuite):
         properties = get_properties_for_test_suite(test_suite)
         if playbook_id := properties.get("playbook_id"):
@@ -547,11 +547,11 @@ def main():
                 verify=False,
             )
             author = pull_request.data.get('user', {}).get('login')
-            if triggering_workflow in {BUCKET_UPLOAD}:
-                logging.info(f"Not supporting custom Slack channel for {triggering_workflow} workflow")
-            else:
+            if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR}:
                 # This feature is only supported for content nightly and content pr workflows.
                 computed_slack_channel = f"{computed_slack_channel}{author}"
+            else:
+                logging.info(f"Not supporting custom Slack channel for {triggering_workflow} workflow")
             logging.info(f"Sending slack message to channel {computed_slack_channel} for "
                          f"Author:{author} of PR#{pull_request.data.get('number')}")
         except Exception:
