@@ -532,7 +532,7 @@ COURSE_OF_ACTION_DATA = [{
             "network-network-profiles-zone-protection/reconnaissance-protection."
         ]
 }]
-
+# add rawJSON
 COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                            'firstseenbysource': '2020-06-23T19:50:31.722Z',
                                            'modified': '2020-09-04T13:59:35.883Z',
@@ -540,6 +540,11 @@ COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                            'reportedby': 'Unit42',
                                            'stixid': 'course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5',
                                            'tags': []},
+                                'rawJSON': {'type': 'course-of-action',
+                                            'id': 'course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5',
+                                            'name': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2',
+                                            'created': '2020-06-23T19:50:31.722Z',
+                                            'modified': '2020-09-04T13:59:35.883Z'},
                                 'score': 0,
                                 'type': 'Course of Action',
                                 'value': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2'},
@@ -551,6 +556,11 @@ COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                            'reportedby': 'Unit42',
                                            'stixid': 'course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2',
                                            'tags': []},
+                                'rawJSON': {'type': 'course-of-action',
+                                            'id': 'course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2',
+                                            'name': 'Ensure that all zones have Zone Protection Profiles with all Reconnaissance Protection settings enabled.',
+                                            'created': '2020-06-23T19:50:31.722Z',
+                                            'modified': '2020-06-26T19:00:21.151Z'},
                                 'score': 0,
                                 'type': 'Course of Action',
                                 'value': 'Ensure that all zones have Zone Protection Profiles with all '

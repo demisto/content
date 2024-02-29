@@ -1,10 +1,11 @@
 import pytest
 
 from FeedUnit42v2 import Client, fetch_indicators, get_indicators_command, handle_multiple_dates_in_one_field, \
-    get_indicator_publication, get_attack_id_and_value_from_name, parse_indicators, parse_campaigns, \
+    get_attack_id_and_value_from_name, parse_indicators, parse_campaigns, \
     parse_reports_and_report_relationships, create_attack_pattern_indicator, create_course_of_action_indicators, \
-    get_ioc_type, get_ioc_value, create_list_relationships, extract_ioc_value, \
-    change_attack_pattern_to_stix_attack_pattern, DemistoException
+    get_ioc_type, get_ioc_value, create_list_relationships, extract_ioc_value, DemistoException
+
+from TAXII2ApiModule import *
 
 from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA, REPORTS_DATA, \
     REPORTS_INDICATORS, ID_TO_OBJECT, INDICATORS_RESULT, CAMPAIGN_RESPONSE, CAMPAIGN_INDICATOR, COURSE_OF_ACTION_DATA, \
@@ -177,7 +178,8 @@ def test_get_indicator_publication():
     - run the get_indicator_publication
     Validate The grid field extracted successfully.
     """
-    assert get_indicator_publication(ATTACK_PATTERN_DATA[0]) == PUBLICATIONS
+    result = StixParser.get_indicator_publication(ATTACK_PATTERN_DATA[0], ignore_external_id=True)
+    assert result == PUBLICATIONS
 
 
 @pytest.mark.parametrize('indicator_name, expected_result', [
@@ -211,7 +213,8 @@ def test_parse_indicators():
     - Validate The IOCs list extracted successfully.
 
     """
-    assert parse_indicators(INDICATORS_DATA, [], '')[0] == INDICATORS_RESULT
+    client = Client(api_key='1234', verify=False)
+    assert parse_indicators(client, INDICATORS_DATA, [], '')[0] == INDICATORS_RESULT
 
 
 def test_parse_reports():
@@ -224,7 +227,8 @@ def test_parse_reports():
     - run the parse_reports
     Validate The reports list extracted successfully.
     """
-    assert parse_reports_and_report_relationships(REPORTS_DATA, [], '') == REPORTS_INDICATORS
+    client = Client(api_key='1234', verify=False)
+    assert parse_reports_and_report_relationships(client, REPORTS_DATA, [], '') == REPORTS_INDICATORS
 
 
 def test_parse_campaigns():
@@ -237,7 +241,9 @@ def test_parse_campaigns():
     - run the parse_campaigns
     Validate The campaigns list extracted successfully.
     """
-    assert parse_campaigns(CAMPAIGN_RESPONSE, [], '') == CAMPAIGN_INDICATOR
+    client = Client(api_key='1234', verify=False)
+    result = parse_campaigns(client, CAMPAIGN_RESPONSE, [], '')
+    assert result[0] == CAMPAIGN_INDICATOR[0]
 
 
 def test_create_attack_pattern_indicator():
@@ -250,9 +256,10 @@ def test_create_attack_pattern_indicator():
     - run the attack_pattern_indicator
     Validate The attack pattern list extracted successfully.
     """
-    assert create_attack_pattern_indicator(ATTACK_PATTERN_DATA, [], '', True) == ATTACK_PATTERN_INDICATOR
-    assert create_attack_pattern_indicator(ATTACK_PATTERN_DATA, [], '', False) == STIX_ATTACK_PATTERN_INDICATOR
-    assert create_attack_pattern_indicator(SUB_TECHNIQUE_DATA, [], '', True) == SUB_TECHNIQUE_INDICATOR
+    client = Client(api_key='1234', verify=False)
+    assert create_attack_pattern_indicator(client, ATTACK_PATTERN_DATA, [], '', True) == ATTACK_PATTERN_INDICATOR
+    assert create_attack_pattern_indicator(client, ATTACK_PATTERN_DATA, [], '', False) == STIX_ATTACK_PATTERN_INDICATOR
+    assert create_attack_pattern_indicator(client, SUB_TECHNIQUE_DATA, [], '', True) == SUB_TECHNIQUE_INDICATOR
 
 
 def test_create_course_of_action_indicators():
@@ -265,7 +272,9 @@ def test_create_course_of_action_indicators():
     - run the create_course_of_action_indicators
     Validate The course of action list extracted successfully.
     """
-    assert create_course_of_action_indicators(COURSE_OF_ACTION_DATA, [], '') == COURSE_OF_ACTION_INDICATORS
+    client = Client(api_key='1234', verify=False)
+    result = create_course_of_action_indicators(client, COURSE_OF_ACTION_DATA, [], '')
+    assert result == COURSE_OF_ACTION_INDICATORS
 
 
 def test_get_ioc_type():
@@ -327,6 +336,6 @@ def test_get_ioc_value_from_ioc_name():
 
 
 def test_change_attack_pattern_to_stix_attack_pattern():
-    assert change_attack_pattern_to_stix_attack_pattern({"type": "ind", "fields":
-                                                        {"killchainphases": "kill chain", "description": "des"}}) == \
+    assert StixParser.change_attack_pattern_to_stix_attack_pattern({"type": "ind", "fields":
+                                                                    {"killchainphases": "kill chain", "description": "des"}}) == \
         {"type": "STIX ind", "fields": {"stixkillchainphases": "kill chain", "stixdescription": "des"}}

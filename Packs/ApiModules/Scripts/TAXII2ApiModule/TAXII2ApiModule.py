@@ -223,7 +223,7 @@ class StixParser(BaseClient):
         self.last_fetched_indicator__modified = None
 
     @staticmethod
-    def get_indicator_publication(indicator: dict[str, Any]):
+    def get_indicator_publication(indicator: dict[str, Any], ignore_external_id: bool = False):
         """
         Build publications grid field from the indicator external_references field
 
@@ -235,6 +235,8 @@ class StixParser(BaseClient):
         """
         publications = []
         for external_reference in indicator.get('external_references', []):
+            if ignore_external_id and external_reference.get('external_id'):
+                continue
             url = external_reference.get('url', '')
             description = external_reference.get('description', '')
             source_name = external_reference.get('source_name', '')
@@ -376,13 +378,13 @@ class StixParser(BaseClient):
 
         return indicators
 
-    def parse_attack_pattern(self, attack_pattern_obj: dict[str, Any]) -> list[dict[str, Any]]:
+    def parse_attack_pattern(self, attack_pattern_obj: dict[str, Any], ignore_external_id: bool = False) -> list[dict[str, Any]]:
         """
         Parses a single attack pattern object
         :param attack_pattern_obj: attack pattern object
         :return: attack pattern extracted from the attack pattern object in cortex format
         """
-        publications = self.get_indicator_publication(attack_pattern_obj)
+        publications = self.get_indicator_publication(attack_pattern_obj, ignore_external_id)
 
         kill_chain_mitre = [chain.get('phase_name', '') for chain in attack_pattern_obj.get('kill_chain_phases', [])]
         kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
@@ -601,13 +603,13 @@ class StixParser(BaseClient):
 
         return [tool]
 
-    def parse_course_of_action(self, coa_obj: dict[str, Any]) -> list[dict[str, Any]]:
+    def parse_course_of_action(self, coa_obj: dict[str, Any], ignore_external_id: bool = False) -> list[dict[str, Any]]:
         """
         Parses a single course of action object
         :param coa_obj: course of action object
         :return: course of action extracted from the course of action object in cortex format
         """
-        publications = self.get_indicator_publication(coa_obj)
+        publications = self.get_indicator_publication(coa_obj, ignore_external_id)
 
         course_of_action = {
             "value": coa_obj.get('name'),
@@ -662,13 +664,13 @@ class StixParser(BaseClient):
 
         return [campaign]
 
-    def parse_intrusion_set(self, intrusion_set_obj: dict[str, Any]) -> list[dict[str, Any]]:
+    def parse_intrusion_set(self, intrusion_set_obj: dict[str, Any], ignore_external_id: bool = False) -> list[dict[str, Any]]:
         """
         Parses a single intrusion set object
         :param intrusion_set_obj: intrusion set object
         :return: intrusion set extracted from the intrusion set object in cortex format
         """
-        publications = self.get_indicator_publication(intrusion_set_obj)
+        publications = self.get_indicator_publication(intrusion_set_obj, ignore_external_id)
 
         intrusion_set = {
             "value": intrusion_set_obj.get('name'),

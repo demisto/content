@@ -52,8 +52,10 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
 
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 
+from TAXII2ApiModule import *  # noqa: E402
 
-class Client(BaseClient):
+
+class Client(StixParser):
 
     def __init__(self, api_key, verify):
         """Implements class for Unit 42 feed.
@@ -62,7 +64,7 @@ class Client(BaseClient):
             api_key: unit42 API Key.
             verify: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         """
-        super().__init__(base_url='https://stix2.unit42.org/taxii', verify=verify,
+        super().__init__(id_to_object={}, base_url='https://stix2.unit42.org/taxii', verify=verify,
                          proxy=argToBoolean(demisto.params().get('proxy') or 'false'))
         self._api_key = api_key
         self._proxies = handle_proxy()
@@ -95,6 +97,7 @@ class Client(BaseClient):
         if test:
             return data
         self.objects_data[kwargs.get('type')] = data
+        return None
 
 
 def extract_ioc_value(value: str):
@@ -108,7 +111,8 @@ def extract_ioc_value(value: str):
         return None
 
 
-def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None, tlp_color: Optional[str] = None) -> list:
+def parse_indicators(client: Client, indicator_objects: list, feed_tags: Optional[list] = None,
+                     tlp_color: Optional[str] = None) -> list:
     """Parse the IOC objects retrieved from the feed.
     Args:
       indicator_objects: a list of objects containing the indicators.
@@ -124,7 +128,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None, 
     if indicator_objects:
         for indicator_object in indicator_objects:
             pattern = indicator_object.get('pattern') or ''
-            for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
+            for key in UNIT42_TYPES_TO_DEMISTO_TYPES:
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
                     indicator_obj = {
                         "value": indicator_object.get('name', ''),
@@ -174,13 +178,10 @@ def get_campaign_from_sub_reports(report_object, id_to_object):
 
 def is_sub_report(report_obj):
     obj_refs = report_obj.get('object_refs', [])
-    for obj_ref in obj_refs:
-        if obj_ref.startswith('report--'):
-            return False
-    return True
+    return all(not obj_ref.startswith('report--') for obj_ref in obj_refs)
 
 
-def parse_reports_and_report_relationships(report_objects: list, feed_tags: Optional[list] = None,
+def parse_reports_and_report_relationships(client: Client, report_objects: list, feed_tags: Optional[list] = None,
                                            tlp_color: Optional[str] = None, id_to_object: Optional[dict] = None):
     """Parse the Reports objects retrieved from the feed.
 
@@ -205,7 +206,7 @@ def parse_reports_and_report_relationships(report_objects: list, feed_tags: Opti
         if is_sub_report(report_object):
             continue
 
-        report = dict()  # type: Dict[str, Any]
+        report = {}  # type: Dict[str, Any]
 
         report['type'] = ThreatIntel.ObjectsNames.REPORT
         report['value'] = f"[Unit42 ATOM] {report_object.get('name')}"
@@ -238,7 +239,7 @@ def parse_reports_and_report_relationships(report_objects: list, feed_tags: Opti
     return reports
 
 
-def parse_campaigns(campaigns_obj, feed_tags, tlp_color):
+def parse_campaigns(client: Client, campaigns_objs, feed_tags, tlp_color):
     """Parse the Campaign objects retrieved from the feed.
 
     Args:
@@ -250,26 +251,16 @@ def parse_campaigns(campaigns_obj, feed_tags, tlp_color):
         A list of processed campaign.
     """
     campaigns_indicators = []
-    for campaign in campaigns_obj:
-        indicator_obj = {
-            "value": campaign.get('name'),
-            "type": ThreatIntel.ObjectsNames.CAMPAIGN,
-            "rawJSON": campaign,
-            "score": ThreatIntel.ObjectsScore.CAMPAIGN,
-            "fields": {
-                'stixid': campaign.get('id'),
-                "firstseenbysource": campaign.get('created'),
-                "modified": campaign.get('modified'),
-                'description': campaign.get('description'),
-                "reportedby": 'Unit42',
-                "tags": [tag for tag in feed_tags],
-            }
-        }
+    for campaigns_obj in campaigns_objs:
+        campaigns_indicator_list = client.parse_campaign(campaigns_obj)
+        campaigns_indicator = campaigns_indicator_list[0]
+        campaigns_indicator["fields"]["reportedby"] = 'Unit42'
+        campaigns_indicator["fields"]["tags"] = list(feed_tags)
 
         if tlp_color:
-            indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+            campaigns_indicator['fields']['trafficlightprotocol'] = tlp_color
 
-        campaigns_indicators.append(indicator_obj)
+        campaigns_indicators.append(campaigns_indicator)
 
     return campaigns_indicators
 
@@ -293,25 +284,25 @@ def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
         return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
 
 
-def get_indicator_publication(indicator):
-    """
-    Build publications grid field from the indicator external_references field
+# def get_indicator_publication(indicator):
+#     """
+#     Build publications grid field from the indicator external_references field
 
-    Args:
-        indicator: The indicator with publication field
+#     Args:
+#         indicator: The indicator with publication field
 
-    Returns:
-        list. publications grid field
-    """
-    publications = []
-    for external_reference in indicator.get('external_references', []):
-        if external_reference.get('external_id'):
-            continue
-        url = external_reference.get('url')
-        description = external_reference.get('description')
-        source_name = external_reference.get('source_name')
-        publications.append({'link': url, 'title': description, 'source': source_name})
-    return publications
+#     Returns:
+#         list. publications grid field
+#     """
+#     publications = []
+#     for external_reference in indicator.get('external_references', []):
+#         if external_reference.get('external_id'):
+#             continue
+#         url = external_reference.get('url')
+#         description = external_reference.get('description')
+#         source_name = external_reference.get('source_name')
+#         publications.append({'link': url, 'title': description, 'source': source_name})
+#     return publications
 
 
 def get_attack_id_and_value_from_name(attack_indicator):
@@ -334,21 +325,21 @@ def get_attack_id_and_value_from_name(attack_indicator):
     return ind_id, value
 
 
-def change_attack_pattern_to_stix_attack_pattern(indicator: dict):
-    kill_chain_phases = indicator['fields']['killchainphases']
-    del indicator['fields']['killchainphases']
-    description = indicator['fields']['description']
-    del indicator['fields']['description']
+# def change_attack_pattern_to_stix_attack_pattern(indicator: dict):
+#     kill_chain_phases = indicator['fields']['killchainphases']
+#     del indicator['fields']['killchainphases']
+#     description = indicator['fields']['description']
+#     del indicator['fields']['description']
 
-    indicator_type = indicator['type']
-    indicator['type'] = f'STIX {indicator_type}'
-    indicator['fields']['stixkillchainphases'] = kill_chain_phases
-    indicator['fields']['stixdescription'] = description
+#     indicator_type = indicator['type']
+#     indicator['type'] = f'STIX {indicator_type}'
+#     indicator['fields']['stixkillchainphases'] = kill_chain_phases
+#     indicator['fields']['stixdescription'] = description
 
-    return indicator
+#     return indicator
 
 
-def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_color, is_up_to_6_2) -> List:
+def create_attack_pattern_indicator(client: Client, attack_indicator_objects, feed_tags, tlp_color, is_up_to_6_2) -> List:
     """Parse the Attack Pattern objects retrieved from the feed.
 
     Args:
@@ -365,7 +356,7 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
 
     for attack_indicator in attack_indicator_objects:
 
-        publications = get_indicator_publication(attack_indicator)
+        publications = client.get_indicator_publication(attack_indicator)
         mitre_id, value = get_attack_id_and_value_from_name(attack_indicator)
 
         kill_chain_mitre = [chain.get('phase_name', '') for chain in attack_indicator.get('kill_chain_phases', [])]
@@ -385,7 +376,7 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
                 "publications": publications,
                 "mitreid": mitre_id,
                 "reportedby": 'Unit42',
-                "tags": [tag for tag in feed_tags],
+                "tags": list(feed_tags),
             }
         }
         indicator['fields']['tags'].extend([mitre_id])
@@ -394,13 +385,13 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
 
         if not is_up_to_6_2:
             # For versions less than 6.2 - that only support STIX and not the newer types - Malware, Tool, etc.
-            indicator = change_attack_pattern_to_stix_attack_pattern(indicator)
+            indicator = client.change_attack_pattern_to_stix_attack_pattern(indicator)
 
         attack_pattern_indicators.append(indicator)
     return attack_pattern_indicators
 
 
-def create_course_of_action_indicators(course_of_action_objects, feed_tags, tlp_color):
+def create_course_of_action_indicators(client: Client, course_of_action_objects, feed_tags, tlp_color):
     """Parse the Course of Action objects retrieved from the feed.
 
     Args:
@@ -413,57 +404,39 @@ def create_course_of_action_indicators(course_of_action_objects, feed_tags, tlp_
     """
     course_of_action_indicators = []
 
-    for coa_indicator in course_of_action_objects:
+    for coa_indicator_object in course_of_action_objects:
 
-        publications = get_indicator_publication(coa_indicator)
-
-        indicator = {
-            "value": coa_indicator.get('name'),
-            "type": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
-            "score": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
-            "fields": {
-                'stixid': coa_indicator.get('id'),
-                "firstseenbysource": handle_multiple_dates_in_one_field('created', coa_indicator.get('created')),
-                "modified": handle_multiple_dates_in_one_field('modified', coa_indicator.get('modified')),
-                'description': coa_indicator.get('description', ''),
-                "publications": publications,
-                "reportedby": 'Unit42',
-                "tags": [tag for tag in feed_tags],
-            }
-        }
+        coa_indicator_list = client.parse_course_of_action(coa_indicator_object)
+        coa_indicator = coa_indicator_list[0]
+        coa_indicator["fields"]["reportedby"] = 'Unit42'
+        coa_indicator["fields"]["firstseenbysource"] = handle_multiple_dates_in_one_field(
+            'created', coa_indicator_object.get('created'))
+        coa_indicator["fields"]["modified"] = handle_multiple_dates_in_one_field('modified', coa_indicator_object.get('modified'))
+        coa_indicator["fields"]["tags"] = list(feed_tags)
         if tlp_color:
-            indicator['fields']['trafficlightprotocol'] = tlp_color
+            coa_indicator_object['fields']['trafficlightprotocol'] = tlp_color
 
-        course_of_action_indicators.append(indicator)
+        course_of_action_indicators.append(coa_indicator)
 
     return course_of_action_indicators
 
 
-def create_intrusion_sets(intrusion_sets_objects, feed_tags, tlp_color):
+def create_intrusion_sets(client: Client, intrusion_sets_objects, feed_tags, tlp_color):
     course_of_action_indicators = []
 
-    for intrusion_set in intrusion_sets_objects:
+    for intrusion_set_object in intrusion_sets_objects:
 
-        publications = get_indicator_publication(intrusion_set)
-
-        indicator = {
-            "value": intrusion_set.get('name'),
-            "type": ThreatIntel.ObjectsNames.INTRUSION_SET,
-            "score": ThreatIntel.ObjectsScore.INTRUSION_SET,
-            "fields": {
-                'stixid': intrusion_set.get('id'),
-                "firstseenbysource": handle_multiple_dates_in_one_field('created', intrusion_set.get('created')),
-                "modified": handle_multiple_dates_in_one_field('modified', intrusion_set.get('modified')),
-                'description': intrusion_set.get('description', ''),
-                "publications": publications,
-                "reportedby": 'Unit42',
-                "tags": [tag for tag in feed_tags],
-            }
-        }
+        intrusion_set_list = client.parse_intrusion_set(intrusion_set_object, ignore_external_id=True)
+        intrusion_set = intrusion_set_list[0]
+        intrusion_set["fields"]["reportedby"] = 'Unit42'
+        intrusion_set["fields"]["firstseenbysource"] = handle_multiple_dates_in_one_field(
+            'created', intrusion_set_object.get('created'))
+        intrusion_set["fields"]["modified"] = handle_multiple_dates_in_one_field('modified', intrusion_set_object.get('modified'))
+        intrusion_set["fields"]["tags"] = list(feed_tags)
         if tlp_color:
-            indicator['fields']['trafficlightprotocol'] = tlp_color
+            intrusion_set['fields']['trafficlightprotocol'] = tlp_color
 
-        course_of_action_indicators.append(indicator)
+        course_of_action_indicators.append(intrusion_set)
 
     return course_of_action_indicators
 
@@ -503,7 +476,7 @@ def get_ioc_value(ioc, id_to_obj):
     """
     ioc_obj = id_to_obj.get(ioc)
     if not ioc_obj:
-        return
+        return None
 
     if ioc_obj.get('type') == 'report':
         return f"[Unit42 ATOM] {ioc_obj.get('name')}"
@@ -542,14 +515,14 @@ def create_list_relationships(relationships_objects, id_to_object):
 
         a_threat_intel_type = relationships_object.get('source_ref').split('--')[0]
         a_type = ''
-        if a_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.keys():
+        if a_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES:
             a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type)  # type: ignore
         elif a_threat_intel_type == 'indicator':
             a_type = get_ioc_type(relationships_object.get('source_ref'), id_to_object)
 
         b_threat_intel_type = relationships_object.get('target_ref').split('--')[0]
         b_type = ''
-        if b_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.keys():
+        if b_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES:
             b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type)  # type: ignore
         if b_threat_intel_type == 'indicator':
             b_type = get_ioc_type(relationships_object.get('target_ref'), id_to_object)
@@ -617,13 +590,13 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
         + client.objects_data['course-of-action'] + client.objects_data['intrusion-set']
     }
 
-    ioc_indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
-    reports = parse_reports_and_report_relationships(client.objects_data['report'], feed_tags, tlp_color, id_to_object)
-    campaigns = parse_campaigns(client.objects_data['campaign'], feed_tags, tlp_color)
-    attack_patterns = create_attack_pattern_indicator(client.objects_data['attack-pattern'],
+    ioc_indicators = parse_indicators(client, client.objects_data['indicator'], feed_tags, tlp_color)
+    reports = parse_reports_and_report_relationships(client, client.objects_data['report'], feed_tags, tlp_color, id_to_object)
+    campaigns = parse_campaigns(client, client.objects_data['campaign'], feed_tags, tlp_color)
+    attack_patterns = create_attack_pattern_indicator(client, client.objects_data['attack-pattern'],
                                                       feed_tags, tlp_color, is_up_to_6_2)
-    intrusion_sets = create_intrusion_sets(client.objects_data['intrusion-set'], feed_tags, tlp_color)
-    course_of_actions = create_course_of_action_indicators(client.objects_data['course-of-action'],
+    intrusion_sets = create_intrusion_sets(client, client.objects_data['intrusion-set'], feed_tags, tlp_color)
+    course_of_actions = create_course_of_action_indicators(client, client.objects_data['course-of-action'],
                                                            feed_tags, tlp_color)
 
     dummy_indicator = {}
@@ -676,9 +649,9 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: Opti
     indicators = client.fetch_stix_objects_from_api(test=True, type=ind_type, limit=limit)
 
     if ind_type == 'indicator':
-        indicators = parse_indicators(indicators, feed_tags, tlp_color)
+        indicators = parse_indicators(client, indicators, feed_tags, tlp_color)
     else:
-        indicators = create_attack_pattern_indicator(indicators, feed_tags, tlp_color, is_version_over_6_2)
+        indicators = create_attack_pattern_indicator(client, indicators, feed_tags, tlp_color, is_version_over_6_2)
     limited_indicators = indicators[:limit]
 
     readable_output = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value', 'fields'])
