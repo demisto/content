@@ -5201,5 +5201,6 @@ class TestGetWarRoomURL:
         url = "https://example.com/WarRoom/ALERT-1234"
         mocker.patch('SlackV3.is_xsiam', return_value=True)
         mocker.patch.dict(demisto.callingContext, {'context': {'Inv': {'id': '1234'}}})
-        expected_war_room_url = "https://example.com/incidents/alerts_and_insights?caseId=1234&action:openAlertDetails=1234-warRoom"
+        expected_war_room_url = \
+            "https://example.com/incidents/alerts_and_insights?caseId=1234&action:openAlertDetails=1234-warRoom"
         assert get_war_room_url(url) == expected_war_room_url
