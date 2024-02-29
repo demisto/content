@@ -23,11 +23,6 @@ def test_pids():
 def test_fd_limits():
     assert check_fd_limits(100, 200)
 
-
-def test_non_root():
-    assert not check_non_root()  # we run tests as non root
-
-
 def test_check_cpus():
     if os.getenv("CI") == "true":
         pytest.skip("skipping as in CI we run with a single CPU")

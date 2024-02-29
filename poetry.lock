@@ -1354,7 +1354,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.26.2"
+version = "1.27.0"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
@@ -1454,8 +1454,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "7d40490ed84093f922416a9598f1462cd235a721"
-resolved_reference = "7d40490ed84093f922416a9598f1462cd235a721"
+reference = "d4d298b76f6f24fb6ca924a290b4396cb39e779b"
+resolved_reference = "d4d298b76f6f24fb6ca924a290b4396cb39e779b"
 
 [[package]]
 name = "deprecated"
@@ -7148,4 +7148,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "8b668a7b294574a2ea08608bcfc97596b0a081d3f0478c6431a56639e3eae730"
+content-hash = "14d573e2ce20436b1563e84b9908b6508f2a5f64d9acef0f2253fcd189fad752"
