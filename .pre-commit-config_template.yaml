@@ -56,7 +56,6 @@ repos:
     - community
     exclude_support_level:nightly:
     - community
-
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.982
   hooks:
@@ -97,7 +96,7 @@ repos:
     - decorator==5.1.1 ; python_version >= "3.8" and python_version < "3.11"
     - defusedxml==0.7.1 ; python_version >= "3.8" and python_version < "3.11"
     - demisto-py==3.2.13 ; python_version >= "3.8" and python_version < "3.11"
-    - demisto-sdk==1.26.2 ; python_version >= "3.8" and python_version < "3.11"
+    - demisto-sdk @ git+https://github.com/demisto/demisto-sdk.git@d4d298b76f6f24fb6ca924a290b4396cb39e779b ; python_version >= "3.8" and python_version < "3.11"
     - dictdiffer==0.9.0 ; python_version >= "3.8" and python_version < "3.11"
     - dictor==0.1.12 ; python_version >= "3.8" and python_version < "3.11"
     - distlib==0.3.7 ; python_version >= "3.8" and python_version < "3.11"
@@ -114,8 +113,6 @@ repos:
     - google-api-core==2.13.0 ; python_version >= "3.8" and python_version < "3.11"
     - google-api-core[grpc]==2.13.0 ; python_version >= "3.8" and python_version < "3.11"
     - google-auth==2.23.4 ; python_version >= "3.8" and python_version < "3.11"
-    - google-cloud-bigquery==3.13.0 ; python_version >= "3.8" and python_version < "3.11"
-    - google-cloud-compute==1.14.1 ; python_version >= "3.8" and python_version < "3.11"
     - google-cloud-core==2.3.3 ; python_version >= "3.8" and python_version < "3.11"
     - google-cloud-secret-manager==2.16.4 ; python_version >= "3.8" and python_version < "3.11"
     - google-cloud-storage==2.13.0 ; python_version >= "3.8" and python_version < "3.11"
@@ -266,10 +263,8 @@ repos:
     - wrapt==1.13.3 ; python_version >= "3.8" and python_version < "3.11"
     - yamlordereddictloader==0.4.2 ; python_version >= "3.8" and python_version < "3.11"
     - zipp==3.17.0 ; python_version >= "3.8" and python_version < "3.10"
-
 - repo: local
   hooks:
-
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
@@ -292,9 +287,8 @@ repos:
       arg_name: --rcfile
       file_name: .pylintrc
     skip:commit: true
-    pass_docker_extra_args:ci: --rm=false 
+    pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
-
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
@@ -305,7 +299,6 @@ repos:
     entry: python
     language: docker
     files: Packs\/.*_test\.py$
-    # this is the list of test files that should be run with network enabled, so we need to exclude them from here
     exclude: test_data|Packs/ApiModules/Scripts/NGINXApiModule/NGINXApiModule_test.py|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
@@ -329,7 +322,6 @@ repos:
     pass_docker_extra_args:ci: --rm=false --network=none
     pass_docker_extra_args:nightly: --rm=false --network=none
     pass_docker_extra_args: --network=none
-
   - id: pytest-network-in-docker
     name: pytest-network-in-docker
     description: Run pytest with network enabled on the code in content packs
@@ -339,7 +331,6 @@ repos:
     docker_image: from-yml
     entry: coverage
     language: docker
-    # this is the list of test files that should be run with network enabled
     files: Packs/ApiModules/Scripts/NGINXApiModule/NGINXApiModule_test.py|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
@@ -358,10 +349,8 @@ repos:
     - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
     run_isolated: true
-    pass_docker_extra_args:ci: --rm=false 
+    pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
-
-    
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
     description: Run powershell tests
@@ -378,11 +367,10 @@ repos:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
     run_isolated: true
-    pass_docker_extra_args:ci: --rm=false --network=none 
+    pass_docker_extra_args:ci: --rm=false --network=none
     pass_docker_extra_args:nightly: --rm=false --network=none
     pass_docker_extra_args: --network=none
     skip:commit: true
-
   - id: pwsh-analyze-in-docker
     name: pwsh-analyze-in-docker
     description: Run powershell analyze
@@ -401,10 +389,9 @@ repos:
     - Tests/demistomock/demistomock.ps1
     run_isolated: true
     skip:commit: true
-    pass_docker_extra_args:ci: --rm=false --network=none 
+    pass_docker_extra_args:ci: --rm=false --network=none
     pass_docker_extra_args:nightly: --rm=false --network=none
     pass_docker_extra_args: --network=none
-
   - id: is-circle-changed
     name: is-circle-changed
     description: Checks if circle files are changed, and checkout to current if it is.
@@ -419,7 +406,6 @@ repos:
     language: script
     pass_filenames: false
     skip:commit: true
-    
   - id: validate
     name: validate
     description: validate content
@@ -431,7 +417,6 @@ repos:
     require_serial: true
     skip:commit: true
     skip:nightly: true
-
   - id: format
     name: format
     description: Format non-code files, to comply with XSOAR standards.
@@ -443,7 +428,6 @@ repos:
     language: system
     pass_filenames: false
     require_serial: true
-
   - id: secrets
     name: secrets
     description: Check for secrets in files.
@@ -454,7 +438,6 @@ repos:
     language: system
     skip:ci: true
     skip:nightly: true
-
   - id: merge-pytest-reports
     name: merge-pytest-reports
     entry: merge-pytest-reports
@@ -489,7 +472,6 @@ repos:
     - '100'
     needs:
     - pytest-in-docker
-    
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:
