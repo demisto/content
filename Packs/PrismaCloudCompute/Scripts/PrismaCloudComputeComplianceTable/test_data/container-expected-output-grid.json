@@ -1,0 +1,6 @@
+{"cloudmetadata": "accountID: some_account_id\nimage: some_image\nprovider: some_provider\nregion: sa-east-1\nresourceID: some_resource_id\ntype: some_type\nvmImageID: some_vm_image_id",
+ "compliancedistribution": "critical: 2\nhigh: 6\nlow: 0\nmedium: 0\ntotal: 8",
+ "complianceissues": "1337 (high | custom) - title",
+ "containerid": "some_container_id",
+ "hostname": "some_hostname",
+ "imagename": "some_docker_image_name"}
