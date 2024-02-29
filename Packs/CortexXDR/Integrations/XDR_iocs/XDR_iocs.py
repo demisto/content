@@ -253,24 +253,18 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
-def _parse_demisto_comments(ioc: dict, comment_field_name: list[str] | str, comments_as_tags: bool) -> list[str] | None:
+def _parse_demisto_comments(ioc: dict, comment_field_name: list[str] | str, comments_as_tags: bool) -> list[Any] | None:
     # parse comments from multiple fields if specified as list
-    demisto.debug(f'{comment_field_name}')
-    demisto.debug(f'{type(comment_field_name)}')
     if isinstance(comment_field_name, list):
-        demisto.debug(f' is list {comment_field_name}')
         comments = []
         for field in comment_field_name:
-            parsing = parse_demisto_single_comments(ioc,field, comments_as_tags)
-            demisto.debug(f'parsed comments from field {field}: {parsing}')
+            parsing = parse_demisto_single_comments(ioc, field, comments_as_tags)
             if parsing:
                 comments.extend(parsing)
-            demisto.debug(f'parsed comments after comment field {field}: {comments}')
-            
-        return comments
+        return [', '.join(comments)]
 
     # else return single field
-    return parse_demisto_single_comments(ioc,comment_field_name, comments_as_tags)
+    return parse_demisto_single_comments(ioc, comment_field_name, comments_as_tags)
 
 
 def parse_demisto_single_comments(ioc: dict, comment_field_name: list[str] | str, comments_as_tags: bool) -> list[str] | None:
@@ -316,11 +310,9 @@ def demisto_ioc_to_xdr(ioc: dict) -> dict:
         if vendors := demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {})):
             xdr_ioc['vendors'] = vendors
         comment = _parse_demisto_comments(ioc=ioc, comment_field_name=Client.xsoar_comments_field,
-                                               comments_as_tags=Client.comments_as_tags)
-        demisto.debug(f'Parsed comments: {comment}')
+                                          comments_as_tags=Client.comments_as_tags)
         if (comment):
             xdr_ioc['comment'] = comment
-            demisto.debug(f"Parsed comments xdr_ioc['comment'] : {comment} type : {type(comment)}")
 
         custom_fields = ioc.get('CustomFields', {})
 
@@ -759,6 +751,7 @@ def validate_fix_severity_value(severity: str, indicator_value: str | None = Non
 
 
 def main():  # pragma: no cover
+
     params = demisto.params()
     # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
     Client.severity = params.get('severity', '')

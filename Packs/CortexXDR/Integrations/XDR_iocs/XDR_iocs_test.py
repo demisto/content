@@ -1073,4 +1073,4 @@ def test_parse_demisto_list_of_comments_default(mocker):
              'id': inc_id},
         comment_field_name=['indicator_link', Client.xsoar_comments_field],
         comments_as_tags=False
-    ) == [f'url/#/indicator/{inc_id}', comment_value]
+    ) == [f'url/#/indicator/{inc_id}, {comment_value}']
