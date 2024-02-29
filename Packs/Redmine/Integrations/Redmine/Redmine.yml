@@ -42,15 +42,37 @@ script:
       type: textArea
       required: true
     - name: tracker_id
+      auto: PREDEFINED
       description: Enter the tracker ID for this issue
-      type: textArea
+      predefined:
+      - 'Bug'
+      - 'Feature'
+      - 'Support'
+      required: true
     - name: status_id
+      auto: PREDEFINED
       required: true
       description: Enter the status ID for this issue
-      type: textArea
+      predefined:
+      - open
+      - closed
+      - '*'
+      - New
+      - In progress
+      - Resolved
+      - Feedback
+      - Closed
+      - Rejected
     - name: priority_id
+      auto: PREDEFINED
       required: true
       description: Enter the priority ID for this issue
+      predefined:
+      - 'Low'
+      - 'Normal'
+      - 'High'
+      - 'Urgent'
+      - 'Immediate'
       type: textArea
     - name: subject
       required: true

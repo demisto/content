@@ -50,10 +50,8 @@ class Client(BaseClient):
 
     def create_issue_request(self, args):
         try:
-            subject = args.pop('subject', None)
             uploads = args.pop('uploads', None)
-            if subject:
-                body_for_request = {'issue': {'subject': subject}}
+            body_for_request = {'issue': args}
             if uploads:
                 body_for_request['issue']['uploads'] = uploads
             response = self._http_request('POST', '/issues.json', params=args,
@@ -221,13 +219,14 @@ def test_module(client: Client) -> None:
 
 def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
     # is it redundant
+    print(args)
     required_fields = ['status_id', 'priority_id', 'subject', 'project_id']
     missing_fields = [field for field in required_fields if not args.get(field)]
     if missing_fields:
         raise DemistoException('One or more required arguments not specified: {}'.format(', '.join(missing_fields)))
 
     '''Checks if a file needs to be added'''
-    entry_id = args.pop('file_entry_id')
+    entry_id = args.pop('file_entry_id', None)
     if entry_id:
         file_name = args.pop('file_name', '')
         file_description = args.pop('file_description', '')
@@ -243,7 +242,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
                                 filename=file_name,
                                 description=file_description)
         args['uploads'] = [uploads]
-        convert_args_to_request_format(args)
+    convert_args_to_request_format(args)
 
     response = client.create_issue_request(args)['issue']
 
