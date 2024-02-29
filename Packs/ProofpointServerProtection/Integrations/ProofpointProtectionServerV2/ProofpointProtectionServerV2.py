@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
     def health_check(self) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix='/pss/health', status_list_to_retry=[503], timeout=60, retries=3)
+        return self._http_request(method='GET', url_suffix='/pss/health')
 
     @logger
     def smart_search_request(self,
@@ -167,16 +167,8 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    try:
-        client.health_check()  # test pss managed module
-        client.list_quarantined_messages_request(subject='Test')  # test Quarantine managed module
-    except Exception as e:
-        demisto.debug(f'PP: caught exception: {str(e)}')
-        if '503' in str(e):
-            raise DemistoException('Error in API [503] - The service is unavailable, please try again in a few minutes')
-        else:
-            raise e
-
+    client.health_check()  # test pss managed module
+    client.list_quarantined_messages_request(subject='Test')  # test Quarantine managed module
     return 'ok'
 
 
