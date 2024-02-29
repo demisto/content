@@ -8,7 +8,7 @@ isXsiam = function () {
     return false
 }
 
-if (isXsiam){
+if (isXsiam()){
     incidentObject = JSON.parse(incObj);
     if (incidentObject.length > 0 && incidentObject[0].id.startsWith("INCIDENT")) {
         throw "AssignAnalystToIncident script can only be used within an alert and not from an incident."
