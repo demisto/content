@@ -9,9 +9,15 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-ENTITY_TYPE = 'office365_emails_email'
 MAX_FETCH_DEFAULT = 10
-SAAS_NAMES = ['office365_emails']
+SAAS_NAMES = [
+    'office365_emails',
+    'google_mail'
+]
+SAAS_APPS_TO_SAAS_NAMES = {
+    'Microsoft Exchange': 'office365_emails',
+    'Gmail': 'google_mail'
+}
 SEVERITY_VALUES = {
     'critical': 5,
     'high': 4,
@@ -117,12 +123,12 @@ class Client(BaseClient):
             url_suffix='soar/test'
         )
 
-    def query_events(self, start_date: str, end_date: str = None, states: List[str] = None, severities: List[int] = None,
-                     threat_types: List[str] = None) -> dict[str, Any]:
+    def query_events(self, start_date: str, end_date: str = None, saas_apps: List[str] = None, states: List[str] = None,
+                     severities: List[int] = None, threat_types: List[str] = None) -> dict[str, Any]:
         request_data: dict[str, Any] = {
             'startDate': start_date,
             'endDate': end_date,
-            'saas': SAAS_NAMES
+            'saas': saas_apps or SAAS_NAMES,
         }
         if states:
             request_data['eventStates'] = states
@@ -152,16 +158,15 @@ class Client(BaseClient):
             url_suffix=f'soar/entity/{entity}'
         )
 
-    def search_emails(self, start_date: str, end_date: str = None, direction: str = None, subject_contains: str = None,
-                      subject_match: str = None, sender_contains: str = None, sender_match: str = None, domain: str = None,
-                      cp_detection: List[str] = None, ms_detection: List[str] = None, detection_op: str = None,
-                      server_ip: str = None, recipients_contains: str = None, recipients_match: str = None, links: str = None,
-                      message_id: str = None, cp_quarantined_state: str = None, ms_quarantined_state: str = None,
-                      quarantined_state_op: str = None, name_contains: str = None, name_match: str = None, client_ip: str = None,
-                      attachment_md5: str = None):
+    def search_emails(self, start_date: str, end_date: str = None, saas: str = None, direction: str = None,
+                      subject_contains: str = None, subject_match: str = None, sender_contains: str = None,
+                      sender_match: str = None, domain: str = None, cp_detection: List[str] = None,
+                      ms_detection: List[str] = None, detection_op: str = None, server_ip: str = None,
+                      recipients_contains: str = None, recipients_match: str = None, links: str = None, message_id: str = None,
+                      cp_quarantined_state: str = None, ms_quarantined_state: str = None, quarantined_state_op: str = None,
+                      name_contains: str = None, name_match: str = None, client_ip: str = None, attachment_md5: str = None):
         entity_filter = {
-            'saas': SAAS_NAMES[0],
-            'saasEntity': ENTITY_TYPE,
+            'saas': saas or SAAS_NAMES[0],
             'startDate': start_date,
         }
         if end_date:
@@ -286,10 +291,10 @@ class Client(BaseClient):
             json_data=payload
         )
 
-    def send_action(self, entities: list, action: str):
+    def send_action(self, entities: list, entity_type: str, action: str):
         request_data = {
             'entityIds': entities,
-            'entityType': ENTITY_TYPE,
+            'entityType': entity_type,
             'entityActionName': action,
         }
         payload = {
@@ -326,15 +331,17 @@ def test_module(client: Client):
     return 'ok' if result.get('ok') else 'error'
 
 
-def fetch_incidents(client: Client, first_fetch: str, states: List[str], severities: List[int], threat_types: List[str],
-                    max_fetch: int):
+def fetch_incidents(client: Client, first_fetch: str, saas_apps: List[str], states: List[str], severities: List[int],
+                    threat_types: List[str], max_fetch: int):
     last_run = demisto.getLastRun()
     if not (last_fetch := last_run.get('last_fetch')):
         if last_fetch := dateparser.parse(first_fetch, date_formats=[DATE_FORMAT]):
             last_fetch = last_fetch.isoformat()
         else:
             raise Exception('Could not get last fetch')
-    result = client.query_events(start_date=last_fetch, states=states, severities=severities, threat_types=threat_types)
+    result = client.query_events(
+        start_date=last_fetch, states=states, saas_apps=saas_apps, severities=severities, threat_types=threat_types
+    )
     events = result['responseData']
 
     counter = 0
@@ -381,10 +388,13 @@ def checkpointhec_get_entity(client: Client, entity: str) -> CommandResults:
         )
 
 
-def checkpointhec_get_events(client: Client, start_date: str, end_date: str = None, states: List[str] = None,
-                             severities: List[int] = None, threat_types: List[str] = None, limit: int = 100) -> CommandResults:
-    result = client.query_events(start_date=start_date, end_date=end_date, states=states, severities=severities,
-                                 threat_types=threat_types)
+def checkpointhec_get_events(client: Client, start_date: str, end_date: str = None, saas_apps: List[str] = None,
+                             states: List[str] = None, severities: List[int] = None, threat_types: List[str] = None,
+                             limit: int = 100) -> CommandResults:
+    result = client.query_events(
+        start_date=start_date, end_date=end_date, saas_apps=saas_apps, states=states, severities=severities,
+        threat_types=threat_types
+    )
     if events := result['responseData']:
         return CommandResults(
             outputs_prefix='CheckPointHEC.Event',
@@ -416,7 +426,7 @@ def checkpointhec_get_scan_info(client: Client, entity: str) -> CommandResults:
 
 
 def checkpointhec_search_emails(client: Client, date_last: str = None, date_from: str = None, date_to: str = None,
-                                direction: str = None, subject_contains: str = None, subject_match: str = None,
+                                saas: str = None, direction: str = None, subject_contains: str = None, subject_match: str = None,
                                 sender_contains: str = None, sender_match: str = None, domain: str = None,
                                 cp_detection: List[str] = None, ms_detection: List[str] = None, detection_op: str = None,
                                 server_ip: str = None, recipients_contains: str = None, recipients_match: str = None,
@@ -466,8 +476,8 @@ def checkpointhec_search_emails(client: Client, date_last: str = None, date_from
             readable_output=f'Argument {name_contains=} and {name_match=} cannot be both set'
         )
 
-    result = client.search_emails(start_date, end_date, direction, subject_contains, subject_match, sender_contains, sender_match,
-                                  domain, cp_detection, ms_detection, detection_op, server_ip, recipients_contains,
+    result = client.search_emails(start_date, end_date, saas, direction, subject_contains, subject_match, sender_contains,
+                                  sender_match, domain, cp_detection, ms_detection, detection_op, server_ip, recipients_contains,
                                   recipients_match, links, message_id, cp_quarantined_state, ms_quarantined_state,
                                   quarantined_state_op, name_contains, name_match, client_ip, attachment_md5)
     if 'responseData' in result:
@@ -487,8 +497,8 @@ def checkpointhec_search_emails(client: Client, date_last: str = None, date_from
         )
 
 
-def checkpointhec_send_action(client: Client, entities: list, action: str) -> CommandResults:
-    result = client.send_action(entities, action)
+def checkpointhec_send_action(client: Client, entities: list, entity_type: str, action: str) -> CommandResults:
+    result = client.send_action(entities, entity_type, action)
     if resp := result['responseData']:
         return CommandResults(
             outputs_prefix='CheckPointHEC.Task',
@@ -550,6 +560,7 @@ def main() -> None:  # pragma: no cover
         elif command == 'fetch-incidents':
             kwargs = {
                 'first_fetch': params.get('first_fetch'),
+                'saas_apps': [SAAS_APPS_TO_SAAS_NAMES.get(x) for x in argToList(params.get('saas_apps'))],
                 'states': [x.lower() for x in argToList(params.get('event_state'))],
                 'severities': [SEVERITY_VALUES.get(x.lower()) for x in argToList(params.get('event_severity'))],
                 'threat_types': [x.lower().replace(' ', '_') for x in argToList(params.get('threat_type'))],
@@ -563,6 +574,7 @@ def main() -> None:  # pragma: no cover
             kwargs = {
                 'start_date': args.get('start_date'),
                 'end_date': args.get('end_date'),
+                'saas_apps': [SAAS_APPS_TO_SAAS_NAMES.get(x) for x in argToList(params.get('saas_apps'))],
                 'states': [x.lower() for x in argToList(args.get('states'))],
                 'severities': [SEVERITY_VALUES.get(x.lower()) for x in argToList(args.get('severities'))],
                 'threat_types': [x.lower().replace(' ', '_') for x in argToList(args.get('threat_type'))],
@@ -577,6 +589,7 @@ def main() -> None:  # pragma: no cover
                 'date_last': args.get('date_last'),
                 'date_from': args.get('date_from'),
                 'date_to': args.get('date_to'),
+                'saas': SAAS_APPS_TO_SAAS_NAMES.get(args.get('saas')) if args.get('saas') else None,
                 'direction': args.get('direction'),
                 'subject_contains': args.get('subject_contains'),
                 'subject_match': args.get('subject_match'),
@@ -603,6 +616,7 @@ def main() -> None:  # pragma: no cover
         elif command == 'checkpointhec-send-action':
             kwargs = {
                 'entities': argToList(args.get('entity')),
+                'entity_type': f"{SAAS_APPS_TO_SAAS_NAMES.get(args.get('saas'))}_email",
                 'action': args.get('action'),
             }
             return_results(checkpointhec_send_action(client, **kwargs))

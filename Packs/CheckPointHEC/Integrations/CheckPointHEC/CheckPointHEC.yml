@@ -38,6 +38,14 @@ configuration:
   required: false
   section: Collect
   defaultvalue: 1 hour
+- display: SaaS Application
+  name: saas_apps
+  type: 16
+  required: false
+  options:
+  - Microsoft Exchange
+  - Gmail
+  additionalinfo: Get incidents from the selected SaaS
 - display: State
   name: event_state
   type: 16
@@ -215,6 +223,14 @@ script:
     - name: end_date
       description: End date in ISO 8601 format, now by default.
       required: false
+    - name: saas_apps
+      description: SaaS application to retrieve events from.
+      auto: PREDEFINED
+      predefined:
+      - Microsoft Exchange
+      - Gmail
+      isArray: true
+      required: false
     - name: states
       description: Event states to be retrieved.
       auto: PREDEFINED
@@ -331,6 +347,12 @@ script:
       description: Start date to get emails in ISO 8601 format. The arguments `date_last` and `date_from` with `date_to` are mutually exclusive and cannot be specified together in the same request.
     - name: date_to
       description: End date to get emails in ISO 8601 format. The arguments `date_last` and `date_from` with `date_to` are mutually exclusive and cannot be specified together in the same request.
+    - name: saas
+      description: SaaS application to retrieve emails from.
+      auto: PREDEFINED
+      predefined:
+      - Microsoft Exchange
+      - Gmail
     - name: direction
       description: Email precedence.
       auto: PREDEFINED
@@ -430,6 +452,13 @@ script:
       description: One or multiple Email ids to apply action over.
       required: true
       isArray: true
+    - name: saas
+      description: SaaS application to apply action over.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Microsoft Exchange
+      - Gmail
     - name: action
       description: Action to perform (quarantine or restore).
       required: true
