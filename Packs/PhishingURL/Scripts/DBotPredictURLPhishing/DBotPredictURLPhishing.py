@@ -515,7 +515,6 @@ def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
     domains = list(map(extract_domainv2, final_urls))
 
     whois_results = get_whois_verdict(domains)
-    # demisto.debug(f'Domains: {json.dumps(whois_results, indent=4)}')
 
     results = []
     for url, final_url, res_whois, output_rasterize in zip(urls, final_urls, whois_results, rasterize_outputs):
@@ -687,10 +686,10 @@ def update_model_docker_from_model(model_docker, model):
 def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version, demisto_minor_version,
                           model_data):
     if debug:
-        if exist:
-            msg_list.append(MSG_MODEL_VERSION_IN_DEMISTO.format(demisto_major_version, demisto_minor_version))
-        else:
-            msg_list.append(MSG_NO_MODEL_IN_DEMISTO)
+        msg_list.append(
+            MSG_MODEL_VERSION_IN_DEMISTO.format(demisto_major_version, demisto_minor_version)
+            if exist else MSG_NO_MODEL_IN_DEMISTO
+        )
 
     if reset_model or not exist or (
             demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
@@ -744,17 +743,15 @@ def main():
 
         # Get all the URLs on which we will run the model
         urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
-        if not urls:
-            return None
-
-        # Run the model and get predictions
-        results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
-        # Return outputs
-        general_summary = return_general_summary(results)
-        detailed_summary = return_detailed_summary(results, reliability)
-        if debug:
-            return_results(msg_list)
-        return general_summary, detailed_summary, msg_list  # TODO
+        if urls:
+            # Run the model and get predictions
+            results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
+            # Return outputs
+            general_summary = return_general_summary(results)
+            detailed_summary = return_detailed_summary(results, reliability)
+            if debug:
+                return_results(msg_list)
+            return general_summary, detailed_summary, msg_list
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute URL Phishing script. Error: {ex}')

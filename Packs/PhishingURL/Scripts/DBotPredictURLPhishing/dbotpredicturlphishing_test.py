@@ -50,6 +50,7 @@ def executeCommand(command, args=None):
     elif command == 'UnEscapeURLs':
         url = args.get('input')
         return [{'Contents': url}]
+    return None
 
 
 def test_regular_malicious_new_domain(mocker):
@@ -69,7 +70,7 @@ def test_regular_malicious_new_domain(mocker):
     mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
     return_results_mock = mocker.patch.object(DBotPredictURLPhishing, 'return_results', return_value=None)
     general_summary, detailed_summary, msg_list = main()
-    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_MALICIOUS_COLOR % MALICIOUS_VERDICT
+    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_MALICIOUS_COLOR.format(MALICIOUS_VERDICT)
     assert detailed_summary[0][KEY_CONTENT_DOMAIN] == 'psg.fr'
     assert detailed_summary[0][KEY_CONTENT_URL] == 'psg.fr'
     assert detailed_summary[0][KEY_CONTENT_LOGO] == 'True'
@@ -117,7 +118,7 @@ def test_regular_malicious_reliability_change(mocker, provided_reliability):
     assert entry_context[KEY_CONTENT_DBOT_SCORE]['Reliability'] == provided_reliability
 
 
-def test_regular_malicious_reliability_invalid(mocker):
+def test_regular_malicious_reliability_invalid(mocker: MockerFixture):
     """
     Given:
         - url
@@ -157,7 +158,7 @@ def test_regular_benign(mocker):
     mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
     mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
     general_summary, detailed_summary, msg_list = main()
-    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_BENIGN_COLOR % BENIGN_VERDICT
+    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_BENIGN_COLOR.format(BENIGN_VERDICT)
     assert detailed_summary[0][KEY_CONTENT_DOMAIN] == 'google.com'
     assert detailed_summary[0][KEY_CONTENT_URL] == 'google.com'
     assert detailed_summary[0][KEY_CONTENT_LOGO] == 'False'
@@ -189,7 +190,7 @@ def test_missing_url(mocker):
     assert MSG_NO_ACTION_ON_MODEL in msg_list
 
 
-def test_no_html_data(mocker):
+def test_no_html_data(mocker: MockerFixture):
     """
     Given: URL without HTML data
     When: Calling the script
@@ -225,7 +226,7 @@ def test_white_list_not_force(mocker):
     mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
     mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
     general_summary, detailed_summary, msg_list = main()
-    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_BENIGN_COLOR % BENIGN_VERDICT_WHITELIST
+    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_BENIGN_COLOR.format(BENIGN_VERDICT_WHITELIST)
     assert MSG_NO_ACTION_ON_MODEL in msg_list
 
 
@@ -246,7 +247,8 @@ def test_white_list_force(mocker):
     mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
     mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
     general_summary, detailed_summary, msg_list = main()
-    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_BENIGN_COLOR % BENIGN_VERDICT
+
+    assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_BENIGN_COLOR.format(BENIGN_VERDICT)
     assert not detailed_summary
     # assert detailed_summary[0][KEY_CONTENT_DOMAIN] == 'google.com'
     # assert detailed_summary[0][KEY_CONTENT_URL] == 'google.com'
@@ -279,7 +281,7 @@ def test_new_major_version(mocker):
     mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
     mocker.patch('DBotPredictURLPhishing.MAJOR_VERSION', 1)
     general_summary, detailed_summary, msg_list = main()
-    assert MSG_UPDATE_MODEL % (1, 0) in msg_list
+    assert MSG_UPDATE_MODEL.format(1, 0) in return_results.mock_calls[-1].args[0]
 
 
 def test_get_colored_pred_json():
@@ -299,15 +301,15 @@ def test_get_colored_pred_json():
     res_1 = get_colored_pred_json(pred_json_1)
     res_2 = get_colored_pred_json(pred_json_2)
 
-    assert res_1[MODEL_KEY_SEO] == RED_COLOR % 'Bad'
-    assert res_1[MODEL_KEY_LOGO_FOUND] == RED_COLOR % 'Suspicious'
-    assert res_1[MODEL_KEY_LOGIN_FORM] == RED_COLOR % 'Yes'
-    assert res_1[DOMAIN_AGE_KEY] == RED_COLOR % 'Less than 6 months ago'
+    assert res_1[MODEL_KEY_SEO] == RED_COLOR.format('Bad')
+    assert res_1[MODEL_KEY_LOGO_FOUND] == RED_COLOR.format('Suspicious')
+    assert res_1[MODEL_KEY_LOGIN_FORM] == RED_COLOR.format('Yes')
+    assert res_1[DOMAIN_AGE_KEY] == RED_COLOR.format('Less than 6 months ago')
 
-    assert res_2[MODEL_KEY_SEO] == GREEN_COLOR % 'Good'
-    assert res_2[MODEL_KEY_LOGO_FOUND] == GREEN_COLOR % 'Not Suspicious'
-    assert res_2[MODEL_KEY_LOGIN_FORM] == GREEN_COLOR % 'No'
-    assert res_2[DOMAIN_AGE_KEY] == GREEN_COLOR % 'More than 6 months ago'
+    assert res_2[MODEL_KEY_SEO] == GREEN_COLOR.format('Good')
+    assert res_2[MODEL_KEY_LOGO_FOUND] == GREEN_COLOR.format('Not Suspicious')
+    assert res_2[MODEL_KEY_LOGIN_FORM] == GREEN_COLOR.format('No')
+    assert res_2[DOMAIN_AGE_KEY] == GREEN_COLOR.format('More than 6 months ago')
 
 
 def test_get_score():
@@ -336,4 +338,4 @@ def test_extract_created_date_with_empty_entry():
     Then: Make sure None is returned
     """
     from DBotPredictURLPhishing import extract_created_date
-    assert not extract_created_date(entry_list=[{"EntryContext": None, "Type": 1}])
+    assert not extract_created_date({"EntryContext": None, "Type": 1})
