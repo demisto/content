@@ -3728,77 +3728,70 @@ def set_xsoar_threats_entries(
             reopen_in_xsoar(entries, remote_incident_id, "Hurukai threat")
 
 
-def get_remote_data(client, args):
-    """
-    get-remote-data command: Returns an updated remote security event or threat.
+def get_remote_data(
+    client: Client,
+    args: dict[str, Any],
+) -> GetRemoteDataResponse:
+    """Mirror modifications from remote EDR instance into XSOAR.
+
     Args:
+        client: Demisto client to use. Initialized in the 'main' function.
         args:
             id: security event or threat id to retrieve.
             lastUpdate: when was the last time we retrieved data.
 
     Returns:
-        GetRemoteDataResponse object, which contain the security event or threat data to update.
+        GetRemoteDataResponse object, which contain the security event or
+          threat data to update.
     """
-    remote_args = GetRemoteDataArgs(args)
-    remote_incident_id = remote_args.remote_incident_id
+    remote_data_args = GetRemoteDataArgs(args)
+    remote_incident_id: str = remote_data_args.remote_incident_id
 
-    mirrored_data = {}
-    entries: List = []
-    updated_object = None
+    incident_type: str  # check 'IncidentType' for valid values
+    incident_id: str
 
-    try:
+    # the 'remote_incident_id' format is define in the 'get_modified_remote_data'
+    # function ('sec:XXX' or 'thr:YYY')
+    incident_type, incident_id = remote_incident_id.split(":", 1)
+
+    mirrored_data: dict[str, Any]
+    updated_object: dict[str, Any]
+
+    entries: list[dict] = []
+
+    match incident_type:
+
+        case IncidentType.SEC_EVENT.value:
+            _get_remote_data = get_remote_secevent_data
+            _set_xsoar_entries = set_xsoar_security_events_entries
+
+        case IncidentType.THREAT.value:
+            _get_remote_data = get_remote_threat_data
+            _set_xsoar_entries = set_xsoar_threats_entries
+
+        case _:
+            raise ValueError(
+                f"Expected '{IncidentType.SEC_EVENT.value}' or '{IncidentType.THREAT.value}' "
+                f"for 'incident_type', get '{incident_type}' ({remote_incident_id})"
+            )
+
+    mirrored_data, updated_object = _get_remote_data(client, incident_id)
+
+    if updated_object:
         demisto.debug(
-            f"Performing get-remote-data command with incident or detection id: {remote_incident_id} "
-            f"and last_update: {remote_args.last_update}"
+            f"Update incident {remote_incident_id} with fields: {updated_object}"
         )
-        incident_type = find_incident_type(remote_incident_id)
-        if incident_type == IncidentType.SEC_EVENT:
-            mirrored_data, updated_object = get_remote_secevent_data(
-                client, remote_incident_id[4:]
-            )
-            if updated_object:
-                demisto.debug(
-                    f"Update security event {remote_incident_id} with fields: {updated_object}"
-                )
-                set_xsoar_security_events_entries(
-                    updated_object, entries, remote_incident_id
-                )  # sets in place
+        _set_xsoar_entries(updated_object, entries, remote_incident_id)
 
-        elif incident_type == IncidentType.THREAT:
-            mirrored_data, updated_object = get_remote_threat_data(
-                client, remote_incident_id[4:]
-            )
-            if updated_object:
-                demisto.debug(
-                    f"Update threat {remote_incident_id} with fields: {updated_object}"
-                )
-                set_xsoar_threats_entries(
-                    updated_object, entries, remote_incident_id
-                )  # sets in place
-        else:
-            # this is here as prints can disrupt mirroring
-            raise Exception(
-                f"Executed get-remote-data command with undefined id: {remote_incident_id}"
-            )
+    else:
+        # log it as error because in this function we expect an update
+        # from remote the instance
+        demisto.error(f"No update found for incident {remote_incident_id}")
 
-        if not updated_object:
-            demisto.debug(f"No delta was found for detection {remote_incident_id}.")
-
-        demisto.debug(f"Updated object {updated_object}")
-
-        return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
-
-    except Exception as e:
-        demisto.debug(
-            f"Error in HarfangLab EDR incoming mirror for security event or threat: {remote_incident_id}\n"
-            f"Error message: {str(e)}"
-        )
-
-        if not mirrored_data:
-            mirrored_data = {"id": remote_incident_id}
-        mirrored_data["in_mirror_error"] = str(e)
-
-        return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
+    return GetRemoteDataResponse(
+        mirrored_object=updated_object,
+        entries=entries,
+    )
 
 
 def close_in_hfl(delta: Dict[str, Any]) -> bool:
