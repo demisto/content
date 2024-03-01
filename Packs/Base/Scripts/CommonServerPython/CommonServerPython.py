@@ -11764,7 +11764,7 @@ def comma_separated_mapping_to_dict(raw_text):
     demisto.debug("comma_separated_mapping_to_dict "
                   ">> Resolving comma-separated input mapping: {raw_text}".format(raw_text=raw_text))
 
-    mapping_dict = {} # type: Dict[str, str]
+    mapping_dict = {}  # type: Dict[str, str]
     # If a proper mapping was not provided, return an empty dict.
     if not raw_text:
         return mapping_dict
