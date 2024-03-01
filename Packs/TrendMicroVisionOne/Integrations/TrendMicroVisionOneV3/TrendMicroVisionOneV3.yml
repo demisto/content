@@ -1205,9 +1205,14 @@ script:
     description: Runs a custom script on the specified endpoint or agentGuid.
     name: trendmicro-visionone-run-custom-script
   - arguments:
-    - description: 'Filter (A dictionary object with key/value used to create a query string) for retrieving a subset of the custom scripts list. e.g. {"fileName":"test-script.ps1","fileType":"powershell"}. If you want a list of all custom scripts available, run action with fields=`{}`.'
-      name: fields
-      required: true
+    - description: 'Name of the custom script.'
+      name: filename
+    - description: 'Type of script, either bash or powershell.'
+      name: filetype
+      auto: PREDEFINED
+      predefined:
+      - bash
+      - powershell
     - description: 'Conditional operator used to build request that allows user to retrieve a subset of custom scripts. Possible values: and/or. Ex. `or`: the results retrieved will contain custom script(s) matching FileName OR FileType. `and`: the result retrieved will contain custom script matching FileName AND FileType. Defaults to `and`.'
       name: query_op
       auto: PREDEFINED
@@ -1296,7 +1301,7 @@ script:
       type: string
     description: Updates the contents of a custom script based on script ID.
     name: trendmicro-visionone-update-custom-script
-  dockerimage: demisto/pytmv1:0.8.1.88013
+  dockerimage: devdemisto/pytmv1:0.8.2.88577
   isFetchSamples: true
   isfetch: true
   script: ''

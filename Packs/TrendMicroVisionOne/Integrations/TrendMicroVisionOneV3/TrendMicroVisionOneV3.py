@@ -2474,14 +2474,22 @@ def get_custom_script_list(
     :rtype: ``dict`
     """
     # Optional Params
-    fields = json.loads(args.get(FIELDS, EMPTY_STRING))
+    filename = args.get(FILE_NAME, EMPTY_STRING)
+    filetype = args.get(FILE_TYPE, EMPTY_STRING)
     query_op = args.get(QUERY_OP, EMPTY_STRING)
+    fields: dict[str, str] = {}
+    if filename and filetype:
+        fields = {"fileName": filename, "fileType": filetype}
+    elif filename:
+        fields = {"fileName": filename}
+    elif filetype:
+        fields = {"fileType": filetype}
     # response contents for war room will be stored here
     message: list[dict[str, Any]] = []
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
         query_op = pytmv1.QueryOp.OR
-    elif query_op.lower() == "and":
+    else:
         query_op = pytmv1.QueryOp.AND
     # Make rest call
     resp = v1_client.script.list(op=query_op, **fields)

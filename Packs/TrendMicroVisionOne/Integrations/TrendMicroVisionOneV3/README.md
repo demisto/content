@@ -1054,7 +1054,8 @@ Fetches a list of all available custom scripts in V1 XDR Portal.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | Filter (A dictionary object with key/value used to create a query string) for retrieving a subset of the custom scripts list. e.g. {"fileName":"test-script.ps1","fileType":"powershell"}. If you want a list of all custom scripts available, run action with fields=`{}`. | Required | 
+| filename | Name of the custom script. e.g. filename="hello.sh". | Optional | 
+| filetype | Type of script, either bash or powershell. e.g. filetype="bash". | Optional | 
 | query_op | Conditional operator used to build request that allows user to retrieve a subset of custom scripts. Possible values: and/or. Ex. `or`: the results retrieved will contain custom script(s) matching FileName OR FileType. `and`: the result retrieved will contain custom script matching FileName AND FileType. Defaults to `and`. | Optional | 
 
 #### Context Output

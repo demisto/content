@@ -1492,7 +1492,7 @@ def test_get_custom_script_list(mocker):
     """
     client = Mock()
     client.script.list = Mock(return_value=get_custom_script_list_mock_response())
-    args = {"fields": json.dumps({"fileType": "bash"}), "query_op": "or"}
+    args = {"filename": "test-script.sh", "filetype": "bash", "query_op": "or"}
     result = get_custom_script_list(client, args)
     assert isinstance(result.outputs[0]["id"], str)
     assert isinstance(result.outputs[0]["filename"], str)
