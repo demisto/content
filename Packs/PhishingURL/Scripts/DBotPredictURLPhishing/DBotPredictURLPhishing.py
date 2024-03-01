@@ -26,7 +26,6 @@ KEY_IMAGE_RASTERIZE = "image_b64"
 KEY_IMAGE_HTML = "html"
 KEY_CURRENT_URL_RASTERIZE = 'current_url'
 
-MSG_MISSING_INFORMATION_RASTERIZE = f"Missing required Rastarize data ({KEY_IMAGE_HTML} / {KEY_IMAGE_RASTERIZE})."
 MSG_SOMETHING_WRONG_IN_RASTERIZE = "Something went wrong with rasterize"
 MSG_ENABLE_WHOIS = "Please enable whois integration for more accurate prediction"
 MSG_MODEL_VERSION_IN_DEMISTO = "Model version in demisto: {}.{}"
@@ -500,13 +499,12 @@ def get_whois_verdict(domains: list[dict]) -> list:
             demisto.debug(str(e))
     else:
         return_results(MSG_ENABLE_WHOIS)
-    return []
+    return [None] * len(domains)
 
 
 def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout):
 
     rasterize_outputs = rasterize_urls(urls, rasterize_timeout)
-    # demisto.debug(f'Rasterize Outputs: {json.dumps(rasterize_outputs, indent=4)}')
 
     # Get final url and redirection
     final_urls = [res[KEY_CURRENT_URL_RASTERIZE] for res in rasterize_outputs]
@@ -743,6 +741,7 @@ def main():
 
         # Get all the URLs on which we will run the model
         urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
+
         if urls:
             # Run the model and get predictions
             results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
