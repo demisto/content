@@ -1,6 +1,7 @@
 Predict phishing incidents using the out-of-the-box pre-trained model.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,7 +10,25 @@ Predict phishing incidents using the out-of-the-box pre-trained model.
 | Tags | phishing, ml |
 | Cortex XSOAR Version | 5.5.0 |
 
+## Dependencies
+
+---
+This script uses the following commands and scripts.
+
+* GetMLModelEvaluation
+* DBotPredictPhishingWords
+
+## Used In
+
+---
+This script is used in the following playbooks and scripts.
+
+* VerifyOOBV2Predictions-Test
+* DbotPredictOufOfTheBoxTestV2
+* Phishing - Machine Learning Analysis
+
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -24,8 +43,10 @@ Predict phishing incidents using the out-of-the-box pre-trained model.
 | confidenceThreshold | The confidence threshold. The model will provide predictions only if their confidence is above this threshold. |
 | returnError | Whether to return an error when there is no prediction. Default is "true". |
 | setIncidentFields | Whether to set Cortex XSOAR out-of-the-box DBot fields. |
+| language | The language of the input. Default is "Any". Can be "Any", "English", "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other". If "Any"  or "Other" is selected, the script pre-process the entire input, no matter what its actual language is. If a specific language is selected, the script filters out any other language from the output text. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

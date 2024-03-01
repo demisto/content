@@ -34,6 +34,20 @@ args:
   predefined:
   - 'true'
   - 'false'
+- auto: PREDEFINED
+  defaultValue: Any
+  description: The language of the input. Default is "Any". Can be "Any", "English", "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other". If "Any"  or "Other" is selected, the script pre-process the entire input, no matter what its actual language is. If a specific language is selected, the script filters out any other language from the output text.
+  name: language
+  predefined:
+  - Any
+  - English
+  - German
+  - French
+  - Spanish
+  - Portuguese
+  - Italian
+  - Dutch
+  - Other
 commonfields:
   id: DBotPredictOutOfTheBoxV2
   version: -1
