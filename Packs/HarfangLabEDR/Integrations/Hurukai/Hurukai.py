@@ -3593,13 +3593,6 @@ def get_modified_remote_data(
     return GetModifiedRemoteDataResponse(modified_incident_ids)
 
 
-def find_incident_type(remote_incident_id: str):
-    if remote_incident_id[0:3] == IncidentType.SEC_EVENT.value:
-        return IncidentType.SEC_EVENT
-    if remote_incident_id[0:3] == IncidentType.THREAT.value:
-        return IncidentType.THREAT
-
-
 def set_updated_object(
     updated_object: Dict[str, Any],
     mirrored_data: Dict[str, Any],
