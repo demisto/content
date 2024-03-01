@@ -14,7 +14,6 @@ import urllib3
 
 from collections.abc import Callable, Mapping, MutableMapping
 from datetime import datetime, timedelta, timezone
-from enum import Enum
 from typing import Any, Generic, Literal, TypeAlias, TypeVar
 
 import dateutil.parser
@@ -119,8 +118,8 @@ MIRROR_DIRECTION_MAPPING = {
 }
 
 
-class IncidentType(Enum):
-    SEC_EVENT = "sec"
+class IncidentType:
+    SECURITY_EVENT = "sec"
     THREAT = "thr"
 
 
@@ -3559,7 +3558,7 @@ def get_modified_remote_data(
     demisto.debug(f"Found {len(security_events_to_update)} security events to update")
 
     modified_incident_ids.extend(
-        f"{IncidentType.SEC_EVENT.value}:{s['id']}" for s in security_events_to_update
+        f"{IncidentType.SECURITY_EVENT}:{s['id']}" for s in security_events_to_update
     )
 
     for fetch_limit in (fetch_base_limit * i for i in itertools.count(start=1)):
@@ -3582,7 +3581,7 @@ def get_modified_remote_data(
     demisto.debug(f"Found {len(threats_to_update)} threats to update")
 
     modified_incident_ids.extend(
-        f"{IncidentType.THREAT.value}:{t['id']}" for t in threats_to_update
+        f"{IncidentType.THREAT}:{t['id']}" for t in threats_to_update
     )
 
     demisto.info(
@@ -3761,17 +3760,17 @@ def get_remote_data(
 
     match incident_type:
 
-        case IncidentType.SEC_EVENT.value:
+        case IncidentType.SECURITY_EVENT:
             _get_remote_data = get_remote_secevent_data
             _set_xsoar_entries = set_xsoar_security_events_entries
 
-        case IncidentType.THREAT.value:
+        case IncidentType.THREAT:
             _get_remote_data = get_remote_threat_data
             _set_xsoar_entries = set_xsoar_threats_entries
 
         case _:
             raise ValueError(
-                f"Expected '{IncidentType.SEC_EVENT.value}' or '{IncidentType.THREAT.value}' "
+                f"Expected '{IncidentType.SECURITY_EVENT}' or '{IncidentType.THREAT}' "
                 f"for 'incident_type', get '{incident_type}' ({remote_incident_id})"
             )
 
@@ -3903,16 +3902,18 @@ def update_remote_system(client, args):
     parsed_args = UpdateRemoteSystemArgs(args)
     delta = parsed_args.delta
     entries = parsed_args.entries
-    remote_incident_id = parsed_args.remote_incident_id
+    remote_incident_id: str = parsed_args.remote_incident_id
+
+    incident_type: str
+    incident_type, _ = remote_incident_id.split(":", 1)
 
     if delta:
         demisto.debug(f"Got the following delta keys {list(delta.keys())}.")
         demisto.debug(f"Got the following entries {entries}.")
 
     try:
-        incident_type = find_incident_type(remote_incident_id)
         if parsed_args.incident_changed and delta:
-            if incident_type == IncidentType.SEC_EVENT:
+            if incident_type == IncidentType.SECURITY_EVENT:
                 demisto.debug(f"Updating remote security event {remote_incident_id}")
                 result = update_remote_security_event(
                     client, delta, parsed_args.inc_status, remote_incident_id
