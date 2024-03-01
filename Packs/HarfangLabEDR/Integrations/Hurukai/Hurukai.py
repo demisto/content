@@ -3670,7 +3670,7 @@ def get_remote_threat_data(client, remote_incident_id: str):
 
 
 def close_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
-    demisto.debug(f"{incident_type_name} is closed: {remote_incident_id}")
+    demisto.debug(f"Close incident '{remote_incident_id}'")
     entries.append(
         {
             "Type": EntryType.NOTE,
@@ -3683,8 +3683,8 @@ def close_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: s
     )
 
 
-def reopen_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
-    demisto.debug(f"{incident_type_name} is reopened: {remote_incident_id}")
+def reopen_in_xsoar(entries: List, remote_incident_id: str):
+    demisto.debug(f"Reopen incident '{remote_incident_id}'")
     entries.append(
         {
             "Type": EntryType.NOTE,
@@ -3696,28 +3696,36 @@ def reopen_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: 
     )
 
 
-def set_xsoar_security_events_entries(
-    updated_object: Dict[str, Any], entries: List, remote_incident_id: str
-):
+def set_xsoar_entries(
+    updated_object: dict[str, Any],
+    entries: list,
+    remote_incident_id: str,
+    incident_type_name: str,
+) -> None:
     if demisto.params().get("close_incident"):
-        if updated_object.get("status") == "Closed":
-            close_in_xsoar(entries, remote_incident_id, "Hurukai alert")
-        elif updated_object.get("status") in (
-            set(STATUS_XSOAR_TO_HFL.keys()) - {"Closed"}
-        ):
-            reopen_in_xsoar(entries, remote_incident_id, "Hurukai alert")
+        incident_status: Optional[str] = updated_object.get("status")
+        if incident_status == "Closed":
+            close_in_xsoar(entries, remote_incident_id, incident_type_name)
+        # the 'Closed' status as been checked right before, no need to
+        # exclude it from STATUS_XSOAR_TO_HFL's values
+        elif incident_status in STATUS_XSOAR_TO_HFL:
+            reopen_in_xsoar(entries, remote_incident_id)
+
+
+def set_xsoar_security_events_entries(
+    updated_object: dict[str, Any],
+    entries: list,
+    remote_incident_id: str,
+):
+    set_xsoar_entries(updated_object, entries, remote_incident_id, "Hurukai alert")
 
 
 def set_xsoar_threats_entries(
-    updated_object: Dict[str, Any], entries: List, remote_incident_id: str
+    updated_object: dict[str, Any],
+    entries: list,
+    remote_incident_id: str,
 ):
-    if demisto.params().get("close_incident"):
-        if updated_object.get("status") == "Closed":
-            close_in_xsoar(entries, remote_incident_id, "Hurukai threat")
-        elif updated_object.get("status") in (
-            set(STATUS_XSOAR_TO_HFL.keys()) - {"Closed"}
-        ):
-            reopen_in_xsoar(entries, remote_incident_id, "Hurukai threat")
+    set_xsoar_entries(updated_object, entries, remote_incident_id, "Hurukai threat")
 
 
 def get_remote_data(
