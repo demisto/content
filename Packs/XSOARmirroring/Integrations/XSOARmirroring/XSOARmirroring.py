@@ -351,7 +351,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
 
     for incident in incidents:
         incident_result: dict[str, Any] = {}
-        incident_result['dbotMirrorDirection'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
+        incident_result['dbotMirrorDirection'] = MIRROR_DIRECTION.get(mirror_direction)  # type: ignore
         incident['dbotMirrorInstance'] = demisto.integrationInstance()
         incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None  # type: ignore
         incident_result['dbotMirrorId'] = incident['id']
