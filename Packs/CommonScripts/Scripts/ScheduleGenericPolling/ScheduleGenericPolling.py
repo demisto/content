@@ -95,7 +95,7 @@ def main():  # pragma: no cover
                                                                          dt.replace('"', r'\"'), interval, timeout,
                                                                          tag, args_names, args_values)
     if extract_mode:
-        command_string += f" auto-extract={extract_mode}"
+        command_string += f" auto-extract={extract_mode} extractMode={extract_mode}"
     schedule_command_args = {
         'command': command_string,
         'cron': f'*/{interval} * * * *',
