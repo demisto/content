@@ -69,6 +69,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, api_token: str, proxy: bool,
                  verify: bool):
+        self.api_key = api_token
         headers = {
             "Authorization": f"bearer {api_token}",
         }
@@ -226,6 +227,13 @@ class Client(BaseClient):
             'vm': vm,
             'playbook': playbook
         })
+        if files:
+            demisto.debug("the sample id is file, added the api_key to data request")
+            if self._headers:
+               self._headers.pop("Authorization")
+            payload = {
+                "api_key": self.api_key
+            }
         return self._http_request("POST",
                                   urljoin(API_V2_PREFIX, "samples"),
                                   files=files,
@@ -867,6 +875,7 @@ def upload_sample_command(
                                         private=private,
                                         vm=vm,
                                         playbook=playbook)
+    demisto.debug(f"{response=}")
     uploaded_sample = response["data"]
 
     return CommandResults(
