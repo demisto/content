@@ -382,7 +382,7 @@ def test_handle_html(mocker):
     assert expected_attachments == attachments
 
 
-def test_handle_html_image_with_new_line(mocker):
+def test_handle_html_image_with_new_line():
     """
     Given:
         - html body of a message with an attached base64 image.
@@ -396,7 +396,7 @@ def test_handle_html_image_with_new_line(mocker):
     htmlBody = """
 <html>
     <body>
-        <img \n\t\t\t\t\t  src="data:image/png;base64,Aa=="/>
+        <img\n\t\t\t\t\t  src="data:image/png;base64,Aa=="/>
     </body>
 </html>"""
 
@@ -412,7 +412,7 @@ def test_handle_html_image_with_new_line(mocker):
     expected_cleanBody = """
 <html>
     <body>
-        <img 
+        <img
 \t\t\t\t\t  src="cid:image0.png"/>
     </body>
 </html>"""
