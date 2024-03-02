@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -1921,7 +1919,7 @@ def handle_html(htmlBody):
         re.finditer(  # pylint: disable=E1101
             r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"',
             htmlBody,
-            re.I  # pylint: disable=E1101
+            re.I | re.S  # pylint: disable=E1101
         )
     ):
         maintype, subtype = m.group(2).split('/', 1)
@@ -2198,7 +2196,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     cc = argToList(args.get('cc'))
     bcc = argToList(args.get('bcc'))
     html_body = args.get('htmlBody')
-    force_handle_htmlBody = argToBoolean(args.get('force_handle_htmlBody', True))
+    force_handle_htmlBody = argToBoolean(args.get('force_handle_htmlBody', False))
     reply_to = args.get('replyTo')
     attach_names = argToList(args.get('attachNames'))
     attach_cids = argToList(args.get('attachCIDs'))
