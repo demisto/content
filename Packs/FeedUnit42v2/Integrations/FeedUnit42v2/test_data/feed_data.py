@@ -386,12 +386,16 @@ CAMPAIGN_INDICATOR = [{'fields': {'description': 'Since the beginning of the cal
                        'type': 'Campaign',
                        'value': 'Campaign 1 - [Endor] Maze Ransomware'}]
 
+# add modified and rawJSON and Report Object References fields to match CAMPAIGN_INDICATOR format
 REPORTS_INDICATORS = [{'fields': {'description': 'A description of the report',
                                   'firstseenbysource': '1993-06-17T11:00:00.000Z',
                                   'published': '1994-08-12T11:00:00.000Z',
                                   'reportedby': 'Unit42',
                                   'stixid': 'report--a',
-                                  'tags': ['intrusion-set']},
+                                  'tags': ['intrusion-set'],
+                                  'Report Object References': [{'objectstixid': 'intrusion-set--a'}, {'objectstixid': 'report--ab'}],
+                                  'report_types': [],
+                                  'modified': '1993-06-17T11:00:00.000Z'},
                        'rawJSON': {'unit42_created_date': '1993-06-17T11:00:00.000Z',
                                    'unit42_description': 'A description of the report',
                                    'unit42_id': 'report--a',

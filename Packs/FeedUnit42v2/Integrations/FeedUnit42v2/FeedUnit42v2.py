@@ -29,27 +29,6 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
     'intrusion-set': ThreatIntel.ObjectsNames.INTRUSION_SET
 }
 
-MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
-    'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
-    'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
-    'adversary-opsec': ThreatIntel.KillChainPhases.ADVERSARY_OPSEC,
-    'credential-access': ThreatIntel.KillChainPhases.CREDENTIAL_ACCESS,
-    'exfiltration': ThreatIntel.KillChainPhases.EXFILTRATION,
-    'lateral-movement': ThreatIntel.KillChainPhases.LATERAL_MOVEMENT,
-    'defense-evasion': ThreatIntel.KillChainPhases.DEFENSE_EVASION,
-    'persistence': ThreatIntel.KillChainPhases.PERSISTENCE,
-    'collection': ThreatIntel.KillChainPhases.COLLECTION,
-    'impact': ThreatIntel.KillChainPhases.IMPACT,
-    'initial-access': ThreatIntel.KillChainPhases.INITIAL_ACCESS,
-    'discovery': ThreatIntel.KillChainPhases.DISCOVERY,
-    'execution': ThreatIntel.KillChainPhases.EXECUTION,
-    'installation': ThreatIntel.KillChainPhases.INSTALLATION,
-    'delivery': ThreatIntel.KillChainPhases.DELIVERY,
-    'weaponization': ThreatIntel.KillChainPhases.WEAPONIZATION,
-    'act-on-objectives': ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
-    'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL
-}
-
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 
 from TAXII2ApiModule import *  # noqa: E402
@@ -205,20 +184,12 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
     for report_object in report_objects:
         if is_sub_report(report_object):
             continue
-
-        report = {}  # type: Dict[str, Any]
-
-        report['type'] = ThreatIntel.ObjectsNames.REPORT
+        report_list = client.parse_report(report_object)
+        report = report_list[0]
         report['value'] = f"[Unit42 ATOM] {report_object.get('name')}"
-        report['score'] = ThreatIntel.ObjectsScore.REPORT
-        report['fields'] = {
-            'stixid': report_object.get('id'),
-            "firstseenbysource": report_object.get('created'),
-            'published': report_object.get('published'),
-            'description': report_object.get('description', ''),
-            "reportedby": 'Unit42',
-            "tags": list((set(report_object.get('labels') or [])).union(set(feed_tags))),
-        }
+        report['fields']['tags'] = list((set(report_object.get('labels') or [])).union(set(feed_tags)))
+        report['fields']['reportedby'] = 'Unit42'
+
         if tlp_color:
             report['fields']['trafficlightprotocol'] = tlp_color
 
@@ -304,7 +275,7 @@ def get_attack_id_and_value_from_name(attack_indicator):
     return ind_id, value
 
 
-def create_attack_pattern_indicator(client: Client, attack_indicator_objects, feed_tags, tlp_color, is_up_to_6_2) -> List:
+def create_attack_pattern_indicator(client: Client, attack_indicator_objects, feed_tags, tlp_color) -> List:
     """Parse the Attack Pattern objects retrieved from the feed.
 
     Args:
@@ -350,7 +321,7 @@ def create_course_of_action_indicators(client: Client, course_of_action_objects,
       tlp_color: Traffic Light Protocol color.
 
     Returns:
-        A list of processed campaign.
+      A list of processed campaign.
     """
     course_of_action_indicators = []
 
@@ -528,7 +499,6 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
     item_types_to_fetch_from_api = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship',
                                     'course-of-action', 'intrusion-set']
     client.get_stix_objects(items_types=item_types_to_fetch_from_api)
-    is_up_to_6_2 = is_demisto_version_ge('6.2.0')
 
     for type_, objects in client.objects_data.items():
         demisto.info(f'Fetched {len(objects)} Unit42 {type_} objects.')
@@ -539,12 +509,12 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
         + client.objects_data['campaign'] + client.objects_data['attack-pattern']
         + client.objects_data['course-of-action'] + client.objects_data['intrusion-set']
     }
-
+    client.id_to_object = id_to_object
     ioc_indicators = parse_indicators(client, client.objects_data['indicator'], feed_tags, tlp_color)
     reports = parse_reports_and_report_relationships(client, client.objects_data['report'], feed_tags, tlp_color, id_to_object)
     campaigns = parse_campaigns(client, client.objects_data['campaign'], feed_tags, tlp_color)
     attack_patterns = create_attack_pattern_indicator(client, client.objects_data['attack-pattern'],
-                                                      feed_tags, tlp_color, is_up_to_6_2)
+                                                      feed_tags, tlp_color)
     intrusion_sets = create_intrusion_sets(client, client.objects_data['intrusion-set'], feed_tags, tlp_color)
     course_of_actions = create_course_of_action_indicators(client, client.objects_data['course-of-action'],
                                                            feed_tags, tlp_color)
@@ -589,7 +559,6 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: Opti
     Returns:
         Demisto Outputs.
     """
-    is_version_over_6_2 = is_demisto_version_ge('6.2.0')
     limit = arg_to_number(args.get('limit')) or 10
     if not feed_tags:
         feed_tags = []
@@ -601,7 +570,7 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: Opti
     if ind_type == 'indicator':
         indicators = parse_indicators(client, indicators, feed_tags, tlp_color)
     else:
-        indicators = create_attack_pattern_indicator(client, indicators, feed_tags, tlp_color, is_version_over_6_2)
+        indicators = create_attack_pattern_indicator(client, indicators, feed_tags, tlp_color)
     limited_indicators = indicators[:limit]
 
     readable_output = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value', 'fields'])

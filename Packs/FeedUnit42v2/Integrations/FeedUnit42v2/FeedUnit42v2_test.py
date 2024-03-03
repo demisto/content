@@ -257,9 +257,9 @@ def test_create_attack_pattern_indicator(mocker):
     import TAXII2ApiModule
     client = Client(api_key='1234', verify=False)
     mocker.patch.object(TAXII2ApiModule, 'is_demisto_version_ge', side_effect=[True, False, True])
-    assert create_attack_pattern_indicator(client, ATTACK_PATTERN_DATA, [], '', True) == ATTACK_PATTERN_INDICATOR
-    assert create_attack_pattern_indicator(client, ATTACK_PATTERN_DATA, [], '', False) == STIX_ATTACK_PATTERN_INDICATOR
-    assert create_attack_pattern_indicator(client, SUB_TECHNIQUE_DATA, [], '', True) == SUB_TECHNIQUE_INDICATOR
+    assert create_attack_pattern_indicator(client, ATTACK_PATTERN_DATA, [], '') == ATTACK_PATTERN_INDICATOR
+    assert create_attack_pattern_indicator(client, ATTACK_PATTERN_DATA, [], '') == STIX_ATTACK_PATTERN_INDICATOR
+    assert create_attack_pattern_indicator(client, SUB_TECHNIQUE_DATA, [], '') == SUB_TECHNIQUE_INDICATOR
 
 
 def test_create_course_of_action_indicators():
