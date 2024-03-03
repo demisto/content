@@ -880,7 +880,9 @@ script:
     - description: The tags for the new service.
       isArray: true
       name: tags
-    description: Creates a service.
+    description: >
+     Creates a service.
+     Note: overrides the service if it already exists.
     deprecated: true
     name: panorama-create-service
     outputs:
@@ -5033,6 +5035,9 @@ script:
   - arguments:
     - description: The serial number of the device.
       name: target
+    - defaultValue: 'running_config'
+      description: Name of the file to save the configuration to.
+      name: filename
     description: Pull the running config file.
     name: pan-os-get-running-config
   - arguments:
@@ -7155,7 +7160,6 @@ script:
       defaultValue: disable
     description: Enables assigning EDL to the anti-spyware profile under "DNS Signature Policies".
     name: pan-os-apply-dns-signature-policy
-    outputs: []
   - arguments: []
     description: Gets file-blocking best practices.
     name: pan-os-get-file-blocking-best-practice
@@ -8432,6 +8436,8 @@ script:
     - description: Serial number of the device from which to fetch the device state.
       name: target
       required: true
+    - description: Name of the file for the state file to be saved. Default will use the hostname as the filename.
+      name: filename
     description: Get the device state from the provided device. Note; This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in "show system info" is unreachable, this command will fail.
     name: pan-os-platform-get-device-state
     outputs:
@@ -8670,7 +8676,6 @@ script:
       - reverse
     description: Creates a new NAT rule in a Panorama/firewall instance.
     name: pan-os-create-nat-rule
-    outputs: []
   - arguments:
     - description: The name of the NAT rule to delete. Can be retrieved from the pan-os-list-nat-rules command.
       name: rulename
@@ -8685,7 +8690,6 @@ script:
       - post-rulebase
     description: Deletes a NAT rule.
     name: pan-os-delete-nat-rule
-    outputs: []
   - arguments:
     - description: The name of the NAT rule to edit. Can be retrieved from the pan-os-list-nat-rules command.
       name: rulename
@@ -8737,7 +8741,6 @@ script:
       required: true
     description: Edits a NAT rule.
     name: pan-os-edit-nat-rule
-    outputs: []
   - arguments:
     - description: The name of the virtual router to retrieve. If not mentioned, will bring all the virtual routers.
       name: virtual_router
@@ -8891,7 +8894,6 @@ script:
       name: filter_bgp_extended_community
     description: Creates a new redistribution-profile under a virtual-router for a Panorama/firewall instance.
     name: pan-os-create-redistribution-profile
-    outputs: []
   - arguments:
     - description: The name of the redistribution-profile to edit.
       name: name
@@ -8931,7 +8933,6 @@ script:
       defaultValue: 'replace'
     description: Edits a redistribution-profile in a virtual-router.
     name: pan-os-edit-redistribution-profile
-    outputs: []
   - arguments:
     - description: The name of the redistribution-profile to delete.
       name: name
@@ -8943,7 +8944,6 @@ script:
       name: template
     description: Deletes a redistribution-profile from a virtual-router.
     name: pan-os-delete-redistribution-profile
-    outputs: []
   - arguments:
     - description: The name of the pbf-rule to retrieve. If not mentioned, will bring all the pbf rules.
       name: rulename
@@ -9115,7 +9115,6 @@ script:
       name: nexthop_address_list
     description: Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance.
     name: pan-os-create-pbf-rule
-    outputs: []
   - arguments:
     - description: The name of the PBF rule to edit. Can be retrieved from the pan-os-list-pbf-rules command.
       name: rulename
@@ -9269,7 +9268,6 @@ script:
       name: device-group
     description: Deletes an application-group.
     name: pan-os-delete-application-group
-    outputs: []
   - arguments:
     - description: Whether to include shared tags in the list.
       name: include_shared_tags
@@ -9366,7 +9364,7 @@ script:
       description: The job ID to use when polling.
     description: Exports a tech support file (TSF).
     polling: true
-  dockerimage: demisto/pan-os-python:1.0.0.83880
+  dockerimage: demisto/pan-os-python:1.0.0.87401
   isfetch: true
   runonce: false
   script: ''

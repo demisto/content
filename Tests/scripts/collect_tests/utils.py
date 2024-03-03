@@ -127,11 +127,12 @@ class DictBased:
         return version.Infinity
 
     def _handle_xsoar_marketplaces(self) -> tuple[MarketplaceVersions, ...] | None:
-        '''
+        """
         If xsoar marketplace supported add xsoar_saas marketplace.
         If xsoar_on_prem marketplace supported add xsoar marketplace.
-        '''
-        pack_marketplaces = {MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)} or None
+        """
+        pack_marketplaces = {MarketplaceVersions(v)
+                             for v in to_tuple(self.get('marketplaces', (), warn_if_missing=False))} or None
         if not pack_marketplaces:
             return pack_marketplaces
 

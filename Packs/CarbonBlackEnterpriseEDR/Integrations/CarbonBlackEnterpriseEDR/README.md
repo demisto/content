@@ -2712,3 +2712,93 @@ RBAC Permissions Required - org.search.events: READ
 >| 80abd555c1869baaff2d8a8d535ce07e,<br/>fa353f142361e5c6ca57a66dcb341bba20392f5c29d2c113c7d62a216b0e0504 | c:\program files\vmware\vmware tools\vmtoolsd.exe | desktop-aa2m6ld | 2020-08-26T16:06:50.813Z | 2016 | DESKTOP-AA2M6LD\John Doe |
 >| 80abd555c1869baaff2d8a8d535ce07e,<br/>fa353f142361e5c6ca57a66dcb341bba20392f5c29d2c113c7d62a216b0e0504 | c:\program files\vmware\vmware tools\vmtoolsd.exe | desktop-aa2m6ld | 2020-08-17T14:37:19.963Z | 8052 | DESKTOP-AA2M6LD\John Doe |
 
+### cb-eedr-add-threat-tags
+
+***
+Update threat ID tags.
+
+#### Base Command
+
+`cb-eedr-add-threat-tags`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_id | Threat ID. | Required | 
+| tags | Comma-separated list of tags. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CarbonBlackEEDR.Threat.ThreatID | unknown | Threat ID. | 
+| CarbonBlackEEDR.Threat.Tags | unknown | Threat ID tags. | 
+
+### cb-eedr-add-threat-notes
+
+***
+Update threat ID notes.
+
+#### Base Command
+
+`cb-eedr-add-threat-notes`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_id | Threat ID. | Required | 
+| notes | Notes to be added to the provided threat ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CarbonBlackEEDR.Threat.ThreatID | unknown | Threat ID. | 
+| CarbonBlackEEDR.Threat.Notes | unknown | Threat ID notes. | 
+
+### cb-eedr-add-alert-notes
+
+***
+Update alert ID notes.
+
+#### Base Command
+
+`cb-eedr-add-alert-notes`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | Alert ID to add the notes to. | Required | 
+| notes | Notes to be added to the provided alert ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CarbonBlackEEDR.Alert.AlertID | unknown | The alert ID. | 
+| CarbonBlackEEDR.Alert.Notes | unknown | Alert notes. | 
+
+### cb-eedr-get-threat-tags
+
+***
+Output a list of tags for the provided threat ID.
+
+#### Base Command
+
+`cb-eedr-get-threat-tags`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_id | The threat ID for which we wish to get the tags. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CarbonBlackEEDR.Threat.ThreatID | unknown | Threat ID. | 
+| CarbonBlackEEDR.Threat.Tags | unknown | Threat tags. | 

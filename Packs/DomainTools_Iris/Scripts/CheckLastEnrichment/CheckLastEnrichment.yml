@@ -1,0 +1,32 @@
+args:
+- default: false
+  description: Date domain was last enriched '%Y-%m-%d'.
+  isArray: false
+  name: last_enrichment
+  required: true
+  secret: false
+comment: Check if DomainTools Data is in Need of Enrichment.
+commonfields:
+  id: CheckLastEnrichment
+  version: -1
+enabled: false
+name: CheckLastEnrichment
+outputs:
+- contextPath: 'yes'
+  description: Refresh Enrichment Data.
+  type: String
+- contextPath: 'no'
+  description: Don't Refresh Enrichment Data.
+  type: String
+script: '-'
+system: false
+tags:
+- DomainTools
+- Condition
+timeout: '0'
+type: python
+subtype: python3
+fromversion: 6.6.0
+dockerimage: demisto/python3:3.10.13.87159
+tests:
+- No tests (auto formatted)

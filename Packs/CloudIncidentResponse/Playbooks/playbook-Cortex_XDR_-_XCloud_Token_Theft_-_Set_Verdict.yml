@@ -122,53 +122,19 @@ tasks:
       id: 980777c8-d213-4f10-848b-290d9e700bba
       version: -1
       name: Get additional alerts
-      description: |-
-        Searches Demisto incidents. A summarized version of this scrips is avilable with the summarizedversion argument.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: SearchIncidentsV2
+      description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
+      script: '|||xdr-get-incident-extra-data'
       type: regular
-      iscommand: false
-      brand: Builtin
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      custom_filter:
-        simple: |-
-          {
-            "OR": [
-              {
-                "AND": [
-                  {
-                    "SEARCH_FIELD": "agent_ip_addresses",
-                    "SEARCH_TYPE": "IPLIST_MATCH",
-                    "SEARCH_VALUE": "${inputs.sourceIP}"
-                  }
-                ]
-              },
-              {
-                "AND": [
-                  {
-                    "SEARCH_FIELD": "action_local_ip",
-                    "SEARCH_TYPE": "IP_MATCH",
-                    "SEARCH_VALUE": "${inputs.sourceIP}"
-                  }
-                ]
-              },
-              {
-                "AND": [
-                  {
-                    "SEARCH_FIELD": "action_remote_ip",
-                    "SEARCH_TYPE": "IP_MATCH",
-                    "SEARCH_VALUE": "${inputs.sourceIP}"
-                  }
-                ]
-              }
-            ]
-          }
+      incident_id:
+        complex:
+          root: incident
+          accessor: xdrincidentid
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -358,7 +324,7 @@ tasks:
           left:
             value:
               complex:
-                root: alertJson.raw_abioc.event
+                root: Core.OriginalAlert.event
                 accessor: cloud_agent_external_ip_days_seen_count
             iscontext: true
           right:
@@ -368,7 +334,7 @@ tasks:
           left:
             value:
               complex:
-                root: alertJson.raw_abioc.event
+                root: Core.OriginalAlert.event
                 accessor: cloud_caller_ip_asn_count_distinct_cloud_best_identity
             iscontext: true
           right:
@@ -627,14 +593,6 @@ inputs:
   value: {}
   required: false
   description: The source IP to search by additional alerts.
-  playbookInputQuery:
-- key: fromDate
-  value: {}
-  required: false
-  description: |-
-    The start date for the search additional alerts task.
-
-    Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   playbookInputQuery:
 outputs:
 - contextPath: alertVerdict

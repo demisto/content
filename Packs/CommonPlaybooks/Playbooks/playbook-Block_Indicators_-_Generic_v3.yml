@@ -350,6 +350,15 @@ tasks:
       indicatorsValues:
         complex:
           root: IndicatorsToBlock
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: IndicatorsToBlock
+                iscontext: true
+              right:
+                value:
+                  simple: No indicators to block
     separatecontext: false
     view: |-
       {
@@ -826,8 +835,8 @@ tasks:
               defaultValue:
                 value:
                   simple: No indicators to block
-    separatecontext: false
     reputationcalc: 2
+    separatecontext: false
     continueonerrortype: ""
     view: |-
       {
@@ -915,6 +924,7 @@ tasks:
               defaultValue:
                 value:
                   simple: No indicators to block
+    reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -927,7 +937,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    reputationcalc: 2
     skipunavailable: false
     quietmode: 0
     isoversize: false
