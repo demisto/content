@@ -141,9 +141,9 @@ To setup the mirroring follow these instructions:
 4. Under **Mapper (incoming)**, select `XDR - Incoming Mapper`.
 5. Under **Mapper (outgoing)**, select `Cortex XDR - Outgoing Mapper`.
 6. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
-   - Incoming - Any changes in XDR incidents will be reflected in XSOAR incidents.
-   - Outgoing - Any changes in XSOAR incidents will be reflected in XDR incidents.
-   - Both - Changes in XSOAR and XDR incidents will be reflected in both directions.
+   - Incoming - Any changes in Cortex XDR incidents will be reflected in Cortex XSOAR incidents.
+   - Outgoing - Any changes in Cortex XSOAR incidents will be reflected in Cortex XDR incidents.
+   - Both - Changes in Cortex XSOAR and Cortex XDR incidents will be reflected in both directions.
    - None - Choose this to turn off incident mirroring.
 7. Optional: Provide a custom close-reason mapping for mirrored XDR <-> XSOAR incidents. Please use only possible close-reasons to map: 
 
