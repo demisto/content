@@ -2,7 +2,7 @@ commonfields:
   id: SlackBlockBuilder
   version: -1
 name: SlackBlockBuilder
-script: '-'
+script: ''
 type: python
 tags:
 - slack
@@ -47,7 +47,7 @@ outputs:
   description: The state of the response from the user will be stored under this context path.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.73190
+dockerimage: demisto/python3:3.10.13.88772
 runas: DBotWeakRole
 dependson:
   must:
@@ -55,3 +55,8 @@ dependson:
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+engineinfo: {}
+runonce: false

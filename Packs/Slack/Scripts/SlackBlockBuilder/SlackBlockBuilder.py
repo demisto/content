@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from typing import Dict, Any, List
 import traceback
 import urllib.parse
@@ -281,9 +283,24 @@ def slack_block_builder_command(args: Dict[str, Any]):
     block_carrier.format_blocks()
     notification = SendNotification(blocks_carrier=block_carrier, slack_instance=slack_instance, to=to,
                                     channel_id=channel_id, channel=channel)
+                                        channel_id=channel_id, channel=channel, threadID=thread_id)
     notification.send()
     human_readable = notification.send_response[0]['HumanReadable']
-    return CommandResults(readable_output=human_readable)
+    # Dict object returned from sending the message; contains Slack metadata
+    context_output = {
+        'ThreadID': notification.send_response[0].get('Contents', {}).get('ts'),
+        'Channel': notification.send_response[0].get('Contents', {}).get('channel'),
+        'Text': notification.send_response[0].get('Contents', {}).get('message', {}).get('text'),
+        'BotID': notification.send_response[0].get('Contents', {}).get('message', {}).get('bot_id'),
+        'Username': notification.send_response[0].get('Contents', {}).get('message', {}).get('username'),
+        'AppID': notification.send_response[0].get('Contents', {}).get('message', {}).get('app_id')
+    }
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='SlackBlockBuilder',
+        outputs=context_output
+    )
+
 
 
 ''' MAIN FUNCTION '''
@@ -301,3 +318,4 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
