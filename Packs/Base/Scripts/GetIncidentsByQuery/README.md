@@ -28,7 +28,7 @@ This script is used in the following playbooks and scripts.
 | fromDate | The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00 \+0200"\). |
 | toDate | The end date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00 \+0200"\). |
 | limit | The maximum number of incidents to fetch. |
-| includeContext | Whether to query and fetch incident context. Can be "true" or "false". The default is "false". |
+| includeContext | Deprecated due to performance considerations. Rather than using this argument, it is recommended to retrieve the context of the incidents separately, preferably for a limited number of incidents. |
 | timeField | The incident field to specify for the date range. Can be "created" or "modified". The default is "created". Due to performance considerations, you should only use "modified" if you have a large number of incidents. |
 | NonEmptyFields | A comma-separated list of non-empty value incident field names by which to filter incidents. |
 | outputFormat | The output file format. |
