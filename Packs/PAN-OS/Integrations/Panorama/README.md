@@ -2328,7 +2328,7 @@ Creates a policy rule.
 | profile_setting | A profile setting group. | Optional | 
 | where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Optional | 
 | dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional |
-| audit_comment | A audit comment for the rule. | Optional |
+| audit_comment | An audit comment for the rule. | Optional |
 
 #### Context Output
 
@@ -7959,7 +7959,7 @@ Creates a new NAT rule in a Panorama/firewall instance.
 | destination_translation_distribution_method | The destination translation distribution method. Possible values are: round-robin, source-ip-hash, ip-modulo, ip-hash, least-sessions. | Optional | 
 | negate_destination | Whether to use negate destination. Possible values are: yes, no. | Optional | 
 | destination_dns_rewrite_direction | The DNS rewrite direction. Possible values are: forward, reverse. | Optional | 
-| audit_comment | A audit comment for the rule. | Optional |
+| audit_comment | An audit comment for the rule. | Optional |
 
 
 #### Context Output
@@ -8575,7 +8575,7 @@ Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance
 | negate_source | Whether to negate the source. Possible values are: yes, no. Default is no. | Optional | 
 | negate_destination | Whether to negate the destination. Possible values are: yes, no. Default is no. | Optional | 
 | nexthop_address_list | The nexthop addresses list for the symmetric return. | Optional | 
-| audit_comment | A audit comment for the rule. | Optional |
+| audit_comment | An audit comment for the rule. | Optional |
 
 
 #### Context Output
