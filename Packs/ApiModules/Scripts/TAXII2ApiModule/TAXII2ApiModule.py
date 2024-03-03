@@ -1241,7 +1241,6 @@ class Taxii2FeedClient:
         parsed_objects_counter: Dict[str, int] = {}
         try:
             for envelope in envelopes:
-                # demisto.debug(f'parse_generator_type_envelope, trying to parse the envelope: {envelope}')
                 self.increase_count(parsed_objects_counter, 'envelope')
                 try:
                     stix_objects = envelope.get("objects")
