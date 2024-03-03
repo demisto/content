@@ -12,7 +12,8 @@ args:
   name: limit
 - auto: PREDEFINED
   defaultValue: 'false'
-  description: Whether to query and fetch incident context. Can be "true" or "false". The default is "false".
+  deprecated: true
+  description: Deprecated due to performance considerations. Rather than using this argument, it is recommended to retrieve the context of the incidents separately, preferably for a limited number of incidents.
   name: includeContext
   predefined:
   - 'true'
@@ -36,7 +37,7 @@ args:
 - description: A comma-separated list of fields in the object to poplulate.
   name: populateFields
 - defaultValue: '100'
-  description: Incidents query batch size
+  description: Incidents query batch size.
   name: pageSize
 comment: |-
   Gets a list of incident objects and the associated incident outputs that
@@ -62,7 +63,7 @@ tags:
 - ml
 timeout: 60µs
 type: python
-dockerimage: demisto/python3:3.10.12.66339
+dockerimage: demisto/python3:3.10.13.87159
 tests:
 - Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0
