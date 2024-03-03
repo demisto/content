@@ -158,7 +158,7 @@ To setup the mirroring follow these instructions:
     |                           |    | Auto                         |
 
     Failing to use only available values will result in using default mapping of closure reasons.
-8. Optional: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both XDR and XSOAR.
+8. Optional: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both Cortex XDR and Cortex XSOAR.
 
    - Note: This feature will only work if the same users are registered in both Cortex XSOAR and Cortex XDR.
 
