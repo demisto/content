@@ -18,9 +18,9 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
-        "DomainTools": {
+        "DomainTools_Iris": {
             "mandatory": false,
-            "display_name": "DomainTools"
+            "display_name": "DomainTools Iris"
         },
         "CommonScripts": {
             "mandatory": true,
