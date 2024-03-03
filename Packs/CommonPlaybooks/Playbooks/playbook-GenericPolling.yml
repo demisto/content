@@ -297,7 +297,7 @@ inputs:
 - key: ExtractMode
   value: {}
   required: false
-  description: Extraction mode for subsequent runs of the command
+  description: Indicator Extraction mode for the command sequence. (In XSOAR 8 and above,  for first run command set manually the RunPollingCommand task  in the sub-playbook, Advanced -> Indicator Extraction mode).
   playbookInputQuery:
 outputs: []
 tests:
