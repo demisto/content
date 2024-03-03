@@ -1229,7 +1229,7 @@ class Taxii2FeedClient:
 
         return indicators
 
-    def increase_count(self, counter: dict[str, int], id: str):
+    def increase_count(self, counter: Dict[str, int], id: str):
         if id in counter:
             counter[id] = counter[id] + 1
         else:
