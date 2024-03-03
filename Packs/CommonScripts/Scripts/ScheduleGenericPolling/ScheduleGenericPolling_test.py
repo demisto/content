@@ -169,6 +169,47 @@ def test_get_command_string_fail():
     assert result == expected_result
 
 
+def test_get_command_string_with_extract_mode():
+    '''
+    Given:
+        - inputs with extractMode
+    When:
+        - run get_command_string function
+    Then:
+        - Ensure the `auto-extract` and `extractMode` is present in the command_string
+    '''
+    inputs = {
+        'ids': "123",
+        'pollingCommand': "jira-get-issue",
+        'pollingCommandArgName': "issueId",
+        'playbookId': "pi",
+        'dt': "Ticket(val.Status != 'Done').Id",
+        'interval': "3",
+        'timeout': "5",
+        'tag': "polling",
+        'args_names': "my_arg_name",
+        'args_values': "test",
+        'extractMode': 'none',
+    }
+
+    command_string = get_command_string(
+        inputs.get('ids'),
+        inputs.get('pollingCommand'),
+        inputs.get('pollingCommandArgName'),
+        inputs.get('playbookId'),
+        inputs.get('dt'),
+        inputs.get('interval'),
+        inputs.get('timeout'),
+        inputs.get('tag,'),
+        inputs.get('args_names'),
+        inputs.get('args_values'),
+        inputs.get('extractMode'),
+    )
+
+    assert 'auto-extract=none' in command_string
+    assert 'extractMode=none' in command_string
+
+
 def test_main_pass(mocker):
     """
     Given
