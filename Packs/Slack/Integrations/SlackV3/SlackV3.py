@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import asyncio
 import concurrent
 import logging.handlers
@@ -1996,6 +1998,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
             server_links = demisto.demistoUrls()
             if investigation:
                 if investigation.get('type') != PLAYGROUND_INVESTIGATION_TYPE:
+                    print('in server links')
                     link = server_links.get('warRoom')
                     if link:
                         if entry:
@@ -2191,7 +2194,7 @@ def set_channel_topic():
     """
     Sets a topic for a slack channel
     """
-
+    print("DAN TEST PROD")
     channel = demisto.args().get('channel')
     channel_id = demisto.args().get('channel_id', '')
     topic = demisto.args().get('topic')
