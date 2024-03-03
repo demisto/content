@@ -288,7 +288,6 @@ class Client(BaseClient):
         """
 
         Args:
-            chunk_size: maximum number of assets in one chunk.
             fetch_from: the last asset that was fetched previously.
 
         Returns: The UUID of the assets export job.
@@ -618,6 +617,14 @@ def generate_assets_export_uuid(client: Client, assets_last_run):
 
 
 def handle_assets_chunks(client: Client, assets_last_run):
+    """
+    Handle assets chunks stored in the last run object.
+
+    Args:
+        client: Client class object.
+        assets_last_run: assets last run object.
+
+    """
     stored_chunks = assets_last_run.get('assets_available_chunks', [])
     updated_stored_chunks = stored_chunks.copy()
     export_uuid = assets_last_run.get('assets_export_uuid')
