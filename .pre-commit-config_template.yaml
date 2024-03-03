@@ -101,7 +101,7 @@ repos:
     - --source=.
     - -m
     - pytest
-    - -v
+    - -vv
     - --override-ini='asyncio_mode=auto'
     - --rootdir=/src
     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml

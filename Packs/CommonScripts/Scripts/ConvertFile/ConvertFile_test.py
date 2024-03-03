@@ -7,6 +7,8 @@ import glob
 import os
 import subprocess
 
+from time import sleep
+
 RETURN_ERROR_TARGET = 'ConvertFile.return_error'
 
 
@@ -83,6 +85,11 @@ def test_convert_pdf_to_html(mocker):
     assert glob_list
     # check no defunct processed
     zombies, output = find_zombie_processes()
+    demisto.info(f"zombies: {zombies}, output: {output}")
+    sleep(1)
+    zombies, output = find_zombie_processes()
+    demisto.info(f"AFTER:\nzombies: {zombies}, output: {output}")
+
     assert not zombies
     assert 'defunct' not in output
 

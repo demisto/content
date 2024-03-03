@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+import time
 import subprocess
 import glob
 import os
@@ -21,6 +22,7 @@ def find_zombie_processes():
                                      stderr=subprocess.STDOUT, universal_newlines=True)
     lines = ps_out.splitlines()
     pid = str(os.getpid())
+    demisto.info(f"Currrent pid: {pid}")
     zombies = []
     if len(lines) > 1:
         for line in lines[1:]:
@@ -37,7 +39,7 @@ def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str) 
         env = os.environ.copy()
         env['HOME'] = '/tmp/convertfile'
         res = subprocess.check_output(run_cmd, stderr=subprocess.STDOUT, universal_newlines=True, env=env)
-        demisto.debug("completed running: {}. With result: {}".format(run_cmd, res))
+        demisto.info(f"completed running: {run_cmd}. With result: {res}")
         if all_files:
             files = glob.glob(outdir + '/*')
         else:
@@ -49,14 +51,16 @@ def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str) 
     finally:
         # make sure we don't have zombie processes (seen when converting pdf to html)
         try:
+            time.sleep(2)
             zombies, ps_out = find_zombie_processes()
+            demisto.info(f"{zombies=}")
             if zombies:  # pragma no cover
-                demisto.info("Found zombie processes will waitpid: {}".format(ps_out))
+                demisto.info(f"Found zombie processes will waitpid: {ps_out}")
                 for pid in zombies:
                     waitres = os.waitpid(int(pid), os.WNOHANG)
-                    demisto.info("waitpid result: {}".format(waitres))
+                    demisto.info(f"waitpid result: {waitres}")
             else:
-                demisto.debug("No zombie processes found for ps output: {}".format(ps_out))
+                demisto.info(f"No zombie processes found for ps output: {ps_out}")
         except Exception as ex:
             demisto.error("Failed checking for zombie processes: {}. Trace: {}".format(ex, traceback.format_exc()))
 
@@ -69,8 +73,8 @@ def main():
     try:
         result = demisto.getFilePath(entry_id)
         if not result:
-            return_error("Couldn't find entry id: {}".format(entry_id))
-        demisto.debug('going to convert: {}'.format(result))
+            return_error(f"Couldn't find entry id: {entry_id}")
+        demisto.info(f'going to convert: {result}')
         file_path = result['path']
         file_path_name_only = os.path.splitext(os.path.basename(file_path))[0]
         file_name = result.get('name')
