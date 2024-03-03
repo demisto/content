@@ -16,8 +16,6 @@
  *              ID - the key that contains the id for polling
  */
 
-const { args } = require("commander");
-
 // Constant to verify the minimum build number and XSIAM version for the new polling command (stopScheduleEntry feature).
 //const MINIMUM_XSIAM_VERSION = '8.3.0';
 //const MINIMUM_BUILD_NUMBER_XSIAM = 313276;
