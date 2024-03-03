@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import asyncio
 import concurrent
 import logging.handlers
@@ -2046,6 +2048,7 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
         body['thread_ts'] = thread_id
 
     for destination in destinations:
+        print("TEST DAN 3.4.1")
         body['channel'] = destination
         response = send_slack_request_sync(CLIENT, 'chat.postMessage', body=body)
 
