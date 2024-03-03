@@ -35,8 +35,7 @@ class Client(BaseClient):
     """
 
     def search_events(
-        self, last_run: dict[str, Any], max_events_per_fetch: int, get_events: bool = False
-    ) -> tuple[List[Dict], List[Dict], List[int], List[int], str]:  # noqa: E501
+        self, last_run: dict[str, Any], max_events_per_fetch: int, event_type: str) -> tuple[List[Dict], List[int], str, bool, str]:  # noqa: E501
         """
         Searches for GitGuardian alerts using the '/secrets' and '/audit_logs' API endpoints.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -50,23 +49,28 @@ class Client(BaseClient):
             List: A list of events that were fetched
             str: The time to start the next incident fetch.
         """
-        incidents, last_fetched_incident_ids = self.retrieve_events(
-            last_run.get("from_fetch_time", ""), last_run.get("to_fetch_time", ""), max_events_per_fetch, last_run.get(
-                "last_fetched_incident_ids", []), 'incident', get_events
-        )
-        audit_logs, last_fetched_audit_log_ids = self.retrieve_events(
-            last_run.get("from_fetch_time", ""), last_run.get("to_fetch_time", ""), max_events_per_fetch, last_run.get(
-                "last_fetched_audit_log_ids", []), 'audit_log', get_events
+        from_fetch_time = last_run.get("from_fetch_time", "")
+        to_fetch_time = last_run.get("to_fetch_time", "")
+        last_fetched_event_ids = last_run.get("last_fetched_ids", [])
+        next_url_link = last_run.get("next_url_link", "")
+
+        events, last_fetched_event_ids, next_fetch_url, is_nextTrigger = self.retrieve_events(
+            from_fetch_time, to_fetch_time, max_events_per_fetch, last_fetched_event_ids, event_type, next_url_link
         )
 
-        next_run_from_fetch_time = last_run.get("to_fetch_time", "")
+        if is_nextTrigger:
+            # handle the case where we do not need to update the time window for the next fetch, as we need to
+            # continue fetching more pages
+            next_run_from_fetch_time = last_run.get("from_fetch_time", "")
+        else:
+            # there are no more events to fetch in the current time window
+            next_run_from_fetch_time = last_run.get("to_fetch_time", "")
 
-        return incidents, audit_logs, last_fetched_incident_ids, last_fetched_audit_log_ids, next_run_from_fetch_time
+        return events, last_fetched_event_ids, next_fetch_url, is_nextTrigger, next_run_from_fetch_time
 
     def retrieve_events(
-        self, from_fetch_time: str, to_fetch_time: str, max_events_per_fetch: int, prev_run_fetched_event_ids: List[int],
-        event_type: str, get_events: bool = False
-    ) -> tuple[List[Dict], List[int]]:
+            self, from_fetch_time: str, to_fetch_time: str, max_events_per_fetch: int, prev_run_fetched_event_ids: List[int],
+            event_type: str, next_url: str) -> tuple[List[Dict], List[int], str, bool]:
         """retrieve events from the API
 
         Args:
@@ -79,19 +83,16 @@ class Client(BaseClient):
             get_events (bool, optional): running the function through the get-events command. Defaults to False.
 
         """
-        next_url = ""
-        events = []
-        fetched_event_ids = []
-        all_fetched_events = []
-        num_of_fetched_events = 0
+        events: List[dict] = []
         params = {"from": from_fetch_time, "per_page": DEFAULT_PAGE_SIZE, "to": to_fetch_time}
 
-        while True:
+        while len(events) < max_events_per_fetch:
             if next_url:
                 demisto.debug(f"GG: Fetching events using the next_url: {next_url}")
                 response = self._http_request(
                     method="GET",
                     full_url=next_url,
+                    retries=3,
                 )
             else:
                 demisto.debug(f"GG: Fetching events using the params: {params}")
@@ -99,59 +100,44 @@ class Client(BaseClient):
                     method="GET",
                     url_suffix=EVENT_TYPE_TO_ENDPOINT.get(event_type, ''),
                     params=params,
+                    retries=3,
                 )
-            all_fetched_events.extend(response.get("results"))
             new_events = self.remove_duplicated_events(response.get("results"), prev_run_fetched_event_ids)
             events.extend(new_events)
-            num_of_fetched_events += len(new_events)
+
             next_url = response.get("next")
-
-            if num_of_fetched_events >= max_events_per_fetch or not next_url:
-                # Fetched the max number of events or no more events, sending them to xsiam
-                events, last_fetched_incidents_ids = self.handle_events(events,
-                                                                        max_events_per_fetch,
-                                                                        event_type,
-                                                                        to_fetch_time,
-                                                                        get_events)
-                fetched_event_ids.extend(last_fetched_incidents_ids)
-                num_of_fetched_events = len(events)
-
-            if get_events and len(all_fetched_events) >= max_events_per_fetch:
-                break
             if not next_url:
                 break
 
-        next_run_events_from_fetch = to_fetch_time
+        last_fetched_events_ids, next_fetch_url, is_nextTrigger = self.handle_events(events, event_type, to_fetch_time, next_url, prev_run_fetched_event_ids)  # noqa: E501
+
         if response.get("count") == 0:
-            demisto.debug(f"GG: No events were fetched, next_run_event_from_time is {next_run_events_from_fetch}")
-        else:
-            demisto.debug(
-                f"GG: Events were fetched, next_run_event_from_time is {next_run_events_from_fetch}"
-            )
+            demisto.debug("GG: No events were fetched.")
 
-        return all_fetched_events, fetched_event_ids
+        return events, last_fetched_events_ids, next_fetch_url, is_nextTrigger
 
-    def handle_events(self, events_to_send: list, max_events_per_fetch: int, event_type: str,
-                      to_fetch_time: str, get_events: bool = False) -> tuple[List[Dict], List[int]]:
-        """_summary_
+    def handle_events(self, events: list, event_type: str, to_fetch_time: str, next_url: str,
+                      prev_run_fetched_event_ids: List[int]) -> tuple[List[int], str, bool]:
+        """handle the newly fetched events.
 
         Args:
             events_to_send (list): events fetched.
-            max_events_per_fetch (int): maximum number of events to send to xsiam.
             event_type (str): the type of the event.
             to_fetch_time (str): the end time of the fetch
-            get_events (bool, optional): running the function through the get-events command. Defaults to False.
 
         """
-        events_to_send_to_xsiam, events_to_keep = events_to_send[:max_events_per_fetch], events_to_send[max_events_per_fetch:]
-        last_fetched_incidents_ids = self.extract_event_ids_with_same_to_fetch_time(
-            events_to_send_to_xsiam, to_fetch_time, event_type)
+        last_fetched_events_ids = []
+        if next_url:
+            last_fetched_events_ids = prev_run_fetched_event_ids
+            next_fetch_url = next_url
+            is_nextTrigger = True
 
-        if events_to_send_to_xsiam and not get_events:
-            self.add_time_to_events(events_to_send_to_xsiam, event_type)
-            send_events_to_xsiam(events_to_send_to_xsiam, vendor=VENDOR, product=PRODUCT)
-
-        return events_to_keep, last_fetched_incidents_ids
+        else:
+            # there are no more events to fetch in the current time window
+            last_fetched_events_ids = self.extract_event_ids_with_same_to_fetch_time(events, to_fetch_time, event_type)
+            is_nextTrigger = False
+            next_fetch_url = ''
+        return last_fetched_events_ids, next_fetch_url, is_nextTrigger
 
     @staticmethod
     def add_time_to_events(events: List[Dict] | None, event_type: str):
@@ -183,18 +169,6 @@ class Client(BaseClient):
         return new_events
 
     @staticmethod
-    def sort_incidents_based_on_date_field(incidents: List[Dict], date_field_to_sort_by):
-        """Sort incidents based on their last_occurrence_date. Returns the incidents in an ascending manner (earliest to latest)
-        """
-
-        def get_date_time(dict_item):
-            return datetime.strptime(dict_item[date_field_to_sort_by], "%Y-%m-%dT%H:%M:%SZ")
-
-        sorted_incidents = sorted(incidents, key=get_date_time)
-
-        return sorted_incidents
-
-    @staticmethod
     def extract_event_ids_with_same_to_fetch_time(events: List[Dict], to_fetch_time: str, event_type: str):
         """Extract incident ids of incidents with the same to_fetch_time.
         Returns the incidents in an ascending manner (earliest to latest).
@@ -207,6 +181,31 @@ class Client(BaseClient):
         ids_with_same_occurrence_date = [event["id"] for event in events if format_date_string(event[EVENT_TYPE_TO_TIME_MAPPING[event_type]], event_type) == to_fetch_time]  # noqa: E501
 
         return ids_with_same_occurrence_date
+
+
+def handle_last_run(last_run: dict, is_nextTrigger_incident: bool, is_nextTrigger_auditlog: bool,
+                    next_run_incident_from_fetch_time: str, next_run_audit_log_from_fetch_time: str,
+                    last_fetched_incident_ids: list, last_fetched_audit_log_ids: list, next_fetch_incident_url: str,
+                    next_fetch_auditlog_url: str):
+    """Creates the next_run dictionary for the next fetch.
+    """
+    next_run: Dict[str, Any] = {}
+    if is_nextTrigger_incident or is_nextTrigger_auditlog:
+        next_run["nextTrigger"] = 0
+    next_run["incident"] = {
+        "from_fetch_time": next_run_incident_from_fetch_time,
+        "to_fetch_time": last_run["incident"]['to_fetch_time'],
+        "last_fetched_event_ids": last_fetched_incident_ids,
+        "next_url_link": next_fetch_incident_url
+    }
+    next_run["audit_log"] = {
+        "from_fetch_time": next_run_audit_log_from_fetch_time,
+        "to_fetch_time": last_run["audit_log"]['to_fetch_time'],
+        "last_fetched_event_ids": last_fetched_audit_log_ids,
+        "next_url_link": next_fetch_auditlog_url
+    }
+
+    return next_run
 
 
 def test_module(
@@ -233,7 +232,7 @@ def test_module(
             "last_fetched_incident_ids": [],
             "last_fetched_audit_log_ids": [],
         }
-        client.search_events(last_run, max_events_per_fetch)
+        client.search_events(last_run, max_events_per_fetch, 'incident')
 
     except Exception as e:
         if "Forbidden" in str(e):
@@ -253,9 +252,10 @@ def get_events(
     )  # if no from_date, will return all of the available incidents and audit logs
     last_run = {
         "from_fetch_time": from_date,
-        "last_fetched_incident_ids": [],
+        "last_fetched_event_ids": [],
     }
-    incidents, audit_logs, _, _, _ = client.search_events(last_run, limit, get_events=True)
+    incidents, _, _, _, _ = client.search_events(last_run, limit, 'incident')
+    audit_logs, _, _, _, _ = client.search_events(last_run, limit, 'audit_log')
     incidents = incidents[:limit]
     audit_logs = audit_logs[:limit]
 
@@ -288,20 +288,14 @@ def fetch_events(
         list: List of events that will be created in XSIAM.
     """
 
-    (
-        incidents,
-        audit_logs,
-        last_fetched_incident_ids,
-        last_fetched_audit_log_ids,
-        next_run_from_fetch_time,
-    ) = client.search_events(last_run, max_events_per_fetch)
+    incidents, last_fetched_incident_ids, next_fetch_incident_url, is_nextTrigger_incident, next_run_incident_from_fetch_time = client.search_events(  # noqa: E501
+        last_run.get("incident", {}), max_events_per_fetch, 'incident')
+    audit_logs, last_fetched_audit_log_ids, next_fetch_auditlog_url, is_nextTrigger_auditlog, next_run_audit_log_from_fetch_time = client.search_events(  # noqa: E501
+        last_run.get("audit_log", {}), max_events_per_fetch, 'audit_log')
 
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {
-        "from_fetch_time": next_run_from_fetch_time,
-        "last_fetched_incident_ids": last_fetched_incident_ids,
-        "last_fetched_audit_log_ids": last_fetched_audit_log_ids
-    }
+    next_run = handle_last_run(last_run, is_nextTrigger_incident, is_nextTrigger_auditlog, next_run_incident_from_fetch_time,
+                               next_run_audit_log_from_fetch_time, last_fetched_incident_ids, last_fetched_audit_log_ids,
+                               next_fetch_incident_url, next_fetch_auditlog_url)
 
     return next_run, incidents, audit_logs
 
@@ -323,20 +317,28 @@ def main() -> None:  # pragma: no cover
     verify = not params.get("insecure", False)
     max_events_per_fetch = int(params.get("max_events_per_fetch", 5000))
 
-    last_run = demisto.getLastRun()
+    last_run: dict[str, Any] = demisto.getLastRun()
     current_fetch_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
     if not last_run:
         # first fetch of the collector, will fetch events
         demisto.debug("GG: first fetch of the collector")
         last_run = {
-            "from_fetch_time": current_fetch_time,
-            "to_fetch_time": current_fetch_time,
-            "last_fetched_incident_ids": [],
-            "last_fetched_audit_log_ids": [],
+            "incident": {"from_fetch_time": current_fetch_time,
+                         "to_fetch_time": current_fetch_time,
+                         "last_fetched_event_ids": [],
+                         "next_url_link": ''},
+            "audit_log": {
+                "from_fetch_time": current_fetch_time,
+                "to_fetch_time": current_fetch_time,
+                "last_fetched_event_ids": [],
+                "next_url_link": ''
+            }
         }
 
-    else:
-        last_run["to_fetch_time"] = current_fetch_time
+    if "nextTrigger" not in last_run:
+        # updating the fetch time window
+        last_run["incident"]["to_fetch_time"] = current_fetch_time
+        last_run["audit_log"]["to_fetch_time"] = current_fetch_time
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -363,6 +365,10 @@ def main() -> None:  # pragma: no cover
                 last_run=last_run,
                 max_events_per_fetch=max_events_per_fetch,
             )
+            client.add_time_to_events(audit_logs, 'audit_log')
+            send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
+            client.add_time_to_events(incidents, 'incident')
+            send_events_to_xsiam(incidents, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f"GG: Setting next run: {next_run}.")
             demisto.setLastRun(next_run)
 

@@ -8,7 +8,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dict = {}):
+def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dict = {}, retries: int = 3):
     if url_suffix == "/secrets" or full_url.endswith("/secrets"):
         return util_load_json("test_data/incident_response.json")
     else:
@@ -82,16 +82,23 @@ def test_fetch_events(client, mocker):
 
     max_events_per_fetch = 3
     last_run = {
-        "from_fetch_time": "2024-01-03T21:10:40Z",
-        "to_fetch_time": "2024-01-03T21:10:40Z",
-        "last_fetched_incident_ids": [],
-        "last_fetched_audit_log_ids": []
+        "incident": {"from_fetch_time": "2024-01-03T21:10:40Z",
+                     "to_fetch_time": "2024-01-03T21:10:40Z",
+                     "last_fetched_event_ids": [],
+                     "next_url_link": ''},
+        "audit_log": {
+            "from_fetch_time": "2024-01-03T21:10:40Z",
+            "to_fetch_time": "2024-01-03T21:10:40Z",
+            "last_fetched_event_ids": [],
+            "next_url_link": ''
+        }
     }
+
     mocker.patch('GitGuardianEventCollector.send_events_to_xsiam')
     next_run, incidents, audit_logs = fetch_events(
         client, last_run, max_events_per_fetch
     )
     assert len(incidents) == 2
     assert len(audit_logs) == 1
-    assert next_run.get("from_fetch_time") == "2024-01-03T21:10:40Z"
-    assert next_run.get("last_fetched_incident_ids") == []
+    assert next_run["incident"].get("from_fetch_time") == "2024-01-03T21:10:40Z"
+    assert next_run["incident"].get("last_fetched_event_ids") == []
