@@ -33,10 +33,13 @@ class SuppressWarningFilter(logging.Filter):    # pragma: no cover
 
 # Make sure we have only one SuppressWarningFilter
 v21_logger = logging.getLogger("taxii2client.v21")
+demisto.debug(f'Logging Filters before removing: {v21_logger.filters=}')
 for current_filter in list(v21_logger.filters):    # pragma: no cover
     if 'SuppressWarningFilter' in type(current_filter).__name__:
         v21_logger.removeFilter(current_filter)
+demisto.debug(f'Logging Filters after removing: {v21_logger.filters=}')
 v21_logger.addFilter(SuppressWarningFilter())
+demisto.debug(f'Logging Filters: {v21_logger.filters=}')
 
 # CONSTANTS
 TAXII_VER_2_0 = "2.0"
