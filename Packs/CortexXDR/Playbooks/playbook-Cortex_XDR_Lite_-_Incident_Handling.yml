@@ -176,6 +176,8 @@ tasks:
           - operator: uniq
       URLSSLVerification:
         simple: "False"
+      UseReputationCommand:
+        simple: "True"
       Username:
         complex:
           root: inputs.Username
@@ -2142,7 +2144,20 @@ inputs:
   playbookInputQuery:
 - key: InternalRange
   value:
-    simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexReplace
+        args:
+          action_dt: {}
+          ignore_case: {}
+          multi_line: {}
+          output_format: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: IANA_Private_Address
   required: false
   description: |-
     This input is used in the "Entity Enrichment - Generic v3" playbook.

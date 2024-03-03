@@ -5,38 +5,49 @@ Used Sub-playbooks:
 * Block IP - Generic v3
 * Block Account - Generic v2
 
+If you wish to link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: Alert Source = Correlation AND Alert Name = CyberArk Failed Logins
+
 
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * Block IP - Generic v3
 * Block Account - Generic v2
 * Enrichment for Verdict
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * setAlert
 * closeInvestigation
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| InternalRange | List of Internal IP ranges |  | Optional |
+| InternalRange | List of Internal IP ranges | lists.PrivateIPs | Optional |
 | UserVerification | Whether to wait for user verification for blocking those IPs. <br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | True | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![CyberArk - Brute Force_Investigation](../doc_files/CyberArk_-_Brute_Force_Investigation.png)

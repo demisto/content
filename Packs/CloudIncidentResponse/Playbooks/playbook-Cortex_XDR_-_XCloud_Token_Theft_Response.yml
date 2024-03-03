@@ -2284,7 +2284,21 @@ inputs:
   description: The alert ID.
   playbookInputQuery:
 - key: InternalRange
-  value: {}
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexReplace
+        args:
+          action_dt: {}
+          ignore_case: {}
+          multi_line: {}
+          output_format: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: IANA_Private_Address
   required: false
   description: A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation.
   playbookInputQuery:
