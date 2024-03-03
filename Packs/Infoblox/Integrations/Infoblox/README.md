@@ -61,7 +61,13 @@ Get IP info
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip  | The IP address for which to retrieve information. | Required |
+| ip  | The IP address for which to retrieve information, e.g. "192.168.1.1". Cannot be used in conjunction with `network` or `from/to_ip` arguments. | Optional |
+| network  | The network that the IP belongs in FQDN/CIDR format, e.g. "192.168.1.0/24". Cannot be used in conjunction with `ip` or `from/to_ip` arguments. | Optional |
+| from_ip  | The beginning of the IP range, e.g. "192.168.1.0". Must be used in conjunction with `to_ip`. | Optional |
+| to_ip  | The end of the IP range, e.g. "192.168.1.254". Must be used in conjunction with `from_ip`. | Optional |
+| status  | The status of the IP device. Used in conjunction with the `network` or `ip` argument. Possible values are `ACTIVE`, `UNUSED` and `USED`. | Optional |
+| extended_attrs  | Comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue". | Optional |
+| max_results  | The maximum results to return. Maximum is 1000. Default is 50. | Optional |
 
 ##### Context Output
 
@@ -88,7 +94,7 @@ Get IP info
 
 ```json
 {
-    "Infoblox.IP": {
+    "Infoblox.IP": [
         "Extattrs": {},
         "IpAddress": "172.0.0.0",
         "IsConflict": false,
@@ -103,13 +109,13 @@ Get IP info
             "NETWORK"
         ],
         "Usage": []
-    }
+    ]
 }
 ```
 
 ##### Human Readable Output
 
-### Infoblox Integration - IP: 172.0.0.0 info.
+### Infoblox Integration
 
 | **Extattrs** | **Ip Address** | **Is Conflict** | **Mac Address** | **Names** | **Network** | **Network View** | **Objects** | **Reference ID** | **Status** | **Types** | **Usage** |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
