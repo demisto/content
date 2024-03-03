@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Symantec block Email](https://raw.githubusercontent.com/demisto/content/master/Packs/Symantec_Messaging_Gateway/doc_files/Symantec_block_Email.png)
+![Symantec block Email](https://raw.githubusercontent.com/demisto/content/cfbc35e7b18342a51fffb90c9c78f0020855a206/Packs/Symantec_Messaging_Gateway/doc_files/Symantec_block_Email.png)
