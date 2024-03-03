@@ -547,6 +547,7 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     # Cortex XSOAR will print everything you return different than 'ok' as
     # an error
     try:
+        print("NEWWW")
         if params.get('isFetch'):  # Tests fetch incident:
             alert_status = params.get('alert_status', None)
             alert_type = params.get('alert_type', None)
