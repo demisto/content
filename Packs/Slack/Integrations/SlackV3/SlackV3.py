@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import asyncio
 import concurrent
 import logging.handlers
@@ -1457,6 +1459,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
     :param req: SocketModeRequest: The request object which has been sent by Slack.
     :return: None
     """
+    print("DAN TEST")
     demisto.debug("Starting to process message")
     if req.envelope_id:
         response = SocketModeResponse(envelope_id=req.envelope_id)
