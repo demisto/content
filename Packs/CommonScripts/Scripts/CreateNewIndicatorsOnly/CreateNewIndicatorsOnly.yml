@@ -69,8 +69,13 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.13.87159
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+engineinfo: {}
+runonce: false

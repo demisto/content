@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from typing import Any
 
 
@@ -98,4 +100,5 @@ def main():
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    print("ADDED TESTS")
     main()
