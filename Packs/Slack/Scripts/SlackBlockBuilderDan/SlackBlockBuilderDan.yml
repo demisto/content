@@ -1,0 +1,62 @@
+args:
+- description: The URL copied from Slack's Block Builder.
+  name: blocks_url
+- description: The name of the Cortex XSOAR list to use as the block's input.
+  name: list_name
+- description: The Slack user to send the message to. Can be either an email address or a Slack user name.
+  name: user
+- description: The Slack channel to send the message to.
+  name: channel
+- description: The Slack channel ID to send the message to.
+  name: channel_id
+- description: The task to close with the reply. If empty, then no playbook tasks will be closed.
+  name: task
+- description: Tag to add to email reply entries.
+  name: replyEntriesTag
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Indicates whether to use one-time entitlement or persistent entitlement.
+  name: persistent
+  predefined:
+  - 'true'
+  - 'false'
+- defaultValue: Thank you for your response.
+  description: The reply to send to the user. Use the templates {user} and {response} to incorporate these in the reply (i.e., "Thank you {user}. You have answered {response}.").
+  name: reply
+- defaultValue: 1 day
+  description: Time until the question expires. For example - 1 day. When it expires, a default response is sent.
+  name: lifetime
+- defaultValue: NoResponse
+  description: Default response in case the question expires.
+  name: defaultResponse
+- description: The instance of SlackV3 this script should use.
+  name: slackInstance
+comment: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination. Make sure to mark **Trust any certificate** and fill the **XSOAR API Key integration** parameters if you want to get a response to the incident context.
+commonfields:
+  id: SlackBlockBuilder_Dan
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dependson:
+  must:
+  - SlackV3|||send-notification
+dockerimage: demisto/python3:3.10.13.88772
+enabled: true
+engineinfo: {}
+name: SlackBlockBuilder_Dan
+outputs:
+- contextPath: SlackBlockState
+  description: The state of the response from the user will be stored under this context path.
+  type: unknown
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- slack
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
