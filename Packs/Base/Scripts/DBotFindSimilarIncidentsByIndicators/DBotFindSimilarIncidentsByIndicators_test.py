@@ -180,6 +180,34 @@ def test_get_mutual_indicators(incidents: list[dict], indicators: list[dict], ex
     ) == ids_of(expected_indicators)
 
 
+def test_enrich_incidents_on_current_incident(mocker) -> None:
+    """
+    Given:
+    - A dataframe of the current incident which runs the script
+    - A list of fields to display from the current incident
+    When:
+    - Running enrich_incidents() with is_current_incident=True
+    Then:
+    - Ensure the result contains enriched data from the current incident.
+    """
+    incident_df = pd.DataFrame([{INCIDENT_ID_FIELD: INC_1[INCIDENT_ID_FIELD]}])
+    fields_to_display = [NAME_FIELD, CREATED_FIELD, STATUS_FIELD]
+    mocker.patch.object(demisto, "incidents", return_value=[INC_1])
+
+    result = enrich_incidents(
+        incident_df,
+        fields_to_display,
+        is_current_incident=True,
+    ).to_dict(orient="records")
+
+    assert result == [{
+        INCIDENT_ID_FIELD: INC_1[INCIDENT_ID_FIELD],
+        NAME_FIELD: INC_1[NAME_FIELD],
+        CREATED_FIELD: INC_1[CREATED_FIELD],
+        STATUS_FIELD: STATUS_DICT[INC_1[STATUS_FIELD]],
+    }]
+
+
 def test_find_similar_incidents_by_indicators_end_to_end() -> None:
     """
     Given:
@@ -198,8 +226,8 @@ def test_find_similar_incidents_by_indicators_end_to_end() -> None:
     - Ensure INC_1, INC_3, INC_4 are collected as similar incidents, and ensure their expected similarity scores
     """
     command_results_list = find_similar_incidents_by_indicators(
-        INC_2["id"],
         args={
+            "incidentId": INC_2["id"],
             "showActualIncident": "true",
             "minNumberOfIndicators": "2",
             "maxIncidentsInIndicatorsForWhiteList": "3",
@@ -271,8 +299,8 @@ def test_find_similar_incidents_by_indicators_end_to_end__different_args() -> No
                     for max_incidents in range(0, 7, 3):
                         for from_date in ["", "2023-01-01"]:
                             results = find_similar_incidents_by_indicators(
-                                inc["id"],
                                 args={
+                                    "incidentId": inc["id"],
                                     "minNumberOfIndicators": str(min_number_of_indicators),
                                     "maxIncidentsInIndicatorsForWhiteList": str(max_incs_in_indicators),
                                     "threshold": str(threshold),
@@ -303,8 +331,8 @@ def test_find_similar_incidents_by_indicators_end_to_end__no_results() -> None:
     - Ensure the command succeeds with empty lists for mutual_indicators and similar_incidents
     """
     command_results_list = find_similar_incidents_by_indicators(
-        INC_1["id"],
         args={
+            "incidentId": INC_1["id"],
             "minNumberOfIndicators": "7",
             "maxIncidentsInIndicatorsForWhiteList": "0",
             "threshold": "1",
