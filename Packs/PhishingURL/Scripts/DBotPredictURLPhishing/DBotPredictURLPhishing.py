@@ -463,16 +463,6 @@ def validate_rasterize(res_rasterize: list[dict]):
     if is_error(res_rasterize):
         error = yaml.safe_dump(get_error(res_rasterize))
         raise DemistoException(f'Rasterize on URLs returned an error:\n{error}')
-    if any(
-        isinstance(res['Contents'], str) or not (
-            res['Contents'].get(KEY_IMAGE_RASTERIZE)
-            and res['Contents'].get(KEY_IMAGE_HTML)
-        )
-        for res in res_rasterize
-    ):
-        raise DemistoException('Rasterize failed. Response is missing fields')
-    if any(KEY_CURRENT_URL_RASTERIZE not in res['Contents'] for res in res_rasterize):
-        raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
 
 
 def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
