@@ -2,6 +2,7 @@
     "reply": {
         "total_count": 2,
         "result_count": 2,
+        "alerts_limit_per_incident": 2,
         "incidents": [
             {
                 "incident": {
@@ -217,7 +218,7 @@
                             "original_tags": "DS:PANW/XDR Agent"
                         },
                         {
-                            "agent_os_sub_type": "3.2.2.2;    ",
+                            "agent_os_sub_type": "2.2.2.2;    ",
                             "fw_app_category": null,
                             "fw_app_id": null,
                             "fw_app_subcategory": null,
@@ -365,7 +366,7 @@
                             "name": "Kernel Privilege Escalation",
                             "endpoint_id": "22222222",
                             "description": "Traps has detected malware",
-                            "host_ip": "4.1.1.1",
+                            "host_ip": "1.1.1.1",
                             "host_name": "host_name",
                             "source": "XDR Agent",
                             "action": "BLOCKED",
@@ -375,7 +376,7 @@
                             "original_tags": "DS:PANW/XDR Agent"
                         },
                         {
-                            "agent_os_sub_type": "3.2.2.9",
+                            "agent_os_sub_type": "9.9.9.9",
                             "fw_app_category": null,
                             "fw_app_id": null,
                             "fw_app_subcategory": null,
@@ -477,7 +478,7 @@
                             "case_id": 1,
                             "deduplicate_tokens": null,
                             "filter_rule_id": null,
-                            "agent_version": "1.1.0.7",
+                            "agent_version": "7.7.7.7",
                             "agent_ip_addresses_v6": null,
                             "agent_data_collection_status": true,
                             "agent_is_vdi": false,
@@ -523,7 +524,7 @@
                             "name": "Kernel Privilege Escalation",
                             "endpoint_id": "22222222",
                             "description": "Traps has detected malware",
-                            "host_ip": "5.1.1.1",
+                            "host_ip": "1.1.1.1",
                             "host_name": "host_name",
                             "source": "XDR Agent",
                             "action": "BLOCKED",
