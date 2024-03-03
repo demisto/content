@@ -1,5 +1,6 @@
 import pytest
 from Redmine import Client
+from requests.models import Response
 
 @pytest.fixture
 def redmine_client(url: str = 'url', verify_certificate: bool = True, proxy: bool = False, auth=('username', 'password')):
@@ -425,3 +426,24 @@ def test_convert_args_to_request_format():
     """
     from Redmine import convert_args_to_request_format
     convert_args_to_request_format({'watcher_user_ids':'1,2,3'})
+    
+def test_error_handler():
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - error_handler command is executed
+    Then:
+        - The key or value is being converted
+    """
+    from Redmine import error_handler
+    from CommonServerPython import DemistoException
+    response_data = {
+        "status_code": 404,
+        "reason": "Not Found"
+    }
+    mock_response = Response()
+    mock_response.__dict__.update(response_data)
+    with pytest.raises(DemistoException) as e:
+        error_handler(mock_response)
+    assert e.value.message == "Redmine - Error in API call 404 - Not Found; ID does not exist."

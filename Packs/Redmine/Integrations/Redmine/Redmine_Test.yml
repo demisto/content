@@ -1,0 +1,453 @@
+id: 3900afd6-a237-4a7e-8042-b99ef0ad3231
+version: 7
+vcShouldKeepItemLegacyProdMachine: false
+name: Redmine_Test
+description: Tests the Redmine Integrations command
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 921223a8-9b77-4b39-8a05-55527d793e14
+    type: start
+    task:
+      id: 921223a8-9b77-4b39-8a05-55527d793e14
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d41600f5-1f2d-471e-8130-b476ddfffef9
+    type: regular
+    task:
+      id: d41600f5-1f2d-471e-8130-b476ddfffef9
+      version: -1
+      name: Delete All Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d7206441-27f8-44a0-8d01-73ee0e6288ce
+    type: regular
+    task:
+      id: d7206441-27f8-44a0-8d01-73ee0e6288ce
+      version: -1
+      name: redmine-issue-create
+      description: Create an issue
+      script: '|||redmine-issue-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      priority_id:
+        simple: Normal
+      project_id:
+        simple: "1"
+      status_id:
+        simple: New
+      subject:
+        simple: New Issue for Test playbook
+      tracker_id:
+        simple: Bug
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: bfb76bc8-45c3-4fdc-80ee-db0db242e9f9
+    type: regular
+    task:
+      id: bfb76bc8-45c3-4fdc-80ee-db0db242e9f9
+      version: -1
+      name: redmine-issue-show
+      description: Show an issue by id
+      script: '|||redmine-issue-show'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "7"
+    scriptarguments:
+      issue_id:
+        simple: ${Redmine.Issue.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7ef86989-7d70-4281-8e9e-b95d2b39cbbd
+    type: regular
+    task:
+      id: 7ef86989-7d70-4281-8e9e-b95d2b39cbbd
+      version: -1
+      name: redmine-issue-delete
+      description: Delete an issue by its ID
+      script: '|||redmine-issue-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+      - "9"
+      - "11"
+    scriptarguments:
+      issue_id:
+        simple: ${Redmine.Issue.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: fa4389b9-ee86-4184-8bc8-ffe0ab011f5a
+    type: regular
+    task:
+      id: fa4389b9-ee86-4184-8bc8-ffe0ab011f5a
+      version: -1
+      name: redmine-issue-update
+      description: Update an existing issue
+      script: '|||redmine-issue-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      issue_id:
+        simple: ${Redmine.Issue.id}
+      subject:
+        simple: changed from test playbook
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 1fdbcf53-e9f6-4679-8c01-669a1474d3ab
+    type: regular
+    task:
+      id: 1fdbcf53-e9f6-4679-8c01-669a1474d3ab
+      version: -1
+      name: redmine-issue-show
+      description: Show an issue by id
+      script: '|||redmine-issue-show'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      include:
+        simple: watchers
+      issue_id:
+        simple: ${Redmine.Issue.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f9cb4ccc-1b7a-46f3-8156-f77011e05fda
+    type: regular
+    task:
+      id: f9cb4ccc-1b7a-46f3-8156-f77011e05fda
+      version: -1
+      name: redmine-issue-watcher-add
+      description: Add a watcher to the specified issue
+      script: '|||redmine-issue-watcher-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      issue_id:
+        simple: ${Redmine.Issue.id}
+      watcher_id:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f801ecfb-8f21-4ade-8f1b-0f1f3fdce95d
+    type: regular
+    task:
+      id: f801ecfb-8f21-4ade-8f1b-0f1f3fdce95d
+      version: -1
+      name: redmine-user-id-list
+      description: Retrieve a list of users with optional filtering options.
+      script: '|||redmine-user-id-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 89fb5142-e1bf-4d77-808c-f5fcc0afee35
+    type: regular
+    task:
+      id: 89fb5142-e1bf-4d77-808c-f5fcc0afee35
+      version: -1
+      name: Untitled Task
+      description: Retrieve a list of all custom fields.
+      script: Redmine1|||redmine-custom-field-list
+      type: regular
+      iscommand: true
+      brand: Redmine1
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0fb3214a-56bd-4b89-84ed-53321ec57a4b
+    type: regular
+    task:
+      id: 0fb3214a-56bd-4b89-84ed-53321ec57a4b
+      version: -1
+      name: redmine-issue-list
+      description: Display a list of issues
+      script: '|||redmine-issue-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 66dcc321-ae45-4e2e-8192-1f90c330d6be
+    type: regular
+    task:
+      id: 66dcc321-ae45-4e2e-8192-1f90c330d6be
+      version: -1
+      name: Delete All Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1375,
+        "width": 1210,
+        "x": 240,
+        "y": -90
+      }
+    }
+  }
+inputs: []
+outputs: []

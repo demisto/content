@@ -6,11 +6,6 @@ from CommonServerUserPython import *  # noqa
 from typing import Any
 
 ''' CONSTANTS '''
-POST_PUT_HEADER = {'Content-Type': 'application/json'}
-
-GET_HEADER = {}
-
-UPLOAD_FILE_HEADER = {'Content-Type': 'application/octet-stream'}
 
 USER_STATUS_DICT = {
     'Active' : '1',
@@ -43,10 +38,12 @@ ISSUE_PRIORITY_DICT = {
     'Immediate': '5'
 }
 ''' CLIENT CLASS '''
-
 class Client(BaseClient):
-    def __init__(self, server_url, verify=True, proxy=False, headers=None, auth=None):
+    def __init__(self, server_url, api_key, verify=True, proxy=False, headers=None, auth=None):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
+        self._post_put_header = {'Content-Type': 'application/json', 'X-Redmine-API-Key': api_key}
+        self._upload_file_header = {'Content-Type': 'application/octet-stream', 'X-Redmine-API-Key': api_key}
+        self._get_header = { 'X-Redmine-API-Key': api_key}
 
     def create_issue_request(self, args):
         try:
@@ -55,14 +52,14 @@ class Client(BaseClient):
             if uploads:
                 body_for_request['issue']['uploads'] = uploads
             response = self._http_request('POST', '/issues.json', params=args,
-                                          json_data=body_for_request, headers=POST_PUT_HEADER)
+                                          json_data=body_for_request, headers=self._post_put_header)
         except Exception as e:
             raise DemistoException(f'Could not create an issue with error: {e}')
         return response
 
     def create_file_token_request(self, args, entry_id):
         file_content = get_file_name_and_content(entry_id)
-        response = self._http_request('POST', '/uploads.json', params=args, headers=UPLOAD_FILE_HEADER,
+        response = self._http_request('POST', '/uploads.json', params=args, headers=self._upload_file_header,
                                       data=file_content)
         return response
 
@@ -75,49 +72,53 @@ class Client(BaseClient):
         if file_token:
             args['uploads'] = [{'token': file_token, 'filename': file_name,
                                 'description': description, 'content_type': content_type}]
-        response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": args}, headers=POST_PUT_HEADER,
+        response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": args}, headers=self._post_put_header,
                                       empty_valid_codes=[204], return_empty_response=True)
         return response
 
     def get_issues_list_request(self, args: dict[str, Any]):
-        response = self._http_request('GET', '/issues.json', params=args, headers=GET_HEADER)
+        response = self._http_request('GET', '/issues.json', params=args, headers=self._get_header)
         return response
 
     def delete_issue_by_id_request(self, issue_id):
-        response = self._http_request('DELETE', f'/issues/{issue_id}.json', headers=POST_PUT_HEADER,
+        response = self._http_request('DELETE', f'/issues/{issue_id}.json', headers=self._post_put_header,
                                       empty_valid_codes=[200,204,201],return_empty_response=True)
         return response
 
     def get_issue_by_id_request(self, args, issue_id):
-        response = self._http_request('GET', f'/issues/{issue_id}.json', params=args, headers=POST_PUT_HEADER)
+        response = self._http_request('GET', f'/issues/{issue_id}.json', params=args, headers=self._post_put_header,
+                                      error_handler=error_handler)
         return response
 
     def add_issue_watcher_request(self, issue_id, watcher_id):
         args_to_add = {'user_id': watcher_id}
-        response = self._http_request('POST', f'/issues/{issue_id}/watchers.json', params=args_to_add, headers=POST_PUT_HEADER,
-                                      empty_valid_codes=[200,204,201], return_empty_response=True)
+        response = self._http_request('POST', f'/issues/{issue_id}/watchers.json', params=args_to_add,
+                                      headers=self._post_put_header, empty_valid_codes=[200,204,201], return_empty_response=True)
         return response
 
     def remove_issue_watcher_request(self, issue_id, watcher_id):
-        response = self._http_request('DELETE', f'/issues/{issue_id}/watchers/{watcher_id}.json', headers=POST_PUT_HEADER,
+        response = self._http_request('DELETE', f'/issues/{issue_id}/watchers/{watcher_id}.json', headers=self._post_put_header,
                                       empty_valid_codes=[200,204,201], return_empty_response=True)
         return response
 
     def get_project_list_request(self, args: dict[str, Any]):
-        response = self._http_request('GET', '/projects.json', params=args, headers=GET_HEADER)
+        response = self._http_request('GET', '/projects.json', params=args, headers=self._get_header)
         return response
 
     def get_custom_fields_request(self):
-        response = self._http_request('GET', '/custom_fields.json', headers=GET_HEADER)
+        response = self._http_request('GET', '/custom_fields.json', headers=self._get_header)
         return response
 
     def get_users_request(self, args: dict[str, Any]):
-        response = self._http_request('GET', 'users.json', params=args, headers=GET_HEADER)
+        response = self._http_request('GET', 'users.json', params=args, headers=self._get_header)
         return response
 
 
 ''' HELPER FUNCTIONS '''
-
+def error_handler (res: requests.models.Response):
+    if res.status_code in (404,422):
+        err_msg = f'Redmine - Error in API call {res.status_code} - {res.reason}; ID does not exist.'
+    raise DemistoException(err_msg)
 
 def create_paging_header(page_size: int, page_number: int):
     return '#### Showing' + (f' {page_size}') + ' results' + (f' from page {page_number}') + ':\n'
@@ -219,7 +220,6 @@ def test_module(client: Client) -> None:
 
 def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
     # is it redundant
-    print(args)
     required_fields = ['status_id', 'priority_id', 'subject', 'project_id']
     missing_fields = [field for field in required_fields if not args.get(field)]
     if missing_fields:
@@ -287,6 +287,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
     response = client.get_issues_list_request(args)['issues']
     if not page_header:
         page_header = create_paging_header(len(response), 1)
+    '''Issue id is a number and tableToMarkdown can't transform it'''
     for issue in response:
         issue['id'] = str(issue['id'])
     headers = ['id', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date', 'due_date', 'done_ratio',
@@ -298,11 +299,19 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
         outputs=response,
         raw_response=response,
         readable_output=page_header + tableToMarkdown('Issues Results:',
-                                                      response,
-                                                      headers=headers,
-                                                      removeNull=True,
-                                                      headerTransform=pascalToSpace,
-                                                      is_auto_json_transform=True))
+                                                    response,
+                                                    headers=headers,
+                                                    removeNull=True,
+                                                    headerTransform=pascalToSpace,
+                                                    is_auto_json_transform=True,
+                                                    json_transform_mapping = {
+                                                        "tracker": JsonTransformer(keys=["name"]),
+                                                        "status": JsonTransformer(keys=["name"]),
+                                                        "priority": JsonTransformer(keys=["name"]),
+                                                        "author": JsonTransformer(keys=["name"]),
+                                                        }
+                                                    )
+                                        )
     return command_results
 
 
@@ -324,10 +333,19 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                                          outputs=response,
                                          raw_response=response,
                                          readable_output=tableToMarkdown('Issues List:', response,
-                                                                         headers=headers,
-                                                                         removeNull=True,
-                                                                         headerTransform=underscoreToCamelCase,
-                                                                         is_auto_json_transform=True))
+                                                                        headers=headers,
+                                                                        removeNull=True,
+                                                                        headerTransform=underscoreToCamelCase,
+                                                                        is_auto_json_transform=True,
+                                                                        json_transform_mapping = {
+                                                                        "tracker": JsonTransformer(keys=["name"]),
+                                                                        "project": JsonTransformer(keys=["name"]),
+                                                                        "status": JsonTransformer(keys=["name"]),
+                                                                        "priority": JsonTransformer(keys=["name"]),
+                                                                        "author": JsonTransformer(keys=["name"]),
+                                                                        "custom_fields": JsonTransformer(keys=["name","value"]),
+                                                                        "watchers": JsonTransformer(keys=["name"]),
+                                                                        }))
         return command_results
     else:
         raise DemistoException('Issue_id is missing in order to get this issue')
@@ -454,10 +472,6 @@ def main() -> None:
 
     command = demisto.command()
 
-    POST_PUT_HEADER['X-Redmine-API-Key'] = api_key
-    UPLOAD_FILE_HEADER['X-Redmine-API-Key'] = api_key
-    GET_HEADER['X-Redmine-API-Key'] = api_key
-
     try:
         commands = {'redmine-issue-create': create_issue_command,
                     'redmine-issue-update': update_issue_command,
@@ -471,10 +485,11 @@ def main() -> None:
                     'redmine-user-id-list': get_users_command}
 
         client = Client(
-            base_url,
-            verify_certificate,
-            proxy,
-            auth=("", api_key))
+            server_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            api_key=api_key)
+        
         if command == 'test-module':
             return_results(test_module(client))
         elif command in commands:

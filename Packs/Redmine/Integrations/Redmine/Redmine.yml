@@ -1,7 +1,6 @@
 commonfields:
   id: Redmine1
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Redmine1
 display: Redmine1
 category: Utilities
@@ -26,8 +25,9 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- display: Project id
-  name: Project id
+- section: Connect
+  display: Project Id
+  name: project_id
   type: 0
 
   required: false
@@ -52,11 +52,8 @@ script:
     - name: status_id
       auto: PREDEFINED
       required: true
-      description: Enter the status ID for this issue
+      description: Enter the status ID for this issue (* means all)
       predefined:
-      - open
-      - closed
-      - '*'
       - New
       - In progress
       - Resolved
@@ -118,7 +115,7 @@ script:
       description:  Enter the file content type of the file you attached
       type: textArea
     outputs:
-      - contextPath: Redmine.issue
+      - contextPath: Redmine.Issue
         description: Create a new issue
   - name: redmine-issue-list
     description: Display a list of issues
@@ -152,7 +149,7 @@ script:
       type: textArea
     - name: status_id
       auto: PREDEFINED
-      description: Specify a status ID to display issues of this status ID
+      description: Specify a status ID to display issues of this status ID (* means all)
       predefined:
       - open
       - closed
@@ -173,7 +170,7 @@ script:
       description: Add this field to get issues with the given value for a custom field with an ID of x
       type: textArea
     outputs:
-      - contextPath: Redmine.issue
+      - contextPath: Redmine.Issue
         description: Display a list of issues
   - name: redmine-issue-update
     description: Update an existing issue
@@ -267,7 +264,7 @@ script:
       description: The content type of the attached file (image/jpg or image/png or text/txt etc...)
       type: textArea
     outputs:
-      - contextPath: Redmine.issue
+      - contextPath: Redmine.Issue
         description: The issue was updated
   - name: redmine-issue-show
     description: Show an issue by id
