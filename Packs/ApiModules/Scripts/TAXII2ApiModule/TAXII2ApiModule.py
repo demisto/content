@@ -390,7 +390,7 @@ class Taxii2FeedClient:
                     break
             if not collection_found:
                 raise DemistoException(
-                    "Could not find the provided Collection name ({collection_to_fetch}) in the available collections. "
+                    f"Could not find the provided Collection name {collection_to_fetch} in the available collections. "
                     "Please make sure you entered the name correctly."
                 )
 
@@ -1232,7 +1232,7 @@ class Taxii2FeedClient:
 
         return indicators
 
-    def increase_count(self, counter: dict[str, int], id: str):
+    def increase_count(self, counter: Dict[str, int], id: str):
         if id in counter:
             counter[id] = counter[id] + 1
         else:
@@ -1241,10 +1241,9 @@ class Taxii2FeedClient:
     def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
         relationships_lst = []
-        parsed_objects_counter: dict[str, int] = {}
+        parsed_objects_counter: Dict[str, int] = {}
         try:
             for envelope in envelopes:
-                # demisto.debug(f'parse_generator_type_envelope, trying to parse the envelope: {envelope}')
                 self.increase_count(parsed_objects_counter, 'envelope')
                 try:
                     stix_objects = envelope.get("objects")
