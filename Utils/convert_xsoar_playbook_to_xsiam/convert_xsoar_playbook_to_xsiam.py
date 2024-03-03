@@ -84,14 +84,10 @@ def replace_occurrences(data, keyword, mapping):
 def convert_playbook(
     input_path: str = typer.Option(None, "--input", "-i", help="The path to the playbook yaml file."),
     output: str = typer.Option(None, "--output", "-o", help="The path to save the converted playbook yaml file."),
-    src: str = typer.Option("XSOAR", "--src", "-f", help="From what product to convert this file (default: XSOAR)", case_sensitive=False),
-    dst: str = typer.Option("XSIAM", "--dst", "-t", help="To what product to convert this file (default: XSIAM)", case_sensitive=False),
-):
+    ):
+    # Currently supports only conversion from XSOAR to XSIAM
     commands_not_replaced_str = ""
-    if src == "XSOAR" and dst == "XSIAM":
-        mapping = util_load_json('Utils/convert_xsoar_playbook_to_xsiam/xsoar_to_xsiam_command_mapping.json')
-    else:
-        mapping = util_load_json('Utils/convert_xsoar_playbook_to_xsiam/xsiam_to_xsoar_command_mapping.json')
+    mapping = util_load_json('Utils/convert_xsoar_playbook_to_xsiam/xsoar_to_xsiam_command_mapping.json')
 
     system_alert_fields = get_system_alert_fields()
     playbook_path = CONTENT_PATH / Path(input_path)
