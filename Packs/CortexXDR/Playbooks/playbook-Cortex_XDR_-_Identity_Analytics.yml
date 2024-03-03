@@ -5,18 +5,18 @@ description: |
   The `Cortex XDR - Identity Analytics` playbook is designed to handle Cortex XDR Identity Analytics alerts and executes the following:
 
   Analysis:
-  - Enriches the IP and the account, providing additional context and information about these indicators.
+  - Enriches the IP address and the account, providing additional context and information about these indicators.
 
   Verdict:
   - Determines the appropriate verdict based on the data collected from the enrichment phase.
 
   Investigation:
-  - Checks for related XDR alerts to the user by Mitre tactics to identify malicious activity.
+  - Checks for related Cortex XDR alerts to the user by Mitre tactics to identify malicious activity.
   - Checks for specific arguments for malicious usage from Okta using the 'Okta User Investigation' sub-playbook.
   - Checks for specific arguments for malicious usage from Azure using the 'Azure User Investigation' sub-playbook.
 
   Verdict Handling:
-  - Handles malicious alerts by initiating appropriate response actions, including blocking malicious IP and revoking or clearing user's sessions.
+  - Handles malicious alerts by initiating appropriate response actions, including blocking malicious IP addresses and revoking or clearing user's sessions.
   - Handles non-malicious alerts identified during the investigation.
 
   The playbook is used as a sub-playbook in ‘Cortex XDR Alerts Handling v2’.
@@ -1208,7 +1208,7 @@ tasks:
       id: bf0ca540-08c2-4b81-8cc8-68e83d308a0b
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the Cortex XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -1562,7 +1562,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1692,7 +1692,7 @@ inputs:
 - key: AlertName
   value: {}
   required: false
-  description: Alert Name.
+  description: Alert name.
   playbookInputQuery:
 - key: alert_id
   value: {}
@@ -1702,7 +1702,7 @@ inputs:
 - key: IPAddress
   value: {}
   required: false
-  description: IP Address from the XDR Alert.
+  description: IP address from the XDR alert.
   playbookInputQuery:
 - key: Username
   value: {}
@@ -1714,7 +1714,7 @@ inputs:
     simple: "5"
   required: false
   description: |
-    This is the minimum threshold for XDR related alerts, based on MITRE tactics used to identify malicious activity by the user in the last 1 day.
+    This is the minimum threshold for Cortex XDR related alerts, based on MITRE tactics used to identify malicious activity by the user in the last 1 day.
   playbookInputQuery:
 - key: FailedLogonThreshold
   value:
@@ -1722,7 +1722,7 @@ inputs:
   required: false
   description: |-
     This is the minimum threshold for user login failures within the last 1 day.
-    example: If this input is set to '30', and the 'Okta - User Investigation' or the 'Azure - User Investigation' sub-playbooks have found 31 failed login attempts - It will classify this behavior as malicious activity.
+    For example: If this input is set to '30', and the 'Okta - User Investigation' or the 'Azure - User Investigation' sub-playbooks have found 31 failed login attempts - It will classify this behavior as malicious activity.
     The default value is '30'.
   playbookInputQuery:
 - key: OktaSuspiciousActivitiesThreshold
@@ -1731,7 +1731,7 @@ inputs:
   required: false
   description: |-
     This is the minimum threshold for suspicious Okta activity events by the user in the last 1 day.
-    example: If this input is set to '5', and the 'Okta - User Investigation' sub-playbooks have found 6 events of suspicious activity by the user - It will classify this behavior as malicious activity.
+    For example: If this input is set to '5', and the 'Okta - User Investigation' sub-playbooks have found 6 events of suspicious activity by the user - It will classify this behavior as malicious activity.
     The default value is '5'.
   playbookInputQuery:
 - key: AutoRemediation
@@ -1759,13 +1759,13 @@ inputs:
   value:
     simple: "Yes"
   required: false
-  description: "This input determines whether to commit the configuration automatically on PAN-OS devices and other FWs. \nYes - Commit automatically.\nNo - Commit manually."
+  description: "This input determines whether to commit the configuration automatically on PAN-OS devices and other firewalls. \nYes - Commit automatically.\nNo - Commit manually."
   playbookInputQuery:
 - key: UserVerification
   value:
     simple: "False"
   required: false
-  description: "Possible values: True/False.  Default: True.\nWhether to provide user verification for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  description: "Whether to provide user verification for blocking those IPs. \nPossible values: True/False.  Default: True. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:
 - key: InternalRange
   value:

@@ -47,7 +47,7 @@ This playbook does not use any commands.
 | --- | --- | --- | --- |
 | incident_id | Incident ID. | PaloAltoNetworksXDR.Incident.incident_id | Optional |
 | alert_id | Alert ID. | PaloAltoNetworksXDR.Incident.alerts.alert_id | Optional |
-| InternalIPRanges | A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | lists.PrivateIPs | Optional |
+| InternalIPRanges | A list of IP address ranges to check the IP address against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | lists.PrivateIPs | Optional |
 
 ## Playbook Outputs
 
