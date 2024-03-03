@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import sys
+import re
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 from pathlib import Path
@@ -58,7 +59,7 @@ UPLOAD_BUCKETS = [
     (ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE, "XSIAM", False),
     (ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE, "XPANSE", False)
 ]
-
+REGEX_EXTRACT_MACHINE = re.compile(r"qa2-test-\d+")
 
 def options_handler() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
@@ -106,6 +107,34 @@ def get_artifact_data(artifact_folder: Path, artifact_relative_path: str) -> str
 
 def get_test_report_pipeline_url(pipeline_url: str) -> str:
     return f"{pipeline_url}/test_report"
+
+
+def extract_machines_saas_and_xsiam():
+    lock_xsoar_machine_raw_txt = get_artifact_data(ARTIFACTS_FOLDER_XSOAR / "logs", "lock_file.txt")
+    lock_xsiam_machine_raw_txt = get_artifact_data(ARTIFACTS_FOLDER_XSIAM / "logs", "lock_file.txt")
+    machines = []
+
+    if lock_xsoar_machine_raw_txt and (xsoar_machine := REGEX_EXTRACT_MACHINE.findall(lock_xsoar_machine_raw_txt)):
+        machines.append(f"XSOAR SAAS: {xsoar_machine[0]}")
+    if lock_xsiam_machine_raw_txt and (xsiam_machine := REGEX_EXTRACT_MACHINE.findall(lock_xsiam_machine_raw_txt)):
+        machines.append(f"XSIAM: {xsiam_machine[0]}")
+
+    if not machines:
+        return []
+
+    title = f"Used {len(machines)} machines"
+    return [{
+            'fallback': title,
+            'color': 'warning',
+            'title': title,
+            'fields': [
+                {
+                    "title": "The following machines are used:",
+                    "value": '\n'.join(machines),
+                    "short": False
+                }
+            ]
+        }]
 
 
 def test_modeling_rules_results(artifact_folder: Path,
@@ -412,6 +441,7 @@ def construct_slack_msg(triggering_workflow: str,
         has_failed_tests |= (test_playbooks_has_failure_xsoar or test_playbooks_has_failure_xsiam
                              or test_modeling_rules_has_failure_xsiam)
         slack_msg_append += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE)
+        slack_msg_append += extract_machines_saas_and_xsiam()
     if triggering_workflow == CONTENT_NIGHTLY:
         # The coverage Slack message is only relevant for nightly and not for PRs.
         slack_msg_append += construct_coverage_slack_msg()
