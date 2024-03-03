@@ -8,6 +8,7 @@ import slack_sdk
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
+from SlackV3 import get_war_room_url
 
 from CommonServerPython import *
 
@@ -5178,3 +5179,28 @@ async def test_listen(client_session):
         assert result_incident_id == '3'
         assert result_entitlement == '326a8a51-3dbd-4b07-8662-d36bfa9509fb'
         assert test_result_content == expected_content
+
+
+class TestGetWarRoomURL:
+
+    def test_get_war_room_url_with_xsiam_from_incident_war_room(self, mocker):
+        url = "https://example.com/WarRoom/INCIDENT-2930"
+        expected_war_room_url = "https://example.com/incidents/war_room?caseId=2930"
+        mocker.patch('SlackV3.is_xsiam', return_value=True)
+        mocker.patch.dict(demisto.callingContext, {'context': {'Inv': {'id': 'INCIDENT-2930'}}})
+
+        assert get_war_room_url(url) == expected_war_room_url
+
+    def test_get_war_room_url_without_xsiam_from_incident_war_room(self, mocker):
+        url = "https://example.com/WarRoom/INCIDENT-2930"
+        mocker.patch('SlackV3.is_xsiam', return_value=False)
+        expected_war_room_url = "https://example.com/WarRoom/INCIDENT-2930"
+        assert get_war_room_url(url) == expected_war_room_url
+
+    def test_get_war_room_url_with_xsiam_from_alert_war_room(self, mocker):
+        url = "https://example.com/WarRoom/ALERT-1234"
+        mocker.patch('SlackV3.is_xsiam', return_value=True)
+        mocker.patch.dict(demisto.callingContext, {'context': {'Inv': {'id': '1234'}}})
+        expected_war_room_url = \
+            "https://example.com/incidents/alerts_and_insights?caseId=1234&action:openAlertDetails=1234-warRoom"
+        assert get_war_room_url(url) == expected_war_room_url

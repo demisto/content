@@ -7,6 +7,7 @@ on:
 jobs:
   check_label:
     runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false
 
     steps:
       - name: Checkout repo
@@ -21,12 +22,12 @@ jobs:
           echo "All changed files:"
           echo "${CHANGED_FILES}"
           GITLAB_CHANGED_FILES=$( [[ $CHANGED_FILES == *".gitlab/ci"* ]] && echo true || echo false)
-          echo "Files in the.gitlab folder have changed: ${GITLAB_CHANGED_FILES}"
+          echo "Files in the .gitlab folder have changed: ${GITLAB_CHANGED_FILES}"
           echo "gitlab_changed_files=$GITLAB_CHANGED_FILES" >> $GITHUB_OUTPUT
           if [[ $GITLAB_CHANGED_FILES == true ]]; then
             echo 'Files under .gitlab folder has changed, Will check if the PR has the `nightly-ok` label.'
           else
-            echo 'Files in the.gitlab folder have not been changed.'
+            echo 'Files in the .gitlab folder have not been changed.'
           fi
 
       - name: Check if PR has the nightly-ok label
@@ -46,5 +47,5 @@ jobs:
                 process.exit(1); // Exit with failure status if label is missing
               }
             } else {
-              console.log('Files in the.gitlab folder have not been changed.');
+              console.log('Files in the .gitlab folder have not been changed.');
             }
