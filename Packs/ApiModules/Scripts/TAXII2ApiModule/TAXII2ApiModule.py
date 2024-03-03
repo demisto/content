@@ -1238,7 +1238,7 @@ class Taxii2FeedClient:
     def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
         relationships_lst = []
-        parsed_objects_counter: dict[str, int] = {}
+        parsed_objects_counter: Dict[str, int] = {}
         try:
             for envelope in envelopes:
                 # demisto.debug(f'parse_generator_type_envelope, trying to parse the envelope: {envelope}')
