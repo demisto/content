@@ -256,10 +256,31 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "1"
+          - operator: uniq
       Username:
         complex:
           root: inputs.Username
           transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "2"
           - operator: uniq
     separatecontext: true
     continueonerrortype: ""
