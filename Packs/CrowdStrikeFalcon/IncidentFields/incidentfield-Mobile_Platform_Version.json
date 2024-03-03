@@ -1,11 +1,11 @@
 {
-    "id": "incident_crowdstrikefalconcrawledtimestamp",
+    "id": "incident_crowdstrikefalconmobileplatformversion",
     "version": -1,
-    "modified": "2023-06-14T13:50:25.28823161Z",
-    "name": "CrowdStrike Falcon Crawled Timestamp",
+    "modified": "2024-02-25T15:48:24.075185814Z",
+    "name": "CrowdStrike Falcon Mobile platform version",
     "ownerOnly": false,
-    "cliName": "crowdstrikefalconcrawledtimestamp",
-    "type": "date",
+    "cliName": "crowdstrikefalconmobileplatformversion",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -19,7 +19,6 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "CrowdStrike Falcon IDP Detection",
         "CrowdStrike Falcon Mobile Detection"
     ],
     "associatedToAll": false,
@@ -28,5 +27,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.10.0"
 }
