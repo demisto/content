@@ -106,7 +106,7 @@ references:
           neo4j_conf_file="/etc/neo4j/neo4j.conf"
           sudo echo "dbms.security.procedures.unrestricted=apoc.*" >> $neo4j_conf_file
           sudo echo "dbms.security.procedures.allowlist=apoc.*" >> $neo4j_conf_file
-          sudo echo "dbms.memory.transaction.total.max=600m" >> $neo4j_conf_file
+          sudo echo "dbms.memory.transaction.total.max=2000m" >> $neo4j_conf_file
 
           apoc_conf_file="/etc/neo4j/apoc.conf"
           sudo echo "apoc.export.file.enabled=true" > $apoc_conf_file
