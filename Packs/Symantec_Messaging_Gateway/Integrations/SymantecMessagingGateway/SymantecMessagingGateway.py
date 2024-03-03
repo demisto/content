@@ -9,18 +9,12 @@ from bs4 import BeautifulSoup
 urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+SERVER = demisto.params()['server'].rstrip('/')
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 BASE_URL = SERVER + '/brightmail/'
 USE_SSL = not demisto.params().get('insecure', False)
 COOKIES = {}  # type: ignore
-
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 BAD_DOMAINS_EMAILS_GROUP = 'Local Bad Sender Domains'
 BAD_IPS_GROUP = 'Local Bad Sender IPs'
@@ -440,32 +434,34 @@ def unblock_ip(ip):
     return entry
 
 
-''' EXECUTION CODE '''
-TOKEN = login()
+def main():
+    handle_proxy()
+    TOKEN = login()
 
-LOG('command is %s' % (demisto.command(), ))
-try:
-    if demisto.command() == 'test-module':
-        # Checks authentication and connectivity in login() function
-        demisto.results('ok')
-    elif demisto.command() == 'smg-block-email':
-        # demisto.results(get_selected_sender_groups())
-        demisto.results(block_email(demisto.args()['email']))
-    elif demisto.command() == 'smg-unblock-email':
-        demisto.results(unblock_email(demisto.args()['email']))
-    elif demisto.command() == 'smg-block-domain':
-        demisto.results(block_domain(demisto.args()['domain']))
-    elif demisto.command() == 'smg-block-ip':
-        demisto.results(block_ip(demisto.args()['ip']))
-    elif demisto.command() == 'smg-unblock-ip':
-        demisto.results(unblock_ip(demisto.args()['ip']))
-    elif demisto.command() == 'smg-unblock-domain':
-        demisto.results(unblock_domain(demisto.args()['domain']))
-    elif demisto.command() == 'smg-get-blocked-domains':
-        demisto.results(get_blocked_domains())
-    elif demisto.command() == 'smg-get-blocked-ips':
-        demisto.results(get_blocked_ips())
-except Exception as e:
-    LOG(e)
-    LOG.print_log()
-    raise
+    try:
+        if demisto.command() == 'test-module':
+            # Checks authentication and connectivity in login() function
+            demisto.results('ok')
+        elif demisto.command() == 'smg-block-email':
+            # demisto.results(get_selected_sender_groups())
+            demisto.results(block_email(demisto.args()['email']))
+        elif demisto.command() == 'smg-unblock-email':
+            demisto.results(unblock_email(demisto.args()['email']))
+        elif demisto.command() == 'smg-block-domain':
+            demisto.results(block_domain(demisto.args()['domain']))
+        elif demisto.command() == 'smg-block-ip':
+            demisto.results(block_ip(demisto.args()['ip']))
+        elif demisto.command() == 'smg-unblock-ip':
+            demisto.results(unblock_ip(demisto.args()['ip']))
+        elif demisto.command() == 'smg-unblock-domain':
+            demisto.results(unblock_domain(demisto.args()['domain']))
+        elif demisto.command() == 'smg-get-blocked-domains':
+            demisto.results(get_blocked_domains())
+        elif demisto.command() == 'smg-get-blocked-ips':
+            demisto.results(get_blocked_ips())
+
+    except Exception as e:
+        return_error(str(e))
+
+if __name__ in ('__main__', 'builtin', 'builtins'):
+    main()
