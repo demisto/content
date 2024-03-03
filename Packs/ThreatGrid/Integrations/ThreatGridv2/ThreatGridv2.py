@@ -971,6 +971,7 @@ def sample_state_get_command(
     """
     sample_id = args["sample_id"]
     response = client.get_sample_state(sample_id)
+    demisto.debug(f"sample state get {response=}")
     output = response["data"]
 
     readable_output = "The command was executed successfully"
