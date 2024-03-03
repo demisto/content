@@ -61,6 +61,7 @@ UPLOAD_BUCKETS = [
 ]
 REGEX_EXTRACT_MACHINE = re.compile(r"qa2-test-\d+")
 
+
 def options_handler() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
     parser.add_argument('-n', '--name-mapping_path', help='Path to name mapping file.', required=True)
@@ -110,31 +111,41 @@ def get_test_report_pipeline_url(pipeline_url: str) -> str:
 
 
 def extract_machines_saas_and_xsiam():
-    lock_xsoar_machine_raw_txt = get_artifact_data(ARTIFACTS_FOLDER_XSOAR / "logs", "lock_file.txt")
-    lock_xsiam_machine_raw_txt = get_artifact_data(ARTIFACTS_FOLDER_XSIAM / "logs", "lock_file.txt")
+    lock_xsoar_machine_raw_txt = get_artifact_data(
+        ARTIFACTS_FOLDER_XSOAR / "logs", "lock_file.txt"
+    )
+    lock_xsiam_machine_raw_txt = get_artifact_data(
+        ARTIFACTS_FOLDER_XSIAM / "logs", "lock_file.txt"
+    )
     machines = []
 
-    if lock_xsoar_machine_raw_txt and (xsoar_machine := REGEX_EXTRACT_MACHINE.findall(lock_xsoar_machine_raw_txt)):
+    if lock_xsoar_machine_raw_txt and (
+        xsoar_machine := REGEX_EXTRACT_MACHINE.findall(lock_xsoar_machine_raw_txt)
+    ):
         machines.append(f"XSOAR SAAS: {xsoar_machine[0]}")
-    if lock_xsiam_machine_raw_txt and (xsiam_machine := REGEX_EXTRACT_MACHINE.findall(lock_xsiam_machine_raw_txt)):
+    if lock_xsiam_machine_raw_txt and (
+        xsiam_machine := REGEX_EXTRACT_MACHINE.findall(lock_xsiam_machine_raw_txt)
+    ):
         machines.append(f"XSIAM: {xsiam_machine[0]}")
 
     if not machines:
         return []
 
     title = f"Used {len(machines)} machines"
-    return [{
-            'fallback': title,
-            'color': 'warning',
-            'title': title,
-            'fields': [
+    return [
+        {
+            "fallback": title,
+            "color": "warning",
+            "title": title,
+            "fields": [
                 {
                     "title": "The following machines are used:",
-                    "value": '\n'.join(machines),
-                    "short": False
+                    "value": "\n".join(machines),
+                    "short": False,
                 }
-            ]
-        }]
+            ],
+        }
+    ]
 
 
 def test_modeling_rules_results(artifact_folder: Path,
