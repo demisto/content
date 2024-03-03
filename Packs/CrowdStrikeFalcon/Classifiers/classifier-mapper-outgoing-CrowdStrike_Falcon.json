@@ -19,6 +19,14 @@
                 }
             }
         },
+        "CrowdStrike Falcon Mobile Detection": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "status": {
+                    "simple": "state"
+                }
+            }
+        },
         "CrowdStrike Falcon Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
