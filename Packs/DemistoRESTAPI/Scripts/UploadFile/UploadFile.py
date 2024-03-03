@@ -5,7 +5,8 @@ from CommonServerPython import *
 def upload_file(incident_id: str, entry_id: str, body: str = '', using: str = '', as_incident_attachment: bool = True):
     service_name = 'incident' if as_incident_attachment else 'entry'
     return demisto.executeCommand("core-api-multipart",
-                                  {"uri": f'{service_name}/upload/{incident_id}', "entryID": entry_id, "body": body, "using": using})
+                                  {"uri": f'{service_name}/upload/{incident_id}', "entryID": entry_id,
+                                   "body": body, "using": using})
 
 
 def upload_file_command(args: dict) -> list[CommandResults]:
