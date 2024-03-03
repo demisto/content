@@ -72,7 +72,7 @@ def is_command_sanitized(command):
 
 def get_command_string(ids, pollingCommand, pollingCommandArgName, playbookId, dt, interval, timeout, tag, args_names,
                        args_values, extract_mode):
-    
+
     command_string = '''!GenericPollingScheduledTask ids="{}" pollingCommand="{}" pollingCommandArgName="{}"{} \
               pendingIds="{}" interval="{}" timeout="{}" tag="{}" additionalPollingCommandArgNames="{}" \
               additionalPollingCommandArgValues="{}"'''.format(ids.replace('"', r'\"'), pollingCommand,
