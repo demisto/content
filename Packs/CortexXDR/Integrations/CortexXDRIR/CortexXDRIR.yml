@@ -36,7 +36,7 @@ configuration:
   - Incoming
   - Outgoing
   - Both
-- display: Mirrored XSOAR -> XDR Incident custom close-reason mapping (Overwrites default close-reason mapping defined by XSOAR)
+- display: Mirrored XSOAR > XDR Incident custom close-reason mapping (Overwrites default close-reason mapping defined by Cortex XSOAR)
   section: Collect
   additionalinfo: 'Define how to close the mirrored incidents from Cortex XSOAR into XDR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {XSOAR close reason}={XDR close reason}) to override the default close reason mapping defined by XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other". Default: "Other=Other,Duplicate=Duplicate Incident,False Positive=False Positive,Resolved=True Positive”. Refer to integration documentation for possible close-reasons.'
   name: custom_xsoar_to_xdr_close_reason_mapping
