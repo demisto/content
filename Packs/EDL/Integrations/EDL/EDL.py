@@ -350,6 +350,8 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
         for ioc_res in indicator_searcher:
             fetched_iocs = ioc_res.get('iocs') or []
             for ioc in fetched_iocs:
+                demisto.debug(f"Parsing the following indicator: {ioc.get('value')}")
+
                 ioc_counter += 1
                 if request_args.out_format == FORMAT_PROXYSG:
                     files_by_category = create_proxysg_out_format(ioc, files_by_category, request_args)
@@ -374,7 +376,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
                     break
 
     except Exception as e:
-        demisto.error(f'Error parsing the following indicator: {ioc.get("value")}\n{e}')
+        demisto.error(f'Error in parsing the indicators, error: {str(e)}')
         # 429 error can only be raised when the Elasticsearch instance encountered an error
         if '[429] Failed with error' in str(e):
             version = demisto.demistoVersion()
