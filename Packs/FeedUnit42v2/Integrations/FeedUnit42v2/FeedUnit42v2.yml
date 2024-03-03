@@ -111,7 +111,7 @@ script:
       - attack-pattern
     description: Retrieves a limited number of the indicators.
     name: unit42-get-indicators
-  dockerimage: demisto/taxii2:1.0.0.87504
+  dockerimage: demisto/taxii2:1.0.0.88937
   feed: true
   runonce: false
   script: '-'
