@@ -25,11 +25,10 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- section: Connect
+- section: Collect
   display: Project Id
   name: project_id
   type: 0
-
   required: false
 script: 
   type: python
@@ -38,9 +37,9 @@ script:
     description: Create an issue
     arguments:
     - name: project_id
-      description: Enter the project ID for this issue
+      description: Enter the project ID for this issue (If given, by default- project_id from authentication, this field override it)
       type: textArea
-      required: true
+      required: false
     - name: tracker_id
       auto: PREDEFINED
       description: Enter the tracker ID for this issue
@@ -52,7 +51,7 @@ script:
     - name: status_id
       auto: PREDEFINED
       required: true
-      description: Enter the status ID for this issue (* means all)
+      description: Enter the status ID for this issue
       predefined:
       - New
       - In progress
@@ -154,12 +153,6 @@ script:
       - open
       - closed
       - '*'
-      - New
-      - In progress
-      - Resolved
-      - Feedback
-      - Closed
-      - Rejected
     - name: assigned_to_id
       description: Specify an assigned-to ID to display issues assigned to this user ID
       type: textArea
@@ -252,7 +245,7 @@ script:
       - 'True'
       - 'False'    
     - name: file_entry_id
-      description: The entry ID of the file to upload
+      description: Required if uploading a file- The entry ID of the file to upload
       type: textArea
     - name: file_name
       description: The name of the file to upload (should end with .jpg/.png/.txt etc...)

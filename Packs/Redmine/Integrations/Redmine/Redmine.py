@@ -39,22 +39,21 @@ ISSUE_PRIORITY_DICT = {
 }
 ''' CLIENT CLASS '''
 class Client(BaseClient):
-    def __init__(self, server_url, api_key, verify=True, proxy=False, headers=None, auth=None):
+    def __init__(self, server_url, api_key, verify=True, proxy=False, headers=None, auth=None, project_id=None):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
         self._post_put_header = {'Content-Type': 'application/json', 'X-Redmine-API-Key': api_key}
         self._upload_file_header = {'Content-Type': 'application/octet-stream', 'X-Redmine-API-Key': api_key}
         self._get_header = { 'X-Redmine-API-Key': api_key}
+        self._project_id = project_id
 
-    def create_issue_request(self, args):
-        try:
-            uploads = args.pop('uploads', None)
-            body_for_request = {'issue': args}
-            if uploads:
-                body_for_request['issue']['uploads'] = uploads
-            response = self._http_request('POST', '/issues.json', params=args,
-                                          json_data=body_for_request, headers=self._post_put_header)
-        except Exception as e:
-            raise DemistoException(f'Could not create an issue with error: {e}')
+    def create_issue_request(self, params, project_id=None):
+        uploads = params.pop('uploads', None)
+        body_for_request = {'issue': params}
+        if uploads:
+            body_for_request['issue']['uploads'] = uploads
+        params['project_id'] = project_id or self._project_id
+        response = self._http_request('POST', '/issues.json', params={},
+                                        json_data=body_for_request, headers=self._post_put_header)
         return response
 
     def create_file_token_request(self, args, entry_id):
@@ -76,8 +75,9 @@ class Client(BaseClient):
                                       empty_valid_codes=[204], return_empty_response=True)
         return response
 
-    def get_issues_list_request(self, args: dict[str, Any]):
-        response = self._http_request('GET', '/issues.json', params=args, headers=self._get_header)
+    def get_issues_list_request(self, project_id, status_id, offset_to_dict, limit_to_dict, args: dict[str, Any]):
+        params = assign_params(project_id=project_id, status_id=status_id, offset=offset_to_dict, limit=limit_to_dict, **args)
+        response = self._http_request('GET', '/issues.json', params=params, headers=self._get_header)
         return response
 
     def delete_issue_by_id_request(self, issue_id):
@@ -85,9 +85,9 @@ class Client(BaseClient):
                                       empty_valid_codes=[200,204,201],return_empty_response=True)
         return response
 
-    def get_issue_by_id_request(self, args, issue_id):
-        response = self._http_request('GET', f'/issues/{issue_id}.json', params=args, headers=self._post_put_header,
-                                      error_handler=error_handler)
+    def get_issue_by_id_request(self, issue_id, included_fields):
+        response = self._http_request('GET', f'/issues/{issue_id}.json', params={"include":included_fields},
+                                      headers=self._post_put_header)
         return response
 
     def add_issue_watcher_request(self, issue_id, watcher_id):
@@ -110,15 +110,17 @@ class Client(BaseClient):
         return response
 
     def get_users_request(self, args: dict[str, Any]):
-        response = self._http_request('GET', 'users.json', params=args, headers=self._get_header)
+        response = self._http_request('GET', '/users.json', params=args, headers=self._get_header)
         return response
 
 
 ''' HELPER FUNCTIONS '''
-def error_handler (res: requests.models.Response):
-    if res.status_code in (404,422):
-        err_msg = f'Redmine - Error in API call {res.status_code} - {res.reason}; ID does not exist.'
-    raise DemistoException(err_msg)
+
+def set_project_id_for_command(client: Client, project_id_from_command = None):
+    if project_id_from_command:
+        return project_id_from_command
+    else:
+        return client._project_id
 
 def create_paging_header(page_size: int, page_number: int):
     return '#### Showing' + (f' {page_size}') + ' results' + (f' from page {page_number}') + ':\n'
@@ -130,7 +132,6 @@ def adjust_paging_to_request(args: dict[str, Any]):
     limit = args.pop('limit', None)
     offset_to_dict = None
     limit_to_dict = None
-    page_header = None
     if page_number or page_size:
         if page_size:
             page_size = int(page_size)
@@ -142,7 +143,7 @@ def adjust_paging_to_request(args: dict[str, Any]):
             page_number = 1
         offset_to_dict = (page_number - 1) * page_size
         limit_to_dict = page_size
-        page_header = create_paging_header(page_size, page_number)
+        page_number_for_header = page_number
     else:
         if limit:
             offset_to_dict = 0
@@ -150,8 +151,8 @@ def adjust_paging_to_request(args: dict[str, Any]):
         else:
             offset_to_dict = 0
             limit_to_dict = 25
-        page_header = create_paging_header(limit_to_dict, 1)
-    return offset_to_dict, limit_to_dict, page_header
+        page_number_for_header = 1
+    return offset_to_dict, limit_to_dict, page_number_for_header
 
 
 def map_header(header_string: str) -> str:
@@ -219,120 +220,145 @@ def test_module(client: Client) -> None:
 
 
 def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    # is it redundant
-    required_fields = ['status_id', 'priority_id', 'subject', 'project_id']
-    missing_fields = [field for field in required_fields if not args.get(field)]
-    if missing_fields:
-        raise DemistoException('One or more required arguments not specified: {}'.format(', '.join(missing_fields)))
-
+    if not args.get('project_id', None) and not client._project_id:
+        raise DemistoException('project_id field is missing in order to create an issue')
+    response = {}
     '''Checks if a file needs to be added'''
-    entry_id = args.pop('file_entry_id', None)
-    if entry_id:
-        file_name = args.pop('file_name', '')
-        file_description = args.pop('file_description', '')
-        content_type = args.pop('file_content_type', '')
-        args_for_file = assign_params(file_name=file_name, content_type=content_type)
-        response = client.create_file_token_request(args_for_file, entry_id)
-
-        if 'upload' not in response:
-            raise DemistoException(f"Could not upload file with entry id {entry_id}")
-
-        uploads = assign_params(token=response['upload'].get('token', ''),
-                                content_type=content_type,
-                                filename=file_name,
-                                description=file_description)
-        args['uploads'] = [uploads]
-    convert_args_to_request_format(args)
-
-    response = client.create_issue_request(args)['issue']
-
-    headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'estimated_hours', 'created_on',
-               'subject', 'description', 'start_date', 'estimated_hours', 'custom fields']
-    response['id'] = str(response['id'])
-
-    command_results = CommandResults(
-        outputs_prefix='Redmine.Issue',
-        outputs_key_field='id',
-        outputs=response,
-        raw_response=response,
-        readable_output=tableToMarkdown('The issue you created:', response, headers=headers,
-                                        removeNull=True, is_auto_json_transform=True, headerTransform=pascalToSpace)
-    )
-    return command_results
-        
-def update_issue_command(client: Client, args: dict[str, Any]):
-    # need to deal with watchers,customfields,attachments
-    issue_id = args.get('issue_id')
-    if issue_id:
+    try:
         entry_id = args.pop('file_entry_id', None)
-        if (entry_id):
+        if entry_id:
             file_name = args.pop('file_name', '')
-            file_token = client.create_file_token_request(assign_params(file_name=file_name), entry_id)['upload']['token']
+            file_description = args.pop('file_description', '')
+            content_type = args.pop('file_content_type', '')
+            args_for_file = assign_params(file_name=file_name, content_type=content_type)
+            response = client.create_file_token_request(args_for_file, entry_id)
+            if 'upload' not in response:
+                raise DemistoException(f"Could not upload file with entry id {entry_id}")
+            uploads = assign_params(token=response['upload'].get('token', ''),
+                        content_type=content_type,
+                        filename=file_name,
+                        description=file_description)
+            args['uploads'] = [uploads]
+    except Exception as e:
+        raise DemistoException("Failed to execute redmine-issue-create command. \n"
+                               "Could not create a token for your file- please try again \n"
+                               f"Error: with error {e}")
+    try:
+        convert_args_to_request_format(args)
+        project_id = args.pop('project_id', None)
+        response = client.create_issue_request(args,project_id)
+        issue_response = response['issue']
+        headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'estimated_hours', 'created_on',
+                'subject', 'description', 'start_date', 'estimated_hours', 'custom fields']
+        issue_response['id'] = str(issue_response['id'])
+
+        command_results = CommandResults(
+            outputs_prefix='Redmine.Issue',
+            outputs_key_field='id',
+            outputs=issue_response,
+            raw_response=issue_response,
+            readable_output=tableToMarkdown('The issue you created:', issue_response, headers=headers,
+                                            removeNull=True, is_auto_json_transform=True, headerTransform=pascalToSpace)
+        )
+        return command_results
+    except Exception as e:
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
+            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
+                                   "Please make sure all IDs are correct")
+        else:
+            raise DemistoException(e.args[0])
+
+def update_issue_command(client: Client, args: dict[str, Any]):
+    #categoty ID, fixed versions מזהההההה
+    issue_id = args.get('issue_id')
+    entry_id = args.pop('file_entry_id', None)
+    if (entry_id):
+        file_name = args.pop('file_name', '')
+        try:
+            file_token_response = client.create_file_token_request(assign_params(file_name=file_name), entry_id)
+            file_token= file_token_response['upload']['token']
             args = assign_params(token=file_token, **args)
+        except Exception as e:
+            raise DemistoException("Failed to execute redmine-issue-update command. \n"
+                f"Couldn't create file token for the file you are trying to upload with error {e}")
+    try:
         convert_args_to_request_format(args)
         client.update_issue_request(args)
         command_results = CommandResults(
             readable_output=f'Issue with id {issue_id} was successfully updated.')
         return (command_results)
-    else:
-        raise DemistoException('Issue_id is missing in order to update this issue')
-
+    except Exception as e:
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
+            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
+                                   "Please make sure all IDs are correct")
+        else:
+            raise DemistoException(e.args[0])
 
 def get_issues_list_command(client: Client, args: dict[str, Any]):
-    offset_to_dict, limit_to_dict, page_header = adjust_paging_to_request(args)
-    status_id = args.pop('status_id', None)
-    if status_id:
-        status_id = ISSUE_STATUS_DICT[status_id]
-    args = assign_params(status_id=status_id, offset=offset_to_dict, limit=limit_to_dict, **args)
-    response = client.get_issues_list_request(args)['issues']
-    if not page_header:
-        page_header = create_paging_header(len(response), 1)
-    '''Issue id is a number and tableToMarkdown can't transform it'''
-    for issue in response:
-        issue['id'] = str(issue['id'])
-    headers = ['id', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date', 'due_date', 'done_ratio',
-               'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'updated_on',
-               'closed_on', 'attachments', 'relations']
-    command_results = CommandResults(
-        outputs_prefix='Redmine.Issue',
-        outputs_key_field='id',
-        outputs=response,
-        raw_response=response,
-        readable_output=page_header + tableToMarkdown('Issues Results:',
-                                                    response,
-                                                    headers=headers,
-                                                    removeNull=True,
-                                                    headerTransform=pascalToSpace,
-                                                    is_auto_json_transform=True,
-                                                    json_transform_mapping = {
-                                                        "tracker": JsonTransformer(keys=["name"]),
-                                                        "status": JsonTransformer(keys=["name"]),
-                                                        "priority": JsonTransformer(keys=["name"]),
-                                                        "author": JsonTransformer(keys=["name"]),
-                                                        }
-                                                    )
-                                        )
-    return command_results
-
+    #cf_x not working
+    try:
+        offset_to_dict, limit_to_dict, page_number_for_header = adjust_paging_to_request(args)
+        status_id = args.pop('status_id', None)
+        if status_id:
+            status_id = ISSUE_STATUS_DICT[status_id]
+        project_id = args.pop('project_id', None) or client._project_id
+        response = client.get_issues_list_request(project_id, status_id, offset_to_dict, limit_to_dict, args)
+        issues_response = response['issues']
+        page_header = create_paging_header(len(issues_response), page_number_for_header)
+            
+        '''Issue id is a number and tableToMarkdown can't transform it'''
+        for issue in issues_response:
+            issue['id'] = str(issue['id'])
+            
+        headers = ['id', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date', 'due_date',
+                   'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'updated_on',
+                   'closed_on', 'attachments', 'relations']
+        command_results = CommandResults(
+            outputs_prefix='Redmine.Issue',
+            outputs_key_field='id',
+            outputs=issues_response,
+            raw_response=issues_response,
+            readable_output=page_header + tableToMarkdown('Issues Results:',
+                                                        issues_response,
+                                                        headers=headers,
+                                                        removeNull=True,
+                                                        headerTransform=pascalToSpace,
+                                                        is_auto_json_transform=True,
+                                                        json_transform_mapping = {
+                                                            "tracker": JsonTransformer(keys=["name"]),
+                                                            "status": JsonTransformer(keys=["name"]),
+                                                            "priority": JsonTransformer(keys=["name"]),
+                                                            "author": JsonTransformer(keys=["name"]),
+                                                            }
+                                                        )
+                                            )
+        return command_results
+    except Exception as e:
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
+            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
+                                   "Please make sure all IDs are correct")
+        else:
+            raise DemistoException(e.args[0])
 
 def get_issue_by_id_command(client: Client, args: dict[str, Any]):
-    issue_id = args.pop('issue_id', None)
-    if issue_id:
-        include_possible_values = {'children', 'attachments', 'relations',
-                                   'changesets', 'journals', 'watchers', 'allowed_statuses'}
-        included_fields = args.get('include')
+    try:
+        issue_id = args.pop('issue_id', None)
+        include_possible_values = {'children', 'attachments', 'relations', 'changesets', 'journals', 'watchers', 'allowed_statuses'}
+        included_fields = args.pop('include',None)
         if included_fields and not all(field_value in include_possible_values for field_value in included_fields.split(',')):
-            raise DemistoException(f"You can only include the following values {include_possible_values}")
-        response = client.get_issue_by_id_request(args, issue_id)['issue']
+            raise DemistoException(f"You can only include the following values {include_possible_values}, separated with comma")
+        response = client.get_issue_by_id_request(issue_id, included_fields)
+        response_issue=response['issue']
+        
         headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date',
-                   'due_date', 'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'closed_on',
-                   'attachments', 'watchers', 'children', 'relations', 'changesets', 'journals', 'allowed_statuses']
-        response['id'] = str(response['id'])
+                    'due_date', 'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'closed_on',
+                    'attachments', 'watchers', 'children', 'relations', 'changesets', 'journals', 'allowed_statuses']
+        response_issue['id'] = str(response_issue['id'])
         command_results = CommandResults(outputs_prefix='Redmine.Issue',
-                                         outputs_key_field='id',
-                                         outputs=response,
-                                         raw_response=response,
-                                         readable_output=tableToMarkdown('Issues List:', response,
+                                            outputs_key_field='id',
+                                            outputs=response_issue,
+                                            raw_response=response_issue,
+                                            readable_output=tableToMarkdown('Issues List:', response_issue,
                                                                         headers=headers,
                                                                         removeNull=True,
                                                                         headerTransform=underscoreToCamelCase,
@@ -347,52 +373,58 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                                                                         "watchers": JsonTransformer(keys=["name"]),
                                                                         }))
         return command_results
-    else:
-        raise DemistoException('Issue_id is missing in order to get this issue')
-
+    except Exception as e:
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
+            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
+                                    "Please make sure all IDs are correct")
+        else:
+            raise DemistoException(e.args[0])
 
 def delete_issue_by_id_command(client: Client, args: dict[str, Any]):
-    # if issue_id doesnt exist application crashes due to api 404
     issue_id = args.get('issue_id')
-    if issue_id:
+    try:
         client.delete_issue_by_id_request(issue_id)
         command_results = CommandResults(
             readable_output=f'Issue with id {issue_id} was deleted successfully.')
         return (command_results)
-    else:
-        raise DemistoException('Issue_id is missing in order to delete')
+    except Exception as e:
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
+            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
+                                    "Please make sure all IDs are correct")
+        else:
+            raise DemistoException(e.args[0])
+
 
 
 def add_issue_watcher_command(client: Client, args: dict[str, Any]):
-    # is it redandent?
     issue_id = args.get('issue_id')
     watcher_id = args.get('watcher_id')
-    if issue_id:
-        if watcher_id:
+    try:
             client.add_issue_watcher_request(issue_id, watcher_id)
             command_results = CommandResults(
                 readable_output=f'Watcher with id {watcher_id} was added successfully to issue with id {issue_id}.')
             return (command_results)
+    except Exception as e:
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
+            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
+                                    "Please make sure all IDs are correct")
         else:
-            raise DemistoException('watcher_id is missing in order to add this watcher to the issue')
-    else:
-        raise DemistoException('Issue_id is missing in order to add a watcher to this issue')
-
+            raise DemistoException(e.args[0])
 
 def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
-    # is it redandent?
-    issue_id = args.get('issue_id')
-    watcher_id = args.get('watcher_id')
-    if issue_id:
-        if watcher_id:
-            client.remove_issue_watcher_request(issue_id, watcher_id)
-            command_results = CommandResults(
-                readable_output=f'Watcher with id {watcher_id} was removed successfully from issue with id {issue_id}.')
-            return command_results
+    try:
+        issue_id = args.get('issue_id')
+        watcher_id = args.get('watcher_id')
+        response = client.remove_issue_watcher_request(issue_id, watcher_id)
+        command_results = CommandResults(
+            readable_output=f'Watcher with id {watcher_id} was removed successfully from issue with id {issue_id}.')
+        return command_results
+    except Exception as e:
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
+            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
+                                    "Please make sure all IDs are correct")
         else:
-            raise DemistoException('watcher_id is missing in order to remove watcher from this issue')
-    else:
-        raise DemistoException('Issue_id is missing in order to remove watcher from this issue')
+            raise DemistoException(e.args[0])
 
 
 def get_project_list_command(client: Client, args: dict[str, Any]):
@@ -465,12 +497,13 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     base_url = params.get('url')
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-
     api_key = params.get('credentials', {}).get('password', '')
+    project_id = params.get('project_id', None)
 
     command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
 
     try:
         commands = {'redmine-issue-create': create_issue_command,
@@ -488,14 +521,18 @@ def main() -> None:
             server_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
-            api_key=api_key)
+            api_key=api_key,
+            project_id=project_id)
         
         if command == 'test-module':
             return_results(test_module(client))
         elif command in commands:
             return_results(commands[command](client, args))
+        else:
+            raise NotImplementedError(f"command {command} is not implemented.")
+        
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
