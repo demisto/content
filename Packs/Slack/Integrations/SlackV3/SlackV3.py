@@ -8,6 +8,8 @@ import threading
 from distutils.util import strtobool
 import aiohttp
 import slack_sdk
+from urllib.parse import urlparse
+
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
 from slack_sdk.socket_mode.request import SocketModeRequest
@@ -85,6 +87,7 @@ BOT_ID: str
 CACHED_INTEGRATION_CONTEXT: dict
 CACHE_EXPIRY: float
 MIRRORING_ENABLED: bool
+FILE_MIRRORING_ENABLED: bool
 LONG_RUNNING_ENABLED: bool
 DEMISTO_API_KEY: str
 DEMISTO_URL: str
@@ -92,6 +95,24 @@ IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
 
 ''' HELPER FUNCTIONS '''
+
+
+def get_war_room_url(url: str) -> str:
+    # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
+    if is_xsiam():
+        incident_id = demisto.callingContext.get('context', {}).get('Inv', {}).get('id')
+        incident_url = urlparse(url)
+        war_room_url = f"{incident_url.scheme}://{incident_url.netloc}/incidents"
+        # executed from the incident War Room
+        if incident_id and incident_id.startswith('INCIDENT-'):
+            war_room_url += f"/war_room?caseId={incident_id.split('-')[-1]}"
+        # executed from the alert War Room
+        else:
+            war_room_url += f"/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
+
+        return war_room_url
+
+    return url
 
 
 def get_bot_id() -> str:
@@ -1767,6 +1788,31 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     return conversation
 
 
+def send_mirrored_file_to_slack(entry: str, message: str, original_channel: str, channel_id: str, comment: Optional[str] = None):
+    """
+    Sends a file from xsoar investigation to a mirrored slack channel
+
+    Args:
+        entry: the entry ID of the file
+        message: the message from the war-room when uploading file
+        original_channel: the channel name to upload the file
+        channel_id: the channel ID to upload the file
+        comment: a comment that was added when uploading the file
+    """
+    file_name = demisto.getFilePath(entry)["name"]
+    if FILE_MIRRORING_ENABLED:
+        demisto.debug(
+            f'file {file_name} has been uploaded to a mirrored incident, '
+            f'uploading the file to slack channel {original_channel}'
+        )
+        if comment:
+            # if a comment was added when uploading the file, add it to the message
+            message = f'{message}\nComment: {comment}'
+        slack_send_file(original_channel, channel_id, entry, message)
+    else:
+        demisto.debug(f'file {file_name} will not be mirrored because file mirroring is not enabled')
+
+
 def slack_send():
     """
     Sends a message to slack
@@ -1805,6 +1851,16 @@ def slack_send():
 
         # return if the entry tags is not containing any of the filtered_tags
         if tags and not any(elem in entry_tags for elem in tags):
+            return
+
+        if entry:
+            send_mirrored_file_to_slack(
+                entry,
+                message=message,
+                original_channel=original_channel,
+                channel_id=channel_id,
+                comment=entry_object.get("contents")
+            )
             return
 
     if (to and group) or (to and original_channel) or (to and original_channel and group):
@@ -1910,17 +1966,17 @@ def save_entitlement(entitlement, thread, reply, expiry, default_response):
     set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
-def slack_send_file():
+def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_id: str | None = None, _comment: str = ""):
     """
     Sends a file to slack
     """
     to = demisto.args().get('to')
-    channel = demisto.args().get('channel')
-    channel_id = demisto.args().get('channel_id', '')
+    channel = _channel or demisto.args().get('channel')
+    channel_id = _channel_id or demisto.args().get('channel_id', '')
     group = demisto.args().get('group')
-    entry_id = demisto.args().get('file')
+    entry_id = _entry_id or demisto.args().get('file')
     thread_id = demisto.args().get('threadID')
-    comment = demisto.args().get('comment', '')
+    comment = _comment or demisto.args().get('comment', '')
 
     if not (to or channel or group):
         mirror = find_mirror_by_investigation()
@@ -1998,6 +2054,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
                 if investigation.get('type') != PLAYGROUND_INVESTIGATION_TYPE:
                     link = server_links.get('warRoom')
                     if link:
+                        link = get_war_room_url(link)
                         if entry:
                             link += '/' + entry
                         message += f'\nView it on: {link}'
@@ -2747,7 +2804,7 @@ def init_globals(command_name: str = ''):
     """
 
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, USER_CLIENT, \
-        CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED, USER_TOKEN
+        CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED, FILE_MIRRORING_ENABLED, USER_TOKEN
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
@@ -2784,6 +2841,7 @@ def init_globals(command_name: str = ''):
     CUSTOM_PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
     PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
     MIRRORING_ENABLED = demisto.params().get('mirroring', True)
+    FILE_MIRRORING_ENABLED = demisto.params().get('enable_outbound_file_mirroring', False)
     LONG_RUNNING_ENABLED = demisto.params().get('longRunning', True)
     DEMISTO_API_KEY = demisto.params().get('demisto_api_key', {}).get('password', '')
     demisto_urls = demisto.demistoUrls()
@@ -2949,7 +3007,7 @@ def main() -> None:
         if EXTENSIVE_LOGGING:
             os.environ['PYTHONASYNCIODEBUG'] = "1"
         support_multithreading()
-        command_func()
+        command_func()  # type: ignore
     except Exception as e:
         demisto.debug(e)
         return_error(str(e))

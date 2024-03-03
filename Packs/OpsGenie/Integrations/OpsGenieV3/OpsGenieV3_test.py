@@ -70,6 +70,26 @@ def test_create_alert(mocker):
     assert (res.raw_response == util_load_json('test_data/create_alert.json'))
 
 
+def test_create_alert_with_tags(mocker):
+    """
+    Given:
+        - An app client object
+        - "tags": "tag_test"
+    When:
+        - Calling function create_alert with argument responders in the right format
+    Then:
+        - Ensure the return data is correct
+    """
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'create_alert',
+                        return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/create_alert.json', True))
+    res = OpsGenieV3.create_alert(mock_client, {'tags': ["tags_test"]})
+    assert (res.raw_response == util_load_json('test_data/create_alert.json'))
+
+
 def test_get_alerts(mocker):
     """
     Given:
