@@ -458,4 +458,3 @@ def test_upload_with_using_argument(mocker):
     upload_file_command({'incidentId': '1', 'entryID': '1', 'using': 'instance_1'})
     assert len(execute_command_mocker.call_args_list) == 1
     assert execute_command_mocker.call_args_list[0][0][1]['using'] == 'instance_1'
-    
