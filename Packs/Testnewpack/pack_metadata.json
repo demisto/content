@@ -1,0 +1,21 @@
+{
+    "name": "testnewpack",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "dansterenson",
+    "url": "",
+    "email": "",
+    "created": "2024-03-03T12:32:23Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "dansterenson"
+    ]
+}
