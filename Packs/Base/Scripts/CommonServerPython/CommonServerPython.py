@@ -9040,13 +9040,16 @@ if 'requests' in sys.modules:
                 if with_metrics:
                     self.execution_metrics.connection_error += 1
                 # Get originating Exception in Exception chain
-                error_class = str(exception.__class__)
-                err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-                err_msg = 'Verify that the server URL parameter' \
-                          ' is correct and that you have access to the server from your host.' \
-                          '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                    .format(err_type, exception.errno, exception.strerror)
-                raise DemistoException(err_msg, exception)
+                if exception.errno and exception.strerror:
+                    error_class = str(exception.__class__)
+                    err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+                    err_msg = 'Verify that the server URL parameter' \
+                            ' is correct and that you have access to the server from your host.' \
+                            '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                        .format(err_type, exception.errno, exception.strerror)
+                    raise DemistoException(err_msg, exception)
+                
+                raise DemistoException(str(exception))
             except requests.exceptions.RetryError as exception:
                 if with_metrics:
                     self.execution_metrics.retry_error += 1
