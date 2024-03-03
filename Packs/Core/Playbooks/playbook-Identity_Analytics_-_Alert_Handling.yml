@@ -500,7 +500,7 @@ tasks:
     task:
       id: c57402d1-54ac-4fcd-86b3-ea787ef0f134
       version: -1
-      name: Analyst Desicion
+      name: Analyst Decision
       description: An analyst’s decision is required to determine whether it is a malicious or non-malicious activity.
       type: condition
       iscommand: false
