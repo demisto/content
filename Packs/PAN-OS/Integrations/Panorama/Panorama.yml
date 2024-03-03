@@ -9377,7 +9377,7 @@ script:
       name: rule_name
       required: true
     - auto: PREDEFINED
-      description: The rule type. Possible values are - Security Rule, NAT Rule, PBF Rule.
+      description: The rule type. 
       name: rule_type
       required: true
       predefined:
