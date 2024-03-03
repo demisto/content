@@ -103,6 +103,7 @@ def test_get_command_string_pass():
                                         good_input.get('tag'),
                                         good_input.get('args_names'),
                                         good_input.get('args_values'),
+                                        None,
                                         )
 
     expected_command = '!GenericPollingScheduledTask ids="123" pollingCommand="jira-get-issue" pollingCommandArgName=' \
