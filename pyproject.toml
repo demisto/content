@@ -13,7 +13,7 @@ defusedxml = "^0.7.1"
 demisto-sdk = "1.27.1"
 requests = "^2.22.0"
 pre-commit = "^3.5.0"
-google-cloud-compute = "^1.8.0"
+google-cloud-compute = "^1.17.0"
 dateparser = "^1.1.8"
 
 [tool.poetry.group.linters.dependencies]
