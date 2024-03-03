@@ -25,14 +25,6 @@ EVENT_TYPE_TO_ENDPOINT = {
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
-    """
 
     def search_events(
         self, last_run: dict[str, Any], max_events_per_fetch: int, event_type: str) -> tuple[List[Dict], List[int], str, bool, str]:  # noqa: E501
@@ -54,11 +46,11 @@ class Client(BaseClient):
         last_fetched_event_ids = last_run.get("last_fetched_ids", [])
         next_url_link = last_run.get("next_url_link", "")
 
-        events, last_fetched_event_ids, next_fetch_url, is_nextTrigger = self.retrieve_events(
+        events, last_fetched_event_ids, next_fetch_url, is_pagination_in_progress = self.retrieve_events(
             from_fetch_time, to_fetch_time, max_events_per_fetch, last_fetched_event_ids, event_type, next_url_link
         )
 
-        if is_nextTrigger:
+        if is_pagination_in_progress:
             # handle the case where we do not need to update the time window for the next fetch, as we need to
             # continue fetching more pages
             next_run_from_fetch_time = last_run.get("from_fetch_time", "")
@@ -66,7 +58,7 @@ class Client(BaseClient):
             # there are no more events to fetch in the current time window
             next_run_from_fetch_time = last_run.get("to_fetch_time", "")
 
-        return events, last_fetched_event_ids, next_fetch_url, is_nextTrigger, next_run_from_fetch_time
+        return events, last_fetched_event_ids, next_fetch_url, is_pagination_in_progress, next_run_from_fetch_time
 
     def retrieve_events(
             self, from_fetch_time: str, to_fetch_time: str, max_events_per_fetch: int, prev_run_fetched_event_ids: List[int],
@@ -109,12 +101,12 @@ class Client(BaseClient):
             if not next_url:
                 break
 
-        last_fetched_events_ids, next_fetch_url, is_nextTrigger = self.handle_events(events, event_type, to_fetch_time, next_url, prev_run_fetched_event_ids)  # noqa: E501
+        last_fetched_events_ids, next_fetch_url, is_pagination_in_progress = self.handle_events(events, event_type, to_fetch_time, next_url, prev_run_fetched_event_ids)  # noqa: E501
 
         if response.get("count") == 0:
             demisto.debug("GG: No events were fetched.")
 
-        return events, last_fetched_events_ids, next_fetch_url, is_nextTrigger
+        return events, last_fetched_events_ids, next_fetch_url, is_pagination_in_progress
 
     def handle_events(self, events: list, event_type: str, to_fetch_time: str, next_url: str,
                       prev_run_fetched_event_ids: List[int]) -> tuple[List[int], str, bool]:
@@ -124,20 +116,22 @@ class Client(BaseClient):
             events_to_send (list): events fetched.
             event_type (str): the type of the event.
             to_fetch_time (str): the end time of the fetch
+            next_url (str): the url for the next fetch
+            prev_run_fetched_event_ids (List[int]): the event ids that were fetched in the previous fetch
 
         """
         last_fetched_events_ids = []
         if next_url:
             last_fetched_events_ids = prev_run_fetched_event_ids
             next_fetch_url = next_url
-            is_nextTrigger = True
+            is_pagination_in_progress = True
 
         else:
             # there are no more events to fetch in the current time window
             last_fetched_events_ids = self.extract_event_ids_with_same_to_fetch_time(events, to_fetch_time, event_type)
-            is_nextTrigger = False
+            is_pagination_in_progress = False
             next_fetch_url = ''
-        return last_fetched_events_ids, next_fetch_url, is_nextTrigger
+        return last_fetched_events_ids, next_fetch_url, is_pagination_in_progress
 
     @staticmethod
     def add_time_to_events(events: List[Dict] | None, event_type: str):
@@ -183,15 +177,14 @@ class Client(BaseClient):
         return ids_with_same_occurrence_date
 
 
-def handle_last_run(last_run: dict, is_nextTrigger_incident: bool, is_nextTrigger_auditlog: bool,
-                    next_run_incident_from_fetch_time: str, next_run_audit_log_from_fetch_time: str,
-                    last_fetched_incident_ids: list, last_fetched_audit_log_ids: list, next_fetch_incident_url: str,
-                    next_fetch_auditlog_url: str):
+def handle_last_run(last_run: dict, is_pagination_in_progress: bool, next_run_incident_from_fetch_time: str,
+                    next_run_audit_log_from_fetch_time: str, last_fetched_incident_ids: list, last_fetched_audit_log_ids: list,
+                    next_fetch_incident_url: str, next_fetch_auditlog_url: str):
     """Creates the next_run dictionary for the next fetch.
     """
     next_run: Dict[str, Any] = {}
-    if is_nextTrigger_incident or is_nextTrigger_auditlog:
-        next_run["nextTrigger"] = 0
+    if is_pagination_in_progress:
+        next_run["nextTrigger"] = "0"
     next_run["incident"] = {
         "from_fetch_time": next_run_incident_from_fetch_time,
         "to_fetch_time": last_run["incident"]['to_fetch_time'],
@@ -260,13 +253,13 @@ def get_events(
     audit_logs = audit_logs[:limit]
 
     hr = tableToMarkdown(
-        name="Test Event - incidents",
+        name="incidents",
         t=incidents,
         headers=["display_name", "id", "created_at", "type", "_time"],
         removeNull=True,
     )
     hr += tableToMarkdown(
-        name="Test Event - audit_logs",
+        name="Audit logs",
         t=audit_logs,
         headers=["id", "type", "gg_created_at", "actor_ip", "actor_email", "_time"],
         removeNull=True,
@@ -288,12 +281,14 @@ def fetch_events(
         list: List of events that will be created in XSIAM.
     """
 
-    incidents, last_fetched_incident_ids, next_fetch_incident_url, is_nextTrigger_incident, next_run_incident_from_fetch_time = client.search_events(  # noqa: E501
+    incidents, last_fetched_incident_ids, next_fetch_incident_url, is_pagination_in_progress_incident, next_run_incident_from_fetch_time = client.search_events(  # noqa: E501
         last_run.get("incident", {}), max_events_per_fetch, 'incident')
-    audit_logs, last_fetched_audit_log_ids, next_fetch_auditlog_url, is_nextTrigger_auditlog, next_run_audit_log_from_fetch_time = client.search_events(  # noqa: E501
+    audit_logs, last_fetched_audit_log_ids, next_fetch_auditlog_url, is_pagination_in_progress_auditlog, next_run_audit_log_from_fetch_time = client.search_events(  # noqa: E501
         last_run.get("audit_log", {}), max_events_per_fetch, 'audit_log')
 
-    next_run = handle_last_run(last_run, is_nextTrigger_incident, is_nextTrigger_auditlog, next_run_incident_from_fetch_time,
+    is_pagination_in_progress = is_pagination_in_progress_incident or is_pagination_in_progress_auditlog
+
+    next_run = handle_last_run(last_run, is_pagination_in_progress, next_run_incident_from_fetch_time,
                                next_run_audit_log_from_fetch_time, last_fetched_incident_ids, last_fetched_audit_log_ids,
                                next_fetch_incident_url, next_fetch_auditlog_url)
 

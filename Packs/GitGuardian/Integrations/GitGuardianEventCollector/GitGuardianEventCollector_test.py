@@ -11,6 +11,8 @@ def util_load_json(path):
 def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dict = {}, retries: int = 3):
     if url_suffix == "/secrets" or full_url.endswith("/secrets"):
         return util_load_json("test_data/incident_response.json")
+    elif full_url == 'next_url':
+        return util_load_json("test_data/audit_log_response_next_link.json")
     else:
         return util_load_json("test_data/audit_log_response.json")
 
@@ -73,14 +75,14 @@ def test_remove_duplicated_incidents(client):
                                 {"id": 3, "last_occurrence_date": "2024-03-03T21:05:38Z"}]
 
 
-def test_fetch_events(client, mocker):
+def test_fetch_events_without_nextTrigger(client, mocker):
     """
     Given: A mock GitGuardian client.
     When: Running fetch_events with a limit of 3
     Then: Ensure all of the events are returned, and the next run include the new fetch times.
     """
 
-    max_events_per_fetch = 3
+    max_events_per_fetch = 2
     last_run = {
         "incident": {"from_fetch_time": "2024-01-03T21:10:40Z",
                      "to_fetch_time": "2024-01-03T21:10:40Z",
@@ -99,6 +101,40 @@ def test_fetch_events(client, mocker):
         client, last_run, max_events_per_fetch
     )
     assert len(incidents) == 2
-    assert len(audit_logs) == 1
+    assert len(audit_logs) == 2
     assert next_run["incident"].get("from_fetch_time") == "2024-01-03T21:10:40Z"
     assert next_run["incident"].get("last_fetched_event_ids") == []
+    assert "nextTrigger" not in next_run  # fetched all of the events
+
+
+def test_fetch_events_with_nextTrigger(client, mocker):
+    """
+    Given: A mock GitGuardian client.
+    When: Running fetch_events with a limit of 1
+    Then: Ensure next run include the new fetch times, the next_url link, and fetch timing
+    """
+
+    max_events_per_fetch = 1
+    last_run = {
+        "incident": {"from_fetch_time": "2024-01-03T21:10:40Z",
+                     "to_fetch_time": "2024-01-03T21:10:42Z",
+                     "last_fetched_event_ids": [],
+                     "next_url_link": ''},
+        "audit_log": {
+            "from_fetch_time": "2024-01-03T21:10:40Z",
+            "to_fetch_time": "2024-01-03T21:10:42Z",
+            "last_fetched_event_ids": [],
+            "next_url_link": ''
+        }
+    }
+
+    mocker.patch('GitGuardianEventCollector.send_events_to_xsiam')
+    next_run, _, _ = fetch_events(
+        client, last_run, max_events_per_fetch
+    )
+    assert "nextTrigger" in next_run  # did not fetch all of the events
+    assert next_run["audit_log"].get("next_url_link") == "next_url"
+    # Did not update the time window due to next url
+    assert next_run["audit_log"].get("from_fetch_time") == "2024-01-03T21:10:40Z"
+    assert next_run["incident"].get("next_url_link") == ""
+    assert next_run["incident"].get("from_fetch_time") == "2024-01-03T21:10:42Z"
