@@ -387,7 +387,7 @@ class Taxii2FeedClient:
                     break
             if not collection_found:
                 raise DemistoException(
-                    "Could not find the provided Collection name ({collection_to_fetch}) in the available collections. "
+                    f"Could not find the provided Collection name {collection_to_fetch} in the available collections. "
                     "Please make sure you entered the name correctly."
                 )
 
