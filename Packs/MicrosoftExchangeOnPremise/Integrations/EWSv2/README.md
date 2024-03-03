@@ -463,7 +463,7 @@ Searches for items in the specified mailbox. Specific permissions are needed for
 | is-public | Whether the folder is a Public Folder?. Possible values are: True, False. | Optional | 
 | message-id | The message ID of the email. This will be ignored if a query argument is provided. | Optional | 
 | selected-fields | A CSV list of fields to retrieve. Possible values are: . Default is all. | Optional | 
-| surround_id_with_angle_brackets | Whether to surround the message id with angle brackets (<>) if not exist. Default is 'True'. | Optional | 
+| surround_id_with_angle_brackets | Whether to surround the message ID with angle brackets (<>) if it does not exist. Default is 'True'. | Optional | 
 
 
 
