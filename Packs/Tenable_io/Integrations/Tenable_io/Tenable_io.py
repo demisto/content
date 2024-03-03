@@ -163,7 +163,7 @@ VENDOR = 'tenable'
 PRODUCT = 'io'
 CHUNK_SIZE = 5000
 MAX_CHUNKS_PER_FETCH = 10
-ASSETS_FETCH_FROM = '120 days'  # todo: revert to 90 days
+ASSETS_FETCH_FROM = '90 days'
 MIN_ASSETS_INTERVAL = 60
 
 
