@@ -180,6 +180,7 @@ def main():
     elapsed: float = 0
     start = time.time()
     while elapsed < TIMEOUT:
+        time.sleep(10)
         response = requests.request('GET', url, headers=headers, verify=False)
         if response.status_code != requests.codes.ok:
             logging.error('Failed to retrieve SDK changelog workflow status')
@@ -193,7 +194,6 @@ def main():
             break
 
         logging.info(f'waiting to SDK changelog workflow to finish, current status: {status}')
-        time.sleep(10)
 
         elapsed = time.time() - start
         if elapsed >= TIMEOUT:
