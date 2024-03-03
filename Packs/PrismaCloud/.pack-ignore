@@ -49,6 +49,7 @@ vpc
 cloudtrail
 Prioritization
 namespaces
+retries
 
 [file:classifier-Prisma_Cloud.json]
 ignore=BA101

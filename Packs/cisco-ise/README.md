@@ -1,5 +1,6 @@
 # Cisco ISE 
-This pack includes Cortex XSIAM content. 
+This pack includes Cortex XSIAM content.
+<~XSIAM>
 ## Configuration on Server Side
 
 Complete the following to configure basic log syslog collection:
@@ -27,3 +28,4 @@ You can configure the specific vendor and product for this instance.
 3. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - cisco
    - product as product - ise
+</~XSIAM>

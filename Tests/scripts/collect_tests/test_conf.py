@@ -2,6 +2,9 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Optional
 
+from demisto_sdk.commands.common.constants import MarketplaceVersions
+
+from Tests.scripts.collect_tests.constants import DEFAULT_MARKETPLACES_WHEN_MISSING
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                to_tuple)
@@ -38,15 +41,18 @@ class TestConfItem(DictBased):
 class TestConf(DictFileBased):
     __test__ = False  # prevents pytest from running it
 
-    def __init__(self, conf_path: Path):
+    def __init__(self, conf_path: Path, marketplace: MarketplaceVersions):
         super().__init__(conf_path, is_infrastructure=True)
         self.tests = tuple(TestConfItem(value) for value in self['tests'])
         self.test_id_to_test = {test.playbook_id: test
                                 for test in self.tests}
 
         tests_to_integration_set: dict[str, set[str]] = defaultdict(set)
+        self.marketplace = marketplace
+        self.tests_to_marketplace_set: dict[str, set[str]] = defaultdict(set)
         for test in self.tests:
             tests_to_integration_set[test.playbook_id].update(test.integrations)
+            self.tests_to_marketplace_set[test.playbook_id].update(test.marketplaces or DEFAULT_MARKETPLACES_WHEN_MISSING)
         self.tests_to_integrations: dict[str, tuple[str, ...]] = {
             test: tuple(sorted(test_integrations)) for test, test_integrations in tests_to_integration_set.items()
         }

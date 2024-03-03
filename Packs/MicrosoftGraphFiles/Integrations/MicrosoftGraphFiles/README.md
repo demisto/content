@@ -6,13 +6,14 @@ For more details about the authentication used in this integration, see <a href=
 
 ### Required Permissions
 The required permission depends on whether you want to access all sites (Sites.ReadWrite.All) or specific sites (Site.Selected):
-- `Sites.ReadWrite.All`: Provides read and write access to all sites.\
-`Client Credentials Flow` - Application permission.\
-`Authorization Code Flow` - Delegated permission.\
+- `Sites.ReadWrite.All`: Provides read and write access to all sites.  
+`Client Credentials Flow` - Application permission.  
+`Authorization Code Flow` - Delegated permission.  
+
 Note: This permission is sufficient for all the commands, but if you want the least privileged permissions for each command, they are listed for each command definition.
 
 OR
-- `Sites.Selected - Application`: Provides read and write access to specific sites.\
+- `Sites.Selected - Application`: Provides read and write access to specific sites.  
 This option is not supported with the `Authorization Code Flow` according to [Microsoft documentation](https://learn.microsoft.com/en-us/graph/permissions-reference#sitesselected).
 
 Note: Using `Site.Selected` requires additional configuration steps outlined below.
@@ -89,7 +90,7 @@ Deletes an item from OneDrive.
 
 #### Required Permissions
 
-Client Credentials Flow - `Files.ReadWrite.All - Application`\
+Client Credentials Flow - `Files.ReadWrite.All - Application`  
 Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 #### Input
@@ -126,7 +127,7 @@ Uploads a file from Cortex XSOAR to the specified MS Graph resource.
 
 #### Required Permissions
 
-Client Credentials Flow - `Sites.ReadWrite.All - Application`\
+Client Credentials Flow - `Sites.ReadWrite.All - Application`  
 Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 #### Input
@@ -232,7 +233,7 @@ Replaces the content of the file in the specified MS Graph resource.
 
 #### Required Permissions
 
-Client Credentials Flow - `Sites.ReadWrite.All - Application`\
+Client Credentials Flow - `Sites.ReadWrite.All - Application`  
 Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 
@@ -341,7 +342,7 @@ Creates a new folder in a drive with the specified parent item or path.
 
 #### Required Permissions
 
-Client Credentials Flow - `Files.ReadWrite.All - Application`\
+Client Credentials Flow - `Files.ReadWrite.All - Application`  
 Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 #### Input
@@ -442,7 +443,7 @@ Returns the list of document libraries (drives) available for a target site.
 
 #### Required Permissions
 
-Client Credentials Flow - `Files.Read.All - Application`\
+Client Credentials Flow - `Files.Read.All - Application`  
 Authorization Code Flow - `Files.Read - Delegated`
 
 #### Input
@@ -528,7 +529,7 @@ Returns a list of files and folders in the specified drive.
 
 #### Required Permissions
 
-Client Credentials Flow - `Files.Read.All - Application`\
+Client Credentials Flow - `Files.Read.All - Application`  
 Authorization Code Flow - `Files.Read - Delegated`
 
 #### Input
@@ -637,7 +638,7 @@ Returns a list of the tenant sites.
 
 #### Required Permissions
 
-Client Credentials Flow - `Sites.Read.All - Application`\
+Client Credentials Flow - `Sites.Read.All - Application`  
 Authorization Code Flow - `Sites.Read.All - Delegated`
 
 #### Input
@@ -710,7 +711,7 @@ Downloads the file contents of the drive item.
 
 #### Required Permissions
 
-Client Credentials Flow - `Files.Read.All - Application`\
+Client Credentials Flow - `Files.Read.All - Application`  
 Authorization Code Flow - `Files.Read - Delegated`
 
 #### Input
@@ -720,6 +721,7 @@ Authorization Code Flow - `Files.Read - Delegated`
 | object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required | 
 | object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command. | Required | 
 | item_id | The MS Graph item ID.<br/>To get the ID of the file you want to download, use the msgraph-list-drive-content command. | Required | 
+| file_name | The file name to download.<br/>Use msgraph-list-drive-content to retrieve the name of a file, if not provided, the file name will be the value of the item_id argument. | Optional |
 
 #### Context Output
 

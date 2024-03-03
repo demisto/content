@@ -9,10 +9,10 @@ import pytest
 
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
-from CoreIRApiModule import CoreClient
+from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, list_user_groups_command, parse_user_groups, list_users_command, list_roles_command, \
-    change_user_role_command, list_risky_users_or_host_command, enrich_error_message_id_group_role
+    change_user_role_command, list_risky_users_or_host_command, enrich_error_message_id_group_role, get_incidents_command
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
@@ -845,6 +845,27 @@ def test_get_update_args_unassgning_user(mocker):
     assert update_args.get('assigned_user_mail') is None
     assert update_args.get('assigned_user_pretty_name') is None
     assert update_args.get('unassign_user') == 'true'
+
+
+def test_handle_outgoing_issue_closure_close_reason(mocker):
+    """
+    Given:
+        -  a dict indicating changed fields (delta)
+        - the incident status - set to set to 2 == Closed
+    When
+        - running handle_outgoing_issue_closure
+    Then
+        - Closing the issue with the resolved_security_testing status
+    """
+    from CoreIRApiModule import handle_outgoing_issue_closure
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({'delta': {'assigned_user_mail': 'None', 'closeReason': 'Resolved - Security Testing'},
+                                          'status': 2, 'inc_status': 2, 'data': {'status': 'other'}})
+    request_data_log = mocker.patch.object(demisto, 'debug')
+    handle_outgoing_issue_closure(remote_args)
+
+    assert "handle_outgoing_issue_closure Closing Remote incident incident_id=None with status resolved_security_testing" in request_data_log.call_args[  # noqa: E501
+        0][0]
 
 
 def test_get_update_args_close_incident():
@@ -1752,7 +1773,7 @@ def test_get_script_execution_status_command(requests_mock):
     response = get_script_execution_status_command(client, args)
 
     api_response['reply']['action_id'] = int(action_id)
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'action_id': action_id
@@ -1931,7 +1952,7 @@ def test_run_script_delete_file_command(requests_mock):
 
     response = run_script_delete_file_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
@@ -1978,7 +1999,7 @@ def test_run_script_delete_multiple_files_command(requests_mock):
 
     response = run_script_delete_file_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
@@ -2038,7 +2059,7 @@ def test_run_script_file_exists_command(requests_mock):
 
     response = run_script_file_exists_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '414763381b5bfb7b05796c9fe690df46',
@@ -2085,7 +2106,7 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
 
     response = run_script_file_exists_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '414763381b5bfb7b05796c9fe690df46',
@@ -2145,7 +2166,7 @@ def test_run_script_kill_process_command(requests_mock):
 
     response = run_script_kill_process_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': 'fd0a544a99a9421222b4f57a11839481',
@@ -2192,7 +2213,7 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
 
     response = run_script_kill_process_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': 'fd0a544a99a9421222b4f57a11839481',
@@ -3697,3 +3718,129 @@ def test_enrich_error_message_id_group_role(error_message: str, expected_error_m
         DemistoException(message=error_message, res=MockException(500)), "test", "test"
     )
     assert error_response == expected_error_message[0]
+
+
+def get_incident_by_status(incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
+                           lte_creation_time=None, gte_creation_time=None, starred=None,
+                           starred_incidents_fetch_window=None, status=None, sort_by_modification_time=None,
+                           sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
+    """
+        The function simulate the client.get_incidents method for the test_fetch_incidents_filtered_by_status
+        and for the test_get_incident_list_by_status.
+        The function got the status as a string, and return from the json file only the incidents
+        that are in the given status.
+    """
+    incidents_list = load_test_data('./test_data/get_incidents_list.json')['reply']['incidents']
+    return [incident for incident in incidents_list if incident['status'] == status]
+
+
+class TestGetIncidents:
+
+    def test_get_incident_list(self, requests_mock):
+        """
+        Given: Incidents returned from client.
+        When: Running get_incidents_command.
+        Then: Ensure the outputs contain the incidents from the client.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day'
+        }
+        _, outputs, _ = get_incidents_command(client, args)
+
+        expected_output = {
+            'CoreApiModule.Incident(val.incident_id==obj.incident_id)':
+                get_incidents_list_response.get('reply').get('incidents')
+        }
+        assert expected_output == outputs
+
+    def test_get_incident_list_by_status(self, mocker):
+        """
+        Given: A status query, and incidents filtered by the query.
+        When: Running get_incidents_command.
+        Then: Ensure outputs contain the incidents from the client.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day',
+            'status': 'under_investigation,new'
+        }
+        mocker.patch.object(client, 'get_incidents', side_effect=get_incident_by_status)
+
+        _, outputs, _ = get_incidents_command(client, args)
+
+        expected_output = {
+            'CoreApiModule.Incident(val.incident_id==obj.incident_id)':
+                get_incidents_list_response.get('reply').get('incidents')
+        }
+        assert expected_output == outputs
+
+    def test_get_starred_incident_list(self, requests_mock):
+        """
+        Given: A query with starred parameters.
+        When: Running get_incidents_command.
+        Then: Ensure the starred output is returned.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day',
+            'starred': True,
+            'starred_incidents_fetch_window': '3 days'
+        }
+        _, outputs, _ = get_incidents_command(client, args)
+
+        assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
+
+
+INPUT_test_handle_outgoing_issue_closure = load_test_data('./test_data/handle_outgoing_issue_closure_input.json')
+
+
+@pytest.mark.parametrize("args, expected_delta",
+                         [
+                             # close an incident from xsoar ui, and the incident type isn't cortex xdr incident
+                             (INPUT_test_handle_outgoing_issue_closure["xsoar_ui_common_mapping"]["args"],
+                              INPUT_test_handle_outgoing_issue_closure["xsoar_ui_common_mapping"]["expected_delta"]),
+                             # close an incident from xsoar ui, and the incident type is cortex xdr incident
+                             (INPUT_test_handle_outgoing_issue_closure["xsoar_ui_cortex_xdr_incident"]["args"],
+                              INPUT_test_handle_outgoing_issue_closure["xsoar_ui_cortex_xdr_incident"]["expected_delta"]),
+                             # close an incident from XDR
+                             (INPUT_test_handle_outgoing_issue_closure["xdr"]["args"],
+                              INPUT_test_handle_outgoing_issue_closure["xdr"]["expected_delta"])
+                         ])
+def test_handle_outgoing_issue_closure(args, expected_delta):
+    """
+    Given: An UpdateRemoteSystemArgs object.
+    - case A: data & delta that match a case of closing an incident from xsoar ui, and the incident type isn't cortex xdr incident
+    - case B: data & delta that match a case of closing an incident from xsoar ui, and the incident type is cortex xdr incident
+    - case C: data & delta that match a case of closing an incident from XDR.
+    When: Closing an incident.
+    Then: Ensure the update_args has the expected value.
+    - case A: a status is added with the correct value.
+    - case B: a status is added with the correct value.
+    - case C: a status isn't added. (If the closing status came from XDR, there is no need to update it again)
+    """
+    from CommonServerPython import UpdateRemoteSystemArgs
+
+    remote_args = UpdateRemoteSystemArgs(args)
+    handle_outgoing_issue_closure(remote_args)
+    assert remote_args.delta == expected_delta

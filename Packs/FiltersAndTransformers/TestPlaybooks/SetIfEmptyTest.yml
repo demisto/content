@@ -25,12 +25,14 @@ tasks:
       - "10"
       - "11"
       - "13"
+      - "24"
+      - "25"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 1985,
           "y": 50
         }
       }
@@ -67,7 +69,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 195
         }
       }
@@ -104,7 +106,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 195
         }
       }
@@ -141,7 +143,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1340,
           "y": 195
         }
       }
@@ -178,7 +180,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1770,
           "y": 195
         }
       }
@@ -215,7 +217,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 2200,
           "y": 195
         }
       }
@@ -252,7 +254,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 2630,
           "y": 195
         }
       }
@@ -294,7 +296,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 3060,
           "y": 195
         }
       }
@@ -331,7 +333,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3060,
+          "x": 50,
           "y": 195
         }
       }
@@ -380,7 +382,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3060,
+          "x": 50,
           "y": 370
         }
       }
@@ -408,7 +410,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 1985,
           "y": 545
         }
       }
@@ -457,7 +459,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 370
         }
       }
@@ -506,7 +508,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 370
         }
       }
@@ -555,7 +557,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1340,
           "y": 370
         }
       }
@@ -605,7 +607,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1770,
           "y": 370
         }
       }
@@ -669,7 +671,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 2200,
           "y": 370
         }
       }
@@ -718,7 +720,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 2630,
           "y": 370
         }
       }
@@ -767,7 +769,139 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 3060,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 734e2202-9550-478b-88fe-3f2571e17416
+    type: regular
+    task:
+      id: 734e2202-9550-478b-88fe-3f2571e17416
+      version: -1
+      name: Test SetIfEmpty - defaultValue from context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: Test9
+      value:
+        complex:
+          root: Invalid
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${incident.created}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 616decf8-e627-4692-86da-65dd75e6f6a7
+    type: regular
+    task:
+      id: 616decf8-e627-4692-86da-65dd75e6f6a7
+      version: -1
+      name: Set
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: test_chaining_transformers
+      value:
+        simple: '[1,2]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 8385addb-79b2-4530-86e2-a4182080cec9
+    type: condition
+    task:
+      id: 8385addb-79b2-4530-86e2-a4182080cec9
+      version: -1
+      name: Test SetIfEmpty - chaining transformers
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: test_chaining_transformers
+                transformers:
+                - operator: count
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3920,
           "y": 370
         }
       }
@@ -784,7 +918,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 560,
-        "width": 3390,
+        "width": 4250,
         "x": 50,
         "y": 50
       }

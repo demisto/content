@@ -50,7 +50,7 @@ function finish(playbookId, tag, err, entryGUID) {
     if (err === undefined) {
         params.input = 'YES';
     } else {
-        params.input = 'NO'
+        params.input = 'NO';
     }
     if (playbookId) {
         params.parentPlaybookID = playbookId;
@@ -126,7 +126,7 @@ function genericPollingScheduled(){
             ids[i] = ids[i].replace(/[\\]*"/g, '');
         }
 
-0
+    
         // Set the context of the scheduled task to the local playbook context
         var idsToPoll = ids;
         var pendingPath = args.pendingIds;

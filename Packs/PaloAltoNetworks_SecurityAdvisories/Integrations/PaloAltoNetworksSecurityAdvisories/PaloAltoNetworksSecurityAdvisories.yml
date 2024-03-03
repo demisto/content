@@ -101,42 +101,42 @@ script:
       - MEDIUM
       - LOW
       - NONE
-    - description: Text search query - supports same search syntax as the GUI filter field
+    - description: Text search query - supports same search syntax as the GUI filter field.
       name: q
     description: Gets all the advisories for the given product.
     name: pan-advisories-get-advisories
     outputs:
     - contextPath: PANSecurityAdvisory.Advisory.data_type
-      description: The type of advisory this is
+      description: The type of advisory this is.
       type: String
     - contextPath: PANSecurityAdvisory.Advisory.data_format
-      description: The format of the advisory, such as MITRE
+      description: The format of the advisory, such as MITRE.
       type: String
     - contextPath: PANSecurityAdvisory.Advisory.cve_id
-      description: The ID of the CVE described by this advisory
+      description: The ID of the CVE described by this advisory.
       type: String
     - contextPath: PANSecurityAdvisory.Advisory.cve_date_public
-      description: The date this CVE was released
+      description: The date this CVE was released.
       type: String
     - contextPath: PANSecurityAdvisory.Advisory.cve_title
-      description: The name of this CVE
+      description: The name of this CVE.
       type: String
     - contextPath: PANSecurityAdvisory.Advisory.description
-      description: Human readable description of Advisory
+      description: Human readable description of Advisory.
       type: String
     - contextPath: PANSecurityAdvisory.Advisory.cvss_score
-      description: The CVSS Score
+      description: The CVSS Score.
       type: String
     - contextPath: PANSecurityAdvisory.Advisory.cvss_severity
-      description: The CVSS Severity
+      description: The CVSS Severity.
       type: String
     - contextPath: PANSecurityAdvisory.Advisory.cvss_vector_string
-      description: The CVSS Vector string
+      description: The CVSS Vector string.
       type: String
     - contextPath: PANSecurityAdvisory.Advisory.affected_version_list
-      description: List of affected versions strings
+      description: List of affected versions strings.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.84405
   feed: true
   runonce: false
   script: '-'

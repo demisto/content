@@ -2239,7 +2239,7 @@ def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, 
 
     # Validation check first
     if len(white_list) > limit:
-        raise DemistoException("Recieved More than 3 results when querying by hash. This condition should not occur")
+        raise DemistoException("Received more than 3 results when querying by hash. This condition should not occur")
 
     for entry in white_list:
         # Second validation. E.g. if user passed in a hash value shorter than SHA1 length
@@ -2934,30 +2934,26 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
         raw_response=result)
 
 
-def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None, get_global: bool = True) -> list[str | None]:
+def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None) -> list[str | None]:
     """
     Return the IDs of the hash from the blocklist. Helper function for remove_hash_from_blocklist
 
     A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
     """
-    if get_global:
+    ret: list = []
+    if client.block_site_ids:
+        PAGE_SIZE = 20
+        site_ids = ','.join(client.block_site_ids)
+        block_list = client.get_blocklist_request(tenant=False, skip=0, limit=PAGE_SIZE, os_type=os_type, site_ids=site_ids,
+                                                  sort_by="updatedAt", sort_order="asc", value_contains=sha1)
+    else:
         PAGE_SIZE = 4
         block_list = client.get_blocklist_request(tenant=True, skip=0, limit=PAGE_SIZE, os_type=os_type,
                                                   sort_by="updatedAt", sort_order="asc", value_contains=sha1)
 
-        ret: list = []
-
         # Validation check first
         if len(block_list) > 3:
-            raise DemistoException("Recieved More than 3 results when querying by hash. This condition should not occur")
-    else:
-        PAGE_SIZE = 20
-        block_list = client.get_blocklist_request(tenant=False, skip=0, limit=PAGE_SIZE, os_type=os_type,
-                                                  sort_by="updatedAt", sort_order="asc", value_contains=sha1)
-
-        ret = []
-
-        # Validation check first
+            raise DemistoException("Received more than 3 results when querying by hash. This condition should not occur")
 
     for block_entry in block_list:
         # Second validation. E.g. if user passed in a hash value shorter than SHA1 length
@@ -2975,9 +2971,7 @@ def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
     if not sha1:
         raise DemistoException("You must specify a valid Sha1 hash")
     os_type = args.get('os_type', None)
-    get_global = args.get('global', True)
-    demisto.debug(f'Global input: {get_global}')
-    hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type, get_global)
+    hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type)
 
     if not hash_ids:
         status = {
@@ -3489,10 +3483,7 @@ def fetch_handler(client: Client, args):
 
 def to_incident(type, data):
     incident = {
-        'details': json.dumps(data),
         'rawJSON': json.dumps(data),
-        'labels': [{'type': _type, 'value': value if isinstance(value, str) else json.dumps(value)}
-                   for _type, value in data.items()]
     }
 
     if type == 'Threat':

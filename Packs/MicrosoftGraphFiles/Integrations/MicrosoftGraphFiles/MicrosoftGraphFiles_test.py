@@ -173,27 +173,47 @@ def test_parse_key_to_context_exclude_keys_from_list() -> None:
 
 
 @pytest.mark.parametrize(
-    "command, args, response",
+    "command, args, response, filename_expected",
     [
         (
             download_file_command,
             {"object_type": "drives", "object_type_id": "123", "item_id": "232"},
-            File
+            File,
+            "232",
+        ),
+        (
+            download_file_command,
+            {
+                "object_type": "drives",
+                "object_type_id": "123",
+                "item_id": "232",
+                "file_name": "test.xslx",
+            },
+            File,
+            "test.xslx",
         ),
     ],
 )  # noqa: E124
-def test_download_file(mocker: MockerFixture, command: Callable, args: dict, response: File) -> None:
+def test_download_file(
+    mocker: MockerFixture,
+    command: Callable,
+    args: dict,
+    response: File,
+    filename_expected: str,
+) -> None:
     """
     Given:
         - Location to where to upload file to Graph Api
     When
         - Using download file command in Demisto
     Then
-        - return FileResult object
+        - Ensure the `filename` is as sent in the command arguments when provided
+          otherwise, the `filename` is `item_id`
     """
     mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
-    result: dict = command(CLIENT_MOCKER, args)
-    assert "Contents" in list(result.keys())
+    mock_file_result = mocker.patch("MicrosoftGraphFiles.fileResult")
+    command(CLIENT_MOCKER, args)
+    mock_file_result.assert_called_with(filename_expected, response.content)
 
 
 @pytest.mark.parametrize(
@@ -914,7 +934,7 @@ def test_generate_login_url(mocker):
     main()
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                    f'response_type=code&scope=offline_access%20{Scopes.graph}' \
-                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+                   f'&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)'
     res = return_results.call_args[0][0].readable_output
     assert expected_url in res
 

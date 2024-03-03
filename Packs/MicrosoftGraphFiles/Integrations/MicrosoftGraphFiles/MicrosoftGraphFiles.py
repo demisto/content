@@ -550,11 +550,12 @@ def download_file_command(client: MsGraphClient, args: dict[str, str]) -> dict:
     object_type = args["object_type"]
     object_type_id = args["object_type_id"]
     item_id = args["item_id"]
+    file_name = args.get("file_name") or item_id
 
     result = client.download_file(
         object_type=object_type, object_type_id=object_type_id, item_id=item_id
     )
-    return fileResult(item_id, result.content)
+    return fileResult(file_name, result.content)
 
 
 def list_drive_content_human_readable_object(parsed_drive_items: dict) -> dict:

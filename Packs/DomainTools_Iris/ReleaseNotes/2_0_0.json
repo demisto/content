@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Removed AlexaRank field from domain, domaintoolsiris-analytics, domaintoolsiris-threat-profile, and domaintoolsiris-pivot commands. Domain fields have been updated to follow the mandatory and recommended context standards in domain, domaintoolsiris-analytics, domaintoolsiris-threat-profile, and domaintoolsiris-pivot commands."
+}
