@@ -2138,6 +2138,16 @@ def get_mirroring():
 
 
 def format_incidents_response_with_display_values(incidents_res: dict) -> list[dict]:
+    """Format the incidents response to use display values and remove the values,
+       except for the key opened_at which will receive the value,
+       as well as several other keys which will remain unchanged.
+
+    Args:
+        incidents_res (dict): The original incidents response
+
+    Returns:
+        list[dict]: The formatted incidents.
+    """
     format_incidents = []
 
     for incident in incidents_res:
