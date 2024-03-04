@@ -153,6 +153,7 @@ class Client(BaseClient):
         self.headers: Dict[str, Any] = {}
         self.headers["authorization"] = None
         self.headers["content-type"] = 'application/json'
+        self.headers["varonis-integration"] = 'XSOAR Cortex'
 
     def varonis_authenticate(self, apiKey: str) -> Dict[str, Any]:
         headers = {
