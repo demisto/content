@@ -371,9 +371,7 @@ CAMPAIGN_INDICATOR = [{'fields': {'description': 'Since the beginning of the cal
                                   'modified': '2020-08-03T14:55:56.362Z',
                                   'reportedby': 'Unit42',
                                   'stixid': 'campaign--f69de074-6abd-45a1-909f-51ef8fce808a',
-                                  'tags': [],
-                                  'aliases': [],
-                                  'objective': ''},
+                                  'tags': []},
                        'rawJSON': {'created': '2020-04-24T13:40:41.386Z',
                                    'description': 'Since the beginning of the calendar year',
                                    'first_seen': '2020-04-01T00:00:00.000Z',
@@ -386,7 +384,6 @@ CAMPAIGN_INDICATOR = [{'fields': {'description': 'Since the beginning of the cal
                        'type': 'Campaign',
                        'value': 'Campaign 1 - [Endor] Maze Ransomware'}]
 
-# add modified and rawJSON and Report Object References fields to match CAMPAIGN_INDICATOR format
 REPORTS_INDICATORS = [{'fields': {'description': 'A description of the report',
                                   'firstseenbysource': '1993-06-17T11:00:00.000Z',
                                   'published': '1994-08-12T11:00:00.000Z',
@@ -526,9 +523,6 @@ ATTACK_PATTERN_INDICATOR = [
             "stixid": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
             "tags": ["T1047"],
         },
-        "type": "Attack Pattern",
-        "score": 2,
-        "value": "Windows Management Instrumentation",
         "rawJSON": {
             "created": "2018-08-03T19:54:02.821Z",
             "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
@@ -584,6 +578,9 @@ ATTACK_PATTERN_INDICATOR = [
             "x_mitre_system_requirements": ["WMI service"],
             "x_mitre_version": "1.0",
         },
+        "type": "Attack Pattern",
+        "score": 2,
+        "value": "Windows Management Instrumentation",
     }
 ]
 
@@ -719,15 +716,14 @@ COURSE_OF_ACTION_DATA = [{
             "network-network-profiles-zone-protection/reconnaissance-protection."
         ]
 }]
-# add rawJSON
+
 COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                            'firstseenbysource': '2020-06-23T19:50:31.722Z',
                                            'modified': '2020-09-04T13:59:35.883Z',
                                            'publications': [],
                                            'reportedby': 'Unit42',
                                            'stixid': 'course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5',
-                                           'tags': [],
-                                           'action_type': ''},
+                                           'tags': []},
                                 'rawJSON': {'type': 'course-of-action',
                                             'id': 'course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5',
                                             'name': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2',
@@ -737,13 +733,13 @@ COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                 'type': 'Course of Action',
                                 'value': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2'},
                                {'fields': {'description': 'Enable all three scan options in a Zone '
-                                           'Protection profile.',
+                                                          'Protection profile.',
                                            'firstseenbysource': '2020-06-23T19:50:31.722Z',
                                            'modified': '2020-06-26T19:00:21.151Z',
                                            'publications': [],
                                            'reportedby': 'Unit42',
                                            'stixid': 'course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2',
-                                           'tags': [], 'action_type': ''},
+                                           'tags': []},
                                 'rawJSON': {'type': 'course-of-action',
                                             'id': 'course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2',
                                             'name': 'Ensure that all zones have Zone Protection Profiles with all Reconnaissance Protection settings enabled.',
@@ -765,7 +761,7 @@ COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                 'score': 0,
                                 'type': 'Course of Action',
                                 'value': 'Ensure that all zones have Zone Protection Profiles with all '
-                                'Reconnaissance Protection settings enabled.'}]
+                                         'Reconnaissance Protection settings enabled.'}]
 
 DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST = {
     'relationships': [{'entityA': '0f11fb955df07afc1912312f276c7fa3794ab85cd9f03b197c8bdbefb215fe92',
@@ -1108,8 +1104,6 @@ FETCH_RESULTS = [
             "description": "Since the beginning of the calendar year",
             "reportedby": "Unit42",
             "tags": [],
-            "aliases": [],
-            "objective": "",
         },
     },
     {
@@ -1217,7 +1211,6 @@ FETCH_RESULTS = [
             "publications": [],
             "reportedby": "Unit42",
             "tags": [],
-            "action_type": "",
         },
         "rawJSON": {
             "type": "course-of-action",
@@ -1239,7 +1232,6 @@ FETCH_RESULTS = [
             "publications": [],
             "reportedby": "Unit42",
             "tags": [],
-            "action_type": "",
         },
         "rawJSON": {
             "type": "course-of-action",
@@ -1278,11 +1270,6 @@ FETCH_RESULTS = [
             "publications": [],
             "reportedby": "Unit42",
             "tags": [],
-            "aliases": [],
-            "goals": [],
-            "resource_level": "",
-            "primary_motivation": "",
-            "secondary_motivations": [],
         },
         "rawJSON": {
             "type": "intrusion-set",
@@ -1292,39 +1279,6 @@ FETCH_RESULTS = [
             "name": "[Endor] Maze Ransomware",
         },
     },
-]
-
-FETCH_MOCK_RESPONSE = [
-    {
-        "created": "2019-05-21T18:21:23.421Z",
-        "description": "description",
-        "id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf0",
-        "labels": [
-            "intrusion-set"
-        ],
-        "modified": "2021-09-29T15:55:04.815Z",
-        "name": "name",
-                "object_refs": [
-                    "report--0f86dccd-29bd-46c6-83fd-e79ba040bf1"
-        ],
-        "published": "2020-07-30T16:55:31.554Z",
-        "type": "report"
-    },
-    {
-        "created": "2019-05-21T18:21:23.550Z",
-        "id": "report--0f86dccd-29bd-46c6-83fd-e79ba040bf1",
-        "labels": [
-            "campaign"
-        ],
-        "modified": "2021-09-29T15:55:04.815Z",
-        "name": "name",
-        "object_refs": [
-                "campaign--f69de074-6abd-45a1-909f-51ef8fce808a"
-        ],
-        "published": "2019-10-11T15:26:10.706Z",
-        "type": "report"
-    }
-
 ]
 
 INDICATOR_WITH_RELATIONSHIP = {

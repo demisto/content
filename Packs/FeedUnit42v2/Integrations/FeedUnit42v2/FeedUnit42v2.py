@@ -227,7 +227,9 @@ def parse_campaigns(client: Client, campaigns_objs, feed_tags, tlp_color):
         campaigns_indicator = campaigns_indicator_list[0]
         campaigns_indicator["fields"]["reportedby"] = 'Unit42'
         campaigns_indicator["fields"]["tags"] = list(feed_tags)
-
+        for field_name in ["aliases", "objective"]:
+            if campaigns_indicator['fields'].get(field_name) is not None:
+                campaigns_indicator["fields"].pop(field_name)
         if tlp_color:
             campaigns_indicator['fields']['trafficlightprotocol'] = tlp_color
 
@@ -338,7 +340,8 @@ def create_course_of_action_indicators(client: Client, course_of_action_objects,
             "modified": handle_multiple_dates_in_one_field('modified', coa_indicator_object.get('modified')),
             "tags": list(feed_tags)
         })
-
+        if coa_indicator['fields'].get('action_type') is not None:
+            coa_indicator["fields"].pop("action_type")
         if tlp_color:
             coa_indicator_object['fields']['trafficlightprotocol'] = tlp_color
 
@@ -360,6 +363,9 @@ def create_intrusion_sets(client: Client, intrusion_sets_objects, feed_tags, tlp
             "modified": handle_multiple_dates_in_one_field('modified', intrusion_set_object.get('modified')),
             "tags": list(feed_tags)
         })
+        for field_name in ["secondary_motivations", "aliases", "primary_motivation", "resource_level", "goals"]:
+            if intrusion_set['fields'].get(field_name) is not None:
+                intrusion_set["fields"].pop(field_name)
         if tlp_color:
             intrusion_set['fields']['trafficlightprotocol'] = tlp_color
 
