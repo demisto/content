@@ -162,7 +162,8 @@ class Client(BaseClient):
         Fetches alerts from the Jamf Protect API.
 
         Args:
-            args (dict): The arguments to be used in the GraphQL query. It should contain a key "created" with a value representing the creation date of the alerts.
+            args (dict): The arguments to be used in the GraphQL query.
+             It should contain a key "created" with a value representing the creation date of the alerts.
             next_page (str): The next page token for pagination.
 
         Returns:
@@ -207,7 +208,8 @@ class Client(BaseClient):
         Fetches audit logs from the Jamf Protect API.
 
         Args:
-            args (dict): The arguments to be used in the GraphQL query. It should contain keys "start_date" and "end_date" with values representing the date range of the audit logs.
+            args (dict): The arguments to be used in the GraphQL query.
+             It should contain keys "start_date" and "end_date" with values representing the date range of the audit logs.
             next_page (str): The next page token for pagination.
 
         Returns:
@@ -275,8 +277,10 @@ def parse_response(response: dict) -> tuple:
 
     Returns:
         tuple: A tuple containing two elements:
-            - A dictionary which contains the page information from the response. This includes the next page token for pagination and the total number of items.
-            - A list of items from the response. These items are either alerts or audit logs, depending on the API endpoint that was called.
+            - A dictionary which contains the page information from the response.
+             This includes the next page token for pagination and the total number of items.
+            - A list of items from the response.
+             These items are either alerts or audit logs, depending on the API endpoint that was called.
     """
     data = response.get("data", {})
     parsed_data = data.get("listAlerts") or data.get("listAuditLogsByDate") or {}
@@ -302,7 +306,8 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
     Returns:
         tuple: A tuple containing two elements:
             - A list of dictionaries. Each dictionary represents an event.
-            - A dictionary with new last run values, the end date of the fetched events and a continuance token if the fetched reached the max limit.
+            - A dictionary with new last run values,
+             the end date of the fetched events and a continuance token if the fetched reached the max limit.
     """
     created, current_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key="alert")
     command_args = {"created": created}
@@ -313,7 +318,8 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     if next_page:
         demisto.debug(
-            f" Jamf Protect - Fetched {len(events)} which is the maximum number of alerts. Will keep the fetching in the next fetch.")
+            f" Jamf Protect - Fetched {len(events)} which is the maximum number of alerts."
+            f" Will keep the fetching in the next fetch.")
         new_last_run_with_next_page = {"next_page": next_page, "last_fetch": created}
         return events, new_last_run_with_next_page
 
@@ -343,7 +349,8 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
      Returns:
          tuple: A tuple containing two elements:
              - A list of dictionaries. Each dictionary represents an event.
-             - A dictionary with new last run values, the end date of the fetched events and a continuance token if the fetched reached the max limit.
+             - A dictionary with new last run values,
+              the end date of the fetched events and a continuance token if the fetched reached the max limit.
      """
     start_date, end_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key="alert")
     command_args = {"start_date": start_date, "end_date": end_date}
@@ -354,7 +361,8 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     if next_page:
         demisto.debug(
-            f" Jamf Protect - Fetched {len(events)} which is the maximum number of audits. Will keep the fetching in the next fetch.")
+            f" Jamf Protect - Fetched {len(events)}"
+            f" which is the maximum number of audits. Will keep the fetching in the next fetch.")
         new_last_run_with_next_page = {"next_page": next_page, "last_fetch": start_date}
         return events, new_last_run_with_next_page
 
@@ -371,7 +379,8 @@ def get_events(command_args: dict, client_event_type_func: Callable, max_fetch: 
     Fetches events from the Jamf Protect API.
 
     Args:
-        command_args (dict): The arguments to be used in the client function. It should contain keys representing the required arguments for the client function.
+        command_args (dict): The arguments to be used in the client function.
+         It should contain keys representing the required arguments for the client function.
         client_event_type_func (Callable): The client function to be used for fetching the events.
         max_fetch (int): The maximum number of events to fetch.
         next_page (str, optional): The next page token for pagination. Defaults to "".
@@ -402,7 +411,8 @@ def calculate_fetch_dates(start_date: str, last_run_key: str, last_run: dict, en
 
     This function takes the start date and end date provided as arguments.
     If these are not provided, it uses the last run information to calculate the start and end dates.
-    If the last run information is also not available, it uses the current time as the end date and the time one minute before the current time as the start date.
+    If the last run information is also not available,
+     it uses the current time as the end date and the time one minute before the current time as the start date.
 
     Args:
         start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
@@ -458,7 +468,8 @@ def add_time_field(events: List[Dict[str, Any]]) -> list:
     """
     Adds a '_time' field to each event in the list of events.
 
-    This function iterates over the list of events. For each event, it adds a new field '_time' with the value of the 'date' or 'created' field of the event.
+    This function iterates over the list of events.
+     For each event, it adds a new field '_time' with the value of the 'date' or 'created' field of the event.
 
     Args:
         events (List[Dict[str, Any]]): A list of dictionaries. Each dictionary represents an event.
@@ -478,7 +489,8 @@ def validate_start_and_end_dates(args):
     """
     Validates the start and end dates provided in the arguments.
 
-    This function checks if the start date is missing or if it is greater than the end date. If either of these conditions is true, it raises a ValueError. Otherwise, it returns the start and end dates.
+    This function checks if the start date is missing or if it is greater than the end date.
+     If either of these conditions is true, it raises a ValueError. Otherwise, it returns the start and end dates.
 
     Args:
         args (dict): A dictionary containing the arguments for the command.
@@ -510,8 +522,6 @@ def get_events_command(client, args):
     Args:
         client (Client): An instance of the Client class.
         args (dict): A dictionary containing the arguments for the command.
-                     It should contain keys 'start_date' and 'end_date' with values representing the date range of the events to fetch,
-                     and a 'limit' key with a value representing the maximum number of events to fetch.
 
     Returns:
         tuple: A tuple containing two elements:
