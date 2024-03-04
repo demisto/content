@@ -883,7 +883,15 @@ class Client(BaseClient):
         return self.http_request(
             method='POST',
             url_suffix='/config/event_sources/log_source_management/log_sources',
-            json_data= log_source
+            json_data=log_source
+        )
+    
+    def update_log_source(self, log_source: dict):
+        return self.http_request(
+            method='PATCH',
+            url_suffix='/config/event_sources/log_source_management/log_sources',
+            json_data=log_source,
+            resp_type='response'
         )
 
     def test_connection(self):
@@ -1729,6 +1737,22 @@ def convert_dict_values_string_to_number(obj: dict) -> dict:
             clone[key] = int(value)
     return clone
 
+def convert_to_actual_values_recursive(input_dict: dict) -> dict:
+    output_dict = {}
+    for key, value in input_dict.items():
+        if isinstance(value, dict):
+            output_dict[key] = convert_to_actual_values_recursive(value)
+        elif isinstance(value, str):
+            try:
+                output_dict[key] = argToBoolean(value)
+            except ValueError:
+                try:
+                    output_dict[key] = arg_to_number(value)
+                except ValueError:
+                    output_dict[key] = value
+        else:
+            output_dict[key] = value
+    return output_dict
 
 def get_offense_enrichment(enrichment: str) -> tuple[bool, bool]:
     """
@@ -4630,7 +4654,7 @@ def qradar_log_source_create_command(client: Client, args: dict) -> CommandResul
         name, value = pair.split('=')
         # Add the pair to the dictionary
         protocol_parameters.append({'name': name.strip(), 'value': value.strip()})
-    log_source = convert_dict_values_string_to_number({
+    log_source = convert_to_actual_values_recursive({
         **args,
         'protocol_parameters': protocol_parameters,
         'group_ids': group_ids,
@@ -4656,7 +4680,74 @@ def qradar_log_source_create_command(client: Client, args: dict) -> CommandResul
         outputs=outputs,
         raw_response=response
     )
-    
+
+def qradar_log_source_update_command(client: Client, args: dict) -> CommandResults:
+    """
+    Creates a log source.
+    Possible arguments:
+    - id: Required. The id of the log source.
+    - name: The unique name of the log source.
+    - sending_ip: The ip of the system which the log source is associated to, or fed by.
+    - protocol_type_id: The type of protocol that is used by the log source.
+    - type_id: The type of the log source. Must correspond to an existing log source type.
+      Must correspond to an existing protocol type.
+    - protocol_parameters: The list of protocol parameters corresponding with the selected protocol type id. The syntax
+      for this argument should follow: protocol_parameters="name_1=value_1,name_2=value_2,...,name_n=value_n" where each name
+      should correspond to a name of a protocol parameter from the protocol type and each value should fit the type of the
+      protocol parameter.
+    - descrption: The description of the log source
+    - coalesce_events: Determines if events collected by this log source are coalesced based on common properties.
+      If each individual event is stored, then the condition is set to false. Defaults to true.
+    - enabled: Determines if the log source is enabled. Defaults to true.
+    - parsing_order: The order in which log sources will parse if multiple exists with a common identifier.
+    - group_ids: The set of log source group IDs this log source is a member of.
+      Each ID must correspond to an existing log source group.
+      See the Log Source Group API (https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html).
+    - credibility: On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source
+    - store_event_payload: If the payloads of events that are collected by this log source are stored, the condition is set to
+      'true'. If only the normalized event records are stored, then the condition is set to 'false'.
+    - target_event_collector_id:  The ID of the event collector where the log source sends its data.
+      The ID must correspond to an existing event collector.
+    - disconnected_log_collector_id:  The ID of the disconnected log collector where this log source will run.
+      The ID must correspond to an existing disconnected log collector.
+    - language_id: The language of the events that are being processed by this log source.
+      Must correspond to an existing log source language.
+    - requires_deploy: Set to 'true' if you need to deploy changes to enable the log source for use;
+      otherwise, set to 'false' if the log source is already active.
+    - wincollect_internal_destination_id : The internal WinCollect destination for this log source, if applicable.
+      Log sources without an associated WinCollect agent have a null value. Must correspond to an existing WinCollect destination.
+    - wincollect_external_destination_ids: The set of external WinCollect destinations for this log source, if applicable.
+      Log Sources without an associated WinCollect agent have a null value.
+      Each ID must correspond to an existing WinCollect destination.
+    - gateway: If the log source is configured as a gateway, the condition is set to 'true';
+      otherwise, the condition is set to 'false'. A gateway log source is a stand-alone protocol configuration.
+      The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to
+      feed other log sources. It acts as a "gateway" for events from multiple systems to enter the event pipeline.
+    """
+    id = args.get('id')
+    pp_pairs = args.get('protocol_parameters').split(',') if args.get('protocol_parameters') else None
+    protocol_parameters = []
+    group_ids = args.get('group_ids').split(',') if args.get('group_ids') else None
+    wincollect_external_destination_ids = (
+        args.get('wincollect_external_destination_ids').split(',') if args.get('group_ids')
+        else None
+    )
+    if pp_pairs:
+        for pair in pp_pairs:
+            # Split the pair into name and value using '=' as delimiter
+            name, value = pair.split('=')
+            # Add the pair to the dictionary
+            protocol_parameters.append({'name': name.strip(), 'value': value.strip()})
+    log_source_str = {**args}
+    if pp_pairs:
+        log_source_str['protocol_parameters'] = protocol_parameters
+    if group_ids:
+        log_source_str['group_ids'] = group_ids
+    if wincollect_external_destination_ids:
+        log_source_str['wincollect_external_destination_ids'] = wincollect_external_destination_ids
+    log_source =[convert_to_actual_values_recursive(log_source_str)]
+    client.update_log_source(log_source)
+    return CommandResults(readable_output=f'Log source  {id} was updated successfully')
 
 def migrate_integration_ctx(ctx: dict) -> dict:
     """Migrates the old context to the current context
@@ -4965,7 +5056,10 @@ def main() -> None:  # pragma: no cover
         
         elif command == 'qradar-log-source-create':
             return_results(qradar_log_source_create_command(client, args))
-        
+
+        elif command == 'qradar-log-source-update':
+            return_results(qradar_log_source_update_command(client, args))
+
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
