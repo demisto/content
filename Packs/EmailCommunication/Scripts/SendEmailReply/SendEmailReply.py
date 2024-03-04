@@ -573,19 +573,29 @@ def get_incident_by_query(query):
     return incidents_details
 
 
-def get_unique_code():
+def get_unique_code(incident_id):
     """
-        Create an 8-digit unique random code that should be used to identify new created incidents.
+        Create an 13-digit unique random code that should be used to identify new created incidents.
     Args: None
+    Args:
+        incident_id: 
+
     Returns:
-        8-digit code returned as a string
+        13-digit code returned as a string
     """
+    demisto.debug(f'Generating a unique code for incident {incident_id}')
+    tried_codes = set()
+    incident_id_padded = incident_id[-3:].rjust(3, "0")  # Take padded last 3 digits of incident ID.
     while True:
-        code = f'{random.randrange(1, 10 ** 8):08}'
-        query = f'emailgeneratedcode: {code}'
-        incidents_details = get_incident_by_query(query)
-        if incidents_details is None or len(incidents_details) == 0:
-            return code
+        # The random code is 13 digits long and is created by concatenating the last 3 digits of the incident ID and epoch.
+        code = f'{incident_id_padded}{int(time.time()):010d}'
+        if code not in tried_codes:
+            tried_codes.add(code)
+            query = f'emailgeneratedcode: {code}'
+            incidents_details = get_incident_by_query(query)
+            if incidents_details is None or len(incidents_details) == 0:
+                demisto.debug(f'Generated unique code for incident {incident_id}: {code}, tried {len(tried_codes)} times')
+                return code
 
 
 def reset_fields():
@@ -689,7 +699,7 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_t
     # Use Incident fields to construct & send email reply.
     if not email_code:
         # If a unique code is not set for this incident yet, generate and set it
-        email_code = get_unique_code()
+        email_code = get_unique_code(incident_id)
         demisto.debug(f"Setting incident {incident_id} emailgeneratedcode to {email_code}")
         demisto.executeCommand('setIncident', {'id': incident_id,
                                                'customFields': {'emailgeneratedcode': email_code}})
@@ -744,7 +754,7 @@ def multi_thread_new(new_email_subject, subject_include_incident_id, new_email_r
         return_error(f'The following required fields have not been set.  Please set them and try again. '
                      f'{missing_fields}')
 
-    thread_code = get_unique_code()
+    thread_code = get_unique_code(incident_id)
 
     # If there are already other values in 'emailgeneratedcodes', append the new code as a comma-separated list
     if email_codes:
