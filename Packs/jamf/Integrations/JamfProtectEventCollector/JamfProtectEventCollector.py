@@ -314,7 +314,7 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
     client_event_type_func = client.get_alerts
     next_page = last_run.get("alert", {}).get("next_page", "")
 
-    demisto.debug(f" Jamf Protect - Fetching alerts from {created}")
+    demisto.debug(f"Jamf Protect- Fetching alerts from {created}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     if next_page:
         demisto.debug(
@@ -327,7 +327,7 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
                                              for event in events) if dt is not None]).strftime(
         DATE_FORMAT) if events else current_date
     new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
-    demisto.debug(f" Jamf Protect - Fetched {len(events)} alerts")
+    demisto.debug(f"Jamf Protect- Fetched {len(events)} alerts")
     return events, new_last_run_without_next_page
 
 
@@ -357,7 +357,7 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
     client_event_type_func = client.get_audits
     next_page = last_run.get("audit", {}).get("next_page", "")
 
-    demisto.debug(f" Jamf Protect - Fetching audits from {start_date} to {end_date}")
+    demisto.debug(f"Jamf Protect- Fetching audits from {start_date} to {end_date}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     if next_page:
         demisto.debug(
@@ -370,7 +370,7 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
                                              for event in events) if dt is not None]).strftime(
         DATE_FORMAT) if events else end_date
     new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
-    demisto.debug(f" Jamf Protect - Fetched {len(events)} audits")
+    demisto.debug(f"Jamf Protect- Fetched {len(events)} audits")
     return events, new_last_run_without_next_page
 
 
@@ -537,7 +537,7 @@ def get_events_command(client, args) -> tuple:
                                                  end_date_arg=end_date)
     alert_events = alert_events[:limit]
     audit_events = audit_events[:limit]
-    
+
     if alert_events:
         results.append(
             CommandResults(readable_output=tableToMarkdown("Jamf Protect Alert Events", alert_events), raw_response=alert_events))
