@@ -46,7 +46,7 @@ script:
       name: end_date
       required: true
     description: 'Collect reports from cyble angel'
-    name: cyble-angel-get-events
+    name: cybleangel
     outputs: []
   runonce: false
   script: '-'

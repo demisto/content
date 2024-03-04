@@ -7,6 +7,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 from typing import Dict, Any, Tuple
+from enum import Enum
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,6 +17,11 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 DEFAULT_MAX_FETCH = 5000
 VENDOR = "cybelangel"
 PRODUCT = "platform"
+
+
+class LastRun(str, Enum):
+    LATEST_REPORT_TIME = "latest_report_time"
+    LATEST_FETCHED_REPORTS = "latest_feteched_reports"
 
 
 class Client(BaseClient):
@@ -53,6 +59,7 @@ class Client(BaseClient):
             "end-date": end_date
         }
         reports = self.http_request(method='GET', url_suffix="/api/v2/reports", params=params).get("reports") or []
+        # sort the reports by their date as their order is returned randomly
         reports = sorted(reports, key=lambda report: dateparser.parse(report["created_at"]))
         return reports[:limit]
 
@@ -146,25 +153,6 @@ def dedup_fetched_events(
     return un_fetched_events
 
 
-def get_latest_fetched_event_ids(events: List[dict]) -> Tuple[str, List[str]]:
-
-    if not events:
-        return "", []
-
-    latest_event_time = max(events, key=lambda event: dateparser.parse(event["created_at"]).strftime(DATE_FORMAT))["created_at"]
-    demisto.debug(f'Latest event time: {latest_event_time}')
-
-    latest_occurred_event_ids = set()
-
-    for event in events:
-        if event["created_at"] == latest_event_time:
-            event_id = event.get("id")
-            demisto.info(f'adding event with ID {event_id} to latest occurred event IDs')
-            latest_occurred_event_ids.add(event_id)
-
-    return latest_event_time, list(latest_occurred_event_ids)
-
-
 def test_module(client: Client) -> str:
     client.get_reports(
         start_date=(datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT),
@@ -174,17 +162,27 @@ def test_module(client: Client) -> str:
 
 
 def fetch_events(client: Client, last_run: Dict, max_fetch: int) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    last_run_time, last_fetched_report_ids = last_run.get("time"), last_run.get("fetched_report_ids")
+    last_run_time, last_fetched_report_ids = last_run.get(LastRun.LATEST_REPORT_TIME), last_run.get(LastRun.LATEST_FETCHED_REPORTS)
     if not last_run_time:
         last_run_time = (datetime.now() - timedelta(days=1065)).strftime(DATE_FORMAT)
+
     reports = client.get_reports(start_date=last_run_time, end_date=datetime.now().strftime(DATE_FORMAT), limit=max_fetch)
     reports = dedup_fetched_events(reports, last_run_fetched_event_ids=last_fetched_report_ids or set())
 
     for report in reports:
         report["_time"] = report["created_at"]
 
-    latest_report_time, last_fetched_report_ids = get_latest_fetched_event_ids(reports)
-    last_run.update({"time": latest_report_time or last_run_time, "fetched_report_ids": last_fetched_report_ids})
+    latest_report_time = reports[-1]["created_at"] if reports else None
+    demisto.debug(f'latest-report-time: {latest_report_time}')
+    last_fetched_report_ids = [report for report in reports if report["created_at"] == latest_report_time]
+    demisto.debug(f'latest-fetched-report-ids {last_fetched_report_ids}')
+
+    last_run.update(
+        {
+            LastRun.LATEST_REPORT_TIME: latest_report_time or last_run_time,
+            LastRun.LATEST_FETCHED_REPORTS: last_fetched_report_ids or last_fetched_report_ids
+        }
+    )
     return reports, last_run
 
 
@@ -218,11 +216,11 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'fetch-events':
-            events, last_fetch = fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch)
+            events, last_run = fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to xsiam')
-            demisto.setLastRun(last_fetch)
-        elif command == "cyble-angel-get-events":
+            demisto.setLastRun(last_run)
+        elif command == "cybleangel-get-events":
             return_results(get_events(client, demisto.args()))
 
     # Log exceptions and return errors
