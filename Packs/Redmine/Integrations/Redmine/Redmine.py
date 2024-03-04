@@ -68,6 +68,7 @@ class Client(BaseClient):
         file_name = args.pop('file_name', '')
         description = args.pop('description', '')
         content_type = args.pop('content_type', '')
+        args = assign_params(args)
         if file_token:
             args['uploads'] = [{'token': file_token, 'filename': file_name,
                                 'description': description, 'content_type': content_type}]
@@ -168,34 +169,33 @@ def map_header(header_string: str) -> str:
     }
     return header_mapping.get(header_string, header_string)
 
+def map_predefined_values_to_id(predefined_value, converter_dict, error_message):
+    if predefined_value is not None:
+        predefined_id = converter_dict.get(predefined_value)
+        if predefined_id is not None:
+            return predefined_id
+        else:
+            raise DemistoException(error_message)
+    return None
+        
 def convert_args_to_request_format(args):
     tracker_id = args.pop('tracker_id', None)
     status_id = args.pop('status_id', None)
     priority_id = args.pop('priority_id', None)
     custom_fields = args.pop('custom_fields', None)
     watcher_user_ids = args.pop('custom_fields', None)
-    if tracker_id:
-        if tracker_id in ISSUE_TRACKER_DICT:
-            args['tracker_id'] = ISSUE_TRACKER_DICT[tracker_id]
-        else:
-            raise DemistoException("Tracker_id invalid, please make you used only predefined values")
-    if status_id:
-        if status_id in ISSUE_STATUS_DICT:
-            args['status_id'] = ISSUE_STATUS_DICT[status_id]
-        else:
-            raise DemistoException("Status_id invalid, please make you used only predefined values")
-    if priority_id:
-        if priority_id in ISSUE_PRIORITY_DICT:
-            args['priority_id'] = ISSUE_PRIORITY_DICT[priority_id]
-        else:
-            raise DemistoException("Priority_id invalid, please make you used only predefined values")
+
+    args['tracker_id'] = map_predefined_values_to_id(tracker_id, ISSUE_TRACKER_DICT, "Tracker_id invalid, please make sure you use only predefined values")
+    args['status_id'] = map_predefined_values_to_id(status_id, ISSUE_STATUS_DICT, "Status_id invalid, please make sure you use only predefined values")
+    args['priority_id'] = map_predefined_values_to_id(priority_id, ISSUE_PRIORITY_DICT, "Priority_id invalid, please make sure you use only predefined values")
+
     if custom_fields:
+        custom_fields = custom_fields.split(',')
         try:
-            custom_fields = custom_fields.split(',')
-            args['custom_fields'] = [{'id': field[:field.index(':')], 'value': field[field.index(':') + 1:]}
-                                     for field in custom_fields]
+            args['custom_fields'] = [{'id': field.split(':')[0], 'value': field.split(':')[1]} for field in custom_fields]
         except Exception as e:
             raise DemistoException("Custom fields not in format, please follow the instructions")
+
     if watcher_user_ids:
         args['watcher_user_ids'] = [watcher_user_ids]
 
