@@ -52,7 +52,7 @@ def append_email_signature(html_body):
     Args: (string) html_body
     Returns: (string) Original HTML body with HTML formatted email signature appended
     """
-    demisto.debug("Getting email signature")
+    demisto.debug("append_email_signature")
     email_signature = demisto.executeCommand('getList', {'listName': 'XSOAR - Email Communication Signature'})
 
     if is_error(email_signature):
@@ -147,7 +147,7 @@ def execute_reply_mail(incident_id, email_subject, subject_include_incident_id, 
         instances = demisto.getModules()
         if instances.get(mail_sender_instance, {}).get("brand") == "Gmail Single User":
             mail_content["references"] = email_latest_message
-    demisto.debug(f"Sending email with the following content: {mail_content}")
+    demisto.debug(f"Sending email with the following subject: {subject_with_id}, and content: {mail_content}")
     return demisto.executeCommand("reply-mail", mail_content)
 
 
@@ -329,7 +329,7 @@ def send_new_mail_request(incident_id, email_subject, subject_include_incident_i
         mail_content["using"] = mail_sender_instance
 
     # Send email
-    demisto.debug(f"Sending email with the following content: {mail_content}")
+    demisto.debug(f"Sending email for incident {incident_id}, with the following subject: {email_subject}, and content: {mail_content}")
     email_result = demisto.executeCommand("send-mail", mail_content)
 
     # Store message details in context entry
@@ -441,7 +441,7 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
     if notes:
         for note in notes:
             note_user = note['Metadata']['user']
-            demisto.debug(f"Getting user data for user {note_user}")
+            demisto.debug(f"Getting user data for user {note_user} in incident {incident_id}")
             note_userdata = demisto.executeCommand("getUserByUsername", {"username": note_user})
             user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name']) or "DBot"
             reply_body += f"{user_fullname}: \n\n{note['Contents']}\n\n"
@@ -586,7 +586,7 @@ def get_unique_code(incident_id):
     incident_id_padded = incident_id[-3:].rjust(3, "0")  # Take padded last 3 digits of incident ID.
     while True:
         # The random code is 13 digits long and is created by concatenating the last 3 digits of the incident ID and epoch.
-        code = f'{incident_id_padded}{int(time.time()):010d}'
+        code = f'{incident_id_padded}{int(1000*time.time()):013d}'
         if code not in tried_codes:
             tried_codes.add(code)
             query = f'emailgeneratedcode: {code}'
@@ -749,7 +749,7 @@ def multi_thread_new(new_email_subject, subject_include_incident_id, new_email_r
             missing_fields.append('New Email Recipients')
         if not new_email_body:
             missing_fields.append('New Email Body')
-        return_error(f'The following required fields have not been set.  Please set them and try again. '
+        return_error(f'The following required fields have not been set. Please set them and try again. '
                      f'{missing_fields}')
 
     thread_code = get_unique_code(incident_id)
