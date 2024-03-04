@@ -1,0 +1,25 @@
+{
+    "result": [
+        {
+            "_ref": "record:host/abcddd:localdoman.localhost.test/default",
+            "extattrs": {
+                "IB Discovery Owned": {
+                    "value": "EMEA"
+                },
+                "Site": {
+                    "value": "Tel-Aviv"
+                }
+            },
+            "ipv4addrs": [
+                {
+                    "_ref": "record:host_ipv4addr/abcd:s.o.me.ip/localdoman.localhost.test/default",
+                    "configure_for_dhcp": false,
+                    "host": "localdoman.localhost.test",
+                    "ipv4addr": "some_ip"
+                }
+            ],
+            "name": "localdoman.localhost.test",
+            "view": "default"
+        }
+    ]
+}
