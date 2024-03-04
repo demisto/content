@@ -153,7 +153,7 @@ def decode_model_data(model_data: str):
     :param model_data: string of the encoded based 64 model
     :return: Model
     """
-    return dill.loads(base64.b64decode(model_data.encode('utf-8')))
+    return dill.loads(base64.b64decode(model_data.encode('utf-8')))  # guardrails-disable-line
 
 
 def load_oob(path=OUT_OF_THE_BOX_MODEL_PATH):

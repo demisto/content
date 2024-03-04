@@ -624,7 +624,7 @@ def rasterize_thread(browser, chrome_port, path: str,
             raise DemistoException(f'Unsupported rasterization type: {rasterize_type}.')
 
 
-def perform_rasterize(path: str,
+def perform_rasterize(paths: list[str],
                       rasterize_type: RasterizeType = RasterizeType.PNG,
                       wait_time: int = DEFAULT_WAIT_TIME,
                       offline_mode: bool = False,
@@ -646,13 +646,11 @@ def perform_rasterize(path: str,
     :param width: window width
     :param height: window height
     """
-    demisto.debug(f"rasterize, {path=}, {rasterize_type=}")
+    demisto.debug(f"rasterize, {paths=}, {rasterize_type=}")
     browser, chrome_port = ensure_chrome_running()
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
-            paths = argToList(path)
-            demisto.debug(f"rasterize, {paths=}, {rasterize_type=}")
             rasterization_threads = []
             rasterization_results = []
             for current_path in paths:
@@ -846,7 +844,7 @@ def module_test():  # pragma: no cover
 
 
 def rasterize_command():  # pragma: no cover
-    url = demisto.getArg('url')
+    urls = argToList(demisto.getArg('url'))
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
@@ -861,11 +859,11 @@ def rasterize_command():  # pragma: no cover
         file_extension = "pdf"
     file_name = f'{file_name}.{file_extension}'  # type: ignore
 
-    rasterize_output = perform_rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
+    rasterize_output = perform_rasterize(paths=urls, rasterize_type=rasterize_type, wait_time=wait_time,
                                          navigation_timeout=navigation_timeout, include_url=include_url,
                                          full_screen=full_screen)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
-    for current_rasterize_output, current_url in zip(rasterize_output, url):
+    for current_rasterize_output, current_url in zip(rasterize_output, urls):
         # demisto.debug(f"rasterize_command response, {current_rasterize_output=}")
 
         if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
