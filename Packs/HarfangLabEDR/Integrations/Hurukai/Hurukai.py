@@ -3839,142 +3839,162 @@ def close_in_hfl(delta: dict[str, Any]) -> bool:
     return demisto.params().get("close_in_hfl") and bool(closing_fields & set(delta))
 
 
-def update_security_event_request(client, ids: List[str], status: str) -> str:
-    if status not in SECURITY_EVENT_STATUS:
-        raise DemistoException(
-            f"HarfangLab EDR Error: "
-            f"Status given is {status} and it is not in {SECURITY_EVENT_STATUS}"
+def update_remote_incident(
+    delta: dict[str, Any],
+    incident_status: IncidentStatus,
+    incident_type: str,
+    incident_id: str,
+    *,
+    change_incident_status_fn: Callable[[str, str], Any],
+) -> None:
+
+    new_remote_status: Optional[str] = None
+
+    match incident_status:
+
+        case IncidentStatus.PENDING:
+            new_remote_status = "new"
+
+        case IncidentStatus.ACTIVE:
+            new_remote_status = "investigating"
+
+        case IncidentStatus.DONE:
+            if close_in_hfl(delta):
+                new_remote_status = "closed"
+
+        case IncidentStatus.ARCHIVE:
+            demisto.debug(
+                "The 'ARCHIVE' status is not supported on HarfangLab EDR side"
+            )
+
+        case _:
+            raise ValueError(
+                f"Expected one of the IncidentStatus' values from "
+                f"'CommonServerPython.py' for 'incident_status', get "
+                f"'{incident_status}' ({incident_type}:{incident_id})"
+            )
+
+    if new_remote_status:
+
+        if new_remote_status not in SECURITY_EVENT_STATUS:
+            raise ValueError(
+                f"Invalid value for 'new_remote_status': "
+                f"expected one of {SECURITY_EVENT_STATUS}, get '{new_remote_status}'"
+            )
+
+        demisto.debug(
+            f"Incident '{incident_type}:{incident_id}', will have its status "
+            f"changed to '{new_remote_status}'"
         )
 
-    for eventid in ids:
-        client.change_security_event_status(eventid, status)
-    return "OK"
-
-
-def update_threat_request(client, ids: List[str], status: str) -> str:
-    if status not in SECURITY_EVENT_STATUS:
-        raise DemistoException(
-            f"HarfangLab EDR Error: "
-            f"Status given is {status} and it is not in {SECURITY_EVENT_STATUS}"
-        )
-
-    for threatid in ids:
-        client.change_threat_status(threatid, status)
-    return "OK"
+        change_incident_status_fn(incident_id, new_remote_status)
 
 
 def update_remote_security_event(
-    client, delta, inc_status: IncidentStatus, detection_id: str
-) -> str:
-    if inc_status == IncidentStatus.DONE and close_in_hfl(delta):
-        demisto.debug(
-            f"Closing security event with remote ID {detection_id} in remote system."
-        )
-        return str(update_security_event_request(client, [detection_id[4:]], "closed"))
+    client: Client,
+    delta: dict[str, Any],
+    incident_status: IncidentStatus,
+    incident_type: str,
+    incident_id: str,
+) -> None:
 
-    # status field in HarfangLab EDR is mapped to State field in XSOAR
-    elif inc_status == IncidentStatus.PENDING:
-        demisto.debug(
-            f"""Security Event with remote ID {detection_id} status will change to "{delta.get('status')}" in remote system."""
-        )
-        return str(update_security_event_request(client, [detection_id[4:]], "new"))
-
-    elif inc_status == IncidentStatus.ACTIVE:
-        demisto.debug(
-            f"""Security Event with remote ID {detection_id} status will change to "{delta.get('status')}" in remote system."""
-        )
-        return str(
-            update_security_event_request(client, [detection_id[4:]], "investigating")
-        )
-
-    return ""
+    update_remote_incident(
+        delta,
+        incident_status,
+        incident_type,
+        incident_id,
+        change_incident_status_fn=client.change_security_event_status,
+    )
 
 
 def update_remote_threat(
-    client, delta, inc_status: IncidentStatus, detection_id: str
-) -> str:
-    demisto.debug(f"Delta {delta}")
+    client: Client,
+    delta: dict[str, Any],
+    incident_status: IncidentStatus,
+    incident_type: str,
+    incident_id: str,
+) -> None:
 
     if "details" in delta:
-        client.update_threat_description(detection_id[4:], delta["details"])
+        client.update_threat_description(incident_id, delta["details"])
 
-    if inc_status == IncidentStatus.DONE and close_in_hfl(delta):
-        demisto.debug(
-            f"Closing security event with remote ID {detection_id} in remote system."
-        )
-        return str(update_threat_request(client, [detection_id[4:]], "closed"))
-
-    # status field in HarfangLab EDR is mapped to State field in XSOAR
-    elif inc_status == IncidentStatus.PENDING:
-        demisto.debug(
-            f"""Threat with remote ID {detection_id} status will change to "{delta.get('status')}" in remote system."""
-        )
-        return str(update_threat_request(client, [detection_id[4:]], "new"))
-
-    elif inc_status == IncidentStatus.ACTIVE:
-        demisto.debug(
-            f"""Threat with remote ID {detection_id} status will change to "{delta.get('status')}" in remote system."""
-        )
-        return str(update_threat_request(client, [detection_id[4:]], "investigating"))
-
-    return ""
+    update_remote_incident(
+        delta,
+        incident_status,
+        incident_type,
+        incident_id,
+        change_incident_status_fn=client.change_threat_status,
+    )
 
 
-def update_remote_system(client, args):
+def update_remote_system(client: Client, args: dict[str, Any]) -> str:
     """
-    Mirrors out local changes to the remote system.
+    Mirrors local changes from XSOAR to the remote EDR instance.
+
     Args:
-        args: A dictionary containing the data regarding a modified incident, including: data, entries, incident_changed,
-         remote_incident_id, inc_status, delta
+        client: Demisto client to use. Initialized in the 'main' function.
+        args: A dictionary containing the data regarding a modified incident, including:
+          data, entries, incident_changed, remote_incident_id, inc_status, delta
 
     Returns:
-        The remote incident id that was modified. This is important when the incident is newly created remotely.
+        The remote incident id that was modified. This is important when the
+        incident is newly created remotely.
     """
-    parsed_args = UpdateRemoteSystemArgs(args)
-    delta = parsed_args.delta
-    entries = parsed_args.entries
-    remote_incident_id: str = parsed_args.remote_incident_id
+    update_remote_system_args = UpdateRemoteSystemArgs(args)
+
+    delta: Optional[dict[str, Any]] = update_remote_system_args.delta
+
+    incident_has_changed: bool = update_remote_system_args.incident_changed
+    incident_status: IncidentStatus = update_remote_system_args.inc_status
+
+    remote_incident_id: str = update_remote_system_args.remote_incident_id
 
     incident_type: str
-    incident_type, _ = remote_incident_id.split(":", 1)
+    incident_id: str
 
-    if delta:
-        demisto.debug(f"Got the following delta keys {list(delta.keys())}.")
-        demisto.debug(f"Got the following entries {entries}.")
+    # the 'remote_incident_id' format is define in the 'get_modified_remote_data'
+    # function ('sec:XXX' or 'thr:YYY')
+    incident_type, incident_id = remote_incident_id.split(":", 1)
 
-    try:
-        if parsed_args.incident_changed and delta:
-            if incident_type == IncidentType.SECURITY_EVENT:
-                demisto.debug(f"Updating remote security event {remote_incident_id}")
-                result = update_remote_security_event(
-                    client, delta, parsed_args.inc_status, remote_incident_id
-                )
-                if result:
-                    demisto.debug(
-                        f"Security event updated successfully. Result: {result}"
-                    )
+    match incident_type:
 
-            elif incident_type == IncidentType.THREAT:
-                demisto.debug(f"Updating remote threat {remote_incident_id}")
-                result = update_remote_threat(
-                    client, delta, parsed_args.inc_status, remote_incident_id
-                )
-                if result:
-                    demisto.debug(f"Threat updated successfully. Result: {result}")
-            else:
-                raise Exception(
-                    f"Executed update-remote-system command with undefined id: {remote_incident_id}"
-                )
+        case IncidentType.SECURITY_EVENT:
+            _update_remote_incident = update_remote_security_event
+
+        case IncidentType.THREAT:
+            _update_remote_incident = update_remote_threat
+
+        case _:
+            raise ValueError(
+                f"Expected '{IncidentType.SECURITY_EVENT}' or '{IncidentType.THREAT}' "
+                f"for 'incident_type', get '{incident_type}' ({remote_incident_id})"
+            )
+
+    if incident_has_changed:
+        if delta:
+
+            demisto.debug(
+                f"The following fields has been changed for incident "
+                f"'{remote_incident_id}': {delta.items()}"
+            )
+
+            _update_remote_incident(
+                client,
+                delta,
+                incident_status,
+                incident_type,
+                incident_id,
+            )
+
+            demisto.debug(f"Incident '{remote_incident_id}' successfully updated")
 
         else:
-            pass
-            # demisto.debug(f"Skipping updating remote security event or threat {remote_incident_id} as it didn't change.")
-
-    except Exception as e:
-        demisto.error(
-            f"Error in HarfangLab EDR outgoing mirror for security event or threat {remote_incident_id}. "
-            f"Error message: {str(e)}"
-        )
+            demisto.error(
+                f"Incident '{remote_incident_id}' is marked as changed, "
+                f"but have no delta"
+            )
+    else:
+        demisto.debug(f"No change found for incident '{remote_incident_id}'")
 
     return remote_incident_id
 
