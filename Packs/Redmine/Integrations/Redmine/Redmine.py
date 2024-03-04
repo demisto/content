@@ -63,15 +63,14 @@ class Client(BaseClient):
                                       data=file_content)
         return response
 
-    def update_issue_request(self, args):
+    def update_issue_request(self, args, file_token):
         issue_id = args.pop('issue_id')
-        file_token = args.pop('token', None)
         file_name = args.pop('file_name', '')
         description = args.pop('description', '')
         content_type = args.pop('content_type', '')
         params = assign_params(**args)
         if file_token:
-            args['uploads'] = [{'token': file_token, 'filename': file_name,
+            params['uploads'] = [{'token': file_token, 'filename': file_name,
                                 'description': description, 'content_type': content_type}]
         response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": params}, headers=self._post_put_header,
                                       empty_valid_codes=[204], return_empty_response=True)
@@ -160,13 +159,22 @@ def adjust_paging_to_request(args: dict[str, Any]):
 def map_header(header_string: str) -> str:
     header_mapping = {
         'id': 'ID',
+        'author': 'Author',
+        'project': 'Project',
+        'status': 'Status',
+        'priority': ' Priority',
         'login': 'Login',
         'admin': 'Admin',
         'firstname': 'First Name',
         'lastname': 'Last Name',
         'mail': 'Email',
         'created_on': 'Created On',
-        'last_login_on': 'Last Login On'
+        'last_login_on': 'Last Login On',
+        'estimated_hours': 'Estimated Hours',
+        'start_date': 'Start Date',
+        'custom_fields': 'Custom Fields',
+        'description': 'Description',
+        'subject': 'Subject',
     }
     return header_mapping.get(header_string, header_string)
 
@@ -273,7 +281,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
         response = client.create_issue_request(args,project_id)
         issue_response = response['issue']
         headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'estimated_hours', 'created_on',
-                'subject', 'description', 'start_date', 'estimated_hours', 'custom fields']
+                'subject', 'description', 'start_date', 'estimated_hours', 'custom_fields']
         issue_response['id'] = str(issue_response['id'])
 
         command_results = CommandResults(
@@ -282,7 +290,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
             outputs=issue_response,
             raw_response=issue_response,
             readable_output=tableToMarkdown('The issue you created:', issue_response, headers=headers,
-                                            removeNull=True, is_auto_json_transform=True, headerTransform=pascalToSpace)
+                                            removeNull=True, is_auto_json_transform=True, headerTransform=map_header)
         )
         return command_results
     except Exception as e:
@@ -295,18 +303,18 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
 def update_issue_command(client: Client, args: dict[str, Any]):
     issue_id = args.get('issue_id')
     entry_id = args.pop('file_entry_id', None)
+    file_token = None
     if (entry_id):
         file_name = args.pop('file_name', '')
         try:
             file_token_response = client.create_file_token_request(assign_params(file_name=file_name), entry_id)
             file_token= file_token_response['upload']['token']
-            args = assign_params(token=file_token, **args)
         except Exception as e:
             raise DemistoException("Failed to execute redmine-issue-update command. "
                 f"Couldn't create file token for the file you are trying to upload. with error: {e}")
     try:
         convert_args_to_request_format(args)
-        client.update_issue_request(args)
+        client.update_issue_request(args, file_token)
         command_results = CommandResults(
             readable_output=f'Issue with id {issue_id} was successfully updated.')
         return (command_results)
