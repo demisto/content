@@ -104,6 +104,8 @@ class Client(BaseClient):
 
         if response.get("count") == 0:
             demisto.debug("GG: No events were fetched.")
+        else:
+            demisto.debug(f"GG: Fetched {len(events)} events.")
 
         return events, last_fetched_events_ids, next_fetch_url, is_pagination_in_progress
 
@@ -163,8 +165,8 @@ class Client(BaseClient):
 
     @staticmethod
     def extract_event_ids_with_same_to_fetch_time(events: List[Dict], to_fetch_time: str, event_type: str):
-        """Extract incident ids of incidents with the same to_fetch_time.
-        Returns the incidents in an ascending manner (earliest to latest).
+        """Extract event ids of incidents with the same to_fetch_time as the _time field time.
+        Returns the events in an ascending manner (earliest to latest).
         """
         def format_date_string(date_string, event_type):
             if event_type == "audit_log":
@@ -176,25 +178,27 @@ class Client(BaseClient):
         return ids_with_same_occurrence_date
 
 
-def handle_last_run(last_run: dict, is_pagination_in_progress: bool, next_run_incident_from_fetch_time: str,
-                    next_run_audit_log_from_fetch_time: str, last_fetched_incident_ids: list, last_fetched_audit_log_ids: list,
-                    next_fetch_incident_url: str, next_fetch_auditlog_url: str):
+def handle_last_run(last_run: dict, is_pagination_in_progress_incident: bool, is_pagination_in_progress_auditlog: bool,
+                    next_run_incident_from_fetch_time: str, next_run_audit_log_from_fetch_time: str, last_fetched_incident_ids: list,  # noqa: E501
+                    last_fetched_audit_log_ids: list, next_fetch_incident_url: str, next_fetch_auditlog_url: str):
     """Creates the next_run dictionary for the next fetch.
     """
     next_run: Dict[str, Any] = {}
-    if is_pagination_in_progress:
+    if is_pagination_in_progress_incident or is_pagination_in_progress_auditlog:
         next_run["nextTrigger"] = "0"
     next_run["incident"] = {
         "from_fetch_time": next_run_incident_from_fetch_time,
         "to_fetch_time": last_run["incident"]['to_fetch_time'],
         "last_fetched_event_ids": last_fetched_incident_ids,
-        "next_url_link": next_fetch_incident_url
+        "next_url_link": next_fetch_incident_url,
+        "is_pagination_in_progress": is_pagination_in_progress_incident,
     }
     next_run["audit_log"] = {
         "from_fetch_time": next_run_audit_log_from_fetch_time,
         "to_fetch_time": last_run["audit_log"]['to_fetch_time'],
         "last_fetched_event_ids": last_fetched_audit_log_ids,
-        "next_url_link": next_fetch_auditlog_url
+        "next_url_link": next_fetch_auditlog_url,
+        "is_pagination_in_progress": is_pagination_in_progress_auditlog,
     }
 
     return next_run
@@ -285,11 +289,10 @@ def fetch_events(
     audit_logs, last_fetched_audit_log_ids, next_fetch_auditlog_url, is_pagination_in_progress_auditlog, next_run_audit_log_from_fetch_time = client.search_events(  # noqa: E501
         last_run.get("audit_log", {}), max_events_per_fetch, 'audit_log')
 
-    is_pagination_in_progress = is_pagination_in_progress_incident or is_pagination_in_progress_auditlog
 
-    next_run = handle_last_run(last_run, is_pagination_in_progress, next_run_incident_from_fetch_time,
-                               next_run_audit_log_from_fetch_time, last_fetched_incident_ids, last_fetched_audit_log_ids,
-                               next_fetch_incident_url, next_fetch_auditlog_url)
+    next_run = handle_last_run(last_run, is_pagination_in_progress_incident, is_pagination_in_progress_auditlog,
+                               next_run_incident_from_fetch_time, next_run_audit_log_from_fetch_time, last_fetched_incident_ids,
+                               last_fetched_audit_log_ids, next_fetch_incident_url, next_fetch_auditlog_url)
 
     return next_run, incidents, audit_logs
 
@@ -315,24 +318,28 @@ def main() -> None:  # pragma: no cover
     current_fetch_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
     if not last_run:
         # first fetch of the collector, will fetch events
-        demisto.debug("GG: first fetch of the collector")
+        demisto.debug("GG: first fetch of the collector.")
         last_run = {
-            "incident": {"from_fetch_time": current_fetch_time,
-                         "to_fetch_time": current_fetch_time,
+            "incident": {"from_fetch_time": '2019-01-12T13:08:16Z',
+                         "to_fetch_time": '2019-01-12T13:08:16Z',
                          "last_fetched_event_ids": [],
-                         "next_url_link": ''},
+                         "next_url_link": "",
+                         "is_pagination_in_progress": False},
             "audit_log": {
-                "from_fetch_time": current_fetch_time,
-                "to_fetch_time": current_fetch_time,
+                "from_fetch_time": '2019-01-12T13:08:16Z',
+                "to_fetch_time": '2019-01-12T13:08:16Z',
                 "last_fetched_event_ids": [],
-                "next_url_link": ''
+                "next_url_link": "",
+                "is_pagination_in_progress": False
             }
         }
 
-    if "nextTrigger" not in last_run:
-        # updating the fetch time window
+    if not last_run["incident"].get("is_pagination_in_progress"):
         last_run["incident"]["to_fetch_time"] = current_fetch_time
+    if not last_run["audit_log"].get("is_pagination_in_progress"):
         last_run["audit_log"]["to_fetch_time"] = current_fetch_time
+    demisto.debug(f"GG: fetching incidents from {last_run['incident']['from_fetch_time']} to {last_run['incident']['to_fetch_time']}. "  # noqa: E501
+                  f"fetching audit logs from {last_run['audit_log']['from_fetch_time']} to {last_run['audit_log']['to_fetch_time']}.")  # noqa: E501
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -348,9 +355,8 @@ def main() -> None:  # pragma: no cover
             incidents, audit_logs, results = get_events(client, args)
             if should_push_events:
                 client.add_time_to_events(audit_logs, 'audit_log')
-                send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
                 client.add_time_to_events(incidents, 'incident')
-                send_events_to_xsiam(incidents, vendor=VENDOR, product=PRODUCT)
+                send_events_to_xsiam(incidents + audit_logs, vendor=VENDOR, product=PRODUCT)
             return_results(results)
 
         elif command == "fetch-events":
@@ -360,9 +366,8 @@ def main() -> None:  # pragma: no cover
                 max_events_per_fetch=max_events_per_fetch,
             )
             client.add_time_to_events(audit_logs, 'audit_log')
-            send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
             client.add_time_to_events(incidents, 'incident')
-            send_events_to_xsiam(incidents, vendor=VENDOR, product=PRODUCT)
+            send_events_to_xsiam(incidents + audit_logs, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f"GG: Setting next run: {next_run}.")
             demisto.setLastRun(next_run)
 

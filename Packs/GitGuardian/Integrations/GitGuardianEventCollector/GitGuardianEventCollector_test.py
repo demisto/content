@@ -136,5 +136,7 @@ def test_fetch_events_with_nextTrigger(client, mocker):
     assert next_run["audit_log"].get("next_url_link") == "next_url"
     # Did not update the time window due to next url
     assert next_run["audit_log"].get("from_fetch_time") == "2024-01-03T21:10:40Z"
+    assert next_run['audit_log']['is_pagination_in_progress']
     assert next_run["incident"].get("next_url_link") == ""
+    assert not next_run['incident']['is_pagination_in_progress']
     assert next_run["incident"].get("from_fetch_time") == "2024-01-03T21:10:42Z"
