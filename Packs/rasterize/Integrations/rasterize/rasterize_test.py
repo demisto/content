@@ -332,3 +332,7 @@ def test_excepthook_recv_loop(mocker):
 
     demisto_info.assert_any_call('Unsuppressed Exception in _recv_loop: args.exc_type=None')
     demisto_info.assert_any_call('Unsuppressed Exception in _recv_loop: args.exc_type=None, empty exc_value')
+def test_poppler_version():
+    import pdf2image
+    poppler_version = pdf2image.pdf2image._get_poppler_version("pdftoppm")
+    assert poppler_version[0] > 20
