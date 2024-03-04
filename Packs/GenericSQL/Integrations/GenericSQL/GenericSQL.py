@@ -393,7 +393,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
             "InstanceName": f"{client.dialect}_{client.dbname}",
         }
         entry_context: dict = {'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': context}}
-        return human_readable, entry_context, result
+        return human_readable, entry_context, table
 
     except Exception as err:
         # In case there is no query executed and only an action e.g - insert, delete, update
