@@ -33,11 +33,10 @@ class XsoarSuppressWarningFilter(logging.Filter):    # pragma: no cover
 
 # Make sure we have only one XsoarSuppressWarningFilter
 v21_logger = logging.getLogger("taxii2client.v21")
-demisto.debug(f'Logging Filters before removing: {v21_logger.filters=}')
+demisto.debug(f'Logging Filters before cleaning: {v21_logger.filters=}')
 for current_filter in list(v21_logger.filters):    # pragma: no cover
     if 'XsoarSuppressWarningFilter' in type(current_filter).__name__:
         v21_logger.removeFilter(current_filter)
-demisto.debug(f'Logging Filters after removing: {v21_logger.filters=}')
 v21_logger.addFilter(XsoarSuppressWarningFilter())
 demisto.debug(f'Logging Filters: {v21_logger.filters=}')
 
