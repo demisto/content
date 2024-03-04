@@ -880,7 +880,6 @@ class Client(BaseClient):
         )
     
     def create_log_source(self, log_source: dict):
-        print('log_source: ', log_source)
         return self.http_request(
             method='POST',
             url_suffix='/config/event_sources/log_source_management/log_sources',
@@ -4565,7 +4564,11 @@ def qradar_log_source_delete_command(client: Client, args: dict) -> CommandResul
             readable_output=f'Log source {id} was deleted successfully'
         )
     if name is not None:
-        log_source_list = client.get_resource_list('items=0-0', 'config/event_sources/log_source_management/log_sources', f'name="{name}"')
+        log_source_list = client.get_resource_list(
+            'items=0-0',
+            'config/event_sources/log_source_management/log_sources',
+            f'name="{name}"'
+        )
         relevant_log_source = log_source_list[0]
         client.delete_log_source(relevant_log_source.get('id'))
         return CommandResults(
@@ -4618,7 +4621,10 @@ def qradar_log_source_create_command(client: Client, args: dict) -> CommandResul
     pp_pairs = args.get('protocol_parameters', '').split(',')
     protocol_parameters = []
     group_ids = args.get('group_ids').split(',') if args.get('group_ids') else []
-    wincollect_external_destination_ids = args.get('wincollect_external_destination_ids').split(',') if args.get('group_ids') else []
+    wincollect_external_destination_ids = (
+        args.get('wincollect_external_destination_ids').split(',') if args.get('group_ids')
+        else []
+    )
     for pair in pp_pairs:
         # Split the pair into name and value using '=' as delimiter
         name, value = pair.split('=')
