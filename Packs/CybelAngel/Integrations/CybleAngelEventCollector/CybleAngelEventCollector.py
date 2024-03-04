@@ -222,8 +222,6 @@ def main() -> None:
             demisto.setLastRun(last_run)
         elif command == "cybleangel-get-events":
             return_results(get_events(client, demisto.args()))
-
-    # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} command.\nError:\ntype:{type(e)}, error:{str(e)}")
