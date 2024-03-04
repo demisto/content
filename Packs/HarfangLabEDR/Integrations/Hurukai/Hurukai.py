@@ -1116,8 +1116,39 @@ def _fetch_threat_incidents(
 def fetch_incidents(
     client: Client, args: dict[str, Any]
 ) -> tuple[dict, list[XSOARIncident]]:
+    """Fetch incident from remote EDR to XSOAR.
 
-    # temporary setup - need to move from 'args' to pure kw + **kwargs
+    incident = security event, threat or both (see 'FetchType' for valid values)
+
+    Args:
+        client: Demisto client to use. Initialized in the 'main' function.
+        args:
+            fetch_types: which type of incident to fetch.
+            last_run: LastRun object - determine when the last fetch has been
+              occurred, both for security event and threat.
+            min_severity: Minimum level of incident to fetch. Can be "Low",
+              "Medium", "High" or "Critical" (see 'Severity' type).
+            mirror_direction: In which direction action should be mirrored. Can
+              "None", "Incoming", "Outgoing", "Incoming And Outgoing" (see
+              'MIRROR_DIRECTION_MAPPING' keys).
+            alert_status: Incident status that should be fetched. Can be
+              "ACTIVE", "CLOSED" or None.
+            alert_type: Incident type that should be fetched. Comma separated
+              string/list (eg.: "sigma,yara,vt") - only available for security
+              event.
+            first_fetch: How many past days should be fetched on run.
+            max_fetch: Maximum count of incident to fetch per call of this
+              function.
+
+    Raises:
+        KeyError: if 'fetch_types' or 'last_run' are missing from input 'args'.
+        ValueError: if there are invalid/unexpected value/type in input 'args'.
+
+    Returns:
+        A LastRun object as dictionary and the list of new incidents to add
+        to the XSOAR instance.
+    """
+
     # * mandatory:
     fetch_types: list[FetchType] = args["fetch_types"]
     last_run: LastRun = args["last_run"]
