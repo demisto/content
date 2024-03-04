@@ -22,7 +22,7 @@ build-machines-cleanup:
     -   echo "Check if lock file already exist "
     -   gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - |
-        for _ in {1..3}; do
+        for i in {1..3}; do
           if gsutil -q stat "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/${LOCK_MACHINE_NAME}-lock-${CI_PIPELINE_ID}" 2>/dev/null; then
             echo "File found in GCS bucket."
             export CLOUD_CHOSEN_MACHINE_IDS=${LOCK_MACHINE_NAME}
@@ -34,8 +34,11 @@ build-machines-cleanup:
             sleep 120
           fi
         done
-        echo "Couldn't find lock file with machine id: ${LOCK_MACHINE_NAME} and this pipeline id: ${CI_PIPELINE_ID}"
-        job-done
+        if [[ "${i}" = "3" ]]; then
+          echo "Couldn't find lock file after 3 attempts  with machine id: ${LOCK_MACHINE_NAME} and this pipeline id: ${CI_PIPELINE_ID}"
+          job-done
+          exit "${EXIT_CODE}"
+        fi
     - else
     -   !reference [.lock-machine]
     - fi
