@@ -9043,7 +9043,7 @@ Returns a list of security profile groups from Panorama.
 | Panorama.ProfileGroup.url-filtering | String | The URL filtering profile. | 
 | Panorama.ProfileGroup.file-blocking | String | The file blocking profile. | 
 | Panorama.ProfileGroup.data-filtering | String | The data filtering profile. | 
-| Panorama.ProfileGroup.wildfire-analysis | String | The wildFire analysis profile. | 
+| Panorama.ProfileGroup.wildfire-analysis | String | The WildFire analysis profile. | 
 | Panorama.ProfileGroup.disable-override | String | Whether overriding the security profile group is disabled. | 
 
 #### Command example
