@@ -331,11 +331,14 @@ def create_course_of_action_indicators(client: Client, course_of_action_objects,
 
         coa_indicator_list = client.parse_course_of_action(coa_indicator_object)
         coa_indicator = coa_indicator_list[0]
-        coa_indicator["fields"]["reportedby"] = 'Unit42'
-        coa_indicator["fields"]["firstseenbysource"] = handle_multiple_dates_in_one_field(
-            'created', coa_indicator_object.get('created'))
-        coa_indicator["fields"]["modified"] = handle_multiple_dates_in_one_field('modified', coa_indicator_object.get('modified'))
-        coa_indicator["fields"]["tags"] = list(feed_tags)
+        coa_indicator["fields"].update({
+            "reportedby": 'Unit42',
+            "firstseenbysource": handle_multiple_dates_in_one_field(
+                'created', coa_indicator_object.get('created')),
+            "modified": handle_multiple_dates_in_one_field('modified', coa_indicator_object.get('modified')),
+            "tags": list(feed_tags)
+        })
+
         if tlp_color:
             coa_indicator_object['fields']['trafficlightprotocol'] = tlp_color
 
@@ -348,14 +351,15 @@ def create_intrusion_sets(client: Client, intrusion_sets_objects, feed_tags, tlp
     course_of_action_indicators = []
 
     for intrusion_set_object in intrusion_sets_objects:
-
         intrusion_set_list = client.parse_intrusion_set(intrusion_set_object, ignore_external_id=True)
         intrusion_set = intrusion_set_list[0]
-        intrusion_set["fields"]["reportedby"] = 'Unit42'
-        intrusion_set["fields"]["firstseenbysource"] = handle_multiple_dates_in_one_field(
-            'created', intrusion_set_object.get('created'))
-        intrusion_set["fields"]["modified"] = handle_multiple_dates_in_one_field('modified', intrusion_set_object.get('modified'))
-        intrusion_set["fields"]["tags"] = list(feed_tags)
+        intrusion_set["fields"].update({
+            "reportedby": 'Unit42',
+            "firstseenbysource": handle_multiple_dates_in_one_field(
+                'created', intrusion_set_object.get('created')),
+            "modified": handle_multiple_dates_in_one_field('modified', intrusion_set_object.get('modified')),
+            "tags": list(feed_tags)
+        })
         if tlp_color:
             intrusion_set['fields']['trafficlightprotocol'] = tlp_color
 

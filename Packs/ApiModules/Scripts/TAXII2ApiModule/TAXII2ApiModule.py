@@ -997,7 +997,7 @@ class StixParser(BaseClient):
         :param indicator_groups: caught regex group in pattern of: [`type`, `indicator`]
         :param indicator_obj: taxii indicator object
         :param indicator_types: supported indicator types -> cortex types
-        :param field_map: map used to create fields entry ({field_name: field_value})
+        :param field_map: map used to create fields entry ({field_name: field_value})-
         :return: Indicators list
         """
         indicators = []
