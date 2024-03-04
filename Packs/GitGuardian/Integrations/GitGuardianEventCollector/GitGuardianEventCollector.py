@@ -289,7 +289,6 @@ def fetch_events(
     audit_logs, last_fetched_audit_log_ids, next_fetch_auditlog_url, is_pagination_in_progress_auditlog, next_run_audit_log_from_fetch_time = client.search_events(  # noqa: E501
         last_run.get("audit_log", {}), max_events_per_fetch, 'audit_log')
 
-
     next_run = handle_last_run(last_run, is_pagination_in_progress_incident, is_pagination_in_progress_auditlog,
                                next_run_incident_from_fetch_time, next_run_audit_log_from_fetch_time, last_fetched_incident_ids,
                                last_fetched_audit_log_ids, next_fetch_incident_url, next_fetch_auditlog_url)
