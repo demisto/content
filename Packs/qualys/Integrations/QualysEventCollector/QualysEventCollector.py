@@ -78,7 +78,7 @@ class Client(BaseClient):
 
         return response.text
 
-    def get_host_list_detection(self, next_page=None) -> Union[str, bytes]:
+    def get_host_list_detection(self, since_datetime, next_page=None) -> Union[str, bytes]:
         """
         Make a http request to Qualys API to get assets
         Args:
@@ -88,7 +88,6 @@ class Client(BaseClient):
             DemistoException: can be raised by the _http_request function
         """
         self._headers.update({"Content-Type": 'application/json'})
-        since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)
         params: dict[str, Any] = {
             "truncation_limit": 3,
             "vm_scan_date_after": since_datetime
@@ -106,7 +105,7 @@ class Client(BaseClient):
         )
         return response
 
-    def get_vulnerabilities(self) -> Union[str, bytes]:
+    def get_vulnerabilities(self, since_datetime) -> Union[str, bytes]:
         """
         Make a http request to Qualys API to get vulnerabilities
         Args:
@@ -116,7 +115,6 @@ class Client(BaseClient):
             DemistoException: can be raised by the _http_request function
         """
         self._headers.update({"Content-Type": 'application/json'})
-        since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)
         params: dict[str, Any] = {"last_modified_after": since_datetime}
 
         response = self._http_request(
@@ -145,12 +143,18 @@ def get_partial_response(response: str, start: str, end: str):
 
 
 def skip_fetch_assets(last_run):
+    """ Checks if enough time has passed since the previous run.
+    Args:
+        last_run: Last run time.
+    Returns:
+        Returns true or false if enough time has passed since the previous run.
+    """
     time_to_check = last_run.get("assets_last_fetch")
     if not time_to_check:
         return False
-    passed_time = (time.time() - time_to_check) / 60
-    if passed_time < MIN_ASSETS_INTERVAL:
-        demisto.info(f"Skipping fetch-assets command. Only {passed_time} minutes have passed since the last fetch. "
+    passed_minutes = (time.time() - time_to_check) / 60
+    if passed_minutes < MIN_ASSETS_INTERVAL:
+        demisto.info(f"Skipping fetch-assets command. Only {passed_minutes} minutes have passed since the last fetch. "
                      f"It should be a minimum of 1 hour.")
         return True
     return False
@@ -376,18 +380,20 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
     return activity_logs_events, next_run_dict
 
 
-def get_host_list_detections_events(client) -> list:
+def get_host_list_detections_events(client, since_datetime) -> list:
     """ Get host list detections from qualys
     Args:
         client: Qualys client
+        since_datetime: The start fetch date.
     Returns:
         Host list detections assets
     """
     demisto.debug(f'Starting to fetch assets')
     assets = []
     next_page = ''
+
     while True:
-        host_list_detections = client.get_host_list_detection(next_page=next_page)
+        host_list_detections = client.get_host_list_detection(since_datetime, next_page=next_page)
         host_list_assets, next_url = handle_host_list_detection_result(host_list_detections) or []
         assets += host_list_assets
         next_page = get_next_page_from_url(next_url, 'id_min')
@@ -402,19 +408,19 @@ def get_host_list_detections_events(client) -> list:
     return edited_host_detections
 
 
-def get_vulnerabilities(client) -> list:
+def get_vulnerabilities(client, since_datetime) -> list:
     """ Get vulnerabilities list from qualys
     Args:
         client: Qualys client
+        since_datetime: The start fetch date.
     Returns:
         list vulnerabilities
     """
-    demisto.debug(f'Starting to fetch vulnerabilities')
-    host_list_detections = client.get_vulnerabilities()
+    demisto.debug('Starting to fetch vulnerabilities')
+    host_list_detections = client.get_vulnerabilities(since_datetime)
     vulnerabilities = handle_vulnerabilities_result(host_list_detections) or []
 
-    demisto.debug(f'Parsed detections from hosts, got {len(vulnerabilities)=} assets.')
-
+    demisto.debug(f'Parsed detections from hosts, got {len(vulnerabilities)=} vulnerabilities.')
     return vulnerabilities
 
 
@@ -426,10 +432,12 @@ def fetch_assets(client):
         event: events to push to xsiam
     """
     demisto.debug(f'Starting fetch for assets')
-    assets = get_host_list_detections_events(client)
-    vulnerabilities = get_vulnerabilities(client)
+    since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)
 
-    demisto.info(f"Sending {len(assets)} assets, and {len(vulnerabilities)} vulnerabilities to XSIAM")
+    assets = get_host_list_detections_events(client, since_datetime)
+    vulnerabilities = get_vulnerabilities(client, since_datetime)
+
+    demisto.info(f"Pulled {len(assets)} assets, and {len(vulnerabilities)} vulnerabilities from API, sending them to XSIAM")
     return assets, vulnerabilities
 
 
@@ -607,10 +615,11 @@ def main():  # pragma: no cover
             demisto.debug(f'saved lastrun assets: {assets_last_run}')
             if skip_fetch_assets(assets_last_run):
                 return
-            demisto.setAssetsLastRun({'assets_last_fetch': time.time()})
+            execution_start_time = time.time()
             assets, vulnerabilities = fetch_assets(client=client)
             send_data_to_xsiam(data=assets, vendor=VENDOR, product='host_detections', data_type='assets')
             send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities')
+            demisto.setAssetsLastRun({'assets_last_fetch': execution_start_time})
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
