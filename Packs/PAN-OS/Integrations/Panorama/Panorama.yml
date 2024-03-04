@@ -9420,7 +9420,7 @@ script:
       name: file_blocking_profile
     - description: The data filtering profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
       name: data_filtering_profile
-    - description: The wildfire analysis profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+    - description: The WildFire analysis profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
       name: wildfire_analysis_profile
     description: Creates a new security profile group in Panorama.
     name: pan-os-create-security-profile-group
