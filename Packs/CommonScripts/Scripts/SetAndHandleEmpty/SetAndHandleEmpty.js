@@ -1,5 +1,5 @@
 function getValue(value, stringify = false) {
-    logDebug('getValue.stringify= ' + stringify);
+    logDebug('getValue.stringify=' + stringify);
     if (stringify) {
         if (value === null || value === undefined) {
             return '';
@@ -21,7 +21,7 @@ function main() {
     let value = args.value;
     const force = args.force === 'true';
     logDebug('args.stringify= ' + args.stringify);
-    value = getValue(value, args.stringify === 'true');
+    value = getValue(value, toBoolean(args.stringify));
 
     let results = [];
     for (let i = 0; i < keys.length; i++) {
