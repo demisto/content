@@ -66,7 +66,6 @@ class Client(BaseClient):
     def update_issue_request(self, args):
         issue_id = args.pop('issue_id')
         params = assign_params(**args)
-        print(params)
         response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": params}, headers=self._post_put_header,
                                       empty_valid_codes=[204], return_empty_response=True)
         return response
