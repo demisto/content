@@ -8,7 +8,6 @@ from SafeBreach import (
     get_user_id_by_name_or_email,
     main,
     create_user,
-    NotFoundError,
     update_user_with_details,
     delete_user_with_details,
     create_deployment,
@@ -56,7 +55,7 @@ def util_load_json(path):
 
 @pytest.fixture()
 def client():
-    return Client(api_key="test", account_id=None, base_url=SERVER_URL, verify=True, proxy=True)
+    return Client(api_key="test", account_id=None, base_url=SERVER_URL, verify=True)
 
 
 def deployment_transformer(header):
@@ -244,7 +243,7 @@ def test_update_user_with_details(client, mocker):
         if key in ["failed_update", "weak_password"]:
             try:
                 update_user_with_details(client)
-            except NotFoundError as error:
+            except DemistoException as error:
                 assert f"User with {test_input[key]['args']['user_id']} not found" == str(error)
             continue
         else:
@@ -291,7 +290,7 @@ def test_delete_user_with_details(client, mocker):
         if key == "failed_delete":
             try:
                 delete_user_with_details(client)
-            except NotFoundError as error:
+            except DemistoException as error:
                 assert (
                     f"User with {test_input[key]['args']['user_id']} or {test_input[key]['args']['email']} not found"
                     == str(error)
@@ -481,7 +480,7 @@ def test_delete_api_key(client, mocker):
         else:
             try:
                 delete_api_key(client)
-            except NotFoundError as err:
+            except DemistoException as err:
                 assert f"couldn't find APi key with given name: {test_input[key]['args']['key_name']}" == str(err)
             continue
         command_results = delete_api_key(client)

@@ -1,5 +1,5 @@
 category: Deception & Breach Simulation
-description: "This Integration aims to provide easy access to safebreach from XSOAR.\nFollowing are the things that user can get access through XSOAR command integration: \n1. User get, create, update and delete.\n2. Deployment create, update and delete.\n3. Tests get and delete.\n4. Simulators get, update, delete.\n5. Get current tests/simulation status and/or queue them.\n"
+description: "SafeBreach automatically executes thousands of breach methods from its extensive and growing Hacker’s Playbook™ to validate security control effectiveness. Simulations are automatically correlated with network, endpoint, and SIEM solutions providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses."
 commonfields:
   id: Safebreach
   version: -1
@@ -2037,7 +2037,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.13.88772
   feed: false
   isfetch: false
   runonce: false

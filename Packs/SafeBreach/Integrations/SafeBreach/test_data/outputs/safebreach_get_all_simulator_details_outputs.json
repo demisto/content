@@ -4,7 +4,7 @@
             "data": {
                 "rows": [
                     {
-                        "planName": "Endpoint - Baseline_api_testing_changed_to_one_step",
+                        "planName": "Dummy - Baseline",
                         "planId": 123,
                         "originalScenarioId": "baa50109-deb7-466b-86b1-8049c270cd9a",
                         "securityActionPerControl": [],
@@ -74,7 +74,7 @@
                         "id": "12343.12"
                     },
                     {
-                        "planName": "Email - Attachment - Infiltration - Baseline",
+                        "planName": "Dummy - Attachment",
                         "originalScenarioId": "86d8a8ff-68ce-46a2-842c-b018120b95e3",
                         "securityActionPerControl": [],
                         "planRunId": "1232.32",

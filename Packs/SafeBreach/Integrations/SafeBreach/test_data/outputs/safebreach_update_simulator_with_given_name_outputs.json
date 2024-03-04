@@ -70,7 +70,7 @@
                                     "USED": 4145901568
                                 },
                                 {
-                                    "MOUNT": "/snap/amazon-ssm-agent/495",
+                                    "MOUNT": "/495",
                                     "DEVICE": "/dev/loop0",
                                     "TOTAL": 13369344,
                                     "FREE": 0,
@@ -84,7 +84,7 @@
                                     "USED": 119537664
                                 },
                                 {
-                                    "MOUNT": "/snap/amazon-ssm-agent/5656",
+                                    "MOUNT": "/5656",
                                     "DEVICE": "/dev/loop5",
                                     "TOTAL": 26345472,
                                     "FREE": 0,
@@ -466,7 +466,7 @@
                         }
                     },
                     "CURRENT_CONFIGURATION": {
-                        "_config_file": "/home/safebreach/simulator/config/sbsimulator.conf",
+                        "_config_file": "config/sbsimulator.conf",
                         "IS_REMOTE_NODE": true,
                         "REMOTE_NODE_LISTEN_PORT": 65010,
                         "EXECUTION_HOSTNAME": "safebreach.loc",
@@ -477,11 +477,11 @@
                         "SIGNUP_ACK_ENDPOINT": "/somepath/",
                         "SIGNUP_FIN_ENDPOINT": ".*/api/agent/v2/signup-fin",
                         "IS_EXECUTION_COMMUNICATION_SECURED": true,
-                        "HTTPS_CERTIFICATE_PATH": "/home/safebreach/simulator/resources/server.cert",
-                        "HTTPS_KEY_PATH": "/home/safebreach/simulator/resources/server.key",
+                        "HTTPS_CERTIFICATE_PATH": "resources/server.cert",
+                        "HTTPS_KEY_PATH": "resources/server.key",
                         "PROTOCOL_VERSION": "3.0.0",
                         "LOGGER_NAME": "SBSimulator",
-                        "LOG_FILE_PATH": "/home/safebreach/simulator/logs/sbsimulator.log",
+                        "LOG_FILE_PATH": "/dummy/path/sbsimulator.log",
                         "ASYNCIO_DEBUG": false,
                         "LOG_TO_CONSOLE": false,
                         "TORNADO_LOG_LEVEL": "WARNING",
@@ -499,15 +499,15 @@
                         "LOG_DATEFMT": "%Y-%m-%d %H:%M:%S",
                         "UUID_VERSION": 4,
                         "USE_NODE_ID_FILE": true,
-                        "NODE_ID_FILE": "/home/safebreach/simulator/resources/node_id.txt",
+                        "NODE_ID_FILE": "resources/node_id.txt",
                         "NODE_NAME": "ip-172-31-25-165",
                         "DEFAULT_NODE_ID": "00000000-0000-0000-0000-000000000000",
                         "SIMULATOR_VERSION_FILE": null,
                         "CONFIGURATION_WATCHER": false,
-                        "EXECUTION_API": "api/execution/v1/messages/",
-                        "EMPTY_BUFFERS_ENDPOINT": "/api/execution/v3/messages/",
-                        "REST_CLIENT_ENDPOINT": "/api/execution/v3/node_communication/",
-                        "GET_CONFIG_ENDPOINT": "/api/execution/v3/configuration",
+                        "EXECUTION_API": "v1/messages/",
+                        "EMPTY_BUFFERS_ENDPOINT": "/v3/messages/",
+                        "REST_CLIENT_ENDPOINT": "/v3/node_communication/",
+                        "GET_CONFIG_ENDPOINT": "/v3/configuration",
                         "RETRIES": 3,
                         "RETRIES_INTERVAL": 5,
                         "USE_PROXY": false,
@@ -518,16 +518,16 @@
                         "STATUS_REPORT_PORT": 65003,
                         "TASKS_ROUTER_PORT": 65004,
                         "TASK_EXECUTABLE": [
-                            "/home/safebreach/simulator/app/sbsimulation/sbsimulation"
+                            "/dummy/path/sbsimulation/sbsimulation"
                         ],
                         "POST_ACTION_EXECUTABLE": [
-                            "/home/safebreach/simulator/app/sbsimulation/sbpostaction"
+                            "/dummy/path/sbsimulation/sbpostaction"
                         ],
-                        "SQLITE_DATABASE": "/home/safebreach/simulator/resources/sbsimulator.db",
+                        "SQLITE_DATABASE": "resources/sbsimulator.db",
                         "STORE_POST_ACTIONS": true,
                         "SQLITE_LIMIT": 100,
                         "APPEND_REVERT": true,
-                        "AUTHENTICATION_ENDPOINT": "/api/authentication/v2/simulator/",
+                        "AUTHENTICATION_ENDPOINT": "/dummy/path/",
                         "SKIP_EXECUTION_SIGNUP": false,
                         "SECRET_LENGTH": 64,
                         "MIN_KEY_SIZE": 32,
@@ -604,17 +604,17 @@
                         "NUM_OF_REQUESTS_FOR_REPORTING": 60,
                         "MAXIMUM_PACKETS_PER_CAPTURE": 800,
                         "SERVICES_SSL_VERIFY": true,
-                        "CA_BUNDLE": "/home/safebreach/simulator/resources/.cacert.pem",
-                        "CUSTOM_CA": "/home/safebreach/simulator/resources/custom_certificates.pem",
+                        "CA_BUNDLE": "resources/.cacert.pem",
+                        "CUSTOM_CA": "resources/custom_certificates.pem",
                         "USE_RELAY": false,
                         "_ORIGINAL_LOG_LEVEL": "INFO",
-                        "SIMULATION_LOG_FILE_PATH": "/home/safebreach/simulator/logs/sbsimulator_tasks.log",
-                        "COMMANDS_LOG_FILE_PATH": "/home/safebreach/simulator/logs/sbsimulator_commands.log",
+                        "SIMULATION_LOG_FILE_PATH": "/dummy/path/sbsimulator_tasks.log",
+                        "COMMANDS_LOG_FILE_PATH": "/dummy/path/sbsimulator_commands.log",
                         "SIMULATOR_VERSION": "Orion.2022Q3.8 v20220908_083801",
                         "SECRET": "***** (len=128)",
                         "IS_UNIX": true,
                         "FRAMEWORK_VERSION": "3.58.0",
-                        "JSON_LOG_FILE_PATH": "/home/safebreach/simulator/logs/_sbsimulator.json",
+                        "JSON_LOG_FILE_PATH": "/dummy/path/_sbsimulator.json",
                         "CENTRAL_LOGGING": false,
                         "CHARDET_LOG_LEVEL": "WARNING",
                         "LOGOUT_ON_EXIT": false,
@@ -623,8 +623,8 @@
                         "SIMULATION_EVENTS": true,
                         "SUPPORTED_CLOUD_PROVIDERS": null,
                         "ANTIVIRUS_DETECTION": true,
-                        "SIMULATION_JSON_LOG_FILE_PATH": "/home/safebreach/simulator/logs/_sbsimulator_tasks.json",
-                        "COMMANDS_JSON_LOG_FILE_PATH": "/home/safebreach/simulator/logs/_sbsimulator_commands.json"
+                        "SIMULATION_JSON_LOG_FILE_PATH": "/dummy/path/_sbsimulator_tasks.json",
+                        "COMMANDS_JSON_LOG_FILE_PATH": "/dummy/path/_sbsimulator_commands.json"
                     }
                 },
                 "tunnel": "",

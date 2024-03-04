@@ -16,34 +16,12 @@
             "data": {
               "uuid": "0000000-0000-0000-0000-00000000"
             }
-          },
-          {
-            "id": 2,
-            "type": "multiAttack",
-            "data": {
-              "uuid": "0000000-0000-0000-0000-00000000"
-            }
-          },
-          {
-            "id": 3,
-            "type": "multiAttack",
-            "data": {
-              "uuid": "0000000-0000-0000-0000-00000000"
-            }
           }
         ],
         "edges": [
           {
             "from": 0,
             "to": 1
-          },
-          {
-            "from": 1,
-            "to": 2
-          },
-          {
-            "from": 2,
-            "to": 3
           }
         ],
         "createdAt": "2022-12-29T20:33:28.512Z",
@@ -195,7 +173,7 @@
           "id": 105,
           "name": "Rerun simulations by list",
           "accountId": 1234567890,
-          "description": "This scenario consists of discovery and collection techniques for gathering information and metadata using AWS' native API. The scenario is divided into three steps, each collecting different information: (1) through AWS’ API related to EC2 information, (2) through Amazon S3 and RDS APIs for storage-related information, and (3) general AWS data. Use this scenario to validate privilege management and access-control across your AWS control plane.",
+          "description": "",
           "successCriteria": null,
           "originalScenarioId": null,
           "actions": [

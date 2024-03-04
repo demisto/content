@@ -19,12 +19,6 @@
                                 "id": 1,
                                 "sort": 1,
                                 "value": "Network Inspection"
-                            },
-                            {
-                                "displayName": "Network Access",
-                                "id": 3,
-                                "sort": 3,
-                                "value": "Network Access"
                             }
                         ],
                         "attackerSimulatorStartTime": "2024-01-07T15:45:22.337Z",
@@ -54,84 +48,6 @@
                                 "id": 0,
                                 "sort": 0,
                                 "value": "Aerospace"
-                            },
-                            {
-                                "displayName": "Chemical",
-                                "id": 2,
-                                "sort": 2,
-                                "value": "Chemical"
-                            },
-                            {
-                                "displayName": "Defense",
-                                "id": 4,
-                                "sort": 4,
-                                "value": "Defense"
-                            },
-                            {
-                                "displayName": "Energy",
-                                "id": 6,
-                                "sort": 6,
-                                "value": "Energy"
-                            },
-                            {
-                                "displayName": "Finance",
-                                "id": 7,
-                                "sort": 7,
-                                "value": "Finance"
-                            },
-                            {
-                                "displayName": "Government",
-                                "id": 8,
-                                "sort": 8,
-                                "value": "Government"
-                            },
-                            {
-                                "displayName": "Healthcare",
-                                "id": 9,
-                                "sort": 9,
-                                "value": "Healthcare"
-                            },
-                            {
-                                "displayName": "Hospitality",
-                                "id": 10,
-                                "sort": 10,
-                                "value": "Hospitality"
-                            },
-                            {
-                                "displayName": "Manufacturing",
-                                "id": 11,
-                                "sort": 11,
-                                "value": "Manufacturing"
-                            },
-                            {
-                                "displayName": "Media",
-                                "id": 12,
-                                "sort": 12,
-                                "value": "Media"
-                            },
-                            {
-                                "displayName": "Retail",
-                                "id": 14,
-                                "sort": 14,
-                                "value": "Retail"
-                            },
-                            {
-                                "displayName": "Technology",
-                                "id": 16,
-                                "sort": 16,
-                                "value": "Technology"
-                            },
-                            {
-                                "displayName": "Telecommunications",
-                                "id": 17,
-                                "sort": 17,
-                                "value": "Telecommunications"
-                            },
-                            {
-                                "displayName": "Transportation",
-                                "id": 18,
-                                "sort": 18,
-                                "value": "Transportation"
                             }
                         ],
                         "srcNodeName": "Firewall Outside",
@@ -142,30 +58,6 @@
                             {
                                 "valueId": 1,
                                 "paramId": 1
-                            },
-                            {
-                                "valueId": 2,
-                                "paramId": 2
-                            },
-                            {
-                                "valueId": 1,
-                                "paramId": 3
-                            },
-                            {
-                                "valueId": 1,
-                                "paramId": 4
-                            },
-                            {
-                                "valueId": 0,
-                                "paramId": 8
-                            },
-                            {
-                                "valueId": 1,
-                                "paramId": 9
-                            },
-                            {
-                                "valueId": 1,
-                                "paramId": 10
                             }
                         ],
                         "labels": [],
@@ -197,13 +89,6 @@
                                     "displayType": "Client HTTP Headers",
                                     "displayName": "Server Node Headers",
                                     "name": "headers_green",
-                                    "value": ""
-                                },
-                                {
-                                    "displayValue": "",
-                                    "displayType": "Client HTTP Headers",
-                                    "displayName": "Client Node Headers",
-                                    "name": "headers_red",
                                     "value": ""
                                 }
                             ],
@@ -254,239 +139,6 @@
                                 "type": "DIRECTORY",
                                 "nodeId": "0000000-0000-0000-0000-00000000",
                                 "timestamp": "2024-01-07T15:45:22.212Z"
-                            },
-                            {
-                                "fileName": "/dummy/sbsimulation_sb_s198862_bs_194623_red",
-                                "sha256": "",
-                                "action": "CREATE",
-                                "type": "FILE",
-                                "nodeId": "0000000-0000-0000-0000-00000000",
-                                "timestamp": "2024-01-07T15:45:22.380Z"
-                            },
-                            {
-                                "cmdline": "/sbin/init",
-                                "exe": "/usr/lib/systemd/systemd",
-                                "job_id": null,
-                                "name": "systemd",
-                                "action": "START",
-                                "pid": 1,
-                                "type": "PROCESS",
-                                "nodeId": "0000000-0000-0000-0000-00000000",
-                                "timestamp": "2024-01-07T15:17:54.320Z",
-                                "ppid": 0,
-                                "username": "root"
-                            },
-                            {
-                                "cmdline": "/dummy/app/sbsimulator/sbsimulator",
-                                "exe": "/dummy/app/sbsimulator/sbsimulator",
-                                "job_id": null,
-                                "name": "sbsimulator",
-                                "action": "START",
-                                "pid": 3115,
-                                "type": "PROCESS",
-                                "nodeId": "0000000-0000-0000-0000-00000000",
-                                "timestamp": "2024-01-07T15:34:26.380Z",
-                                "ppid": 1,
-                                "username": "root"
-                            },
-                            {
-                                "cmdline": "/dummy/sbsimulation_sb_198862_bs_194623_red sb_198862_bs",
-                                "exe": "/dummy/sbsimulation_sb_198862_bs_194623_red",
-                                "job_id": 198862,
-                                "name": "sbsimulation_sb_198862_bs_194623_red",
-                                "action": "START",
-                                "pid": 3981,
-                                "type": "PROCESS",
-                                "nodeId": "0000000-0000-0000-0000-00000000",
-                                "timestamp": "2024-01-07T15:45:21.660Z",
-                                "ppid": 3115,
-                                "username": "root"
-                            },
-                            {
-                                "destIp": "10.0.200.207",
-                                "srcIp": "10.0.100.219",
-                                "protocol": "TCP",
-                                "errno": null,
-                                "destPort": 80,
-                                "action": "CONNECT",
-                                "srcPort": 51496,
-                                "type": "NETWORK",
-                                "nodeId": "0000000-0000-0000-0000-00000000",
-                                "timestamp": "2024-01-07T15:45:24.332Z",
-                                "status": "OPEN"
-                            },
-                            {
-                                "headers": {
-                                    "Accept": "*/*",
-                                    "User-Agent": "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E); sb_198862_bs",
-                                    "Connection": "keep-alive",
-                                    "Accept-Encoding": "gzip, deflate",
-                                    "Content-Length": "246",
-                                    "Content-Type": "application/x-www-form-urlencoded"
-                                },
-                                "method": "POST",
-                                "ip": null,
-                                "type": "HTTP",
-                                "uri": "/panel/gate.php",
-                                "url": "https://00.0.200.000:00/panel/gate.php",
-                                "proxy": null,
-                                "protocol": "https",
-                                "port": 80,
-                                "host": "10.0.200.207",
-                                "action": "REQUEST",
-                                "nodeId": "0000000-0000-0000-0000-00000000",
-                                "timestamp": "2024-01-07T15:45:24.360Z"
-                            },
-                            {
-                                "destIp": "10.0.200.207",
-                                "srcIp": "10.0.100.219",
-                                "protocol": "TCP",
-                                "errno": null,
-                                "destPort": 80,
-                                "action": "CONNECT",
-                                "srcPort": 51506,
-                                "type": "NETWORK",
-                                "nodeId": "0000000-0000-0000-0000-00000000",
-                                "timestamp": "2024-01-07T15:45:25.341Z",
-                                "status": "OPEN"
-                            },
-                            {
-                                "headers": {
-                                    "Accept": "*/*",
-                                    "User-Agent": "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E); sb_198862_bs",
-                                    "Connection": "keep-alive",
-                                    "Accept-Encoding": "gzip, deflate",
-                                    "Content-Length": "226",
-                                    "Content-Type": "application/x-www-form-urlencoded"
-                                },
-                                "method": "POST",
-                                "ip": null,
-                                "type": "HTTP",
-                                "uri": "/panel/gate.php",
-                                "url": "https://00.0.200.000:00/panel/gate.php",
-                                "proxy": null,
-                                "protocol": "https",
-                                "port": 80,
-                                "host": "10.0.200.207",
-                                "action": "REQUEST",
-                                "nodeId": "0000000-0000-0000-0000-00000000",
-                                "timestamp": "2024-01-07T15:45:25.378Z"
-                            },
-                            {
-                                "fileName": "/dummy/sbsimulation_sb_198862_bs_194623_red",
-                                "sha256": "",
-                                "action": "DELETE",
-                                "type": "FILE",
-                                "nodeId": "0000000-0000-0000-0000-00000000",
-                                "timestamp": "2024-01-07T15:45:25.566Z"
-                            },
-                            {
-                                "action": "DELETE",
-                                "dirPath": "/dummy/sb_000000_bs_redlr42u_pf",
-                                "type": "DIRECTORY",
-                                "nodeId": "0000000-0000-0000-0000-00000000",
-                                "timestamp": "2024-01-07T15:45:25.577Z"
-                            },
-                            {
-                                "action": "CREATE",
-                                "dirPath": "/dummy/path/",
-                                "type": "DIRECTORY",
-                                "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
-                                "timestamp": "2024-01-07T15:45:22.188Z"
-                            },
-                            {
-                                "fileName": "/dummy/sbsimulation_sb_198862_bs_194623_green",
-                                "sha256": "",
-                                "action": "CREATE",
-                                "type": "FILE",
-                                "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
-                                "timestamp": "2024-01-07T15:45:22.337Z"
-                            },
-                            {
-                                "cmdline": "/dummy/app/sbsimulator/sbsimulator",
-                                "exe": "/dummy/app/sbsimulator/sbsimulator",
-                                "job_id": null,
-                                "name": "sbsimulator",
-                                "action": "START",
-                                "pid": 3506,
-                                "type": "PROCESS",
-                                "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
-                                "timestamp": "2024-01-07T15:33:11.110Z",
-                                "ppid": 1,
-                                "username": "root"
-                            },
-                            {
-                                "cmdline": "/dummy/sbsimulation_sb_198862_bs_194623_green sb_198862_bs",
-                                "exe": "/dummy/sbsimulation_sb_198862_bs_194623_green",
-                                "job_id": 198862,
-                                "name": "sbsimulation_sb_198862_bs_194623_green",
-                                "action": "START",
-                                "pid": 4375,
-                                "type": "PROCESS",
-                                "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
-                                "timestamp": "2024-01-07T15:45:21.400Z",
-                                "ppid": 3506,
-                                "username": "root"
-                            },
-                            {
-                                "cmdline": "/sbin/init",
-                                "exe": "/usr/lib/systemd/systemd",
-                                "job_id": null,
-                                "name": "systemd",
-                                "action": "START",
-                                "pid": 1,
-                                "type": "PROCESS",
-                                "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
-                                "timestamp": "2024-01-07T15:18:45.260Z",
-                                "ppid": 0,
-                                "username": "root"
-                            },
-                            {
-                                "fileName": "/dummy/path//cert_file_VIcEFuUyuU",
-                                "sha256": "",
-                                "action": "CREATE",
-                                "type": "FILE",
-                                "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
-                                "timestamp": "2024-01-07T15:45:23.350Z"
-                            },
-                            {
-                                "fileName": "/dummy/path//cert_file_radISyWYtV",
-                                "sha256": "",
-                                "action": "CREATE",
-                                "type": "FILE",
-                                "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
-                                "timestamp": "2024-01-07T15:45:24.417Z"
-                            },
-                            {
-                                "fileName": "/dummy/path//cert_file_radISyWYtV",
-                                "sha256": null,
-                                "action": "DELETE",
-                                "type": "FILE",
-                                "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
-                                "timestamp": "2024-01-07T15:45:25.385Z"
-                            },
-                            {
-                                "fileName": "/dummy/path//cert_file_VIcEFuUyuU",
-                                "sha256": null,
-                                "action": "DELETE",
-                                "type": "FILE",
-                                "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
-                                "timestamp": "2024-01-07T15:45:25.387Z"
-                            },
-                            {
-                                "fileName": "/dummy/sbsimulation_sb_198862_bs_194623_green",
-                                "sha256": "",
-                                "action": "DELETE",
-                                "type": "FILE",
-                                "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
-                                "timestamp": "2024-01-07T15:45:25.571Z"
-                            },
-                            {
-                                "action": "DELETE",
-                                "dirPath": "/dummy/path/",
-                                "type": "DIRECTORY",
-                                "nodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
-                                "timestamp": "2024-01-07T15:45:25.584Z"
                             }
                         ],
                         "planRunId": "1704642251553.4",
@@ -532,18 +184,6 @@
                             {
                                 "title": "Restrict access to trusted IPs or network segments",
                                 "content": "It is important to validate that the specified host IPs (or network segments) have network access to the target node. Be as restrictive as possible."
-                            },
-                            {
-                                "title": "Block target port in the Firewall",
-                                "content": "Only keep open ports which are required for regular operation. Block all unused ports."
-                            },
-                            {
-                                "title": "Use Secure Web Gateway or Sandbox",
-                                "content": "Enable the Sandbox Evaluation option in your security controller."
-                            },
-                            {
-                                "title": "Anti Virus/Endpoint Security",
-                                "content": "Make sure your Anti Virus/Endpoint security software is up-to-date and running."
                             }
                         ],
                         "packageId": 2,
@@ -561,30 +201,6 @@
                                 "id": 4,
                                 "sort": 4,
                                 "value": "PLATINUM"
-                            },
-                            {
-                                "displayName": "Lazarus Group",
-                                "id": 19,
-                                "sort": 19,
-                                "value": "Lazarus Group"
-                            },
-                            {
-                                "displayName": "BRONZE BUTLER",
-                                "id": 23,
-                                "sort": 23,
-                                "value": "BRONZE BUTLER"
-                            },
-                            {
-                                "displayName": "APT37",
-                                "id": 29,
-                                "sort": 29,
-                                "value": "APT37"
-                            },
-                            {
-                                "displayName": "APT32",
-                                "id": 41,
-                                "sort": 41,
-                                "value": "APT32"
                             }
                         ],
                         "Attack_Type": [

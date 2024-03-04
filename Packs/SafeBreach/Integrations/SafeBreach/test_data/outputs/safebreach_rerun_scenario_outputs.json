@@ -3,7 +3,7 @@
     "fail": {},
     "success": {
       "data": {
-        "name": "Endpoint - Baseline_api_testing_changed_to_one_step",
+        "name": "Dummy - Baseline",
         "steps": [
           {
             "id": 199,
@@ -60,7 +60,7 @@
           }
         ],
         "originalPlan": {
-          "name": "Endpoint - Baseline_api_testing_changed_to_one_step",
+          "name": "Dummy - Baseline",
           "steps": [
             {
               "id": 199,

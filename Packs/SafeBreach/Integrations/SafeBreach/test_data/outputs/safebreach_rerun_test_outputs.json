@@ -4,7 +4,7 @@
     "success": {
       "data": {
         "id": 74,
-        "name": "(#1263) Data asset exfiltration over TCP",
+        "name": "(#1263) Dummy Info",
         "accountId": 1234567890,
         "description": "",
         "successCriteria": null,
@@ -80,7 +80,7 @@
         "planId": 74,
         "originalPlan": {
           "id": 74,
-          "name": "(#1263) Data asset exfiltration over TCP",
+          "name": "(#1263) Dummy Info",
           "accountId": 1234567890,
           "description": "",
           "successCriteria": null,

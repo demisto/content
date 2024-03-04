@@ -3,16 +3,13 @@ import demistomock as demisto
 from copy import deepcopy
 import json
 import re
-import traceback
 from ast import literal_eval
 from typing import Any
 from collections.abc import Iterable
 
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S UTC"  # ISO8601 format with UTC, default in XSOAR
 
-bool_map = {"true": True, "false": False, "True": True, "False": False, True: True, False: False}
-
-category_mapper = {
+CATEGORY_MAPPER = {
     "Network Access": [1, 2, 3, 4, 19, 20, 21, 22],
     "Network Inspection": [7, 10, 11, 12, 18],
     "Endpoint": [8, 9, 13, 14, 17],
@@ -21,7 +18,7 @@ category_mapper = {
     "Data Leak": [16],
 }
 
-insight_data_type_mapper = {
+INSIGHT_DATA_TYPE_MAPPER = {
     1: "Port",
     2: "Protocol",
     3: "Port",
@@ -42,7 +39,7 @@ insight_data_type_mapper = {
     24: "Hash",
 }
 
-safebreach_types = [
+SAFE_BREACH_TYPES = [
     "Protocol",
     "FQDN/IP",
     "Port",
@@ -61,7 +58,7 @@ safebreach_types = [
 ]
 
 # mapper from SB data type to demisto data type that given when the integration was configured.
-indicator_type_sb_to_demisto_mapper = {
+INDICATOR_TYPE_SB_TO_DEMISTO_MAPPER = {
     "SHA256": "Hash",
     "Port": "Port",
     "FQDN/IP": "Domain",
@@ -70,7 +67,7 @@ indicator_type_sb_to_demisto_mapper = {
     "URI": "URI",
 }
 
-indicator_type_mapper = {
+INDICATOR_TYPE_MAPPER = {
     "FQDN/IP": FeedIndicatorType.Domain,
     "SHA256": FeedIndicatorType.File,
     "Domain": FeedIndicatorType.Domain,
@@ -83,9 +80,9 @@ indicator_type_mapper = {
     "IP": FeedIndicatorType.IP,
 }
 
-demisto_indicator_reputation = {"None": 0, "Good": 1, "Suspicious": 2, "Bad": 3}
+DEMISTO_INDICATOR_REPUTATION = {"None": 0, "Good": 1, "Suspicious": 2, "Bad": 3}
 
-ip_regex = r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
+IP_REGEX = r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
 
 simulator_details_inputs = [
     InputArgument(
@@ -515,30 +512,6 @@ def format_sb_code_error(errors_data):
     return final_error_string
 
 
-class NotFoundError(Exception):
-    def __init__(self, *args: object) -> None:
-        super().__init__(*args)
-
-    def __str__(self) -> str:
-        return super().__str__()
-
-
-class SBError(Exception):
-    def __init__(self, *args: object) -> None:
-        super().__init__(*args)
-
-    def __str__(self) -> str:
-        return super().__str__()
-
-
-class InputError(Exception):
-    def __init__(self, *args: object) -> None:
-        super().__init__(*args)
-
-    def __str__(self) -> str:
-        return super().__str__()
-
-
 class Client(BaseClient):
     """
     Client class to interact with the service API
@@ -550,14 +523,13 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, api_key: str, account_id: int, base_url: str, verify: bool, proxy: bool):
+    def __init__(self, api_key: str, account_id: int, base_url: str, verify: bool):
         super().__init__(base_url=base_url, verify=verify)
 
         self.base_url = base_url
         self.api_key = api_key
         self.account_id = account_id
-        if proxy:
-            self.proxies = handle_proxy()
+        self.proxies = handle_proxy()
 
     def validate_email(self, email):
         """
@@ -625,7 +597,7 @@ class Client(BaseClient):
         """
         demisto.debug(f"error being sent to format_sb_code_error function is {response.get('error')}")
         exception_string = format_sb_code_error(response.get("error"))
-        raise SBError(exception_string)
+        raise DemistoException(exception_string)
 
     def get_all_users_for_test(self):
         """
@@ -636,24 +608,24 @@ class Client(BaseClient):
             str: This is just status string, if "ok" then it will show test as success else it throws error
         """
         try:
-            account_id = demisto.params().get("account_id", 0)
+            account_id = self.account_id
             url = f"/config/v1/accounts/{account_id}/users"
             response = self.get_response(url=url)
-            demisto.info(f"the response of function get_all_users_for_test is {response}")
             if response and response.get("data"):
                 return "ok"
             elif response.get("data") == []:
-                return "Please check the account Id and try again"
+                return "Please check the Account Id and try again"
             return "Could not verify the connection"
         except Exception as exc:
             if "Error in API call [404] - Not Found" in str(exc):
-                return "Please check the URL configured and try again"
+                raise DemistoException(f"Please check the URL configured and try again. Error:-{exc}")
             elif "Error in API call [401] - Unauthorized" in str(exc):
-                return "Please check the API used and try again"
+                raise DemistoException(f"Please check the API used and try again. Error:-{exc}")
             elif "SSL Certificate Verification Failed" in str(exc):
-                return "Error with SSL certificate verification. Please check the URL used and try again"
+                raise DemistoException("Unable to verify SSL certificate. Please ensure that the SSL "
+                                       + f"certificate is valid and properly configured. Error:-{exc}")
             else:
-                raise Exception(exc)
+                raise DemistoException(exc)
 
     def get_users_list(self):
         """
@@ -662,7 +634,7 @@ class Client(BaseClient):
         Returns:
             list: this is list of users queried based on modifiers specified
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         url = f"/config/v1/accounts/{account_id}/users"
         params = {"details": "true", "deleted": "false"}
         response = self.get_response(url=url, request_params=params)
@@ -677,7 +649,7 @@ class Client(BaseClient):
             dict: user data related to the user who has been deleted
         """
         user_id = demisto.args().get("user_id")
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         method = "DELETE"
         url = f"/config/v1/accounts/{account_id}/users/{user_id}"
 
@@ -700,7 +672,7 @@ class Client(BaseClient):
             if not user_details[key]:
                 user_details.pop(key)
 
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         method = "PUT"
         url = f"/config/v1/accounts/{account_id}/users/{int(user_id)}"
 
@@ -714,7 +686,7 @@ class Client(BaseClient):
         Returns:
             list: List of deployments data retrieved
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         url = f"/config/v1/accounts/{account_id}/deployments"
 
         response = self.get_response(url=url)
@@ -729,7 +701,7 @@ class Client(BaseClient):
         Returns:
             dict: the data of deployment created
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         name = demisto.args().get("name", "").strip()
         description = demisto.args().get("description", "").strip()
         simulators = demisto.args().get("simulators", [])
@@ -740,7 +712,6 @@ class Client(BaseClient):
             "name": name,
             "description": description,
         }
-        demisto.info(f"deployment creation payload is {deployment_payload}")
         method = "POST"
         url = f"/config/v1/accounts/{account_id}/deployments"
         created_deployment = self.get_response(url=url, method=method, body=deployment_payload)
@@ -757,10 +728,10 @@ class Client(BaseClient):
             dict: updated deployment data
         """
 
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         deployment_id = demisto.args().get("deployment_id", "")
         if not deployment_id:
-            raise InputError("Inputs Error: Deployment ID is a required field which has to have a value as input")
+            raise DemistoException("Inputs Error: Deployment ID is a required field which has to have a value as input")
 
         name = demisto.args().get("updated_deployment_name", "").strip()
         simulators = demisto.args().get("updated_simulators_for_deployment", [])
@@ -768,7 +739,6 @@ class Client(BaseClient):
             simulators = simulators.split()
         description = demisto.args().get("updated_deployment_description", "").strip()
         deployment_payload = {"nodes": simulators, "name": name, "description": description}
-        demisto.info(f"deployment payload is {deployment_payload}")
         method = "PUT"
         url = f"/config/v1/accounts/{account_id}/deployments/{deployment_id}"
         updated_deployment = self.get_response(url=url, method=method, body=deployment_payload)
@@ -784,7 +754,7 @@ class Client(BaseClient):
         Returns:
             dict: deleted deployment data
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         deployment_id = demisto.args().get("deployment_id", None)
 
         method = "DELETE"
@@ -812,7 +782,7 @@ class Client(BaseClient):
         #     "stepRunId": "stepRunId"
         # }
 
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
 
         # include_archived = "false"
         # size = demisto.args().get("entries_per_page")
@@ -828,10 +798,7 @@ class Client(BaseClient):
         else:
             url = f"/data/v1/accounts/{account_id}/testsummaries"
             for param in [("simulationId", simulation_id)]:
-                # [("includeArchived", include_archived), ("size", size), ("status", status), ("planId", scenario_id),
-                #               ("simulationId", simulation_id), ("sortBy", sort_by)]:
                 parameters.update({} if not param[1] else {param[0]: param[1]})
-            demisto.info(f"get_test_summary parameters is {parameters}")
         test_summaries = self.get_response(url=url, method=method, request_params=parameters)
         return test_summaries
 
@@ -937,7 +904,7 @@ class Client(BaseClient):
         Returns:
             dict: Deleted test data results
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         test_id = demisto.args().get("test_id")
 
         method = "DELETE"
@@ -996,7 +963,7 @@ class Client(BaseClient):
         Returns:
             dict: This will be having dict containing results and status
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         method = "GET"
         url = f"/siem/v1/accounts/{account_id}/config/providers/status"
 
@@ -1010,7 +977,7 @@ class Client(BaseClient):
         Returns:
             dict: This will be having dict containing results and status
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         method = "GET"
         url = f"/siem/v1/accounts/{account_id}/config/providers"
 
@@ -1024,9 +991,8 @@ class Client(BaseClient):
         Returns:
             dict: status stating whether its success and how many errors are remaining incase of failure to delete some
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         connector_id = demisto.args().get("integration_id", "").strip()
-        demisto.info(f"connector id for deleting integration errors is {connector_id}")
 
         method = "DELETE"
         url = f"/siem/v1/accounts/{account_id}/config/providers/status/delete/{connector_id}"
@@ -1042,7 +1008,7 @@ class Client(BaseClient):
             dict: response of generate API key API call which contains generated \
                 API key and name along with additional details
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         name = demisto.args().get("name", "").strip()
         description = demisto.args().get("description", "").strip()
         method = "POST"
@@ -1063,7 +1029,7 @@ class Client(BaseClient):
         Returns:
             dict: This function retrieves API keys which are active for the given account
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         method = "GET"
         url = f"config/v1/accounts/{account_id}/apikeys"
         request_params = {"details": "true"}
@@ -1084,12 +1050,12 @@ class Client(BaseClient):
             string: key ID for API key
         """
         active_keys = self.get_all_active_api_keys_with_details()
-        demisto.info(f"active api keys count is {len(active_keys.get('data'))}")
+        demisto.debug(f"active api keys count is {len(active_keys.get('data'))}")
         required_key_object = list(
             filter(lambda key_obj: key_obj["name"].lower() == key_name.lower(), active_keys.get("data"))
         )
         if not required_key_object:
-            raise NotFoundError(f"couldn't find APi key with given name: {key_name}")
+            raise DemistoException(f"couldn't find APi key with given name: {key_name}")
         return required_key_object[0]["id"]
 
     def delete_api_key(self):
@@ -1101,7 +1067,7 @@ class Client(BaseClient):
         """
         key_name = demisto.args().get("key_name", "").strip()
         key_id = self.filter_api_key_with_key_name(key_name=key_name)
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         method = "DELETE"
         url = f"/config/v1/accounts/{account_id}/apikeys/{key_id}"
         deleted_api_key = self.get_response(method=method, url=url)
@@ -1115,7 +1081,7 @@ class Client(BaseClient):
         Returns:
             dict: user details related to the queried account
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         method = "GET"
         url = f"/config/v1/accounts/{account_id}"
         simulator_details = self.get_response(method=method, url=url)
@@ -1136,13 +1102,13 @@ class Client(BaseClient):
         Returns:
             list(dict): returns simulator related data which fulfils the given input parameters
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         method = "GET"
         url = f"/config/v1/accounts/{account_id}/nodes/bulk"
 
         simulators_details = self.get_response(method=method, url=url, request_params=request_params)
         if not simulators_details.get("data", {}).get("count"):
-            raise NotFoundError(f"No Matching simulators found with details not found details are {request_params}")
+            raise DemistoException(f"No Matching simulators found with details not found details are {request_params}")
         return simulators_details
 
     def get_simulators_details_with_id(self):
@@ -1160,7 +1126,7 @@ class Client(BaseClient):
         Returns:
             list(dict): returns simulator related data which fulfils the given input parameters
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         simulator_id = demisto.args().get("simulator_id")
         method = "GET"
         url = f"/config/v1/accounts/{account_id}/nodes/{simulator_id}"
@@ -1194,7 +1160,7 @@ class Client(BaseClient):
         for parameter in possible_inputs:
             if demisto.args().get(parameter):
                 request_params[possible_inputs[parameter]] = (
-                    bool_map[demisto.args().get(parameter)]
+                    argToBoolean(demisto.args().get(parameter))
                     if (
                         demisto.args().get(parameter) not in ["true", "false"]
                         and parameter
@@ -1296,7 +1262,7 @@ class Client(BaseClient):
             dict: deleted simulator related data
         """
         simulator_id = demisto.args().get("simulator_id")
-        demisto.info(f"simulator id of given simulator is {simulator_id}")
+        demisto.debug(f"simulator id of given simulator is {simulator_id}")
 
         force_delete = "false"
         result = self.delete_simulator_with_given_id(simulator_id=simulator_id, force=force_delete)
@@ -1318,7 +1284,6 @@ class Client(BaseClient):
             "preferredInterface": demisto.args().get("preferred_interface", "").strip(),
             "preferredIp": demisto.args().get("preferred_ip", "").strip(),
         }
-        demisto.info(f"update simulator payload before deletion of useless keys is {data_dict}")
         for key, value in tuple(data_dict.items()):
             if not value:
                 data_dict.pop(key)
@@ -1350,10 +1315,8 @@ class Client(BaseClient):
             dict: this is updated simulators details for given simulators ID
         """
         simulator_id = demisto.args().get("simulator_id")
-        demisto.info(f"simulator id is {simulator_id}")
 
         payload = self.make_update_simulator_payload()
-        demisto.info(f"update simulator payload is {payload}")
 
         updated_simulator = self.update_simulator_api_call(simulator_id=simulator_id, simulator_data=payload)
         return updated_simulator
@@ -1366,7 +1329,6 @@ class Client(BaseClient):
             dict: this is updated simulators details for given simulators ID
         """
         simulator_id = demisto.args().get("simulator_id")
-        demisto.info(f"simulator id is {simulator_id}")
         payload = {"status": "APPROVED"}
 
         approved_simulator = self.update_simulator_api_call(simulator_id=simulator_id, simulator_data=payload)
@@ -1394,30 +1356,30 @@ class Client(BaseClient):
         Returns:
             dict: created user data
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         name = demisto.args().get("name", "").strip()
         email = demisto.args().get("email", "").strip()
-        is_active = bool_map.get(demisto.args().get("is_active"), "false")
-        send_email_post_creation = bool_map.get(demisto.args().get("email_post_creation"), "false")
+        is_active = argToBoolean(demisto.args().get("is_active"))
+        send_email_post_creation = argToBoolean(demisto.args().get("email_post_creation"))
         password = demisto.args().get("password")
-        change_password = bool_map.get(demisto.args().get("change_password_on_create"), "false")
+        change_password = argToBoolean(demisto.args().get("change_password_on_create"))
         role = demisto.args().get("user_role", "").strip()
         deployment_list = demisto.args().get("deployments", None)
         try:
             deployment_list = list(map(int, deployment_list.split(","))) if deployment_list else []
         except ValueError:
-            raise InputError(
+            raise DemistoException(
                 "Input Error: Deployments ids are numbers, please give deployments ids as comma separated values"
             )
 
         if not email:
-            raise InputError(
+            raise DemistoException(
                 "Inputs Error: Email is necessary when creating user, please give a valid email which hasn't \
                 been used before for user creation"
             )
 
         if not self.validate_email(email):
-            raise InputError("Inputs Error: Please enter valid email")
+            raise DemistoException("Inputs Error: Please enter valid email")
 
         user_payload = {
             "name": name,
@@ -1430,7 +1392,6 @@ class Client(BaseClient):
             "deployments": deployment_list,
         }
 
-        demisto.info(f"user payload for create user is {user_payload}")
         method = "POST"
         url = f"/config/v1/accounts/{account_id}/users"
         created_user = self.get_response(url=url, method=method, body=user_payload)
@@ -1449,7 +1410,7 @@ class Client(BaseClient):
         # user_email = demisto.args().get("email", "").strip()
 
         name = demisto.args().get("name", "").strip()
-        is_active = bool_map[demisto.args().get("is_active", "False")]
+        is_active = argToBoolean(demisto.args().get("is_active"))
         description = demisto.args().get("user_description", "").strip()
         role = demisto.args().get("user_role", "").strip()
         password = demisto.args().get("password")
@@ -1457,7 +1418,7 @@ class Client(BaseClient):
         try:
             deployment_list = list(map(int, deployment_list.split(","))) if deployment_list else []
         except ValueError:
-            raise InputError(
+            raise DemistoException(
                 "Input Error: deployments ids are numbers, please give deployments ids as comma separated values"
             )
 
@@ -1470,16 +1431,6 @@ class Client(BaseClient):
             "role": role,
             "password": password,
         }
-        demisto.info(f"upload user payload is {details}")
-        # # retrieve user based on email and user_id whichever is present
-        # if user_email and not user_id:
-        #     user_list = self.get_users_list()
-        #     demisto.info("retrieved user list which contains all available users in safebreach")
-        #     user = list(filter(lambda user_data: user_data.get("email") == user_email, user_list))
-        #     if not user:
-        #         demisto.info(f"filtered users are {user} while all users are {user_list}")
-        #         raise NotFoundError(f"User with {user_id} or {user_email} not found")
-        #     user_id = user[0]["id"]
         user = self.update_user_with_details(user_id, details)
         return user
 
@@ -1490,7 +1441,7 @@ class Client(BaseClient):
         Returns:
             Dict: Returns test data as a dictionary per test which is array as value for "data" key
         """
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
 
         method = "GET"
         url = f"/orch/v2/accounts/{account_id}/queue"
@@ -1510,7 +1461,7 @@ class Client(BaseClient):
         return simulations_details
 
     def set_simulations_status(self):
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
 
         method = "PUT"
         url = f"orch/v3/accounts/{account_id}/queue/state"
@@ -1519,7 +1470,7 @@ class Client(BaseClient):
         return simulations_details
 
     def get_schedules(self):
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
 
         method = "GET"
         url = f"/config/v1/accounts/{account_id}/schedules"
@@ -1534,7 +1485,7 @@ class Client(BaseClient):
         return schedules
 
     def delete_schedule(self):
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         schedule_id = demisto.args().get("schedule_id")
 
         method = "DELETE"
@@ -1615,7 +1566,7 @@ class Client(BaseClient):
         return scenarios
 
     def get_custom_scenarios(self):
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
 
         method = "GET"
         url = f"/config/v2/accounts/{account_id}/plans"
@@ -1630,7 +1581,7 @@ class Client(BaseClient):
         return services_data
 
     def get_simulations(self):
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         method = "GET"
         url = f"/data/v1/accounts/{account_id}/executionsHistoryResults"
 
@@ -1640,14 +1591,14 @@ class Client(BaseClient):
         return simulations_data
 
     def get_verification_token(self):
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         method = "GET"
         url = f"/config/v1/accounts/{account_id}/nodes/secret"
         verification_data = self.get_response(url=url, method=method)
         return verification_data
 
     def rerun_test_or_simulation(self):
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
 
         if demisto.command() == "safebreach-rerun-test":
             test_data = {
@@ -1662,7 +1613,7 @@ class Client(BaseClient):
                 try:
                     simulations_list.append(int(simulation))
                 except ValueError:
-                    raise InputError(
+                    raise DemistoException(
                         "Input Error: simulation_ids are numbers and not strings, please \
                         enter valid simulation ids"
                     )
@@ -1677,25 +1628,6 @@ class Client(BaseClient):
                     }
                 ],
             }
-
-        # position = demisto.args().get("position")
-        # feedback_loop = demisto.args().get("enable_feedback_loop")
-        # retry_simulations = demisto.args().get("retry_simulation")
-        # wait_for_retry = demisto.args().get("wait_for_retry")
-        # priority = demisto.args().get("priority")
-        # request_params = {
-        #     "position": position,
-        #     "enableFeedbackLoop": feedback_loop,
-        #     "retrySimulations": retry_simulations,
-        #     "priority": priority,
-        #     "waitForRetry": wait_for_retry
-        # }
-        # for parameter in list(request_params.keys()):
-        #     if not request_params[parameter]:
-        #         request_params.pop(parameter)
-
-        # demisto.info(f"processed request parameters payload is {request_params}")
-
         method = "POST"
         url = f"/orch/v3/accounts/{account_id}/queue"
         tests_data = self.get_response(
@@ -1725,8 +1657,8 @@ class Client(BaseClient):
     def get_insights_ids_by_category(self, insight_category):
         output = []
         for category in insight_category:
-            if category_mapper.get(category):
-                output.append(category_mapper.get(category))
+            if CATEGORY_MAPPER.get(category):
+                output.append(CATEGORY_MAPPER.get(category))
         return list({y for x in output if x is not None for y in x})
 
     def get_insights(self, test_id):
@@ -1735,7 +1667,7 @@ class Client(BaseClient):
         return self.get_response(url=url, method="GET")
 
     def get_remediation_data(self, insight_id, test_id):
-        account_id = demisto.params().get("account_id", 0)
+        account_id = self.account_id
         url = f"/data/v1/accounts/{account_id}/insights/{insight_id}/remediation?planRunIds={test_id}"
         return self.get_response(url=url, method="GET")
 
@@ -1751,7 +1683,7 @@ class Client(BaseClient):
         try:
             insights = sorted(response, key=lambda i: i.get("ruleId"))
         except TypeError:
-            demisto.info("Failed to sort SafeBreach insights, skip")
+            demisto.debug("Failed to sort SafeBreach insights, skip")
 
         if insight_ids and len(insight_ids) > 0:
             # Verify that insight_ids holds List[int]
@@ -1784,7 +1716,7 @@ class Client(BaseClient):
             output.extend([{"type": parent_key, "value": o} for o in first_level_data])
 
         for indicator in data[parent_key]:
-            if self.contains(safebreach_types, list(data[parent_key][indicator].keys())):
+            if self.contains(SAFE_BREACH_TYPES, list(data[parent_key][indicator].keys())):
                 for inner_type in data[parent_key][indicator]:
                     formated_inner_type = inner_type.replace(" ", "")
                     for item in data[parent_key][indicator][inner_type]:
@@ -1812,7 +1744,7 @@ class Client(BaseClient):
     def is_ip(self, value):
         if isinstance(value, int):
             value = str(value)
-        return re.match(ip_regex, value)
+        return re.match(IP_REGEX, value)
 
     def get_simulators_versions_list(self):
         url = "/updater/v2/updates/nodes"
@@ -1849,7 +1781,6 @@ class Client(BaseClient):
         insights_ids = self.get_insights_ids_by_category(insight_category)
         raw_insights = self.get_insights(test_id)
         # Filter insight by category
-        # insights = [item for item in raw_insights if int(item.get("ruleId")) in insights_ids]
         insights = [
             item for item in raw_insights if isinstance(item, dict) and int(item.get("ruleId", 0)) in insights_ids
         ]
@@ -1859,12 +1790,12 @@ class Client(BaseClient):
             processed_data = self.get_remediation_data_command({"insightId": insight.get("ruleId")}, test_id)
             for item in processed_data:
                 # if the data type is not in the filter data types continue,
-                if indicator_type_sb_to_demisto_mapper.get(item["type"]) not in insight_data_type:
+                if INDICATOR_TYPE_SB_TO_DEMISTO_MAPPER.get(item["type"]) not in insight_data_type:
                     continue
-                if not indicator_type_mapper.get(str(item["type"])) or item["value"] == "N/A":
+                if not INDICATOR_TYPE_MAPPER.get(str(item["type"])) or item["value"] == "N/A":
                     continue
                 if isinstance(item["type"], int):
-                    demisto.info("Data type is int", item["type"], insight["ruleId"])
+                    demisto.debug("Data type is int", item["type"], insight["ruleId"])
 
                 is_behavioral = item["type"] not in ["Domain", "FQDN/IP", "SHA256", "URI", "Hash"]
                 raw_json = {
@@ -1887,7 +1818,7 @@ class Client(BaseClient):
 
                 indicator = {
                     "value": str(item["value"]),
-                    "type": indicator_type_mapper.get(str(item["type"])),
+                    "type": INDICATOR_TYPE_MAPPER.get(str(item["type"])),
                     "rawJSON": raw_json,
                     "fields": mapping,
                 }
@@ -1915,18 +1846,15 @@ def get_simulators_and_display_in_table(client: Client):
         dict: simulator details
     """
     request_params = client.create_search_simulator_params()
-    demisto.info(f"request parameters for {demisto.command()} is {request_params}")
 
     result = client.get_simulators_details(request_params=request_params)
-    demisto.info(f"related simulations are {result}")
+    demisto.debug(f"Related simulations are: {result}")
 
     flattened_simulators, keys = client.flatten_simulator_details(result.get("data", {}).get("rows", {}))
 
     human_readable = tableToMarkdown(name="Simulators Details", t=flattened_simulators, headers=keys)
     outputs = result.get("data", {}).get("rows")
     outputs_prefix = "simulator_details"
-    demisto.info(f"json output is {outputs} with prefix {outputs_prefix}")
-
     result = CommandResults(outputs_prefix=outputs_prefix, outputs=outputs, readable_output=human_readable)
     return result
 
@@ -1967,15 +1895,13 @@ def get_specific_simulator_details(client: Client):
     """
 
     result = client.get_simulators_details_with_id()
-    demisto.info(f"related simulations are {result}")
+    demisto.debug(f"Related simulations are: {result}")
 
     flattened_simulators, keys = client.flatten_simulator_details([result.get("data", {})])
 
     human_readable = tableToMarkdown(name="Simulators Details", t=flattened_simulators, headers=keys)
     outputs = result.get("data", {})
     outputs_prefix = "simulator_details_with_id"
-    demisto.info(f"json output is {outputs} with prefix {outputs_prefix}")
-
     result = CommandResults(outputs_prefix=outputs_prefix, outputs=outputs, readable_output=human_readable)
     return result
 
@@ -2015,7 +1941,7 @@ def get_tests_summary(client: Client):
         CommandResults,dict: This returns a table view of data and a dictionary as output
     """
     test_summaries = client.get_tests_with_args()
-    demisto.info(f"output of get_tests_summary is {test_summaries}")
+    demisto.debug(f"Get tests summary is: {test_summaries}")
     client.flatten_test_summaries(test_summaries)
     human_readable = tableToMarkdown(
         name="Test Results",
@@ -2043,7 +1969,6 @@ def get_tests_summary(client: Client):
         ],
     )
     outputs = {"tests_data": test_summaries}
-    demisto.info(f"json output of get_tests_summary is {outputs}")
     result = CommandResults(outputs_prefix="tests_data", outputs=outputs, readable_output=human_readable)
 
     return result
@@ -2084,7 +2009,7 @@ def get_all_users(client: Client):
         as a table and as a dictionary
     """
     user_data = client.get_users_list()
-    demisto.info(f"users retrieved when executing {demisto.command()} command \n Data: \n{user_data}")
+    demisto.debug(f"Get all users result is :{user_data}")
 
     human_readable = tableToMarkdown(name="user data", t=user_data, headers=["id", "name", "email"])
     outputs = user_data
@@ -2144,9 +2069,9 @@ def get_user_id_by_name_or_email(client: Client):
     name = demisto.args().get("name", "").strip()
     email = demisto.args().get("email", "").strip()
     if not (name or email):
-        raise InputError("Incorrect inputs: either name or email are to be given.")
+        raise DemistoException("Incorrect inputs: either name or email are to be given.")
     user_list = client.get_users_list()
-    demisto.info(f"retrieved user list which has {len(user_list)} users")
+    demisto.debug(f"User list: {user_list}")
 
     filtered_user_list = list(
         filter(
@@ -2157,7 +2082,6 @@ def get_user_id_by_name_or_email(client: Client):
             user_list,
         )
     )
-    demisto.info(f"filtered user list which contains {len(filtered_user_list)}")
 
     if filtered_user_list:
         human_readable = tableToMarkdown(name="user data", t=filtered_user_list, headers=["id", "name", "email"])
@@ -2166,8 +2090,7 @@ def get_user_id_by_name_or_email(client: Client):
         result = CommandResults(outputs_prefix="filtered_users", outputs=outputs, readable_output=human_readable)
 
         return result
-    demisto.info(f"list of retrieved users are {user_list}")
-    raise NotFoundError(f"user with name {name} was not found")
+    raise DemistoException(f"user with name {name} was not found")
 
 
 @metadata_collector.command(
@@ -2283,6 +2206,7 @@ def create_user(client: Client):
         CommandResults,dict: This will show a dictionary based on user data created
     """
     created_user = client.create_user_data()
+    demisto.debug(f"Create user result is: {created_user}")
 
     human_readable = tableToMarkdown(
         name="Created User Data",
@@ -2301,8 +2225,6 @@ def create_user(client: Client):
         ],
     )
     outputs = created_user.get("data", {})
-    demisto.info(f"json output for create user is {outputs}")
-
     result = CommandResults(
         outputs_prefix="created_user_data",
         outputs=outputs,
@@ -2450,6 +2372,7 @@ def update_user_with_details(client: Client):
         CommandResults,dict: This function returns updated user in form of table and dictionary
     """
     updated_user = client.update_user_data()
+    demisto.debug(f"Update user result is: {updated_user}")
 
     human_readable = tableToMarkdown(
         name="Updated User Data",
@@ -2468,8 +2391,6 @@ def update_user_with_details(client: Client):
         ],
     )
     outputs = updated_user.get("data", {})
-
-    demisto.info(f"json output for update user is {outputs}")
     result = CommandResults(outputs_prefix="updated_user_data", outputs=outputs, readable_output=human_readable)
     return result
 
@@ -2550,6 +2471,7 @@ def delete_user_with_details(client: Client):
         CommandResults,dict: This is details of user that has been deleted
     """
     deleted_user = client.delete_user()
+    demisto.debug(f"Delete user result is: {deleted_user}")
 
     human_readable = tableToMarkdown(
         name="Deleted User Data",
@@ -2557,8 +2479,6 @@ def delete_user_with_details(client: Client):
         headers=["id", "name", "email", "deletedAt", "roles", "description", "role", "deployments", "createdAt"],
     )
     outputs = deleted_user.get("data", {})
-
-    demisto.info(f"json output for delete uer is {outputs}")
     result = CommandResults(outputs_prefix="deleted_user_data", outputs=outputs, readable_output=human_readable)
     return result
 
@@ -2634,6 +2554,7 @@ def get_deployments(client: Client):
         CommandResults,dict:Deployment data as a table and a dictionary
     """
     deployments = client.list_deployments()
+    demisto.debug(f"Get deployment list result is: {deployments}")
 
     human_readable = tableToMarkdown(
         name="Deployments",
@@ -2642,8 +2563,6 @@ def get_deployments(client: Client):
         headers=["id", "accountId", "name", "createdAt", "description", "nodes", "updatedAt"],
     )
     outputs = deployments
-    demisto.info(f"json output for update deployment is {outputs}")
-
     result = CommandResults(outputs_prefix="deployment_data", outputs=outputs, readable_output=human_readable)
     return result
 
@@ -2732,6 +2651,7 @@ def create_deployment(client: Client):
         CommandResults,dict: Created deployment data as a table and a dictionary
     """
     created_deployment = client.create_deployment_data()
+    demisto.debug(f"Create deployment result is: {created_deployment}")
 
     human_readable = tableToMarkdown(
         name="Created Deployment",
@@ -2740,8 +2660,6 @@ def create_deployment(client: Client):
         headers=["id", "accountId", "name", "createdAt", "description", "nodes"],
     )
     outputs = created_deployment.get("data", {})
-    demisto.info(f"json output for create deployment is {outputs}")
-
     result = CommandResults(outputs_prefix="created_deployment_data", outputs=outputs, readable_output=human_readable)
 
     return result
@@ -2833,6 +2751,7 @@ def update_deployment(client: Client):
         CommandResults,dict: updated deployment data as a table and a dictionary
     """
     updated_deployment = client.update_deployment()
+    demisto.debug(f"Update deployment result is: {updated_deployment}")
 
     human_readable = tableToMarkdown(
         name="Updated Deployment",
@@ -2841,8 +2760,6 @@ def update_deployment(client: Client):
         headers=["id", "accountId", "name", "createdAt", "description", "nodes", "updatedAt"],
     )
     outputs = updated_deployment.get("data", {})
-    demisto.info(f"json output for update deployment is {outputs}")
-
     result = CommandResults(outputs_prefix="updated_deployment_data", outputs=outputs, readable_output=human_readable)
     return result
 
@@ -2909,6 +2826,7 @@ def delete_deployment(client: Client):
         CommandResults,dict: deleted deployment data as a table and a dictionary
     """
     deleted_deployment = client.delete_deployment()
+    demisto.debug(f"Delete deployment result is: {deleted_deployment}")
 
     human_readable = tableToMarkdown(
         name="Deleted Deployment",
@@ -2917,8 +2835,6 @@ def delete_deployment(client: Client):
         headers=["id", "accountId", "name", "createdAt", "description", "nodes", "updatedAt"],
     )
     outputs = deleted_deployment.get("data", {})
-    demisto.info(f"json output for delete deployment is {outputs}")
-
     result = CommandResults(outputs_prefix="deleted_deployment_data", outputs=outputs, readable_output=human_readable)
     return result
 
@@ -3008,6 +2924,7 @@ def create_api_key(client: Client):
         CommandResults,dict: Command results for generated API key details table and dict containing data
     """
     generated_api_key = client.generate_api_key()
+    demisto.debug(f"Generated API key is: {generated_api_key}")
 
     human_readable = tableToMarkdown(
         name="Generated API key Data",
@@ -3016,7 +2933,6 @@ def create_api_key(client: Client):
         headers=["name", "description", "createdBy", "createdAt", "key"],
     )
     outputs = generated_api_key.get("data")
-    demisto.info(f"json output for create API key is {outputs}")
 
     result = CommandResults(outputs_prefix="generated_api_key", outputs=outputs, readable_output=human_readable)
     return result
@@ -3074,7 +2990,7 @@ def delete_api_key(client: Client):
         CommandResults,dict: Command results for deleted API key details table and dict containing data
     """
     deleted_api_key = client.delete_api_key()
-
+    demisto.debug(f"Delete API key is: {deleted_api_key}")
     human_readable = tableToMarkdown(
         name="Deleted API key Data",
         t=deleted_api_key.get("data"),
@@ -3082,8 +2998,6 @@ def delete_api_key(client: Client):
         headers=["name", "description", "createdBy", "createdAt", "deletedAt"],
     )
     outputs = deleted_api_key.get("data")
-    demisto.info(f"json output for delete api key is {outputs}")
-
     result = CommandResults(outputs_prefix="deleted_api_key", outputs=outputs, readable_output=human_readable)
     return result
 
@@ -3170,7 +3084,7 @@ def get_all_integration_error_logs(client: Client):
     """
     formatted_error_logs = []
     error_logs = client.get_all_integration_error_logs()
-    demisto.info(f"integration logs are {error_logs}")
+    demisto.debug(f"Get all integration error logs result is: {error_logs}")
 
     formatted_error_logs = client.flatten_error_logs_for_table_view(error_logs.get("result"))
     human_readable = tableToMarkdown(
@@ -3180,18 +3094,15 @@ def get_all_integration_error_logs(client: Client):
         headers=["connector", "action", "success", "error", "timestamp", "integration_name"],
     )
     outputs = error_logs.get("result")
-    demisto.info(f"json output for get_all_integration_logs is {outputs}")
-
     result = CommandResults(outputs_prefix="Integration Error Data", outputs=outputs, readable_output=human_readable)
     return result
 
 
 def get_integration_details(client: Client):
     connector_details = client.get_integration_details()
-    demisto.info(f"integration are {len(connector_details.get('result',{}).get('providers',[]))}")
+    demisto.debug(f"Get integration details result is: {connector_details}")
 
     installed_connectors = connector_details.get("result", {}).get("providers", [])
-
     connectors_map = {}
     for connector in installed_connectors:
         connectors_map[connector["id"]] = connector["name"]
@@ -3239,14 +3150,13 @@ def delete_integration_error_logs(client: Client):
         CommandResults,Dict: This returns a table of data showing deleted details and dict showing same in outputs
     """
     error_logs = client.delete_integration_error_logs()
+    demisto.debug(f"Delete integration error logs result is: {error_logs}")
     headers = ["result", "error"]
     if error_logs.get("errorMessage"):
         # should we throw a integration not found here or just show it as success saying no integration found
         headers = ["error", "errorMessage"]
     human_readable = tableToMarkdown(name="Integration errors status", t=error_logs, headers=headers)
     outputs = error_logs
-    demisto.info(f"json output for delete integration error logs is {outputs}")
-
     result = CommandResults(outputs_prefix="errors_cleared", outputs=outputs, readable_output=human_readable)
     return result
 
@@ -3332,7 +3242,7 @@ def get_simulator_quota_with_table(client: Client):
         CommandResults,dict: this shows a table with account details and a dict with account details
     """
     simulator_details = client.get_simulator_quota()
-
+    demisto.debug(f"Simulator details result is: {simulator_details}")
     human_readable = tableToMarkdown(
         name="Account Details",
         t=simulator_details.get("data"),
@@ -3353,8 +3263,6 @@ def get_simulator_quota_with_table(client: Client):
         "account_details": simulator_details.get("data"),
         "simulator_quota": simulator_details.get("data").get("nodesQuota"),
     }
-    demisto.info(f"json output for get_simulator_quota is {outputs}")
-
     simulator_details = CommandResults(
         outputs_prefix="account_details", outputs=outputs, readable_output=human_readable
     )
@@ -3426,12 +3334,10 @@ def delete_simulator_with_given_name(client: Client):
         CommandResults,Dict: this is for table showing deleted simulator data and dict with data
     """
     deleted_simulator = client.delete_simulator_with_given_name()
-
+    demisto.debug(f"Delete simulator with given name result is: {deleted_simulator}")
     flattened_simulators, keys = client.flatten_simulator_details([deleted_simulator.get("data", {})])
     human_readable = tableToMarkdown(name="Deleted Simulators Details", t=flattened_simulators, headers=keys)
     outputs = deleted_simulator.get("data", {})
-    demisto.info(f"json output of delete simulator with given name is {outputs}")
-
     result = CommandResults(outputs_prefix="deleted_simulator_details", outputs=outputs, readable_output=human_readable)
     return result
 
@@ -3456,12 +3362,10 @@ def update_simulator(client: Client):
         CommandResults,Dict: This will return table and dict containing updated simulator data
     """
     updated_simulator = client.update_simulator()
-
+    demisto.debug(f"Update simulator result is: {updated_simulator}")
     flattened_simulators, keys = client.flatten_simulator_details([updated_simulator.get("data", {})])
     human_readable = tableToMarkdown(name="Updated Simulators Details", t=flattened_simulators, headers=keys)
     outputs = updated_simulator.get("data", {})
-    demisto.info(f"json output of update simulator with a given name is {outputs}")
-
     result = CommandResults(outputs_prefix="updated_simulator_details", outputs=outputs, readable_output=human_readable)
     return result
 
@@ -3492,12 +3396,10 @@ def approve_simulator(client: Client):
         CommandResults,Dict: This will return table and dict containing approved simulator data
     """
     approved_simulator = client.approve_simulator()
-
+    demisto.debug(f"Approve simulator result is: {approved_simulator}")
     flattened_simulators, keys = client.flatten_simulator_details([approved_simulator.get("data", {})])
     human_readable = tableToMarkdown(name="Approved Simulators Details", t=flattened_simulators, headers=keys)
     outputs = approved_simulator.get("data", {})
-    demisto.info(f"json output of approve simulator with a given name is {outputs}")
-
     result = CommandResults(
         outputs_prefix="approved_simulator_details", outputs=outputs, readable_output=human_readable
     )
@@ -3602,7 +3504,7 @@ def delete_test_result_of_test(client: Client):
         CommandResults,Dict: A table showing deletion results and a dict of outputs showing the same
     """
     test_summaries = client.delete_test_result_of_test()
-    demisto.info(f"output of delete_test_result_of_test is {test_summaries}")
+    demisto.debug(f"Delete test with ID result is: {test_summaries}")
     human_readable = tableToMarkdown(name="Deleted Test", t=test_summaries.get("data", {}), headers=["id"])
     outputs = [test_summaries.get("data", {}).get("id")]
 
@@ -3628,7 +3530,7 @@ def get_all_running_tests_summary(client: Client):
         CommandResults,Dict: This returns all tests related summary as a table and gives a dictionary as outputs for the same
     """
     running_tests = client.get_active_tests()
-    demisto.info(f"the get_all_running_tests_summary function gave response {running_tests}")
+    demisto.debug(f"Get all running tests summary result is: {running_tests}")
 
     flattened_running_tests_for_table = client.flatten_tests_data(running_tests.get("data", {}))
     human_readable = tableToMarkdown(
@@ -3638,8 +3540,6 @@ def get_all_running_tests_summary(client: Client):
         headers=test_outputs_headers_list,
     )
     outputs = running_tests
-    demisto.info(f"json output of get_all_running_tests_summary function gave response {running_tests}")
-
     result = CommandResults(outputs_prefix="tests_data", outputs=outputs, readable_output=human_readable)
 
     return result
@@ -3691,7 +3591,7 @@ def get_all_running_simulations_summary(client: Client):
     """
     running_simulations = client.get_active_simulations()
     flattened_simulations_data_for_table = client.flatten_simulations_data(running_simulations.get("data", {}))
-    demisto.info(f"the get_all_running_simulations_summary function gave response {running_simulations}")
+    demisto.debug(f"Get all running simulations summary result is: {running_simulations}")
     human_readable = tableToMarkdown(
         name="Running Simulations",
         t=flattened_simulations_data_for_table,
@@ -3703,9 +3603,7 @@ def get_all_running_simulations_summary(client: Client):
             "moveId",
         ],
     )
-
     outputs = running_simulations
-    demisto.info(f"json output for get_all_running_simulations_summary is {running_simulations}")
     result = CommandResults(outputs_prefix="active_simulations", outputs=outputs, readable_output=human_readable)
 
     return result
@@ -3856,17 +3754,11 @@ def get_schedules(client: Client):
     ]
 
     schedules_data = client.get_schedules()
-    # test_summaries = client.get_tests_with_args()
-    # plan_map = plan_id_name_map(test_summaries)
-    # for schedule in schedules_data:
-    #     schedule["name"] =  plan_map.get(str(schedule["planId"]),"")
-
     new_schedules_data = client.append_cron_to_schedule(deepcopy(schedules_data.get("data")))
-    demisto.info(f"the get_schedules function gave response {schedules_data}")
+    demisto.debug(f"Get schedules result is: {schedules_data}")
     human_readable = tableToMarkdown(
         name="Schedules", headerTransform=safebreach_schedules_transformer, t=new_schedules_data, headers=headers
     )
-
     outputs = schedules_data.get("data")
     result = CommandResults(outputs_prefix="schedules", outputs=outputs, readable_output=human_readable)
 
@@ -3969,9 +3861,7 @@ def delete_schedules(client: Client):
     ]
 
     schedules_data = client.delete_schedule()
-    demisto.info(
-        f"the delete_schedules function with id {demisto.args().get('schedule_id')} gave response {schedules_data}"
-    )
+    demisto.debug(f"Delete schedules result is: {schedules_data}")
 
     new_schedules_data = client.append_cron_to_schedule([deepcopy(schedules_data.get("data"))])
     human_readable = tableToMarkdown(
@@ -4073,7 +3963,7 @@ def get_prebuilt_scenarios(client: Client):
         CommandResults,Dict: This returns all tests related summary as a table and gives a dictionary as outputs for the same
     """
     prebuilt_scenarios = client.get_prebuilt_scenarios()
-    demisto.info(f"output of get_prebuilt_scenarios function call is {prebuilt_scenarios}")
+    demisto.debug(f"Get prebuilt scenarios result is: {prebuilt_scenarios}")
 
     flattened_simulations_data_for_table = client.extract_default_scenario_fields(prebuilt_scenarios)
     human_readable = tableToMarkdown(
@@ -4095,8 +3985,6 @@ def get_prebuilt_scenarios(client: Client):
             "minApiVer",
         ],
     )
-
-    demisto.info(f"json output for get_prebuilt_scenarios function is {prebuilt_scenarios}")
     outputs = prebuilt_scenarios
     result = CommandResults(outputs_prefix="prebuilt_scenarios", outputs=outputs, readable_output=human_readable)
 
@@ -4185,10 +4073,6 @@ def scenarios_transformer(header):
             prefix="custom_scenarios",
             output_type=str,
         ),
-        # OutputArgument(name="custom_data_object_for_rerun_simulation", description="the data which can be used for \
-        #     rerun-simulation command.", prefix="custom_scenarios", output_type=str),
-        # OutputArgument(name="custom_data_for_rerun_test", description="the data which can be used for rerun-test command.",
-        #                prefix="custom_scenarios", output_type=str),
     ],
     description="This command  retrieves scenarios which are saved by user as custom scenarios. they generally have "
     + "configurations and everything set up and will be ready to run as tests",
@@ -4204,10 +4088,7 @@ def get_custom_scenarios(client: Client):
         CommandResults,Dict: This returns all tests related summary as a table and gives a dictionary as outputs for the same
     """
     custom_scenarios = client.get_custom_scenarios()
-    demisto.info(
-        f"output of get_custom_scenarios function for command {demisto.command()} with details input \
-        {demisto.args().get('schedule_details')} is {custom_scenarios}"
-    )
+    demisto.debug(f"Get custom scenarios result is: {custom_scenarios}")
 
     if demisto.args().get("schedule_details") == "true":
         flattened_simulations_data_for_table = client.extract_custom_scenario_fields(custom_scenarios.get("data", {}))
@@ -4230,8 +4111,6 @@ def get_custom_scenarios(client: Client):
             "updatedAt",
         ],
     )
-
-    demisto.info(f"json output of custom scenarios call is {custom_scenarios}")
     outputs = custom_scenarios
     result = CommandResults(outputs_prefix="custom_scenarios", outputs=outputs, readable_output=human_readable)
 
@@ -4269,13 +4148,12 @@ def get_services_status(client: Client):
         CommandResults,Dict: This returns all tests related summary as a table and gives a dictionary as outputs for the same
     """
     services = client.get_services_status()
-    demisto.info(f"result of services API call is {services}")
+    demisto.debug(f"Services API call is {services}")
 
     modified_services_data = client.format_services_response(services)
     human_readable = tableToMarkdown(
         name="Services", t=modified_services_data, headers=["name", "version", "connection_status"]
     )
-    demisto.info(f"json output of services API call is {modified_services_data}")
 
     outputs = services
     result = CommandResults(outputs_prefix="services_status", outputs=outputs, readable_output=human_readable)
@@ -4376,7 +4254,7 @@ def get_simulations(client: Client):
         "attacks_involved",
     ]
     simulations = client.get_simulations()
-    demisto.info(f"result of simulations API call is {simulations}")
+    demisto.debug(f"Result of simulations is: {simulations}")
     modified_simulations_data = format_simulations_data(simulations.get("simulations"))
     human_readable = tableToMarkdown(
         name="Simulations Details for test",
@@ -4384,8 +4262,6 @@ def get_simulations(client: Client):
         headerTransform=simulations_transformer,
         headers=headers,
     )
-    demisto.info(f"json output of simulations API call is {modified_simulations_data}")
-
     outputs = simulations
     result = CommandResults(outputs_prefix="simulation_details", outputs=outputs, readable_output=human_readable)
     return result
@@ -4407,7 +4283,7 @@ def get_simulations(client: Client):
 )
 def get_verification_token(client):
     token_data = client.get_verification_token()
-    demisto.info(f"output of get_verification_token function for command {demisto.command()} is {token_data}")
+    demisto.debug(f"Getvverification token result is: {token_data}")
     human_readable = tableToMarkdown(name="Verification Token", t=token_data.get("data"), headers=["secret"])
 
     outputs = token_data
@@ -4506,7 +4382,7 @@ def tests_scenarios_transformer(header):
 )
 def rerun_test(client):
     rerun_results = client.rerun_test_or_simulation()
-    demisto.info(f"output of rerun_test function for command {demisto.command()} is {rerun_results}")
+    demisto.debug(f"Rerun test result is: {rerun_results}")
 
     flattened_simulations_data_for_table = client.extract_test_fields(rerun_results.get("data", {}))
     human_readable = tableToMarkdown(
@@ -4526,8 +4402,6 @@ def rerun_test(client):
             "retrySimulations",
         ],
     )
-    demisto.info(f"json output of rerun_test is {flattened_simulations_data_for_table}")
-
     outputs = rerun_results
     result = CommandResults(outputs_prefix="changed_data", outputs=outputs, readable_output=human_readable)
     return result
@@ -4603,7 +4477,7 @@ def rerun_test(client):
 )
 def rerun_simulation(client):
     rerun_results = client.rerun_test_or_simulation()
-    demisto.info(f"output of rerun_simulation function for command {demisto.command()} is {rerun_results}")
+    demisto.debug(f"Rerun Simulation result is: {rerun_results}")
     flattened_simulations_data_for_table = client.extract_custom_scenario_fields([rerun_results.get("data", {})])
     human_readable = tableToMarkdown(
         name="Scenarios",
@@ -4620,7 +4494,6 @@ def rerun_simulation(client):
             "retrySimulations",
         ],
     )
-    demisto.info(f"json output of services rerun_simulation call is {flattened_simulations_data_for_table}")
     outputs = rerun_results
     result = CommandResults(outputs_prefix="changed_data", outputs=outputs, readable_output=human_readable)
 
@@ -4735,7 +4608,7 @@ def rerun_simulation(client):
 )
 def get_indicators_command(client):
     indicator_results = client.get_indicators_command()
-    demisto.info(f"Output of get_indicators_command function for command {demisto.command()} is {indicator_results}")
+    demisto.debug(f"List of Indicators: {indicator_results}")
     outputs = indicator_results
 
     entry_result = camelize(outputs)
@@ -4775,9 +4648,7 @@ def get_indicators_command(client):
 )
 def get_simulators_versions_list(client):
     simulator_results = client.get_simulators_versions_list()
-    demisto.info(
-        f"Output of get_simulators_versions_list function for command {demisto.command()} is {simulator_results}"
-    )
+    demisto.debug(f"List of simulators versions: {simulator_results}")
     outputs = simulator_results
     entry_result = camelize(outputs)
     hr = tableToMarkdown("Simulators:", entry_result)
@@ -4808,7 +4679,7 @@ def get_simulators_versions_list(client):
 )
 def update_simulator_with_id(client):
     results = client.update_simulator_with_id()
-    demisto.info(f"Output of update_simulator_with_id function for command {demisto.command()} is {results}")
+    demisto.debug(f"Updated simulator result is: {results}")
     outputs = results
     entry_result = camelize(outputs)
     hr = tableToMarkdown("Updated Simulator:", entry_result)
@@ -4873,7 +4744,7 @@ def update_simulator_with_id(client):
 )
 def get_installation_links(client):
     results = client.get_installation_links()
-    demisto.info(f"Output of get_installation_links function for command {demisto.command()} is {results}")
+    demisto.debug(f"Installation links result is: {results}")
     outputs = results
     entry_result = camelize(outputs)
     hr = tableToMarkdown("Installation Links:", entry_result)
@@ -4941,7 +4812,6 @@ def main() -> None:
         account_id=demisto.params().get("account_id"),
         base_url=demisto.params().get("base_url"),
         verify=demisto.params().get("verify"),
-        proxy=demisto.params().get("proxy"),
     )
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
@@ -5107,7 +4977,6 @@ def main() -> None:
             return_results(result)
 
     except Exception as error:
-        demisto.error(f"Error generated while executing {demisto.command}, \n {error},\n{traceback.format_exc()}")
         return_error(f"Failed to execute {demisto.command()} command .\nError:\n{error}")
 
 

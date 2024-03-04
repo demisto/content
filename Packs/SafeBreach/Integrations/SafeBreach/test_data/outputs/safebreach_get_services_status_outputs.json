@@ -107,7 +107,7 @@
                 "isUp": true,
                 "lastCheck": "2023-09-15T07:45:15.204Z",
                 "name": "SafeBreach CLI",
-                "path": "/api/cli/v2/",
+                "path": "/dummy/path/v2/",
                 "port": "1307",
                 "version": "1.183.0"
             },
@@ -167,7 +167,7 @@
                 "isUp": true,
                 "lastCheck": "2023-09-15T07:45:15.183Z",
                 "name": "Task Execution Manager",
-                "path": "/api/execution/v2/",
+                "path": "/v2/",
                 "port": "8153",
                 "version": "2.446.2"
             },
@@ -399,7 +399,7 @@
                 "isUp": true,
                 "lastCheck": "2023-09-15T07:45:15.204Z",
                 "name": "SafeBreach CLI",
-                "path": "/api/cli/v2/",
+                "path": "/dummy/path/v2/",
                 "port": "1307",
                 "version": "1.183.0"
             },
@@ -459,7 +459,7 @@
                 "isUp": true,
                 "lastCheck": "2023-09-15T07:45:15.183Z",
                 "name": "Task Execution Manager",
-                "path": "/api/execution/v2/",
+                "path": "/v2/",
                 "port": "8153",
                 "version": "2.446.2"
             },

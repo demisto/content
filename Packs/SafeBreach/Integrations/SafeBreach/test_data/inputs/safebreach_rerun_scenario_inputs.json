@@ -8,7 +8,7 @@
             "priority": "low",
             "test data": {
                 "plan": {
-                    "name": "Endpoint - Baseline_api_testing_changed_to_one_step",
+                    "name": "Dummy - Baseline",
                     "steps": [
                         {
                             "id": 199,

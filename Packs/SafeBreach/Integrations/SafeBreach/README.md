@@ -1,8 +1,4 @@
-1. User get, create, update and delete.
-2. Deployment create, update and delete.
-3. Tests get and delete.
-4. Simulators get, update, delete.
-5. Get current tests/simulation status and/or queue them.
+SafeBreach automatically executes thousands of breach methods from its extensive and growing Hacker’s Playbook™ to validate security control effectiveness. Simulations are automatically correlated with network, endpoint, and SIEM solutions providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.
 This integration was integrated and tested with version 2024Q1.4 of Safebreach.
 
 ## Configure Safebreach on Cortex XSOAR
