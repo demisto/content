@@ -1,8 +1,8 @@
 commonfields:
-  id: Redmine
+  id: Redmine1
   version: -1
-name: Redmine
-display: Redmine
+name: Redmine1
+display: Redmine1
 category: Utilities
 description: 'A project management and issue tracking system that provides a web-based
   platform for managing projects, tracking tasks, and handling various types of project-related

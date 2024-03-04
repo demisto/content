@@ -63,15 +63,10 @@ class Client(BaseClient):
                                       data=file_content)
         return response
 
-    def update_issue_request(self, args, file_token):
+    def update_issue_request(self, args):
         issue_id = args.pop('issue_id')
-        file_name = args.pop('file_name', '')
-        description = args.pop('file_description', '')
-        content_type = args.pop('file_content_type', '')
         params = assign_params(**args)
-        if file_token:
-            params['uploads'] = [{'token': file_token, 'file_name': file_name,
-                                'description': description, 'content_type': content_type}]
+        print(params)
         response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": params}, headers=self._post_put_header,
                                       empty_valid_codes=[204], return_empty_response=True)
         return response
@@ -300,18 +295,10 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
 
 def update_issue_command(client: Client, args: dict[str, Any]):
     issue_id = args.get('issue_id')
-    entry_id = args.pop('file_entry_id', None)
-    file_token = None
-    if (entry_id):
-        file_name = args.pop('file_name', '')
-        try:
-            file_token_response = client.create_file_token_request(assign_params(file_name=file_name), entry_id)
-            file_token= file_token_response['upload']['token']
-        except Exception as e:
-            raise DemistoException(f"Couldn't create file token for the file you are trying to upload. with error: {e}")
+    handle_file_attachment(client, args)
     try:
         convert_args_to_request_format(args)
-        client.update_issue_request(args, file_token)
+        client.update_issue_request(args)
         command_results = CommandResults(
             readable_output=f'Issue with id {issue_id} was successfully updated.')
         return (command_results)
