@@ -21,7 +21,7 @@ import tempfile
 urllib3.disable_warnings()
 
 
-class SuppressWarningFilter(logging.Filter):    # pragma: no cover
+class XsoarSuppressWarningFilter(logging.Filter):    # pragma: no cover
     def filter(self, record):
         # Suppress all logger records, but send the important ones to demisto logger
         if record.levelno == logging.WARNING:
@@ -31,14 +31,14 @@ class SuppressWarningFilter(logging.Filter):    # pragma: no cover
         return False
 
 
-# Make sure we have only one SuppressWarningFilter
+# Make sure we have only one XsoarSuppressWarningFilter
 v21_logger = logging.getLogger("taxii2client.v21")
 demisto.debug(f'Logging Filters before removing: {v21_logger.filters=}')
 for current_filter in list(v21_logger.filters):    # pragma: no cover
-    if 'SuppressWarningFilter' in type(current_filter).__name__:
+    if 'XsoarSuppressWarningFilter' in type(current_filter).__name__:
         v21_logger.removeFilter(current_filter)
 demisto.debug(f'Logging Filters after removing: {v21_logger.filters=}')
-v21_logger.addFilter(SuppressWarningFilter())
+v21_logger.addFilter(XsoarSuppressWarningFilter())
 demisto.debug(f'Logging Filters: {v21_logger.filters=}')
 
 # CONSTANTS
