@@ -9045,11 +9045,11 @@ if 'requests' in sys.modules:
 
                 err_msg = 'Verify that the server URL parameter' \
                     ' is correct and that you have access to the server from your host.' \
-                    f'\nError Type: {err_type}'
+                    '\nError Type: {}'.format(err_type)
                 if exception.errno and exception.strerror:
-                    err_msg = f'{err_msg}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n'
+                    err_msg += '\nError Number: [{}]\nMessage: {}\n'.format(exception.errno, exception.strerror)
                 else:
-                    err_msg = f'{err_msg}\n{str(exception)}'
+                    err_msg += '\n{}'.format(str(exception))
                 raise DemistoException(err_msg, exception)
 
             except requests.exceptions.RetryError as exception:
