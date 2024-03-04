@@ -640,7 +640,7 @@ def main():
 
     try:
         response = slack_client.chat_postMessage(
-            channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
+            channel=CONTENT_CHANNEL, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
         )
 
         if threaded_messages:
@@ -648,7 +648,7 @@ def main():
             thread_ts: str = data['ts']
             for slack_msg in threaded_messages:
                 slack_client.chat_postMessage(
-                    channel=computed_slack_channel, attachments=[slack_msg], username=SLACK_USERNAME,
+                    channel=CONTENT_CHANNEL, attachments=[slack_msg], username=SLACK_USERNAME,
                     thread_ts=thread_ts
                 )
 
