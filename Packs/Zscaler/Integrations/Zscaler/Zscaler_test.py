@@ -7,10 +7,10 @@ import requests_mock
 
 
 class ResponseMock:
-    def __init__(self, response):
+    def __init__(self, response, status_code=200):
         self._json = response
         self.content = json.dumps(response)
-        self.status_code = 200
+        self.status_code = status_code
 
     def json(self):
         return self._json
@@ -85,6 +85,25 @@ def test_url_command(mocker):
                      response_path='test_data/responses/url.json',
                      expected_result_path='test_data/results/url.json',
                      mocker=mocker, result_validator=validator)
+
+
+def test_url_429_retry(mocker, requests_mock):
+    """url"""
+    import Zscaler
+    Zscaler.BASE_URL = 'http://cloud/api/v1'
+    data = {  # https://help.zscaler.com/zia/understanding-rate-limiting
+        "message": "Rate Limit (4/SECOND) exceeded",
+        "Retry-After": "4 seconds"
+    }
+    response = ResponseMock(response=data, status_code=429)
+    requests_mock.post(urljoin(Zscaler.BASE_URL, 'urlLookup'), status_code=429)
+    mocker.patch('requests.request', return_value=response)
+    args = {'url': 'https://www.demisto-news.com,https://www.demisto-search.com'}
+
+    try:
+        Zscaler.url_lookup(args)
+    except Exception as ex:
+        assert 'Exceeded maximum retries' in str(ex)
 
 
 def test_url_fails_unknown_error_code(mocker, requests_mock):

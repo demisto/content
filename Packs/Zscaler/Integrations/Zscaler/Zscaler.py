@@ -30,7 +30,7 @@ PROXY = demisto.params().get("proxy", True)
 REQUEST_TIMEOUT = int(demisto.params().get("requestTimeout", 15))
 DEFAULT_HEADERS = {"content-type": "application/json"}
 EXCEEDED_RATE_LIMIT_STATUS_CODE = 429
-MAX_SECONDS_TO_WAIT = 100
+MAX_SECONDS_TO_WAIT = 40
 SESSION_ID_KEY = "session_id"
 ERROR_CODES_DICT = {
     400: "Invalid or bad request",
@@ -74,6 +74,10 @@ handle_proxy()
 """ HELPER CLASSES """
 
 
+class RateLimitError(DemistoException):
+    """Error to be raised when the time of retries exceeded the MAX_SECONDS_TO_WAIT"""
+
+
 class AuthorizationError(DemistoException):
     """Error to be raised when 401/403 headers are present in http response"""
 
@@ -81,7 +85,19 @@ class AuthorizationError(DemistoException):
 """ HELPER FUNCTIONS """
 
 
-def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_wait=3):
+def extract_sleep_time_from_429(res: requests.Response):
+    res_json: dict = res.json()
+    retry_after = res_json.get('Retry-After', None)
+    retry_split_res = retry_after.split()
+    sleep_time = 0
+    if len(retry_split_res) == 2 and retry_split_res[1].lower() == 'seconds':
+        sleep_time = int(retry_split_res[0])
+    else:
+        demisto.debug(f'Cant parse 429 Retry-After response: {res.json()}')
+    return sleep_time
+
+
+def http_request(method, url_suffix, data=None, headers=None, epoch_time=time.time()):
     if headers is None:
         headers = DEFAULT_HEADERS
     data = {} if data is None else data
@@ -96,21 +112,21 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
             timeout=REQUEST_TIMEOUT,
         )
         if res.status_code not in (200, 204):
-            if (
-                res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE
-                and num_of_seconds_to_wait <= MAX_SECONDS_TO_WAIT
-            ):
-                random_num_of_seconds = random.randint(
-                    num_of_seconds_to_wait, num_of_seconds_to_wait + 3
-                )
-                time.sleep(random_num_of_seconds)  # pylint: disable=sleep-exists
-                return http_request(
-                    method,
-                    url_suffix,
-                    data,
-                    headers=headers,
-                    num_of_seconds_to_wait=num_of_seconds_to_wait + 3,
-                )
+            if res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE:
+                sleep_time = extract_sleep_time_from_429(res)
+                if sleep_time == 0:
+                    raise Exception(f'429 unhandled format. {res.text}')
+                if time.time() - epoch_time + sleep_time < MAX_SECONDS_TO_WAIT:
+                    demisto.debug(f'Got 429 will now sleep for:{sleep_time} seconds.')
+                    time.sleep(sleep_time)
+                    return http_request(
+                        method,
+                        url_suffix,
+                        data,
+                        headers=headers,
+                        epoch_time=epoch_time)
+                else:
+                    raise RateLimitError('Exceeded maximum retries for rate limit')
             elif res.status_code in (401, 403):
                 raise AuthorizationError(res.content)
             elif (
@@ -188,7 +204,11 @@ def login():
     ts, key = obfuscateApiKey(API_KEY)
     data = {"username": USERNAME, "timestamp": ts, "password": PASSWORD, "apiKey": key}
     json_data = json.dumps(data)
-    result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    try:
+        result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    except Exception as e:
+        LOG(f"Login failed with error: {str(e)}")
+        return None
     auth = result.headers["Set-Cookie"]
     ctx[SESSION_ID_KEY] = DEFAULT_HEADERS["cookie"] = auth[: auth.index(";")]
     set_integration_context(ctx)
