@@ -293,7 +293,6 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
             raise DemistoException(e.args[0])
 
 def update_issue_command(client: Client, args: dict[str, Any]):
-    #categoty ID, fixed versions מזהההההה
     issue_id = args.get('issue_id')
     entry_id = args.pop('file_entry_id', None)
     if (entry_id):
@@ -319,7 +318,6 @@ def update_issue_command(client: Client, args: dict[str, Any]):
             raise DemistoException(e.args[0])
 
 def get_issues_list_command(client: Client, args: dict[str, Any]):
-    #cf_x not working
     try:
         offset_to_dict, limit_to_dict, page_number_for_header = adjust_paging_to_request(args)
         status_id = args.pop('status_id', None)
