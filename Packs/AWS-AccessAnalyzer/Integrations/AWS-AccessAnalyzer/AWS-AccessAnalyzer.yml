@@ -26,7 +26,7 @@ configuration:
   - us-gov-east-1
   - us-gov-west-1
   type: 15
-  required: false
+  required: true
 - display: Role Arn
   additionalinfo: The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required.
   name: roleArn
@@ -301,7 +301,7 @@ script:
       name: roleSessionDuration
     description: Updates findings with the new values provided in the request.
     name: aws-access-analyzer-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.86592
+  dockerimage: demisto/boto3py3:1.0.0.88855
   isfetch: true
   runonce: false
   script: '-'
