@@ -536,11 +536,8 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         demisto.debug(f'search_query_per_page number of attributes:\
                       {len(search_query_per_page.get("response", {}).get("Attribute", []))} page: {params_dict["page"]}')
         indicators = build_indicators(search_query_per_page, attribute_types, tlp_color, params.get('url'), reputation, feed_tags)
-        if LIMIT > 2000:
-            for iter_ in batch(indicators, batch_size=2000):
-                demisto.createIndicators(iter_)
-        else:
-            demisto.createIndicators(indicators)
+        for iter_ in batch(indicators, batch_size=2000):
+            demisto.createIndicators(iter_)
         params_dict['page'] += 1
         last_run = search_query_per_page['response']['Attribute'][-1]['timestamp']
         search_query_per_page = client.search_query(params_dict)
