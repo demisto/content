@@ -927,7 +927,9 @@ script:
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: 'Query by which to filter reference sets, e.g., "timeout_type=FIRST_SEEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: |-
+        Query by which to filter reference sets, e.g., "timeout_type=FIRST_SEEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html.
+        when using both ref_name and filter arguments, the filter should be from the data values of the specified reference set, e.g. "value='1.1.1.1'".
     - name: fields
       description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-GET.html.'
       isArray: true
