@@ -616,8 +616,8 @@ class TestFetchRemovingIrrelevantIncidents:
         splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
         last_fetched_ids = set_last_run_mocker.call_args_list[0][0][0]['found_incidents_ids']
         assert last_fetched_ids == {'1': {'occurred_time': '2024-02-19T10:00:00'},
-                                    '3': {'occurred_time': '2024-02-12T10:00:00'},
-                                    '4': {'occurred_time': '2024-02-12T10:00:00'}}
+                                    '3': {'occurred_time': '2024-02-19T10:00:00'},
+                                    '4': {'occurred_time': '2024-02-19T10:00:00'}}
 
     def test_remove_irrelevant_fetched_incident_ids(self, mocker: MockerFixture):
         """
@@ -634,8 +634,8 @@ class TestFetchRemovingIrrelevantIncidents:
 
         mocker.patch.object(demisto, 'setLastRun')
         mock_last_run = {'time': '2024-02-12T10:00:00', 'latest_time': '2024-02-19T10:00:00',
-                         'found_incidents_ids': {'1': {'occurred_time': '2024-02-12T09:59:59'},
-                                                 '2': {'occurred_time': '2024-02-12T10:00:00'}}}
+                         'found_incidents_ids': {'1': {'occurred_time': '2024-02-19T10:01:00'},
+                                                 '2': {'occurred_time': '2024-02-18T10:00:00'}}}
         mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
         mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
         mocker.patch('demistomock.params', return_value=mock_params)
@@ -646,9 +646,9 @@ class TestFetchRemovingIrrelevantIncidents:
         mapper = UserMappingObject(service, False)
         splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
         last_fetched_ids = set_last_run_mocker.call_args_list[0][0][0]['found_incidents_ids']
-        assert last_fetched_ids == {'2': {'occurred_time': '2024-02-12T10:00:00'},
-                                    '3': {'occurred_time': '2024-02-12T10:00:00'},
-                                    '4': {'occurred_time': '2024-02-12T10:00:00'}}
+        assert last_fetched_ids == {'2': {'occurred_time': '2024-02-18T10:00:00'},
+                                    '3': {'occurred_time': '2024-02-19T10:00:00'},
+                                    '4': {'occurred_time': '2024-02-19T10:00:00'}}
 
 
 class TestFetchForLateIndexedEvents:
