@@ -456,7 +456,7 @@
                             "original_tags": "DS:PANW/XDR Agent"
                         },
                         {
-                            "agent_os_sub_type": "3.2.2.2;    ",
+                            "agent_os_sub_type": "2.2.2.2;    ",
                             "fw_app_category": null,
                             "fw_app_id": null,
                             "fw_app_subcategory": null,
@@ -604,7 +604,7 @@
                             "name": "Kernel Privilege Escalation",
                             "endpoint_id": "22222222",
                             "description": "Traps has detected malware",
-                            "host_ip": "4.1.1.1",
+                            "host_ip": "1.1.1.1",
                             "host_name": "host_name",
                             "source": "XDR Agent",
                             "action": "BLOCKED",
