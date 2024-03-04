@@ -58,4 +58,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Codecov Breach - Bash Uploader](../doc_files/Codecov_Breach_-_Bash_Uploader.png)
+![Codecov Breach - Bash Uploader](../doc_files/Codecov_breach_-_Bash_Uploader.png)

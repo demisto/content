@@ -512,7 +512,7 @@ tasks:
       RuleName:
         simple: XSOAR - Block IP playbook - ${alert.alertid}
       UserVerification:
-        simple: "False"
+        simple: ${inputs.UserVerification}
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -601,7 +601,7 @@ tasks:
       Tag:
         simple: Bad Account
       UserVerification:
-        simple: "True"
+        simple: ${inputs.UserVerification}
       Username:
         complex:
           root: alert
@@ -664,7 +664,7 @@ inputs:
   playbookInputQuery:
 - key: UserVerification
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: "Whether to provide user verification for blocking those IPs. \nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:

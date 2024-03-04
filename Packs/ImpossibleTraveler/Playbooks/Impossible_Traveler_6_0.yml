@@ -359,6 +359,8 @@ tasks:
           accessor: Address
           transformers:
           - operator: uniq
+      InternalRange:
+        simple: ${inputs.InternalRange}          
       ResolveIP:
         simple: "True"
     separatecontext: true

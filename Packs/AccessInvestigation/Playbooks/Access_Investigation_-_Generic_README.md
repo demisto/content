@@ -71,4 +71,4 @@ This playbook does not use any integrations.
 
 ---
 
-![Access Investigation - Generic](../doc_files/Access_Investigation_-_Generic.png)
+![Access Investigation - Generic](../doc_files/Access_Investigation_-_Generic_4_5.png)
