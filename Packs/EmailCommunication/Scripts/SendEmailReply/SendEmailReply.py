@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import json
-import random
 import re
 from datetime import datetime as dt
 from markdown import Extension, markdown
@@ -576,9 +575,8 @@ def get_incident_by_query(query):
 def get_unique_code(incident_id):
     """
         Create an 13-digit unique random code that should be used to identify new created incidents.
-    Args: None
     Args:
-        incident_id: 
+        incident_id:
 
     Returns:
         13-digit code returned as a string
