@@ -86,10 +86,13 @@ class AuthorizationError(DemistoException):
 
 
 def extract_sleep_time_from_429(res: requests.Response):
+    sleep_time = 0
     res_json: dict = res.json()
     retry_after = res_json.get('Retry-After', None)
+    if not retry_after:
+        return sleep_time
+    
     retry_split_res = retry_after.split()
-    sleep_time = 0
     if len(retry_split_res) == 2 and retry_split_res[1].lower() == 'seconds':
         sleep_time = int(retry_split_res[0])
     else:
@@ -115,7 +118,7 @@ def http_request(method, url_suffix, data=None, headers=None, epoch_time=time.ti
             if res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE:
                 sleep_time = extract_sleep_time_from_429(res)
                 if sleep_time == 0:
-                    raise Exception(f'429 unhandled format. {res.text}')
+                    raise Exception(f'429 unsupported format. {res}')
                 if time.time() - epoch_time + sleep_time < MAX_SECONDS_TO_WAIT:
                     demisto.debug(f'Got 429 will now sleep for:{sleep_time} seconds.')
                     time.sleep(sleep_time)
@@ -126,7 +129,7 @@ def http_request(method, url_suffix, data=None, headers=None, epoch_time=time.ti
                         headers=headers,
                         epoch_time=epoch_time)
                 else:
-                    raise RateLimitError('Exceeded maximum retries for rate limit')
+                    raise RateLimitError('Exceeded maximum retries time for rate limit.')
             elif res.status_code in (401, 403):
                 raise AuthorizationError(res.content)
             elif (
