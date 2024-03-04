@@ -451,17 +451,14 @@ def fetch_events(client: Client, max_fetch: int, start_date_arg: str = "", end_d
             - A dictionary with the key 'last_fetch' and its value representing the end date of the fetched events.
     """
     last_run = demisto.getLastRun()
-    events = []
 
     alert_events, alert_next_run = get_events_alert_type(client, start_date_arg, max_fetch, last_run)
-    events.extend(alert_events)
     audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch, last_run)
-    events.extend(audit_events)
     next_run = {"alert": alert_next_run, "audit": audit_next_run}
     if "next_page" in (alert_next_run | audit_next_run):
         # Will instantly re-trigger the fetch command.
         next_run["nextTrigger"] = "0"
-    return events, next_run
+    return alert_events, audit_events, next_run
 
 
 def add_time_field(events: List[Dict[str, Any]]) -> list:
@@ -515,27 +512,41 @@ def validate_start_and_end_dates(args):
     return start_date_str, end_date_str
 
 
-def get_events_command(client, args):
+def get_events_command(client, args) -> tuple:
     """
-    Fetches events from the Jamf Protect API within a specified date range and limit.
+     Fetches events from the Jamf Protect API within a specified date range and returns them along with the command results.
 
-    Args:
-        client (Client): An instance of the Client class.
-        args (dict): A dictionary containing the arguments for the command.
+     This function fetches both alert and audit type events from the Jamf Protect API based on the provided start and end dates.
+     It fetches events up to the maximum number specified by the 'limit' argument.
+     If the 'should_push_events' argument is set to True, it sends the fetched events to XSIAM.
 
-    Returns:
-        tuple: A tuple containing two elements:
-            - A list of dictionaries. Each dictionary represents an event.
-            - A CommandResults object which includes the events in its raw_response attribute and a human-readable output.
-    """
+     Args:
+         client (Client): An instance of the Client class for interacting with the API.
+         args (dict): A dictionary containing the arguments for the command.
+                      It should contain keys 'start_date', 'end_date', 'limit' and 'should_push_events'.
+
+     Returns:
+         tuple: A tuple containing two elements:
+             - A list of dictionaries. Each dictionary represents an event.
+             - A list of CommandResults objects. Each CommandResults object represents the command results for a type of event.
+     """
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
+    results = []
     start_date, end_date = validate_start_and_end_dates(args)
-    events, _ = fetch_events(client=client, max_fetch=limit, start_date_arg=start_date,
-                             end_date_arg=end_date)
-
+    alert_events, audit_events, _ = fetch_events(client=client, max_fetch=limit, start_date_arg=start_date,
+                                                 end_date_arg=end_date)
+    alert_events = alert_events[:limit]
+    audit_events = audit_events[:limit]
+    
+    if alert_events:
+        results.append(
+            CommandResults(readable_output=tableToMarkdown("Jamf Protect Alert Events", alert_events), raw_response=alert_events))
+    if audit_events:
+        results.append(
+            CommandResults(readable_output=tableToMarkdown("Jamf Protect Audit Events", audit_events), raw_response=audit_events))
+    events = alert_events + audit_events
     if events:
-        return add_time_field(events), CommandResults(readable_output=tableToMarkdown("Jamf Protect Events", events),
-                                                      raw_response=events)
+        return add_time_field(events), results
     return [], CommandResults(readable_output='No events found')
 
 
@@ -570,8 +581,9 @@ def main() -> None:  # pragma: no cover
             if argToBoolean(args.get("should_push_events")):
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
         elif demisto.command() == 'fetch-events':
-            events, new_last_run = fetch_events(client=client,
-                                                max_fetch=max_fetch)
+            alert_events, audit_events, new_last_run = fetch_events(client=client,
+                                                                    max_fetch=max_fetch)
+            events = alert_events + audit_events
             if events:
                 add_time_field(events)
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
