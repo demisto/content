@@ -1072,3 +1072,5 @@ tests:
 - No tests (auto formatted)
 description: Test Playbook for Endpoint Investigation Plan.
 fromversion: 6.6.0
+marketplaces:
+- marketplacev2
