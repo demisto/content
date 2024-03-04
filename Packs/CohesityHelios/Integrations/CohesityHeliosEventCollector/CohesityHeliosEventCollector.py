@@ -80,7 +80,14 @@ def adjust_and_dedup_elements(new_elements: list[dict], existing_element_ids: li
     filtered_list: list = []
     for element in new_elements:
         if element.get('id') not in existing_element_ids:
-            element['_time'] = element.get(time_field_name)
+            try:
+                element['_time'] = timestamp_to_datestring(element.get(time_field_name) / 1000)
+
+            except TypeError as e:
+                # modeling rule will default on ingestion time if _time is missing
+                demisto.error(f'Could not parse _time field, for event {element}: {e}')
+                pass
+
             filtered_list.append(element)
     return filtered_list
 
@@ -127,8 +134,7 @@ def hash_fields_to_create_id(event: dict) -> str:
     return _id
 
 
-def fetch_events_per_type(client: Client, event_type: EventType, fetch_start_timestamp: int, fetch_end_timestamp: int) -> \
-    list[dict]:
+def fetch_events_per_type(client: Client, event_type: str, fetch_start_timestamp: int, fetch_end_timestamp: int) -> list[dict]:
     """
     Given the event type to pull and the relevant start and end time, call the relevant function to pull the given event type.
     Args:
@@ -151,12 +157,18 @@ def fetch_events_per_type(client: Client, event_type: EventType, fetch_start_tim
     else:
         raise DemistoException(f'Event Type: {event_type} is not supported by the integration')
 
-    res = event_pulling_function(fetch_start_timestamp, fetch_end_timestamp)
-    events = res.get(data_field, [])
-    if event_type == EventType.alert:
-        # The API returns alerts with no specific order in each response, but we prefer DESCENDING order since the API will
-        # always return the LATEST PAGE_SIZE alerts that matched the query and not the EARLIEST PAGE_SIZE alerts.
-        events.sort(key=lambda alert: alert.get(ALERT_TIME_FIELD), reverse=True)
+    try:
+        res = event_pulling_function(fetch_start_timestamp, fetch_end_timestamp)
+        events = res.get(data_field, [])
+        if event_type == EventType.alert:
+            # The API returns alerts with no specific order in each response, but we prefer DESCENDING order since the API will
+            # always return the LATEST PAGE_SIZE alerts that matched the query and not the EARLIEST PAGE_SIZE alerts.
+            events.sort(key=lambda alert: alert.get(ALERT_TIME_FIELD), reverse=True)
+
+    except DemistoException as e:
+        if 'Unauthorized' in e.message:
+            raise DemistoException(f'Unauthorized: API key is invalid')
+        raise e
 
     return events
 
@@ -180,7 +192,8 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
     time_field_name = ALERT_TIME_FIELD if event_type == EventType.alert else AUDIT_LOGS_TIME_FIELD
 
     ids_for_dedup = cache.get('ids_for_dedup', [])
-    fetch_start_timestamp = cache.get('next_start_timestamp') or int(arg_to_datetime('1 week').timestamp() * 1000000)   # TODO: change default to 1 min
+    fetch_start_timestamp = cache.get('next_start_timestamp') or int(arg_to_datetime('1 week').timestamp() * 1000000)
+    # fetch_start_timestamp = cache.get('next_start_timestamp') or int(arg_to_datetime('1 min').timestamp() * 1000000)
     fetch_end_timestamp = cache.get('next_end_timestamp') or int(arg_to_datetime('Now').timestamp() * 1000000)
 
     # The latest_event_fetched_timestamp acts like a pointer to the newest event we ever fetched.

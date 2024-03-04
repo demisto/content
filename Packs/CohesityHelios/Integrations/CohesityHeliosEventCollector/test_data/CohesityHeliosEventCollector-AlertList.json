@@ -1,244 +1,258 @@
-{
-    "alertsList": [
-        {
-            "id": "308054",
-            "alertCode": "CE00411001",
-            "firstTimestampUsecs": 1708175775539273,
-            "latestTimestampUsecs": 1708175775539273,
-            "alertType": 11001,
-            "dedupTimestamps": [
-                1708175775539273
-            ],
-            "dedupCount": 1,
-            "clusterName": "cohesity-cluster-2",
-            "clusterId": 878948577151123,
-            "alertTypeBucket": "kSoftware",
-            "alertCategory": "kNodeHealth",
-            "severity": "kCritical",
-            "alertState": "kOpen",
-            "alertDocument": {
-                "alertName": "FrequentProcessRestarts",
-                "alertDescription": "Process bifrost_broker_exec is restarting frequently",
-                "alertCause": "process bifrost_broker_exec is restarting frequently on the cluster.",
-                "alertHelpText": "Please refer to KB for details/resolution."
+[
+    {
+        "alertsList": [
+            {
+                "id": "308054",
+                "alertCode": "CE00411001",
+                "firstTimestampUsecs": 1708175775539273,
+                "latestTimestampUsecs": 1708175775539273,
+                "alertType": 11001,
+                "dedupTimestamps": [
+                    1708175775539273
+                ],
+                "dedupCount": 1,
+                "clusterName": "cohesity-cluster-2",
+                "clusterId": 878948577151123,
+                "alertTypeBucket": "kSoftware",
+                "alertCategory": "kNodeHealth",
+                "severity": "kCritical",
+                "alertState": "kOpen",
+                "alertDocument": {
+                    "alertName": "FrequentProcessRestarts",
+                    "alertDescription": "Process bifrost_broker_exec is restarting frequently",
+                    "alertCause": "process bifrost_broker_exec is restarting frequently on the cluster.",
+                    "alertHelpText": "Please refer to KB for details/resolution."
+                },
+                "vaults": null,
+                "propertyList": [
+                    {
+                        "key": "num_restarts",
+                        "value": "22"
+                    },
+                    {
+                        "key": "process_name",
+                        "value": "bifrost_broker_exec"
+                    },
+                    {
+                        "key": "reason_string",
+                        "value": "process bifrost_broker_exec is restarting frequently on the cluster."
+                    },
+                    {
+                        "key": "cluster_name",
+                        "value": "cohesity-cluster-2"
+                    },
+                    {
+                        "key": "duration_seconds",
+                        "value": "3600"
+                    },
+                    {
+                        "key": "node_id",
+                        "value": "3812890615711891"
+                    }
+                ]
             },
-            "vaults": null,
-            "propertyList": [
-                {
-                    "key": "num_restarts",
-                    "value": "22"
+            {
+                "id": "306054",
+                "alertCode": "CE00411001",
+                "firstTimestampUsecs": 1707996205135856,
+                "latestTimestampUsecs": 1707996205135856,
+                "alertType": 11001,
+                "dedupTimestamps": [
+                    1707996205135856
+                ],
+                "dedupCount": 1,
+                "clusterName": "cohesity-cluster-2",
+                "clusterId": 878948577151123,
+                "alertTypeBucket": "kSoftware",
+                "alertCategory": "kNodeHealth",
+                "severity": "kCritical",
+                "alertState": "kOpen",
+                "alertDocument": {
+                    "alertName": "FrequentProcessRestarts",
+                    "alertDescription": "Process bifrost_broker_exec is restarting frequently",
+                    "alertCause": "process bifrost_broker_exec is restarting frequently on the cluster.",
+                    "alertHelpText": "Please refer to KB for details/resolution."
                 },
-                {
-                    "key": "process_name",
-                    "value": "bifrost_broker_exec"
+                "vaults": null,
+                "propertyList": [
+                    {
+                        "key": "num_restarts",
+                        "value": "22"
+                    },
+                    {
+                        "key": "process_name",
+                        "value": "bifrost_broker_exec"
+                    },
+                    {
+                        "key": "reason_string",
+                        "value": "process bifrost_broker_exec is restarting frequently on the cluster."
+                    },
+                    {
+                        "key": "cluster_name",
+                        "value": "cohesity-cluster-2"
+                    },
+                    {
+                        "key": "duration_seconds",
+                        "value": "3600"
+                    },
+                    {
+                        "key": "node_id",
+                        "value": "3812890615711891"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "alertsList": [
+            {
+                "id": "66777",
+                "alertCode": "CE00411001",
+                "firstTimestampUsecs": 1707986205135856,
+                "latestTimestampUsecs": 1707986205135856,
+                "alertType": 11001,
+                "dedupTimestamps": [
+                    1708072432714915,
+                    1708071663181477
+                ],
+                "dedupCount": 53,
+                "clusterName": "cohesity-cluster-1",
+                "clusterId": 3543552943385798,
+                "alertTypeBucket": "kSoftware",
+                "alertCategory": "kNodeHealth",
+                "severity": "kCritical",
+                "alertState": "kOpen",
+                "alertDocument": {
+                    "alertName": "FrequentProcessRestarts",
+                    "alertDescription": "Process storage_proxy_exec has restarted 36 times on node 3810370756996294 in last 3600 seconds.",
+                    "alertCause": "process storage_proxy_exec is restarting frequently on the cluster.",
+                    "alertHelpText": "Please refer to KB for details/resolution."
                 },
-                {
-                    "key": "reason_string",
-                    "value": "process bifrost_broker_exec is restarting frequently on the cluster."
-                },
-                {
-                    "key": "cluster_name",
-                    "value": "cohesity-cluster-2"
-                },
-                {
-                    "key": "duration_seconds",
-                    "value": "3600"
-                },
-                {
-                    "key": "node_id",
-                    "value": "3812890615711891"
-                }
-            ]
-        },
-        {
-            "id": "66777",
-            "alertCode": "CE00411001",
-            "firstTimestampUsecs": 1707986205135856,
-            "latestTimestampUsecs": 1708072432714915,
-            "alertType": 11001,
-            "dedupTimestamps": [
-                1708072432714915,
-                1708071663181477,
-                1708071438750893,
-                1708070920503856,
-                1708070479861012,
-                1708069952146706,
-                1708064574966345,
-                1708064441056497,
-                1708064377374054,
-                1708064287025946,
-                1708064228913115,
-                1708063929163985,
-                1708062918316431,
-                1708062860238186,
-                1708062329762632,
-                1708061888388718,
-                1708061858300237,
-                1708061830651731,
-                1708061801177733,
-                1708061763834575,
-                1708061741780078,
-                1708060933827172,
-                1708060907904477,
-                1708060800101782,
-                1708060503305698,
-                1708059913519562,
-                1708059461836952,
-                1708059123802947,
-                1708059087537751,
-                1708056433847209,
-                1708055911443416,
-                1708055880394804,
-                1708055711566604,
-                1708055453462804,
-                1708055341240098,
-                1708055251792433,
-                1708055147497450,
-                1708055127135464,
-                1708055043080470,
-                1708051594455223,
-                1708041709551963,
-                1707994712922514,
-                1707993591574730,
-                1707988447254772,
-                1707988386749483,
-                1707988055090381,
-                1707987278597499,
-                1707987112840674,
-                1707986763525742,
-                1707986742217528
-            ],
-            "dedupCount": 53,
-            "clusterName": "cohesity-cluster-1",
-            "clusterId": 3543552943385798,
-            "alertTypeBucket": "kSoftware",
-            "alertCategory": "kNodeHealth",
-            "severity": "kCritical",
-            "alertState": "kOpen",
-            "alertDocument": {
-                "alertName": "FrequentProcessRestarts",
-                "alertDescription": "Process storage_proxy_exec has restarted 36 times on node 3810370756996294 in last 3600 seconds.",
-                "alertCause": "process storage_proxy_exec is restarting frequently on the cluster.",
-                "alertHelpText": "Please refer to KB for details/resolution."
+                "vaults": null,
+                "propertyList": [
+                    {
+                        "key": "node_id",
+                        "value": "3810370756996294"
+                    },
+                    {
+                        "key": "num_restarts",
+                        "value": "36"
+                    },
+                    {
+                        "key": "process_name",
+                        "value": "storage_proxy_exec"
+                    },
+                    {
+                        "key": "reason_string",
+                        "value": "process storage_proxy_exec is restarting frequently on the cluster."
+                    },
+                    {
+                        "key": "cluster_name",
+                        "value": "cohesity-cluster-1"
+                    },
+                    {
+                        "key": "duration_seconds",
+                        "value": "3600"
+                    }
+                ]
             },
-            "vaults": null,
-            "propertyList": [
-                {
-                    "key": "node_id",
-                    "value": "3810370756996294"
+            {
+                "id": "66770",
+                "alertCode": "CE00411001",
+                "firstTimestampUsecs": 1707984205135856,
+                "latestTimestampUsecs": 1707984205135856,
+                "alertType": 11001,
+                "dedupTimestamps": [
+                    1708072432714915,
+                    1708071663181477,
+                    1708071438750893
+                ],
+                "dedupCount": 53,
+                "clusterName": "cohesity-cluster-1",
+                "clusterId": 3543552943385798,
+                "alertTypeBucket": "kSoftware",
+                "alertCategory": "kNodeHealth",
+                "severity": "kCritical",
+                "alertState": "kOpen",
+                "alertDocument": {
+                    "alertName": "FrequentProcessRestarts",
+                    "alertDescription": "Process storage_proxy_exec has restarted 36 times on node 3810370756996294 in last 3600 seconds.",
+                    "alertCause": "process storage_proxy_exec is restarting frequently on the cluster.",
+                    "alertHelpText": "Please refer to KB for details/resolution."
                 },
-                {
-                    "key": "num_restarts",
-                    "value": "36"
+                "vaults": null,
+                "propertyList": [
+                    {
+                        "key": "node_id",
+                        "value": "3810370756996294"
+                    },
+                    {
+                        "key": "num_restarts",
+                        "value": "36"
+                    },
+                    {
+                        "key": "process_name",
+                        "value": "storage_proxy_exec"
+                    },
+                    {
+                        "key": "reason_string",
+                        "value": "process storage_proxy_exec is restarting frequently on the cluster."
+                    },
+                    {
+                        "key": "cluster_name",
+                        "value": "cohesity-cluster-1"
+                    },
+                    {
+                        "key": "duration_seconds",
+                        "value": "3600"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "alertsList": [
+            {
+                "id": "158138",
+                "alertCode": "CE00301008",
+                "firstTimestampUsecs": 1707814673947198,
+                "latestTimestampUsecs": 1707814673947198,
+                "alertType": 1008,
+                "dedupTimestamps": [
+                ],
+                "dedupCount": 2405,
+                "clusterName": "cohesity-cluster-2",
+                "clusterId": 878948577151123,
+                "alertTypeBucket": "kHardware",
+                "alertCategory": "kCluster",
+                "severity": "kWarning",
+                "alertState": "kOpen",
+                "alertDocument": {
+                    "alertName": "TimeService",
+                    "alertDescription": "Node 3812890615711891 with ip 1.1.1.1 cannot sync time.",
+                    "alertCause": "The difference between the node's time and the server 172.16.11.20's time is 35 seconds. Resyncing failed 3 times.A new NTP server might be required.",
+                    "alertHelpText": "Verify NTP server."
                 },
-                {
-                    "key": "process_name",
-                    "value": "storage_proxy_exec"
-                },
-                {
-                    "key": "reason_string",
-                    "value": "process storage_proxy_exec is restarting frequently on the cluster."
-                },
-                {
-                    "key": "cluster_name",
-                    "value": "cohesity-cluster-1"
-                },
-                {
-                    "key": "duration_seconds",
-                    "value": "3600"
-                }
-            ]
-        },
-        {
-            "id": "158146",
-            "alertCode": "CE00301008",
-            "firstTimestampUsecs": 1707814873967198,
-            "latestTimestampUsecs": 1707901085225096,
-            "alertType": 1008,
-            "dedupTimestamps": [
-                1707901085225096,
-                1707901085224874,
-                1707901079113966,
-                1707901073002266,
-                1707901066890484,
-                1707901060779784,
-                1707901054670169,
-                1707901048560724,
-                1707901042450195,
-                1707900586892112,
-                1707900586892027,
-                1707900580783607,
-                1707900574673734,
-                1707900568562981,
-                1707900562454438,
-                1707900556342190,
-                1707900550232312,
-                1707900544122869,
-                1707900173619720,
-                1707900173619622,
-                1707900167512020,
-                1707900161402731,
-                1707900155292083,
-                1707900149185864,
-                1707900143070616,
-                1707897400415394,
-                1707897394298484,
-                1707897388180613,
-                1707897382065241,
-                1707897375948277,
-                1707897369814172,
-                1707897363697697,
-                1707897357582247,
-                1707897351464357,
-                1707897345345706,
-                1707897039120478,
-                1707897033005035,
-                1707897026889068,
-                1707897020773130,
-                1707897014658173,
-                1707897008536426,
-                1707897002008800,
-                1707896995891991,
-                1707896989779038,
-                1707896983662150,
-                1707896677434063,
-                1707896671315961,
-                1707896665201525,
-                1707896659082909,
-                1707896652964729
-            ],
-            "dedupCount": 2405,
-            "clusterName": "cohesity-cluster-2",
-            "clusterId": 878948577151123,
-            "alertTypeBucket": "kHardware",
-            "alertCategory": "kCluster",
-            "severity": "kWarning",
-            "alertState": "kOpen",
-            "alertDocument": {
-                "alertName": "TimeService",
-                "alertDescription": "Node 3812890615711891 with ip 1.1.1.1 cannot sync time.",
-                "alertCause": "The difference between the node's time and the server 172.16.11.20's time is 35 seconds. Resyncing failed 3 times.A new NTP server might be required.",
-                "alertHelpText": "Verify NTP server."
-            },
-            "vaults": null,
-            "propertyList": [
-                {
-                    "key": "node_id",
-                    "value": "3812890615711891"
-                },
-                {
-                    "key": "node_ip",
-                    "value": "1.1.1.1"
-                },
-                {
-                    "key": "reason_string",
-                    "value": "The difference between the node's time and the server 172.16.11.20's time is 35 seconds. Resyncing failed 3 times.A new NTP server might be required."
-                },
-                {
-                    "key": "cluster_name",
-                    "value": "cohesity-cluster-2"
-                }
-            ]
-        }
-    ]
-}
+                "vaults": null,
+                "propertyList": [
+                    {
+                        "key": "node_id",
+                        "value": "3812890615711891"
+                    },
+                    {
+                        "key": "node_ip",
+                        "value": "1.1.1.1"
+                    },
+                    {
+                        "key": "reason_string",
+                        "value": "The difference between the node's time and the server 172.16.11.20's time is 35 seconds. Resyncing failed 3 times.A new NTP server might be required."
+                    },
+                    {
+                        "key": "cluster_name",
+                        "value": "cohesity-cluster-2"
+                    }
+                ]
+            }
+        ]
+    }
+]
