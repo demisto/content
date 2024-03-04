@@ -11,7 +11,7 @@ from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DA
     REPORTS_INDICATORS, ID_TO_OBJECT, INDICATORS_RESULT, CAMPAIGN_RESPONSE, CAMPAIGN_INDICATOR, COURSE_OF_ACTION_DATA, \
     PUBLICATIONS, ATTACK_PATTERN_INDICATOR, COURSE_OF_ACTION_INDICATORS, RELATIONSHIP_OBJECTS, INTRUSION_SET_DATA, \
     DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST, STIX_ATTACK_PATTERN_INDICATOR, SUB_TECHNIQUE_INDICATOR, \
-    SUB_TECHNIQUE_DATA, INVALID_ATTACK_PATTERN_STRUCTURE
+    SUB_TECHNIQUE_DATA, INVALID_ATTACK_PATTERN_STRUCTURE, FETCH_RESULTS, FETCH_MOCK_RESPONSE, INDICATOR_WITH_RELATIONSHIP
 
 
 @pytest.mark.parametrize('command, args, response, length', [
@@ -61,6 +61,18 @@ TYPE_TO_RESPONSE_WIITH_INVALID_ATTACK_PATTERN_DATA = {
 }
 
 
+TYPE_TO_RESPONSE_FETCH = {
+    'indicator': INDICATORS_DATA,
+    'report': FETCH_MOCK_RESPONSE,
+    'attack-pattern': ATTACK_PATTERN_DATA,
+    'malware': MALWARE_DATA,
+    'campaign': CAMPAIGN_RESPONSE,
+    'relationship': RELATIONSHIP_DATA,
+    'course-of-action': COURSE_OF_ACTION_DATA,
+    'intrusion-set': INTRUSION_SET_DATA
+}
+
+
 def test_fetch_indicators_command(mocker):
     """
     Given
@@ -85,6 +97,7 @@ def test_fetch_indicators_command(mocker):
     indicators = fetch_indicators(client, create_relationships=True)
     assert len(indicators) == 17
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
+    assert indicators == FETCH_RESULTS
 
 
 def test_fetch_indicators_fails_on_invalid_attack_pattern_structure(mocker):
@@ -212,8 +225,7 @@ def test_parse_indicators():
     - Validate The IOCs list extracted successfully.
 
     """
-    client = Client(api_key='1234', verify=False)
-    assert parse_indicators(client, INDICATORS_DATA, [], '')[0] == INDICATORS_RESULT
+    assert parse_indicators(INDICATORS_DATA, [], '')[0] == INDICATORS_RESULT
 
 
 def test_parse_reports():
@@ -338,3 +350,30 @@ def test_change_attack_pattern_to_stix_attack_pattern():
     assert StixParser.change_attack_pattern_to_stix_attack_pattern({"type": "ind", "fields":
                                                                     {"killchainphases": "kill chain", "description": "des"}}) == \
         {"type": "STIX ind", "fields": {"stixkillchainphases": "kill chain", "stixdescription": "des"}}
+
+
+def test_fetch_indicators_command_with_relationship(mocker):
+    """
+    Given
+    - fetch incidents command
+    - command args
+    - command raw response
+    When
+    - mock the Client's get_stix_objects.
+    Then
+    - run the fetch incidents command using the Client
+    Validate the amount of indicators fetched
+    Validate that the dummy indicator with the relationships list fetched
+    """
+
+    def mock_get_stix_objects(test, **kwargs):
+        type_ = kwargs.get('type')
+        client.objects_data[type_] = TYPE_TO_RESPONSE_FETCH[type_]
+
+    client = Client(api_key='1234', verify=False)
+    mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
+
+    indicators = fetch_indicators(client, create_relationships=True)
+    assert len(indicators) == 17
+    assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
+    assert INDICATOR_WITH_RELATIONSHIP in indicators

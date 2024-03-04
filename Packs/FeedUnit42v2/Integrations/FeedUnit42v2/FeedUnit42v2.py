@@ -90,7 +90,7 @@ def extract_ioc_value(value: str):
         return None
 
 
-def parse_indicators(client: Client, indicator_objects: list, feed_tags: Optional[list] = None,
+def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
                      tlp_color: Optional[str] = None) -> list:
     """Parse the IOC objects retrieved from the feed.
     Args:
@@ -123,9 +123,9 @@ def parse_indicators(client: Client, indicator_objects: list, feed_tags: Optiona
                         }
                     }
 
-                    if "file:hashes.'SHA-256' = '" in indicator_obj['value']:
-                        if ioc_value := extract_ioc_value(indicator_obj['value']):
-                            indicator_obj['value'] = ioc_value
+                    if "file:hashes.'SHA-256' = '" in indicator_obj['value'] and \
+                            (ioc_value := extract_ioc_value(indicator_obj['value'])):
+                        indicator_obj['value'] = ioc_value
 
                     if tlp_color:
                         indicator_obj['fields']['trafficlightprotocol'] = tlp_color
@@ -296,13 +296,15 @@ def create_attack_pattern_indicator(client: Client, attack_indicator_objects, fe
         mitre_id, value = get_attack_id_and_value_from_name(attack_indicator_object)
 
         attack_indicator["value"] = value
-        attack_indicator["fields"]["reportedby"] = 'Unit42'
-        attack_indicator["fields"]["firstseenbysource"] = handle_multiple_dates_in_one_field(
-            'created', attack_indicator_object.get('created'))
-        attack_indicator["fields"]["modified"] = handle_multiple_dates_in_one_field(
-            'modified', attack_indicator_object.get('modified'))
-        attack_indicator["fields"]["tags"] = list(feed_tags)
-        attack_indicator['fields']['mitreid'] = mitre_id
+        attack_indicator["fields"].update({
+            "reportedby": 'Unit42',
+            "firstseenbysource": handle_multiple_dates_in_one_field(
+                "created", attack_indicator_object.get('created')),
+            "modified": handle_multiple_dates_in_one_field(
+                'modified', attack_indicator_object.get('modified')),
+            "tags": list(feed_tags),
+            "mitreid": mitre_id
+        })
         attack_indicator['fields']['tags'].extend([mitre_id])
 
         if tlp_color:
@@ -510,7 +512,7 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
         + client.objects_data['course-of-action'] + client.objects_data['intrusion-set']
     }
     client.id_to_object = id_to_object
-    ioc_indicators = parse_indicators(client, client.objects_data['indicator'], feed_tags, tlp_color)
+    ioc_indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
     reports = parse_reports_and_report_relationships(client, client.objects_data['report'], feed_tags, tlp_color, id_to_object)
     campaigns = parse_campaigns(client, client.objects_data['campaign'], feed_tags, tlp_color)
     attack_patterns = create_attack_pattern_indicator(client, client.objects_data['attack-pattern'],
@@ -568,7 +570,7 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: Opti
     indicators = client.fetch_stix_objects_from_api(test=True, type=ind_type, limit=limit)
 
     if ind_type == 'indicator':
-        indicators = parse_indicators(client, indicators, feed_tags, tlp_color)
+        indicators = parse_indicators(indicators, feed_tags, tlp_color)
     else:
         indicators = create_attack_pattern_indicator(client, indicators, feed_tags, tlp_color)
     limited_indicators = indicators[:limit]
