@@ -1,0 +1,42 @@
+{
+    "isDnsEnabled": false,
+    "enableSafariBrowserExtensionTutorial": true,
+    "groups": [
+        {
+            "id": "37",
+            "accountId": "25",
+            "name": "Default Group",
+            "description": "Default Group",
+            "created": "2023-12-05T20:09:16.621+00:00",
+            "modified": "2023-12-05T20:09:16.621+00:00",
+            "staticFilesWritten": "2024-01-23T06:00:53.957+00:00",
+            "zapps": [],
+            "userActivations": [
+                {
+                    "id": "40"
+                }
+            ],
+            "groupActivations": [],
+            "global": true,
+            "emm": false
+        }
+    ],
+    "created": "2023-12-05T20:09:16.621+00:00",
+    "enableDnsPhishingTutorial": false,
+    "useLocalVpn": true,
+    "useUrlSharing": true,
+    "allowEndUserControl": false,
+    "phishingPolicyType": "ON_DEVICE",
+    "contentCategoryActionList": [],
+    "useRemoteContentInspection": true,
+    "phishingDetectionAction": "WARN",
+    "enableMessageFilterTutorial": true,
+    "accountId": "25",
+    "teamId": null,
+    "team": null,
+    "modified": "2023-12-11T13:33:08.481+00:00",
+    "accessControlList": null,
+    "global": true,
+    "name": "Default",
+    "id": "25"
+}
