@@ -319,6 +319,12 @@ class StixParser(BaseClient):
         tlp_from_marking_refs = self.get_tlp(obj_to_parse)
         tlp_color = tlp_from_marking_refs if tlp_from_marking_refs else self.tlp_color
 
+        if obj_to_parse.get('confidence', ''):
+            fields['confidence'] = obj_to_parse.get('confidence', '')
+
+        if obj_to_parse.get('lang', ''):
+            fields['languages'] = obj_to_parse.get('lang', '')
+
         if tlp_color:
             fields['trafficlightprotocol'] = tlp_color
 
@@ -1029,7 +1035,7 @@ class StixParser(BaseClient):
             "type": type_,
             "rawJSON": ioc_obj_copy,
         }
-        fields = {}
+        fields = self.set_default_fields(indicator_obj)
         tags = list(self.tags)
         # create tags from labels:
         for label in ioc_obj_copy.get("labels", []):
@@ -1063,6 +1069,7 @@ class StixParser(BaseClient):
                 tags.append(field_tag)
 
         fields["tags"] = list(set(tags))
+        fields["publications"] = self.get_indicator_publication(indicator_obj)
 
         indicator["fields"] = fields
         return indicator
