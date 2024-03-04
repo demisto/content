@@ -251,10 +251,7 @@ def clean_user_query(query: str, limit: int, page: int = 1, from_timestamp: str 
         params.pop("timestamp", None)
         if 'page' not in params:
             params["page"] = page
-        if 'limit' not in params:
-            params["limit"] = limit
-        else:
-            LIMIT = params["limit"]
+        params["limit"] = params.get("limit") or LIMIT
         if from_timestamp:
             params['from'] = from_timestamp
     except Exception as err:
@@ -520,14 +517,13 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
     Returns: List of indicators.
 
     """
-    global LIMIT
     tlp_color = params.get('tlp_color')
     reputation = params.get('feedReputation')
     tags = argToList(params.get('attribute_tags', ''))
     feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
-    last_run = demisto.getLastRun().get('timestamp') if demisto.getLastRun() else ''
+    last_run = demisto.getLastRun().get('timestamp') or ""
     params_dict = clean_user_query(query, LIMIT, from_timestamp=last_run) if query else\
         build_params_dict(tags=tags, attribute_type=attribute_types, limit=LIMIT, page=1, from_timestamp=last_run)
     search_query_per_page = client.search_query(params_dict)
