@@ -9105,7 +9105,7 @@ Creates a new security profile group in Panorama.
 | URL_filtering_profile | The URL filtering profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command. | Optional | 
 | file_blocking_profile | The file blocking profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command. | Optional | 
 | data_filtering_profile | The data filtering profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command. | Optional | 
-| wildfire_analysis_profile | The wildfire analysis profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command. | Optional | 
+| wildfire_analysis_profile | The WildFire analysis profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command. | Optional | 
 
 #### Context Output
 
