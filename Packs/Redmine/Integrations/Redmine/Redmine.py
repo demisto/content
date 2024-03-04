@@ -69,11 +69,11 @@ class Client(BaseClient):
         file_name = args.pop('file_name', '')
         description = args.pop('description', '')
         content_type = args.pop('content_type', '')
-        args = assign_params(args)
+        params = assign_params(**args)
         if file_token:
             args['uploads'] = [{'token': file_token, 'filename': file_name,
                                 'description': description, 'content_type': content_type}]
-        response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": args}, headers=self._post_put_header,
+        response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": params}, headers=self._post_put_header,
                                       empty_valid_codes=[204], return_empty_response=True)
         return response
 
@@ -184,7 +184,7 @@ def convert_args_to_request_format(args):
     status_id = args.pop('status_id', None)
     priority_id = args.pop('priority_id', None)
     custom_fields = args.pop('custom_fields', None)
-    watcher_user_ids = args.pop('custom_fields', None)
+    watcher_user_ids = args.pop('watcher_user_ids', None)
 
     args['tracker_id'] = map_predefined_values_to_id(tracker_id, ISSUE_TRACKER_DICT, "Tracker_id invalid, please make sure you use only predefined values")
     args['status_id'] = map_predefined_values_to_id(status_id, ISSUE_STATUS_DICT, "Status_id invalid, please make sure you use only predefined values")
@@ -198,7 +198,7 @@ def convert_args_to_request_format(args):
             raise DemistoException("Custom fields not in format, please follow the instructions")
 
     if watcher_user_ids:
-        args['watcher_user_ids'] = [watcher_user_ids]
+        args['watcher_user_ids'] = f'[{watcher_user_ids}]'
 
 def get_file_name_and_content(entry_id: str) -> bytes:
     """Returns the XSOAR file entry's content.
@@ -429,7 +429,7 @@ def add_issue_watcher_command(client: Client, args: dict[str, Any]):
                 readable_output=f'Watcher with id {watcher_id} was added successfully to issue with id {issue_id}.')
             return (command_results)
     except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0] or 'Error in API call [403]' in e.args[0]:
             raise DemistoException("Invalid ID for one or more fields that request IDs "
                                     "Please make sure all IDs are correct")
         else:
@@ -454,7 +454,7 @@ def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
 def get_project_list_command(client: Client, args: dict[str, Any]):
     try:
         INCLUDE_SET = {'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities','issue_custom_fields'}
-        include_arg = args['include']
+        include_arg = args.get('include', None)
         if include_arg:
             included_values = include_arg.split(',')
             invalid_values = [value for value in included_values if value not in INCLUDE_SET]
@@ -462,16 +462,17 @@ def get_project_list_command(client: Client, args: dict[str, Any]):
                 raise DemistoException("The 'include' argument should only contain values from trackers/issue_categories/"\
                                     "enabled_modules/time_entry_activities/issue_custom_fields, separated by commas. "\
                                     f"These values are not in options {invalid_values}")
-        response = client.get_project_list_request(args)['projects']
+        response = client.get_project_list_request(args)
+        projects_response = response['projects']
         headers = ['id', 'name', 'identifier', 'description', 'status', 'is_public', 'time_entry_activities', 'created_on',
                 'updated_on', 'default_value', 'visible', 'roles']
-        for project in response:
+        for project in projects_response:
             project['id'] = str(project['id'])
         command_results = CommandResults(outputs_prefix='Redmine.Project',
                                         outputs_key_field='id',
-                                        outputs=response,
-                                        raw_response=response,
-                                        readable_output=tableToMarkdown('Projects List:', response,
+                                        outputs=projects_response,
+                                        raw_response=projects_response,
+                                        readable_output=tableToMarkdown('Projects List:', projects_response,
                                                                         headers=headers,
                                                                         removeNull=True,
                                                                         headerTransform=underscoreToCamelCase,

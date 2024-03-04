@@ -34,11 +34,11 @@ script:
   type: python
   commands:
   - name: redmine-issue-create
-    description: 
-      Update an existing issue
-      When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
-      To create a custom field, navigate to the server URL with administrative privileges, click on 'Administration' (located at the top left), select 'Custom fields,' then proceed to create a new custom field. Once created, you can add values as needed
-      To create a category/version, navigate to the server URL -> Click on the Settings (top bar) -> Versions tab and Issue categories tab
+    description: | 
+      - Update an existing issue
+      - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
+      - To create a custom field, navigate to the server URL with administrative privileges, click on 'Administration' (located at the top left), select 'Custom fields,' then proceed to create a new custom field. Once created, you can add values as needed
+      - To create a category/version, navigate to the server URL -> Click on the Settings (top bar) -> Versions tab and Issue categories tab
     arguments:
     - name: project_id
       description: Enter the project ID for this issue (If given, by default- project_id from authentication, this field override it)
@@ -186,28 +186,28 @@ script:
       auto: PREDEFINED
       description: The ID of the tracker type
       predefined:
-      - 'Bug'
-      - 'Feature'
-      - 'Support'
+      - Bug
+      - Feature
+      - Support
     - name: status_id
       auto: PREDEFINED
       description: The ID of the status to set for the issue
       predefined:
-      - 'New'
-      - 'In progress'
-      - 'Resolved'
-      - 'Feedback'
-      - 'Closed'
-      - 'Rejected'
+      - New
+      - In progress
+      - Resolved
+      - Feedback
+      - Closed
+      - Rejected
     - name: priority_id
       auto: PREDEFINED
       description: The ID of the priority level for the issue
       predefined:
-      - 'Low'
-      - 'Normal'
-      - 'High'
-      - 'Urgent'
-      - 'Immediate'
+      - Low
+      - Normal
+      - High
+      - Urgent
+      - Immediate
     - name: subject
       description: The subject of the issue
       type: textArea
