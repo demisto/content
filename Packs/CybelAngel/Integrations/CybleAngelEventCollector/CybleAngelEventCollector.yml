@@ -44,7 +44,7 @@ script:
     - description: 'Get reports until a specific end date'
       name: end_date
       required: true
-    description: 'Collect reports from cyble angel'
+    description: 'Collect reports from cyble angel, used mainly for debugging.'
     name: cybleangel-get-events
     outputs: []
   runonce: false
