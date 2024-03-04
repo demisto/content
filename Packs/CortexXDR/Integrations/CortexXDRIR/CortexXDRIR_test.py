@@ -51,7 +51,6 @@ def test_fetch_incidents(requests_mock, mocker):
     from CortexXDRIR import fetch_incidents, Client, sort_all_list_incident_fields
     import copy
 
-    # get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json').get('reply', {})
     modified_raw_incident = raw_incident['incident'].copy()
     modified_raw_incident['alerts'] = copy.deepcopy(raw_incident.get('alerts').get('data'))
@@ -61,9 +60,7 @@ def test_fetch_incidents(requests_mock, mocker):
     modified_raw_incident['mirror_instance'] = 'MyInstance'
     modified_raw_incident['last_mirrored_in'] = 740314800000
 
-    # requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
     mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=[raw_incident])
-    # requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_multiple_incidents_extra_data', json=raw_incident)
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
 
     client = Client(
@@ -100,7 +97,7 @@ def test_fetch_incidents_filtered_by_status(requests_mock, mocker):
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     incident_extra_data_under_investigation = load_test_data('./test_data/get_incident_extra_data_host_id_array.json')\
-        .get('reply')
+        .get('reply', {}).get('incidents')[0]
     incident_extra_data_new = load_test_data('./test_data/get_incident_extra_data_new_status.json').get('reply')
     mocker.patch.object(Client, 'get_multiple_incidents_extra_data', side_effect=[incident_extra_data_under_investigation,
                                                                                   incident_extra_data_new])
@@ -748,3 +745,33 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
     assert incidents[0]['name'] == 'XDR Incident 1 - desc1'
     assert json.loads(incidents[0]['rawJSON']).get('incident_id') == '1'
     assert json.loads(incidents[1]['rawJSON']).get('incident_id') == '2'
+
+
+def test_get_incident_extra_data(mocker):
+    from CortexXDRIR import get_incident_extra_data_command, Client
+
+    get_incident_extra_data_response = load_test_data('./test_data/get_incident_extra_data_host_id_array.json')\
+        .get('reply', {}).get('incidents', [])
+    mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=get_incident_extra_data_response)
+    mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=2)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+    args = {
+        'incident_id': '1'
+    }
+    _, outputs, raw_incident = get_incident_extra_data_command(client, args)
+
+    expected_output = {
+        'Process(val.Name && val.Name == obj.Name)': [
+            {
+                'Name': 'wildfire-test-pe-file.exe',
+                'CommandLine': '"C:\\Users\\Administrator\\Downloads\\wildfire-test-pe-file.exe"',
+                'Hostname': 'AAAAAA'
+            }
+        ],
+        'Endpoint(val.Hostname==obj.Hostname)': [{'Hostname': 'AAAAAA', 'ID': '1234'}]
+    }
+    assert raw_incident == get_incident_extra_data_response[0]
+    assert expected_output['Process(val.Name && val.Name == obj.Name)'] == outputs['Process(val.Name && val.Name == obj.Name)']
+    assert expected_output['Endpoint(val.Hostname==obj.Hostname)'] == outputs['Endpoint(val.Hostname==obj.Hostname)']
