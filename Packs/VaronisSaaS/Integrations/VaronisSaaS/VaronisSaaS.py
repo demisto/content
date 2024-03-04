@@ -1279,17 +1279,14 @@ THREAT_MODEL_ENUM_ID = 5821
 ALERT_STATUSES = {'new': 1, 'under investigation': 2, 'closed': 3, 'action required': 4, 'auto-resolved': 5}
 ALERT_SEVERITIES = {'high': 0, 'medium': 1, 'low': 2}
 CLOSE_REASONS = {
-    'none': 0,
-    'resolved': 1,
-    'misconfiguration': 2,
-    'threat model disabled or deleted': 3,
-    'account misclassification': 4,
-    'legitimate activity': 5,
-    'other': 6
+    'other': 1,
+    'benign activity': 2,
+    'true positive': 3,
+    'environment misconfiguration': 4,
+    'alert recently customized': 5,
+    'inaccurate alert logic': 6,
+    'authorized activity': 7
 }
-DISPLAY_NAME_KEY = 'DisplayName'
-SAM_ACCOUNT_NAME_KEY = 'SAMAccountName'
-EMAIL_KEY = 'Email'
 
 
 def convert_to_demisto_severity(severity: Optional[str]) -> int:
@@ -1960,7 +1957,7 @@ def varonis_alert_add_note_command(client: Client, args: Dict[str, Any]) -> bool
     """
     note = str(args.get('note'))
 
-    return varonis_update_alert(client, CLOSE_REASONS['none'], status_id=None, alert_ids=argToList(args.get('alert_id')),
+    return varonis_update_alert(client, close_reason_id=None, status_id=None, alert_ids=argToList(args.get('alert_id')),
                                 note=note)
 
 
@@ -1992,7 +1989,8 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
 
     note = args.get('note')
 
-    return varonis_update_alert(client, CLOSE_REASONS['none'], status_id, argToList(args.get('alert_id')), note)
+    return varonis_update_alert(client, close_reason_id=None, status_id=status_id, alert_ids=argToList(args.get('alert_id')),
+                                note=note)
 
 
 def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:

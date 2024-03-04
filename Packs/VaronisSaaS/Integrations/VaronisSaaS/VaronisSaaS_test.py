@@ -81,7 +81,7 @@ def test_varonis_close_alert_command(requests_mock):
     )
 
     args = {
-        'close_reason': 'Account misclassification',
+        'close_reason': 'Inaccurate alert logic',
         'alert_id': "C8CF4194-133F-4F5A-ACB1-FFFB00573468, F8F608A7-0256-42E0-A527-FFF4749C1A8B"
     }
 

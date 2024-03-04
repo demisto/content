@@ -181,12 +181,13 @@ script:
     - contextPath: Varonis.Alert.CloseReason.Name
       description: |-
         Reason the alert was closed. Options are:
-        - Resolved
-        - Misconfiguration
-        - Threat model disabled or deleted
-        - Account misclassification
-        - Legitimate activity
-        - Other.
+        - Other
+        - Benign activity
+        - True positive
+        - Environment misconfiguration
+        - Alert recently customized
+        - Inaccurate alert logic
+        - Authorized activity.
       type: String
     - contextPath: Varonis.Alert.Location.BlacklistedLocation
       description: Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred.
@@ -311,12 +312,13 @@ script:
       default: false
       description: The reason the alert was closed.
       predefined:
-      - Resolved
-      - Misconfiguration
-      - Threat model disabled or deleted
-      - Account misclassification
-      - Legitimate activity
       - Other
+      - Benign activity
+      - True positive
+      - Environment misconfiguration
+      - Alert recently customized
+      - Inaccurate alert logic
+      - Authorized activity
       isArray: false
       name: close_reason
       required: true
