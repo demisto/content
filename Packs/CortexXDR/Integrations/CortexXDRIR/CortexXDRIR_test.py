@@ -820,7 +820,7 @@ def test_update_remote_system_command(incident_changed, delta):
 
                              # Expecting default mapping to be used for when improper key-value pair *format* is provided.
                              ("Duplicate Incident=Other, False Positive=Other True Positive=Other",
-                              ["Other", "Other", "False Positive", "Resolved", "Resolved - Security Testing", "Other",
+                              ["Other", "Other", "False Positive", "Resolved", "Security Testing", "Other",
                                "Resolved"]),
 
                          ],

@@ -148,6 +148,54 @@ class Client(CoreClient):
             else:
                 raise
 
+        self.test_custom_close_reason_mapping()
+
+    @staticmethod
+    def test_custom_close_reason_mapping():
+        """ Test validity of provided custom close-reason mappings. """
+
+        xdr_statuses_to_xsoar = [status.replace("resolved_", "").replace("_", " ").title()
+                                 for status in XDR_RESOLVED_STATUS_TO_XSOAR.keys()]
+        xsoar_statuses_to_xdr = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys())
+
+        # XSOAR -> XDR
+        try:
+            xsoar_to_xdr_close_reason_mapping = demisto.params().get("custom_xsoar_to_xdr_close_reason_mapping")
+            xsoar_to_xdr_close_reason_mapping = comma_separated_mapping_to_dict(xsoar_to_xdr_close_reason_mapping)
+
+            for key, value in xsoar_to_xdr_close_reason_mapping.items():
+                xdr_close_reason = "resolved_" + "_".join(value.lower().split(" "))
+                if key not in XSOAR_RESOLVED_STATUS_TO_XDR:
+                    raise DemistoException(
+                        f'Improper custom mapping (XSOAR -> XDR) provided: "{key}" is not a valid Cortex XSOAR close-reason.'
+                        f' Valid Cortex XSOAR close-reasons are: {xsoar_statuses_to_xdr}')
+                elif xdr_close_reason not in XDR_RESOLVED_STATUS_TO_XSOAR:
+                    raise DemistoException(
+                        f'Improper custom mapping (XSOAR -> XDR) provided: "{value}" is not a valid Cortex XDR close-reason.'
+                        f' Valid Cortex XDR close-reasons are: {xdr_statuses_to_xsoar}')
+
+        except ValueError as e:
+            raise DemistoException(f'Custom mapping (XSOAR -> XDR) error: {str(e)}')
+
+        # XDR -> XSOAR
+        try:
+            xdr_to_xsoar_close_reason_mapping = demisto.params().get("custom_xdr_to_xsoar_close_reason_mapping")
+            xdr_to_xsoar_close_reason_mapping = comma_separated_mapping_to_dict(xdr_to_xsoar_close_reason_mapping)
+
+            for key, value in xdr_to_xsoar_close_reason_mapping.items():
+                xdr_close_reason = "resolved_" + "_".join(key.lower().split(" "))
+                if xdr_close_reason not in XDR_RESOLVED_STATUS_TO_XSOAR:
+                    raise DemistoException(
+                        f'Improper custom mapping (XDR -> XSOAR) provided: "{key}" is not a valid Cortex XDR close-reason. '
+                        f'Valid Cortex XDR close-reasons are: {xdr_statuses_to_xsoar}')
+                elif value not in XSOAR_RESOLVED_STATUS_TO_XDR:
+                    raise DemistoException(
+                        f'Improper custom mapping (XDR -> XSOAR) provided: "{value}" is not a valid Cortex XSOAR close-reason.'
+                        f' Valid Cortex XSOAR close-reasons are: {xsoar_statuses_to_xdr}')
+
+        except ValueError as e:
+            raise DemistoException(f'Custom mapping (XDR -> XSOAR) error: {str(e)}')
+
     def handle_fetch_starred_incidents(self, limit: int, page_number: int, request_data: dict) -> List:
         """
         handles pagination and filter of starred incidents that were fetched.
