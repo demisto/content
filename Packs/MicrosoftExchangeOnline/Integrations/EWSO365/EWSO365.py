@@ -2037,7 +2037,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):      # pra
     return None
 
 
-def handle_attached_email_with_incorrect_id(attached_email: Message):
+def handle_attached_email_with_incorrect_message_id(attached_email: Message):
     """This function handles a malformed Message-ID value which can be returned in the header of certain email objects.
     This issue happens due to a current bug in "email" library and further explained in XSUP-32074.
     Public issue link: https://github.com/python/cpython/issues/105802
@@ -2053,12 +2053,14 @@ def handle_attached_email_with_incorrect_id(attached_email: Message):
     for i in range(len(attached_email._headers)):
         if attached_email._headers[i][0] == "Message-ID":
             message_id = attached_email._headers[i][1]
+            demisto.debug(f'Handling Message-ID header, {message_id=}.')
             try:
-                if message_id.endswith("]>") and message_id.startswith("<["):
-                    demisto.debug(f"Fixing invalid {message_id=} attachment header by removing its square bracket \
-                        wrapper (see XSUP-32074 for further information)")
+                message_id_value = handle_incorrect_message_id(message_id)
+                if message_id_value != message_id:
+                    # If the Message-ID header was fixed in the context of this function
+                    # the header will be replaced in _headers list
                     attached_email._headers.pop(i)
-                    message_id_value = f"<{message_id[2:-2]}>"
+                    attached_email._headers.append(("Message-ID", message_id_value))
 
             except Exception as e:
                 # The function is designed to handle a specific format error for the Message-ID header
@@ -2069,10 +2071,22 @@ def handle_attached_email_with_incorrect_id(attached_email: Message):
                 demisto.debug(f"Invalid {message_id=}, Error: {e}")
                 break
             break
-    if message_id_value:
-        # If the Message-ID header was fixed in the context of this function, it will be inserted again to the _headers list
-        attached_email._headers.append(("Message-ID", message_id_value))
     return attached_email
+
+
+def handle_incorrect_message_id(message_id: str) -> str:
+    """
+    Use regex to identify and correct one of the following invalid message_id formats:
+    1. '<[message_id]>' --> '<message_id>'
+    2. '\r\n\t<[message_id]>' --> '\r\n\t<message_id>'
+    If no necessary changes identified the original 'message_id' argument value is returned.
+    """
+    if re.search("\<\[.*\]\>", message_id):
+        # find and replace "<[" with "<" and "]>" with ">"
+        fixed_message_id = re.sub(r'<\[(.*?)\]>', r'<\1>', message_id)
+        demisto.debug('Fixed message id {message_id} to {fixed_message_id}')
+        return fixed_message_id
+    return message_id
 
 
 def parse_incident_from_item(item):     # pragma: no cover
@@ -2184,7 +2198,7 @@ def parse_incident_from_item(item):     # pragma: no cover
                     if attachment.item.headers:
                         # compare header keys case-insensitive
                         attached_email_headers = []
-                        attached_email = handle_attached_email_with_incorrect_id(attached_email)
+                        attached_email = handle_attached_email_with_incorrect_message_id(attached_email)
                         for h, v in attached_email.items():
                             if not isinstance(v, str):
                                 try:
@@ -2203,7 +2217,16 @@ def parse_incident_from_item(item):     # pragma: no cover
                                     and header.name.lower() != "content-type"
                             ):
                                 try:
-                                    attached_email.add_header(header.name, header.value)
+                                    if header.name.lower() == "message-id":
+                                        """ Handle a case where a Message-ID header was NOT already in attached_email,
+                                        and instead is coming from attachment.item.headers.
+                                        Meaning it wasn't handled in handle_attached_email_with_incorrect_message_id function
+                                        and instead it is handled here using handle_incorrect_message_id function."""
+                                        correct_message_id = handle_incorrect_message_id(header.value)
+                                        if (header.name.lower(), correct_message_id) not in attached_email_headers:
+                                            attached_email.add_header(header.name, correct_message_id)
+                                    else:
+                                        attached_email.add_header(header.name, header.value)
                                 except ValueError as err:
                                     if "There may be at most" not in str(err):
                                         raise err
