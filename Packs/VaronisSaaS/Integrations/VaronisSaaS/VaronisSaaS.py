@@ -2012,7 +2012,7 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
     """
     close_reason = str(args.get('close_reason'))
     close_reasons = list(filter(lambda name: not strEqual(name, 'none'), CLOSE_REASONS.keys()))
-    if close_reason.lower() not in close_reasons:
+    if not close_reason or close_reason.lower() not in close_reasons:
         raise ValueError(f'close reason must be one of {close_reasons}')
 
     close_reason_id = CLOSE_REASONS[close_reason.lower()]
