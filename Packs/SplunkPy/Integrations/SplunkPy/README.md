@@ -1132,3 +1132,16 @@ The default port is 8088.
 ## Troubleshooting
 
 In case you encounter HTTP errors (e.g., IncompleteRead), we recommend using Python requests handler.
+
+If you encounter connectivity issues while using **Splunk Cloud** within Cortex XSOAR8 or Cortex XSIAM you may receive the following error:
+
+    requests.exceptions.ConnectTimeout:
+    HTTPSConnectionPool(host='<name>.splunkcloud.com', port=8089)
+    : Max retries exceeded with url: /services/auth/login (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7fc389a4e170>,
+     'Connection to <name>.splunkcloud.com timed out. 
+    (connect timeout=None)'))
+
+To resolve this issue, add the IP addresses of Cortex XSOAR8 or Cortex XSIAM to the Splunk Cloud whitelist.
+You can find the relevant IP addresses at:
+[Cortex XSOAR Administrator Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Enable-Access-to-Cortex-XSOAR) 
+under **Used for communication between Cortex XSOAR and customer resources**. Choose the IP address corresponding to your Cortex XSOAR region.
