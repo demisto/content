@@ -312,7 +312,8 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
     demisto.debug(f" Jamf Protect - Fetching alerts from {created}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     if next_page:
-        demisto.debug(f" Jamf Protect - Fetched {len(events)} which is the maximum number of alerts. Will keep the fetching in the next fetch.")
+        demisto.debug(
+            f" Jamf Protect - Fetched {len(events)} which is the maximum number of alerts. Will keep the fetching in the next fetch.")
         new_last_run_with_next_page = {"next_page": next_page, "last_fetch": created}
         return events, new_last_run_with_next_page
 
@@ -352,7 +353,8 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
     demisto.debug(f" Jamf Protect - Fetching audits from {start_date} to {end_date}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     if next_page:
-        demisto.debug(f" Jamf Protect - Fetched {len(events)} which is the maximum number of audits. Will keep the fetching in the next fetch.")
+        demisto.debug(
+            f" Jamf Protect - Fetched {len(events)} which is the maximum number of audits. Will keep the fetching in the next fetch.")
         new_last_run_with_next_page = {"next_page": next_page, "last_fetch": start_date}
         return events, new_last_run_with_next_page
 
