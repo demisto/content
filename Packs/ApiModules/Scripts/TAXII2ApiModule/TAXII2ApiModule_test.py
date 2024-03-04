@@ -1446,3 +1446,26 @@ def test_reached_limit(limit, element_count, return_value):
     """
     from TAXII2ApiModule import reached_limit
     assert reached_limit(limit, element_count) == return_value
+
+
+def test_increase_count():
+    """
+    Given:
+        - A counters dict.
+    When:
+        - Increasing various counters.
+    Then:
+        - Assert that the counters reflect the expected values.
+    """
+    from TAXII2ApiModule import increase_count
+
+    objects_counter: Dict[str, int] = {}
+
+    increase_count(objects_counter, 'counter_a')
+    assert objects_counter == {'counter_a': 1}
+
+    increase_count(objects_counter, 'counter_a')
+    assert objects_counter == {'counter_a': 2}
+
+    increase_count(objects_counter, 'counter_b')
+    assert objects_counter == {'counter_a': 2, 'counter_b': 1}
