@@ -45,12 +45,10 @@ cmdb
 bypassaddrecord
 closereason
 closenotes
+mmm
 
 [file:classifier-ServiceNow.json]
 ignore=BA101
 
 [file:ServiceNowIncidentStatus.yml]
 ignore=BA124
-
-[known_words]
-mmm
