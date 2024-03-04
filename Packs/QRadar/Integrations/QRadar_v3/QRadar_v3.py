@@ -454,7 +454,7 @@ class Client(BaseClient):
         self.server = server
 
     def http_request(self, method: str, url_suffix: str, params: Optional[dict] = None,
-                     json_data: Optional[dict] = None, additional_headers: Optional[dict] = None,
+                     json_data: Optional[dict] = None, data: Optional[dict] = None, additional_headers: Optional[dict] = None,
                      timeout: Optional[int] = None, resp_type: str = 'json'):
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
         for _time in range(1, CONNECTION_ERRORS_RETRIES + 1):
@@ -464,6 +464,7 @@ class Client(BaseClient):
                     url_suffix=url_suffix,
                     params=params,
                     json_data=json_data,
+                    data=data,
                     headers=headers,
                     error_handler=self.qradar_error_handler,
                     timeout=timeout or self.timeout,
@@ -876,6 +877,14 @@ class Client(BaseClient):
             method='DELETE',
             url_suffix=f'/config/event_sources/log_source_management/log_sources/{id}',
             resp_type='response'
+        )
+    
+    def create_log_source(self, log_source: dict):
+        print('log_source: ', log_source)
+        return self.http_request(
+            method='POST',
+            url_suffix='/config/event_sources/log_source_management/log_sources',
+            json_data= log_source
         )
 
     def test_connection(self):
@@ -1713,6 +1722,13 @@ def convert_start_fetch_to_milliseconds(fetch_start_time: str):
         # if date is None it means dateparser failed to parse it
         raise ValueError(f'Invalid first_fetch format: {fetch_start_time}')
     return int(date.timestamp() * 1000)
+
+def convert_dict_values_string_to_number(obj: dict) -> dict:
+    clone = { **obj }
+    for key, value in obj.items():
+        if isinstance(value, str) and value.isnumeric():
+            clone[key] = int(value)
+    return clone
 
 
 def get_offense_enrichment(enrichment: str) -> tuple[bool, bool]:
@@ -4557,6 +4573,85 @@ def qradar_log_source_delete_command(client: Client, args: dict) -> CommandResul
         )
     raise Exception('At least one of the arguments: name, id must be provided.')
 
+def qradar_log_source_create_command(client: Client, args: dict) -> CommandResults:
+    """
+    Creates a log source.
+    Possible arguments:
+    - name: Required. The unique name of the log source.
+    - sending_ip: The ip of the system which the log source is associated to, or fed by.
+    - protocol_type_id: Required. The type of protocol that is used by the log source.
+    - type_id: Required. The type of the log source. Must correspond to an existing log source type.
+      Must correspond to an existing protocol type.
+    - protocol_parameters: Required. The list of protocol parameters corresponding with the selected protocol type id. The syntax
+      for this argument should follow: protocol_parameters="name_1=value_1,name_2=value_2,...,name_n=value_n" where each name
+      should correspond to a name of a protocol parameter from the protocol type and each value should fit the type of the
+      protocol parameter.
+    - descrption: The description of the log source
+    - coalesce_events: Determines if events collected by this log source are coalesced based on common properties.
+      If each individual event is stored, then the condition is set to false. Defaults to true.
+    - enabled: Determines if the log source is enabled. Defaults to true.
+    - parsing_order: The order in which log sources will parse if multiple exists with a common identifier.
+    - group_ids: Required. The set of log source group IDs this log source is a member of.
+      Each ID must correspond to an existing log source group.
+      See the Log Source Group API (https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html).
+    - credibility: On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source
+    - store_event_payload: If the payloads of events that are collected by this log source are stored, the condition is set to
+      'true'. If only the normalized event records are stored, then the condition is set to 'false'.
+    - target_event_collector_id:  Required. The ID of the event collector where the log source sends its data.
+      The ID must correspond to an existing event collector.
+    - disconnected_log_collector_id:  The ID of the disconnected log collector where this log source will run.
+      The ID must correspond to an existing disconnected log collector.
+    - language_id: The language of the events that are being processed by this log source.
+      Must correspond to an existing log source language.
+    - requires_deploy: Set to 'true' if you need to deploy changes to enable the log source for use;
+      otherwise, set to 'false' if the log source is already active.
+    - wincollect_internal_destination_id : The internal WinCollect destination for this log source, if applicable.
+      Log sources without an associated WinCollect agent have a null value. Must correspond to an existing WinCollect destination.
+    - wincollect_external_destination_ids: The set of external WinCollect destinations for this log source, if applicable.
+      Log Sources without an associated WinCollect agent have a null value.
+      Each ID must correspond to an existing WinCollect destination.
+    - gateway: If the log source is configured as a gateway, the condition is set to 'true';
+      otherwise, the condition is set to 'false'. A gateway log source is a stand-alone protocol configuration.
+      The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to
+      feed other log sources. It acts as a "gateway" for events from multiple systems to enter the event pipeline.
+    """
+    pp_pairs = args.get('protocol_parameters', '').split(',')
+    protocol_parameters = []
+    group_ids = args.get('group_ids').split(',') if args.get('group_ids') else []
+    wincollect_external_destination_ids = args.get('wincollect_external_destination_ids').split(',') if args.get('group_ids') else []
+    for pair in pp_pairs:
+        # Split the pair into name and value using '=' as delimiter
+        name, value = pair.split('=')
+        # Add the pair to the dictionary
+        protocol_parameters.append({'name': name.strip(), 'value': value.strip()})
+    log_source = convert_dict_values_string_to_number({
+        **args,
+        'protocol_parameters': protocol_parameters,
+        'group_ids': group_ids,
+        'wincollect_external_destination_ids': wincollect_external_destination_ids
+        })
+    response = client.create_log_source(log_source)
+    outputs = sanitize_outputs(response, LOG_SOURCES_OLD_NEW_MAP)[0]
+    headers = build_headers(['ID', 'Name', 'Description'], set(LOG_SOURCES_OLD_NEW_MAP.values()))
+    readable_outputs = {
+        'ID': outputs['ID'],
+        'Name': outputs['Name'],
+        'CreationDate': outputs['CreationDate'],
+        'Description': outputs['Description'],
+        'Enabled': outputs['Enabled'],
+        'Status': outputs['Status']['status'],
+        'StatusLastUpdated': outputs['Status'].get('last_updated', ''),
+        'StatusMessages': outputs['Status'].get('messages', ''),
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown('Log Source Created', readable_outputs, headers, removeNull=True),
+        outputs_prefix='QRadar.LogSource',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+    
+
 def migrate_integration_ctx(ctx: dict) -> dict:
     """Migrates the old context to the current context
 
@@ -4861,6 +4956,9 @@ def main() -> None:  # pragma: no cover
         
         elif command == 'qradar-log-source-delete':
             return_results(qradar_log_source_delete_command(client, args))
+        
+        elif command == 'qradar-log-source-create':
+            return_results(qradar_log_source_create_command(client, args))
         
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')

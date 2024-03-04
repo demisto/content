@@ -1763,6 +1763,52 @@ script:
       description: 'The id of the log source to be deleted. If this argument is not provided, name must be provided'
     - name: 'name'
       description: 'The unique name of the log source to be deleted. If this argument is not provided, id must be provided'
+  - name: qradar-log-source-create
+    description: 'Creates a new log source'
+    arguments:
+    - name: name
+      description: The unique name of the log source.
+      required: true
+    - name: protocol_type_id
+      description: The type of protocol that is used by the log source. Must correspond to an existing protocol type.
+      required: true
+    - name: type_id
+      description: The type of the log source. Must correspond to an existing log source type.
+      required: true
+    - name: protocol_parameters
+      description: 'The list of protocol parameters corresponding with the selected protocol type id. The syntax for this argument should follow: protocol_parameters="name_1=value_1,name_2=value_2,...,name_n=value_n" where each name should correspond to a name of a protocol parameter from the protocol type and each value should fit the type of the protocol parameter. The command qradar-log-source-protocol-types-list can be used to list all available protocol types.'
+      required: true
+    - name: target_event_collector_id
+      description:  The ID of the event collector where the log source sends its data. The ID must correspond to an existing event collector.
+      required: true      
+    - name: sending_ip
+      description: The ip of the system which the log source is associated to, or fed by.
+    - name: descrption
+      description: The description of the log source.
+    - name: coalesce_events
+      description: Determines if events collected by this log source are coalesced based on common properties. If each individual event is stored, then the condition is set to false. Defaults to true.
+    - name: enabled
+      description: Determines if the log source is enabled. Defaults to true.
+    - name: parsing_order
+      description: The order in which log sources will parse if multiple exists with a common identifier.
+    - name: group_ids
+      description: The set of log source group IDs this log source is a member of. Each ID must correspond to an existing log source group. The command qradar-log-sources-groups-list can be used to list all available groups. See the Log Source Group API (https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html).
+    - name: credibility
+      description: On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source
+    - name: store_event_payload
+      description: If the payloads of events that are collected by this log source are stored, the condition is set to 'true'. If only the normalized event records are stored, then the condition is set to 'false'.
+    - name: disconnected_log_collector_id
+      description:  The ID of the disconnected log collector where this log source will run. The ID must correspond to an existing disconnected log collector.
+    - name: language_id
+      description: The language of the events that are being processed by this log source. Must correspond to an existing log source language.
+    - name: requires_deploy
+      description: Set to 'true' if you need to deploy changes to enable the log source for use; otherwise, set to 'false' if the log source is already active.
+    - name: wincollect_internal_destination_id
+      description : The internal WinCollect destination for this log source, if applicable. Log sources without an associated WinCollect agent have a null value. Must correspond to an existing WinCollect destination.
+    - name: wincollect_external_destination_ids
+      description: The set of external WinCollect destinations for this log source, if applicable. Log Sources without an associated WinCollect agent have a null value. Each ID must correspond to an existing WinCollect destination.
+    - name: gateway
+      description: If the log source is configured as a gateway, the condition is set to 'true'; otherwise, the condition is set to 'false'. A gateway log source is a stand-alone protocol configuration. The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to feed other log sources. It acts as a "gateway" for events from multiple systems to enter the event pipeline.
 #    Deprecated commands, to support backward compatibility for QRadar v2.
   - arguments:
     - description: 'Query by which to filter offenses. For reference, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
