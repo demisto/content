@@ -329,7 +329,8 @@ def send_new_mail_request(incident_id, email_subject, subject_include_incident_i
         mail_content["using"] = mail_sender_instance
 
     # Send email
-    demisto.debug(f"Sending email for incident {incident_id}, with the following subject: {email_subject}, and content: {mail_content}")
+    demisto.debug(
+        f"Sending email for incident {incident_id}, with the following subject: {email_subject}, and content: {mail_content}")
     email_result = demisto.executeCommand("send-mail", mail_content)
 
     # Store message details in context entry
@@ -572,21 +573,22 @@ def get_incident_by_query(query):
     return incidents_details
 
 
-def get_unique_code(incident_id):
+def get_unique_code(incident_id, max_tries=1000):
     """
-        Create an 13-digit unique random code that should be used to identify new created incidents.
+        Create an 16-digit unique random code that should be used to identify new created incidents.
     Args:
-        incident_id:
+        max_tries: The maximum number of tries to generate a unique code.
+        incident_id: The incident ID.
 
     Returns:
-        13-digit code returned as a string
+        16-digit code returned as a string
     """
     demisto.debug(f'Generating a unique code for incident {incident_id}')
     tried_codes = set()
     incident_id_padded = incident_id[-3:].rjust(3, "0")  # Take padded last 3 digits of incident ID.
     while True:
-        # The random code is 13 digits long and is created by concatenating the last 3 digits of the incident ID and epoch.
-        code = f'{incident_id_padded}{int(1000*time.time()):013d}'
+        # The random code is 16 digits long and is created by concatenating the last 3 digits of the incident ID and epoch.
+        code = f'{incident_id_padded}{time.time_ns():013d}'[:16]
         if code not in tried_codes:
             tried_codes.add(code)
             query = f'emailgeneratedcode: {code}'
@@ -594,6 +596,11 @@ def get_unique_code(incident_id):
             if incidents_details is None or len(incidents_details) == 0:
                 demisto.debug(f'Generated unique code for incident {incident_id}: {code}, tried {len(tried_codes)} times')
                 return code
+            if len(tried_codes) > max_tries:
+                demisto.debug(f'Failed to generate unique code for incident {incident_id} after {max_tries} tries')
+                return_error(f'Failed to generate unique code for incident {incident_id} after {max_tries} tries')
+            if len(tried_codes) % 10 == 0:
+                demisto.debug(f'Generated {len(tried_codes)} unique codes for incident {incident_id}')
 
 
 def reset_fields():
