@@ -973,7 +973,8 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
                 incident_data = client.get_incident_extra_data(client, {"incident_id": incident_id,
-                                                                        "alerts_limit": 1000})[0].get('incident') or {}
+                                                                        "alerts_limit": 1000})[0].get('incident')\
+                    or {}
 
             sort_all_list_incident_fields(incident_data)
 
