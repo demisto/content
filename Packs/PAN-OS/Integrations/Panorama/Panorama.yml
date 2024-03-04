@@ -9397,7 +9397,7 @@ script:
       description: The data filtering profile.
       type: String
     - contextPath: Panorama.ProfileGroup.wildfire-analysis
-      description: The wildFire analysis profile.
+      description: The WildFire analysis profile.
       type: String
     - contextPath: Panorama.ProfileGroup.disable-override
       description: Whether overriding the security profile group is disabled.
