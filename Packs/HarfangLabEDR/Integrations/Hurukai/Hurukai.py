@@ -3825,19 +3825,18 @@ def get_remote_data(
     )
 
 
-def close_in_hfl(delta: Dict[str, Any]) -> bool:
+def close_in_hfl(delta: dict[str, Any]) -> bool:
     """
     Closing in the remote system should happen only when both:
         1. The user asked for it
         2. One of the closing fields appears in the delta
 
-    The second is mandatory so we will not send a closing request at all of the mirroring requests that happen after closing an
-    incident (in case where the incident is updated so there is a delta, but it is not the status that was changed).
+    The second condition is here to avoid to continuously send a closing request
+    on incidents that are already closed but have to be updated (e.g.: update of
+    the description or comment).
     """
     closing_fields = {"closeReason", "closingUserId", "closeNotes"}
-    return demisto.params().get("close_in_hfl") and any(
-        field in delta for field in closing_fields
-    )
+    return demisto.params().get("close_in_hfl") and bool(closing_fields & set(delta))
 
 
 def update_security_event_request(client, ids: List[str], status: str) -> str:
