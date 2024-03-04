@@ -1699,11 +1699,11 @@ def get_limited_number_of_messages_from_qs(qs, limit):  # pragma: no cover
 
 
 def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=100, target_mailbox=None,
-                            is_public=None, selected_fields='all'):  # pragma: no cover
+                            is_public=None, selected_fields='all', surround_id_with_angle_brackets=True):  # pragma: no cover
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
 
-    if message_id and message_id[0] != '<' and message_id[-1] != '>':
+    if argToBoolean(surround_id_with_angle_brackets) and message_id and message_id[0] != '<' and message_id[-1] != '>':
         message_id = f'<{message_id}>'
 
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
