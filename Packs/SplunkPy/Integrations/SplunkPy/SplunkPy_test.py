@@ -634,7 +634,7 @@ class TestFetchRemovingIrrelevantIncidents:
 
         mocker.patch.object(demisto, 'setLastRun')
         mock_last_run = {'time': '2024-02-12T10:00:00', 'latest_time': '2024-02-19T10:00:00',
-                         'found_incidents_ids': {'1': {'occurred_time': '2024-02-19T10:01:00'},
+                         'found_incidents_ids': {'1': {'occurred_time': '2024-02-12T09:59:59'},
                                                  '2': {'occurred_time': '2024-02-18T10:00:00'}}}
         mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
         mocker.patch('demistomock.getLastRun', return_value=mock_last_run)

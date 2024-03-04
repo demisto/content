@@ -267,7 +267,7 @@ def remove_irrelevant_incident_ids(last_run_fetched_ids: dict[str, dict[str, str
             # Last fetched IDs held the epoch time of their appearance, they will now hold the
             # new format, with an occurred time equal to the end of the window
             extensive_log(f'[SplunkPy] {incident_id} was saved using old implementation,'
-                           f' with value {incident_occurred_time}, keeping')
+                          f' with value {incident_occurred_time}, keeping')
             new_last_run_fetched_ids[incident_id] = {'occurred_time': window_end_time}
     return new_last_run_fetched_ids
 
