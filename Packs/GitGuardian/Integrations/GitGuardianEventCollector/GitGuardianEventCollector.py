@@ -225,8 +225,8 @@ def test_module(
         last_run = {
             "from_fetch_time": from_fetch_time,
             "to_fetch_time": from_fetch_time,
-            "last_fetched_incident_ids": [],
-            "last_fetched_audit_log_ids": [],
+            "last_fetched_ids": [],
+            "next_url_link": "",
         }
         client.search_events(last_run, max_events_per_fetch, 'incident')
 
