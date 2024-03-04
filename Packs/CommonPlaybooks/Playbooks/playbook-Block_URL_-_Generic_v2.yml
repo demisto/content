@@ -1414,6 +1414,6 @@ inputs:
   playbookInputQuery: null
 outputs: []
 tests:
-- Send Investigation Summary Reports - Test
+- No tests (auto formatted)
 fromversion: 6.5.0
 system: true
