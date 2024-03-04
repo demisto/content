@@ -1,6 +1,5 @@
 from collections.abc import Callable
 
-import demistomock
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import urllib3
@@ -11,7 +10,8 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 VENDOR = 'Jamf'
 PRODUCT = 'Protect'
-PAGE_SIZE = 200  # The maximum number of items the API allows to retrieve in a single request.
+ALERT_PAGE_SIZE = 200
+AUDIT_PAGE_SIZE = 5000
 DEFAULT_MAX_FETCH = 10000
 DEFAULT_LIMIT = 10
 MINUTES_BEFORE_TOKEN_EXPIRED = 2
@@ -152,6 +152,7 @@ class Client(BaseClient):
             url_suffix="/graphql",
             headers=headers,
             json_data=json_data,
+            retries=3
         )
         self.handle_errors(res)
         return res
@@ -195,7 +196,7 @@ class Client(BaseClient):
         """
         variables = {
             "created": args.get("created"),
-            "page_size": PAGE_SIZE,
+            "page_size": ALERT_PAGE_SIZE,
         }
         if next_page:
             variables["next"] = next_page
@@ -234,7 +235,7 @@ class Client(BaseClient):
         variables = {
             "input":
                 {
-                    "pageSize": PAGE_SIZE,
+                    "pageSize": AUDIT_PAGE_SIZE,
                     "condition": {
                         "dateRange": {
                             "startDate": args.get("start_date"),
@@ -284,70 +285,141 @@ def parse_response(response: dict) -> tuple:
     return page_info, items
 
 
-def get_events_alert_type(client: Client, created: str) -> list:
+def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_run: dict) -> tuple:
     """
-    Fetches alerts from the Jamf Protect API.
+    Fetches alert type events from the Jamf Protect API within a specified date range.
+
+    This function fetches alert type events from the Jamf Protect API based on the provided start date.
+    It fetches events up to the maximum number specified by max_fetch.
+    The function also uses the information from the last run to continue fetching from where it left off in the previous run.
 
     Args:
-        client (Client): An instance of the Client class.
-        created (str): The creation date of the alerts.
+        client (Client): An instance of the Client class for interacting with the API.
+        start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
+        max_fetch (int): The maximum number of events to fetch.
+        last_run (dict): A dictionary containing information about the last run.
 
     Returns:
-        list: A list of dictionaries. Each dictionary represents an alert.
+        tuple: A tuple containing two elements:
+            - A list of dictionaries. Each dictionary represents an event.
+            - A dictionary with new last run values, the end date of the fetched events and a continuance token if the fetched reached the max limit.
     """
-    args = {"created": created}
+    created, current_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key="alert")
+    command_args = {"created": created}
     client_event_type_func = client.get_alerts
-    return get_events(args, client_event_type_func)
+    next_page = last_run.get("alert", {}).get("next_page", "")
+
+    demisto.debug(f" Jamf Protect - Fetching alerts from {created}")
+    events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
+    if next_page:
+        demisto.debug(f" Jamf Protect - Fetched {len(events)} which is the maximum number of alerts. Will keep the fetching in the next fetch.")
+        new_last_run_with_next_page = {"next_page": next_page, "last_fetch": created}
+        return events, new_last_run_with_next_page
+
+    new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get("created"), DATE_FORMAT)
+                                             for event in events) if dt is not None]).strftime(
+        DATE_FORMAT) if events else current_date
+    new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
+    demisto.debug(f" Jamf Protect - Fetched {len(events)} alerts")
+    return events, new_last_run_without_next_page
 
 
-def get_events_audit_type(client: Client, start_date: str, end_date: str) -> list:
+def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fetch: int, last_run: dict) -> tuple:
     """
-    Fetches audit logs from the Jamf Protect API.
+     Fetches audit type events from the Jamf Protect API within a specified date range.
 
-    Args:
-        client (Client): An instance of the Client class.
-        start_date (str): The start date of the audit logs.
-        end_date (str): The end date of the audit logs.
+     This function fetches audit type events from the Jamf Protect API based on the provided start and end dates.
+     It fetches events up to the maximum number specified by max_fetch.
+     The function also uses the information from the last run to continue fetching from where it left off in the previous run.
 
-    Returns:
-        list: A list of dictionaries. Each dictionary represents an audit log.
-    """
-    args = {"start_date": start_date, "end_date": end_date}
+     Args:
+         client (Client): An instance of the Client class for interacting with the API.
+         start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
+         end_date (str): The end date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
+         max_fetch (int): The maximum number of events to fetch.
+         last_run (dict): A dictionary containing information about the last run.
+
+     Returns:
+         tuple: A tuple containing two elements:
+             - A list of dictionaries. Each dictionary represents an event.
+             - A dictionary with new last run values, the end date of the fetched events and a continuance token if the fetched reached the max limit.
+     """
+    start_date, end_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key="alert")
+    command_args = {"start_date": start_date, "end_date": end_date}
     client_event_type_func = client.get_audits
-    return get_events(args, client_event_type_func)
+    next_page = last_run.get("audit", {}).get("next_page", "")
+
+    demisto.debug(f" Jamf Protect - Fetching audits from {start_date} to {end_date}")
+    events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
+    if next_page:
+        demisto.debug(f" Jamf Protect - Fetched {len(events)} which is the maximum number of audits. Will keep the fetching in the next fetch.")
+        new_last_run_with_next_page = {"next_page": next_page, "last_fetch": start_date}
+        return events, new_last_run_with_next_page
+
+    new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get("date"), DATE_FORMAT)
+                                             for event in events) if dt is not None]).strftime(
+        DATE_FORMAT) if events else end_date
+    new_last_run_without_next_page = {"last_fetch": new_last_fetch_date}
+    demisto.debug(f" Jamf Protect - Fetched {len(events)} audits")
+    return events, new_last_run_without_next_page
 
 
-def get_events(args: dict, client_event_type_func: Callable) -> list:
+def get_events(command_args: dict, client_event_type_func: Callable, max_fetch: int, next_page: str = "") -> tuple:
     """
-    Fetches alerts or audit logs from the Jamf Protect API.
+    Fetches events from the Jamf Protect API.
 
     Args:
-        args (dict): The arguments to be used in the GraphQL query. It should contain keys "start_date" and "end_date" with values representing the date range of the audit logs for fetching audit logs, or a key "created" with a value representing the creation date of the alerts for fetching alerts.
-        client_event_type_func (Callable): A function reference to either get_alerts or get_audits method of the Client class.
+        command_args (dict): The arguments to be used in the client function. It should contain keys representing the required arguments for the client function.
+        client_event_type_func (Callable): The client function to be used for fetching the events.
+        max_fetch (int): The maximum number of events to fetch.
+        next_page (str, optional): The next page token for pagination. Defaults to "".
 
     Returns:
-        list: A list of dictionaries. Each dictionary represents an alert or an audit log.
+        tuple: A tuple containing two elements:
+            - A list of dictionaries. Each dictionary represents an event.
+            - A string representing the next page token for pagination.
     """
-    events = []
+    events: List[dict] = []
     has_next = True
-    next_page = ""
+
     while has_next:
         has_next = False
-        response = client_event_type_func(args, next_page)
+        if len(events) >= max_fetch:
+            return events, next_page
+        response = client_event_type_func(command_args, next_page)
         page_info, parsed_data = parse_response(response=response)
         if next_page := page_info.get("next"):
             has_next = True
         events.extend(parsed_data)
-    return events
+    return events, ""
 
 
-def calculate_fetch_dates(start_date: str, end_date: str) -> tuple:
-    last_run = demistomock.getLastRun()
+def calculate_fetch_dates(start_date: str, last_run_key: str, last_run: dict, end_date: str = "") -> tuple:
+    """
+    Calculates the start and end dates for fetching events.
+
+    This function takes the start date and end date provided as arguments.
+    If these are not provided, it uses the last run information to calculate the start and end dates.
+    If the last run information is also not available, it uses the current time as the end date and the time one minute before the current time as the start date.
+
+    Args:
+        start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
+        last_run_key (str): The key to retrieve the last fetch date from the last run dictionary.
+        last_run (dict): A dictionary containing information about the last run.
+        end_date (str, optional): The end date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format. Defaults to "".
+
+    Returns:
+        tuple: A tuple containing two elements:
+            - The start date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
+            - The end date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
+    """
     now_utc_time = get_current_time()
     # argument > last run > current time
-    start_date = start_date or last_run.get('last_fetch') or ((now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
+    start_date = start_date or last_run.get(last_run_key, {}).get('last_fetch') or (
+        (now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
     # argument > current time
     end_date = end_date or now_utc_time.strftime(DATE_FORMAT)
+    start_date = '2024-01-01T07:51:57Z'
     return start_date, end_date
 
 
@@ -366,21 +438,32 @@ def fetch_events(client: Client, max_fetch: int, start_date_arg: str = "", end_d
             - A list of dictionaries. Each dictionary represents an event.
             - A dictionary with the key 'last_fetch' and its value representing the end date of the fetched events.
     """
+    last_run = demisto.getLastRun()
     events = []
-    start_date, end_date = calculate_fetch_dates(start_date_arg, end_date_arg)
-    demisto.debug(f"Fetching events created after {start_date}")
-    events.extend(get_events_alert_type(client, created=start_date))
-    total_alerts = len(events)
-    demisto.debug(f"Fetched {total_alerts} alert type events")
-    events.extend(get_events_audit_type(client, start_date=start_date, end_date=end_date))
-    demisto.debug(f"Fetched {len(events) - total_alerts} audit type events")
-    if len(events) > max_fetch:
-        demisto.info(f"Number of events fetched ({len(events)}) exceeds the maximum fetch limit ({max_fetch}).")
-    return events[:max_fetch], {"last_fetch": end_date}
+
+    alert_events, alert_next_run = get_events_alert_type(client, start_date_arg, max_fetch, last_run)
+    events.extend(alert_events)
+    audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch, last_run)
+    events.extend(audit_events)
+    next_run = {"alert": alert_next_run, "audit": audit_next_run}
+    if "next_page" in (alert_next_run | audit_next_run):
+        # Will instantly re-trigger the fetch command.
+        next_run["nextTrigger"] = "0"
+    return events, next_run
 
 
 def add_time_field(events: List[Dict[str, Any]]) -> list:
-    """Adds time field to the events"""
+    """
+    Adds a '_time' field to each event in the list of events.
+
+    This function iterates over the list of events. For each event, it adds a new field '_time' with the value of the 'date' or 'created' field of the event.
+
+    Args:
+        events (List[Dict[str, Any]]): A list of dictionaries. Each dictionary represents an event.
+
+    Returns:
+        list: The updated list of events. Each event now includes a '_time' field.
+    """
     for event in events:
         event['_time'] = event.get('date') or event.get('created')
     return events
@@ -390,11 +473,28 @@ def add_time_field(events: List[Dict[str, Any]]) -> list:
 
 
 def validate_start_and_end_dates(args):
+    """
+    Validates the start and end dates provided in the arguments.
+
+    This function checks if the start date is missing or if it is greater than the end date. If either of these conditions is true, it raises a ValueError. Otherwise, it returns the start and end dates.
+
+    Args:
+        args (dict): A dictionary containing the arguments for the command.
+                     It should contain keys 'start_date' and 'end_date' with values representing the date range.
+
+    Returns:
+        tuple: A tuple containing two elements:
+            - The start date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
+            - The end date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
+
+    Raises:
+        ValueError: If the start date is missing or if it is greater than the end date.
+    """
     start_date_str = ""
     end_date_str = ""
     if start_date := arg_to_datetime(args.get('start_date')):
         start_date_str = start_date.strftime(DATE_FORMAT)
-    if end_date := arg_to_datetime("end_date"):
+    if end_date := arg_to_datetime(args.get("end_date")):
         end_date_str = end_date.strftime(DATE_FORMAT)
     if (end_date and not start_date) or (start_date and end_date and start_date >= end_date):
         raise ValueError("Either the start date is missing or it is greater than the end date. Please provide valid dates.")
@@ -402,10 +502,25 @@ def validate_start_and_end_dates(args):
 
 
 def get_events_command(client, args):
+    """
+    Fetches events from the Jamf Protect API within a specified date range and limit.
+
+    Args:
+        client (Client): An instance of the Client class.
+        args (dict): A dictionary containing the arguments for the command.
+                     It should contain keys 'start_date' and 'end_date' with values representing the date range of the events to fetch,
+                     and a 'limit' key with a value representing the maximum number of events to fetch.
+
+    Returns:
+        tuple: A tuple containing two elements:
+            - A list of dictionaries. Each dictionary represents an event.
+            - A CommandResults object which includes the events in its raw_response attribute and a human-readable output.
+    """
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
     start_date, end_date = validate_start_and_end_dates(args)
     events, _ = fetch_events(client=client, max_fetch=limit, start_date_arg=start_date,
                              end_date_arg=end_date)
+
     if events:
         return add_time_field(events), CommandResults(readable_output=tableToMarkdown("Jamf Protect Events", events),
                                                       raw_response=events)

@@ -40,7 +40,7 @@ configuration:
   type: 9
   section: Connect
 - additionalinfo: Maximum number of events to fetch at a time.
-  defaultvalue: '10000'
+  defaultvalue: '2000'
   display: Max events per fetch
   name: max_fetch
   required: false
@@ -66,7 +66,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      required: true
+      required: false
     description: Gets events from Jamf Protect.
     name: jamf-protect-get-events
   runonce: false
