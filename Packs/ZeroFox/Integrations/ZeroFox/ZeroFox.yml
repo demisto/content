@@ -1330,6 +1330,37 @@ script:
       type: String
     deprecated: false
     execution: false
+  - name: zerofox-send-alert-attachment
+    description: Sends an attachment to a specified alert.
+    arguments:
+    - name: alert_id
+      description: The ID of an alert. Can be retrieved running the zerofox-list-alerts command.
+      required: true
+    - name: attachment_type
+      description: The type of the attachment. Can be evidence "photo_id", "disruption_agreement", "trademark_information", "trademark"or "copyright".
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - evidence
+      - photo_id
+      - disruption_agreement
+      - trademark_information
+      - trademark
+      - copyright
+    - name: entry_id
+      description: The entry ID of the attachment.
+      required: true
+  - name: zerofox-get-alert-attachments
+    description: Retrieves the attachments of a specified alert.
+    arguments:
+    - name: alert_id
+      description: The ID of an alert. Can be retrieved running the zerofox-list-alerts command.
+      required: true
+    outputs:
+    - contextPath: ZeroFox.AlertAttachments.ID
+      description: The ID of an alert.
+    - contextPath: ZeroFox.AlertAttachments.Name
+      description: The name attachment of an alert.
   - name: zerofox-search-compromised-domain
     description: Looks for a given domain in Zerofox's CTI feeds.
     arguments:
