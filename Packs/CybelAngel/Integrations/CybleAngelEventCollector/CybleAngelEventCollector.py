@@ -53,6 +53,7 @@ class Client(BaseClient):
             "end-date": end_date
         }
         reports = self.http_request(method='GET', url_suffix="/api/v2/reports", params=params).get("reports") or []
+        reports = sorted(reports, key=lambda report: dateparser.parse(report["created_at"]))
         return reports[:limit]
 
     def get_access_token(self) -> str:
@@ -174,8 +175,10 @@ def test_module(client: Client) -> str:
 
 def fetch_events(client: Client, last_run: Dict, max_fetch: int) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     last_run_time, last_fetched_report_ids = last_run.get("time"), last_run.get("fetched_report_ids")
+    if not last_run_time:
+        last_run_time = (datetime.now() - timedelta(days=1065)).strftime(DATE_FORMAT)
     reports = client.get_reports(start_date=last_run_time, end_date=datetime.now().strftime(DATE_FORMAT), limit=max_fetch)
-    reports = dedup_fetched_events(reports, last_run_fetched_event_ids=last_fetched_report_ids)
+    reports = dedup_fetched_events(reports, last_run_fetched_event_ids=last_fetched_report_ids or set())
 
     for report in reports:
         report["_time"] = report["created_at"]
@@ -183,7 +186,6 @@ def fetch_events(client: Client, last_run: Dict, max_fetch: int) -> Tuple[List[D
     latest_report_time, last_fetched_report_ids = get_latest_fetched_event_ids(reports)
     last_run.update({"time": latest_report_time or last_run_time, "fetched_report_ids": last_fetched_report_ids})
     return reports, last_run
-
 
 
 def get_events(client: Client, args: Dict[str, Any]) -> CommandResults:
