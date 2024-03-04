@@ -2124,3 +2124,21 @@ function fileResult(file_name, file_content,entryType=null, human_readable_optio
     HumanReadable: HumanReadable
   };
 };
+
+/**
+ * Converts a string value to a boolean value.
+ * @param {string} value - The value to convert.
+ * @returns {boolean} The boolean representation of the value.
+ * @throws {string} If the value is not a valid boolean-like value.
+ */
+function toBoolean(value) {
+    if (typeof(value) === 'string') {
+        if (['yes', 'true', 'True'].indexOf(value.toLowerCase()) != -1) {
+            return true;
+        } else if (['no', 'false', 'False'].indexOf(value.toLowerCase()) != -1) {
+            return false;
+        }
+        throw 'Argument does not contain a valid boolean-like value';
+    }
+    return value ? true : false;
+}

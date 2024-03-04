@@ -1,4 +1,5 @@
 function getValue(value, stringify = false) {
+    logDebug('getValue.stringify= ' + stringify);
     if (stringify) {
         if (value === null || value === undefined) {
             return '';
@@ -19,6 +20,7 @@ function main() {
     const keys = argToList(args.key);
     let value = args.value;
     const force = args.force === 'true';
+    logDebug('args.stringify= ' + args.stringify);
     value = getValue(value, args.stringify === 'true');
 
     let results = [];

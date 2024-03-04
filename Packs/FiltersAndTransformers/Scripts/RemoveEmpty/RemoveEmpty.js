@@ -1,17 +1,5 @@
 const EMPTY_TOKENS = argToList(args.empty_values);
 
-function toBoolean(value) {
-    if (typeof(value) === 'string') {
-        if (['yes', 'true'].indexOf(value.toLowerCase()) != -1) {
-            return true;
-        } else if (['no', 'false'].indexOf(value.toLowerCase()) != -1) {
-            return false;
-        }
-        throw 'Argument does not contain a valid boolean-like value';
-    }
-    return value ? true : false;
-}
-
 function isObject(o) {
     return o instanceof Object && !(o instanceof Array);
 }
