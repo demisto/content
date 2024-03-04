@@ -1419,7 +1419,7 @@ def get_rule_ids(client: Client, values: List[str]) -> List[int]:
     return ruleIds
 
 
-def varonis_update_alert(client: Client, close_reason_id: int, status_id: Optional[int], alert_ids: list, note) -> bool:
+def varonis_update_alert(client: Client, close_reason_id: Optional[int], status_id: Optional[int], alert_ids: list, note) -> bool:
     """Update Varonis alert. It creates request and pass it to http client
 
     :type client: ``Client``
