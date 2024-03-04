@@ -26,8 +26,7 @@ EVENT_TYPE_TO_ENDPOINT = {
 
 class Client(BaseClient):
 
-    def search_events(
-        self, last_run: dict[str, Any], max_events_per_fetch: int, event_type: str) -> tuple[List[Dict], List[int], str, bool, str]:  # noqa: E501
+    def search_events(self, last_run: dict[str, Any], max_events_per_fetch: int, event_type: str) -> tuple[List[Dict], List[int], str, bool, str]:  # noqa: E501
         """
         Searches for GitGuardian alerts using the '/secrets' and '/audit_logs' API endpoints.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
