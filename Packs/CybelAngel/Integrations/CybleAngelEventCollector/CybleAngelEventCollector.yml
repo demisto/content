@@ -20,7 +20,6 @@ configuration:
   type: 0
   required: true
   section: Collect
-  additionalinfo: Minimum is 10. Maximum is 1000.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -46,13 +45,14 @@ script:
       name: end_date
       required: true
     description: 'Collect reports from cyble angel'
-    name: cybleangel
+    name: cybleangel-get-events
     outputs: []
   runonce: false
   script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.13.87159
+  isfetchevents: true
 fromversion: 8.0.0
 marketplaces:
   - marketplacev2
