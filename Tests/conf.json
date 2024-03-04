@@ -808,11 +808,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Gmail",
-            "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "Whois",
             "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration",
             "fromversion": "6.5.0"
