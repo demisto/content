@@ -66,11 +66,11 @@ class Client(BaseClient):
     def update_issue_request(self, args, file_token):
         issue_id = args.pop('issue_id')
         file_name = args.pop('file_name', '')
-        description = args.pop('description', '')
-        content_type = args.pop('content_type', '')
+        description = args.pop('file_description', '')
+        content_type = args.pop('file_content_type', '')
         params = assign_params(**args)
         if file_token:
-            params['uploads'] = [{'token': file_token, 'filename': file_name,
+            params['uploads'] = [{'token': file_token, 'file_name': file_name,
                                 'description': description, 'content_type': content_type}]
         response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": params}, headers=self._post_put_header,
                                       empty_valid_codes=[204], return_empty_response=True)
@@ -251,8 +251,7 @@ def handle_file_attachment(client: Client, args: Dict[str,Any]):
                         description=file_description)
             args['uploads'] = [uploads]
     except Exception as e:
-        raise DemistoException("Failed to execute redmine-issue-create command."
-                               "Could not create a token for your file- please try again."
+        raise DemistoException("Could not create a token for your file- please try again."
                                f"With error {e}.")
 
 ''' COMMAND FUNCTIONS '''
@@ -272,7 +271,6 @@ def test_module(client: Client) -> None:
 def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
     if not args.get('project_id', None) and not client._project_id:
         raise DemistoException('project_id field is missing in order to create an issue')
-    response = {}
     '''Checks if a file needs to be added'''
     handle_file_attachment(client, args)
     try:
@@ -310,8 +308,7 @@ def update_issue_command(client: Client, args: dict[str, Any]):
             file_token_response = client.create_file_token_request(assign_params(file_name=file_name), entry_id)
             file_token= file_token_response['upload']['token']
         except Exception as e:
-            raise DemistoException("Failed to execute redmine-issue-update command. "
-                f"Couldn't create file token for the file you are trying to upload. with error: {e}")
+            raise DemistoException(f"Couldn't create file token for the file you are trying to upload. with error: {e}")
     try:
         convert_args_to_request_format(args)
         client.update_issue_request(args, file_token)

@@ -106,7 +106,7 @@ def test_create_issue_command_no_token_created_for_file(mocker, redmine_client):
     with pytest.raises(DemistoException) as e:
         create_issue_command(redmine_client, args)
         create_file_token_request_mock.assert_called_with({}, 'a.png')
-    assert e.value.message == "Failed to execute redmine-issue-create command.Could not create a token for your file- please try again.With error Could not upload file with entry id a.png."
+    assert e.value.message == "Could not create a token for your file- please try again.With error Could not upload file with entry id a.png."
     
 def test_create_issue_command_with_file(mocker, redmine_client):
     """
@@ -197,7 +197,7 @@ def test_update_issue_command_no_token_created_for_file(mocker, redmine_client):
     with pytest.raises(DemistoException) as e:
         update_issue_command(redmine_client, args)
         create_file_token_request_mock.assert_called_with({}, 'a.png')
-    assert e.value.message == "Failed to execute redmine-issue-update command. Couldn't create file token for the file you are trying to upload. with error: 'upload'"
+    assert e.value.message == "Couldn't create file token for the file you are trying to upload. with error: 'upload'"
     
 def test_update_issue_command_with_file(mocker, redmine_client):
     """
