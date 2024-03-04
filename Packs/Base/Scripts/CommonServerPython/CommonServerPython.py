@@ -9044,11 +9044,11 @@ if 'requests' in sys.modules:
                     error_class = str(exception.__class__)
                     err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
                     err_msg = 'Verify that the server URL parameter' \
-                            ' is correct and that you have access to the server from your host.' \
-                            '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                        ' is correct and that you have access to the server from your host.' \
+                        '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
                         .format(err_type, exception.errno, exception.strerror)
                     raise DemistoException(err_msg, exception)
-                
+
                 raise DemistoException(str(exception))
             except requests.exceptions.RetryError as exception:
                 if with_metrics:
