@@ -47,11 +47,12 @@ class Client(BaseClient):
         self._project_id = project_id
 
     def create_issue_request(self, params, project_id=None):
+        params['project_id'] = project_id or self._project_id or None
+        params = assign_params(**params)
         uploads = params.pop('uploads', None)
         body_for_request = {'issue': params}
         if uploads:
             body_for_request['issue']['uploads'] = uploads
-        params['project_id'] = project_id or self._project_id
         response = self._http_request('POST', '/issues.json', params={},
                                         json_data=body_for_request, headers=self._post_put_header)
         return response
@@ -216,26 +217,16 @@ def get_file_name_and_content(entry_id: str) -> bytes:
         file_bytes = f.read()
     return file_bytes
 
-''' COMMAND FUNCTIONS '''
+def handle_file_attachment(client: Client, args: Dict[str,Any]):
+    """If a file was provided create a token and add to args
 
-def test_module(client: Client) -> None:
-    message: str = ''
-    try:
-        if (get_issues_list_command(client, {'limit': '1'})):
-            message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return return_results(message)
+    Args:
+        client (Client)
+        args (Dict[str,Any]): Raw arguments dict from user
 
-
-def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    if not args.get('project_id', None) and not client._project_id:
-        raise DemistoException('project_id field is missing in order to create an issue')
-    response = {}
-    '''Checks if a file needs to be added'''
+    Raises:
+        DemistoException: response not in format or could not create a token
+    """
     try:
         entry_id = args.pop('file_entry_id', None)
         if entry_id:
@@ -252,9 +243,30 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
                         description=file_description)
             args['uploads'] = [uploads]
     except Exception as e:
-        raise DemistoException("Failed to execute redmine-issue-create command. \n"
-                               "Could not create a token for your file- please try again \n"
-                               f"Error: with error {e}")
+        raise DemistoException("Failed to execute redmine-issue-create command."
+                               "Could not create a token for your file- please try again."
+                               f"With error {e}.")
+
+''' COMMAND FUNCTIONS '''
+
+def test_module(client: Client) -> None:
+    message: str = ''
+    try:
+        if (get_issues_list_command(client, {'limit': '1'})):
+            message = 'ok'
+    except DemistoException as e:
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
+            message = 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
+    return return_results(message)
+
+def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    if not args.get('project_id', None) and not client._project_id:
+        raise DemistoException('project_id field is missing in order to create an issue')
+    response = {}
+    '''Checks if a file needs to be added'''
+    handle_file_attachment(client, args)
     try:
         convert_args_to_request_format(args)
         project_id = args.pop('project_id', None)
