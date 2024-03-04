@@ -11,7 +11,7 @@ The API supports only HTTP Basic Authentication. Every user must have permission
 2.  Search for Infoblox.
 3.  Click **Add instance** to create and configure a new integration instance.
     * **Name**: a textual name for the integration instance.
-    * **Server URL (e.g. https://example.net)**
+    * **Server URL (e.g.,, https://example.net)**
     * **User Name**
     * **Password**
     * **Trust any certificate (not secure)**
@@ -21,11 +21,11 @@ The API supports only HTTP Basic Authentication. Every user must have permission
 Commands
 --------
 
-You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1.  [Get IP info: infoblox-get-ip](#infoblox-get-ip).
 2.  [Searches IP related objects by a given IP: infoblox-search-related-objects-by-ip](#infoblox-search-related-objects-by-ip).
-3.  [Lists all response policy rules that belong to the given response policy zone: infoblox-list-response-policy-zone-rules](#infoblox-list-response-policy-zone-rules).
+3.  [Lists all response policy rules that belong to the.g.,ven response policy zone: infoblox-list-response-policy-zone-rules](#infoblox-list-response-policy-zone-rules).
 4.  [List all response policy zones: infoblox-list-response-policy-zones](#infoblox-list-response-policy-zones).
 5.  [Creates a response policy zone: infoblox-create-response-policy-zone](#infoblox-create-response-policy-zone).
 6.  [Creates a response policy rule: infoblox-create-rpz-rule](#infoblox-create-rpz-rule).
@@ -38,20 +38,20 @@ You can execute these commands from the XSOAR CLI, as part of an automation, or 
 13. [Create a substitute rule for a txt record: infoblox-create-txt-substitute-record-rule](#infoblox-create-txt-substitute-record-rule).
 14. [Create a substitute rule for an IPv4 rule: infoblox-create-ipv4-substitute-record-rule](#infoblox-create-ipv4-substitute-record-rule).
 15. [Creates a substitute of the IPv6 record rule: infoblox-create-ipv6-substitute-record-rule](#infoblox-create-ipv6-substitute-record-rule).
-16. [Disables a rule by its reference ID (reference ID could be extracted by running the searah rules command): infoblox-enable-rule](#infoblox-enable-rule).
-17. [Disable a rule by its reference ID (reference ID could be extracted by running the 'infoblox-search-rule' command): infoblox-disable-rule](#infoblox-disable-rule).
+16. [Disables a rule by its reference ID (reference ID can be extracted by running the search rules command): infoblox-enable-rule](#infoblox-enable-rule).
+17. [Disable a rule by its reference ID (reference ID can be extracted by running the 'infoblox-search-rule' command): infoblox-disable-rule](#infoblox-disable-rule).
 18. [Returns the object fields names which can be used in the search rules command: infoblox-get-object-fields](#infoblox-get-object-fields).
 19. [Searches a specific rule by its name: infoblox-search-rule](#infoblox-search-rule).
 20. [Deletes a rule: infoblox-delete-rpz-rule](#infoblox-delete-rpz-rule).
 21. [Deletes a given response policy zone: infoblox-delete-response-policy-zone](#infoblox-delete-response-policy-zone).
-22. [List host information: infoblox-list-host-info](#22-infoblox-list-host-info).
-23. [List network information: infoblox-list-network-info](#23-infoblox-list-network-info).
+22. [List host information: infoblox-list-host-info](#infoblox-list-host-info).
+23. [List network information: infoblox-list-network-info](#infoblox-list-network-info).
 
-### 1\. infoblox-get-ip
+### infoblox-get-ip
 
 * * *
 
-Get IP info
+Get IP information.
 
 ##### Base Command
 
@@ -61,12 +61,12 @@ Get IP info
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip  | The IP address for which to retrieve information, e.g. "192.168.1.1". Cannot be used in conjunction with `network` or `from/to_ip` arguments. | Optional |
-| network  | The network that the IP belongs in FQDN/CIDR format, e.g. "192.168.1.0/24". Cannot be used in conjunction with `ip` or `from/to_ip` arguments. | Optional |
-| from_ip  | The beginning of the IP range, e.g. "192.168.1.0". Must be used in conjunction with `to_ip`. | Optional |
-| to_ip  | The end of the IP range, e.g. "192.168.1.254". Must be used in conjunction with `from_ip`. | Optional |
+| ip  | The IP address for which to retrieve information, e.g.,, "192.168.1.1". Cannot be used in conjunction with `network` or `from/to_ip` arguments. | Optional |
+| network  | The network that the IP belongs in FQDN/CIDR format, e.g.,, "192.168.1.0/24". Cannot be used in conjunction with `ip` or `from/to_ip` arguments. | Optional |
+| from_ip  | The beginning of the IP range, e.g.,, "192.168.1.0". Must be used in conjunction with `to_ip`. | Optional |
+| to_ip  | The end of the IP range, e.g.,, "192.168.1.254". Must be used in conjunction with `from_ip`. | Optional |
 | status  | The status of the IP device. Used in conjunction with the `network` or `ip` argument. Possible values are `ACTIVE`, `UNUSED` and `USED`. | Optional |
-| extended_attrs  | Comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue". | Optional |
+| extended_attrs  | Comma-separated key/value formatted filter for extended attributes, e.g.,, "Site=New York,OtherProp=MyValue". | Optional |
 | max_results  | The maximum results to return. Maximum is 1000. Default is 50. | Optional |
 
 ##### Context Output
@@ -75,7 +75,7 @@ Get IP info
 | --- | --- | --- |
 | Infoblox.IP.ReferenceID | number | Reference ID of the object. |
 | Infoblox.IP.MacAddress | string | The Mac address of the IP. |
-| Infoblox.IP.Network | string | The network that the IP belongs, in FQDN/CIDR format. |
+| Infoblox.IP.Network | string | The network that the IP belongs (in FQDN/CIDR format.) |
 | Infoblox.IP.NetworkView | string | The name of the network view. |
 | Infoblox.IP.Status | string | The current status of the address. |
 | Infoblox.IP.IsConflict | string | Whether the IP address has either a MAC address conflict or a DHCP lease conflict detected through a network discovery (if set to true). |
@@ -121,7 +121,7 @@ Get IP info
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 |     | 172.0.0.0 | false |     |     | 172.0.0.0/24 | default |     | ipv4address/Li5pcHY0X2FkZHJlc3MkMTcyLjAuMC4wLzA:172.0.0.0 | USED | NETWORK |     |
 
-### 2\. infoblox-search-related-objects-by-ip
+### infoblox-search-related-objects-by-ip
 
 * * *
 
@@ -170,11 +170,11 @@ Searches IP related objects by a given IP.
 | --- | --- | --- |
 | 172.0.0.0/24 | default | network/ZG5zLm5ldHdvcmskMTcyLjAuMC4wLzI0LzA:172.0.0.0/24/default |
 
-### 3\. infoblox-list-response-policy-zone-rules
+### infoblox-list-response-policy-zone-rules
 
 * * *
 
-Lists all response policy rules that belong to the given response policy zone.
+Lists all response policy rules that belong to the.g.,ven response policy zone.
 
 ##### Base Command
 
@@ -287,7 +287,7 @@ Lists all response policy rules that belong to the given response policy zone.
 |     | false | moshe2 | record:rpz:cname | default | infoblow.com |
 |     | false | moshe3 | record:rpz:cname | default | infoblow.com |
 
-### 4\. infoblox-list-response-policy-zones
+### infoblox-list-response-policy-zones
 
 * * *
 
@@ -301,7 +301,7 @@ List all response policy zones.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| max_results | Maximum results to return. (default is 50) | Optional |
+| max_results | Maximum results to return. (Default is 50) | Optional |
 
 ##### Context Output
 
@@ -478,7 +478,7 @@ Creates a response policy zone.
 | rpz_policy | The override policy of the response policy zone. Can be: "DISABLED", "GIVEN", "NODATA", "NXDOMAIN", "PASSTHRU", or "SUBSTITUTE". | Required |
 | rpz_severity | The severity of the response policy zone. Can be: "CRITICAL", "MAJOR", "WARNING", or "INFORMATIONAL". | Required |
 | substitute_name | The alternative name of the redirect target in a substitute response policy. policy zone. | Optional |
-| rpz_type | The type of the rpz zone. Can be: "FEED", "FIREEYE", or "LOCAL". | Optional |
+| rpz_type | The type of the RPZ. Can be: "FEED", "FIREEYE", or "LOCAL". | Optional |
 
 ##### Context Output
 
@@ -489,7 +489,7 @@ Creates a response policy zone.
 | Infoblox.ResponsePolicyZones.ReferenceID | string | The reference ID of the object. |
 | Infoblox.ResponsePolicyZones.RpzPolicy | string | The response policy zone override policy. |
 | Infoblox.ResponsePolicyZones.RpzSeverity | string | The severity of the response policy zone. |
-| Infoblox.ResponsePolicyZones.RpzType | string | The type of rpz zone. |
+| Infoblox.ResponsePolicyZones.RpzType | string | The type of RPZ. |
 | Infoblox.ResponsePolicyZones.View | string | The view of the definition. |
 
 ##### Command Example
@@ -520,7 +520,7 @@ Creates a response policy zone.
 | --- | --- | --- | --- | --- | --- | --- |
 | false | infonlox.nightly.tpb.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50cGIubmlnaHRseS5pbmZvbmxveA:infonlox.nightly.tpb.com/default | DISABLED | INFORMATIONAL | LOCAL | default |
 
-### 6\. infoblox-create-rpz-rule
+### infoblox-create-rpz-rule
 
 * * *
 
@@ -537,8 +537,8 @@ Creates a response policy rule.
 | rule_type | The type of the rule to create. Can be: "Passthru", "Block" (No such domain), "Block" (No data), or "Substitute" (domain name). | Required |
 | object_type | The type of the object for which to assign the rule. Can be: "Domain Name", "IP address", or "Client IP address". | Required |
 | name | The rule name in a FQDN format. | Required |
-| rp_zone | The zone to assign the rule. | Required |
-| comment | Adds a comment for this rule. | Optional |
+| rp_zone | The zone to assign the rule to. | Required |
+| comment | Comment for this rule. | Optional |
 | substitute_name | The substitute name to assign (substitute domain only). | Optional |
 | view | The DNS view in which the records are located. By default, the 'default' DNS view is searched. | Optional |
 
@@ -582,7 +582,7 @@ Creates a response policy rule.
 | --- | --- | --- | --- | --- | --- | --- |
 | nightly-test-rpz-sub.infoblow.com | false | nightly-test-rpz-sub.infoblow.com | record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy5uaWdodGx5LXRlc3QtcnB6LXN1Yg:nightly-test-rpz-sub.infoblow.com/default | record:rpz:cname | default | infoblow.com |
 
-### 7\. infoblox-create-a-substitute-record-rule
+### infoblox-create-a-substitute-record-rule
 
 * * *
 
@@ -597,8 +597,8 @@ Creates a substitute record rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name for a record in FQDN format. | Required |
-| rp_zone | The zone to assign the rule. | Required |
-| comment | Add a comment for this rule. | Optional |
+| rp_zone | The zone to assign the rule to to. | Required |
+| comment | Comment for this rule. | Optional |
 | ipv4addr | The IPv4 address of the substitute rule. | Optional |
 
 ##### Context Output
@@ -642,7 +642,7 @@ Creates a substitute record rule.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | nightly-test-a-sub | false | 0.0.0.0 | nightly-test-a-sub.infoblow.com | record:rpz:a/ZG5zLmJpbmRfYSQuX2RlZmF1bHQuY29tLmluZm9ibG93LG5pZ2h0bHktdGVzdC1hLXN1YiwwLjAuMC4w:nightly-test-a-sub.infoblow.com/default | record:rpz:a | default | infoblow.com |
 
-### 8\. infoblox-create-aaaa-substitute-record-rule
+### infoblox-create-aaaa-substitute-record-rule
 
 * * *
 
@@ -657,8 +657,8 @@ Creates a substitute rule for an AAAA record.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name for a record in FQDN format. | Required |
-| rp_zone | The zone to assign the rule. | Required |
-| comment | Add a comment for this rule. | Optional |
+| rp_zone | The zone to assign the rule to to. | Required |
+| comment | Comment for this rule. | Optional |
 | ipv6addr | The IPv6 address of the substitute rule. | Optional |
 
 ##### Context Output
@@ -702,7 +702,7 @@ Creates a substitute rule for an AAAA record.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | nightly-test-aaaa-sub | false | fd60:e32:f1b9::2 | nightly-test-aaaa-sub.infoblow.com | record:rpz:aaaa/ZG5zLmJpbmRfYWFhYSQuX2RlZmF1bHQuY29tLmluZm9ibG93LG5pZ2h0bHktdGVzdC1hYWFhLXN1YixmZDYwOmUzMjpmMWI5Ojoy:nightly-test-aaaa-sub.infoblow.com/default | record:rpz:aaaa | default | infoblow.com |
 
-### 9\. infoblox-create-mx-substitute-record-rule
+### infoblox-create-mx-substitute-record-rule
 
 * * *
 
@@ -717,8 +717,8 @@ Creates a substitute rule for the MX record.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name for a record in FQDN format. | Required |
-| rp_zone | The zone to assign the rule. | Required |
-| comment | Add a comment for this rule. | Optional |
+| rp_zone | The zone to assign the rule to to. | Required |
+| comment | Comment for this rule. | Optional |
 | mail_exchanger | The mail exchanger name in FQDN format. This value can be in unicode format. | Required |
 | preference | Preference value, 0 to 65535 (inclusive). | Required |
 
@@ -764,7 +764,7 @@ Creates a substitute rule for the MX record.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | nightly-test-mx-sub | false | 0.0.0.0 | nightly-test-mx-sub.infoblow.com | 5   | record:rpz:mx/ZG5zLmJpbmRfbXgkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy5uaWdodGx5LXRlc3QtbXgtc3ViLjAuMC4wLjAuNQ:nightly-test-mx-sub.infoblow.com/default | record:rpz:mx | default | infoblow.com |
 
-### 10\. infoblox-create-naptr-substitute-record-rule
+### infoblox-create-naptr-substitute-record-rule
 
 * * *
 
@@ -778,9 +778,9 @@ Creates a substitute rule for a NAPTR record.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name for a record in FQDN forma. | Required |
-| rp_zone | The zone to assign the rule. | Required |
-| comment | Add a comment for this rule. | Optional |
+| name | The name for a record in FQDN format. | Required |
+| rp_zone | The zone to assign the rule to to. | Required |
+| comment | Comment for this rule. | Optional |
 | order | The order parameter of the substitute rule of the NAPTR record. This parameter specifies the order in which the NAPTR rules are applied when multiple rules are present. Can be from 0 to 65535 (inclusive). | Required |
 | preference | Preference value, 0 to 65535 (inclusive). | Required |
 | replacement | The substitute rule object replacement field of the NAPTR record. For non-terminal NAPTR records, this field specifies the next domain name to look up. | Required |
@@ -830,7 +830,7 @@ Creates a substitute rule for a NAPTR record.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | nightly-test-naptr-sub | false | nightly-test-naptr-sub.infoblow.com | 0   | 1   | record:rpz:naptr/ZG5zLmJpbmRfbmFwdHIkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdyxuaWdodGx5LXRlc3QtbmFwdHItc3ViLDAsMSwsLCxpbmZvYmxvdy5jb20:nightly-test-naptr-sub.infoblow.com/default |     | infoblow.com |     | record:rpz:naptr | default | infoblow.com |
 
-### 11\. infoblox-create-ptr-substitute-record-rule
+### infoblox-create-ptr-substitute-record-rule
 
 * * *
 
@@ -844,12 +844,12 @@ Creates a substitute rule of the PTR record.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rp_zone | The zone to assign the rule. | Required |
-| comment | Add a comment for this rule. | Optional |
+| rp_zone | The zone to assign the rule to to. | Required |
+| comment | Comment for this rule. | Optional |
 | ptrdname | The domain name of the RPZ substitute rule object of the PTR record in FQDN format. | Required |
 | name | The name of the RPZ Substitute rule object of the PTR record in FQDN format. | Optional |
-| ipv4addr | The IPv4 Address of the substitute rule. | Optional |
-| ipv6addr | The IPv6 Address of the substitute rule. | Optional |
+| ipv4addr | The IPv4 address of the substitute rule. | Optional |
+| ipv6addr | The IPv6 address of the substitute rule. | Optional |
 
 ##### Context Output
 
@@ -893,7 +893,7 @@ Creates a substitute rule of the PTR record.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | nightly-test-ptr-sub | false | 0.0.0.0 | 0.0.0.0.in-addr.arpa.infoblow.com | infoblow.com | record:rpz:ptr/ZG5zLmJpbmRfcHRyJC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cuYXJwYS5pbi1hZGRyLjAuMC4wLjAuaW5mb2Jsb3cuY29t:0.0.0.0.in-addr.arpa.infoblow.com/default | record:rpz:ptr | default | infoblow.com |
 
-### 12\. infoblox-create-srv-substitute-record-rule
+### infoblox-create-srv-substitute-record-rule
 
 * * *
 
@@ -908,12 +908,12 @@ Creates a substitute rule of a SRV record.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name for a record in FQDN format. | Required |
-| rp_zone | The zone to assign the rule. | Required |
-| comment | Add a comment for this rule. | Optional |
+| rp_zone | The zone to assign the rule to. | Required |
+| comment | Comment for this rule. | Optional |
 | port | The port of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive). | Required |
 | priority | The priority of the substitute rule for the SRV Record. Can be 0 to 65535 (inclusive). | Required |
 | target | The target of the substitute rule of the SRV record in FQDN format. This value can be in unicode format. | Required |
-| weight | The weight of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive). | Required |
+| we.g.,t | The we.g.,t of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive). | Required |
 
 ##### Context Output
 
@@ -929,7 +929,7 @@ Creates a substitute rule of a SRV record.
 
 ##### Command Example
 
-`!infoblox-create-srv-substitute-record-rule name="nightly-test-srv-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-srv-sub" port="22" priority="10" target="infoblow.com" weight="10"`
+`!infoblox-create-srv-substitute-record-rule name="nightly-test-srv-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-srv-sub" port="22" priority="10" target="infoblow.com" we.g.,t="10"`
 
 ##### Context Example
 
@@ -945,7 +945,7 @@ Creates a substitute rule of a SRV record.
         "Target": "infoblow.com",
         "Type": "record:rpz:srv",
         "View": "default",
-        "Weight": 10,
+        "We.g.,t": 10,
         "Zone": "infoblow.com"
     }
 }
@@ -955,11 +955,11 @@ Creates a substitute rule of a SRV record.
 
 ### Infoblox Integration - Response Policy Zone rule: nightly-test-srv-sub.infoblow.com has been created:
 
-| **Comment** | **Disable** | **Name** | **Port** | **Priority** | **Reference ID** | **Target** | **Type** | **View** | **Weight** | **Zone** |
+| **Comment** | **Disable** | **Name** | **Port** | **Priority** | **Reference ID** | **Target** | **Type** | **View** | **We.g.,t** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | nightly-test-srv-sub | false | nightly-test-srv-sub.infoblow.com | 22  | 10  | record:rpz:srv/ZG5zLmJpbmRfc3J2JC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cvbmlnaHRseS10ZXN0LXNydi1zdWIvMTAvMTAvMjIvaW5mb2Jsb3cuY29t:nightly-test-srv-sub.infoblow.com/default | infoblow.com | record:rpz:srv | default | 10  | infoblow.com |
 
-### 13\. infoblox-create-txt-substitute-record-rule
+### infoblox-create-txt-substitute-record-rule
 
 * * *
 
@@ -974,8 +974,8 @@ Create a substitute rule for a txt record.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name for a record in FQDN format. | Required |
-| rp_zone | The zone to assign the rule. | Required |
-| comment | Add a comment for this rule. | Optional |
+| rp_zone | The zone to assign the rule to. | Required |
+| comment | Comment for this rule. | Optional |
 | text | Text associated with the record. To enter leading, trailing, or embedded spaces in the text, add quotes around the text to preserve the spaces. | Required |
 
 ##### Context Output
@@ -1019,7 +1019,7 @@ Create a substitute rule for a txt record.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | nightly-test-txt-sub | false | nightly-test-txt-sub.infoblow.com | record:rpz:txt/ZG5zLmJpbmRfdHh0JC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cubmlnaHRseS10ZXN0LXR4dC1zdWIuIm5pZ2h0bHktdGVzdC10eHQtc3ViIg:nightly-test-txt-sub.infoblow.com/default | nightly-test-txt-sub | record:rpz:txt | default | infoblow.com |
 
-### 14\. infoblox-create-ipv4-substitute-record-rule
+### infoblox-create-ipv4-substitute-record-rule
 
 * * *
 
@@ -1034,8 +1034,8 @@ Create a substitute rule for an IPv4 rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name for a record in FQDN format. | Required |
-| rp_zone | The zone to assign the rule. | Required |
-| comment | Add a comment for this rule. | Optional |
+| rp_zone | The zone to assign the rule to. | Required |
+| comment | Comment for this rule. | Optional |
 | ipv4addr | The IPv4 Address of the substitute rule. | Required |
 
 ##### Context Output
@@ -1079,7 +1079,7 @@ Create a substitute rule for an IPv4 rule.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | nightly-test-ipv4-sub | false | 3.3.3.4 | 3.3.3.3.infoblow.com | record:rpz:a:ipaddress/ZG5zLmJpbmRfYSQuX2RlZmF1bHQuY29tLmluZm9ibG93LHJwei1pcC4zLjMuMy4zLjMyLDMuMy4zLjQ:3.3.3.3.infoblow.com/default | record:rpz:a:ipaddress | default | infoblow.com |
 
-### 15\. infoblox-create-ipv6-substitute-record-rule
+### infoblox-create-ipv6-substitute-record-rule
 
 * * *
 
@@ -1094,8 +1094,8 @@ Creates a substitute of the IPv6 record rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name for a record in FQDN format. | Required |
-| rp_zone | The zone to assign the rule. | Required |
-| comment | Add a comment for this rule. | Optional |
+| rp_zone | The zone to assign the rule to. | Required |
+| comment | Comment for this rule. | Optional |
 | ipv6addr | The IPv6 Address of the substitute rule. | Required |
 
 ##### Context Output
@@ -1139,11 +1139,11 @@ Creates a substitute of the IPv6 record rule.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | nightly-test-ipv6-sub | false | fd60:e22:f1b9::2 | ::1.infoblow.com | record:rpz:aaaa:ipaddress/ZG5zLmJpbmRfYWFhYSQuX2RlZmF1bHQuY29tLmluZm9ibG93LHJwei1pcC56ei4xLjEyOCxmZDYwOmUyMjpmMWI5Ojoy:%3A%3A1.infoblow.com/default | record:rpz:aaaa:ipaddress | default | infoblow.com |
 
-### 16\. infoblox-enable-rule
+### infoblox-enable-rule
 
 * * *
 
-Disables a rule by its reference ID (reference ID could be extracted by running the searah rules command).
+Disables a rule by its reference ID (reference ID can be extracted by running the search rules command).
 
 ##### Base Command
 
@@ -1153,7 +1153,7 @@ Disables a rule by its reference ID (reference ID could be extracted by running 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| reference_id | The ID of the rule reference (could be extracted by running the search rules command). | Required |
+| reference_id | The ID of the rule reference (can be extracted by running the search rules command). | Required |
 
 ##### Context Output
 
@@ -1193,11 +1193,11 @@ Disables a rule by its reference ID (reference ID could be extracted by running 
 | --- | --- | --- | --- | --- | --- |
 | 4.4.4.5.infoblow.com | false | 4.4.4.5.infoblow.com | record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy41LjQuNC40:4.4.4.5.infoblow.com/default | default | infoblow.com |
 
-### 17\. infoblox-disable-rule
+### infoblox-disable-rule
 
 * * *
 
-Disable a rule by its reference ID (reference ID could be extracted by running the 'infoblox-search-rule' command).
+Disable a rule by its reference ID (reference ID can be extracted by running the 'infoblox-search-rule' command).
 
 ##### Base Command
 
@@ -1207,7 +1207,7 @@ Disable a rule by its reference ID (reference ID could be extracted by running t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| reference_id | The ID of the rule reference (reference ID could be extracted by running the 'infoblox-search-rule' command). | Required |
+| reference_id | The ID of the rule reference (reference ID can be extracted by running the 'infoblox-search-rule' command). | Required |
 
 ##### Context Output
 
@@ -1247,7 +1247,7 @@ Disable a rule by its reference ID (reference ID could be extracted by running t
 | --- | --- | --- | --- | --- | --- |
 | 4.4.4.5.infoblow.com | true | 4.4.4.5.infoblow.com | record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy41LjQuNC40:4.4.4.5.infoblow.com/default | default | infoblow.com |
 
-### 18\. infoblox-get-object-fields
+### infoblox-get-object-fields
 
 * * *
 
@@ -1313,7 +1313,7 @@ Returns the object fields names which can be used in the search rules command.
 | view |
 | zone |
 
-### 19\. infoblox-search-rule
+### infoblox-search-rule
 
 * * *
 
@@ -1370,7 +1370,7 @@ Searches a specific rule by its name.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 4.4.4.5.infoblow.com | false |     | 4.4.4.5.infoblow.com | record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy41LjQuNC40:4.4.4.5.infoblow.com/default | false | default | infoblow.com |
 
-### 20\. infoblox-delete-rpz-rule
+### infoblox-delete-rpz-rule
 
 * * *
 
@@ -1404,7 +1404,7 @@ There are no context output for this command.
 
 Infoblox Integration - A rule with the following id was deleted: record:rpz:ptr/ZG5zLmJpbmRfcHRyJC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cuYXJwYS5pbi1hZGRyLjAuMC4wLjAuaW5mb2Jsb3cuY29t:0.0.0.0.in-addr.arpa.infoblow.com/default
 
-### 21\. infoblox-delete-response-policy-zone
+### infoblox-delete-response-policy-zone
 
 * * *
 
@@ -1418,7 +1418,7 @@ Deletes a given response policy zone.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| reference_id | The reference ID of the rule (could be extracted by running the search rules command). | Required |
+| reference_id | The reference ID of the rule (can be extracted by running the search rules command). | Required |
 
 ##### Context Output
 
@@ -1472,7 +1472,7 @@ Infoblox Integration - Response Policy Zone with the following id was deleted:
 </p>
 <h2>Known Limitations</h2><h2>Troubleshooting</h2>
 
-### 22. infoblox-list-host-info
+### infoblox-list-host-info
 
 ***
 Get all host records.
@@ -1485,10 +1485,10 @@ Get all host records.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_name | The hostname to retrieve records for, e.g. localhost.test. | Optional | 
-| extattrs | comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue". | Optional | 
+| host_name | The hostname to retrieve records for, e.g., localhost.test. | Optional | 
+| extattrs | Comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue". | Optional | 
 | max_results | The maximum number of records to return. Default is 50, maximum is 1000. | Optional | 
-| additional_return_fields | Comma separated list of additional fields to return for each host, e.g. extattrs,aliases. Default is extattrs. | Optional | 
+| additional_return_fields | Comma-separated list of additional fields to return for each host, e.g., extattrs,aliases. Default is extattrs. | Optional | 
 
 #### Context Output
 
@@ -1626,7 +1626,7 @@ Get all host records.
 >| false | IB Discovery Owned: dummy value<br/>Site: ciac-5843 | 192.168.1.0 | ciac-3607.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5jaWFjLTM2MDcuMTkyLjE2OC4xLjAu:192.168.1.0/ciac-3607.test/default |
 
 
-### 23. infoblox-list-network-info
+### infoblox-list-network-info
 
 ***
 List network information.
@@ -1639,10 +1639,10 @@ List network information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pattern | Filter networks by pattern, e.g. '.0/24' for netmask, '192.168' for subnet. | Optional | 
-| extattrs | comma-separated key/value formatted filter for extended attributes, e.g. "Site=New York,OtherProp=MyValue". | Optional | 
+| pattern | Filter networks by pattern, e.g., '.0/24' for netmask, '192.168' for subnet. | Optional | 
+| extattrs | comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue". | Optional | 
 | max_results | The maximum number of records to return. Maximum is 1000. Default is 50. | Optional | 
-| additional_return_fields | Comma separated list of additional fields to return for each host, e.g. extattrs,aliases. Default is extattrs. | Optional | 
+| additional_return_fields | Comma separated list of additional fields to return for each host, e.g., extattrs,aliases. Default is extattrs. | Optional | 
 
 #### Context Output
 
