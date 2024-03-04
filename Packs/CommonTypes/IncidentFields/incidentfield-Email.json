@@ -13,7 +13,8 @@
         "IAM - Rehire User",
         "IAM - AD User Activation",
         "IAM - AD User Deactivation",
-        "Vectra Account"
+        "Vectra Account",
+        "CrowdStrike Falcon Mobile Detection"
     ],
     "caseInsensitive": true,
     "cliName": "email",

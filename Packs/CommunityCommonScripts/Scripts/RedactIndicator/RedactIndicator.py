@@ -1314,9 +1314,6 @@ ROOOT_Domain_List = {".aaa": "[.]aaa",
                      ".zuerich": "[.]zuerich",
                      ".zw": "[.]zw"}
 
-text = demisto.args()['indicator']
-searchkey = demisto.args().get('searchkey')
-
 
 def redactIP(ip):
     iplist = ip.split(".")
@@ -1332,35 +1329,50 @@ def redactemail(email):
     return newemail
 
 
-ip = re.compile(r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
+def main():
+    try:
+        args = demisto.args()
+        if not args.get('value') and not args.get('indicator'):
+            return_error('Must provide either arg "value" or arg "indicator".')
+        text = args.get('value', args.get('indicator'))
+        searchkey = demisto.args().get('searchkey')
+        ip = re.compile(r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
+        redactDictBASIC = {"http": "hxxp", "meow": "hxxp", "HTTP": "hxxp"}
 
-redactDictBASIC = {"http": "hxxp", "meow": "hxxp", "HTTP": "hxxp"}
+        redactDict = {}
+        searchkeyDict = {}
+        if searchkey is not None:
+            if len(searchkey) > 1:
+                Redact_String = "<REDACTED>"
+                for item in searchkey.split(","):
+                    if (item.startswith("$#=")):
+                        Redact_String = item.split("=")[1]
+                    else:
+                        searchkeyDict.update({item.strip(): Redact_String})
+                for key, value in searchkeyDict.items():
+                    text = text.replace(str(key).strip(), str(value).strip())
 
-redactDict = {}
-searchkeyDict = {}
-if searchkey is not None:
-    if len(searchkey) > 1:
-        Redact_String = "<REDACTED>"
-        for item in searchkey.split(","):
-            if (item.startswith("$#=")):
-                Redact_String = item.split("=")[1]
-            else:
-                searchkeyDict.update({item.strip(): Redact_String})
-        for key, value in searchkeyDict.items():
+        for item in ip.findall(text):
+            redactDict.update({item: redactIP(item)})
+
+        email = re.compile(r'[\w\.-]+@[\w\.-]+')
+        for item in email.findall(text):
+            redactDict.update({item: redactemail(item)})
+        for key, value in redactDict.items():
             text = text.replace(str(key).strip(), str(value).strip())
+        for key, value in redactDictBASIC.items():
+            text = text.replace(str(key).strip(), str(value).strip())
+        for key, value in ROOOT_Domain_List.items():
+            text = text.replace(str(key).strip(), str(value).strip())
+        output = CommandResults(
+            outputs_prefix="Redacted_inicator",
+            outputs=text
+        )
+        return_results(output)
+    except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute redactindicator. Error: {str(ex)}')
 
-for item in ip.findall(text):
-    redactDict.update({item: redactIP(item)})
 
-email = re.compile(r'[\w\.-]+@[\w\.-]+')
-for item in email.findall(text):
-    redactDict.update({item: redactemail(item)})
-for key, value in redactDict.items():
-    text = text.replace(str(key).strip(), str(value).strip())
-for key, value in redactDictBASIC.items():
-    text = text.replace(str(key).strip(), str(value).strip())
-for key, value in ROOOT_Domain_List.items():
-    text = text.replace(str(key).strip(), str(value).strip())
-context = demisto.context()
-demisto.executeCommand('Set', {'key': "Redacted_inicator", 'value': text})
-return_results(text)
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

@@ -24,7 +24,8 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, \
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
-from Tests.scripts.common import get_pipelines_and_commits, is_pivot, person_in_charge
+from Tests.scripts.common import get_pipelines_and_commits, is_pivot, get_commit_by_sha, get_pipeline_by_commit, \
+    create_shame_message, slack_link
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -40,6 +41,7 @@ ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE = ARTIFACTS_FOLDER_XPANSE / "server_type_XPA
 ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE = ARTIFACTS_FOLDER_XSIAM / "server_type_XSIAM"
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 1061
+GITLAB_SSL_VERIFY = bool(strtobool(os.getenv('GITLAB_SSL_VERIFY', 'true')))
 CONTENT_CHANNEL = 'dmst-build-test'
 SLACK_USERNAME = 'Content GitlabCI'
 SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
@@ -60,6 +62,7 @@ UPLOAD_BUCKETS = [
 
 def options_handler() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
+    parser.add_argument('-n', '--name-mapping_path', help='Path to name mapping file.', required=True)
     parser.add_argument('-u', '--url', help='The gitlab server url', default=GITLAB_SERVER_URL)
     parser.add_argument('-p', '--pipeline_id', help='The pipeline id to check the status of', required=True)
     parser.add_argument('-s', '--slack_token', help='The token for slack', required=True)
@@ -182,10 +185,6 @@ def failed_test_data_to_slack_link(failed_test: str, jira_ticket_data: dict[str,
     return failed_test
 
 
-def slack_link(url: str, text: str) -> str:
-    return f"<{url}|{text}>"
-
-
 def test_playbooks_results_to_slack_msg(instance_role: str,
                                         succeeded_tests: set[str],
                                         failed_tests: set[str],
@@ -238,7 +237,7 @@ def get_playbook_tests_data(artifact_folder: Path) -> tuple[set[str], set[str], 
     failed_tests = set()
     skipped_tests = set()
     skipped_integrations = set(split_results_file(get_artifact_data(artifact_folder, 'skipped_integrations.txt')))
-    xml = JUnitXml.fromfile(artifact_folder / TEST_PLAYBOOKS_REPORT_FILE_NAME)
+    xml = JUnitXml.fromfile(str(artifact_folder / TEST_PLAYBOOKS_REPORT_FILE_NAME))
     for test_suite in xml.iterchildren(TestSuite):
         properties = get_properties_for_test_suite(test_suite)
         if playbook_id := properties.get("playbook_id"):
@@ -361,16 +360,9 @@ def construct_slack_msg(triggering_workflow: str,
                         pipeline_url: str,
                         pipeline_failed_jobs: list[ProjectPipelineJob],
                         pull_request: GithubPullRequest | None,
-                        shame_message: tuple[str, str] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+                        shame_message: tuple[str, str, str] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     # report failing jobs
     content_fields = []
-    if shame_message:
-        shame_title, shame_value = shame_message
-        content_fields.append({
-            "title": shame_title,
-            "value": shame_value,
-            "short": False
-        })
 
     failed_jobs_names = {job.name: job.web_url for job in pipeline_failed_jobs}
     if failed_jobs_names:
@@ -447,7 +439,14 @@ def construct_slack_msg(triggering_workflow: str,
         # No color is needed in case of success, as it's controlled by the color of the test failures' indicator.
 
     title += title_append
-    return [{
+    slack_msg_start = []
+    if shame_message:
+        shame_title, shame_value, shame_color = shame_message
+        slack_msg_start.append({
+            "title": f"{shame_title}\n{shame_value}",
+            "color": shame_color
+        })
+    return slack_msg_start + [{
         'fallback': title,
         'color': color,
         'title': title,
@@ -522,11 +521,12 @@ def main():
     options = options_handler()
     triggering_workflow = options.triggering_workflow  # ci workflow type that is triggering the slack notifier
     pipeline_id = options.pipeline_id
+    commit_sha = options.current_sha
     project_id = options.gitlab_project_id
     server_url = options.url
     ci_token = options.ci_token
     computed_slack_channel = options.slack_channel
-    gitlab_client = Gitlab(server_url, private_token=ci_token)
+    gitlab_client = Gitlab(server_url, private_token=ci_token, ssl_verify=GITLAB_SSL_VERIFY)
     slack_token = options.slack_token
     slack_client = WebClient(token=slack_token)
 
@@ -547,11 +547,11 @@ def main():
                 verify=False,
             )
             author = pull_request.data.get('user', {}).get('login')
-            if triggering_workflow in {BUCKET_UPLOAD}:
-                logging.info(f"Not supporting custom Slack channel for {triggering_workflow} workflow")
-            else:
+            if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR}:
                 # This feature is only supported for content nightly and content pr workflows.
                 computed_slack_channel = f"{computed_slack_channel}{author}"
+            else:
+                logging.info(f"Not supporting custom Slack channel for {triggering_workflow} workflow")
             logging.info(f"Sending slack message to channel {computed_slack_channel} for "
                          f"Author:{author} of PR#{pull_request.data.get('number')}")
         except Exception:
@@ -563,19 +563,28 @@ def main():
     shame_message = None
     if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
         # We check if the previous build failed and this one passed, or wise versa.
-        list_of_pipelines, commits = get_pipelines_and_commits(gitlab_url=server_url, gitlab_access_token=ci_token,
-                                                               project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
-        pipeline_changed_status, pivot_commit = is_pivot(single_pipeline_id=pipeline_id,
-                                                         list_of_pipelines=list_of_pipelines,
-                                                         commits=commits)
-        logging.info(f'we are investigating pipeline {pipeline_id}')
-        logging.info(f'Pivot commit is {pivot_commit}, pipeline changed status is {pipeline_changed_status}')
-        if pipeline_changed_status is not None:
-            name, email, pr = person_in_charge(pivot_commit)
-            msg = "broke" if pipeline_changed_status else "fixed"
-            shame_message = (f"Hi @{name}, You {msg} the build.", f" That was done in this {slack_link(pr,'PR.')}")
-
-            computed_slack_channel = "test_slack_notifier_when_master_is_broken"
+        list_of_pipelines, list_of_commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
+                                                                       project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
+        current_commit = get_commit_by_sha(commit_sha, list_of_commits)
+        if current_commit:
+            current_commit_index = list_of_commits.index(current_commit)
+            # If the current commit is the last commit in the list, there is no previous commit,
+            # since commits are in ascending order
+            if current_commit_index != len(list_of_commits) - 1:
+                previous_commit = list_of_commits[current_commit_index + 1]
+                current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
+                previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
+                if current_pipeline and previous_pipeline:
+                    pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
+                    logging.info(
+                        f"Checking pipeline {current_pipeline}, the commit is {current_commit} "
+                        f"and the pipeline change status is: {pipeline_changed_status}"
+                    )
+                    if pipeline_changed_status is not None:
+                        shame_message = create_shame_message(
+                            current_commit, pipeline_changed_status, options.name_mapping_path
+                        )
+                        computed_slack_channel = "test_slack_notifier_when_master_is_broken"
         else:
             computed_slack_channel = "dmst-build-test"
     slack_msg_data, threaded_messages = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request,
@@ -590,7 +599,7 @@ def main():
 
     try:
         response = slack_client.chat_postMessage(
-            channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
+            channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
         )
 
         if threaded_messages:

@@ -1,0 +1,10 @@
+!iris-get-all-cases
+!iris-get-last-case-id
+!iris-close-case-id case_id=9
+!iris-reopen-case-id case_id=9
+!iris-get-list-of-iocs case_id=1
+!iris-get-ioc-content case_id=1 ioc_id=5
+!iris-change-case-state case_id=1 case_state="In progress" case_name="#1 - Initial Demo"
+!iris-create-notes-group case_id=1 group_title="test group"
+!iris-add-new-note-to-group case_id=1 group_id=55 note_content="test content" note_title="test tittle"
+!iris-get-list-of-groups-and-notes case_id=1

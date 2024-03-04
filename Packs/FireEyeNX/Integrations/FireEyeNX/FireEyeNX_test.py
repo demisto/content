@@ -1192,6 +1192,26 @@ def test_set_attachment_file(mock_request, client):
     assert excepted_incident != {}
 
 
+def test_set_attachment_file_attachment_not_found(requests_mock, client):
+    """
+    Given: an incident with uuid 'abc' without attachment
+    When: attempt to set attachment for incident
+    Then: incident is not enriched and the command returns without error
+    """
+    from FireEyeNX import set_attachment_file
+    uuid = "abc"
+    requests_mock.get(
+        f'{client._base_url}/artifacts/{uuid}',
+        status_code=404,
+        headers={'Content-Type': CONTENT_TYPE_ZIP},
+        text='Could not fetch any artifacts for given uuid',
+    )
+    incident = {}
+
+    set_attachment_file(client, incident, uuid, headers={})
+    assert incident == {}
+
+
 @patch('FireEyeNX.BaseClient._http_request')
 @patch('FireEyeNX.Client.get_api_token')
 def test_fetch_incidents_for_event_success(
