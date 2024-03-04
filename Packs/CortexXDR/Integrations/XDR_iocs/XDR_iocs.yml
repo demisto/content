@@ -227,5 +227,5 @@ script:
   subtype: python3
   type: python
 tests:
-- Cortex XDR - IOC_MAI_TEST - Test
+- Cortex XDR - IOC - Test
 fromversion: 5.5.0
