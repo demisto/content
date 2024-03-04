@@ -262,7 +262,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
         )
         return command_results
     except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
             raise DemistoException("Invalid ID for one or more fields that request IDs \n"
                                    "Please make sure all IDs are correct")
         else:
@@ -288,7 +288,7 @@ def update_issue_command(client: Client, args: dict[str, Any]):
             readable_output=f'Issue with id {issue_id} was successfully updated.')
         return (command_results)
     except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
             raise DemistoException("Invalid ID for one or more fields that request IDs \n"
                                    "Please make sure all IDs are correct")
         else:
@@ -334,7 +334,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
                                             )
         return command_results
     except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
             raise DemistoException("Invalid ID for one or more fields that request IDs \n"
                                    "Please make sure all IDs are correct")
         else:
@@ -346,7 +346,8 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
         include_possible_values = {'children', 'attachments', 'relations', 'changesets', 'journals', 'watchers', 'allowed_statuses'}
         included_fields = args.pop('include',None)
         if included_fields and not all(field_value in include_possible_values for field_value in included_fields.split(',')):
-            raise DemistoException(f"You can only include the following values {include_possible_values}, separated with comma")
+            raise DemistoException("You can only include the following values: 'changesets', 'children', 'attachments', "
+                                    "'journals', 'relations', 'watchers', 'allowed_statuses'}, separated with comma")
         response = client.get_issue_by_id_request(issue_id, included_fields)
         response_issue=response['issue']
         
@@ -374,8 +375,8 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                                                                         }))
         return command_results
     except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
-            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
+            raise DemistoException("Invalid ID for one or more fields that request IDs "
                                     "Please make sure all IDs are correct")
         else:
             raise DemistoException(e.args[0])
@@ -388,13 +389,11 @@ def delete_issue_by_id_command(client: Client, args: dict[str, Any]):
             readable_output=f'Issue with id {issue_id} was deleted successfully.')
         return (command_results)
     except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
             raise DemistoException("Invalid ID for one or more fields that request IDs \n"
                                     "Please make sure all IDs are correct")
         else:
             raise DemistoException(e.args[0])
-
-
 
 def add_issue_watcher_command(client: Client, args: dict[str, Any]):
     issue_id = args.get('issue_id')
@@ -405,8 +404,8 @@ def add_issue_watcher_command(client: Client, args: dict[str, Any]):
                 readable_output=f'Watcher with id {watcher_id} was added successfully to issue with id {issue_id}.')
             return (command_results)
     except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
-            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
+            raise DemistoException("Invalid ID for one or more fields that request IDs "
                                     "Please make sure all IDs are correct")
         else:
             raise DemistoException(e.args[0])
@@ -420,78 +419,100 @@ def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
             readable_output=f'Watcher with id {watcher_id} was removed successfully from issue with id {issue_id}.')
         return command_results
     except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]':
-            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
+            raise DemistoException("Invalid ID for one or more fields that request IDs "
                                     "Please make sure all IDs are correct")
         else:
             raise DemistoException(e.args[0])
 
 
 def get_project_list_command(client: Client, args: dict[str, Any]):
-    INCLUDE_SET = {'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities','issue_custom_fields'}
-    include_arg = args['include']
-    if include_arg:
-        included_values = include_arg.split(',')
-        invalid_values = [value for value in included_values if value not in INCLUDE_SET]
-        if invalid_values:
-            raise DemistoException("The 'include' argument should only contain values from trackers/issue_categories/"\
-                                   "enabled_modules/time_entry_activities/issue_custom_fields, separated by commas. "\
-                                f"These values are not in options {invalid_values}")
-    response = client.get_project_list_request(args)['projects']
-    headers = ['id', 'name', 'identifier', 'description', 'status', 'is_public', 'time_entry_activities', 'created_on',
-               'updated_on', 'default_value', 'visible', 'roles']
-    for project in response:
-        project['id'] = str(project['id'])
-    command_results = CommandResults(outputs_prefix='Redmine.Project',
-                                     outputs_key_field='id',
-                                     outputs=response,
-                                     raw_response=response,
-                                     readable_output=tableToMarkdown('Projects List:', response,
-                                                                     headers=headers,
-                                                                     removeNull=True,
-                                                                     headerTransform=underscoreToCamelCase,
-                                                                     is_auto_json_transform=True),
-                                     )
-    return command_results
-
+    try:
+        INCLUDE_SET = {'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities','issue_custom_fields'}
+        include_arg = args['include']
+        if include_arg:
+            included_values = include_arg.split(',')
+            invalid_values = [value for value in included_values if value not in INCLUDE_SET]
+            if invalid_values:
+                raise DemistoException("The 'include' argument should only contain values from trackers/issue_categories/"\
+                                    "enabled_modules/time_entry_activities/issue_custom_fields, separated by commas. "\
+                                    f"These values are not in options {invalid_values}")
+        response = client.get_project_list_request(args)['projects']
+        headers = ['id', 'name', 'identifier', 'description', 'status', 'is_public', 'time_entry_activities', 'created_on',
+                'updated_on', 'default_value', 'visible', 'roles']
+        for project in response:
+            project['id'] = str(project['id'])
+        command_results = CommandResults(outputs_prefix='Redmine.Project',
+                                        outputs_key_field='id',
+                                        outputs=response,
+                                        raw_response=response,
+                                        readable_output=tableToMarkdown('Projects List:', response,
+                                                                        headers=headers,
+                                                                        removeNull=True,
+                                                                        headerTransform=underscoreToCamelCase,
+                                                                        is_auto_json_transform=True),
+                                        )
+        return command_results
+    except Exception as e:
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
+            raise DemistoException("Invalid ID for one or more fields that request IDs "
+                                    "Please make sure all IDs are correct")
+        else:
+            raise DemistoException(e.args[0])
 
 def get_custom_fields_command(client: Client, args):
-    response = client.get_custom_fields_request()['custom_fields']
-    headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter', 'searchable',
-               'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields']
-    for custom in response:
-        custom['id'] = str(custom['id'])
-    command_results = CommandResults(outputs_prefix='Redmine.CustomField',
-                                     outputs_key_field='id',
-                                     outputs=response,
-                                     raw_response=response,
-                                     readable_output=tableToMarkdown('Custom Fields List:', response,
-                                                                     headers=headers,
-                                                                     removeNull=True,
-                                                                     headerTransform=underscoreToCamelCase,
-                                                                     is_auto_json_transform=True
-                                                                     )
-                                     )
-    return command_results
-
+    try:
+        response = client.get_custom_fields_request()
+        custom_fields_response = response['custom_fields']
+        headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter', 'searchable',
+                'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields']
+        for custom_field in custom_fields_response:
+            custom_field['id'] = str(custom_field['id'])
+        command_results = CommandResults(outputs_prefix='Redmine.CustomField',
+                                        outputs_key_field='id',
+                                        outputs=custom_fields_response,
+                                        raw_response=custom_fields_response,
+                                        readable_output=tableToMarkdown('Custom Fields List:', custom_fields_response,
+                                                                        headers=headers,
+                                                                        removeNull=True,
+                                                                        headerTransform=underscoreToCamelCase,
+                                                                        is_auto_json_transform=True
+                                                                        )
+                                        )
+        return command_results
+    except Exception as e:
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
+            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
+                                    "Please make sure all IDs are correct")
+        else:
+            raise DemistoException(e.args[0])
 
 def get_users_command(client: Client, args: dict[str, Any]):
-    status_string = args.get('status')
-    if status_string:
-        args['status'] = USER_STATUS_DICT[status_string]
-    response = client.get_users_request(args)['users']
-    headers = ['id', 'login', 'admin', 'firstname', 'lastname', 'mail', 'created_on', 'last_login_on']
-    for user in response:
-        user['id'] = str(user['id'])
-    command_results = CommandResults(outputs_prefix='Redmine.Users',
-                                     outputs_key_field='id',
-                                     outputs=response,
-                                     raw_response=response,
-                                     readable_output=tableToMarkdown('Users List:', response, headers=headers,
-                                                                     removeNull=True, headerTransform=map_header,
-                                                                     is_auto_json_transform=True))
-    return command_results
-
+    try:
+        status_string = args.get('status')
+        if status_string:
+            try:
+                args['status'] = USER_STATUS_DICT[status_string]
+            except Exception as e:
+                raise DemistoException("Invalid status value- please use the predefined options only")
+        response = client.get_users_request(args)['users']
+        headers = ['id', 'login', 'admin', 'firstname', 'lastname', 'mail', 'created_on', 'last_login_on']
+        for user in response:
+            user['id'] = str(user['id'])
+        command_results = CommandResults(outputs_prefix='Redmine.Users',
+                                        outputs_key_field='id',
+                                        outputs=response,
+                                        raw_response=response,
+                                        readable_output=tableToMarkdown('Users List:', response, headers=headers,
+                                                                        removeNull=True, headerTransform=map_header,
+                                                                        is_auto_json_transform=True))
+        return command_results
+    except Exception as e:
+        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
+            raise DemistoException("Invalid ID for one or more fields that request IDs "
+                                    "Please make sure all IDs are correct")
+        else:
+            raise DemistoException(e.args[0])
 
 def main() -> None:
     params = demisto.params()

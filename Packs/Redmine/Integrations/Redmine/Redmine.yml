@@ -1,8 +1,8 @@
 commonfields:
-  id: Redmine1
+  id: Redmine
   version: -1
-name: Redmine1
-display: Redmine1
+name: Redmine
+display: Redmine
 category: Utilities
 description: 'A project management and issue tracking system that provides a web-based
   platform for managing projects, tracking tasks, and handling various types of project-related
@@ -35,9 +35,9 @@ script:
   commands:
   - name: redmine-issue-create
     description: 
-    - Create an issue
-    - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created 
-    - To create a custom field, navigate to the server URL with administrative privileges, click on 'Administration' (located at the top left), select 'Custom fields,' then proceed to create a new custom field. Once created, you can add values as needed    
+      Update an existing issue
+      When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
+      To create a custom field, navigate to the server URL with administrative privileges, click on 'Administration' (located at the top left), select 'Custom fields,' then proceed to create a new custom field. Once created, you can add values as needed
     arguments:
     - name: project_id
       description: Enter the project ID for this issue (If given, by default- project_id from authentication, this field override it)
@@ -170,9 +170,9 @@ script:
         description: Display a list of issues
   - name: redmine-issue-update
     description: 
-    - Update an existing issue
-    - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
-    - To create a custom field, navigate to the server URL with administrative privileges, click on 'Administration' (located at the top left), select 'Custom fields,' then proceed to create a new custom field. Once created, you can add values as needed
+      Update an existing issue
+      When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
+      To create a custom field, navigate to the server URL with administrative privileges, click on 'Administration' (located at the top left), select 'Custom fields,' then proceed to create a new custom field. Once created, you can add values as needed
     arguments:
     - name: issue_id
       description: The ID of the issue to be updated

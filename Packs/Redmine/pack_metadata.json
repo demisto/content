@@ -1,11 +1,12 @@
 {
     "name": "Redmine",
     "description": "A project management and issue tracking system that provides a web-based platform for managing projects, tracking tasks, and handling various types of project-related activities.",
-    "support": "developer",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
-    "author": "Tal Carmeli",
-    "url": "",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "created": "2024-02-13T00:00:00Z",
     "categories": [
         "Utilities"
     ],
@@ -15,9 +16,5 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ],
-    "devEmail": [
-        "tcarmeli@paloaltonetworks.com"
-    ],
-    "githubUser": []
+    ]
 }
