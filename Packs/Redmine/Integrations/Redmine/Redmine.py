@@ -175,17 +175,29 @@ def convert_args_to_request_format(args):
     custom_fields = args.pop('custom_fields', None)
     watcher_user_ids = args.pop('custom_fields', None)
     if tracker_id:
-        args['tracker_id'] = ISSUE_TRACKER_DICT[tracker_id]
+        if tracker_id in ISSUE_TRACKER_DICT:
+            args['tracker_id'] = ISSUE_TRACKER_DICT[tracker_id]
+        else:
+            raise DemistoException("Tracker_id invalid, please make you used only predefined values")
     if status_id:
-        args['status_id'] = ISSUE_STATUS_DICT[status_id]
+        if status_id in ISSUE_STATUS_DICT:
+            args['status_id'] = ISSUE_STATUS_DICT[status_id]
+        else:
+            raise DemistoException("Status_id invalid, please make you used only predefined values")
     if priority_id:
-        args['priority_id'] = ISSUE_PRIORITY_DICT[priority_id]
+        if priority_id in ISSUE_PRIORITY_DICT:
+            args['priority_id'] = ISSUE_PRIORITY_DICT[priority_id]
+        else:
+            raise DemistoException("Priority_id invalid, please make you used only predefined values")
     if custom_fields:
-        custom_fields = custom_fields.split(',')
-        args['custom_fields'] = [dict(zip(('id', 'value'), field.split(':'))) for field in custom_fields]
+        try:
+            custom_fields = custom_fields.split(',')
+            args['custom_fields'] = [{'id': field[:field.index(':')], 'value': field[field.index(':') + 1:]}
+                                     for field in custom_fields]
+        except Exception as e:
+            raise DemistoException("Custom fields not in format, please follow the instructions")
     if watcher_user_ids:
         args['watcher_user_ids'] = [watcher_user_ids]
-
 
 def get_file_name_and_content(entry_id: str) -> bytes:
     """Returns the XSOAR file entry's content.
@@ -279,8 +291,8 @@ def update_issue_command(client: Client, args: dict[str, Any]):
             file_token= file_token_response['upload']['token']
             args = assign_params(token=file_token, **args)
         except Exception as e:
-            raise DemistoException("Failed to execute redmine-issue-update command. \n"
-                f"Couldn't create file token for the file you are trying to upload with error {e}")
+            raise DemistoException("Failed to execute redmine-issue-update command. "
+                f"Couldn't create file token for the file you are trying to upload. with error: {e}")
     try:
         convert_args_to_request_format(args)
         client.update_issue_request(args)
@@ -289,7 +301,7 @@ def update_issue_command(client: Client, args: dict[str, Any]):
         return (command_results)
     except Exception as e:
         if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
-            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
+            raise DemistoException("Invalid ID for one or more fields that request IDs "
                                    "Please make sure all IDs are correct")
         else:
             raise DemistoException(e.args[0])
@@ -300,7 +312,10 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
         offset_to_dict, limit_to_dict, page_number_for_header = adjust_paging_to_request(args)
         status_id = args.pop('status_id', None)
         if status_id:
-            status_id = ISSUE_STATUS_DICT[status_id]
+            if status_id in ISSUE_STATUS_DICT:
+                status_id = ISSUE_STATUS_DICT[status_id]
+            else:
+                raise DemistoException("Invalid status ID, please use only predefined values")
         project_id = args.pop('project_id', None) or client._project_id
         response = client.get_issues_list_request(project_id, status_id, offset_to_dict, limit_to_dict, args)
         issues_response = response['issues']
