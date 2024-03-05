@@ -179,22 +179,12 @@ class TestFetchEventsCommand:
         return self.load_response(CohesityHeliosEventCollector.EventType.alert)
 
     def test_fetch_events_command_case_1(self, requests_mock, mocker, audit_logs_mock_res, alerts_mock_res):
-        # audit_logs_mock = requests_mock.get(audit_logs_matcher, json=audit_logs_mock_res)
-        # audit_logs_matcher = re.compile(f'{self.base_url}/{self.audit_logs_endpoint}?.*')
-
         from CohesityHeliosEventCollector import Client, fetch_events_command
 
         # mockers
         mocker.patch("CohesityHeliosEventCollector.arg_to_datetime", return_value=arg_to_datetime(self.mock_time))
-        requests_mock.get(f'{self.base_url}/{self.audit_logs_endpoint}?'
-                          f'startTimeUsecs={self.mock_fixed_time_unix}&'
-                          f'endTimeUsecs={self.mock_fixed_time_unix}&'
-                          f'count=10000',
-                          json=audit_logs_mock_res[0])
-        requests_mock.get(f'{self.base_url}/{self.alerts_endpoint}?'
-                          f'startDateUsecs={self.mock_fixed_time_unix}&'
-                          f'endDateUsecs={self.mock_fixed_time_unix}&',
-                          json=alerts_mock_res[0])
+        requests_mock.get(f'{self.base_url}/{self.audit_logs_endpoint}', json=audit_logs_mock_res[0])
+        requests_mock.get(f'{self.base_url}/{self.alerts_endpoint}', json=alerts_mock_res[0])
 
         client = Client(base_url=self.base_url)
         events, last_run = fetch_events_command(client=client, last_run={}, max_fetch=1000)
@@ -211,50 +201,57 @@ class TestFetchEventsCommand:
         import CohesityHeliosEventCollector
         from CohesityHeliosEventCollector import Client, fetch_events_command
 
+        # mockers
         mocker.patch.object(CohesityHeliosEventCollector, 'PAGE_SIZE', 2)
         mocker.patch("CohesityHeliosEventCollector.arg_to_datetime", return_value=arg_to_datetime(self.mock_time))
+        audit_logs_call = requests_mock.get(f'{self.base_url}/{self.audit_logs_endpoint}',
+                                            [{'json': audit_logs_mock_res[0]}, {'json': audit_logs_mock_res[2]}])
+        alerts_call = requests_mock.get(f'{self.base_url}/{self.alerts_endpoint}',
+                                        [{'json': alerts_mock_res[0]}, {'json': alerts_mock_res[2]}])
 
         audit_logs_expected_end_time = audit_logs_mock_res[0].get('auditLogs')[1].get('timestampUsecs')
-        audit_logs_call_1 = requests_mock.get(f'{self.base_url}/{self.audit_logs_endpoint}',
-                                              [{'json': audit_logs_mock_res[0]}, {'json': audit_logs_mock_res[2]}])
-
-        # audit_logs_call_1 = requests_mock.get(
-        #     f'{self.base_url}/{self.audit_logs_endpoint}?'
-        #     f'startTimeUsecs={self.mock_fixed_time_unix}&'
-        #     f'endTimeUsecs={self.mock_fixed_time_unix}&'
-        #     f'count=10000',
-        #     json=audit_logs_mock_res[0])
-        # audit_logs_call_2 = requests_mock.get(
-        #     f'{self.base_url}/{self.audit_logs_endpoint}?'
-        #     f'startTimeUsecs={self.mock_fixed_time_unix}&'
-        #     f'endTimeUsecs={audit_logs_expected_end_time}&'
-        #     f'count=10000',
-        #     json=audit_logs_mock_res[2])
-
         alerts_expected_end_time = alerts_mock_res[0].get('alertsList')[1].get('latestTimestampUsecs')
-        alerts_call_1 = requests_mock.get(f'{self.base_url}/{self.alerts_endpoint}',
-                                          [{'json': alerts_mock_res[0]}, {'json': alerts_mock_res[2]}])
-
-        # alerts_call_1 = requests_mock.get(
-        #     f'{self.base_url}/{self.alerts_endpoint}',
-        #     f'{self.base_url}/{self.alerts_endpoint}?'
-        #     f'startDateUsecs={self.mock_fixed_time_unix}&'
-        #     f'endDateUsecs={self.mock_fixed_time_unix}&',
-        #     json=alerts_mock_res[0])
-        # alerts_call_2 = requests_mock.get(
-        #     f'{self.base_url}/{self.alerts_endpoint}?'
-        #     f'startDateUsecs={self.mock_fixed_time_unix}&'
-        #     f'endDateUsecs={alerts_expected_end_time}&',
-        #     json=alerts_mock_res[2])
-
         client = Client(base_url=self.base_url)
         events, last_run = fetch_events_command(client=client, last_run={}, max_fetch=1000)
+
         assert len(events) == 6
         assert last_run['audit_cache']['next_start_timestamp'] == 170691857331523
         assert not last_run['audit_cache']['ids_for_dedup']
         assert not last_run['audit_cache']['latest_event_fetched_timestamp']
         assert last_run['alert_cache']['next_start_timestamp'] == 1708175775539274
         assert not last_run['alert_cache']['ids_for_dedup']
-        assert not last_run['audit_cache']['latest_event_fetched_timestamp']
-        # assert audit_logs_call_1.call_count == audit_logs_call_2.call_count == alerts_call_1.call_count == \
-        #        alerts_call_2.call_count == 1
+        assert not last_run['alert_cache']['latest_event_fetched_timestamp']
+        assert audit_logs_call.request_history[1].qs['endtimeusecs'][0] == str(audit_logs_expected_end_time)
+        assert alerts_call.request_history[1].qs['enddateusecs'][0] == str(alerts_expected_end_time)
+        assert audit_logs_call.call_count == alerts_call.call_count == 2
+
+    def test_fetch_events_command_case_3(self, requests_mock, mocker, audit_logs_mock_res, alerts_mock_res):
+        import CohesityHeliosEventCollector
+        from CohesityHeliosEventCollector import Client, fetch_events_command
+
+        # mockers
+        mocker.patch.object(CohesityHeliosEventCollector, 'PAGE_SIZE', 2)
+        mocker.patch("CohesityHeliosEventCollector.arg_to_datetime", return_value=arg_to_datetime(self.mock_time))
+        audit_logs_call = requests_mock.get(f'{self.base_url}/{self.audit_logs_endpoint}',
+                                            [{'json': audit_logs_mock_res[0]},
+                                             {'json': audit_logs_mock_res[1]}])
+        alerts_call = requests_mock.get(f'{self.base_url}/{self.alerts_endpoint}',
+                                        [{'json': alerts_mock_res[0]},
+                                         {'json': alerts_mock_res[1]}])
+
+        audit_logs_expected_end_time = audit_logs_mock_res[0].get('auditLogs')[1].get('timestampUsecs')
+        alerts_expected_end_time = alerts_mock_res[0].get('alertsList')[1].get('latestTimestampUsecs')
+
+        client = Client(base_url=self.base_url)
+        events, last_run = fetch_events_command(client=client, last_run={}, max_fetch=3)
+
+        assert len(events) == 8
+        assert last_run['audit_cache']['next_start_timestamp'] == self.mock_fixed_time_unix
+        assert last_run['audit_cache']['ids_for_dedup'] == ['94f359b611f0272505c36002ed4dbcaff9496d0f16460287f1ed05af0f7257a1']
+        assert last_run['audit_cache']['latest_event_fetched_timestamp'] == 170691857331523
+        assert last_run['alert_cache']['next_start_timestamp'] == self.mock_fixed_time_unix
+        assert last_run['alert_cache']['ids_for_dedup'] == ['66770']
+        assert last_run['alert_cache']['latest_event_fetched_timestamp'] == 1708175775539274
+        assert audit_logs_call.request_history[1].qs['endtimeusecs'][0] == str(audit_logs_expected_end_time)
+        assert alerts_call.request_history[1].qs['enddateusecs'][0] == str(alerts_expected_end_time)
+        assert audit_logs_call.call_count == alerts_call.call_count == 2

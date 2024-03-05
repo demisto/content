@@ -167,7 +167,7 @@ def fetch_events_per_type(client: Client, event_type: str, fetch_start_timestamp
 
     except DemistoException as e:
         if 'Unauthorized' in e.message:
-            raise DemistoException(f'Unauthorized: API key is invalid')
+            raise DemistoException(f'Unauthorized - API key is invalid')
         raise e
 
     return events
