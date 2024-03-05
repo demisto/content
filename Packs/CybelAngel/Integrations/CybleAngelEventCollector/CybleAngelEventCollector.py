@@ -60,7 +60,9 @@ class Client(BaseClient):
         }
         reports = self.http_request(method='GET', url_suffix="/api/v2/reports", params=params).get("reports") or []
         # sort the reports by their date as their order is returned randomly
-        reports = sorted(reports, key=lambda report: dateparser.parse(report["created_at"]))
+        reports = sorted(
+            reports, key=lambda report: dateparser.parse(report["created_at"])  # type: ignore[arg-type, return-value]
+        )
         return reports[:limit]
 
     def get_access_token(self, create_new_token: bool = False) -> str:
@@ -92,10 +94,11 @@ class Client(BaseClient):
        Returns:
            tuple[str, str]: token and its expiration date
         """
+        url = 'https://auth.cybelangel.com/oauth/token'
 
         token_response = self._http_request(
             'POST',
-            full_url='https://auth.cybelangel.com/oauth/token',
+            full_url=url,
             json_data={
                 "client_id": self.client_id,
                 "client_secret": self.client_secret,
@@ -103,7 +106,9 @@ class Client(BaseClient):
                 "grant_type": "client_credentials"
             }
         )
-        return token_response.get("access_token", "")
+        if access_token := token_response.get("access_token"):
+            return access_token
+        raise RuntimeError(f"Could not retrieve token from {url}, access-token returned is empty")
 
 
 def dedup_fetched_events(
