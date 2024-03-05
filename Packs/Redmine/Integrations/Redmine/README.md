@@ -1,10 +1,10 @@
 A project management and issue tracking system that provides a web-based platform for managing projects, tracking tasks, and handling various types of project-related activities. 
-This integration was integrated and tested with version xx of Redmine1.
+This integration was integrated and tested with version xx of Redmine.
 
-## Configure Redmine1 on Cortex XSOAR
+## Configure Redmine on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Redmine1.
+2. Search for Redmine.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -13,8 +13,12 @@ This integration was integrated and tested with version xx of Redmine1.
     | Trust any certificate (not secure) | False |
     | API Key | True |
     | Project id | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+4. Getting your API key:
+    - Use your **server URL** to enter to your Redmine instance.
+    - Authenticate with your username and password.
+    - Navigate to **My Account** (at the top right corner).
+    - Click on API **Access key** > **Show** - This is your API key
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
@@ -233,7 +237,7 @@ Retrieve a list of all projects, including both public and private ones that the
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| include | Specify which additional fields to include in the response.<br/>Choose from the following options:<br/>- trackers<br/>- issue_categories<br/>- enabled_modules <br/>- time_entry_activities<br/>- issue_custom_fields<br/>Separate multiple values with comma ONLY.<br/>. | Optional | 
+| include | Specify which additional fields to include in the response.<br/>Choose from the following options:<br/>- trackers<br/>- issue_categories<br/>- enabled_modules <br/>- time_entry_activities<br/>- issue_custom_fields<br/>Separate multiple values with comma ONLY.<br/> | Optional | 
 
 #### Context Output
 
