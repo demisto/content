@@ -66,8 +66,7 @@ def fix_nested_client(data):
         new_dict["client_proxies"] = client.get("proxies", [])
         new_dict["client_count"] = client.get("count", 0)
         new_dict["client_types"] = client.get("types", [])
-        if "concentration" in client:
-            new_dict["client_concentration"] = data["client"]["concentration"]
+        new_dict["client_concentration"] = client.get("concentration", None)
 
     return new_dict
 
