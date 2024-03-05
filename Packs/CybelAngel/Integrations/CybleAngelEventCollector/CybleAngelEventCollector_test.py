@@ -26,7 +26,7 @@ class HttpRequestsMocker:
         self.num_of_events = num_of_events
         self.num_of_calls = 0
 
-    def valid_http_request_side_effect(self, method: str, url_suffix: str, params: Dict | None = None, **kwargs):
+    def valid_http_request_side_effect(self, method: str, url_suffix: str = "", params: Dict | None = None, **kwargs):
         if method == "GET" and url_suffix == "/api/v2/reports":
             start_date = params.get("start-date")
             events = create_events(1, amount_of_events=self.num_of_events, start_date=start_date)
