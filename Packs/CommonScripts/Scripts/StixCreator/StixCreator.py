@@ -413,5 +413,7 @@ def main():
     return_results(res)
 
 
+from TAXII2ApiModule import *  # noqa: E402
+
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
