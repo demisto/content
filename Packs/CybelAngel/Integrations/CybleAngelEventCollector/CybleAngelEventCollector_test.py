@@ -11,7 +11,6 @@ you are implementing with your integration
 """
 
 import json
-import io
 import random
 
 from unittest.mock import MagicMock
@@ -45,6 +44,7 @@ class HttpRequestsMocker:
             start_date = params.get("start-date")
             events = create_events(1, amount_of_events=self.num_of_events, start_date=start_date)
             return create_mocked_response(events)
+        return None
 
     def expired_token_http_request_side_effect(
         self, method: str, url_suffix: Optional[str] = None, params: Dict | None = None, **kwargs
@@ -57,6 +57,7 @@ class HttpRequestsMocker:
             return create_events(1, amount_of_events=self.num_of_events, start_date=start_date)
         if method == "POST" and kwargs.get("full_url") == "https://auth.cybelangel.com/oauth/token":
             return {"access_token": "new_access_token"}
+        return None
 
 
 def create_events(start_id: int, amount_of_events: int, start_date: str) -> Dict[str, List[Dict]]:
@@ -99,7 +100,6 @@ def test_http_request_token_expired(client: Client, mocker):
     events = result["reports"]
     assert len(events) == 1
     assert set_integration_context_mocker.call_args[0][0] == {'access_token': 'new_access_token'}
-
 
 
 def test_the_test_module(mocker):
@@ -192,4 +192,3 @@ def test_fetch_events_no_last_run(mocker):
     last_run = set_last_run_mocker.call_args[0][0]
     assert last_run[CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME] == fetched_events[-1]["created_at"]
     assert last_run[CybleAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS][0]["id"] == fetched_events[-1]["id"]
-

@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any, Tuple
+from typing import Any
 from enum import Enum
 
 # Disable insecure warnings
@@ -32,7 +32,7 @@ class Client(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
 
-    def http_request(self, method: str, url_suffix: str, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    def http_request(self, method: str, url_suffix: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
         """
@@ -53,7 +53,7 @@ class Client(BaseClient):
 
         return self._http_request(method, url_suffix=url_suffix, headers=headers, params=params)
 
-    def get_reports(self, start_date: str, end_date: str, limit: int = DEFAULT_MAX_FETCH) -> List[Dict[str, Any]]:
+    def get_reports(self, start_date: str, end_date: str, limit: int = DEFAULT_MAX_FETCH) -> List[dict[str, Any]]:
         params = {
             "start-date": start_date,
             "end-date": end_date
@@ -133,8 +133,9 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_events(client: Client, last_run: Dict, max_fetch: int) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    last_run_time, last_fetched_report_ids = last_run.get(LastRun.LATEST_REPORT_TIME), last_run.get(LastRun.LATEST_FETCHED_REPORTS)
+def fetch_events(client: Client, last_run: dict, max_fetch: int) -> tuple[List[dict[str, Any]], dict[str, Any]]:
+    last_run_time, last_fetched_report_ids = last_run.get(
+        LastRun.LATEST_REPORT_TIME), last_run.get(LastRun.LATEST_FETCHED_REPORTS)
     if not last_run_time:
         last_run_time = (datetime.now() - timedelta(days=1065)).strftime(DATE_FORMAT)
 
@@ -158,7 +159,7 @@ def fetch_events(client: Client, last_run: Dict, max_fetch: int) -> Tuple[List[D
     return reports, last_run
 
 
-def get_events(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_events(client: Client, args: dict[str, Any]) -> CommandResults:
     pass
 
 
