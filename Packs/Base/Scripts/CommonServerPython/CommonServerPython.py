@@ -9226,9 +9226,13 @@ if 'requests' in sys.modules:
 
         def _return_execution_metrics_results(self):
             """ Returns execution metrics results.
+            Might raise an AttributeError exception if execution_metrics is not initialized.
             """
-            if self.execution_metrics.metrics:
-                return_results(cast(CommandResults, self.execution_metrics.metrics))
+            try:
+                if self.execution_metrics.metrics:
+                    return_results(cast(CommandResults, self.execution_metrics.metrics))
+            except AttributeError:
+                pass
 
 
 def batch(iterable, batch_size=1):
@@ -9444,7 +9448,7 @@ def set_to_integration_context_with_retries(context, object_keys=None, sync=True
                           ''.format(version, str(ve), CONTEXT_UPDATE_RETRY_TIMES - attempt))
             # Sleep for a random time
             time_to_sleep = randint(1, 100) / 1000
-            time.sleep(time_to_sleep)
+            time.sleep(time_to_sleep)  # pylint: disable=E9003
 
 
 def get_integration_context_with_version(sync=True):
