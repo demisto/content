@@ -1,0 +1,6 @@
+name: Fortimail Parsing Rule
+id: Fortimail_ParsingRule
+fromversion: 8.4.0
+tags: []
+rules: ''
+samples: ''
