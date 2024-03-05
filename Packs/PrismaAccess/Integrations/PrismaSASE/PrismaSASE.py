@@ -2073,7 +2073,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
             job_result = job.get('result_str')
             if job_result != 'OK':
                 outputs['result'] = job_result
-                outputs['details'] = res.get('details', '')
+                outputs['details'] = job.get("summary")
                 return CommandResults(entry_type=EntryType.ERROR,
                                       outputs=outputs,
                                       outputs_prefix=f'{PA_OUTPUT_PREFIX}CandidateConfig',
