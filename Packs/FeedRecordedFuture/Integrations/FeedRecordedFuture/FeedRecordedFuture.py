@@ -240,20 +240,20 @@ class Client(BaseClient):
         demisto.info('reading from file')
         # we do this try to make sure the file gets deleted at the end
         try:
-            file_stream = open("response.txt")
-            columns = file_stream.readline()  # get the headers from the csv file.
-            columns = columns.replace("\"", "").strip().split(",")  # type:ignore  # '"a","b"\n' -> ["a", "b"]
+            with open("response.txt") as file_stream:
+                columns = file_stream.readline()  # get the headers from the csv file.
+                columns = columns.replace("\"", "").strip().split(",")  # type:ignore  # '"a","b"\n' -> ["a", "b"]
 
-            batch_size = limit if limit else BATCH_SIZE
-            while True:
+                batch_size = limit if limit else BATCH_SIZE
+                while True:
 
-                feed_batch = [feed for _, feed in zip(range(batch_size + 1), file_stream) if feed]
+                    feed_batch = [feed for _, feed in zip(range(batch_size + 1), file_stream) if feed]
 
-                if not feed_batch:
-                    file_stream.close()
-                    return
-                demisto.info(f'yielding, {batch_size=}')
-                yield csv.DictReader(feed_batch, fieldnames=columns)
+                    if not feed_batch:
+                        return
+
+                    demisto.info(f'yielding, {batch_size=}')
+                    yield csv.DictReader(feed_batch, fieldnames=columns)
         finally:
             try:
                 os.remove("response.txt")
