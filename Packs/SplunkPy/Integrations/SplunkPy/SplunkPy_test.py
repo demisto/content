@@ -574,6 +574,83 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     assert output == expected_output
 
 
+class TestFetchRemovingIrrelevantIncidents:
+
+    notable1 = {'status': '5', 'event_id': '3'}
+    notable2 = {'status': '6', 'event_id': '4'}
+
+    # In order to mock the service.jobs.oneshot() call in the fetch_notables function, we need to create
+    # the following two classes
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x, **kwargs: TestFetchForLateIndexedEvents.notable1
+
+    class Service:
+        def __init__(self):
+            self.jobs = TestFetchForLateIndexedEvents.Jobs()
+
+    def test_backwards_compatible(self, mocker: MockerFixture):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round with the epoch time of their occurrence
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that the last fetched IDs now hold the start of the fetch window, and not the epoch time
+        """
+        from SplunkPy import UserMappingObject
+
+        mocker.patch.object(demisto, 'setLastRun')
+        mock_last_run = {'time': '2024-02-12T10:00:00', 'latest_time': '2024-02-19T10:00:00',
+                         'found_incidents_ids': {'1': 1700497516}}
+        mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
+        mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+        mocker.patch('demistomock.params', return_value=mock_params)
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
+                                                                          self.notable2])
+        service = self.Service()
+        set_last_run_mocker = mocker.patch('demistomock.setLastRun')
+        mapper = UserMappingObject(service, False)
+        splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
+        last_fetched_ids = set_last_run_mocker.call_args_list[0][0][0]['found_incidents_ids']
+        assert last_fetched_ids == {'1': {'occurred_time': '2024-02-19T10:00:00'},
+                                    '3': {'occurred_time': '2024-02-19T10:00:00'},
+                                    '4': {'occurred_time': '2024-02-19T10:00:00'}}
+
+    def test_remove_irrelevant_fetched_incident_ids(self, mocker: MockerFixture):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that the fetched IDs that are no longer in the fetch window are removed
+        """
+        from SplunkPy import UserMappingObject
+
+        mocker.patch.object(demisto, 'setLastRun')
+        mock_last_run = {'time': '2024-02-12T10:00:00', 'latest_time': '2024-02-19T10:00:00',
+                         'found_incidents_ids': {'1': {'occurred_time': '2024-02-12T09:59:59'},
+                                                 '2': {'occurred_time': '2024-02-18T10:00:00'}}}
+        mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
+        mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+        mocker.patch('demistomock.params', return_value=mock_params)
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
+                                                                          self.notable2])
+        service = self.Service()
+        set_last_run_mocker = mocker.patch('demistomock.setLastRun')
+        mapper = UserMappingObject(service, False)
+        splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
+        last_fetched_ids = set_last_run_mocker.call_args_list[0][0][0]['found_incidents_ids']
+        assert last_fetched_ids == {'2': {'occurred_time': '2024-02-18T10:00:00'},
+                                    '3': {'occurred_time': '2024-02-19T10:00:00'},
+                                    '4': {'occurred_time': '2024-02-19T10:00:00'}}
+
+
 class TestFetchForLateIndexedEvents:
     notable1 = {'status': '5', 'event_id': 'id_1'}
     notable2 = {'status': '6', 'event_id': 'id_2'}

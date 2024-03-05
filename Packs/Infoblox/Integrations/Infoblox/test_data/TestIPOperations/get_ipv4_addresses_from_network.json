@@ -1,0 +1,133 @@
+{
+    "result": [
+        {
+            "_ref": "ipv4address/Li5pcHY0X2FkZHJlc3MkMTkyLjE2OC4xLjEvMA:192.168.1.1",
+            "ip_address": "192.168.1.1",
+            "is_conflict": false,
+            "mac_address": "",
+            "names": [],
+            "network": "192.168.1.0/24",
+            "network_view": "default",
+            "objects": [],
+            "status": "USED",
+            "types": [
+                "UNMANAGED"
+            ],
+            "usage": []
+        },
+        {
+            "_ref": "ipv4address/Li5pcHY0X2FkZHJlc3MkMTkyLjE2OC4xLjIvMA:192.168.1.2",
+            "ip_address": "192.168.1.2",
+            "is_conflict": false,
+            "mac_address": "",
+            "names": [
+                "ciac-3607-test-record.test"
+            ],
+            "network": "192.168.1.0/24",
+            "network_view": "default",
+            "objects": [
+                "record:a/ZG5zLmJpbmRfYSQuX2RlZmF1bHQudGVzdCxjaWFjLTM2MDctdGVzdC1yZWNvcmQsMTkyLjE2OC4xLjI:ciac-3607-test-record.test/default"
+            ],
+            "status": "USED",
+            "types": [
+                "A"
+            ],
+            "usage": [
+                "DNS"
+            ]
+        },
+        {
+            "_ref": "ipv4address/Li5pcHY0X2FkZHJlc3MkMTkyLjE2OC4xLjMvMA:192.168.1.3",
+            "ip_address": "192.168.1.3",
+            "is_conflict": false,
+            "mac_address": "",
+            "names": [],
+            "network": "192.168.1.0/24",
+            "network_view": "default",
+            "objects": [],
+            "status": "UNUSED",
+            "types": [],
+            "usage": []
+        },
+        {
+            "_ref": "ipv4address/Li5pcHY0X2FkZHJlc3MkMTkyLjE2OC4xLjQvMA:192.168.1.4",
+            "ip_address": "192.168.1.4",
+            "is_conflict": false,
+            "mac_address": "",
+            "names": [],
+            "network": "192.168.1.0/24",
+            "network_view": "default",
+            "objects": [],
+            "status": "UNUSED",
+            "types": [],
+            "usage": []
+        },
+        {
+            "_ref": "ipv4address/Li5pcHY0X2FkZHJlc3MkMTkyLjE2OC4xLjUvMA:192.168.1.5",
+            "ip_address": "192.168.1.5",
+            "is_conflict": false,
+            "mac_address": "",
+            "names": [],
+            "network": "192.168.1.0/24",
+            "network_view": "default",
+            "objects": [],
+            "status": "UNUSED",
+            "types": [],
+            "usage": []
+        },
+        {
+            "_ref": "ipv4address/Li5pcHY0X2FkZHJlc3MkMTkyLjE2OC4xLjYvMA:192.168.1.6",
+            "ip_address": "192.168.1.6",
+            "is_conflict": false,
+            "mac_address": "",
+            "names": [],
+            "network": "192.168.1.0/24",
+            "network_view": "default",
+            "objects": [],
+            "status": "UNUSED",
+            "types": [],
+            "usage": []
+        },
+        {
+            "_ref": "ipv4address/Li5pcHY0X2FkZHJlc3MkMTkyLjE2OC4xLjcvMA:192.168.1.7",
+            "ip_address": "192.168.1.7",
+            "is_conflict": false,
+            "mac_address": "",
+            "names": [],
+            "network": "192.168.1.0/24",
+            "network_view": "default",
+            "objects": [],
+            "status": "UNUSED",
+            "types": [],
+            "usage": []
+        },
+        {
+            "_ref": "ipv4address/Li5pcHY0X2FkZHJlc3MkMTkyLjE2OC4xLjgvMA:192.168.1.8",
+            "ip_address": "192.168.1.8",
+            "is_conflict": false,
+            "mac_address": "",
+            "names": [],
+            "network": "192.168.1.0/24",
+            "network_view": "default",
+            "objects": [],
+            "status": "USED",
+            "types": [
+                "UNMANAGED"
+            ],
+            "usage": []
+        },
+        {
+            "_ref": "ipv4address/Li5pcHY0X2FkZHJlc3MkMTkyLjE2OC4xLjkvMA:192.168.1.9",
+            "ip_address": "192.168.1.9",
+            "is_conflict": false,
+            "mac_address": "",
+            "names": [],
+            "network": "192.168.1.0/24",
+            "network_view": "default",
+            "objects": [],
+            "status": "UNUSED",
+            "types": [],
+            "usage": []
+        }
+    ]
+}
