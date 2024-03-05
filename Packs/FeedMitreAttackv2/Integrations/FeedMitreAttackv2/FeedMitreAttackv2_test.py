@@ -294,5 +294,5 @@ def test_remove_citations(description, expected_result):
     """
     from FeedMitreAttackv2 import remove_citations
     actual_result = remove_citations(description)
-    "Citation" not in actual_result
-    actual_result == expected_result
+    assert "Citation" not in actual_result
+    assert actual_result == expected_result
