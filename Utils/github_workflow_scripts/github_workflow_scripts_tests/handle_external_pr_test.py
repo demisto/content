@@ -158,35 +158,35 @@ def test_is_requires_security_reviewer_return_false(pr_files: str):
 
 
 OPTION1 = {
-        'reviewer1': 1,
-        'reviewer2': 2,
-        'reviewer3': 3,
-    }
+    'reviewer1': 1,
+    'reviewer2': 2,
+    'reviewer3': 3,
+}
 OPTION2 = {
-        'reviewer1': 3,
-        'reviewer2': 2,
-        'reviewer3': 1,
-    }
+    'reviewer1': 3,
+    'reviewer2': 2,
+    'reviewer3': 1,
+}
 OPTION3 = {
-        'reviewer1': 1,
-        'reviewer2': 1,
-        'reviewer3': 3,
-    }
+    'reviewer1': 1,
+    'reviewer2': 1,
+    'reviewer3': 3,
+}
 OPTION4 = {
-        'reviewer1': 1,
-        'reviewer2': 2,
-        'reviewer3': 1,
-    }
+    'reviewer1': 1,
+    'reviewer2': 2,
+    'reviewer3': 1,
+}
 OPTION5 = {
-        'reviewer1': 2,
-        'reviewer2': 1,
-        'reviewer3': 1,
-    }
+    'reviewer1': 2,
+    'reviewer2': 1,
+    'reviewer3': 1,
+}
 OPTION6 = {
-        'reviewer1': 1,
-        'reviewer2': 1,
-        'reviewer3': 1,
-    }
+    'reviewer1': 1,
+    'reviewer2': 1,
+    'reviewer3': 1,
+}
 
 
 @pytest.mark.parametrize('assigned_prs_per_potential_reviewer, possible_locations',
