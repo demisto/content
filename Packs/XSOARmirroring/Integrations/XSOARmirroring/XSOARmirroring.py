@@ -379,18 +379,20 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
                 tags_and_operator=False
             )
 
-            for entry in entries:
-                if 'file' in entry and entry.get('file'):
-                    file_entry_content = client.get_file_entry(entry.get('id'))  # type: ignore
-                    file_result = fileResult(entry['file'], file_entry_content)
-                    if any(attachment.get('name') == entry['file'] for attachment in incident.get('attachment', [])):
-                        if file_result['Type'] == EntryType.ERROR:
-                            raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
+            # When demisto.command() == 'test-module' we can't write files since we are not running in a playground.
+            if demisto.command() != 'test-module':
+                for entry in entries:
+                    if 'file' in entry and entry.get('file'):
+                        file_entry_content = client.get_file_entry(entry.get('id'))  # type: ignore
+                        file_result = fileResult(entry['file'], file_entry_content)
+                        if any(attachment.get('name') == entry['file'] for attachment in incident.get('attachment', [])):
+                            if file_result['Type'] == EntryType.ERROR:
+                                raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
 
-                        file_attachments.append({
-                            'path': file_result.get('FileID', ''),
-                            'name': file_result.get('File', '')
-                        })
+                            file_attachments.append({
+                                'path': file_result.get('FileID', ''),
+                                'name': file_result.get('File', '')
+                            })
 
         incident_result['attachment'] = file_attachments
         incidents_result.append(incident_result)
