@@ -14,7 +14,7 @@ import json
 import io
 import random
 
-import dateparser
+from unittest.mock import MagicMock
 from CybleAngelEventCollector import DATE_FORMAT, Client
 from CommonServerPython import *
 import pytest
@@ -88,10 +88,7 @@ def test_the_test_module(mocker):
     """
     import CybleAngelEventCollector
 
-    # send_events_mocker = mocker.patch.object(CybleAngelEventCollector, 'send_events_to_xsiam')
-    # set_last_run_mocker = mocker.patch.object(demisto, 'setLastRun', return_value={})
-    # mocker.patch.object(demisto, 'getLastRun', return_value={})
-    demisto_results_mocker = mocker.patch.object(demisto, 'results')
+    demisto_results_mocker: MagicMock = mocker.patch.object(demisto, 'results')
     mocker.patch.object(
         demisto, 'params',
         return_value={
@@ -114,5 +111,58 @@ def test_the_test_module(mocker):
     )
 
     CybleAngelEventCollector.main()
+    assert demisto_results_mocker.called
     assert demisto_results_mocker.call_args[0][0] == "ok"
+
+
+def test_fetch_events_no_last_run(mocker):
+    """
+    Given:
+     - no last run (first time of the fetch)
+
+    When:
+     - running the fetch-events
+
+    Then:
+     - make sure events are sent into xsiam
+     - make sure all the 100 events are fetched
+     - make sure last run is updated
+    """
+    import CybleAngelEventCollector
+
+    send_events_mocker: MagicMock = mocker.patch.object(CybleAngelEventCollector, 'send_events_to_xsiam')
+    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun', return_value={})
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(
+        demisto, 'params',
+        return_value={
+            "url": TEST_URL,
+            "credentials": {
+                "identifier": "1234",
+                "password": "1234",
+            },
+            "max_fetch": 100
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+
+    http_mocker = HttpRequestsMocker(100)
+
+    mocker.patch.object(
+        CybleAngelEventCollector.Client,
+        "_http_request",
+        side_effect=http_mocker.valid_http_request_side_effect
+    )
+
+    CybleAngelEventCollector.main()
+    assert send_events_mocker.called
+    fetched_events = send_events_mocker.call_args[0][0]
+    assert len(fetched_events) == 100
+    for i in range(1, 101):
+        assert fetched_events[i - 1]["id"] == i
+
+    assert set_last_run_mocker.called
+    last_run = set_last_run_mocker.call_args[0][0]
+    assert last_run[CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME] == fetched_events[-1]["created_at"]
+    assert last_run[CybleAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS][0]["id"] == fetched_events[-1]["id"]
 
