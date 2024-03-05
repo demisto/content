@@ -306,6 +306,8 @@ def parse_demisto_single_comments(ioc: dict, comment_field_name: list[str] | str
 
     elif comment_field_name == 'indicator_link':
         # parse indicator link into comments field
+        if is_xsoar_saas():
+            return [f'{demisto.demistoUrls().get("server")}/indicator/{ioc.get("id")}']
         return [f'{demisto.demistoUrls().get("server")}/#/indicator/{ioc.get("id")}']
 
     else:  # custom comments field
