@@ -264,9 +264,12 @@ def get_trail_status(args: dict) -> CommandResults:
         'LatestDigestDeliveryError': response.get('LatestDigestDeliveryError')
     }
 
-    ec = {'AWS.CloudTrail.TrailStatus(val.Name == obj.Name)': data}
-    human_readable = tableToMarkdown('AWS CloudTrail Trail Status', data)
-    return_outputs(human_readable, ec)
+    return CommandResults(
+        outputs_prefix="AWS.CloudTrail.TrailStatus",
+        outputs_key_field="Name",
+        outputs=data,
+        readable_output=tableToMarkdown('AWS CloudTrail TrailStatus', data),
+    )
 
 
 def update_trail(args: dict) -> CommandResults:
