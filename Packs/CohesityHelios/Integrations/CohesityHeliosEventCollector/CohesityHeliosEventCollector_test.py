@@ -8,11 +8,13 @@ from CommonServerPython import arg_to_datetime
 def test_dedup_elements():
     from CohesityHeliosEventCollector import adjust_and_dedup_elements, ALERT_TIME_FIELD, AUDIT_LOGS_TIME_FIELD
     """
-    Case 1: all elements appear in the existing ID list.
+    Case 1:
+    Given a list of 3 elements where all IDs appear in the ID list.
     We expect the result list to have no elements at all and that the final list length was not changed.
     """
-    new_elements = [{'id': '1', 'latestTimestampUsecs': '1'}, {'id': '2', 'latestTimestampUsecs': '2'},
-                    {'id': '3', 'latestTimestampUsecs': '3'}]
+    new_elements = [{'id': '1', 'latestTimestampUsecs': 1704096000000000},
+                    {'id': '2', 'latestTimestampUsecs': 1704182400000000},
+                    {'id': '3', 'latestTimestampUsecs': 1704268800000000}]
     existing_element_ids = ['1', '2', '3']
     deduped_elements = adjust_and_dedup_elements(new_elements=new_elements, existing_element_ids=existing_element_ids,
                                                  time_field_name='')
@@ -20,10 +22,12 @@ def test_dedup_elements():
     assert len(new_elements) == 3
 
     """
-    Case 2: all elements appear in the existing ID list
+    Case 2:
+    Given a list of 2 elements where all elements appear in the existing ID list
     We expect the result list to have no elements at all and that the final list length was not changed.
     """
-    new_elements = [{'id': '2', 'latestTimestampUsecs': '2'}, {'id': '3', 'latestTimestampUsecs': '3'}]
+    new_elements = [{'id': '2', 'latestTimestampUsecs': 1704182400000000},
+                    {'id': '3', 'latestTimestampUsecs': 1704268800000000}]
     existing_element_ids = ['1', '2', '3']
     deduped_elements = adjust_and_dedup_elements(new_elements=new_elements, existing_element_ids=existing_element_ids,
                                                  time_field_name='')
@@ -31,34 +35,38 @@ def test_dedup_elements():
     assert len(new_elements) == 2
 
     """
-    Case 3: the first element appear in the existing ID list.
+    Case 3:
+    Given a list of 3 elements where the first element appear in the existing ID list.
     We expect the result list to have the other two elements and that the final list length was not changed.
     """
-    new_elements = [{'id': '1', 'latestTimestampUsecs': '1'}, {'id': '2', 'latestTimestampUsecs': '2'},
-                    {'id': '3', 'latestTimestampUsecs': '3'}]
+    new_elements = [{'id': '1', 'latestTimestampUsecs': 1704096000000000},
+                    {'id': '2', 'latestTimestampUsecs': 1704182400000000},
+                    {'id': '3', 'latestTimestampUsecs': 1704268800000000}]
     existing_element_ids = ['1']
     deduped_elements = adjust_and_dedup_elements(new_elements=new_elements, existing_element_ids=existing_element_ids,
                                                  time_field_name=ALERT_TIME_FIELD)
-    assert deduped_elements == [{'id': '2', 'latestTimestampUsecs': '2', '_time': '2'},
-                                {'id': '3', 'latestTimestampUsecs': '3', '_time': '3'}]
+    assert deduped_elements == [{'id': '2', 'latestTimestampUsecs': 1704182400000000, '_time': '2024-01-02T08:00:00.000Z'},
+                                {'id': '3', 'latestTimestampUsecs': 1704268800000000, '_time': '2024-01-03T08:00:00.000Z'}]
     assert len(new_elements) == 3
 
     """
-    Case 4: The existing ID list is empty.
+    Case 4:
+    Given a list of 3 elements while the existing ID list is empty.
     We expect the result list to have all elements and that the final list length was not changed.
     """
-    new_elements = [{'id': '1', 'timestampUsecs': '1'}, {'id': '2', 'timestampUsecs': '2'},
-                    {'id': '3', 'timestampUsecs': '3'}]
+    new_elements = [{'id': '1', 'timestampUsecs': 1704096000000000}, {'id': '2', 'timestampUsecs': 1704182400000000},
+                    {'id': '3', 'timestampUsecs': 1704268800000000}]
     existing_element_ids = []
     deduped_elements = adjust_and_dedup_elements(new_elements=new_elements, existing_element_ids=existing_element_ids,
                                                  time_field_name=AUDIT_LOGS_TIME_FIELD)
-    assert deduped_elements == [{'id': '1', 'timestampUsecs': '1', '_time': '1'},
-                                {'id': '2', 'timestampUsecs': '2', '_time': '2'},
-                                {'id': '3', 'timestampUsecs': '3', '_time': '3'}]
+    assert deduped_elements == [{'id': '1', 'timestampUsecs': 1704096000000000, '_time': '2024-01-01T08:00:00.000Z'},
+                                {'id': '2', 'timestampUsecs': 1704182400000000, '_time': '2024-01-02T08:00:00.000Z'},
+                                {'id': '3', 'timestampUsecs': 1704268800000000, '_time': '2024-01-03T08:00:00.000Z'}]
     assert len(new_elements) == 3
 
     """
-    Case 5: The list of elements is empty.
+    Case 5:
+    Given an empty list elements.
     We expect the result list to have no elements at all and that the final list length was not changed.
     """
     new_elements = []
@@ -74,7 +82,8 @@ def test_get_earliest_event_ids_with_the_same_time():
 
     time_field = ALERT_TIME_FIELD
     """
-    Case 1: list of Alert events where there is only one event that has the earliest timestamp
+    Case 1:
+    Given a list of Alert events where there is only one event that has the earliest timestamp
     Ensure only the ID of the earliest Alert is returned
     """
     events = [
@@ -86,7 +95,8 @@ def test_get_earliest_event_ids_with_the_same_time():
     assert earliest_event_fetched_ids == ['a']
 
     """
-    Case 2: list of Alert events where there are two "earliest" events
+    Case 2:
+    Given a list of Alert events where there are two "earliest" events
     Ensure the ID of the TWO earliest Alerts is returned
     """
     events = [
@@ -100,7 +110,8 @@ def test_get_earliest_event_ids_with_the_same_time():
 
     time_field = AUDIT_LOGS_TIME_FIELD
     """
-    Case 3: list of Audit Log events where there is only one event that has the earliest timestamp
+    Case 3:
+    Given a list of Audit Log events where there is only one event that has the earliest timestamp
     Ensure only the ID of the earliest event is returned
     """
     events = [
@@ -112,7 +123,8 @@ def test_get_earliest_event_ids_with_the_same_time():
     assert earliest_event_fetched_ids == ['a']
 
     """
-    Case 4: list of Audit Log events where there are two "earliest" events
+    Case 4:
+    Given a list of Audit Log events where there are two "earliest" events
     Ensure the ID of the TWO earliest Audit logs is returned
     """
     events = [
@@ -127,7 +139,8 @@ def test_get_earliest_event_ids_with_the_same_time():
 
 def test_hash_fields_to_create_id():
     """
-    Given: Dummy audit log event with the relevant fields
+    Given dummy audit log event with the relevant fields
+    Ensure the id is created correctly
     """
     from CohesityHeliosEventCollector import hash_fields_to_create_id
     event = {
@@ -150,16 +163,19 @@ def test_hash_fields_to_create_id():
 
 
 class TestFetchEventsCommand:
+    """
+    Class to test the different Fetch events flow.
+    Fetch events has test 3 case:
+    1: There are fewer events than page_size on first request
+    2: There are more than page_size events but there are less than max_fetch events
+    3: There are more than max_fetch events
+    """
     base_url = 'https://test.com'
     audit_logs_endpoint = 'mcm/audit-logs'
     alerts_endpoint = 'mcm/alerts'
     mock_time = '2024-01-01 10:00:00'
     mock_fixed_time_unix = int(arg_to_datetime(mock_time).timestamp() * 1000000)
 
-    # Fetch should test 3 case:
-    # 1: There are fewer events than page_size on first request
-    # 2: There are more than page_size events but there are less than max_fetch events
-    # 3: There are more than max_fetch events
     @staticmethod
     def load_response(event_type) -> dict:
         from CohesityHeliosEventCollector import EventType
@@ -179,6 +195,9 @@ class TestFetchEventsCommand:
         return self.load_response(CohesityHeliosEventCollector.EventType.alert)
 
     def test_fetch_events_command_case_1(self, requests_mock, mocker, audit_logs_mock_res, alerts_mock_res):
+        """
+
+        """
         from CohesityHeliosEventCollector import Client, fetch_events_command
 
         # mockers
