@@ -461,7 +461,7 @@ def fetch_events(client: Client, max_fetch: int, start_date_arg: str = "", end_d
     if not last_run.get("alert", {}).get("next_page", ""):
         # If the last run does not contain a next page token for alert events, it will fetch audit events.
         audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch, last_run)
-    next_run = {"alert": alert_next_run, "audit": audit_next_run}
+    next_run: Dict[str, Any] = {"alert": alert_next_run, "audit": audit_next_run}
     if "next_page" in (alert_next_run | audit_next_run):
         # Will instantly re-trigger the fetch command.
         next_run["nextTrigger"] = "0"

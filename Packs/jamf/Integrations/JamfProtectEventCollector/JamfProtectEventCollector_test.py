@@ -84,7 +84,8 @@ def test_calculate_fetch_dates_with_arguments(client):
     """
     Given: A mock JamfProtect client.
     When: Running CalculateFetchDates with start and end date arguments.
-    Then: Ensure the returned start date is the same as the start date argument, and the end date is the same as the end date argument.
+    Then: Ensure the returned start date is the same as the start date argument,
+     and the end date is the same as the end date argument.
     """
     from JamfProtectEventCollector import calculate_fetch_dates
     start_date_arg = "2023-01-01T00:00:00Z"
