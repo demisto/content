@@ -58,6 +58,7 @@ script:
     - description: 'The enry IDs of the incident attachments.'
       name: attachment_entry_ids
       required: false
+      isArray: true
     - description: 'The json object that represents the incident.'
       name: incident_raw_json
       required: false

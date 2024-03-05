@@ -68,7 +68,16 @@ def fetch_incidents_command(client):
         if 'attachment' in incident:
             _add_attachments(client, incident)
         if 'entry_id_attachment' in incident:
-            incident.setdefault('attachment', []).extend(incident['entry_id_attachment'])
+            for attachment_entry_id in incident['entry_id_attachment']:
+                attachment = demisto.getFilePath(attachment_entry_id)
+                with open(attachment['path'], 'rb') as f:
+                    attachment_content = f.read()
+                    file = fileResult(attachment['name'], attachment_content)
+                    incident.setdefault('attachment', []).append({
+                        'path': file['FileID'],
+                        'name': attachment['name']
+                    })
+        incident.pop('entry_id_attachment')
 
     # clear the integration contex from already seen incidents
     set_integration_context({'incidents': []})
@@ -179,10 +188,7 @@ def parse_incidents(incidents: List[dict],
             parsed_incident['attachment'] = attachment_path
 
         if attachment_entry_ids:
-            for attachment_entry_id in attachment_entry_ids:
-                attachment = demisto.getFilePath(attachment_entry_id)
-                parsed_incident.setdefault('entry_id_attachment', []).append({'path': attachment.get('file'),
-                                                                              'name': attachment.get('name')})
+            parsed_incident['entry_id_attachment'] = attachment_entry_ids
 
         ready_incidents.append(parsed_incident)
     return ready_incidents
