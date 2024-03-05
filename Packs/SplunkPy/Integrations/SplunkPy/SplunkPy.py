@@ -258,7 +258,8 @@ def remove_irrelevant_incident_ids(last_run_fetched_ids: dict[str, dict[str, str
             incident_window_end_datetime = datetime.strptime(incident_occurred_time.get('occurred_time', ''), SPLUNK_TIME_FORMAT)
             if incident_window_end_datetime >= window_start_datetime:
                 # We keep the incident, since it is still in the fetch window
-                extensive_log(f'[SplunkPy] Keeping {incident_id} as part of the last fetched IDs. {incident_window_end_datetime=}')
+                extensive_log(f'[SplunkPy] Keeping {incident_id} as part of the last fetched IDs.'
+                              f' {incident_window_end_datetime=}')
                 new_last_run_fetched_ids[incident_id] = incident_occurred_time
             else:
                 extensive_log(f'[SplunkPy] Removing {incident_id} from the last fetched IDs. {incident_window_end_datetime=}')
