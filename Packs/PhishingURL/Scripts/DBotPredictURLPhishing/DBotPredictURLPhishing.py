@@ -135,7 +135,7 @@ def get_model_data(model_name: str):
     :param model_name: name of the model to load from demisto
     :return: str, str
     """
-    res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
+    res_model: dict = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]  # type: ignore
     if is_error(res_model):
         raise DemistoException(f"Error reading model {model_name} from Demisto")
     else:
@@ -163,8 +163,7 @@ def load_oob(path=OUT_OF_THE_BOX_MODEL_PATH):
     :return: bytes
     """
     with open(path, 'rb') as f:
-        model_b = f.read()
-    return base64.b64encode(model_b)
+        return base64.b64encode(f.read())
 
 
 def load_model_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH):
@@ -463,6 +462,8 @@ def validate_rasterize(res_rasterize: list[dict]):
     if is_error(res_rasterize):
         error = yaml.safe_dump(get_error(res_rasterize))
         raise DemistoException(f'Rasterize on URLs returned an error:\n{error}')
+    if isinstance(res_rasterize[0]['Contents'], str):
+        raise DemistoException(f'Error in call to rasterize:\n{res_rasterize[0]["Contents"]}')
 
 
 def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
