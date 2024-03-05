@@ -6,7 +6,8 @@ import boto3
 from botocore.config import Config
 from botocore.parsers import ResponseParserError
 import urllib3.util
-from datetime import datetime, date
+from datetime import datetime
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
