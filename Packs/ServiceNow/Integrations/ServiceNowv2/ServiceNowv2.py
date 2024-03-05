@@ -10,6 +10,8 @@ import mimetypes
 import urllib3
 urllib3.disable_warnings()
 
+DEFAULT_FETCH_TIME = '10 minutes'
+
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
 
@@ -23,7 +25,8 @@ DATE_FORMAT_OPTIONS = {
     'dd/MM/yyyy': '%d/%m/%Y %H:%M:%S',
     'dd-MM-yyyy': '%d-%m-%Y %H:%M:%S',
     'dd.MM.yyyy': '%d.%m.%Y %H:%M:%S',
-    'yyyy-MM-dd': '%Y-%m-%d %H:%M:%S'
+    'yyyy-MM-dd': '%Y-%m-%d %H:%M:%S',
+    'mmm-dd-yyyy': '%b-%d-%Y %H:%M:%S'
 }
 
 TICKET_STATES = {
@@ -2135,6 +2138,33 @@ def get_mirroring():
     }
 
 
+def format_incidents_response_with_display_values(incidents_res: dict) -> list[dict]:
+    """Format the incidents response to use display values by key.
+
+    Args:
+        incidents_res (dict): The original incidents response
+
+    Returns:
+        list[dict]: The formatted incidents.
+    """
+    format_incidents = []
+
+    for incident in incidents_res:
+        format_incident = {}
+
+        for item in incident:
+            if item in ("opened_by", "sys_domain", "assignment_group"):
+                format_incident[item] = incident[item]
+            elif item == "opened_at":
+                format_incident[item] = incident[item]["value"]
+            else:
+                format_incident[item] = incident[item]["display_value"]
+
+        format_incidents.append(format_incident)
+
+    return format_incidents
+
+
 def fetch_incidents(client: Client) -> list:
     query_params = {}
     incidents = []
@@ -2159,7 +2189,7 @@ def fetch_incidents(client: Client) -> list:
         query_params['sysparm_query'] = query
     query_params['sysparm_limit'] = fetch_limit  # type: ignore[assignment]
     if client.use_display_value:
-        query_params['sysparm_display_value'] = True  # type: ignore[assignment]
+        query_params['sysparm_display_value'] = "all"
 
     demisto.debug(f"ServiceNowV2 - Last run: {json.dumps(last_run)}")
     demisto.debug(f"ServiceNowV2 - Query sent to the server: {str(query_params)}")
@@ -2168,6 +2198,9 @@ def fetch_incidents(client: Client) -> list:
     skipped_incidents = 0
 
     severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
+
+    if client.use_display_value:
+        tickets_response = format_incidents_response_with_display_values(incidents_res=tickets_response)
 
     # remove duplicate incidents which were already fetched
     tickets_response = filter_incidents_by_duplicates_and_limit(
@@ -3028,7 +3061,7 @@ def main():
     cr_server_url = f'{get_server_url(server_url)}{cr_api}'
     server_url = f'{get_server_url(server_url)}{api}'
 
-    fetch_time = params.get('fetch_time', '10 minutes').strip()
+    fetch_time = (params.get('fetch_time') or DEFAULT_FETCH_TIME).strip()
     sysparm_query = params.get('sysparm_query')
     sysparm_limit = int(params.get('fetch_limit', 10))
     timestamp_field = params.get('timestamp_field', 'opened_at')
