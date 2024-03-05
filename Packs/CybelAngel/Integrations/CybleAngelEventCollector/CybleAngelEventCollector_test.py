@@ -1,16 +1,3 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
-import json
 import random
 
 from unittest.mock import MagicMock
@@ -64,8 +51,7 @@ def create_events(start_id: int, amount_of_events: int, start_date: str) -> Dict
     events = [
         {
             "id": i,
-            "created_at": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
-            "updated_at": (dateparser.parse(start_date) + timedelta(seconds=i + random.randint(0, 10))).strftime(DATE_FORMAT)
+            "updated_at": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
         }
         for i in range(start_id, start_id + amount_of_events)
     ]
