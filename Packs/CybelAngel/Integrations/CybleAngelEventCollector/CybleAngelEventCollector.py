@@ -21,7 +21,7 @@ PRODUCT = "platform"
 
 class LastRun(str, Enum):
     LATEST_REPORT_TIME = "latest_report_time"
-    LATEST_FETCHED_REPORTS = "latest_feteched_reports"
+    LATEST_FETCHED_REPORTS = "latest_fetched_reports"
 
 
 class Client(BaseClient):
@@ -32,7 +32,7 @@ class Client(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
 
-    def http_request(self, method: str, url_suffix: str, params: Dict[str, Any] | None = None):
+    def http_request(self, method: str, url_suffix: str, params: Dict[str, Any] | None = None) -> requests.Response:
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
         """
@@ -51,7 +51,7 @@ class Client(BaseClient):
         token = self.get_token_request()
         headers["Authorization"] = f'Bearer {token}'
 
-        return self._http_request(method, url_suffix=url_suffix, headers=headers, params=params)
+        return self._http_request(method, url_suffix=url_suffix, headers=headers, params=params, resp_type="response")
 
     def get_reports(self, start_date: str, end_date: str, limit: int = DEFAULT_MAX_FETCH) -> List[Dict[str, Any]]:
         params = {
