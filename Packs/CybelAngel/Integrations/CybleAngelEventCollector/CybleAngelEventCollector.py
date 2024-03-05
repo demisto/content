@@ -74,16 +74,16 @@ class Client(BaseClient):
             str: the access token.
        """
         integration_context = get_integration_context()
-        access_token = integration_context.get('access_token')
-        if access_token and not create_new_token:
-            return access_token
-        token = self.get_token_request()
+        current_access_token = integration_context.get('access_token')
+        if current_access_token and not create_new_token:
+            return current_access_token
+        new_access_token = self.get_token_request()
         integration_context = {
-            'access_token': access_token,
+            'access_token': new_access_token,
         }
         demisto.debug(f'updating access token at {datetime.now()}')
         set_integration_context(context=integration_context)
-        return token
+        return new_access_token
 
     def get_token_request(self) -> str:
         """
@@ -103,7 +103,7 @@ class Client(BaseClient):
                 "grant_type": "client_credentials"
             }
         )
-        return token_response.get('access_token', "")
+        return token_response.get("access_token", "")
 
 
 def dedup_fetched_events(

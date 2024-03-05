@@ -22,13 +22,15 @@ import pytest
 
 TEST_URL = "https://test.com/api"
 
+
 @pytest.fixture()
 def client() -> Client:
     return Client(
-        url=TEST_URL,
-        account_id="1234",
-        username="test",
-        password="test",
+        TEST_URL,
+        client_id="1234",
+        client_secret="1234",
+        verify=False,
+        proxy=False,
     )
 
 
@@ -45,7 +47,7 @@ class HttpRequestsMocker:
             return create_mocked_response(events)
 
     def expired_token_http_request_side_effect(
-        self, method: str, url_suffix: str, params: Dict | None = None, **kwargs
+        self, method: str, url_suffix: Optional[str] = None, params: Dict | None = None, **kwargs
     ):
         if method == "GET" and url_suffix == "/api/v2/reports":
             if self.num_of_calls == 0:
@@ -53,6 +55,8 @@ class HttpRequestsMocker:
                 return create_mocked_response([], status_code=401)
             start_date = params.get("start-date")
             return create_events(1, amount_of_events=self.num_of_events, start_date=start_date)
+        if method == "POST" and kwargs.get("full_url") == "https://auth.cybelangel.com/oauth/token":
+            return {"access_token": "new_access_token"}
 
 
 def create_events(start_id: int, amount_of_events: int, start_date: str) -> Dict[str, List[Dict]]:
@@ -74,8 +78,28 @@ def create_mocked_response(response: List[Dict] | Dict, status_code: int = 200) 
     return mocked_response
 
 
-def test_http_request_token_expired():
-    pass
+def test_http_request_token_expired(client: Client, mocker):
+    """
+    Given:
+     - expired token from integration context
+
+    When:
+     - retrieving events by a http-request
+
+    Then:
+     - make sure token is replaced with a new access token
+     - make sure events are still returned even when token has expired
+    """
+    http_mocker = HttpRequestsMocker(1)
+    mocker.patch.object(client, "_http_request", side_effect=http_mocker.expired_token_http_request_side_effect)
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"access_token": "old_access_token"})
+    set_integration_context_mocker: MagicMock = mocker.patch.object(demisto, "setIntegrationContext")
+
+    result = client.http_request(method="GET", url_suffix="/api/v2/reports", params={"start-date": "2021-01-10T00:00:00"})
+    events = result["reports"]
+    assert len(events) == 1
+    assert set_integration_context_mocker.call_args[0][0] == {'access_token': 'new_access_token'}
+
 
 
 def test_the_test_module(mocker):
