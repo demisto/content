@@ -253,7 +253,8 @@ class StixParser(BaseClient):
 
     @staticmethod
     def parse_report_relationships(report_obj: dict[str, Any],
-                                   id_to_object: dict[str, dict[str, Any]]) -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+                                   id_to_object: dict[str, dict[str, Any]],
+                                   relationships_prefix: str = '') -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         obj_refs = report_obj.get('object_refs', [])
         relationships: list[dict[str, Any]] = []
         obj_refs_excluding_relationships_prefix = []
@@ -267,7 +268,7 @@ class StixParser(BaseClient):
                     relationships.append(
                         EntityRelationship(
                             name='related-to',
-                            entity_a=report_obj.get('name'),
+                            entity_a=f"{relationships_prefix}{report_obj.get('name')}",
                             entity_a_type=ThreatIntel.ObjectsNames.REPORT,
                             entity_b=entity_b_obj.get('name'),
                             entity_b_type=entity_b_type
@@ -423,7 +424,7 @@ class StixParser(BaseClient):
 
         return [attack_pattern]
 
-    def parse_report(self, report_obj: dict[str, Any]) -> list[dict[str, Any]]:
+    def parse_report(self, report_obj: dict[str, Any], relationships_prefix: str = '') -> list[dict[str, Any]]:
         """
         Parses a single report object
         :param report_obj: report object
@@ -451,7 +452,9 @@ class StixParser(BaseClient):
         tags = list((set(report_obj.get('labels', []))).union(set(self.tags)))
         fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
 
-        relationships, obj_refs_excluding_relationships_prefix = self.parse_report_relationships(report_obj, self.id_to_object)
+        relationships, obj_refs_excluding_relationships_prefix = self.parse_report_relationships(report_obj,
+                                                                                                 self.id_to_object,
+                                                                                                 relationships_prefix)
         report['relationships'] = relationships
         if obj_refs_excluding_relationships_prefix:
             fields['Report Object References'] = [{'objectstixid': object} for object in obj_refs_excluding_relationships_prefix]

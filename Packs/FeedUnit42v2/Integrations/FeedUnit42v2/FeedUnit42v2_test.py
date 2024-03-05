@@ -11,7 +11,8 @@ from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DA
     REPORTS_INDICATORS, ID_TO_OBJECT, INDICATORS_RESULT, CAMPAIGN_RESPONSE, CAMPAIGN_INDICATOR, COURSE_OF_ACTION_DATA, \
     PUBLICATIONS, ATTACK_PATTERN_INDICATOR, COURSE_OF_ACTION_INDICATORS, RELATIONSHIP_OBJECTS, INTRUSION_SET_DATA, \
     DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST, STIX_ATTACK_PATTERN_INDICATOR, SUB_TECHNIQUE_INDICATOR, \
-    SUB_TECHNIQUE_DATA, INVALID_ATTACK_PATTERN_STRUCTURE, FETCH_RESULTS
+    SUB_TECHNIQUE_DATA, INVALID_ATTACK_PATTERN_STRUCTURE, FETCH_RESULTS, FETCH_MOCK_RESPONSE, \
+    REPORTS_INDICATORS_WITH_RELATIONSHIPS
 
 
 @pytest.mark.parametrize('command, args, response, length', [
@@ -64,6 +65,18 @@ TYPE_TO_RESPONSE_WIITH_INVALID_ATTACK_PATTERN_DATA = {
 TYPE_TO_RESPONSE_FETCH = {
     'indicator': INDICATORS_DATA,
     'report': REPORTS_DATA,
+    'attack-pattern': ATTACK_PATTERN_DATA,
+    'malware': MALWARE_DATA,
+    'campaign': CAMPAIGN_RESPONSE,
+    'relationship': RELATIONSHIP_DATA,
+    'course-of-action': COURSE_OF_ACTION_DATA,
+    'intrusion-set': INTRUSION_SET_DATA
+}
+
+
+TYPE_TO_RESPONSE_FETCH = {
+    'indicator': INDICATORS_DATA,
+    'report': FETCH_MOCK_RESPONSE,
     'attack-pattern': ATTACK_PATTERN_DATA,
     'malware': MALWARE_DATA,
     'campaign': CAMPAIGN_RESPONSE,
@@ -239,7 +252,8 @@ def test_parse_reports():
     Validate The reports list extracted successfully.
     """
     client = Client(api_key='1234', verify=False)
-    assert parse_reports_and_report_relationships(client, REPORTS_DATA, [], '') == REPORTS_INDICATORS
+    result = parse_reports_and_report_relationships(client, REPORTS_DATA, [], '')
+    assert result == REPORTS_INDICATORS
 
 
 def test_parse_campaigns():
@@ -376,3 +390,4 @@ def test_fetch_indicators_command_with_relationship(mocker):
     indicators = fetch_indicators(client, create_relationships=True)
     assert len(indicators) == 17
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
+    assert REPORTS_INDICATORS_WITH_RELATIONSHIPS in indicators

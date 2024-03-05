@@ -184,7 +184,7 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
     for report_object in report_objects:
         if is_sub_report(report_object):
             continue
-        report_list = client.parse_report(report_object)
+        report_list = client.parse_report(report_object, '[Unit42 ATOM] ')
         report = report_list[0]
         report['value'] = f"[Unit42 ATOM] {report_object.get('name')}"
         report['fields']['tags'] = list((set(report_object.get('labels') or [])).union(set(feed_tags)))
@@ -203,7 +203,7 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
             'unit42_object_refs': report_object.get('object_refs')
         }
 
-        report['relationships'] = get_campaign_from_sub_reports(report_object, id_to_object)
+        report['relationships'].extend(get_campaign_from_sub_reports(report_object, id_to_object))
 
         reports.append(report)
 
