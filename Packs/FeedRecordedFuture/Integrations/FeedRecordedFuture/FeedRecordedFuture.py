@@ -47,10 +47,10 @@ class Client(BaseClient):
     headers = {'X-RF-User-Agent': 'Demisto',
                'content-type': 'application/json'}
 
-    def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str | None,
-                 fusion_file_path: str | None, insecure: bool, polling_timeout: int, proxy: bool,
-                 malicious_threshold: int, suspicious_threshold: int, risk_score_threshold: int,
-                 tags: list | None, tlp_color: str | None):
+    def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str | None = None,
+                 fusion_file_path: str | None = None, insecure: bool = False, polling_timeout: int = 20, proxy: bool = False,
+                 malicious_threshold: int = 65, suspicious_threshold: int = 25, risk_score_threshold: int = 25,
+                 tags: list | None = None, tlp_color: str | None = None):
         """
         Attributes:
              indicator_type: string, the indicator type of the feed.
