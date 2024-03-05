@@ -508,7 +508,7 @@ def get_indicators_command(client, args) -> tuple[str, dict[Any, Any], list[dict
             str, dict, list. the markdown table, context JSON and list of indicators
         """
     indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
-    limit = int(args.get('limit'))
+    limit = int(args['limit']) if 'limit' in args else None
 
     human_readable: str = ''
     entry_results: list[dict]
