@@ -196,18 +196,28 @@ class TestFetchEventsCommand:
 
     def test_fetch_events_command_case_1(self, requests_mock, mocker, audit_logs_mock_res, alerts_mock_res):
         """
+        Case 1 is when where are fewer events (4) than page_size (10,000) on the first request.
 
+        We expect:
+            - Each event type API call to be called once
+            - To have only 4 events returned
+            - Audit logs next start time for the next fetch to be set to the latest pulled event timestamp plus 1
+                (170691857331523)
+            - No list of ids_for_dedup and no latest_event_fetched_timestamp for audit logs
+            - Alerts next start time for the next fetch to be set to the latest pulled event timestamp plus 1 (1708175775539274)
+            - No list of ids_for_dedup and no latest_event_fetched_timestamp for alerts
         """
         from CohesityHeliosEventCollector import Client, fetch_events_command
 
         # mockers
         mocker.patch("CohesityHeliosEventCollector.arg_to_datetime", return_value=arg_to_datetime(self.mock_time))
-        requests_mock.get(f'{self.base_url}/{self.audit_logs_endpoint}', json=audit_logs_mock_res[0])
-        requests_mock.get(f'{self.base_url}/{self.alerts_endpoint}', json=alerts_mock_res[0])
+        audit_logs_call = requests_mock.get(f'{self.base_url}/{self.audit_logs_endpoint}', json=audit_logs_mock_res[0])
+        alerts_call = requests_mock.get(f'{self.base_url}/{self.alerts_endpoint}', json=alerts_mock_res[0])
 
         client = Client(base_url=self.base_url)
         events, last_run = fetch_events_command(client=client, last_run={}, max_fetch=1000)
 
+        assert audit_logs_call.call_count == alerts_call.call_count == 1
         assert len(events) == 4
         assert last_run['audit_cache']['next_start_timestamp'] == 170691857331523
         assert not last_run['audit_cache']['ids_for_dedup']
@@ -217,6 +227,23 @@ class TestFetchEventsCommand:
         assert not last_run['audit_cache']['latest_event_fetched_timestamp']
 
     def test_fetch_events_command_case_2(self, requests_mock, mocker, audit_logs_mock_res, alerts_mock_res):
+        """
+        Case 1 is when there are more events (3) from each type than the page_size (2), but there are not more than max_fetch (3)
+            events.
+
+        We expect:
+            - Each event type API call to be called twice
+            - That the endtimeusecs in the 2dn API call for audit logs will be the same as the time of the earliest event fetched
+                timestamp
+            - That the enddateusecs in the 2dn API call for alerts will be the same as the time of the earliest event fetched 
+                timestamp
+            - To have 6 events returned
+            - Audit logs next start time for the next fetch to be set to the latest pulled event timestamp plus 1
+                (170691857331523)
+            - No list of ids_for_dedup and no latest_event_fetched_timestamp for audit logs
+            - Alerts next start time for the next fetch to be set to the latest pulled event timestamp plus 1 (1708175775539274)
+            - No list of ids_for_dedup and no latest_event_fetched_timestamp for alerts
+        """
         import CohesityHeliosEventCollector
         from CohesityHeliosEventCollector import Client, fetch_events_command
 
@@ -233,6 +260,9 @@ class TestFetchEventsCommand:
         client = Client(base_url=self.base_url)
         events, last_run = fetch_events_command(client=client, last_run={}, max_fetch=1000)
 
+        assert audit_logs_call.call_count == alerts_call.call_count == 2
+        assert audit_logs_call.request_history[1].qs['endtimeusecs'][0] == str(audit_logs_expected_end_time)
+        assert alerts_call.request_history[1].qs['enddateusecs'][0] == str(alerts_expected_end_time)
         assert len(events) == 6
         assert last_run['audit_cache']['next_start_timestamp'] == 170691857331523
         assert not last_run['audit_cache']['ids_for_dedup']
@@ -240,11 +270,26 @@ class TestFetchEventsCommand:
         assert last_run['alert_cache']['next_start_timestamp'] == 1708175775539274
         assert not last_run['alert_cache']['ids_for_dedup']
         assert not last_run['alert_cache']['latest_event_fetched_timestamp']
-        assert audit_logs_call.request_history[1].qs['endtimeusecs'][0] == str(audit_logs_expected_end_time)
-        assert alerts_call.request_history[1].qs['enddateusecs'][0] == str(alerts_expected_end_time)
-        assert audit_logs_call.call_count == alerts_call.call_count == 2
 
     def test_fetch_events_command_case_3(self, requests_mock, mocker, audit_logs_mock_res, alerts_mock_res):
+        """
+        Case 3 is when there are more events than max_fetch events.
+
+        We expect:
+            - Each event type API call to be called twice
+            - That the endtimeusecs in the 2dn API call for audit logs will be the same as the time of the earliest event fetched
+                timestamp
+            - That the enddateusecs in the 2dn API call for alerts will be the same as the time of the earliest event fetched
+                timestamp
+            - To have 8 events returned
+            - Audit logs next start time for the next fetch to be set to the same initial start time
+            - ids_for_dedup in the audit_log cache has the ID of the earliest audit log event
+            - latest_event_fetched_timestamp in the audit_log cache holds the latest audit log event timestamp plus 1 sec
+            - Alerts next start time for the next fetch to be set to the same initial start time
+            - No list of ids_for_dedup and no latest_event_fetched_timestamp for alerts
+            - ids_for_dedup in the alerts cache has the ID of the earliest alert event
+            - latest_event_fetched_timestamp in the alerts cache holds the latest alert event timestamp plus 1 sec
+        """
         import CohesityHeliosEventCollector
         from CohesityHeliosEventCollector import Client, fetch_events_command
 
@@ -264,6 +309,9 @@ class TestFetchEventsCommand:
         client = Client(base_url=self.base_url)
         events, last_run = fetch_events_command(client=client, last_run={}, max_fetch=3)
 
+        assert audit_logs_call.call_count == alerts_call.call_count == 2
+        assert audit_logs_call.request_history[1].qs['endtimeusecs'][0] == str(audit_logs_expected_end_time)
+        assert alerts_call.request_history[1].qs['enddateusecs'][0] == str(alerts_expected_end_time)
         assert len(events) == 8
         assert last_run['audit_cache']['next_start_timestamp'] == self.mock_fixed_time_unix
         assert last_run['audit_cache']['ids_for_dedup'] == ['94f359b611f0272505c36002ed4dbcaff9496d0f16460287f1ed05af0f7257a1']
@@ -271,6 +319,3 @@ class TestFetchEventsCommand:
         assert last_run['alert_cache']['next_start_timestamp'] == self.mock_fixed_time_unix
         assert last_run['alert_cache']['ids_for_dedup'] == ['66770']
         assert last_run['alert_cache']['latest_event_fetched_timestamp'] == 1708175775539274
-        assert audit_logs_call.request_history[1].qs['endtimeusecs'][0] == str(audit_logs_expected_end_time)
-        assert alerts_call.request_history[1].qs['enddateusecs'][0] == str(alerts_expected_end_time)
-        assert audit_logs_call.call_count == alerts_call.call_count == 2
