@@ -1,4 +1,3 @@
-import io
 import json
 from CTIXv3 import (
     Client,
@@ -46,7 +45,7 @@ SECRET_KEY = "secret_key"
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -182,6 +181,31 @@ def test_delete_tags_no_input(requests_mock):
 
 def test_whitelist_iocs_command(requests_mock):
     mock_response = util_load_json("test_data/whitelist_iocs.json")
+    requests_mock.post(f"{BASE_URL}conversion/allowed_indicators/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {"type": "indicator", "values": "127.0.0.1, 127.0.0.2", "reason": "test"}
+
+    resp = whitelist_iocs_command(client, args)
+    response = resp.raw_response
+
+    assert response == mock_response["details"]
+    assert resp.outputs_prefix == "CTIX.AllowedIOC"
+
+    assert isinstance(response, dict)
+    assert len(response) == 3
+
+
+def test_whitelist_iocs_command_fallback(requests_mock):
+    mock_response = util_load_json("test_data/whitelist_iocs.json")
+    requests_mock.post(f"{BASE_URL}conversion/allowed_indicators/", status_code=404)
     requests_mock.post(f"{BASE_URL}conversion/whitelist/", json=mock_response)
 
     client = Client(
@@ -204,9 +228,34 @@ def test_whitelist_iocs_command(requests_mock):
     assert len(response) == 3
 
 
+def test_get_whitelist_iocs_command_fallback(requests_mock):
+    mock_response = util_load_json("test_data/get_whitelist_iocs.json")
+    requests_mock.get(f"{BASE_URL}conversion/allowed_indicators/", status_code=404)
+    requests_mock.get(f"{BASE_URL}conversion/whitelist/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {"page": 1, "page_size": 1}
+
+    resp = get_whitelist_iocs_command(client, args)
+    response = resp[0].raw_response
+
+    assert response == mock_response["results"][0]
+    assert resp[0].outputs_prefix == "CTIX.IOC"
+
+    assert isinstance(response, dict)
+    assert len(response) == 11
+
+
 def test_get_whitelist_iocs_command(requests_mock):
     mock_response = util_load_json("test_data/get_whitelist_iocs.json")
-    requests_mock.get(f"{BASE_URL}conversion/whitelist/", json=mock_response)
+    requests_mock.get(f"{BASE_URL}conversion/allowed_indicators/", json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
