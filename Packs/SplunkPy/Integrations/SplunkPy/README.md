@@ -3,7 +3,7 @@ Use the SplunkPy integration to:
 - Push events from Cortex XSOAR to SplunkPy
 - Fetch SplunkPy ES notable events as Cortex XSOAR incidents.
 
-This integration was integrated and tested with Splunk v9.0.4.
+This integration was integrated and tested with Splunk Enterprise v9.0.4 and Enterprise Security v7.1.1.
 
 ## Use Cases
 ---
