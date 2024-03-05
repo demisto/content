@@ -253,20 +253,22 @@ def remove_irrelevant_incident_ids(last_run_fetched_ids: dict[str, dict[str, str
         extensive_log(f'[SplunkPy] Checking if {incident_id} is relevant to fetch window')
         if isinstance(incident_occurred_time, dict):
             # To handle last fetched IDs
-            # Last fetched IDs hold the occurred time that they were seen, and will be deleted from
-            # the last fetched IDs once they pass the fetch window
-            incident_start_datetime = datetime.strptime(incident_occurred_time.get('occurred_time', ''), SPLUNK_TIME_FORMAT)
-            if incident_start_datetime >= window_start_datetime:
+            # Last fetched IDs hold the occurred time that they were seen, which is basically the end time of the fetch window
+            # they were fetched in, and will be deleted from the last fetched IDs once they pass the fetch window
+            incident_window_end_datetime = datetime.strptime(incident_occurred_time.get('occurred_time', ''), SPLUNK_TIME_FORMAT)
+            if incident_window_end_datetime >= window_start_datetime:
                 # We keep the incident, since it is still in the fetch window
-                extensive_log(f'[SplunkPy] Keeping {incident_id} as part of the last fetched IDs. {incident_start_datetime=}')
+                extensive_log(f'[SplunkPy] Keeping {incident_id} as part of the last fetched IDs.'
+                              f' {incident_window_end_datetime=}')
                 new_last_run_fetched_ids[incident_id] = incident_occurred_time
             else:
-                extensive_log(f'[SplunkPy] Removing {incident_id} from the last fetched IDs')
+                extensive_log(f'[SplunkPy] Removing {incident_id} from the last fetched IDs. {incident_window_end_datetime=}')
         else:
             # To handle last fetched IDs before version 3_1_20
             # Last fetched IDs held the epoch time of their appearance, they will now hold the
             # new format, with an occurred time equal to the end of the window
-            extensive_log(f'[SplunkPy] {incident_id} was saved using old implementation, keeping')
+            extensive_log(f'[SplunkPy] {incident_id} was saved using old implementation,'
+                          f' with value {incident_occurred_time}, keeping')
             new_last_run_fetched_ids[incident_id] = {'occurred_time': window_end_time}
     return new_last_run_fetched_ids
 
@@ -409,7 +411,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
 
     extensive_log(f'[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {len(last_run_fetched_ids)}')
     for incident_id in incident_ids_to_add:
-        last_run_fetched_ids[incident_id] = {'occurred_time': occured_start_time}
+        last_run_fetched_ids[incident_id] = {'occurred_time': latest_time}
     extensive_log(f'[SplunkPy] Size of last_run_fetched_ids after adding new IDs: {len(last_run_fetched_ids)}')
 
     # New way to remove IDs
