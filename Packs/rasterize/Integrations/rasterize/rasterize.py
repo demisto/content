@@ -746,7 +746,7 @@ def rasterize_email_command():  # pragma: no cover
 
     res = fileResult(filename=file_name, data=rasterize_output[0][0])
 
-    if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
+    if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
         res['Type'] = entryTypes['image']
 
     demisto.results(res)
@@ -857,7 +857,7 @@ def rasterize_command():  # pragma: no cover
     include_url = argToBoolean(demisto.args().get('include_url', False))
 
     file_extension = "png"
-    if rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
+    if rasterize_type == RasterizeType.PDF or str(rasterize_type).lower() == RasterizeType.PDF.value:
         file_extension = "pdf"
     file_name = f'{file_name}.{file_extension}'  # type: ignore
 
@@ -868,7 +868,7 @@ def rasterize_command():  # pragma: no cover
     for current_rasterize_output, current_url in zip(rasterize_output, urls):
         # demisto.debug(f"rasterize_command response, {current_rasterize_output=}")
 
-        if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
+        if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower() == RasterizeType.JSON.value:
             output = {'image_b64': base64.b64encode(current_rasterize_output[0]).decode('utf8'),
                       'html': current_rasterize_output[1], 'current_url': current_url}
             return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {current_url}"))
@@ -876,7 +876,7 @@ def rasterize_command():  # pragma: no cover
             res = []
             current_res = fileResult(filename=file_name, data=current_rasterize_output[0], file_type=entryTypes['entryInfoFile'])
 
-            if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
+            if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
                 current_res['Type'] = entryTypes['image']
 
             res.append(current_res)
