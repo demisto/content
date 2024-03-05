@@ -554,12 +554,12 @@
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
   script:
+    - section_start "Validate Files and Yaml"
     - |
       echo "set DEMISTO_SDK_GRAPH_FORCE_CREATE to false to avoid creating graph from scratch"
       export DEMISTO_SDK_GRAPH_FORCE_CREATE=false
       echo "DEMISTO_SDK_GRAPH_FORCE_CREATE was set to false to avoid creating graph from scratch"
       echo $DEMISTO_SDK_GRAPH_FORCE_CREATE
-    - section_start "Validate Files and Yaml"
     - |
       ./Tests/scripts/linters_runner.sh
       ./Tests/scripts/new_validate.sh
