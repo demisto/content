@@ -64,7 +64,8 @@ def create_events(start_id: int, amount_of_events: int, start_date: str) -> Dict
     events = [
         {
             "id": i,
-            "created_at": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT)
+            "created_at": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
+            "updated_at": (dateparser.parse(start_date) + timedelta(seconds=i + random.randint(0, 10))).strftime(DATE_FORMAT)
         }
         for i in range(start_id, start_id + amount_of_events)
     ]
@@ -189,7 +190,7 @@ def test_fetch_events_no_last_run(mocker):
 
     assert set_last_run_mocker.called
     last_run = set_last_run_mocker.call_args[0][0]
-    assert last_run[CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME] == fetched_events[-1]["created_at"]
+    assert last_run[CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME] == fetched_events[-1]["_time"]
     assert last_run[CybleAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS][0] == fetched_events[-1]["id"]
 
 
@@ -242,7 +243,7 @@ def test_fetch_events_token_expired(mocker):
 
     assert set_last_run_mocker.called
     last_run = set_last_run_mocker.call_args[0][0]
-    assert last_run[CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME] == fetched_events[-1]["created_at"]
+    assert last_run[CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME] == fetched_events[-1]["_time"]
     assert last_run[CybleAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS][0] == fetched_events[-1]["id"]
 
     assert set_integration_context_mocker.call_args[0][0] == {'access_token': 'new_access_token'}
@@ -301,7 +302,7 @@ def test_fetch_events_with_last_run(mocker):
 
     assert set_last_run_mocker.called
     last_run = set_last_run_mocker.call_args[0][0]
-    assert last_run[CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME] == fetched_events[-1]["created_at"]
+    assert last_run[CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME] == fetched_events[-1]["_time"]
     assert last_run[CybleAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS][0] == fetched_events[-1]["id"]
 
 
@@ -415,3 +416,54 @@ def test_fetch_events_without_last_run_no_events(mocker):
     assert set_last_run_mocker.called
     actual_last_run = set_last_run_mocker.call_args[0][0]
     assert actual_last_run[CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME]
+
+
+def test_get_events_command_command(mocker):
+    """
+    Given:
+     - start date
+
+    When:
+     - running the fetch-events
+
+    Then:
+     - make sure the command returns all the fetched events
+    """
+    import CybleAngelEventCollector
+
+    mocker.patch.object(
+        demisto,
+        'getLastRun',
+        return_value={}
+    )
+    demisto_results_mocker = mocker.patch.object(demisto, 'results')
+    mocker.patch.object(
+        demisto, 'params',
+        return_value={
+            "url": TEST_URL,
+            "credentials": {
+                "identifier": "1234",
+                "password": "1234",
+            },
+            "max_fetch": 100
+        }
+    )
+    mocker.patch.object(
+        demisto, 'args',
+        return_value={
+            "start-date": "2024-02-29T13:48:32",
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='cybleangel-get-events')
+
+    http_mocker = HttpRequestsMocker(100)
+
+    mocker.patch.object(
+        CybleAngelEventCollector.Client,
+        "_http_request",
+        side_effect=http_mocker.valid_http_request_side_effect
+    )
+
+    CybleAngelEventCollector.main()
+    fetched_events = demisto_results_mocker.call_args[0][0]
+    assert len(fetched_events["Contents"]) == 100

@@ -183,7 +183,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int) -> tuple[List[d
     return reports, last_run
 
 
-def get_events(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     if end := args.get("end-date"):
         end_date = dateparser.parse(end).strftime(DATE_FORMAT)
@@ -233,10 +233,10 @@ def main() -> None:
         elif command == 'fetch-events':
             events, last_run = fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to xsiam')
+            demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to XSIAM')
             demisto.setLastRun(last_run)
         elif command == "cybleangel-get-events":
-            return_results(get_events(client, demisto.args()))
+            return_results(get_events_command(client, demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} command.\nError:\ntype:{type(e)}, error:{str(e)}")
