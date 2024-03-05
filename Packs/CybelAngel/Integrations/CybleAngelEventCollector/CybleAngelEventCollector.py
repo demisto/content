@@ -144,22 +144,6 @@ def get_latest_event_time_and_ids(reports: List[Dict[str, Any]]) -> tuple[str, L
     latest_report_time = reports[-1]["_time"]
     return latest_report_time, [report["id"] for report in reports if report["_time"] == latest_report_time]
 
-    latest_report_time = ""
-    for report in reports:
-        if updated_at := report.get("updated_at"):
-            _time_field = updated_at
-            report["_time"] = updated_at
-        else:
-            _time_field = report["created_at"]
-
-        report["_time"] = _time_field
-
-        if not latest_report_time or dateparser.parse(_time_field) > dateparser.parse(latest_report_time):
-            latest_report_time = _time_field
-
-    latest_report_ids = [report["id"] for report in reports if report["_time"] == latest_report_time]
-    return latest_report_time, latest_report_ids
-
 
 def test_module(client: Client) -> str:
     client.get_reports(
@@ -200,7 +184,25 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int) -> tuple[List[d
 
 
 def get_events(client: Client, args: dict[str, Any]) -> CommandResults:
-    pass
+
+    if end := args.get("end-date"):
+        end_date = dateparser.parse(end).strftime(DATE_FORMAT)
+    else:
+        end_date = datetime.now().strftime(DATE_FORMAT)
+
+    reports = client.get_reports(
+        dateparser.parse(args["start-date"]).strftime(DATE_FORMAT),
+        end_date=end_date,
+        limit=arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH
+    )
+
+    return CommandResults(
+        outputs_prefix="CybleAngel.Events",
+        outputs_key_field="id",
+        outputs=reports,
+        raw_response=reports,
+        readable_output=tableToMarkdown("Reports", reports, headers=["id", "created_at", "updated_at"], removeNull=True)
+    )
 
 
 ''' MAIN FUNCTION '''

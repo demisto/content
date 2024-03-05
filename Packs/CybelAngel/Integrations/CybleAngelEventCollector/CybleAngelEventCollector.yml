@@ -41,8 +41,11 @@ script:
     - description: 'Get reports from a specific start date.'
       name: start_date
       required: true
-    - description: 'Get reports until a specific end date.'
+    - description: 'Get reports until a specific end date, if not provided will take the current time'
       name: end_date
+      required: true
+    - description: 'The maximum number of events to return.'
+      name: limit
       required: true
     description: 'Collect reports from cyble angel, used mainly for debugging.'
     name: cybleangel-get-events
