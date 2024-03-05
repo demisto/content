@@ -1,8 +1,8 @@
 commonfields:
-  id: Redmine1
+  id: Redmine
   version: -1
-name: Redmine1
-display: Redmine1
+name: Redmine
+display: Redmine
 category: Utilities
 description: 'A project management and issue tracking system that provides a web-based
   platform for managing projects, tracking tasks, and handling various types of project-related
@@ -34,7 +34,7 @@ script:
   type: python
   commands:
   - name: redmine-issue-create
-    description: | 
+    description: |
       - Update an existing issue
       - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
       - To create a custom field, navigate to the server URL with administrative privileges, click on 'Administration' (located at the top left), select 'Custom fields,' then proceed to create a new custom field. Once created, you can add values as needed

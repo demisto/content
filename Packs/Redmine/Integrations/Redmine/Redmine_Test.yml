@@ -342,10 +342,10 @@ tasks:
       version: -1
       name: Untitled Task
       description: Retrieve a list of all custom fields.
-      script: Redmine1|||redmine-custom-field-list
+      script: Redmine|||redmine-custom-field-list
       type: regular
       iscommand: true
-      brand: Redmine1
+      brand: Redmine
     nexttasks:
       '#none#':
       - "12"
