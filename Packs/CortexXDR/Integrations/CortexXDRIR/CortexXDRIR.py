@@ -19,33 +19,10 @@ XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident Schema'
 INTEGRATION_NAME = 'Cortex XDR - IR'
 ALERTS_LIMIT_PER_INCIDENTS = -1
 FIELDS_TO_EXCLUDE = [
-    "_detection_method",
-    "_type",
-    "activity_first_seen_at",
-    "activity_last_seen_at",
-    "alert_generated_time",
-    "alert_layouts",
-    "association_strength",
-    "bioc_indicator",
-    "comment",
-    "content_version",
-    "detector_api_version",
-    "detector_description",
-    "detector_id",
-    "dst_association_strength",
-    "event_only_full_filter",
-    "group_id",
-    "indicator_predicate",
-    "is_dde_alert",
-    "is_detection",
-    "lcaas_id",
-    "server_version",
-    "silent",
-    "stateful_raw_data",
-    "variation_rule_id",
-    "xdr_log_type",
-    "edrData.action_evtlog_data_fields.content"
-]
+    'network_artifacts',
+    'file_artifacts',
+    'received'
+] #  can also remove 'alerts'
 
 
 XDR_INCIDENT_FIELDS = {
