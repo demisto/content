@@ -56,7 +56,7 @@ configuration:
   required: false
   type: 15
 - display: Varonis threat model name
-  additionalinfo: Comma-separated list of threat model names of alerts to fetch. Use "varonis-get-threat-models" command to retrieve the full list
+  additionalinfo: Pipe-separated list of threat model names of alerts to fetch. Use "varonis-get-threat-models" command to retrieve the full list
   hidden: false
   name: threat_model
   required: false
@@ -80,7 +80,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: List of requested threat models to retrieve.
+      description: List of requested threat models to retrieve (pipe-separated).
       isArray: true
       name: threat_model_name
       required: false
@@ -98,25 +98,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of required alerts status.
+      description: List of requested alerts status (pipe-separated).
       isArray: true
       name: alert_status
       required: false
       secret: false
     - default: false
-      description: List of required alerts severity.
+      description: List of requested alerts severity (pipe-separated).
       isArray: true
       name: alert_severity
       required: false
       secret: false
     - default: false
-      description: List of required alerts device name.
+      description: List of required alerts device name (pipe-separated).
       isArray: true
       name: device_name
       required: false
       secret: false
     - default: false
-      description: User domain name (cannot be provided without user_name).
+      description: User domain name.
       isArray: false
       name: user_name
       required: false
@@ -257,7 +257,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: Requested alerts.
+      description: Requested alerts (pipe-separated).
       isArray: true
       name: alert_id
       required: true
@@ -274,7 +274,7 @@ script:
     name: varonis-alert-add-note
   - arguments:
     - default: false
-      description: Requested alerts.
+      description: Requested alerts (pipe-separated).
       isArray: true
       name: alert_id
       required: true
@@ -335,7 +335,7 @@ script:
     name: varonis-close-alert
   - arguments:
     - default: false
-      description: List of alert IDs.
+      description: List of alert IDs (pipe-separated).
       isArray: true
       name: alert_id
       required: true
@@ -359,7 +359,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Extra fields.
+      description: Extra fields (pipe-separated).
       isArray: false
       name: extra_fields
       required: false
@@ -494,59 +494,11 @@ script:
       type: String
   - arguments:
     - default: false
-      description: List of requested threat model ids.
-      isArray: true
-      name: id
-      required: false
-      secret: false
-    - default: false
-      description: List of requested threat model names.
+      description: List of requested threat model names (pipe-separated).
       isArray: true
       name: name
       required: false
       secret: false
-    - default: false
-      description: List of requested threat model categories.
-      isArray: true
-      name: category
-      required: false
-      secret: false
-      auto: PREDEFINED
-      predefined:
-      - 'Exfiltration'
-      - 'Reconnaissance'
-      - 'Intrusion'
-      - 'Privilege Escalation'
-      - 'Lateral movement'
-      - 'Exploitation'
-      - 'Obfuscation (anti-forensics)'
-      - 'Denial of Service'
-      - 'Other'
-    - default: false
-      description: List of requested threat model severities.
-      isArray: true
-      name: severity
-      required: false
-      secret: false
-      auto: PREDEFINED
-      predefined:
-      - 'Emergency'
-      - 'Alert'
-      - 'Critical'
-      - 'Error'
-      - 'Warning'
-      - 'Notice'
-      - 'Informational'
-    - default: false
-      description: List of requested threat model sources.
-      isArray: true
-      name: source
-      required: false
-      secret: false
-      auto: PREDEFINED
-      predefined:
-      - 'Predefined'
-      - 'User-defined'
     deprecated: false
     description: Get Varonis threat models.
     execution: false
@@ -556,15 +508,6 @@ script:
       type: String
     - contextPath: Name
       description: Name of the threat model.
-      type: String
-    - contextPath: Category
-      description: Category of the threat model.
-      type: String
-    - contextPath: Severity
-      description: Severity of the threat model.
-      type: String
-    - contextPath: Source
-      description: Predefined/User-defined.
       type: String
     name: varonis-get-threat-models
   dockerimage: demisto/python3:3.10.13.88772
