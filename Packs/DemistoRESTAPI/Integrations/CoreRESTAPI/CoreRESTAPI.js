@@ -496,7 +496,7 @@ var fileDeleteCommand = function(EntryID) {
 function coreApiFileCheckCommand(EntryID) {
     files =  invContext['File']instanceof Array? invContext['File']:[invContext['File']];
     var file_found = false;
-    var human_readable = `File ${EntryID} isn't exists`;
+    var human_readable = `File ${EntryID} does not exist`;
     if (typeof files['0'] !== 'undefined') {
         for (var i = 0 ;i <=Object.keys(files).length - 1;  i++) {
             if (files[i]['EntryID'] == EntryID) {
