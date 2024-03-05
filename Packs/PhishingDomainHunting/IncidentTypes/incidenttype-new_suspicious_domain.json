@@ -6,7 +6,7 @@
     "name": "New Suspicious Domain",
     "prevName": "New Suspicious Domain",
     "color": "#F8E7A5",
-    "playbookId": "a40149a9-aee2-4359-85f0-e1bbe899db58",
+    "playbookId": "New Suspicious Domain",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -25,7 +25,7 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {
-            "fingerprint": {
+            "phishingdomainhuntingfingerprint": {
                 "extractAsIsIndicatorTypeId": "136fd66a-e220-4241-8c3a-78a1e6a25add",
                 "isExtractingAllIndicatorTypes": false,
                 "extractIndicatorTypesIDs": []
@@ -38,5 +38,6 @@
                 ]
             }
         }
-    }
+    },
+    "fromVersion": "6.10.0"
 }

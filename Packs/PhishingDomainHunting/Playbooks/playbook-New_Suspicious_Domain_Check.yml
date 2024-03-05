@@ -647,7 +647,7 @@ tasks:
       url:
         complex:
           root: incident
-          accessor: userasset
+          accessor: phishingdomainhuntinguserasset
           transformers:
           - operator: uniq
           - operator: concat
@@ -1012,7 +1012,7 @@ tasks:
       url:
         complex:
           root: incident
-          accessor: userasset
+          accessor: phishingdomainhuntinguserasset
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1222,7 +1222,7 @@ tasks:
       indicatorsValues:
         complex:
           root: incident
-          accessor: fingerprint
+          accessor: phishingdomainhuntingfingerprint
     separatecontext: false
     continueonerrortype: ""
     view: |-

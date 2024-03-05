@@ -376,7 +376,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "userasset",
+                                "fieldId": "phishingdomainhuntinguserasset",
                                 "height": 22,
                                 "id": "9ea58bd0-6d98-11ee-9354-5589491ef700",
                                 "index": 2,
@@ -385,7 +385,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "fingerprint",
+                                "fieldId": "phishingdomainhuntingfingerprint",
                                 "height": 22,
                                 "id": "90a14a10-6d98-11ee-9354-5589491ef700",
                                 "index": 3,
@@ -394,13 +394,13 @@
                             },
                             {
                                 "endCol": 2,
-"fieldId": "certificatesource",
-								"height": 22,
-								"id": "9276c080-7181-11ee-b052-13bd87b11e9a",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
+                                "fieldId": "certificatesource",
+                                "height": 22,
+                                "id": "9276c080-7181-11ee-b052-13bd87b11e9a",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
                             {
                                 "endCol": 2,
                                 "fieldId": "externallink",
@@ -412,21 +412,21 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "levenshteindistance",
+                                "fieldId": "phishingdomainhuntinglevenshteindistance",
                                 "height": 22,
                                 "id": "98c97460-6d98-11ee-9354-5589491ef700",
                                 "index": 5,
-"sectionItemType": "field",
+                                "sectionItemType": "field",
                                 "startCol": 0
-},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "certificateindex",
-								"height": 22,
-								"id": "8ecd8ea0-7181-11ee-b052-13bd87b11e9a",
-								"index": 6,
-								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "certificateindex",
+                                "height": 22,
+                                "id": "8ecd8ea0-7181-11ee-b052-13bd87b11e9a",
+                                "index": 6,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -508,7 +508,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "domainupdateddate",
+                                "fieldId": "phishingdomainhuntingdomainupdateddate",
                                 "height": 22,
                                 "id": "6de260a0-7eef-11ee-8db9-f7e15ed8d3db",
                                 "index": 2,
@@ -517,7 +517,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "registrationemail",
+                                "fieldId": "phishingdomainhuntingregistrationemail",
                                 "height": 22,
                                 "id": "73b6d6f0-7eef-11ee-8db9-f7e15ed8d3db",
                                 "index": 4,
@@ -526,7 +526,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "domainregistrarabuseemail",
+                                "fieldId": "phishingdomainhuntingdomainregistrarabuseemail",
                                 "height": 22,
                                 "id": "e37ad770-8205-11ee-b8c9-e9c6a8687c1a",
                                 "index": 6,
@@ -1068,7 +1068,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_fingerprint",
+                        "fieldId": "incident_phishingdomainhuntingfingerprint",
                         "isVisible": true
                     },
                     {
@@ -1120,7 +1120,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_levenshteindistance",
+                        "fieldId": "incident_phishingdomainhuntinglevenshteindistance",
                         "isVisible": true
                     },
                     {
@@ -1544,7 +1544,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_userasset",
+                        "fieldId": "incident_phishingdomainhuntinguserasset",
                         "isVisible": true
                     },
                     {
@@ -1586,5 +1586,6 @@
     "name": "New Suspicious Domain",
     "system": false,
     "version": -1,
+    "fromVersion": "6.10.0",
     "description": ""
 }

@@ -15,6 +15,7 @@ args:
   description: Second HTML to compare.
 outputs:
 - contextPath: FuzzyHashSimilarity.SimilarityPercentage
+  description: How similar are the HTML pages in precentage.
 scripttarget: 0
 subtype: python3
 runonce: false

@@ -16,3 +16,4 @@ engineinfo: {}
 tests:
 - No tests (auto formatted)
 dockerimage45: demisto/python3:3.10.13.78960
+fromversion: 6.10.0

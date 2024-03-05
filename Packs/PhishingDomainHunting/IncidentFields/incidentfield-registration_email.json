@@ -1,10 +1,10 @@
 {
-    "id": "incident_registrationemail",
+    "id": "incident_phishingdomainhuntingregistrationemail",
     "version": -1,
     "modified": "2023-12-04T15:12:42.699253313Z",
     "name": "Registration Email",
     "ownerOnly": false,
-    "cliName": "registrationemail",
+    "cliName": "phishingdomainhuntingregistrationemail",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -20,7 +20,7 @@
     "openEnded": false,
     "associatedToAll": true,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72

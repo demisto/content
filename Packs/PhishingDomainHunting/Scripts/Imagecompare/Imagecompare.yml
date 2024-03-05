@@ -14,9 +14,10 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: devdemisto/processing-image-file:1.0.0.89225
+dockerimage: demisto/processing-image-file:1.0.0.88740
 runas: DBotWeakRole
 engineinfo: {}
 tests:
 - No tests (auto formatted)
-dockerimage45: devdemisto/processing-image-file:1.0.0.80255
+dockerimage45: demisto/processing-image-file:1.0.0.80255
+fromversion: 6.10.0
