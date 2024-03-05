@@ -318,11 +318,11 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
     if next_page:
         demisto.debug(
-            f" Jamf Protect - Fetched {len(events)} which is the maximum number of alerts."
+            f"Jamf Protect- Fetched {len(events)} which is the maximum number of alerts."
             f" Will keep the fetching in the next fetch.")
         new_last_run_with_next_page = {"next_page": next_page, "last_fetch": created}
         return events, new_last_run_with_next_page
-
+    # If there is no next page, the last fetch date will be the max end date of the fetched events.
     new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get("created"), DATE_FORMAT)
                                              for event in events) if dt is not None]).strftime(
         DATE_FORMAT) if events else current_date
@@ -366,6 +366,7 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
         new_last_run_with_next_page = {"next_page": next_page, "last_fetch": start_date}
         return events, new_last_run_with_next_page
 
+    # If there is no next page, the last fetch date will be the max end date of the fetched events.
     new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get("date"), DATE_FORMAT)
                                              for event in events) if dt is not None]).strftime(
         DATE_FORMAT) if events else end_date
@@ -431,7 +432,7 @@ def calculate_fetch_dates(start_date: str, last_run_key: str, last_run: dict, en
         (now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
     # argument > current time
     end_date = end_date or now_utc_time.strftime(DATE_FORMAT)
-    start_date = '2024-01-01T07:51:57Z'
+
     return start_date, end_date
 
 
@@ -451,9 +452,15 @@ def fetch_events(client: Client, max_fetch: int, start_date_arg: str = "", end_d
             - A dictionary with the key 'last_fetch' and its value representing the end date of the fetched events.
     """
     last_run = demisto.getLastRun()
+    alert_events, alert_next_run = [], {}
+    audit_events, audit_next_run = [], {}
 
-    alert_events, alert_next_run = get_events_alert_type(client, start_date_arg, max_fetch, last_run)
-    audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch, last_run)
+    if not last_run.get("audit", {}).get("next_page", ""):
+        # If the last run contains a next page token for audit events, it will not fetch alert events.
+        alert_events, alert_next_run = get_events_alert_type(client, start_date_arg, max_fetch, last_run)
+    if not last_run.get("alert", {}).get("next_page", ""):
+        # If the last run does not contain a next page token for alert events, it will fetch audit events.
+        audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch, last_run)
     next_run = {"alert": alert_next_run, "audit": audit_next_run}
     if "next_page" in (alert_next_run | audit_next_run):
         # Will instantly re-trigger the fetch command.
@@ -535,13 +542,13 @@ def get_events_command(client, args) -> tuple:
     start_date, end_date = validate_start_and_end_dates(args)
     alert_events, audit_events, _ = fetch_events(client=client, max_fetch=limit, start_date_arg=start_date,
                                                  end_date_arg=end_date)
-    alert_events = alert_events[:limit]
-    audit_events = audit_events[:limit]
 
     if alert_events:
+        alert_events = alert_events[:limit]
         results.append(
             CommandResults(readable_output=tableToMarkdown("Jamf Protect Alert Events", alert_events), raw_response=alert_events))
     if audit_events:
+        audit_events = audit_events[:limit]
         results.append(
             CommandResults(readable_output=tableToMarkdown("Jamf Protect Audit Events", audit_events), raw_response=audit_events))
     events = alert_events + audit_events
