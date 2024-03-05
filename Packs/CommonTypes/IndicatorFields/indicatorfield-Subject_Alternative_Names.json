@@ -1,42 +1,18 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Certificate"
+        "X509 Certificate"
     ],
     "caseInsensitive": true,
-    "cliName": "extension",
+    "cliName": "subjectalternativenames",
     "closeForm": false,
     "columns": [
         {
-            "displayName": "Critical",
+            "displayName": "Type",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "critical",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "boolean",
-            "width": 150
-        },
-        {
-            "displayName": "OID",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "oid",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "Name",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "name",
+            "key": "type",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -52,7 +28,7 @@
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "longText",
+            "type": "shortText",
             "width": 150
         }
     ],
@@ -60,10 +36,10 @@
     "editForm": true,
     "group": 2,
     "hidden": false,
-    "id": "indicator_extension",
-    "isReadOnly": false,
+    "id": "indicator_subjectalternativenames",
+    "isReadOnly": true,
     "locked": false,
-    "name": "Extension",
+    "name": "Subject Alternative Names",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
