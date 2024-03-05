@@ -192,8 +192,7 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
     time_field_name = ALERT_TIME_FIELD if event_type == EventType.alert else AUDIT_LOGS_TIME_FIELD
 
     ids_for_dedup = cache.get('ids_for_dedup', [])
-    fetch_start_timestamp = cache.get('next_start_timestamp') or int(arg_to_datetime('1 week').timestamp() * 1000000)
-    # fetch_start_timestamp = cache.get('next_start_timestamp') or int(arg_to_datetime('1 min').timestamp() * 1000000)
+    fetch_start_timestamp = cache.get('next_start_timestamp') or int(arg_to_datetime('1 min').timestamp() * 1000000)
     fetch_end_timestamp = cache.get('next_end_timestamp') or int(arg_to_datetime('Now').timestamp() * 1000000)
 
     # The latest_event_fetched_timestamp acts like a pointer to the newest event we ever fetched.
@@ -277,7 +276,7 @@ def fetch_events_command(client: Client, last_run: dict, max_fetch: int):
                                                                            last_run.get('alert_cache', {}), max_fetch)
     last_run['alert_cache'] = alerts_cache
     if in_progress_pagination_audit_log or in_progress_pagination_alert:
-        last_run["nextTrigger"]: '0'
+        last_run["nextTrigger"] = '0'
 
     return alerts + audit_logs, last_run
 

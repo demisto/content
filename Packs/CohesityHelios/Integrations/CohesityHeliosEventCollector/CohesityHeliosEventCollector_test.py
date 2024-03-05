@@ -228,8 +228,8 @@ class TestFetchEventsCommand:
 
     def test_fetch_events_command_case_2(self, requests_mock, mocker, audit_logs_mock_res, alerts_mock_res):
         """
-        Case 1 is when there are more events (3) from each type than the page_size (2), but there are not more than max_fetch (3)
-            events.
+        Case 2 is when there are more events (3) from each type than the page_size (2), but there are not more than max_fetch
+        (1000).
 
         We expect:
             - Each event type API call to be called twice
