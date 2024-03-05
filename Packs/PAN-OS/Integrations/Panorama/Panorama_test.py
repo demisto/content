@@ -4272,7 +4272,8 @@ class TestCreatePanOSNatRuleCommand:
                     'source_translation_type': 'dynamic-ip',
                     'source_translated_address_type': 'translated-address',
                     'source_translated_address': '1.1.1.1,2.2.2.2',
-                    'destination_translation_type': 'none'
+                    'destination_translation_type': 'none',
+                    'audit_comment': 'test comment',
                 },
                 integration_panorama_params,
                 {
@@ -4284,7 +4285,8 @@ class TestCreatePanOSNatRuleCommand:
                     'key': 'thisisabogusAPIKEY!',
                     'type': 'config',
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
-                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']"
+                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']",
+                    'audit-comment': 'test comment',
                 }
             ),
             pytest.param(
@@ -4297,7 +4299,8 @@ class TestCreatePanOSNatRuleCommand:
                     'source_translation_type': 'dynamic-ip',
                     'source_translated_address_type': 'translated-address',
                     'source_translated_address': '1.1.1.1,2.2.2.2',
-                    'destination_translation_type': 'none'
+                    'destination_translation_type': 'none',
+                    'audit_comment': 'test comment',
                 },
                 integration_firewall_params,
                 {
@@ -4310,7 +4313,8 @@ class TestCreatePanOSNatRuleCommand:
                     'key': 'thisisabogusAPIKEY!',
                     'type': 'config',
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/"
-                             "entry[@name='vsys1']/rulebase/nat/rules/entry[@name='test']"
+                             "entry[@name='vsys1']/rulebase/nat/rules/entry[@name='test']",
+                    'audit-comment': 'test comment',
                 }
             ),
         ]
@@ -4670,6 +4674,52 @@ class TestPanOSEditNatRule:
         main()
         assert mock_request.call_args.kwargs['params']['xpath'] == expected_url_params['xpath']
         assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+    @staticmethod
+    def test_pan_os_edit_nat_rule_command_audit_comment_main_flow(mocker):
+        """
+        Given
+         - panorama integrations parameters.
+         - pan-os-edit-nat-rule command arguments including device_group.
+         - arguments to edit audit comment of a rule
+
+        When -
+            running the pan-os-edit-nat-rule command through the main flow
+
+        Then
+         - make sure the context output is returned as expected.
+         - make sure the device group gets overriden by the command arguments.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "audit-comment",
+                "element_value": "some string",
+                "pre_post": "pre-rulebase",
+                "device-group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-nat-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        assert request_mock.call_args.kwargs['params'] == {
+            'type': 'op',
+            'cmd': "<set><audit-comment><xpath>/config/devices/entry[@name='localhost.localdomain']/device-group"
+                   "/entry[@name='new device group']/pre-rulebase/nat/rules/entry[@name='test']"
+                   "</xpath><comment>some string</comment></audit-comment></set>",
+            'key': 'thisisabogusAPIKEY!'
+        }
+        assert res.call_args.args[0]['Contents'] == TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
 
 
 class TestPanOSListVirtualRouters:
@@ -5447,7 +5497,8 @@ class TestCreatePBFRuleCommand:
                     'nexthop': 'fqdn',
                     'nexthop_value': '1.1.1.1/24',
                     'pre_post': 'pre-rulebase',
-                    'enforce_symmetric_return': 'yes'
+                    'enforce_symmetric_return': 'yes',
+                    'audit_comment': 'test comment',
                 },
                 integration_panorama_params,
                 {
@@ -5461,7 +5512,8 @@ class TestCreatePBFRuleCommand:
                     'key': 'thisisabogusAPIKEY!',
                     'type': 'config',
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
-                             "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']"
+                             "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']",
+                    'audit-comment': 'test comment',
                 }
             ),
             pytest.param(
@@ -5472,7 +5524,8 @@ class TestCreatePBFRuleCommand:
                     'egress_interface': 'egress-interface',
                     'source_zone': 'all access zone external',
                     'nexthop': 'none',
-                    'enforce_symmetric_return': 'no'
+                    'enforce_symmetric_return': 'no',
+                    'audit_comment': 'test comment',
                 },
                 integration_firewall_params,
                 {
@@ -5484,7 +5537,9 @@ class TestCreatePBFRuleCommand:
                     'key': 'thisisabogusAPIKEY!',
                     'type': 'config',
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
-                             "/rulebase/pbf/rules/entry[@name='test']"}
+                             "/rulebase/pbf/rules/entry[@name='test']",
+                    'audit-comment': 'test comment',
+                }
             ),
         ]
     )
@@ -5768,6 +5823,52 @@ class TestPanOSEditPBFRule:
 
         main()
         assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+    @staticmethod
+    def test_pan_os_edit_pbf_rule_command_audit_comment_main_flow(mocker):
+        """
+        Given
+         - panorama integrations parameters.
+         - pan-os-edit-pbf-rule command arguments including device_group.
+         - arguments to edit audit comment of a rule
+
+        When -
+            running the pan-os-edit-pbf-rule command through the main flow
+
+        Then
+         - make sure the context output is returned as expected.
+         - make sure the device group gets overriden by the command arguments.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "audit-comment",
+                "element_value": "some string",
+                "pre_post": "pre-rulebase",
+                "device-group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-pbf-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        assert request_mock.call_args.kwargs['params'] == {
+            'type': 'op',
+            'cmd': "<set><audit-comment><xpath>/config/devices/entry[@name='localhost.localdomain']/device-group"
+                   "/entry[@name='new device group']/pre-rulebase/pbf/rules/entry[@name='test']"
+                   "</xpath><comment>some string</comment></audit-comment></set>",
+            'key': 'thisisabogusAPIKEY!'
+        }
+        assert res.call_args.args[0]['Contents'] == TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
 
 
 @pytest.mark.parametrize(
