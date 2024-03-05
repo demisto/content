@@ -422,7 +422,7 @@ def test_get_events_command_command(mocker):
         'getLastRun',
         return_value={}
     )
-    demisto_results_mocker = mocker.patch.object(demisto, 'results')
+    return_results_mocker = mocker.patch.object(CybleAngelEventCollector, 'return_results')
     mocker.patch.object(
         demisto, 'params',
         return_value={
@@ -451,5 +451,5 @@ def test_get_events_command_command(mocker):
     )
 
     CybleAngelEventCollector.main()
-    fetched_events = demisto_results_mocker.call_args[0][0]
-    assert len(fetched_events["Contents"]) == 100
+    fetched_events = return_results_mocker.call_args[0][0]
+    assert len(fetched_events.outputs) == 100
