@@ -52,8 +52,7 @@ class HttpRequestsMocker:
                 self.num_of_calls += 1
                 return create_mocked_response([], status_code=401)
             start_date = params.get("start-date")
-            events = create_events(1, amount_of_events=self.num_of_events, start_date=start_date)
-            return create_mocked_response(events)
+            return create_events(1, amount_of_events=self.num_of_events, start_date=start_date)
 
 
 def create_events(start_id: int, amount_of_events: int, start_date: str) -> Dict[str, List[Dict]]:
@@ -73,6 +72,10 @@ def create_mocked_response(response: List[Dict] | Dict, status_code: int = 200) 
     mocked_response._content = json.dumps(response).encode('utf-8')
     mocked_response.status_code = status_code
     return mocked_response
+
+
+def test_http_request_token_expired():
+    pass
 
 
 def test_the_test_module(mocker):

@@ -32,7 +32,7 @@ class Client(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
 
-    def http_request(self, method: str, url_suffix: str, params: Dict[str, Any] | None = None) -> requests.Response:
+    def http_request(self, method: str, url_suffix: str, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
         """
@@ -48,10 +48,10 @@ class Client(BaseClient):
         if response.status_code == 200:
             return response.json()
 
-        token = self.get_token_request()
+        token = self.get_access_token(create_new_token=True)
         headers["Authorization"] = f'Bearer {token}'
 
-        return self._http_request(method, url_suffix=url_suffix, headers=headers, params=params, resp_type="response")
+        return self._http_request(method, url_suffix=url_suffix, headers=headers, params=params)
 
     def get_reports(self, start_date: str, end_date: str, limit: int = DEFAULT_MAX_FETCH) -> List[Dict[str, Any]]:
         params = {
@@ -63,7 +63,7 @@ class Client(BaseClient):
         reports = sorted(reports, key=lambda report: dateparser.parse(report["created_at"]))
         return reports[:limit]
 
-    def get_access_token(self) -> str:
+    def get_access_token(self, create_new_token: bool = False) -> str:
         """
        Obtains access and refresh token from CybleAngel server.
        Access token is used and stored in the integration context until expiration time.
@@ -75,15 +75,15 @@ class Client(BaseClient):
        """
         integration_context = get_integration_context()
         access_token = integration_context.get('access_token')
-        token_initiate_time = integration_context.get('token_initiate_time')
-        token_expiration_seconds = integration_context.get('token_expiration_seconds')
-
-        if access_token and not is_token_expired(
-            token_initiate_time=float(token_initiate_time),
-            token_expiration_seconds=float(token_expiration_seconds)
-        ):
+        if access_token and not create_new_token:
             return access_token
-        return self.get_access_token()
+        token = self.get_token_request()
+        integration_context = {
+            'access_token': access_token,
+        }
+        demisto.debug(f'updating access token at {datetime.now()}')
+        set_integration_context(context=integration_context)
+        return token
 
     def get_token_request(self) -> str:
         """
@@ -103,35 +103,7 @@ class Client(BaseClient):
                 "grant_type": "client_credentials"
             }
         )
-        access_token, token_expiration_seconds = token_response.get('access_token'), token_response.get('expires_in')
-        integration_context = {
-            'access_token': access_token,
-            'token_expiration_seconds': token_expiration_seconds,
-            'token_initiate_time': time.time()
-        }
-        demisto.debug(f'updating access token')
-        set_integration_context(context=integration_context)
-
-        return access_token
-
-
-def is_token_expired(token_initiate_time: float, token_expiration_seconds: float) -> bool:
-    """
-    Checks whether a token has expired. a token considered expired if it has been reached to its expiration date in
-    seconds minus a minute.
-
-    for example ---> time.time() = 300, token_initiate_time = 240, token_expiration_seconds = 120
-
-    300.0001 - 240 < 120 - 60
-
-    Args:
-        token_initiate_time (float): the time in which the token was initiated in seconds.
-        token_expiration_seconds (float): the time in which the token should be expired in seconds.
-
-    Returns:
-        bool: True if token has expired, False if not.
-    """
-    return time.time() - token_initiate_time >= token_expiration_seconds - 60
+        return token_response.get('access_token', "")
 
 
 def dedup_fetched_events(
