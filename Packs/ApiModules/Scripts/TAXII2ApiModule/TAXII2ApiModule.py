@@ -1240,6 +1240,7 @@ class Taxii2FeedClient:
     def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
         relationships_lst = []
+        # Used mainly for logging
         parsed_objects_counter: Dict[str, int] = {}
         try:
             for envelope in envelopes:
