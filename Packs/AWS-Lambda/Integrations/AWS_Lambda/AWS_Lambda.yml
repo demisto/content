@@ -26,33 +26,48 @@ configuration:
   - us-gov-west-1
   type: 15
   required: true
+  defaultvalue:
+  additionalinfo:
 - display: Role Arn
   name: roleArn
   type: 0
   required: false
+  defaultvalue:
+  additionalinfo:
 - display: Role Session Name
   name: roleSessionName
   type: 0
   required: false
+  defaultvalue:
+  additionalinfo:
 - display: Role Session Duration
   name: sessionDuration
   type: 0
   required: false
+  defaultvalue:
+  additionalinfo:
 - display: Access Key
   name: credentials
   type: 9
   displaypassword: Secret Key
   required: false
+  defaultvalue:
+  additionalinfo:
+  hiddenusername: false
 - display: Access Key
   name: access_key
   type: 0
   hidden: true
   required: false
+  defaultvalue:
+  additionalinfo:
 - display: Secret Key
   name: secret_key
   type: 4
   hidden: true
   required: false
+  defaultvalue:
+  additionalinfo:
 - display: Timeout
   name: timeout
   defaultvalue: 60,10
@@ -68,23 +83,27 @@ configuration:
 - display: PrivateLink service URL.
   name: endpoint_url
   type: 0
-  section: Connect
-  advanced: true
   required: false
+  defaultvalue:
+  additionalinfo:
 - display: STS PrivateLink URL
   name: sts_endpoint_url
   type: 0
-  section: Connect
-  advanced: true
   required: false
+  defaultvalue:
+  additionalinfo:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  defaultvalue: "true"
+  additionalinfo:
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  defaultvalue: "true"
+  additionalinfo:
 description: Amazon Web Services Serverless Compute service (lambda).
 display: AWS - Lambda
 name: AWS - Lambda
@@ -943,6 +962,7 @@ script:
       name: qualifier
     description: Deletes a Lambda function URL. When you delete a function URL, you can’t recover it. Creating a new function URL results in a different URL address.
     name: aws-lambda-delete-function-url-config
+    outputs: []
   - arguments:
     - description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
@@ -977,6 +997,315 @@ script:
       name: qualifier
     description: Deletes a Lambda function. To delete a specific function version, use the Qualifier parameter. Otherwise, all versions and aliases are deleted.
     name: aws-lambda-delete-function
+    outputs: []
+  - name: aws-lambda-create-function
+    description: Creates a Lambda function. To create a function, you need a deployment package and an execution role.
+    deprecated: false
+    arguments:
+    - name: functionName
+      description: The name of the Lambda function.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: runtime
+      description: The runtime environment for the function.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: role
+      description: The Amazon Resource Name (ARN) of the function's.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: handler
+      description: " The name of the method within your code that Lambda calls to execute your function."
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: code
+      description: The base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: S3-bucket
+      description: An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: description
+      description: A description of the function.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: timeout
+      description: The amount of time that Lambda allows a function to run before stopping it.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: memorySize
+      description: The amount of memory available to the function at runtime.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: publish
+      description: Set to true to publish the first version of the function during creation.
+      required: false
+      isArray: false
+      defaultValue: ""
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+    - name: vpcConfig
+      description: For network connectivity to Amazon Web Services resources in a VPC, specify a list of security groups and subnets in the VPC. A list of VPC subnet IDs.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: packageType
+      description: The type of deployment package.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      defaultValue: ""
+      predefined:
+      - "Image"
+      - "Zip"
+    - name: environment
+      description: The environment variables for the function. Should be given as key-value pairs.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: tracingConfig
+      description: The tracing configuration for the function.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: tags
+      description: The list of tags to apply to the function.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: layers
+      description: A list of function layers to add to the function's execution environment.
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    outputs:
+    - contextPath: AWS.Lambda.Functions.FunctionName
+      description: The name of the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.FunctionArn
+      description: The function’s Amazon Resource Name (ARN).
+      type: string
+    - contextPath: AWS.Lambda.Functions.Runtime
+      description: The identifier of the function’s runtime. Runtime is required if the deployment package is a .zip file archive.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Role
+      description: The function’s execution role.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Handler
+      description: The function that Lambda calls to begin running your function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.CodeSize
+      description: The size of the function’s deployment package, in bytes.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Description
+      description: The function’s description.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Timeout
+      description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+      type: number
+    - contextPath: AWS.Lambda.Functions.MemorySize
+      description: The amount of memory available to the function at runtime.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Version
+      description: The version of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: list
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SecurityGroupIds
+      description: A list of VPC security group IDs.
+      type: list
+    - contextPath: AWS.Lambda.Functions.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.Ipv6AllowedForDualStack
+      description: Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets.
+      type: boolean
+    - contextPath: AWS.Lambda.Functions.PackageType
+      description: The type of deployment package. Set to Image for container image and set Zip for .zip file archive.
+      type: string
+    - contextPath: AWS.Lambda.Functions.LastModified
+      description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: string
+  - name: aws-lambda-publish-layer-version
+    description: Creates an Lambda layer from a ZIP archive.
+    deprecated: false
+    arguments:
+      - name: layer-name
+        description: The name or Amazon Resource Name (ARN) of the layer.
+        required: true
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: description
+        description: The description of the version.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: content
+        description: The layer's software package, specified as an Amazon S3 object.
+        required: true
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: compatible-runtimes
+        description: " The name of the method within your code that Lambda calls to execute your function."
+        required: false
+        isArray: true
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: code
+        description: The base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: S3-bucket
+        description: An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: description
+        description: A description of the function.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: timeout
+        description: The amount of time that Lambda allows a function to run before stopping it.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: memorySize
+        description: The amount of memory available to the function at runtime.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: publish
+        description: Set to true to publish the first version of the function during creation.
+        required: false
+        isArray: false
+        defaultValue: ""
+        auto: PREDEFINED
+        predefined:
+          - "True"
+          - "False"
+      - name: vpcConfig
+        description: For network connectivity to Amazon Web Services resources in a VPC, specify a list of security groups and subnets in the VPC. A list of VPC subnet IDs.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: packageType
+        description: The type of deployment package.
+        required: false
+        isArray: false
+        auto: PREDEFINED
+        defaultValue: ""
+        predefined:
+          - "Image"
+          - "Zip"
+      - name: environment
+        description: The environment variables for the function. Should be given as key-value pairs.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: tracingConfig
+        description: The tracing configuration for the function.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: tags
+        description: The list of tags to apply to the function.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: layers
+        description: A list of function layers to add to the function's execution environment.
+        required: false
+        isArray: true
+        defaultValue: ""
+        predefined:
+          - ""
+    outputs:
+      - contextPath: AWS.Lambda.Functions.LayerVersionArn
+        description: The ARN of the layer version.
+        type: string
+      - contextPath: AWS.Lambda.Functions.LayerArn
+        description: The ARN of the layer.
+        type: string
+      - contextPath: AWS.Lambda.Functions.Description
+        description: The description of the version.
+        type: string
+      - contextPath: AWS.Lambda.Functions.CreatedDate
+        description: The date that the layer version was created, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+        type: string
+      - contextPath: AWS.Lambda.Functions.Version
+        description: The version number.
+        type: number
+      - contextPath: AWS.Lambda.Functions.CompatibleRuntimes
+        description: The layer’s compatible runtimes.
+        type: list
   dockerimage: demisto/boto3py3:1.0.0.87582
   runonce: false
   subtype: python3

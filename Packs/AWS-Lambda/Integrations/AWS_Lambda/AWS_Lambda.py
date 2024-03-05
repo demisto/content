@@ -2,9 +2,12 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *
 
+from Packs.Base.Scripts.CommonServerPython.CommonServerPython import DemistoException
+
 """IMPORTS"""
 from datetime import date
 import urllib3.util
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -131,11 +134,38 @@ def create_entry(title: str, data: dict, ec: dict):
     }
 
 
+def prepare_create_function_kwargs(args: dict[str, str]):
+    """
+    Prepare arguments to be sent to the API
+    """
+    create_function_api_keys = ['FunctionName', 'Runtime', 'Role', 'Handler', 'Description', 'VpcConfig', 'PackageType']
+    kwargs = {}
+
+    if args.get('code'):
+        kwargs.update({'Code': {'ZipFile': (args.get('code').encode())}})
+    elif args.get('S3-bucket'):
+        kwargs.update({'Code': {'S3Bucket': args.get('S3-bucket')}})
+    else:
+        raise DemistoException('code or S3-bucket must be provided.')
+
+    for key in create_function_api_keys:
+        kwargs.update({key: args.get(key[0].upper() + key[1:])})
+
+    kwargs.update({'Publish': argToBoolean(args.get('publish')),
+                   'Environment': {'Variables': {json.loads(args.get('environment'))}},
+                   'Tags': {json.loads(args.get('tags'))},
+                   'TracingConfig': {'Mode': args.get('tracingConfig')},
+                   'Layers': argToList(args.get('layers')),
+                   'Timeout': arg_to_number(args.get('timeout')),
+                   'MemorySize': arg_to_number(args.get('memorySize'))})
+
+    return kwargs
+
+
 """MAIN FUNCTIONS"""
 
 
 def get_function(args: dict, aws_client):
-
     obj = vars(aws_client._client_config)
     kwargs = {'FunctionName': args.get('functionName')}
     if args.get('qualifier') is not None:
@@ -160,7 +190,6 @@ def get_function(args: dict, aws_client):
 
 
 def list_functions(aws_client):
-
     obj = vars(aws_client._client_config)
     data = []
     output = []
@@ -187,7 +216,6 @@ def list_functions(aws_client):
 
 
 def list_aliases(args, aws_client):
-
     data = []
     output = []
     kwargs = {'FunctionName': args.get('functionName')}
@@ -213,7 +241,6 @@ def list_aliases(args, aws_client):
 
 
 def invoke(args, aws_client):
-
     obj = vars(aws_client._client_config)
     kwargs = {'FunctionName': args.get('functionName')}
     if args.get('invocationType') is not None:
@@ -249,7 +276,6 @@ def invoke(args, aws_client):
 
 
 def remove_permission(args, aws_client):
-
     kwargs = {
         'FunctionName': args.get('functionName'),
         'StatementId': args.get('StatementId')
@@ -265,7 +291,6 @@ def remove_permission(args, aws_client):
 
 
 def get_account_settings(args, aws_client):
-
     obj = vars(aws_client._client_config)
     response = aws_client.get_account_settings()
     account_limit = response['AccountLimit']
@@ -349,6 +374,7 @@ def list_versions_by_function_command(args: dict[str, str], aws_client) -> Comma
         list[CommandResults]: A list of CommandResults objects, containing the parsed versions as outputs,
                               a readable output in Markdown format, and relevant metadata.
     """
+
     def parse_version(version: dict[str, Any]) -> dict[str, str | None]:
         return {
             "Function Name": version.get('FunctionName'),
@@ -398,6 +424,7 @@ def get_function_url_config_command(args: dict[str, str], aws_client) -> Command
         CommandResults: An object containing the URL configuration as outputs, a readable output in Markdown format,
                         and relevant metadata.
     """
+
     def parse_url_config(data: dict[str, Any]) -> dict[str, str | None]:
         return {
             "Function Url": data.get('FunctionUrl'),
@@ -440,6 +467,7 @@ def get_function_configuration_command(args: dict[str, str], aws_client) -> Comm
         CommandResults: An object containing the function configuration as outputs, a readable output in Markdown format,
                         and relevant metadata.
     """
+
     def parse_function_configuration(data: dict[str, Any]) -> dict[str, str | None]:
         return {
             "Function Name": data.get('FunctionName'),
@@ -518,6 +546,48 @@ def delete_function_command(args: dict[str, str], aws_client) -> CommandResults:
     )
 
 
+def create_function_command(args: dict[str, str], aws_client) -> CommandResults:
+    """
+    Creates a Lambda function from AWS.
+
+    Args:
+        args (dict): A dictionary containing the command arguments.
+
+        aws_client (boto3 client): The AWS client used to delete the function.
+
+    Returns:
+        CommandResults: An object containing the result of the creation operation.
+    """
+    output_headers = ['FunctionName', 'FunctionArn', 'Runtime', 'Role', 'Handler', 'CodeSize', 'Description', 'Timeout',
+                      'MemorySize', 'Version', 'VpcConfig', 'PackageType', 'LastModified']
+
+    kwargs = prepare_create_function_kwargs(args)
+
+    res = aws_client.create_function(**kwargs)
+
+    readable_output = tableToMarkdown(t=res, headers=output_headers, headerTransform=pascalToSpace)
+    outputs = {key: res.get(key) for key in output_headers}
+
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix='AWS.Lambda.Functions',
+        outputs_key_field='FunctionArn',
+        readable_output=readable_output
+    )
+
+def publicsh_layer_version_command(args: dict[str,str], aws_client) -> CommandResults:
+    """
+    Creates an Lambda layer from a ZIP archive.
+
+    Args:
+        args (dict): A dictionary containing the command arguments.
+
+        aws_client (boto3 client): The AWS client used to delete the function.
+
+    Returns:
+        CommandResults: An object containing the result of the deletion operation as a readable output in Markdown format.
+    """
+
 """TEST FUNCTION"""
 
 
@@ -528,7 +598,6 @@ def test_function(aws_client):
 
 
 def main():
-
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
@@ -578,6 +647,8 @@ def main():
                 return_results(delete_function_url_config_command(args, aws_client))
             case 'aws-lambda-delete-function':
                 return_results(delete_function_command(args, aws_client))
+            case 'aws-lambda-create-function':
+                return_results(create_function_command(args, aws_client))
             case _:
                 raise NotImplementedError(f"Command {command} is not implemented")
 
