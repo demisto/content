@@ -171,6 +171,7 @@ def test_fetch_events_no_last_run(mocker):
             "max_fetch": 100
         }
     )
+
     mocker.patch.object(demisto, 'command', return_value='fetch-events')
 
     http_mocker = HttpRequestsMocker(100)
@@ -192,3 +193,60 @@ def test_fetch_events_no_last_run(mocker):
     last_run = set_last_run_mocker.call_args[0][0]
     assert last_run[CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME] == fetched_events[-1]["created_at"]
     assert last_run[CybleAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS][0]["id"] == fetched_events[-1]["id"]
+
+
+def test_fetch_events_token_expired(mocker):
+    """
+    Given:
+     - token that has expired
+
+    When:
+     - running the fetch-events
+
+    Then:
+     - make sure events are sent into xsiam
+     - make sure all the 100 events are fetched
+     - make sure last run is updated
+     - make sure the new access token is getting into the integration context
+    """
+    import CybleAngelEventCollector
+
+    send_events_mocker: MagicMock = mocker.patch.object(CybleAngelEventCollector, 'send_events_to_xsiam')
+    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun', return_value={})
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(
+        demisto, 'params',
+        return_value={
+            "url": TEST_URL,
+            "credentials": {
+                "identifier": "1234",
+                "password": "1234",
+            },
+            "max_fetch": 100
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"access_token": "old_access_token"})
+    set_integration_context_mocker: MagicMock = mocker.patch.object(demisto, "setIntegrationContext")
+
+    http_mocker = HttpRequestsMocker(100)
+
+    mocker.patch.object(
+        CybleAngelEventCollector.Client,
+        "_http_request",
+        side_effect=http_mocker.expired_token_http_request_side_effect
+    )
+
+    CybleAngelEventCollector.main()
+    assert send_events_mocker.called
+    fetched_events = send_events_mocker.call_args[0][0]
+    assert len(fetched_events) == 100
+    for i in range(1, 101):
+        assert fetched_events[i - 1]["id"] == i
+
+    assert set_last_run_mocker.called
+    last_run = set_last_run_mocker.call_args[0][0]
+    assert last_run[CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME] == fetched_events[-1]["created_at"]
+    assert last_run[CybleAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS][0]["id"] == fetched_events[-1]["id"]
+
+    assert set_integration_context_mocker.call_args[0][0] == {'access_token': 'new_access_token'}

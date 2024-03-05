@@ -136,24 +136,26 @@ def test_module(client: Client) -> str:
 def fetch_events(client: Client, last_run: dict, max_fetch: int) -> tuple[List[dict[str, Any]], dict[str, Any]]:
     last_run_time, last_fetched_report_ids = last_run.get(
         LastRun.LATEST_REPORT_TIME), last_run.get(LastRun.LATEST_FETCHED_REPORTS)
+    now = datetime.now()
     if not last_run_time:
-        last_run_time = (datetime.now() - timedelta(days=1065)).strftime(DATE_FORMAT)
+        # TODO - get only events from last minute
+        last_run_time = (now - timedelta(days=1065)).strftime(DATE_FORMAT)
 
-    reports = client.get_reports(start_date=last_run_time, end_date=datetime.now().strftime(DATE_FORMAT), limit=max_fetch)
+    reports = client.get_reports(start_date=last_run_time, end_date=now.strftime(DATE_FORMAT), limit=max_fetch)
     reports = dedup_fetched_events(reports, last_run_fetched_event_ids=last_fetched_report_ids or set())
 
     for report in reports:
         report["_time"] = report["created_at"]
 
-    latest_report_time = reports[-1]["created_at"] if reports else None
+    latest_report_time = reports[-1]["created_at"] if reports else last_run_time
     demisto.debug(f'latest-report-time: {latest_report_time}')
-    last_fetched_report_ids = [report for report in reports if report["created_at"] == latest_report_time]
+    fetched_report_ids = [report for report in reports if report["created_at"] == latest_report_time] or last_fetched_report_ids
     demisto.debug(f'latest-fetched-report-ids {last_fetched_report_ids}')
 
     last_run.update(
         {
-            LastRun.LATEST_REPORT_TIME: latest_report_time or last_run_time,
-            LastRun.LATEST_FETCHED_REPORTS: last_fetched_report_ids or last_fetched_report_ids
+            LastRun.LATEST_REPORT_TIME: latest_report_time,
+            LastRun.LATEST_FETCHED_REPORTS: fetched_report_ids
         }
     )
     return reports, last_run
