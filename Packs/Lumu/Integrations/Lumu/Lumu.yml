@@ -1081,7 +1081,7 @@ script:
     - contextPath: Lumu.GetCache.lumu_incidentsId
       type: string
       description: "Lumu incident ids processed."
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.13.88772
   isfetch: true
   subtype: python3
   ismappable: true
