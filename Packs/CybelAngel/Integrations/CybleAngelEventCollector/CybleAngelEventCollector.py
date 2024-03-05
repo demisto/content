@@ -186,12 +186,12 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int) -> tuple[List[d
 def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     if end := args.get("end-date"):
-        end_date = dateparser.parse(end).strftime(DATE_FORMAT)
+        end_date = dateparser.parse(end).strftime(DATE_FORMAT)  # type: ignore[union-attr]
     else:
         end_date = datetime.now().strftime(DATE_FORMAT)
 
     reports = client.get_reports(
-        dateparser.parse(args["start-date"]).strftime(DATE_FORMAT),
+        dateparser.parse(args["start-date"]).strftime(DATE_FORMAT),  # type: ignore[union-attr]
         end_date=end_date,
         limit=arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH
     )
