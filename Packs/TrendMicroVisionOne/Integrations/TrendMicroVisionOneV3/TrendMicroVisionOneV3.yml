@@ -1301,7 +1301,7 @@ script:
       type: string
     description: Updates the contents of a custom script based on script ID.
     name: trendmicro-visionone-update-custom-script
-  dockerimage: devdemisto/pytmv1:0.8.2.88577
+  dockerimage: demisto/pytmv1:0.8.2.89444
   isFetchSamples: true
   isfetch: true
   script: ''
