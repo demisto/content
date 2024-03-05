@@ -10,13 +10,13 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "certificate",
-        "ssl",
-        "threathunting",
-        "domain",
-        "usecase"
+        "Incident Response",
+        "Threat Intelligence",
+        "Use Case"
     ],
-    "useCases": [],
+    "useCases": [
+        "Hunting"
+    ],
     "keywords": [],
     "marketplaces": [
         "xsoar"
