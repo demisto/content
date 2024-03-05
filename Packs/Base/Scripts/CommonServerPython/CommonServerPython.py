@@ -49,7 +49,7 @@ XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
-
+MASK = '<XX_REPLACED>'
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
@@ -1630,7 +1630,7 @@ class IntegrationLogger(object):
             else:
                 res = "Failed encoding message with error: {}".format(exception)
         for s in self.replace_strs:
-            res = res.replace(s, '<XX_REPLACED>')
+            res = res.replace(s, MASK)
         return res
 
     def __call__(self, message):
@@ -1751,12 +1751,13 @@ class IntegrationLogger(object):
             if self.buffering:
                 self.messages.append(text)
             else:
-                demisto.info(text)
                 if is_debug_mode() and text.startswith('send:'):
                     try:
+                        text = censor_request_logs(text)
                         self.build_curl(text)
                     except Exception as e:  # should fail silently
                         demisto.debug('Failed generating curl - {}'.format(str(e)))
+                demisto.info(text)
             self.write_buf = []
 
     def print_override(self, *args, **kwargs):
@@ -11744,6 +11745,31 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     if should_update_health_module:
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
+
+def censor_request_logs(request_log:str) -> str:
+    """
+    Censors the request logs by replacing sensitive information such as tokens and cookies with a mask.
+    Im most cases, the sensitive value is the first word after the keyword, but in some cases it is the second one.
+    """
+    keywords_to_replace = ['Authorization:','Cookie' ]
+    lower_keywords_to_replace = [word.lower() for word in keywords_to_replace]
+    replacement = MASK
+    
+    trimed_request_log=request_log.lstrip("send: b")
+    request_log_with_spaces = trimed_request_log.replace("\\r\\n", " \\r\\n")
+    request_log_lst = request_log_with_spaces.split()
+
+    for i, word in enumerate(request_log_lst):
+        # Check if the word is a keyword or contains a keyword (e.g "Cookies")
+        if any(x in word.lower() for x in lower_keywords_to_replace):
+            next_word = request_log_lst[i + 1]
+            # If the next word is "Bearer" or "Basic" then we replace the word after it since thats the token
+            if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
+                request_log_lst[i + 2] = replacement
+            else:
+                request_log_lst[i + 1] = replacement if i + 1 < len(request_log_lst) else request_log_lst[i + 1]
+    censored_string = "send: b'" + ' '.join(request_log_lst)
+    return censored_string
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
