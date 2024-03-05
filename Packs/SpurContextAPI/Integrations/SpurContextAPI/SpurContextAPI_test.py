@@ -78,7 +78,7 @@ MOCK_HTTP_RESPONSE = {
         "types": ["MOBILE", "DESKTOP"]
     },
     "infrastructure": "DATACENTER",
-    "ip": "192.168.1.1",
+    "ip": "1.1.1.1",
     "location": {
         "city": "St Louis",
         "country": "US",
@@ -89,8 +89,8 @@ MOCK_HTTP_RESPONSE = {
     "tunnels": [
         {
             "anonymous": True,
-            "entries": ["192.168.1.1"],
-            "exits": ["192.168.1.1"],
+            "entries": ["1.1.1.1"],
+            "exits": ["1.1.1.1"],
             "operator": "NORD_VPN",
             "type": "VPN"
         }
@@ -106,7 +106,7 @@ def client(mocker):
 
 
 def test_enrich_command(client):
-    args = {'ip': '192.168.1.1'}
+    args = {'ip': '1.1.1.1'}
     result = enrich_command(client, args)
     assert result.outputs['ip'] == MOCK_HTTP_RESPONSE['ip']
 
@@ -118,9 +118,9 @@ def test_test_module(client):
 
 def test_main_enrich_command(mocker):
     mocker.patch('SpurContextAPI.demisto.command', return_value='spur-context-api-enrich')
-    mocker.patch('SpurContextAPI.demisto.args', return_value={'ip': '192.168.1.1'})
+    mocker.patch('SpurContextAPI.demisto.args', return_value={'ip': '1.1.1.1'})
     mock_enrich = mocker.patch('SpurContextAPI.enrich_command')
     mocker.patch('SpurContextAPI.return_results')
     main()
 
-    mock_enrich.assert_called_once_with(mocker.ANY, {'ip': '192.168.1.1'})
+    mock_enrich.assert_called_once_with(mocker.ANY, {'ip': '1.1.1.1'})

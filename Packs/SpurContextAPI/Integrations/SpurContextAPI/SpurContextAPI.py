@@ -39,17 +39,7 @@ class Client(BaseClient):
             headers=self._headers,
         )
 
-        # Make sure the response is a dictionary
-        if isinstance(response, dict):
-            response = fix_nested_client(response)
-            return CommandResults(
-                outputs_prefix='SpurContextAPI.Context',
-                outputs_key_field='',
-                outputs=response,
-                raw_response=response,
-            )
-        else:
-            raise ValueError(f'Invalid response from API: {response}')
+        return response
 
 
 ''' HELPER FUNCTIONS '''
@@ -112,7 +102,19 @@ def enrich_command(client: Client, args: dict[str, Any]) -> CommandResults:
     if not ip:
         raise ValueError('IP not specified')
 
-    return client.ip(ip)
+    response = client.ip(ip)
+
+    # Make sure the response is a dictionary
+    if isinstance(response, dict):
+        response = fix_nested_client(response)
+        return CommandResults(
+            outputs_prefix='SpurContextAPI.Context',
+            outputs_key_field='',
+            outputs=response,
+            raw_response=response,
+        )
+    else:
+        raise ValueError(f'Invalid response from API: {response}')
 
 
 ''' MAIN FUNCTION '''
