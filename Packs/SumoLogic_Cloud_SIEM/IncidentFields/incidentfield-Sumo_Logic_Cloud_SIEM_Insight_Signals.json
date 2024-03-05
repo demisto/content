@@ -78,7 +78,7 @@
         {
             "key": "sumourl",
             "displayName": "SumoURL",
-            "type": "URL",
+            "type": "url",
             "required": false,
             "script": "",
             "width": 150,
