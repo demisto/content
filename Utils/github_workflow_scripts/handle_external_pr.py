@@ -71,7 +71,13 @@ def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
         If no, choose the one with the lowest number of assigned contribution PRs.
 
         Args:
-            assigned_prs_per_potential_reviewer (dict): A dict od the reviewers and the amount of assigned PRs each has.
+            assigned_prs_per_potential_reviewer (dict): A dict of the reviewers and the amount of assigned PRs each has.
+            an example of this dictionary:
+            {
+                'reviewer1': 1,
+                'reviewer2': 2,
+                'reviewer3': 3,
+            }
 
         Returns:
             int: The location of the chosen assignee in the sorted array.
