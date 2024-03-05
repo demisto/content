@@ -1,0 +1,9 @@
+!infoblox-get-ip ip=192.168.1.0
+!infoblox-get-ip from_ip=192.168.1.1 to_ip=192.168.1.3
+!infoblox-get-ip network="192.168.1.0/24" max_results=3
+!infoblox-list-host-info
+!infoblox-list-host-info additional_return_fields=extattrs,aliases
+!infoblox-list-network-info
+!infoblox-list-network-info pattern=255.255 extattrs="Region=EMEA"
+!infoblox-list-host-info additional_return_fields=aliases extattrs="Site=ciac-5843"
+
