@@ -72,7 +72,7 @@ class Client(BaseClient):
             report["_time"] = _time_field
 
         return sorted(
-            reports, key=lambda report: dateparser.parse(report["_time"])  # type: ignore[arg-type, return-value]
+            reports, key=lambda _report: dateparser.parse(_report["_time"])  # type: ignore[arg-type, return-value]
         )
 
     def get_access_token(self, create_new_token: bool = False) -> str:
