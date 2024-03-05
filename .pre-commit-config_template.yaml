@@ -118,6 +118,19 @@ repos:
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
+  - id: validate-deleted-files
+    name: validate-deleted-files
+    entry: validate-deleted-files
+    language: system
+    require_serial: true
+    pass_filenames: false
+    args:
+      - --protected-dir
+      - Packs
+      - --protected-dir
+      - Tests
+      - --protected-dir
+      - Utils
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
     description: Run powershell tests
