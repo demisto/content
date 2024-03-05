@@ -153,8 +153,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception:
-        stacktrace = traceback.format_exc()
-        return_error(f'Error: {stacktrace}')
+        return_error(f'Error: {traceback.format_exc()}')
 
 
 ''' ENTRY POINT '''
