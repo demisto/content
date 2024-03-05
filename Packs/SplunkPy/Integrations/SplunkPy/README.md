@@ -521,16 +521,16 @@ Sends events to an HTTP event collector using the Splunk platform JSON event pro
 `splunk-submit-event-hec`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| event | The event payload key-value pair. An example string: "event": "Access log test message.". | Required |
-| fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields. | Optional |
-| index | The index name. | Optional |
-| host | The hostname. | Optional |
-| source_type | The user-defined event source type. | Optional |
-| source | The user-defined event source. | Optional | 
-| time | The epoch-formatted time. | Optional | 
-| request_channel | A channel identifier (ID), which must be a Globally Unique Identifier (GUID), is the channel to send the request. If the indexer acknowledgment is turned on, a channel is required. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                          | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| event | The event payload key-value pair. An example string: "event": "Access log test message.".                                                                                | Required |
+| fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields.                                                            | Optional |
+| index | The index name.                                                                                                                                                          | Optional |
+| host | The hostname.                                                                                                                                                            | Optional |
+| source_type | The user-defined event source type.                                                                                                                                      | Optional |
+| source | The user-defined event source.                                                                                                                                           | Optional | 
+| time | The epoch-formatted time.                                                                                                                                                | Optional | 
+| request_channel | A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). **If the indexer acknowledgment is turned on, a channel is required.** | Optional | 
 
 ##### Context Output
 
