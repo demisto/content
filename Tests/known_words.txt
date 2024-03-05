@@ -279,3 +279,4 @@ HSTS
 SaaS
 saas
 Symantec
+XQL

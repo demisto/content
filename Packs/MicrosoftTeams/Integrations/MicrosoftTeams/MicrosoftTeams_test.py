@@ -2262,10 +2262,10 @@ def test_generate_login_url(mocker):
     mocked_params = {
         'REDIRECT_URI': redirect_uri,
         'AUTH_TYPE': 'Authorization Code',
-        'TENANT_ID': tenant_id,
         'BOT_ID': client_id
     }
     mocker.patch.dict(MicrosoftTeams.__dict__, MicrosoftTeams.__dict__ | mocked_params)
+    mocker.patch.object(MicrosoftTeams, "get_integration_context", return_value={'tenant_id': 'tenant_id'})
     mocker.patch.object(MicrosoftTeams, 'return_results')
     mocker.patch.object(MicrosoftTeams, 'support_multithreading')
     mocker.patch.object(demisto, 'command', return_value='microsoft-teams-generate-login-url')
@@ -2276,7 +2276,7 @@ def test_generate_login_url(mocker):
     # assert
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                    'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
-                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+                   f'&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)'
     res = MicrosoftTeams.return_results.call_args[0][0].readable_output
     assert expected_url in res
 
