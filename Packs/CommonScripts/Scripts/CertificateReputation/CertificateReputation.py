@@ -5,7 +5,7 @@ from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-i
 import dateparser
 from datetime import timedelta
 from enum import Enum
-from typing import List, Dict, Any, Optional, Tuple
+from typing import Any
 
 
 # Threshold defining "long expiration". When validity_not_after - validity_not_before is greater than
@@ -39,7 +39,7 @@ def get_indicator_from_value(indicator_value: str):
         return None
 
 
-def indicator_set_validation_checks(ivalue: str, checks: List[CertificateValidationTag]) -> None:
+def indicator_set_validation_checks(ivalue: str, checks: list[CertificateValidationTag]) -> None:
     # we call setIndicator for each check because if you pass the full list to setIndicator at once
     # it will just set the field with the stringified version of the list
     for c in checks:
@@ -50,8 +50,8 @@ def indicator_set_validation_checks(ivalue: str, checks: List[CertificateValidat
         })
 
 
-def certificate_fields_to_context(certindicator_fields: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    pem: Optional[str]
+def certificate_fields_to_context(certindicator_fields: dict[str, Any]) -> dict[str, Any] | None:
+    pem: str | None
     if (pem := certindicator_fields.get('pem')) is None:
         return None
 
@@ -72,10 +72,10 @@ def certificate_fields_to_context(certindicator_fields: Dict[str, Any]) -> Optio
     return entry_context
 
 
-def dbot_context(value: str, certificate_context: Dict[str, Any]
-                 ) -> Tuple[List[CertificateValidationTag], List[str], Dict[str, Any]]:
-    comments: List[str] = []
-    tags: List[CertificateValidationTag] = []
+def dbot_context(value: str, certificate_context: dict[str, Any]
+                 ) -> tuple[list[CertificateValidationTag], list[str], dict[str, Any]]:
+    comments: list[str] = []
+    tags: list[CertificateValidationTag] = []
     some_checks_not_performed: bool = False
     current_score = Common.DBotScore.NONE
 
@@ -185,8 +185,10 @@ def dbot_context(value: str, certificate_context: Dict[str, Any]
         comments.append('No Extensions available, some checks could not be performed')
         some_checks_not_performed = True
     else:
-        subject_key_identifier = next((e.get('Value') for e in extensions if e.get('OID') == '2.5.29.14'), None)
-        authority_key_identifier = next((e.get('Value') for e in extensions if e.get('OID') == '2.5.29.35'), None)
+        subject_key_identifier = next((e.get('Value') for e in extensions
+                                       if e.get('OID') == '2.5.29.14'), None)  # disable-secrets-detection
+        authority_key_identifier = next((e.get('Value') for e in extensions
+                                         if e.get('OID') == '2.5.29.35'), None)  # disable-secrets-detection
 
         subject_key_identifier_digest = None
         authority_key_identifier_ki = None
@@ -199,25 +201,31 @@ def dbot_context(value: str, certificate_context: Dict[str, Any]
             some_checks_not_performed = True
             comments.append('Valid AuthorityKeyIdentifier Extension not available, some checks not performed')
 
-        if subject_key_identifier_digest is not None and authority_key_identifier_ki is not None:
-            if subject_key_identifier_digest == authority_key_identifier_ki:
-                comments.append(f'{CertificateValidationTag.SELF_SIGNED.value} Self-Signed Certificate')
-                tags.append(CertificateValidationTag.SELF_SIGNED)
-                current_score = max(current_score, Common.DBotScore.SUSPICIOUS)
+        if (subject_key_identifier_digest is not None
+            and authority_key_identifier_ki is not None
+                and subject_key_identifier_digest == authority_key_identifier_ki):
+            comments.append(f'{CertificateValidationTag.SELF_SIGNED.value} Self-Signed Certificate')
+            tags.append(CertificateValidationTag.SELF_SIGNED)
+            current_score = max(current_score, Common.DBotScore.SUSPICIOUS)
 
-        elif subject_key_identifier_digest is not None and authority_key_identifier_ki is None:
-            if subject_dn is not None and issuer_dn is not None and subject_dn == issuer_dn:
-                comments.append(f'{CertificateValidationTag.SELF_SIGNED.value} Self-Signed Certificate')
-                tags.append(CertificateValidationTag.SELF_SIGNED)
-                current_score = max(current_score, Common.DBotScore.SUSPICIOUS)
+        elif (subject_key_identifier_digest is not None
+              and authority_key_identifier_ki is None
+              and subject_dn is not None
+              and issuer_dn is not None
+              and subject_dn == issuer_dn):
+            comments.append(f'{CertificateValidationTag.SELF_SIGNED.value} Self-Signed Certificate')
+            tags.append(CertificateValidationTag.SELF_SIGNED)
+            current_score = max(current_score, Common.DBotScore.SUSPICIOUS)
 
         # if self-signed we also check this is self-issued
-        if CertificateValidationTag.SELF_SIGNED in tags:
-            if subject_dn is not None and issuer_dn is not None and subject_dn != issuer_dn:
-                comments.append(f'{CertificateValidationTag.INVALID_DISTINGUISHED_NAMES.value}'
-                                ' Self-Signed Certificate with different Issuer DN and Subject DN')
-                tags.append(CertificateValidationTag.INVALID_DISTINGUISHED_NAMES)
-                current_score = Common.DBotScore.BAD
+        if (CertificateValidationTag.SELF_SIGNED in tags
+            and subject_dn is not None
+            and issuer_dn is not None
+                and subject_dn != issuer_dn):
+            comments.append(f'{CertificateValidationTag.INVALID_DISTINGUISHED_NAMES.value}'
+                            ' Self-Signed Certificate with different Issuer DN and Subject DN')
+            tags.append(CertificateValidationTag.INVALID_DISTINGUISHED_NAMES)
+            current_score = Common.DBotScore.BAD
 
     if not some_checks_not_performed:
         # if we didn't have to skip any check we can mark the cert as good
@@ -237,7 +245,7 @@ def dbot_context(value: str, certificate_context: Dict[str, Any]
 ''' COMMAND FUNCTION '''
 
 
-def certificate_reputation_command(args: Dict[str, Any]) -> Dict[str, Any]:
+def certificate_reputation_command(args: dict[str, Any]) -> dict[str, Any]:
     input_ = args.get('input')
     if input_ is None:
         raise ValueError("input argument is required")
@@ -253,7 +261,7 @@ def certificate_reputation_command(args: Dict[str, Any]) -> Dict[str, Any]:
             'ReadableContentsFormat': formats['markdown']
         }
 
-    comments: List[str] = []
+    comments: list[str] = []
 
     indicator_value = indicator.get('value')
     if indicator_value is None:
