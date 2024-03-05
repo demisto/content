@@ -1,6 +1,6 @@
 {
     "name": "Cyble Angel",
-    "description": "to be added",
+    "description": "Collect reports from CybleAngel platform which specializes in external attack surface protection and management.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

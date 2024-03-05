@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Any, Tuple
+from typing import Any
 from enum import Enum
 
 # Disable insecure warnings
@@ -140,10 +140,9 @@ def dedup_fetched_events(
     return un_fetched_events
 
 
-def get_latest_event_time_and_ids(reports: List[Dict[str, Any]]) -> Tuple[str, List[str]]:
+def get_latest_event_time_and_ids(reports: List[Dict[str, Any]]) -> tuple[str, List[str]]:
     latest_report_time = reports[-1]["_time"]
     return latest_report_time, [report["id"] for report in reports if report["_time"] == latest_report_time]
-
 
     latest_report_time = ""
     for report in reports:

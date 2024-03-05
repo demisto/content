@@ -324,9 +324,9 @@ def test_fetch_events_with_last_run_no_events(mocker):
     send_events_mocker: MagicMock = mocker.patch.object(CybleAngelEventCollector, 'send_events_to_xsiam')
     set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun', return_value={})
     last_run = {
-            CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME: "2024-02-29T13:48:32",
-            CybleAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: [1, 2]
-        }
+        CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME: "2024-02-29T13:48:32",
+        CybleAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: [1, 2]
+    }
     mocker.patch.object(
         demisto,
         'getLastRun',
