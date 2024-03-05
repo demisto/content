@@ -47,11 +47,10 @@ class Client(BaseClient):
     headers = {'X-RF-User-Agent': 'Demisto',
                'content-type': 'application/json'}
 
-    def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str = None,
-                 fusion_file_path: str = None, insecure: bool = False,
-                 polling_timeout: int = 20, proxy: bool = False,
-                 malicious_threshold: int = 65, suspicious_threshold: int = 25, risk_score_threshold: int = 0,
-                 tags: list | None = None, tlp_color: str | None = None):
+    def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str | None,
+                 fusion_file_path: str | None, insecure: bool, polling_timeout: int, proxy: bool,
+                 malicious_threshold: int, suspicious_threshold: int, risk_score_threshold: int,
+                 tags: list | None, tlp_color: str | None):
         """
         Attributes:
              indicator_type: string, the indicator type of the feed.
@@ -574,11 +573,21 @@ def main():  # pragma: no cover
     api_token = params.get('credentials_api_token', {}).get('password') or params.get('api_token')
     if not api_token:
         raise DemistoException('API Token must be provided.')
-    client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], api_token, params.get('services'),
-                    params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
-                    params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
-                    params.get('suspicious_threshold'), params.get('risk_score_threshold'),
-                    argToList(params.get('feedTags')), params.get('tlp_color'))
+    client = Client(
+        indicator_type=RF_INDICATOR_TYPES[params.get('indicator_type')],
+        api_token=api_token,
+        services=params.get('services'),
+        risk_rule=params.get('risk_rule'),
+        fusion_file_path=params.get('fusion_file_path'),
+        insecure=params.get('insecure', False),
+        polling_timeout=int(params['polling_timeout']) if 'polling_timeout' in params else 20,
+        proxy=params.get('proxy', False),
+        malicious_threshold=int(params['threshold']) if 'threshold' in params else 65,
+        suspicious_threshold=int(params['suspicious_threshold']) if 'suspicious_threshold' in params else 25,
+        risk_score_threshold=int(params['risk_score_threshold']) if 'risk_score_threshold' in params else 0,
+        tags=argToList(params.get('feedTags')),
+        tlp_color=params.get('tlp_color'),
+    )
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     # Switch case
