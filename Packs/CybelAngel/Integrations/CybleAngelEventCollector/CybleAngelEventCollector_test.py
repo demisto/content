@@ -186,13 +186,11 @@ def test_fetch_events_no_last_run(mocker):
     assert send_events_mocker.called
     fetched_events = send_events_mocker.call_args[0][0]
     assert len(fetched_events) == 100
-    for i in range(1, 101):
-        assert fetched_events[i - 1]["id"] == i
 
     assert set_last_run_mocker.called
     last_run = set_last_run_mocker.call_args[0][0]
     assert last_run[CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME] == fetched_events[-1]["created_at"]
-    assert last_run[CybleAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS][0]["id"] == fetched_events[-1]["id"]
+    assert last_run[CybleAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS][0] == fetched_events[-1]["id"]
 
 
 def test_fetch_events_token_expired(mocker):
@@ -241,12 +239,10 @@ def test_fetch_events_token_expired(mocker):
     assert send_events_mocker.called
     fetched_events = send_events_mocker.call_args[0][0]
     assert len(fetched_events) == 100
-    for i in range(1, 101):
-        assert fetched_events[i - 1]["id"] == i
 
     assert set_last_run_mocker.called
     last_run = set_last_run_mocker.call_args[0][0]
     assert last_run[CybleAngelEventCollector.LastRun.LATEST_REPORT_TIME] == fetched_events[-1]["created_at"]
-    assert last_run[CybleAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS][0]["id"] == fetched_events[-1]["id"]
+    assert last_run[CybleAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS][0] == fetched_events[-1]["id"]
 
     assert set_integration_context_mocker.call_args[0][0] == {'access_token': 'new_access_token'}

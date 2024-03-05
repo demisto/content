@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Any
+from typing import Any, Tuple
 from enum import Enum
 
 # Disable insecure warnings
@@ -21,7 +21,7 @@ PRODUCT = "platform"
 
 class LastRun(str, Enum):
     LATEST_REPORT_TIME = "latest_report_time"
-    LATEST_FETCHED_REPORTS = "latest_fetched_reports"
+    LATEST_FETCHED_REPORTS_IDS = "latest_fetched_reports_ids"
 
 
 class Client(BaseClient):
@@ -60,10 +60,20 @@ class Client(BaseClient):
         }
         reports = self.http_request(method='GET', url_suffix="/api/v2/reports", params=params).get("reports") or []
         # sort the reports by their date as their order is returned randomly
-        reports = sorted(
-            reports, key=lambda report: dateparser.parse(report["created_at"])  # type: ignore[arg-type, return-value]
+
+        reports = reports[:limit]
+
+        for report in reports:
+            if updated_at := report.get("updated_at"):
+                _time_field = updated_at
+            else:
+                _time_field = report["created_at"]
+
+            report["_time"] = _time_field
+
+        return sorted(
+            reports, key=lambda report: dateparser.parse(report["_time"])  # type: ignore[arg-type, return-value]
         )
-        return reports[:limit]
 
     def get_access_token(self, create_new_token: bool = False) -> str:
         """
@@ -130,6 +140,28 @@ def dedup_fetched_events(
     return un_fetched_events
 
 
+def get_latest_event_time_and_ids(reports: List[Dict[str, Any]]) -> Tuple[str, List[str]]:
+    latest_report_time = reports[-1]["_time"]
+    return latest_report_time, [report["id"] for report in reports if report["_time"] == latest_report_time]
+
+
+    latest_report_time = ""
+    for report in reports:
+        if updated_at := report.get("updated_at"):
+            _time_field = updated_at
+            report["_time"] = updated_at
+        else:
+            _time_field = report["created_at"]
+
+        report["_time"] = _time_field
+
+        if not latest_report_time or dateparser.parse(_time_field) > dateparser.parse(latest_report_time):
+            latest_report_time = _time_field
+
+    latest_report_ids = [report["id"] for report in reports if report["_time"] == latest_report_time]
+    return latest_report_time, latest_report_ids
+
+
 def test_module(client: Client) -> str:
     client.get_reports(
         start_date=(datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT),
@@ -139,28 +171,30 @@ def test_module(client: Client) -> str:
 
 
 def fetch_events(client: Client, last_run: dict, max_fetch: int) -> tuple[List[dict[str, Any]], dict[str, Any]]:
-    last_run_time, last_fetched_report_ids = last_run.get(
-        LastRun.LATEST_REPORT_TIME), last_run.get(LastRun.LATEST_FETCHED_REPORTS)
+    last_run_time = last_run.get(LastRun.LATEST_REPORT_TIME)
     now = datetime.now()
     if not last_run_time:
         # TODO - get only events from last minute
-        last_run_time = (now - timedelta(days=1065)).strftime(DATE_FORMAT)
+        last_run_time = (now - timedelta(days=3000)).strftime(DATE_FORMAT)
 
     reports = client.get_reports(start_date=last_run_time, end_date=now.strftime(DATE_FORMAT), limit=max_fetch)
-    reports = dedup_fetched_events(reports, last_run_fetched_event_ids=last_fetched_report_ids or set())
+    if not reports:
+        demisto.debug(f'No reports found when last run is {last_run}')
+        return [], {
+            LastRun.LATEST_REPORT_TIME: last_run_time,
+            LastRun.LATEST_FETCHED_REPORTS_IDS: last_run.get(LastRun.LATEST_FETCHED_REPORTS_IDS)
+        }
 
-    for report in reports:
-        report["_time"] = report["created_at"]
+    reports = dedup_fetched_events(reports, last_run_fetched_event_ids=last_run.get(LastRun.LATEST_FETCHED_REPORTS_IDS) or set())
 
-    latest_report_time = reports[-1]["created_at"] if reports else last_run_time
+    latest_report_time, latest_fetched_report_ids = get_latest_event_time_and_ids(reports)
     demisto.debug(f'latest-report-time: {latest_report_time}')
-    fetched_report_ids = [report for report in reports if report["created_at"] == latest_report_time] or last_fetched_report_ids
-    demisto.debug(f'latest-fetched-report-ids {last_fetched_report_ids}')
+    demisto.debug(f'latest-fetched-report-ids {latest_fetched_report_ids}')
 
     last_run.update(
         {
             LastRun.LATEST_REPORT_TIME: latest_report_time,
-            LastRun.LATEST_FETCHED_REPORTS: fetched_report_ids
+            LastRun.LATEST_FETCHED_REPORTS_IDS: latest_fetched_report_ids
         }
     )
     return reports, last_run
