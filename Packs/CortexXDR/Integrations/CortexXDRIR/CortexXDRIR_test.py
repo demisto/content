@@ -5,9 +5,9 @@ import pytest
 from freezegun import freeze_time
 
 import demistomock as demisto
-from CommonServerPython import Common
+from CommonServerPython import Common, urljoin, DemistoException
 from CoreIRApiModule import XDR_RESOLVED_STATUS_TO_XSOAR
-
+from CortexXDRIR import XSOAR_TO_XDR, XDR_TO_XSOAR
 XDR_URL = 'https://api.xdrurl.com'
 
 ''' HELPER FUNCTIONS '''
@@ -853,3 +853,59 @@ def test_xdr_to_xsoar_flexible_close_reason_mapping(capfd, mocker, custom_mappin
         with capfd.disabled():
             close_entry = handle_incoming_closing_incident(incident_data)
         assert close_entry["Contents"]["closeReason"] == expected_resolved_status[i]
+
+
+@pytest.mark.parametrize('custom_mapping, direction, should_raise_error',
+                         [
+                             ("Other=Other,Duplicate=Other,False Positive=False Positive,Resolved=True Positive",
+                              XSOAR_TO_XDR, False),
+
+                             ("Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive",
+                              XDR_TO_XSOAR, False),
+
+                             ("Duplicate Incident=Random", XSOAR_TO_XDR, True),
+
+                             ("Duplicate=RANDOM1, Other=Random2", XDR_TO_XSOAR, True),
+                             # Inverted map provided
+                             ("Duplicate=Duplicate Incident", XDR_TO_XSOAR, True),
+                             ("Duplicate Incident=Duplicate", XSOAR_TO_XDR, True),
+                             # Improper mapping
+                             ("Random1, Random2", XDR_TO_XSOAR, True),
+                             ("Random1, Random2", XSOAR_TO_XDR, True),
+
+                         ],
+                         ids=["case-1", "case-2", "case-3", "case-4", "case-5", "case-6", "case-7", "case-8"]
+                         )
+def test_test_module(capfd, custom_mapping, direction, should_raise_error):
+    """
+        Given:
+            - mock client with username and api_key (basic auth)
+        When:
+            - run `test_module` function
+        Then:
+            - Ensure no error is raised, and return `ok`
+        """
+    from CortexXDRIR import Client
+
+    # using two different credentials object as they both fields need to be encrypted
+    base_url = urljoin("dummy_url", '/public_api/v1')
+    proxy = demisto.params().get('proxy')
+    verify_cert = not demisto.params().get('insecure', False)
+
+    client = Client(
+        base_url=base_url,
+        proxy=proxy,
+        verify=verify_cert,
+        timeout=120,
+        params=demisto.params()
+    )
+    # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
+    with capfd.disabled():
+        if should_raise_error:
+            with pytest.raises(DemistoException):
+                client.validate_custom_mapping(mapping=custom_mapping, direction=direction)
+        else:
+            try:
+                client.validate_custom_mapping(mapping=custom_mapping, direction=direction)
+            except DemistoException as e:
+                pytest.fail(f"Unexpected exception raised for input {input}: {e}")

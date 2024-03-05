@@ -44,6 +44,9 @@ MIRROR_DIRECTION = {
     'Both': 'Both'
 }
 
+XSOAR_TO_XDR = "XSOAR -> XDR"
+XDR_TO_XSOAR = "XDR -> XSOAR"
+
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -122,7 +125,6 @@ def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_alrea
 
 
 class Client(CoreClient):
-
     def __init__(self, base_url, proxy, verify, timeout, params=None):
         if not params:
             params = {}
@@ -148,53 +150,55 @@ class Client(CoreClient):
             else:
                 raise
 
-        self.test_custom_close_reason_mapping()
+        # XSOAR -> XDR
+        self.validate_custom_mapping(mapping=self._params.get("custom_xsoar_to_xdr_close_reason_mapping"),
+                                     direction=XSOAR_TO_XDR)
 
-    @staticmethod
-    def test_custom_close_reason_mapping():
-        """ Test validity of provided custom close-reason mappings. """
+        # XDR -> XSOAR
+        self.validate_custom_mapping(mapping=self._params.get("custom_xdr_to_xsoar_close_reason_mapping"),
+                                     direction=XDR_TO_XSOAR)
+
+    def validate_custom_mapping(self, mapping: str, direction: str):
+        """ Check validity of provided custom close-reason mappings. """
 
         xdr_statuses_to_xsoar = [status.replace("resolved_", "").replace("_", " ").title()
                                  for status in XDR_RESOLVED_STATUS_TO_XSOAR.keys()]
         xsoar_statuses_to_xdr = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys())
 
-        # XSOAR -> XDR
-        try:
-            xsoar_to_xdr_close_reason_mapping = demisto.params().get("custom_xsoar_to_xdr_close_reason_mapping")
-            xsoar_to_xdr_close_reason_mapping = comma_separated_mapping_to_dict(xsoar_to_xdr_close_reason_mapping)
+        exception_message = ('Improper custom mapping ({direction}) provided: "{key_or_value}" is not a valid Cortex '
+                             '{xsoar_or_xdr} close-reason. Valid Cortex {xsoar_or_xdr} close-reasons are: {statuses}')
 
-            for key, value in xsoar_to_xdr_close_reason_mapping.items():
-                xdr_close_reason = "resolved_" + "_".join(value.lower().split(" "))
-                if key not in XSOAR_RESOLVED_STATUS_TO_XDR:
-                    raise DemistoException(
-                        f'Improper custom mapping (XSOAR -> XDR) provided: "{key}" is not a valid Cortex XSOAR close-reason.'
-                        f' Valid Cortex XSOAR close-reasons are: {xsoar_statuses_to_xdr}')
-                elif xdr_close_reason not in XDR_RESOLVED_STATUS_TO_XSOAR:
-                    raise DemistoException(
-                        f'Improper custom mapping (XSOAR -> XDR) provided: "{value}" is not a valid Cortex XDR close-reason.'
-                        f' Valid Cortex XDR close-reasons are: {xdr_statuses_to_xsoar}')
+        def to_xdr_status(status):
+            return "resolved_" + "_".join(status.lower().split(" "))
 
-        except ValueError as e:
-            raise DemistoException(f'Custom mapping (XSOAR -> XDR) error: {str(e)}')
+        custom_mapping = comma_separated_mapping_to_dict(mapping)
 
-        # XDR -> XSOAR
-        try:
-            xdr_to_xsoar_close_reason_mapping = demisto.params().get("custom_xdr_to_xsoar_close_reason_mapping")
-            xdr_to_xsoar_close_reason_mapping = comma_separated_mapping_to_dict(xdr_to_xsoar_close_reason_mapping)
+        valid_key = valid_value = True  # If no mapping was provided.
 
-            for key, value in xdr_to_xsoar_close_reason_mapping.items():
-                xdr_close_reason = "resolved_" + "_".join(key.lower().split(" "))
-                if xdr_close_reason not in XDR_RESOLVED_STATUS_TO_XSOAR:
-                    raise DemistoException(
-                        f'Improper custom mapping (XDR -> XSOAR) provided: "{key}" is not a valid Cortex XDR close-reason. '
-                        f'Valid Cortex XDR close-reasons are: {xdr_statuses_to_xsoar}')
-                elif value not in XSOAR_RESOLVED_STATUS_TO_XDR:
-                    raise DemistoException(
-                        f'Improper custom mapping (XDR -> XSOAR) provided: "{value}" is not a valid Cortex XSOAR close-reason.'
-                        f' Valid Cortex XSOAR close-reasons are: {xsoar_statuses_to_xdr}')
+        for key, value in custom_mapping.items():
+            if direction == XSOAR_TO_XDR:
+                xdr_close_reason = to_xdr_status(value)
+                valid_key = key in XSOAR_RESOLVED_STATUS_TO_XDR
+                valid_value = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
+            elif direction == XDR_TO_XSOAR:
+                xdr_close_reason = to_xdr_status(key)
+                valid_key = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
+                valid_value = value in XSOAR_RESOLVED_STATUS_TO_XDR
 
-        except ValueError as e:
-            raise DemistoException(f'Custom mapping (XDR -> XSOAR) error: {str(e)}')
+            if not valid_key:
+                raise DemistoException(
+                    exception_message.format(direction=direction,
+                                             key_or_value=key,
+                                             xsoar_or_xdr="XSOAR" if direction == XSOAR_TO_XDR else "XDR",
+                                             statuses=xsoar_statuses_to_xdr
+                                             if direction == XSOAR_TO_XDR else xdr_statuses_to_xsoar))
+            elif not valid_value:
+                raise DemistoException(
+                    exception_message.format(direction=direction,
+                                             key_or_value=value,
+                                             xsoar_or_xdr="XDR" if direction == XSOAR_TO_XDR else "XSOAR",
+                                             statuses=xdr_statuses_to_xsoar
+                                             if direction == XSOAR_TO_XDR else xsoar_statuses_to_xdr))
 
     def handle_fetch_starred_incidents(self, limit: int, page_number: int, request_data: dict) -> List:
         """
@@ -674,7 +678,7 @@ def handle_incoming_user_unassignment(incident_data):
         incident_data['owner'] = ''
 
 
-def resolve_xsoar_close_reason(xdr_close_reason):
+def resolve_xsoar_close_reason(xdr_close_reason: str):
     """
     Resolving XSOAR close reason from possible custom XDR->XSOAR close-reason mapping or default mapping.
     :param xdr_close_reason: XDR raw status/close reason e.g. 'resolved_false_positive'.
@@ -1019,7 +1023,6 @@ def file_details_results(client: Client, args: Dict, add_to_context: bool) -> No
 
 
 def get_contributing_event_command(client: Client, args: Dict) -> CommandResults:
-
     if alert_ids := argToList(args.get('alert_ids')):
         alerts = []
 
