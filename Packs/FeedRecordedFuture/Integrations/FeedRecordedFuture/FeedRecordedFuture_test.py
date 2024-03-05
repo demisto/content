@@ -187,7 +187,7 @@ GET_INDICATOR_INPUTS = [
 
 @pytest.mark.parametrize('indicator_type, build_iterator_answer, value, type', GET_INDICATOR_INPUTS)
 def test_get_indicators_command(mocker, indicator_type, build_iterator_answer, value, type):
-    client = Client(indicator_type=indicator_type, api_token='123', services='fusion')
+    client = Client(indicator_type=indicator_type, api_token='123', services='fusion', risk_score_threshold=0)
     args = {
         'indicator_type': indicator_type,
         'limit': 1
