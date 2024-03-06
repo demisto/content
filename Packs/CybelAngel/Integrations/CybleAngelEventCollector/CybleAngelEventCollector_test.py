@@ -102,7 +102,7 @@ def test_the_test_module(mocker):
     """
     import CybleAngelEventCollector
 
-    demisto_results_mocker: MagicMock = mocker.patch.object(demisto, 'results')
+    return_results_mocker: MagicMock = mocker.patch.object(CybleAngelEventCollector, 'return_results')
     mocker.patch.object(
         demisto, 'params',
         return_value={
@@ -125,8 +125,8 @@ def test_the_test_module(mocker):
     )
 
     CybleAngelEventCollector.main()
-    assert demisto_results_mocker.called
-    assert demisto_results_mocker.call_args[0][0] == "ok"
+    assert return_results_mocker.called
+    assert return_results_mocker.call_args[0][0] == "ok"
 
 
 def test_fetch_events_no_last_run(mocker):
