@@ -194,17 +194,17 @@ def test_get_command_string_with_extract_mode():
     }
 
     command_string = get_command_string(
-        inputs.get('ids'),
-        inputs.get('pollingCommand'),
-        inputs.get('pollingCommandArgName'),
-        inputs.get('playbookId'),
-        inputs.get('dt'),
-        inputs.get('interval'),
-        inputs.get('timeout'),
-        inputs.get('tag,'),
-        inputs.get('args_names'),
-        inputs.get('args_values'),
-        inputs.get('extractMode'),
+        inputs['ids'],
+        inputs['pollingCommand'],
+        inputs['pollingCommandArgName'],
+        inputs['playbookId'],
+        inputs['dt'],
+        inputs['interval'],
+        inputs['timeout'],
+        inputs['tag'],
+        inputs['args_names'],
+        inputs['args_values'],
+        inputs['extractMode'],
     )
 
     assert 'auto-extract=none' in command_string
