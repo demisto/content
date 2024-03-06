@@ -1,5 +1,5 @@
 id: 3900afd6-a237-4a7e-8042-b99ef0ad3231
-version: 7
+version: 13
 vcShouldKeepItemLegacyProdMachine: false
 name: Redmine_Test
 description: Tests the Redmine Integrations command
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": -90
+          "y": -250
         }
       }
     note: false
@@ -64,7 +64,7 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 20
+          "y": -150
         }
       }
     note: false
@@ -89,7 +89,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "13"
     scriptarguments:
       priority_id:
         simple: Normal
@@ -107,7 +107,7 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 180
+          "y": -10
         }
       }
     note: false
@@ -132,8 +132,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
-      - "7"
+      - "14"
     scriptarguments:
       issue_id:
         simple: ${Redmine.Issue.id}
@@ -143,7 +142,7 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 340
+          "y": 290
         }
       }
     note: false
@@ -168,9 +167,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
-      - "9"
-      - "11"
+      - "12"
     scriptarguments:
       issue_id:
         simple: ${Redmine.Issue.id}
@@ -180,7 +177,7 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 830
+          "y": 1685
         }
       }
     note: false
@@ -192,10 +189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: fa4389b9-ee86-4184-8bc8-ffe0ab011f5a
+    taskid: b279bfc3-ceba-4c4f-80e6-9d102f1ac4f6
     type: regular
     task:
-      id: fa4389b9-ee86-4184-8bc8-ffe0ab011f5a
+      id: b279bfc3-ceba-4c4f-80e6-9d102f1ac4f6
       version: -1
       name: redmine-issue-update
       description: Update an existing issue
@@ -217,7 +214,7 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 520
+          "y": 600
         }
       }
     note: false
@@ -242,7 +239,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "15"
     scriptarguments:
       include:
         simple: watchers
@@ -254,7 +251,7 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 690
+          "y": 740
         }
       }
     note: false
@@ -279,7 +276,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "17"
     scriptarguments:
       issue_id:
         simple: ${Redmine.Issue.id}
@@ -290,8 +287,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1070,
-          "y": 520
+          "x": 640,
+          "y": 1015
         }
       }
     note: false
@@ -316,14 +313,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "10"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 640,
-          "y": 1010
+          "y": 2290
         }
       }
     note: false
@@ -335,27 +332,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 89fb5142-e1bf-4d77-808c-f5fcc0afee35
+    taskid: cfb79bde-6ff5-4443-8769-effb2a5c166f
     type: regular
     task:
-      id: 89fb5142-e1bf-4d77-808c-f5fcc0afee35
+      id: cfb79bde-6ff5-4443-8769-effb2a5c166f
       version: -1
-      name: Untitled Task
+      name: redine-custom-field-list
       description: Retrieve a list of all custom fields.
-      script: Redmine|||redmine-custom-field-list
+      script: '|||redmine-custom-field-list'
       type: regular
       iscommand: true
-      brand: Redmine
+      brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "21"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1010
+          "x": 640,
+          "y": 2440
         }
       }
     note: false
@@ -367,10 +364,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 0fb3214a-56bd-4b89-84ed-53321ec57a4b
+    taskid: 8f746c21-8fd3-43b6-8fc6-8e4e87685bd9
     type: regular
     task:
-      id: 0fb3214a-56bd-4b89-84ed-53321ec57a4b
+      id: 8f746c21-8fd3-43b6-8fc6-8e4e87685bd9
       version: -1
       name: redmine-issue-list
       description: Display a list of issues
@@ -380,17 +377,19 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "18"
     scriptarguments:
       limit:
+        simple: "1"
+      project_id:
         simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": 1010
+          "x": 640,
+          "y": 1415
         }
       }
     note: false
@@ -418,6 +417,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
     scriptarguments:
       all:
         simple: "yes"
@@ -427,7 +429,394 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 1190
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f1bfc818-aff7-45f7-8ac4-adc12e0ec13d
+    type: condition
+    task:
+      id: f1bfc818-aff7-45f7-8ac4-adc12e0ec13d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Redmine.Issue.id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Redmine.Issue.subject
+            iscontext: true
+          right:
+            value:
+              simple: New Issue for Test playbook
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Redmine.Issue.priority.id
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Redmine.Issue.tracker.id
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Redmine.Issue.project.id
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Redmine.Issue.status.id
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: fbb380de-3cc8-4525-835d-ec1ec045d596
+    type: condition
+    task:
+      id: fbb380de-3cc8-4525-835d-ec1ec045d596
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Redmine.Issue.id
+            iscontext: true
+          right:
+            value:
+              simple: Redmine.Issue.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 90abf1c7-89a1-4968-87d5-44d545ccb9c2
+    type: condition
+    task:
+      id: 90abf1c7-89a1-4968-87d5-44d545ccb9c2
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Redmine.Issue.subject
+            iscontext: true
+          right:
+            value:
+              simple: changed from test playbook
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 2d4a0152-8349-4d16-892d-f4e5e24644a9
+    type: condition
+    task:
+      id: 2d4a0152-8349-4d16-892d-f4e5e24644a9
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Redmine.Issue.watchers.id
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: cef3e141-2190-491b-8918-d252e21056a1
+    type: regular
+    task:
+      id: cef3e141-2190-491b-8918-d252e21056a1
+      version: -1
+      name: redmine-issue-show
+      description: Show an issue by id
+      script: '|||redmine-issue-show'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      include:
+        simple: watchers
+      issue_id:
+        simple: ${Redmine.Issue.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 921f71c1-100d-4f39-842a-17518397485f
+    type: condition
+    task:
+      id: 921f71c1-100d-4f39-842a-17518397485f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Redmine.Issue.id
+            iscontext: true
+          right:
+            value:
+              simple: Redmine.Issue.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: f9695789-6262-4f0c-8cee-4cf720bbfdfa
+    type: regular
+    task:
+      id: f9695789-6262-4f0c-8cee-4cf720bbfdfa
+      version: -1
+      name: redmine-issue-list
+      description: Display a list of issues
+      script: '|||redmine-issue-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      limit:
+        simple: "1"
+      project_id:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 8c3e4e87-5f5f-4c1c-8c1c-afd290c18568
+    type: condition
+    task:
+      id: 8c3e4e87-5f5f-4c1c-8c1c-afd290c18568
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Redmine.Issue.id
+            iscontext: true
+          right:
+            value:
+              simple: Redmine.Issue.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 4c245216-5636-415b-8066-1f652268e89f
+    type: title
+    task:
+      id: 4c245216-5636-415b-8066-1f652268e89f
+      version: -1
+      name: End of Playbook
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 2590
         }
       }
     note: false
@@ -442,10 +831,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1375,
-        "width": 1210,
-        "x": 240,
-        "y": -90
+        "height": 2905,
+        "width": 380,
+        "x": 640,
+        "y": -250
       }
     }
   }

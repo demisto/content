@@ -122,12 +122,14 @@ script:
         description: The ID of the new issue.
       - contextPath: Redmine.Issue.priority.id
         description: The ID of the priority of the issue.
-      - contextPath: Redmine.Issue.subject.id
-        description: The ID of the subject of the issue.
       - contextPath: Redmine.Issue.tracker.id
         description: The ID of the tracker of the issue.
       - contextPath: Redmine.Issue.project.id
         description: The ID of the project of the issue.
+      - contextPath: Redmine.Issue.status.id
+        description: The ID of the status of the issue.
+      - contextPath: Redmine.Issue.subject
+        description: The subject of the issue.
   - name: redmine-issue-list
     description: Display a list of issues
     arguments:
@@ -177,6 +179,8 @@ script:
     outputs:
       - contextPath: Redmine.Issue
         description: Display a list of issues
+      - contextPath: Redmine.Issue.id
+        description: Display a list of issues  
   - name: redmine-issue-update
     description: 
       Update an existing issue
@@ -285,8 +289,20 @@ script:
       description: fields to add to the response (possible values- children/attachments/relations/changesets/journals/watchers/allowed_statuses)
       isArray: true
     outputs:
-      - contextPath: Redmine.Issue
-        description: Show the issue with specified id
+      - contextPath: Redmine.Issue.id
+        description: The ID of the found issue.
+      - contextPath: Redmine.Issue.priority.id
+        description: The ID of the priority of the issue.
+      - contextPath: Redmine.Issue.tracker.id
+        description: The ID of the tracker of the issue.
+      - contextPath: Redmine.Issue.project.id
+        description: The ID of the project of the issue.
+      - contextPath: Redmine.Issue.status.id
+        description: The ID of the status of the issue.
+      - contextPath: Redmine.Issue.subject
+        description: The subject of the issue.
+      - contextPath: Redmine.Issue.watchers.id
+        description: The watchers of the issue. 
   - name: redmine-issue-delete
     description: Delete an issue by its ID
     arguments:

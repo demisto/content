@@ -40,10 +40,12 @@ ISSUE_PRIORITY_DICT = {
 
 
 ''' CLIENT CLASS '''
+
+
 class Client(BaseClient):
     def __init__(self, server_url, api_key, verify=True, proxy=False, headers=None, auth=None, project_id=None):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
-        
+
         self._post_put_header = {'Content-Type': 'application/json', 'X-Redmine-API-Key': api_key}
         self._upload_file_header = {'Content-Type': 'application/octet-stream', 'X-Redmine-API-Key': api_key}
         self._get_header = {'X-Redmine-API-Key': api_key}
@@ -185,7 +187,7 @@ def map_predefined_values_to_id(predefined_value, converter_dict, error_message)
     return None
 
 
-def convert_args_to_request_format(args): #put pop in line, remove exceptions
+def convert_args_to_request_format(args):  # put pop in line, remove exceptions
     tracker_id = args.pop('tracker_id', None)
     status_id = args.pop('status_id', None)
     priority_id = args.pop('priority_id', None)
