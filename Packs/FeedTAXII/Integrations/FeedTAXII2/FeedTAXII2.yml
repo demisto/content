@@ -72,6 +72,11 @@ configuration:
   name: credentials
   type: 9
   required: false
+- additionalinfo: The API Root to use (e.g. default, public). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead.
+  display: API Root to use
+  name: default_api_root
+  type: 0
+  required: false
 - additionalinfo: Indicators will be fetched from this collection. Run "taxii2-get-collections" command to get a valid value. If left empty, the instance will try to fetch from all the collections in the given discovery service.
   display: Collection Name To Fetch Indicators From
   name: collection_to_fetch
@@ -178,11 +183,6 @@ configuration:
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  type: 0
-  required: false
-- additionalinfo: The Default API Root to use (e.g. default, public). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead.
-  display: Default API Root to use
-  name: default_api_root
   type: 0
   required: false
 description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
