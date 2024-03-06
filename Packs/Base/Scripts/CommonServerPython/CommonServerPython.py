@@ -158,9 +158,6 @@ def fix_traceback_line_numbers(trace_str):
 
     return trace_str
 
-# todo: run only on: demisto.callingContext
-# demisto.callingContext.get('context', {}).get('IntegrationBrand', ''), demisto.callingContext.get('context', {}).get('ScriptName', '')
-from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
 
 OS_LINUX = False
@@ -11794,6 +11791,9 @@ def comma_separated_mapping_to_dict(raw_text):
         mapping_dict[key] = value
     demisto.debug("comma_separated_mapping_to_dict << Resolved mapping: {mapping_dict}".format(mapping_dict=mapping_dict))
     return mapping_dict
+
+
+from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
 
 ###########################################
