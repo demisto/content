@@ -235,7 +235,7 @@ class TestFetchEventsCommand:
             - Each event type API call to be called twice
             - That the endtimeusecs in the 2dn API call for audit logs will be the same as the time of the earliest event fetched
                 timestamp
-            - That the enddateusecs in the 2dn API call for alerts will be the same as the time of the earliest event fetched 
+            - That the enddateusecs in the 2dn API call for alerts will be the same as the time of the earliest event fetched
                 timestamp
             - To have 6 events returned
             - Audit logs next start time for the next fetch to be set to the latest pulled event timestamp plus 1
