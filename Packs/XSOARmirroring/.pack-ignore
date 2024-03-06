@@ -1,9 +1,6 @@
 [file:classifier-mapper-incoming-XSOAR_Mirroring.json]
 ignore=BA101
 
-[file:XSOARmirroring.py]
-ignore=BA125
-
 [known_words]
 playbookId
 UTC
