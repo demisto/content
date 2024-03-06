@@ -230,7 +230,7 @@
                 "alertDocument": {
                     "alertName": "TimeService",
                     "alertDescription": "Node 3812890615711891 with ip 1.1.1.1 cannot sync time.",
-                    "alertCause": "The difference between the node's time and the server 172.16.11.20's time is 35 seconds. Resyncing failed 3 times.A new NTP server might be required.",
+                    "alertCause": "The difference between the node's time and the server 1.1.1.1's time is 35 seconds. Resyncing failed 3 times.A new NTP server might be required.",
                     "alertHelpText": "Verify NTP server."
                 },
                 "vaults": null,
@@ -245,7 +245,7 @@
                     },
                     {
                         "key": "reason_string",
-                        "value": "The difference between the node's time and the server 172.16.11.20's time is 35 seconds. Resyncing failed 3 times.A new NTP server might be required."
+                        "value": "The difference between the node's time and the server 1.1.1.1's time is 35 seconds. Resyncing failed 3 times.A new NTP server might be required."
                     },
                     {
                         "key": "cluster_name",
