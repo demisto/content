@@ -565,7 +565,7 @@ def create_function_command(args: dict[str, str], aws_client) -> CommandResults:
 
     res = aws_client.create_function(**kwargs)
 
-    readable_output = tableToMarkdown(t=res, headers=output_headers, headerTransform=pascalToSpace)
+    readable_output = tableToMarkdown(name='Create Function', t=res, headers=output_headers, headerTransform=pascalToSpace)
     outputs = {key: res.get(key) for key in output_headers}
 
     return CommandResults(
@@ -575,7 +575,7 @@ def create_function_command(args: dict[str, str], aws_client) -> CommandResults:
         readable_output=readable_output
     )
 
-def publicsh_layer_version_command(args: dict[str,str], aws_client) -> CommandResults:
+def publish_layer_version_command(args: dict[str,str], aws_client) -> CommandResults:
     """
     Creates an Lambda layer from a ZIP archive.
 
@@ -587,6 +587,25 @@ def publicsh_layer_version_command(args: dict[str,str], aws_client) -> CommandRe
     Returns:
         CommandResults: An object containing the result of the deletion operation as a readable output in Markdown format.
     """
+    output_headers = ['LayerVersionArn', 'LayerArn', 'Description', 'CreatedDate', 'Version', 'CompatibleRuntimes']
+
+    kwargs = {
+        'LayerName': args.get('layer-name'),
+        'Description': args.get('description'),
+        'Content': json.loads(args.get('description')),
+        'CompatibleRuntimes': argToList(args.get('compatible-runtimes'))
+    }
+
+    res = aws_client.publish_layer_version(**kwargs)
+    readable_output = tableToMarkdown(name='Publish Layer Version', t=res, headers=output_headers, headerTransform=pascalToSpace)
+    outputs = {key: res.get(key) for key in output_headers}
+
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix='AWS.Lambda.Functions',
+        outputs_key_field='FunctionArn',
+        readable_output=readable_output
+    )
 
 """TEST FUNCTION"""
 
@@ -649,6 +668,8 @@ def main():
                 return_results(delete_function_command(args, aws_client))
             case 'aws-lambda-create-function':
                 return_results(create_function_command(args, aws_client))
+            case 'aws-lambda-publish-layer-version':
+                return_results(publish_layer_version_command(args, aws_client))
             case _:
                 raise NotImplementedError(f"Command {command} is not implemented")
 
