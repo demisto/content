@@ -1446,3 +1446,25 @@ def test_reached_limit(limit, element_count, return_value):
     """
     from TAXII2ApiModule import reached_limit
     assert reached_limit(limit, element_count) == return_value
+
+
+def test_increase_count():
+    """
+    Given:
+        - A counters dict.
+    When:
+        - Increasing various counters.
+    Then:
+        - Assert that the counters reflect the expected values.
+    """
+    mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
+    objects_counter: Dict[str, int] = {}
+
+    mock_client.increase_count(objects_counter, 'counter_a')
+    assert objects_counter == {'counter_a': 1}
+
+    mock_client.increase_count(objects_counter, 'counter_a')
+    assert objects_counter == {'counter_a': 2}
+
+    mock_client.increase_count(objects_counter, 'counter_b')
+    assert objects_counter == {'counter_a': 2, 'counter_b': 1}
