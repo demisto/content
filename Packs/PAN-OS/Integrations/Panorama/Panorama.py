@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from collections import defaultdict
 from dataclasses import dataclass, fields
 from types import SimpleNamespace
@@ -211,6 +213,12 @@ CHARACTERISTICS_LIST = ('virus-ident',
                         'data-ident',
                         'file-forward',
                         'is-saas')
+
+RULE_TYPES_MAP = {
+    "Security Rule": "security",
+    "NAT Rule": "nat",
+    "PBF Rule": "pbf"
+}
 
 
 class PAN_OS_Not_Found(Exception):
@@ -686,9 +694,9 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
             raise Exception('Please provide the pre_post argument when configuring '
                             'a security rule in Panorama instance.')
         else:
-            params['xpath'] = f"{XPATH_SECURITY_RULES}{PRE_POST}/security/rules/entry[@name='{rulename}']"
+            params['xpath'] = f"{XPATH_RULEBASE}{PRE_POST}/security/rules/entry[@name='{rulename}']"
     else:
-        params['xpath'] = f"{XPATH_SECURITY_RULES}[@name='{rulename}']"
+        params['xpath'] = f"{XPATH_RULEBASE}[@name='{rulename}']"
 
     return params
 
@@ -1540,6 +1548,8 @@ def prettify_addresses_arr(addresses_arr: list) -> List:
             pretty_address['IP_Netmask'] = address['ip-netmask']
         if 'ip-range' in address:
             pretty_address['IP_Range'] = address['ip-range']
+        if 'ip-wildcard' in address:
+            pretty_address['IP_Wildcard'] = address['ip-wildcard']
         if 'fqdn' in address:
             pretty_address['FQDN'] = address['fqdn']
         if 'tag' in address and address['tag'] is not None and 'member' in address['tag']:
@@ -1586,7 +1596,8 @@ def panorama_list_addresses_command(args: dict):
         'Contents': addresses_arr,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Addresses:', addresses_output,
-                                         ['Name', 'IP_Netmask', 'IP_Range', 'FQDN', 'Tags'], removeNull=True),
+                                         ['Name', 'IP_Netmask', 'IP_Range', 'IP_Wildcard', 'FQDN', 'Tags'],
+                                         removeNull=True),
         'EntryContext': {
             "Panorama.Addresses(val.Name == obj.Name)": addresses_output
         }
@@ -3863,6 +3874,10 @@ def panorama_create_rule_command(args: dict):
                                           log_forwarding=log_forwarding, tags=tags, category=categories,
                                           from_=source_zone, to=destination_zone, profile_setting=profile_setting,
                                           where=where, dst=dst)
+
+    if args.get('audit_comment'):
+        params['audit-comment'] = args.get('audit_comment')
+
     result = http_request(
         URL,
         'POST',
@@ -4003,7 +4018,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
 
 
 def build_audit_comment_params(
-    name: str, audit_comment: str, pre_post: str, policy_type='security'
+    name: str, pre_post: str, audit_comment: str = '', policy_type='security', xml_type='set'
 ) -> dict:
     """
     Builds up the params needed to update the audit comment of a policy rule.
@@ -4011,9 +4026,20 @@ def build_audit_comment_params(
     _xpath = f"{XPATH_RULEBASE}{pre_post}/{policy_type}/rules/entry[@name='{name}']"
     return {
         'type': 'op',
-        'cmd': f"<set><audit-comment><xpath>{_xpath}</xpath><comment>{audit_comment}</comment></audit-comment></set>",
+        'cmd': build_audit_comment_cmd(_xpath, audit_comment, xml_type),
         'key': API_KEY
     }
+
+
+def build_audit_comment_cmd(xpath, audit_comment, xml_type='set') -> str:
+    """
+    Builds up the needed `cmd` param to get or update the audit comment of a policy rule.
+    """
+    if xml_type == 'set':
+        return f"<set><audit-comment><xpath>{xpath}</xpath><comment>{audit_comment}</comment></audit-comment></set>"
+    elif xml_type == 'show':
+        return f"<show><config><list><audit-comments><xpath>{xpath}</xpath></audit-comments></list></config></show>"
+    return ""
 
 
 @logger
@@ -4044,7 +4070,7 @@ def panorama_edit_rule_command(args: dict):
             new_audit_comment = args.get('element_value') or ''
             # to update audit-comment of a security rule, it is required to build a 'cmd' parameter
             params = build_audit_comment_params(
-                rulename, new_audit_comment, pre_post='rulebase' if VSYS else pre_post
+                rulename, pre_post='rulebase' if VSYS else pre_post, audit_comment=new_audit_comment
             )
         else:
             params = {
@@ -11819,7 +11845,7 @@ def get_object(
     )
 
 
-def get_device_state(topology: Topology, target: str) -> dict:
+def get_device_state(topology: Topology, target: str, filename: str = None) -> dict:
     """
     Get the device state from the provided device target (serial number). Note that this will attempt to connect directly to the
     firewall as there is no way to get the device state for a firewall via Panorama.
@@ -11827,8 +11853,13 @@ def get_device_state(topology: Topology, target: str) -> dict:
     :param topology: `Topology` instance !no-auto-argument
     :param target: String to filter to only show specific hostnames or serial numbers.
     """
+    if not filename:
+        file_name = f"{target}_device_state.tar.gz"
+    else:
+        file_name = f"{target}_{filename}_device_state.tar.gz"
+
     return fileResult(
-        filename=f"{target}_device_state.tar.gz",
+        filename=file_name,
         data=FirewallCommand.get_device_state(topology, target),
         file_type=EntryType.ENTRY_INFO_FILE
     )
@@ -11936,9 +11967,14 @@ def pan_os_get_running_config(args: dict):
 
     if args.get("target"):
         params["target"] = args.get("target")
-
+    file_name_arg = args.get("filename")
+    target = args.get("target")
+    if file_name_arg != 'running_config' and file_name_arg and target:
+        file_name = target + '_' + file_name_arg + '_running_config'
+    else:
+        file_name = file_name_arg
     result = http_request(URL, 'POST', params=params, is_xml=True)
-    return fileResult("running_config", result)
+    return fileResult(file_name, result)
 
 
 def pan_os_get_merged_config(args: dict):
@@ -12315,6 +12351,9 @@ def create_nat_rule(args):
         'key': API_KEY
     }
 
+    if args.get('audit_comment'):
+        params['audit-comment'] = args.get('audit_comment')
+
     return http_request(URL, 'POST', params=params)
 
 
@@ -12358,22 +12397,28 @@ def pan_os_edit_nat_rule(
 ):
     xpath = build_nat_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post, element=element_to_change)
 
-    params = {
-        'xpath': xpath,
-        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-            behavior=behavior,
-            object_name=object_name,
-            element_value=element_value,
-            is_listable=is_listable,
-            xpath=xpath,
-            should_contain_entries=True,
-            is_commit_required=False
+    if element_to_change == 'audit-comment':
+        # to update audit-comment of a nat rule, it is required to build a 'cmd' parameter
+        params = build_audit_comment_params(
+            rule_name, pre_post='rulebase' if VSYS else pre_post, audit_comment=element_value, policy_type='nat'
         )
-        ),
-        'action': 'edit',
-        'type': 'config',
-        'key': API_KEY
-    }
+    else:
+        params = {
+            'xpath': xpath,
+            'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                should_contain_entries=True,
+                is_commit_required=False
+            )
+            ),
+            'action': 'edit',
+            'type': 'config',
+            'key': API_KEY
+        }
 
     return http_request(URL, 'POST', params=params)
 
@@ -12439,7 +12484,8 @@ def pan_os_edit_nat_rule_command(args):
             'dynamic-destination-translation/distribution', 'distribution', False
         ),
         'destination_translation_port': ('destination-translation/translated-port', 'translated-port', False),
-        'destination_translation_ip': ('destination-translation/translated-address', 'translated-address', False)
+        'destination_translation_ip': ('destination-translation/translated-address', 'translated-address', False),
+        'audit-comment': ('audit-comment', '', False)
     }
 
     element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
@@ -13026,6 +13072,9 @@ def pan_os_create_pbf_rule(args):
         'key': API_KEY
     }
 
+    if args.get('audit_comment'):
+        params['audit-comment'] = args.get('audit_comment')
+
     return http_request(URL, 'POST', params=params)
 
 
@@ -13046,23 +13095,29 @@ def pan_os_edit_pbf_rule(
         name=rule_name, pre_post='rulebase' if VSYS else pre_post, element_to_change=element_to_change
     )
 
-    params = {
-        'xpath': xpath,
-        'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-            behavior=behavior,
-            object_name=object_name,
-            element_value=element_value,
-            is_listable=is_listable,
-            xpath=xpath,
-            is_entry=True if object_name == 'nexthop-address-list' else False,
-            is_empty_tag=True if object_name == 'action' else False
-        ),
-            contains_xml_chars=True
-        ),
-        'action': 'edit',
-        'type': 'config',
-        'key': API_KEY
-    }
+    if element_to_change == 'audit-comment':
+        # to update audit-comment of a pbf rule, it is required to build a 'cmd' parameter
+        params = build_audit_comment_params(
+            rule_name, pre_post='rulebase' if VSYS else pre_post, audit_comment=element_value, policy_type='pbf'
+        )
+    else:
+        params = {
+            'xpath': xpath,
+            'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                is_entry=True if object_name == 'nexthop-address-list' else False,
+                is_empty_tag=True if object_name == 'action' else False
+            ),
+                contains_xml_chars=True
+            ),
+            'action': 'edit',
+            'type': 'config',
+            'key': API_KEY
+        }
 
     return http_request(URL, 'POST', params=params)
 
@@ -13098,7 +13153,8 @@ def pan_os_edit_pbf_rule_command(args):
         'description': ('description', 'description', False),
         'negate_source': ('negate-source', 'negate-source', False),
         'negate_destination': ('negate-destination', 'negate-destination', False),
-        'disabled': ('disabled', 'disabled', False)
+        'disabled': ('disabled', 'disabled', False),
+        'audit-comment': ('audit-comment', '', False)
     }
 
     if DEVICE_GROUP and not pre_post:  # panorama instances must have the pre_post argument!
@@ -13645,6 +13701,49 @@ def pan_os_delete_tag_command(args: dict) -> CommandResults:
     return CommandResults(
         raw_response=raw_response,
         readable_output=f'The tag with name "{tag_name}" was deleted successfully.',
+    )
+
+
+def pan_os_get_audit_comment_command(args: dict) -> CommandResults:
+    """
+    executes the command pan-os-get-audit-comment to get the audit comment for a given policy rule.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The command results with raw response, outputs and readable outputs.
+    """
+    if DEVICE_GROUP and not PRE_POST:
+        raise DemistoException(f'The pre_post argument must be provided for panorama instance')
+
+    rule_name = args.get("rule_name") or ""
+    rule_type = args.get("rule_type") or ""
+    params = build_audit_comment_params(
+        name=rule_name,
+        pre_post='rulebase' if VSYS else f'{PRE_POST.lower()}-rulebase',
+        policy_type=RULE_TYPES_MAP[rule_type],
+        xml_type='show',
+    )
+
+    raw_response = http_request(URL, 'GET', params=params)
+    comment = (raw_response["response"]["result"] or {}).get("entry", {}).get("comment", "") or ""
+    outputs = {
+        "rule_name": rule_name,
+        "rule_type": rule_type,
+        "comment": comment
+    }
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            f'Audit Comment for Rule: {rule_name}',
+            outputs,
+            headerTransform=string_to_table_header,
+        ),
+        outputs_prefix='Panorama.AuditComment',
+        outputs_key_field=['rule_name', 'rule_type']
     )
 
 
@@ -14793,6 +14892,8 @@ def main():  # pragma: no cover
             return_results(list_device_groups_names())
         elif command == 'pan-os-export-tech-support-file':
             return_results(export_tsf_command(args))
+        elif command == 'pan-os-get-audit-comment':
+            return_results(pan_os_get_audit_comment_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
