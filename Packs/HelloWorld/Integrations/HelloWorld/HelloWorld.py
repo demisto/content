@@ -912,17 +912,6 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
-    def http_error(status):
-        match status:
-            case 400:
-                return "Bad request"
-            case 404:
-                return "Not found"
-            case 418:
-                return "I'm a teapot"
-            case _:
-                return "Something's wrong with the internet"
-
     api_key = params.get('credentials', {}).get('password')
 
     validate_api_key(api_key)
