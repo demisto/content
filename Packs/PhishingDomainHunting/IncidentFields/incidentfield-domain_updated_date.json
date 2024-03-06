@@ -2,7 +2,7 @@
     "id": "incident_phishingdomainhuntingdomainupdateddate",
     "version": -1,
     "modified": "2023-12-04T15:12:42.59554094Z",
-    "name": "Domain Updated Date",
+    "name": "Phishing Domain Hunting Domain Updated Date",
     "ownerOnly": false,
     "cliName": "phishingdomainhuntingdomainupdateddate",
     "type": "shortText",

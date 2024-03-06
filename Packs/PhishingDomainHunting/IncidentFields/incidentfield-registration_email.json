@@ -2,7 +2,7 @@
     "id": "incident_phishingdomainhuntingregistrationemail",
     "version": -1,
     "modified": "2023-12-04T15:12:42.699253313Z",
-    "name": "Registration Email",
+    "name": "Phishing Domain Hunting Registration Email",
     "ownerOnly": false,
     "cliName": "phishingdomainhuntingregistrationemail",
     "type": "shortText",

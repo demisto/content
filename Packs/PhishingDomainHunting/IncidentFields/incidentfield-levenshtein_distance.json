@@ -2,7 +2,7 @@
     "id": "incident_phishingdomainhuntinglevenshteindistance",
     "version": -1,
     "modified": "2023-12-04T15:12:42.669219628Z",
-    "name": "Levenshtein distance",
+    "name": "Phishing Domain Hunting Levenshtein distance",
     "ownerOnly": false,
     "cliName": "phishingdomainhuntinglevenshteindistance",
     "type": "number",

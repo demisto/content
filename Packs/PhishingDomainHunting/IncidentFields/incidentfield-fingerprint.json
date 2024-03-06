@@ -2,7 +2,7 @@
     "id": "incident_phishingdomainhuntingfingerprint",
     "version": -1,
     "modified": "2023-12-04T15:12:42.625341752Z",
-    "name": "Fingerprint",
+    "name": "Phishing Domain Hunting Fingerprint",
     "ownerOnly": false,
     "cliName": "phishingdomainhuntingfingerprint",
     "type": "shortText",

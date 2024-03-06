@@ -2,7 +2,7 @@
     "id": "incident_phishingdomainhuntinguserasset",
     "version": -1,
     "modified": "2023-12-04T15:12:42.728383492Z",
-    "name": "User asset",
+    "name": "Phishing Domain Hunting User asset",
     "ownerOnly": false,
     "cliName": "phishingdomainhuntinguserasset",
     "type": "shortText",

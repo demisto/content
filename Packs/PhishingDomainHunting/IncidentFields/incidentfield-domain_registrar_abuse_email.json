@@ -2,7 +2,7 @@
     "id": "incident_phishingdomainhuntingdomainregistrarabuseemail",
     "version": -1,
     "modified": "2023-12-04T15:12:42.55578461Z",
-    "name": "Domain Registrar Abuse Email",
+    "name": "Phishing Domain Hunting Domain Registrar Abuse Email",
     "ownerOnly": false,
     "cliName": "phishingdomainhuntingdomainregistrarabuseemail",
     "type": "shortText",
