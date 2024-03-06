@@ -3,6 +3,7 @@
     "action": "collectFile",
     "status": "succeeded",
     "account": "API key",
+    "password": "p0isy16f",
     "file_path": "/home/ec2-user/test_folder/test_file.txt",
     "file_sha1": null,
     "file_size": null,
