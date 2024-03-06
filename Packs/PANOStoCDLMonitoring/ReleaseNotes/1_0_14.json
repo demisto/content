@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "In this pack, the name of the *Cortex Data Lake* playbook was changed to *Strata Logging Service*. If you use this playbook as a sub-playbook in a custom playbook, you may need to update the sub-playbook name in the custom playbook."
+}

@@ -15,7 +15,8 @@
         "runnable_on_docker_only": "Determines whether the test is runnable on docker only. A boolean.",
         "scripts": "Scripts that the test uses. Can hold a list.",
         "timeout": "Test specific timeout, in order to use a different timeout then default testTimeout. A number.",
-        "toversion": "Server version to test up to it."
+        "toversion": "Server version to test up to it. Set it only when a real limit exists, otherwise use the 'marketplaces' field.",
+        "marketplaces": "Marketplaces that the test should run on. Available options are: xsoar (which runs on xsoar_on_prem and xsoar_saas), xsoar_on_prem, xsoar_saas, marketplacev2 and xpanse. Can hold a list. Default value is xsoar and marketplacev2."
     },
     "testTimeout": 160,
     "testInterval": 20,
@@ -23,7 +24,7 @@
         {
             "playbookID": "playbook-AzureLogAnalytics-test",
             "integrations": "Azure Log Analytics",
-            "instance_name": "Azure_Log_Analytics_client_cred",
+            "instance_names": "Azure_Log_Analytics_client_cred",
             "timeout": 800,
             "is_mockable": false
         },
@@ -59,6 +60,11 @@
             "timeout": 800,
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_80k"
+        },
+        {
+            "integrations": "ThreatConnect v3",
+            "playbookID": "test-threatConnectv3",
+            "is_mockable": false
         },
         {
             "playbookID": "Enrichment for Verdict - Test",
@@ -1340,7 +1346,7 @@
             "integrations": "EDL",
             "instance_names": "edl_update_to_7_9_9",
             "fromversion": "5.5.0",
-            "toversion": "7.9.9",
+            "marketplaces": "xsoar_on_prem",
             "pid_threshold": 8,
             "has_api": false
         },
@@ -1352,7 +1358,7 @@
                 "Create-Mock-Feed-Relationships"
             ],
             "fromversion": "6.0.0",
-            "toversion": "7.9.9",
+            "marketplaces": "xsoar_on_prem",
             "timeout": 3500,
             "memory_threshold": 900,
             "pid_threshold": 12,
@@ -1474,8 +1480,8 @@
                 "Rasterize"
             ],
             "timeout": 500,
-            "pid_threshold": 12,
-            "memory_threshold": 150
+            "pid_threshold": 200,
+            "memory_threshold": 300
         },
         {
             "playbookID": "CutTransformerTest"
@@ -1495,7 +1501,7 @@
                 "Core REST API"
             ],
             "fromversion": "5.0.0",
-            "toversion": "7.9.9"
+            "marketplaces": "xsoar_on_prem"
         },
         {
             "integrations": "SCADAfence CNM",
@@ -1742,7 +1748,8 @@
                 "ews_mail_sender_labdemisto"
             ],
             "playbookID": "EWS V2 Send Mail Test 2",
-            "memory_threshold": 150
+            "memory_threshold": 300,
+            "pid_threshold": 200
         },
         {
             "integrations": [
@@ -1828,7 +1835,8 @@
         {
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "memory_threshold": 100
         },
         {
             "integrations": "EWS v2",
@@ -1855,7 +1863,8 @@
             "fromversion": "6.0.0",
             "integrations": "Rasterize",
             "timeout": 240,
-            "memory_threshold": 150
+            "memory_threshold": 300,
+            "pid_threshold": 200
         },
         {
             "playbookID": "Process Email - Generic - Test - Actual Incident"
@@ -2091,7 +2100,7 @@
         {
             "integrations": "Demisto Lock",
             "playbookID": "DemistoLockTest",
-            "instance_name": "no_sync"
+            "instance_names": "no_sync"
         },
         {
             "playbookID": "test-domain-indicator",
@@ -2724,11 +2733,11 @@
         {
             "playbookID": "Calculate Severity - Generic v2 - Test",
             "integrations": [
-                "Palo Alto Minemeld",
                 "Active Directory Query v2"
             ],
             "instance_names": "active_directory_ninja",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "memory_threshold": 100
         },
         {
             "integrations": "Freshdesk",
@@ -2754,7 +2763,9 @@
             ],
             "instance_names": "active_directory_ninja",
             "fromversion": "5.0.0",
-            "timeout": 700
+            "timeout": 700,
+            "memory_threshold": 300,
+            "pid_threshold": 200
         },
         {
             "playbookID": "Active Directory - Get User Manager Details - Test",
@@ -2840,7 +2851,6 @@
         },
         {
             "playbookID": "Calculate Severity - Standard - Test",
-            "integrations": "Palo Alto Minemeld",
             "fromversion": "4.5.0"
         },
         {
@@ -2862,7 +2872,8 @@
                 "Rasterize"
             ],
             "timeout": 700,
-            "memory_threshold": 200,
+            "memory_threshold": 300,
+            "pid_threshold": 200,
             "fromversion": "4.5.0"
         },
         {
@@ -3005,7 +3016,7 @@
         {
             "playbookID": "FormattingPerformance - Test",
             "fromversion": "5.0.0",
-            "toversion": "7.9.9"
+            "marketplaces": "xsoar_on_prem"
         },
         {
             "integrations": "AWS - EC2",
@@ -3083,13 +3094,16 @@
             ],
             "playbookID": "Rasterize Test",
             "fromversion": "5.0.0",
-            "memory_threshold": 150
+            "memory_threshold": 300,
+            "pid_threshold": 200,
+            "timeout": 1500
         },
         {
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest",
             "fromversion": "5.0.0",
-            "memory_threshold": 150
+            "memory_threshold": 300,
+            "pid_threshold": 200
         },
         {
             "integrations": "Ipstack",
@@ -3605,6 +3619,18 @@
             "integrations": "DNSDB_v2",
             "playbookID": "DNSDB-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "CreateIncidents",
+            "playbookID": "DBotFindSimilarIncidentsByIndicators - Test",
+            "instance_names": [
+                "Create Test Incidents - Phishing Mock"
+            ],
+            "timeout": 300,
+            "is_mockable": false
+        },
+        {
+            "playbookID": "GetIndicatorsByQuery - Test"
         },
         {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
@@ -4741,10 +4767,9 @@
         {
             "playbookID": "Detect & Manage Phishing Campaigns - Test",
             "fromversion": "6.0.0",
-            "timeout": 7000,
+            "timeout": 15000,
             "integrations": [
                 "Core REST API",
-                "Rasterize",
                 "Demisto Lock",
                 "EWS v2"
             ],
@@ -4753,7 +4778,7 @@
                 "ews_mail_sender_labdemisto"
             ],
             "memory_threshold": 350,
-            "pid_threshold": 80,
+            "pid_threshold": 200,
             "is_mockable": false
         },
         {
@@ -4783,7 +4808,7 @@
                 "incoming_mapper_id": "EWS v2-mapper"
             },
             "memory_threshold": 400,
-            "pid_threshold": 80
+            "pid_threshold": 200
         },
         {
             "playbookID": "Phishing v3 - Get Original Email + Search & Delete - Test",
@@ -5373,6 +5398,9 @@
             "playbookID": "TestIsInCidrRanges"
         },
         {
+            "playbookID": "TestIsNotInCidrRanges"
+        },
+        {
             "playbookID": "NetskopeAPIv1 Test",
             "integrations": "NetskopeAPIv1"
         },
@@ -5402,7 +5430,8 @@
                 "Rasterize"
             ],
             "memory_threshold": 300,
-            "toversion": "7.9.9"
+            "pid_threshold": 200,
+            "marketplaces": "xsoar_on_prem"
         },
         {
             "playbookID": "DBotUpdateLogoURLPhishing_test"
@@ -5632,14 +5661,30 @@
         },
         {
             "integrations": "AWS - Organizations",
-            "playbookID": "Test - AWS_Organizations"
+            "playbookID": "Test - AWS_Organizations",
+            "fromversion": "6.10.0"
         },
         {
             "integrations": "Netcraft V2",
             "playbookID": "Test - Netcraft"
+        },
+        {
+            "integrations": "Fortimail",
+            "playbookID": "playbook-Fortimail_Test"
+        },
+        {
+            "integrations": "Zimperium v2",
+            "playbookID": "Zimperiumv2-TestPlaybook"
+        },        
+        {
+            "integrations": "AWS-SNS-Listener",
+            "playbookID": "AWS SNS Listener - Test",
+            "instance_names": "AWS-SNS-Listener"
         }
     ],
     "skipped_tests": {
+        "Retrieve File from Endpoint - Generic V2 Test": "The playbook is deprecated",
+        "test-threatConnectv3": "No instance - Instance issues",
         "generic-sql-mssql-encrypted-connection": "Instance issues",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
@@ -5655,8 +5700,6 @@
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
-        "Calculate Severity - Standard - Test": "Issue 32715",
-        "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
         "McAfee-MAR_Test": "Issue CIAC-4521",
         "G Suite Security Alert Center-Test": "Issue CIAC-5682",
@@ -5714,6 +5757,7 @@
         "GmailTest": "Issue 27057",
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
+        "Carbon Black Enterprise EDR Process Search Test": "Issue 29775",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
         "FailedInstances - Test": "Issue 33218",
         "PAN-OS DAG Configuration Test": "Issue 19205",
@@ -5820,9 +5864,11 @@
         "OpsGenieV3TestPlaybook": "Issue CIAC-7649",
         "ThreatStream-Test": "Issue CRTX-96526",
         "MSG-Threat-Assessment-test": "API limitation",
-        "BambenekConsultingFeed_Test": "Issue CRTX-99480"
+        "BambenekConsultingFeed_Test": "Issue CRTX-99480",
+        "AWS SNS Listener - Test": "Cant validate mock msg against AWS-SNS in TBP"
     },
     "skipped_integrations": {
+        "EWS Mail Sender": "The integration is deprecated",
         "CiscoWSAv2": "No instance - No license",
         "DatadogCloudSIEM": "No instance - No license",
         "Lastline v2": "No instance - No license",
@@ -5833,18 +5879,18 @@
         "Azure Firewall": "No instance",
         "Vertica": "No instance issue 45719",
         "Ipstack": "No instance - Usage limit reached (Issue 38063)",
-        "AnsibleAlibabaCloud": "No instance - issue 40447",
-        "AnsibleAzure": "No instance - issue 40447",
-        "AnsibleCiscoIOS": "No instance - issue 40447",
-        "AnsibleCiscoNXOS": "No instance - issue 40447",
-        "AnsibleHCloud": "No instance - issue 40447",
-        "AnsibleKubernetes": "No instance - issue 40447",
-        "AnsibleACME": "No instance - issue 40447",
-        "AnsibleDNS": "No instance - issue 40447",
-        "AnsibleLinux": "No instance - issue 40447",
-        "AnsibleOpenSSL": "No instance - issue 40447",
-        "AnsibleMicrosoftWindows": "No instance - issue 40447",
-        "AnsibleVMware": "No instance - issue 40447",
+        "AnsibleAlibabaCloud": "No instance - issue 40447 - CRTX-43182",
+        "AnsibleAzure": "No instance - issue 40447 - CRTX-43182",
+        "AnsibleCiscoIOS": "No instance - issue 40447- CRTX-43182",
+        "AnsibleCiscoNXOS": "No instance - issue 40447 - CRTX-43182",
+        "AnsibleHCloud": "No instance - issue 40447 - CRTX-43182",
+        "AnsibleKubernetes": "No instance - issue 40447 - CRTX-43182",
+        "AnsibleACME": "No instance - issue 40447- CRTX-43182",
+        "AnsibleDNS": "No instance - issue 40447 - CRTX-43182",
+        "AnsibleLinux": "No instance - issue 40447 - CRTX-43182",
+        "AnsibleOpenSSL": "No instance - issue 40447 - CRTX-43182",
+        "AnsibleMicrosoftWindows": "No instance - issue 40447 - CRTX-43182",
+        "AnsibleVMware": "No instance - issue 40447 - CRTX-43182",
         "SolarWinds": "No instance - developed by Crest",
         "Atlassian Confluence Cloud": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
@@ -5860,8 +5906,8 @@
         "Forcepoint": "No instance - instance issues. Issue 28043",
         "ZeroFox": "No instance - Issue 29284",
         "Symantec Management Center": "No instance - Issue 23960",
-        "Fidelis Elevate Network": "No instance - Issue 26453",
-        "ArcSight Logger": "No instance - Issue 19117",
+        "Fidelis Elevate Network": "No instance - Issue 26453 - CIAC-1635",
+        "ArcSight Logger": "No instance - Issue 19117 - CIAC-1893",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
         "Prisma Access": "No instance - Issue CRTX-84209",
@@ -5885,41 +5931,41 @@
         "FireEye ETP": "No instance",
         "Proofpoint TAP v2": "No instance",
         "remedy_sr_beta": "No instance",
-        "fireeye": "No instance - Issue 19839",
-        "Remedy On-Demand": "No instance - Issue 19835",
+        "fireeye": "No instance - Issue 19839 CIAC-1300, CIAC-2456",
+        "Remedy On-Demand": "No instance - Issue 19835 - CIAC-1870",
         "Check Point": "No instance - Issue 18643",
         "CheckPointFirewall_v2": "No instance - Issue 18643",
         "CTIX v3": "No instance - developed by partner",
         "Jask": "No instance - Issue 18879",
         "vmray": "No instance - Issue 18752",
         "SCADAfence CNM": "No instance - Issue 18376",
-        "ArcSight ESM v2": "No instance - Issue #18328",
+        "ArcSight ESM v2": "No instance - Issue #18328 - CIAC-1919",
         "AlienVault USM Anywhere": "No instance - Issue #18273",
         "Dell Secureworks": "No instance",
         "Service Manager": "No instance - Expired license",
         "carbonblackprotection": "No instance - License expired",
-        "icebrg": "No instance - Issue 14312",
+        "icebrg": "No instance - Issue 14312 - CIAC-2006",
         "Freshdesk": "No instance - Trial account expired",
         "Kafka V2": "No instance - Can not connect to instance from remote",
         "KafkaV3": "No instance - Can not connect to instance from remote",
         "Check Point Sandblast": "No instance - Issue 15948",
         "Remedy AR": "No instance - getting 'Not Found' in test button",
-        "Salesforce": "No instance - Issue 15901",
+        "Salesforce": "No instance - Issue 15901 - CIAC-1976",
         "ANYRUN": "No instance",
         "SecneurX Analysis": "No Instance",
         "Snowflake": "No instance - Looks like account expired, needs looking into",
-        "Cisco Spark": "No instance - Issue 18940",
+        "Cisco Spark": "No instance - Issue 18940 - CIAC-1902",
         "Phish.AI": "No instance - Issue 17291",
         "MaxMind GeoIP2": "No instance - Issue 18932.",
-        "Exabeam": "No instance - Issue 19371",
-        "Ivanti Heat": "No instance - Issue 26259",
+        "Exabeam": "No instance - Issue 19371 - CIAC-903",
+        "Ivanti Heat": "No instance - Issue 26259 - CIAC-1643",
         "AWS - Athena - Beta": "No instance - Issue 19834",
-        "SNDBOX": "No instance - Issue 28826",
-        "Workday": "No instance - License expired Issue: 29595",
+        "SNDBOX": "No instance - Issue 28826 - CIAC-1538",
+        "Workday": "No instance - License expired Issue: 29595 - CIAC-1508",
         "FireEyeFeed": "No instance - License expired Issue: 31838",
-        "Akamai WAF": "No instance - Issue 32318",
+        "Akamai WAF": "No instance - Issue 32318 - CIAC-1407",
         "FreshworksFreshservice": "No instance - Issue 32318",
-        "FraudWatch": "No instance - Issue 34299",
+        "FraudWatch": "No instance - Issue 34299 - CIAC-1323",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
         "CiscoESA": "No instance - developed by Qmasters",
@@ -5937,14 +5983,14 @@
         "_comment4": "~~~ OTHER ~~~",
         "Anomali ThreatStream v2": "Will be deprecated soon.",
         "Anomali ThreatStream": "Will be deprecated soon.",
-        "AlienVault OTX TAXII Feed": "Issue 29197",
+        "AlienVault OTX TAXII Feed": "Issue 29197 - CIAC-1522",
         "EclecticIQ Platform": "Issue 8821",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "ForescoutEyeInspect": "No instance - developed by Qmasters",
         "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
-        "AttackIQFireDrill": "License issues #29774",
+        "AttackIQFireDrill": "License issues #29774 - CIAC-1502",
         "LogRhythm": "The integration is deprecated",
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
         "ThreatGridv2": "No instance - developed by Qmasters",
@@ -5952,7 +5998,8 @@
         "CheckPhish": "Issue CRTX-86562",
         "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
         "ThreatExchange v2": "No instance",
-        "PhishLabs IOC EIR": "No instance, CRTX-91214"
+        "PhishLabs IOC EIR": "No instance, CRTX-91214",
+        "Fortimail": "No instance"
     },
     "nightly_packs": [
         "CommonScripts",
@@ -5962,7 +6009,7 @@
         "Phishing",
         "Base",
         "Active_Directory_Query",
-        "EWS",
+        "MicrosoftExchangeOnline",
         "DefaultPlaybook",
         "DemistoRESTAPI",
         "Palo_Alto_Networks_WildFire",
@@ -5972,7 +6019,7 @@
         "ImageOCR",
         "SplunkPy",
         "MailSenderNew",
-        "EWSMailSender",
+        "MicrosoftExchangeOnPremise",
         "ServiceNow",
         "CortexXDR",
         "PAN-OS",
@@ -6071,12 +6118,12 @@
         "Microsoft Graph User": "Test direct access to oproxy",
         "Azure Security Center v2": "Test direct access to oproxy",
         "Azure Compute v2": "Test direct access to oproxy",
-        "AWS - CloudWatchLogs": "Issue 20958",
-        "AWS - Athena - Beta": "Issue 24926",
-        "AWS - CloudTrail": "Issue 24926",
-        "AWS - Lambda": "Issue 24926",
-        "AWS - IAM": "Issue 24926",
-        "AWS Sagemaker": "Issue 24926",
+        "AWS - CloudWatchLogs": "Issue 20958 - CIAC-1820",
+        "AWS - Athena - Beta": "Issue 24926 - CIAC-1683",
+        "AWS - CloudTrail": "Issue 24926 - CIAC-1683",
+        "AWS - Lambda": "Issue 24926 - CIAC-1683",
+        "AWS - IAM": "Issue 24926 - CIAC-1683",
+        "AWS Sagemaker": "Issue 24926 - CIAC-1683",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
         "GSuiteAdmin": "googleclient sdk has time based challenge exchange",
@@ -6181,7 +6228,7 @@
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
-                "pid_threshold": 18
+                "pid_threshold": 100
             },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 150

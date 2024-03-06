@@ -120,8 +120,12 @@ class URLCheck:
         if not self.done and self.fragment:
             self.fragment_check()
 
-        if self.quoted:
-            self.output = urllib.parse.unquote(self.output)
+        while '%' in self.output:
+            unquoted = urllib.parse.unquote(self.output)
+            if unquoted != self.output:
+                self.output = unquoted
+            else:
+                break
 
     def __str__(self):
         return f"{self.output}"
@@ -728,6 +732,9 @@ def _is_valid_cidr(cidr: str) -> bool:
         True if inout is a valid CIDR
 
     """
+    if not cidr[-1].isdigit():  # precaution incase the regex caught an extra char by mistake
+        cidr = cidr[:-1]
+
     try:
         ipaddress.ip_network(cidr)
         return True

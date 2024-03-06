@@ -1,9 +1,10 @@
 import argparse
+import os
 import sys
 from pathlib import Path
 
 CONTENT_ROOT = Path(__file__).parents[1]
-assert CONTENT_ROOT.name == "content"
+assert CONTENT_ROOT.name == "content" or (os.getenv("CIRCLECI") and CONTENT_ROOT.name == "project")
 
 PROTECTED_DIRECTORY_PATHS: set[Path] = {
     Path(CONTENT_ROOT, dir_name)

@@ -47,7 +47,7 @@ script:
       description: The time that the country code was added to the list.
       type: Date
   - arguments:
-    - description: 'Search strings, separated by “+” to filter the results. (example: "AZ+BS")'
+    - description: 'Search strings, separated by “+” to filter the results. (example: "AZ+BS").'
       name: query
     - description: The page of the results to return.
       name: page
@@ -110,7 +110,7 @@ script:
       description: List of messages associated with each country in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistCountry.cid
-      description: List of central configuration IDs
+      description: List of central configuration IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistCountry.country
       description: An ISO standardized country code.
@@ -139,7 +139,7 @@ script:
       description: List of messages associated with each country in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistCountry.cid
-      description: List of central configuration IDs
+      description: List of central configuration IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistCountry.country
       description: An ISO standardized country code.
@@ -181,7 +181,7 @@ script:
       description: IPv4 host address or CIDRs.
       type: String
     - contextPath: NetscoutAED.OutboundBlacklistHost.update_time
-      description: The time the host was last updated/set
+      description: The time the host was last updated/set.
       type: Date
   - arguments:
     - description: A single IPv4 host address or CIDR or a comma-separated list of IPv4 host addresses or CIDRs.
@@ -234,7 +234,7 @@ script:
     - description: A comma-separated list of IPv4 host addresses or CIDRs.
       isArray: true
       name: host_address
-    - description: 'Search strings, separated by “+” to filter the results. (example: "AZ+BS")'
+    - description: 'Search strings, separated by “+” to filter the results. (example: "AZ+BS").'
       name: query
     - description: The page of the results to return.
       name: page
@@ -260,7 +260,7 @@ script:
     - description: A single description that applies to all of the specified hosts or a comma-separated list of descriptions, each of which applies to a specific host.
       isArray: true
       name: annotation
-    description: Adds one or more hosts to the outbound whitelisted list
+    description: Adds one or more hosts to the outbound whitelisted list.
     name: na-ed-outbound-whitelisted-hosts-add
     outputs:
     - contextPath: NetscoutAED.OutboundWhitelistHost.annotation
@@ -270,7 +270,7 @@ script:
       description: IPv4 host address or CIDRs.
       type: String
     - contextPath: NetscoutAED.OutboundWhitelistHost.update_time
-      description: The time the host was last updated/set
+      description: The time the host was last updated/set.
       type: Date
   - arguments:
     - description: A single IPv4 host address or CIDR or a comma-separated list of IPv4 host addresses or CIDRs to update.
@@ -290,7 +290,7 @@ script:
       description: IPv4 host address or CIDRs.
       type: String
     - contextPath: NetscoutAED.OutboundWhitelistHost.update_time
-      description: The time the host was last updated/set
+      description: The time the host was last updated/set.
       type: Date
   - arguments:
     - description: List of protection group IDs.
@@ -409,7 +409,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: 'Search strings, separated by “+” to filter the results. (example: "AZ+BS")'
+    - description: 'Search strings, separated by “+” to filter the results. (example: "AZ+BS").'
       name: query
     description: Gets a list of the protection groups.
     name: na-ed-protection-groups-list
@@ -481,7 +481,7 @@ script:
     - description: A comma-separated list of IPv4 host addresses or CIDRs.
       isArray: true
       name: host_address
-    - description: 'Search strings, separated by “+” to filter the results. (example: "AZ+BS")'
+    - description: 'Search strings, separated by “+” to filter the results. (example: "AZ+BS").'
       name: query
     - description: The page of the results to return.
       name: page
@@ -520,7 +520,7 @@ script:
       description: List of messages associated with each host in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistHost.cid
-      description: List of central configuration IDs
+      description: List of central configuration IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistHost.host_address
       description: IPv4 host addresses or CIDRs.
@@ -546,7 +546,7 @@ script:
       description: List of messages associated with each host in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistHost.cid
-      description: List of central configuration IDs
+      description: List of central configuration IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistHost.host_address
       description: IPv4 host addresses or CIDRs.
@@ -703,10 +703,10 @@ script:
       description: List of messages associated with each domain in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistDomain.cid
-      description: List of central configuration IDs
+      description: List of central configuration IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistDomain.domain
-      description: Domain name
+      description: Domain name.
       type: String
     - contextPath: NetscoutAED.InboundBlacklistDomain.pgid
       description: List of protection group IDs.
@@ -744,7 +744,7 @@ script:
       description: List of messages associated with each url in the inbound block list.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistUrl.cid
-      description: List of central configuration IDs
+      description: List of central configuration IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistUrl.url
       description: URL address.
@@ -798,7 +798,7 @@ script:
       required: true
     description: Removes one or more hosts or CIDRs from the outbound allow list.
     name: na-ed-outbound-whitelisted-hosts-remove
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
   subtype: python3

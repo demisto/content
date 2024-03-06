@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 from typing import Any
 import traceback
 from random import randint
@@ -71,7 +70,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
     Returns:
         Dict: Dict of the new SG to be used
     """
-    info = sg_info[0]['Contents']['AWS.EC2.SecurityGroups(val.GroupId === obj.GroupId)'][0]
+    info = dict_safe_get(sg_info, (0, 'Contents', 0))
     recreate_list = []
     # Keep track of change in SG or not.
     change = False
@@ -83,20 +82,13 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
                 if (
                     rule['FromPort'] == port
                     and port == rule['ToPort']
-                    and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0"
+                    and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
                     and rule['IpProtocol'] == protocol
                 ):
                     change = True
                 elif (
-                    rule["FromPort"] == port and port == rule["ToPort"]
-                    and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
-                    and rule["IpProtocol"] == protocol
-                ):
-                    # If condition to check for Quad 0 in the rules list for matching port.
-                    change = True
-                elif (
                     rule['FromPort'] <= port and port <= rule['ToPort']
-                    and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0"
+                    and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
                     and rule['IpProtocol'] == protocol
                 ):  # noqa: E127
                     fixed = split_rule(rule, port, protocol)
@@ -107,7 +99,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
                 else:
                     new_rule = (str([rule])).replace("'", "\"")
                     recreate_list.append(new_rule)
-            elif rule.get('IpRanges') and rule['IpRanges'][0].get('CidrIp') == "0.0.0.0/0":
+            elif rule.get('IpRanges') and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"]):
                 fixed = split_rule(rule, port, protocol)
                 change = True
                 for rule_fix in fixed:
@@ -138,7 +130,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
         new_sg = demisto.executeCommand("aws-ec2-create-security-group", cmd_args)
         if isError(new_sg):
             raise ValueError('Error on creating new security group')
-        new_id = new_sg[0]['Contents']['AWS.EC2.SecurityGroups']['GroupId']
+        new_id = dict_safe_get(new_sg, (0, 'Contents', 'GroupId'))
     for item in recreate_list:
         cmd_args = {"groupId": new_id, "IpPermissionsFull": item, "using": instance_to_use}
         if assume_role:
@@ -271,11 +263,8 @@ def instance_info(instance_id: str, public_ip: str, assume_role: str, region: st
     # Need a for loop in case multiple AWS-EC2 integrations are configured.
     match = False
     for instance in instance_info:
-        # Check if returned error, in the case of multiple integration instances only one should pass.
-        if not isError(instance) and \
-           instance.get('Contents').get('AWS.EC2.Instances(val.InstanceId === obj.InstanceId)')[0].get('NetworkInterfaces'):
-            interfaces = instance.get('Contents').get(
-                'AWS.EC2.Instances(val.InstanceId === obj.InstanceId)')[0].get('NetworkInterfaces')
+        interfaces = dict_safe_get(instance, ('Contents', 0, 'NetworkInterfaces'))
+        if not isError(instance) and interfaces:
             mapping_dict = {}
             for interface in interfaces:
                 if interface.get('Association') and interface.get('Association').get('PublicIp') == public_ip:

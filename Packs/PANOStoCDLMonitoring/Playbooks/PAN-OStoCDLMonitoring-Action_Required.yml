@@ -1,8 +1,8 @@
 id: PAN-OS logging to Cortex Data Lake - Action Required
 inputs: []
-name: PAN-OS logging to Cortex Data Lake - Action Required
+name: PAN-OS logging to Strata Logging Service - Action Required
 description: This Playbook initiates the steps needed to investigate the PAN-OS logging
-  to Cortex Data Lake problems.
+  to Strata Logging Service problems.
 outputs: []
 starttaskid: "0"
 tasks:
@@ -46,7 +46,7 @@ tasks:
     task:
       brand: ""
       description: |
-        Could you please investigate the connection to the Cortex Data Lake for the following equipments:
+        Could you please investigate the connection to the Strata Logging Service for the following equipments:
 
         ${CDL.monitoring.FirewallsWithoutLogsSent}
 
@@ -55,7 +55,7 @@ tasks:
         Please do not validate this task before the problem is fixed.
       id: d273ae4f-6ad2-406a-8a9f-b0f2b3bd64ed
       iscommand: false
-      name: FW connection issue with Cortex Data Lake - investigation required
+      name: FW connection issue with Strata Logging Service - investigation required
       type: regular
       version: -1
     taskid: d273ae4f-6ad2-406a-8a9f-b0f2b3bd64ed

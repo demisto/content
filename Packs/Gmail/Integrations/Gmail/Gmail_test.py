@@ -1,135 +1,137 @@
+from freezegun import freeze_time
+import base64
 import demistomock as demisto
 import pytest
 from test_data import input_data
 import datetime
 
 MOCK_MAIL_NO_LABELS = {
-    u'internalDate': u'1572251535000',
-    u'historyId': u'249781',
-    u'payload': {
-        u'mimeType': u'multipart/mixed',
-        u'body': {u'size': 0},
-        u'partId': u'',
-        u'filename': u'',
-        u'headers': [
+    'internalDate': '1572251535000',
+    'historyId': '249781',
+    'payload': {
+        'mimeType': 'multipart/mixed',
+        'body': {'size': 0},
+        'partId': '',
+        'filename': '',
+        'headers': [
             {
-                u'name': u'Received',
-                u'value': u'from 1041831412594 named unknown by gmailapi.google.com with '
-                          u'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
+                'name': 'Received',
+                'value': 'from 1041831412594 named unknown by gmailapi.google.com with '
+                u'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
             }, {
-                u'name': u'Content-Type',
-                u'value': u'mixed; boundary="===============4922146810840031257=="'
+                'name': 'Content-Type',
+                'value': 'mixed; boundary="===============4922146810840031257=="'
             }, {
-                u'name': u'MIME-Version',
-                u'value': u'1.0'
+                'name': 'MIME-Version',
+                'value': '1.0'
             }, {
-                u'name': u'to',
-                u'value': u'<some_mail>'
+                'name': 'to',
+                'value': '<some_mail>'
             }, {
-                u'name': u'cc',
-                u'value': u''
+                'name': 'cc',
+                'value': ''
             }, {
-                u'name': u'bcc',
-                u'value': u''
+                'name': 'bcc',
+                'value': ''
             }, {
-                u'name': u'from',
-                u'value': u'<some_mail>'
+                'name': 'from',
+                'value': '<some_mail>'
             }, {
-                u'name': u'subject',
-                u'value': u'a mail subject'
+                'name': 'subject',
+                'value': 'a mail subject'
             }, {
-                u'name': u'reply-to',
-                u'value': u''
+                'name': 'reply-to',
+                'value': ''
             }, {
-                u'name': u'Date',
-                u'value': u'Mon, 28 Oct 2019 04:32:15 -0400'
+                'name': 'Date',
+                'value': 'Mon, 28 Oct 2019 04:32:15 -0400'
             }, {
-                u'name': u'Message-Id',
-                u'value': u'<some_id>'
+                'name': 'Message-Id',
+                'value': '<some_id>'
             }
         ],
-        u'parts': [
+        'parts': [
             {
-                u'mimeType': u'text/plain',
-                u'headers': [
+                'mimeType': 'text/plain',
+                'headers': [
                     {
-                        u'name': u'Content-Type',
-                        u'value': u'text/plain; charset="utf-8"'
+                        'name': 'Content-Type',
+                        'value': 'text/plain; charset="utf-8"'
                     }, {
-                        u'name': u'MIME-Version',
-                        u'value': u'1.0'
+                        'name': 'MIME-Version',
+                        'value': '1.0'
                     }, {
-                        u'name': u'Content-Transfer-Encoding',
-                        u'value': u'base64'
+                        'name': 'Content-Transfer-Encoding',
+                        'value': 'base64'
                     }
                 ],
-                u'body': {
-                    u'data': u'<data>',
-                    u'size': 9
+                'body': {
+                    'data': '<data>',
+                    'size': 9
                 },
-                u'partId': u'0',
-                u'filename': u''
+                'partId': '0',
+                'filename': ''
             }
         ]
     },
-    u'snippet': u'some info',
-    u'sizeEstimate': 637,
-    u'threadId': u'<id>',
-    u'id': u'<id>'
+    'snippet': 'some info',
+    'sizeEstimate': 637,
+    'threadId': '<id>',
+    'id': '<id>'
 }
 
 EXPECTED_GMAIL_CONTEXT = {
-    'To': u'<some_mail>',
-    'Body': u'',
-    'From': u'<some_mail>',
-    'Attachments': u'',
-    'Format': u'mixed',
-    'Cc': u'',
+    'To': '<some_mail>',
+    'Body': '',
+    'From': '<some_mail>',
+    'Attachments': '',
+    'Format': 'mixed',
+    'Cc': '',
     'Labels': '',
     'Mailbox': 'some_mail',
     'Headers': [
         {
-            'Name': u'Received',
-            'Value': u'from 1041831412594 named '
+            'Name': 'Received',
+            'Value': 'from 1041831412594 named '
                      u'unknown by gmailapi.google.com with HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
         }, {
-            'Name': u'Content-Type',
-            'Value': u'mixed; boundary="===============4922146810840031257=="'
+            'Name': 'Content-Type',
+            'Value': 'mixed; boundary="===============4922146810840031257=="'
         }, {
-            'Name': u'MIME-Version',
-            'Value': u'1.0'
+            'Name': 'MIME-Version',
+            'Value': '1.0'
         }, {
-            'Name': u'to',
-            'Value': u'<some_mail>'
+            'Name': 'to',
+            'Value': '<some_mail>'
         }, {
-            'Name': u'cc',
-            'Value': u''
+            'Name': 'cc',
+            'Value': ''
         }, {
-            'Name': u'bcc', 'Value': u''
+            'Name': 'bcc', 'Value': ''
         }, {
-            'Name': u'from', 'Value': u'<some_mail>'
+            'Name': 'from', 'Value': '<some_mail>'
         }, {
-            'Name': u'subject',
-            'Value': u'a mail subject'
+            'Name': 'subject',
+            'Value': 'a mail subject'
         }, {
-            'Name': u'reply-to',
-            'Value': u''
+            'Name': 'reply-to',
+            'Value': ''
         }, {
-            'Name': u'Date',
-            'Value': u'Mon, 28 Oct 2019 04:32:15 -0400'
+            'Name': 'Date',
+            'Value': 'Mon, 28 Oct 2019 04:32:15 -0400'
         }, {
-            'Name': u'Message-Id',
-            'Value': u'<some_id>'
+            'Name': 'Message-Id',
+            'Value': '<some_id>'
         }
     ],
     'Html': None,
     'RawData': None,
-    'ThreadId': u'<id>',
+    'ThreadId': '<id>',
     'Date': 'Mon, 28 Oct 2019 04:32:15 -0400',
-    'Bcc': u'',
+    'Bcc': '',
     'Type': 'Gmail',
-    'ID': u'<id>',
-    'Subject': u'a mail subject'
+    'ID': '<id>',
+    'Subject': 'a mail subject'
 }
 
 
@@ -613,14 +615,15 @@ def test_no_date_mail():
         Then:
             -the 'Date' is valid.
     """
-    from email.utils import parsedate_to_datetime
+    from email.utils import format_datetime
 
     from Gmail import get_email_context
+    expected_date = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
     context_gmail, _, _, occurred, is_valid = get_email_context(input_data.email_without_date, "some_mail")
     # check that the x-received date was usd
-    assert occurred.timestamp() == parsedate_to_datetime('Mon, 21 Dec 2020 12:11:57 -0800').timestamp()
+    assert occurred.timestamp() == expected_date.timestamp()
     assert is_valid
-    assert context_gmail.get('Date') == 'Mon, 21 Dec 2020 12:11:57 -0800'
+    assert context_gmail.get('Date') == format_datetime(expected_date)
 
 
 class MockMessages:
@@ -657,6 +660,7 @@ class MockExecute:
                 return input_data.service_result_without_pageToken
         if self.name == "get":
             return self.message()
+        return None
 
 
 class MockListAndGet:
@@ -677,6 +681,7 @@ class MockService:
     ({'lastRun': '2018-10-24T14:13:20+00:00', 'gmt_time': '2017-10-24T14:13:20Z', 'page_token': '02582292467408105606'},
      input_data.second_incident_result)
 ])
+@freeze_time("2012-10-24 14:13:20", tz_offset=+0)
 def test_fetch_incidents(mocker, return_value_get_last_run, expected_result):
     """
     Tests fetch_incidents function.
@@ -698,22 +703,56 @@ def test_fetch_incidents(mocker, return_value_get_last_run, expected_result):
     assert incidents == expected_result
 
 
-def test_get_occurred_date():
+EMAIL_NO_INTERNALDATE = input_data.email_without_date
+EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
+EMAIL_INTERNALDATE_EARLY = input_data.email_with_early_internalDate
+EXPECTED_OCCURRED_INTERNALDATE_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 40, tzinfo=datetime.timezone.utc)
+EMAIL_HEADER_EARLY = input_data.email_with_internalDate_header_early
+EXPECTED_OCCURRED_HEADER_EARLY = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
+EMAIL_NO_HEADER = input_data.email_no_header
+EXPECTED_OCCURRED_NO_HEADER = datetime.datetime(2020, 12, 21, 20, 11, 58, tzinfo=datetime.timezone.utc)
+EMAIL_NO_DATE = input_data.email_no_date
+EXPECTED_OCCURRED_NO_DATE = datetime.datetime(2020, 12, 22, 14, 13, 20, tzinfo=datetime.timezone.utc)
+
+
+@pytest.mark.parametrize("email_data, expected_occurred, expected_occurred_is_valid",
+                         [
+                             # no internalDate
+                             (EMAIL_NO_INTERNALDATE, EXPECTED_OCCURRED_NO_INTERNALDATE, True),
+                             # both internalDate and date header, but the internalDate is earlier
+                             (EMAIL_INTERNALDATE_EARLY, EXPECTED_OCCURRED_INTERNALDATE_EARLY, True),
+                             # both internalDate and date header, but the date header is earlier
+                             (EMAIL_HEADER_EARLY, EXPECTED_OCCURRED_HEADER_EARLY, True),
+                             # no date in the headers
+                             (EMAIL_NO_HEADER, EXPECTED_OCCURRED_NO_HEADER, True),
+                             # no internalDate and no date in the headers -> datetime.now
+                             (EMAIL_NO_DATE, EXPECTED_OCCURRED_NO_DATE, False),
+                         ])
+@freeze_time("2020-12-22 14:13:20", tz_offset=+0)
+def test_get_occurred_date(email_data, expected_occurred, expected_occurred_is_valid):
     """
     Tests test_get_occurred_date function.
         Given:
-             - an email message without date header.
+             - case A: an email without an internalDate.
+             - case B: an email with an internalDate and a date header, but the internalDate is earlier.
+             - case C: an email with an internalDate and a date header, but the date header is earlier.
+             - case D: an email without a date in the headers.
+             - case E: an email without an internalDate and no date in the headers.
         When:
             - executing test_get_occurred_date function.
         Then:
             - the occurred date is valid and corresponding to the date in the email.
+            - case A: the occurred date is the date in the headers.
+            - case B: the occurred date is the date in the internalDate.
+            - case C: the occurred date is the date in the date header.
+            - case D: the occurred date is the date in the internalDate.
+            - case E: the occurred date is the current date in UTC (datetime.now).
     """
     from Gmail import get_occurred_date
-    occurred, occurred_is_valid = get_occurred_date(input_data.email_without_date)
-    assert str(occurred) == '2020-12-21 12:11:57-08:00'
-    assert occurred == datetime.datetime(2020, 12, 21, 12, 11, 57,
-                                         tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=57600)))
-    assert occurred_is_valid is True
+    occurred, occurred_is_valid = get_occurred_date(email_data)
+    assert str(occurred) == str(expected_occurred)
+    assert occurred == expected_occurred
+    assert occurred_is_valid is expected_occurred_is_valid
 
 
 def test_get_date_from_email_header():
@@ -844,3 +883,44 @@ def test_filter_by_fields(
     from Gmail import filter_by_fields
 
     assert filter_by_fields(full_mail, filter_fields) == expected_result
+
+
+def test_handle_html_image_with_new_line():
+    """
+    Given:
+        - html body of a message with an attached base64 image.
+    When:
+        - run handle_html function.
+    Then:
+        - Ensure attachments list contains correct data, name and cid fields.
+    """
+    from Gmail import handle_html
+    # mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    htmlBody = """
+<html>
+    <body>
+        <img\n\t\t\t\t\t  src="data:image/png;base64,Aa=="/>
+    </body>
+</html>"""
+
+    expected_attachments = [
+        {
+            "maintype": "image",
+            "subtype": "png",
+            "data": base64.b64decode("Aa=="),
+            "name": "image0.png",
+            "cid": "image0.png",
+        }
+    ]
+    expected_cleanBody = """
+<html>
+    <body>
+        <img
+\t\t\t\t\t  src="cid:image0.png"/>
+    </body>
+</html>"""
+
+    cleanBody, attachments = handle_html(htmlBody)
+
+    assert expected_cleanBody == cleanBody
+    assert expected_attachments == attachments

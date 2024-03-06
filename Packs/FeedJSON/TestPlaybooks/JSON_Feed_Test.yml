@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 28e2fa62-b97e-4345-8391-25df8bd9f7d8
+    taskid: e5f067d2-66c6-4654-8991-61f85510338b
     type: start
     task:
-      id: 28e2fa62-b97e-4345-8391-25df8bd9f7d8
+      id: e5f067d2-66c6-4654-8991-61f85510338b
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -29,12 +30,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: beca0a37-c248-4c36-8c08-1e6fa4b1d084
+    taskid: 2236cc52-41e0-448f-809c-965671e42b5f
     type: regular
     task:
-      id: beca0a37-c248-4c36-8c08-1e6fa4b1d084
+      id: 2236cc52-41e0-448f-809c-965671e42b5f
       version: -1
       name: Get Indicators
       description: Gets the feed indicators.
@@ -49,7 +53,7 @@ tasks:
       extend-context:
         simple: JSONFeed.value=value::JSONFeed.type=type
       limit:
-        simple: "10"
+        simple: "2"
     separatecontext: false
     view: |-
       {
@@ -63,12 +67,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f4c52ff8-afb4-4ba3-897d-618dd257d0e4
+    taskid: d6a0bd79-40d8-4154-85e5-4089c5979d20
     type: condition
     task:
-      id: f4c52ff8-afb4-4ba3-897d-618dd257d0e4
+      id: d6a0bd79-40d8-4154-85e5-4089c5979d20
       version: -1
       name: Assert Output
       description: Asserts output.
@@ -89,16 +96,8 @@ tasks:
                 root: JSONFeed
                 accessor: value
             iscontext: true
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: JSONFeed
-                accessor: type
-            iscontext: true
           right:
-            value:
-              simple: CIDR
+            value: {}
     view: |-
       {
         "position": {
@@ -111,12 +110,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4056602e-6578-4559-8dbc-b857f09115a1
+    taskid: c301b530-a2ca-41f9-8a91-397648f03ff9
     type: title
     task:
-      id: 4056602e-6578-4559-8dbc-b857f09115a1
+      id: c301b530-a2ca-41f9-8a91-397648f03ff9
       version: -1
       name: Done
       description: Done
@@ -136,12 +138,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: caed5d30-e844-429f-890a-73959c5a44a9
+    taskid: 41d21a09-b1a2-4f23-8cb6-13670406e768
     type: regular
     task:
-      id: caed5d30-e844-429f-890a-73959c5a44a9
+      id: 41d21a09-b1a2-4f23-8cb6-13670406e768
       version: -1
       name: Delete Context
       description: Delete field from context.
@@ -155,10 +160,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -172,6 +173,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -187,3 +191,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
+description: Test playbook for Feed JSON

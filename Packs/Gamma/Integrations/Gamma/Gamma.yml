@@ -59,7 +59,7 @@ configuration:
   type: 8
   section: Collect
   required: false
-description: Query and update violations in Gamma
+description: Query and update violations in Gamma.
 display: Gamma
 name: Gamma
 script:
@@ -70,79 +70,79 @@ script:
       name: minimum_violation
       required: true
     - defaultValue: '10'
-      description: 'Upper limit for retrieving violations (max: 100)'
+      description: 'Upper limit for retrieving violations (max: 100).'
       name: limit
       required: true
-    description: Get a list of violations
+    description: Get a list of violations.
     name: gamma-get-violation-list
     outputs:
     - contextPath: GammaViolation.violation_id
-      description: Violation ID
+      description: Violation ID.
       type: Number
     - contextPath: GammaViolation.file_labels_map
-      description: List of Files and corresponding DLP labels in reference to the DLP violation
+      description: List of Files and corresponding DLP labels in reference to the DLP violation.
       type: Array
     - contextPath: GammaViolation.text_labels
-      description: List of DLP labels in reference to the DLP violation
+      description: List of DLP labels in reference to the DLP violation.
       type: Array
     - contextPath: GammaViolation.violation_status
-      description: Violation status, one of 'OPEN', 'RESOLVED', 'IGNORED'
+      description: Violation status, one of 'OPEN', 'RESOLVED', 'IGNORED'.
       type: String
     - contextPath: GammaViolation.violation_category
       description: Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc.
       type: String
     - contextPath: GammaViolation.violation_event_timestamp
-      description: Timestamp of violation in epoch milliseconds
+      description: Timestamp of violation in epoch milliseconds.
       type: Number
     - contextPath: GammaViolation.user
-      description: JSON field containing optional information about user
+      description: JSON field containing optional information about user.
       type: String
     - contextPath: GammaViolation.dashboard_url
-      description: Gamma dashboard URL
+      description: Gamma dashboard URL.
       type: String
     - contextPath: GammaViolation.app_name
-      description: Name of the application where the violation is found
+      description: Name of the application where the violation is found.
       type: String
   - arguments:
-    - description: Violation ID to retrieve
+    - description: Violation ID to retrieve.
       name: violation
       required: true
-    description: Get a specific violation
+    description: Get a specific violation.
     name: gamma-get-violation
     outputs:
     - contextPath: GammaViolation.violation_id
-      description: Violation ID
+      description: Violation ID.
       type: Number
     - contextPath: GammaViolation.file_labels_map
-      description: List of Files and corresponding DLP labels in reference to the DLP violation
+      description: List of Files and corresponding DLP labels in reference to the DLP violation.
       type: Array
     - contextPath: GammaViolation.text_labels
-      description: List of DLP labels in reference to the DLP violation
+      description: List of DLP labels in reference to the DLP violation.
       type: Array
     - contextPath: GammaViolation.violation_status
-      description: Violation status, one of 'OPEN', 'RESOLVED', 'IGNORED'
+      description: Violation status, one of 'OPEN', 'RESOLVED', 'IGNORED'.
       type: String
     - contextPath: GammaViolation.violation_category
       description: Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc.
       type: String
     - contextPath: GammaViolation.violation_event_timestamp
-      description: Timestamp of violation in epoch milliseconds
+      description: Timestamp of violation in epoch milliseconds.
       type: Number
     - contextPath: GammaViolation.user
-      description: JSON field containing optional information about user
+      description: JSON field containing optional information about user.
       type: String
     - contextPath: GammaViolation.dashboard_url
-      description: Gamma dashboard URL
+      description: Gamma dashboard URL.
       type: String
     - contextPath: GammaViolation.app_name
-      description: Name of the application where the violation is found
+      description: Name of the application where the violation is found.
       type: String
   - arguments:
-    - description: Violation ID to update
+    - description: Violation ID to update.
       name: violation
       required: true
     - auto: PREDEFINED
-      description: Status of the violation
+      description: Status of the violation.
       name: status
       predefined:
       - OPEN
@@ -153,9 +153,9 @@ script:
       defaultValue: None
       description: Any notes to add to a violation. It will overwrite existing notes.
       name: notes
-    description: Update a specific violation
+    description: Update a specific violation.
     name: gamma-update-violation
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   runonce: false
   script: '-'

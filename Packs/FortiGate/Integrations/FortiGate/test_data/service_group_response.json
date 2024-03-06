@@ -1,0 +1,49 @@
+{
+    "http_method": "GET",
+    "size": 2,
+    "matched_count": 2,
+    "next_idx": 1,
+    "revision": "12345",
+    "results": [
+        {
+            "name": "Ash Ketchum",
+            "q_origin_key": "Ash Ketchum",
+            "proxy": "disable",
+            "member": [
+                {
+                    "name": "Gary",
+                    "q_origin_key": "Gary"
+                },
+                {
+                    "name": "Oak",
+                    "q_origin_key": "Oak"
+                }
+            ],
+            "comment": "",
+            "color": 0,
+            "fabric-object": "disable"
+        },
+        {
+            "name": "Misty",
+            "q_origin_key": "Misty",
+            "proxy": "disable",
+            "member": [
+                {
+                    "name": "Brock",
+                    "q_origin_key": "Brock"
+                }
+            ],
+            "comment": "",
+            "color": 0,
+            "fabric-object": "disable"
+        }
+    ],
+    "vdom": "root",
+    "path": "firewall.service",
+    "name": "group",
+    "status": "success",
+    "http_status": 200,
+    "serial": "12345",
+    "version": "v7.2.5",
+    "build": 1517
+}

@@ -7,7 +7,7 @@ type: python
 subtype: python3
 tags:
 - RSA NetWitness Security Analytics
-comment: Returns the available NetWitness SA users to be assigned to incidents
+comment: Returns the available NetWitness SA users to be assigned to incidents.
 system: true
 scripttarget: 0
 dependson:
@@ -15,6 +15,6 @@ dependson:
   - netwitness-im-get-available-assignees
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 tests:
 - No tests (auto formatted)

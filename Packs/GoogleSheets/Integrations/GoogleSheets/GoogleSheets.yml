@@ -133,7 +133,7 @@ script:
       description: Sheet grid properties.
       type: Unknown
     - contextPath: GoogleSheets.Spreadsheet.sheets.rowData
-      description: Sheet row data.
+      description: Sheet row data (only when the `include_grid_data` is set to true).
       type: Unknown
   - arguments:
     - description: Spreadsheet ID in which to create a new sheet.
@@ -665,7 +665,7 @@ script:
     - contextPath: GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title
       description: Sheet title.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.83805
+  dockerimage: demisto/googleapi-python3:1.0.0.87804
   runonce: false
   script: "-"
   subtype: python3

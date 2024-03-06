@@ -758,7 +758,7 @@ script:
       description: Timestamp of when this campaign was most recently updated.
       type: Date
     - contextPath: CofenseIntelligence.File.Threats.firstPublished
-      description: Timestamp of when this campaign was initially published
+      description: Timestamp of when this campaign was initially published.
       type: Date
     - contextPath: CofenseIntelligence.File.Threats.label
       description: Human readable name for this campaign.
@@ -970,7 +970,7 @@ script:
       description: Timestamp of when this campaign was most recently updated.
       type: Date
     - contextPath: CofenseIntelligence.Email.Threats.firstPublished
-      description: Timestamp of when this campaign was initially published
+      description: Timestamp of when this campaign was initially published.
       type: Date
     - contextPath: CofenseIntelligence.Email.Threats.label
       description: Human readable name for this campaign.
@@ -1026,7 +1026,7 @@ script:
       description: The actual score.
       type: string
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: string
     - contextPath: URL.Malicious.Description
       description: A description of the malicious URL.
@@ -1491,7 +1491,7 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
   subtype: python3

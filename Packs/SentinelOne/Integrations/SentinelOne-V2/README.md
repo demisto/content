@@ -53,7 +53,7 @@ Returns all agents that match the specified criteria.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| computer_name | The computer name by which to filter the results. | Optional | 
+| computer_name | The computer name by which to filter the results. It can match a partial computer name value (substring). | Optional | 
 | scan_status | A comma-separated list of scan statuses by which to filter the results, for example: "started,aborted". Possible values are: started, none, finished, aborted. | Optional | 
 | os_type | Included operating system types, for example: "windows". Possible values are: windows, windows_legacy, macos, linux. | Optional | 
 | created_at | Endpoint creation timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 

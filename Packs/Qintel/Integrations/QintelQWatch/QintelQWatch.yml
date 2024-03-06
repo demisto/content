@@ -65,21 +65,21 @@ name: QintelQWatch
 script:
   commands:
   - arguments:
-    - description: Email to search
+    - description: Email to search.
       name: email
-    - description: Domain to search
+    - description: Domain to search.
       name: domain
-    description: Search QWatch for exposed credentials
+    description: Search QWatch for exposed credentials.
     name: qintel-qwatch-exposures
     outputs:
     - contextPath: Qintel.QWatch.Exposures
-      description: QWatch Exposure Records
+      description: QWatch Exposure Records.
       type: String
   isfetch: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.84405
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

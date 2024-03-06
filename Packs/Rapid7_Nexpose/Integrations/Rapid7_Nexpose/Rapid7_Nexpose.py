@@ -14,6 +14,8 @@ DEFAULT_PAGE_SIZE = 50  # Default page size to use
 MATCH_DEFAULT_VALUE = "any"  # Default "match" value to use when using search filters. Can be either "all" or "any".
 REMOVE_RESPONSE_LINKS = True  # Whether to remove `links` keys from responses.
 REPORT_DOWNLOAD_WAIT_TIME = 60  # Time in seconds to wait before downloading a report after starting its generation
+CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-errors
+CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
@@ -114,7 +116,15 @@ class VulnerabilityExceptionScopeType(Enum, metaclass=FlexibleEnum):
 class Client(BaseClient):
     """Client class for interactions with Rapid7 Nexpose API."""
 
-    def __init__(self, url: str, username: str, password: str, token: str | None = None, verify: bool = True):
+    def __init__(
+        self,
+        url: str,
+        username: str,
+        password: str,
+        token: str | None = None,
+        verify: bool = True,
+        connection_error_retries: int = CONNECTION_ERRORS_RETRIES
+    ):
         """
         Initialize the client.
 
@@ -133,6 +143,7 @@ class Client(BaseClient):
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
+        self.connection_error_retries = CONNECTION_ERRORS_RETRIES
 
         # Add 2FA token to headers if provided
         if token:
@@ -148,12 +159,24 @@ class Client(BaseClient):
 
     def _http_request(self, **kwargs):
         """Wrapper for BaseClient._http_request() that optionally removes `links` keys from responses."""
-        response = super()._http_request(**kwargs)
+        for _time in range(1, self.connection_error_retries + 1):
+            try:
+                response = super()._http_request(**kwargs)
+                if REMOVE_RESPONSE_LINKS:
+                    return remove_dict_key(response, "links")
+                return response
+            except (DemistoException, requests.ReadTimeout) as error:
+                demisto.error(f'Error {error} running _http_request in time {_time}')
+                if (
+                    isinstance(error, DemistoException) and not isinstance(
+                        error.exception, requests.ConnectionError
+                    ) or _time == self.connection_error_retries
+                ):
+                    raise
+                else:
+                    time.sleep(1)  # pylint: disable=sleep-exists
 
-        if REMOVE_RESPONSE_LINKS:
-            return remove_dict_key(response, "links")
-
-        return response
+        return None
 
     def _generate_session_id(self) -> str:
         """
@@ -223,6 +246,7 @@ class Client(BaseClient):
 
         if not page:
             total_pages = response.get("page", {}).get("totalPages", 1)
+            demisto.debug(f'Total pages = {total_pages}')
             page_count = 0
 
             # Note: page indexing on Nexpose's API starts at 0
@@ -230,7 +254,9 @@ class Client(BaseClient):
                 page_count += 1
                 kwargs["params"]["page"] = str(page_count)
                 response = self._http_request(**kwargs)
-                result.extend(response["resources"])
+                resources = response["resources"]
+                demisto.debug(f'Received {len(resources)} resources with page {page_count=}, {page_size=}')
+                result.extend(resources)
 
         if limit and limit < len(result):
             return result[:limit]
@@ -2594,7 +2620,7 @@ def remove_dict_key(data: dict | list | tuple, key: Any) -> dict | list | tuple:
         for k in data:
             remove_dict_key(data[k], key)
 
-    if isinstance(data, (list, tuple)):
+    if isinstance(data, list | tuple):
         for item in data:
             remove_dict_key(item, key)
 
@@ -2675,7 +2701,7 @@ def find_dict_item(data: dict | list | tuple, key_path: str) -> Any:
         else:
             return None
 
-    elif isinstance(data, (list, tuple)):
+    elif isinstance(data, list | tuple):
         result = [find_dict_item(
             data=item,
             key_path=key_path,
@@ -3936,7 +3962,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
             include_none=True,
         )
 
-        for idx, val in enumerate(solutions_output):
+        for idx, _val in enumerate(solutions_output):
             solutions_output[idx]["Estimate"] = readable_duration_time(solutions_output[idx]["Estimate"])
 
     vulnerability_outputs["Check"] = results_output
@@ -5373,7 +5399,8 @@ def main():  # pragma: no cover
             username=params["credentials"].get("identifier"),
             password=params["credentials"].get("password"),
             token=token,
-            verify=not params.get("unsecure")
+            verify=not params.get("unsecure"),
+            connection_error_retries=arg_to_number(params.get("connection_error_retries")) or CONNECTION_ERRORS_RETRIES
         )
 
         results: CommandResults | list[CommandResults] | dict | str

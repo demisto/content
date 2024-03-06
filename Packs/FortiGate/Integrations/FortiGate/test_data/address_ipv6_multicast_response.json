@@ -1,0 +1,33 @@
+{
+    "http_method": "GET",
+    "size": 2,
+    "matched_count": 2,
+    "next_idx": 1,
+    "revision": "12345",
+    "results": [
+        {
+            "name": "Mario",
+            "q_origin_key": "Mario",
+            "ip6": "0000::/8",
+            "comment": "",
+            "color": 0,
+            "tagging": []
+        },
+        {
+            "name": "Luigi",
+            "q_origin_key": "Luigi",
+            "ip6": "0000:0000:0000:0000:0000:0000:0000:0000/128",
+            "comment": "aaaa",
+            "color": 0,
+            "tagging": []
+        }
+    ],
+    "vdom": "root",
+    "path": "firewall",
+    "name": "multicast-address6",
+    "status": "success",
+    "http_status": 200,
+    "serial": "12345",
+    "version": "v7.2.5",
+    "build": 1517
+}

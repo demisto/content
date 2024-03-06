@@ -60,28 +60,28 @@ configuration:
   display: ''
   type: 1
   required: false
-description: PhishUp prevents phishing attacks, protects your staff and your brand with AI
+description: PhishUp prevents phishing attacks, protects your staff and your brand with AI.
 display: PhishUp
 name: 6437c006-1d86-4cdc-89d5-23305f207e3a
 script:
   commands:
   - arguments:
     - default: true
-      description: Url for PhishUp Reputation Investigation
+      description: Url for PhishUp Reputation Investigation.
       isArray: true
       name: url
       required: true
-    description: Url for PhishUp Reputation Investigation
+    description: Url for PhishUp Reputation Investigation.
     name: url
     outputs:
     - contextPath: PhishUp.Url
-      description: Incoming URL
+      description: Incoming URL.
       type: String
     - contextPath: PhishUp.Result
-      description: response types "Clean", "Phish", "Error"
+      description: response types "Clean", "Phish", "Error".
       type: String
     - contextPath: PhishUp.Score
-      description: Phishup Engine Url Score
+      description: Phishup Engine Url Score.
       type: Number
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -96,25 +96,25 @@ script:
       description: The actual score.
       type: Number
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
-  - description: Get chosen action from PhishUp instance
+  - description: Get chosen action from PhishUp instance.
     name: phishup-get-chosen-action
     outputs:
     - contextPath: PhishUp.Action
-      description: Chosen action from PhishUp instance
+      description: Chosen action from PhishUp instance.
       type: String
   - arguments:
-    - description: takes investigate-url command result
+    - description: takes investigate-url command result.
       isArray: true
       name: URLs
-    description: Evaluation PhishUp URLs Response
+    description: Evaluation PhishUp URLs Response.
     name: phishup-evaluate-response
     outputs:
     - contextPath: PhishUp.Evaluation
-      description: returns "Phish" if any response has "Phish" result
+      description: returns "Phish" if any response has "Phish" result.
       type: String
-  dockerimage: demisto/python3:3.10.12.67728
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
   subtype: python3

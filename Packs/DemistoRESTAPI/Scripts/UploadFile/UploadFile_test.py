@@ -194,8 +194,38 @@ def test_upload_file(mocker):
     Validate the content of the HumanReadable.
     """
     mocker.patch('UploadFile.upload_file', return_value=RAW_RESPONSE)
-    readable, _ = upload_file_command({'incidentId': '1', 'entryID': '12@12', 'body': "test_bark"})
-    assert "test_bark" in readable
+    command_results = upload_file_command({'incidentId': '1', 'entryID': '12@12', 'body': "test_bark"})
+    assert "test_bark" in command_results[0].readable_output
+
+
+def test_upload_file_multiple_entry_ids(mocker):
+    """Unit test
+    Given
+    - Command args with multiple entry IDs.
+    When
+    - Running the upload_file_command function.
+    Then
+    - Validate that the API request was called for each entry ID.
+    """
+    execute_command_mocker = mocker.patch('UploadFile.demisto.executeCommand')
+    upload_file_command({'incidentId': '1', 'entryID': '1,2'})
+    assert execute_command_mocker.call_args_list[0][0][1]['entryID'] == '1'
+    assert execute_command_mocker.call_args_list[1][0][1]['entryID'] == '2'
+
+
+def test_upload_file_one_entry_id(mocker):
+    """Unit test
+    Given
+    - Command args with one entry ID.
+    When
+    - Running the upload_file_command function.
+    Then
+    - Validate that the API request was called only one entry ID.
+    """
+    execute_command_mocker = mocker.patch('UploadFile.demisto.executeCommand')
+    upload_file_command({'incidentId': '1', 'entryID': '1'})
+    assert len(execute_command_mocker.call_args_list) == 1
+    assert execute_command_mocker.call_args_list[0][0][1]['entryID'] == '1'
 
 
 RAW_RESPONSE_ERROR = [
@@ -411,5 +441,20 @@ def test_demisto_upload_file_as_attachment(mocker, target, service):
     """
     import UploadFile
     mocker.patch('UploadFile.demisto.executeCommand')
-    upload_file_command({'target': target})
+    upload_file_command({'target': target, 'entryID': '1'})
     assert f'{service}/upload/' in UploadFile.demisto.executeCommand.call_args[0][1]['uri']
+
+
+def test_upload_with_using_argument(mocker):
+    """Unit test
+    Given
+    - Command args with one entry ID.
+    When
+    - Running the upload_file_command function.
+    Then
+    - Validate that the API request was called only one entry ID.
+    """
+    execute_command_mocker = mocker.patch('UploadFile.demisto.executeCommand')
+    upload_file_command({'incidentId': '1', 'entryID': '1', 'using': 'instance_1'})
+    assert len(execute_command_mocker.call_args_list) == 1
+    assert execute_command_mocker.call_args_list[0][0][1]['using'] == 'instance_1'

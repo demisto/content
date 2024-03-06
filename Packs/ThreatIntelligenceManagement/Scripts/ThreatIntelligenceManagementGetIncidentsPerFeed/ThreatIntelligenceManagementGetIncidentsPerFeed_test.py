@@ -66,7 +66,7 @@ def search_indicators(fromDate='', toDate='', query='', size=None, page=None, va
     indicators = INDICATORS_TO_RETURN[investigation_id]
     indicators_to_return = [indicator for indicator in indicators if
                             [brand for brand in indicator['sourceBrands'] if source_brands in brand]]
-    return {'iocs': indicators_to_return}
+    return {'iocs': indicators_to_return, 'total': len(indicators_to_return)}
 
 
 def test_get_incidents_per_feed(mocker):

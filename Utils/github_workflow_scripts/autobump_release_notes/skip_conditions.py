@@ -19,6 +19,7 @@ PACK_METADATA_FILE = Pack.PACK_METADATA
 RELEASE_NOTES_DIR = Pack.RELEASE_NOTES
 LAST_SUITABLE_PR_UPDATE_TIME_DAYS = 14
 t = Terminal()
+FAILED_TO_MERGE = 'Failed to merge'
 
 
 class UpdateType(str, Enum):
@@ -43,6 +44,8 @@ class SkipReason:
     DIFFERENT_RN_METADATA_VERSIONS = 'Pack: {} has different rn version {}, and metadata version {}.'
     ALLOWED_BUMP_CONDITION = 'Pack {} version was updated from {} to {} version. Allowed bump only by + 1.'
     UNALLOWED_KEYS_CHANGED = 'Pack {} metadata file has different keys in master and branch: {}.'
+    FAILED_TO_MERGE = 'Cannot git merge this PR. It can happened when no mutual history between branch and master, ' \
+                      'for example in PR from forked repo.'
 
 
 class ConditionResult:
@@ -336,6 +339,8 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
         """
         if not conflicting_files:
             return SkipReason.NO_CONFLICTING_FILES
+        elif FAILED_TO_MERGE in conflicting_files:
+            return SkipReason.FAILED_TO_MERGE
         else:
             return SkipReason.CONFLICTING_FILES.format(
                 RELEASE_NOTES_DIR, PACK_METADATA_FILE, conflicting_files
@@ -390,7 +395,9 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
         try:
             self.git_repo.git.merge(f"origin/{pr_branch}", "--no-ff", "--no-commit")
         except GitCommandError as e:
-            print(f'{e}')
+            print(f'Got git error: {e=}')
+            if 'not something we can merge' in e.stderr:
+                return False, [FAILED_TO_MERGE]
             error = e.stdout
             if error:
                 error = error.replace("stdout: '", "").strip()
@@ -403,9 +410,8 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
                 file_name in files_check_to_conflict_with
                 for file_name in conflicting_files
             )
-        finally:
-            self.git_repo.git.merge("--abort")
-            self.git_repo.git.clean("-f")
+        self.git_repo.git.merge("--abort")
+        self.git_repo.git.clean("-f")
         return bool(conflict_only_with_given_files and conflicting_files), conflicting_files
 
 

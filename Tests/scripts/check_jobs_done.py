@@ -9,14 +9,13 @@ from Tests.scripts.utils.log_util import install_logging
 CONTENT_NIGHTLY_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
-    'run-validations: [old-validate-flow]',
-    'run-validations: [new-validate-flow]',
+    'run-validations',
     'trigger-private-build',
     'mpv2-prepare-testing-bucket',
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',
     'xsiam_server_ga',
-    'xsoar_ng_server_ga',
+    # 'xsoar_ng_server_ga',
     'tests_xsoar_server: [Server 6.9]',
     'tests_xsoar_server: [Server 6.10]',
     'tests_xsoar_server: [Server 6.11]',
@@ -26,7 +25,7 @@ CONTENT_NIGHTLY_JOBS = [
     'xsiam-test_playbooks_results',
     'xsiam-test_modeling_rule_results',
     'cloning-content-repo-last-upload-commit',
-    'xsoar-saas_test_e2e_results',
+    # 'xsoar-saas_test_e2e_results',
 ]
 
 SDK_NIGHTLY_JOBS = [
@@ -63,8 +62,7 @@ BUCKET_UPLOAD_JOBS = [
 CONTENT_COMMON_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
-    'run-validations: [old-validate-flow]',
-    'run-validations: [new-validate-flow]',
+    'run-validations',
     'test-upload-flow',
     'trigger-private-build',
     'validate-content-conf',

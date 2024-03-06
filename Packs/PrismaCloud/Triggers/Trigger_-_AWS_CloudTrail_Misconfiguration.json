@@ -1,0 +1,18 @@
+{
+  "trigger_id": "fc37d4039563569b21b5bebec0a92500",
+  "playbook_id": "Prisma Cloud Remediation - AWS CloudTrail Misconfiguration v2",
+  "suggestion_reason": "Recommended for AWS CloudTrail Misconfiguration alerts",
+  "description": "This trigger is responsible for handling AWS CloudTrail Misconfiguration alerts",
+  "trigger_name": "AWS CloudTrail Misconfiguration",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "AWS CloudTrail Misconfiguration"
+        }
+      ]
+    }
+  }
+}

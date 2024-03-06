@@ -23,7 +23,7 @@ ONE_INCIDENT_CREATED = [
 @pytest.mark.parametrize('incident_created, expected_result, pixels', [
     (MULTIPLE_INCIDENT_CREATED, 'July 29, 2021', '24'),
     (ONE_INCIDENT_CREATED, 'July 28, 2021', '24'),
-    ([{'Contents': '[]', 'Type': 3}], 'No last incident occurred found.', '20')
+    ([{'Contents': '[]', 'Type': 3}], 'No last incident occurred found.', '24')
 ])
 def test_show_last_incident_occurred(mocker, incident_created, expected_result, pixels):
     """

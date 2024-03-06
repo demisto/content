@@ -1,4 +1,4 @@
-This playbook remediates Prisma Cloud AWS IAM policy alerts.  It uses sub-playbooks that perform the remediation steps.
+This playbook remediates Prisma Cloud AWS IAM policy alerts. It uses sub-playbooks that perform the remediation steps.
 
 ## Dependencies
 
@@ -11,8 +11,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* PrismaCloud v2
-* Builtin
+* PrismaCloudV2
 
 ### Scripts
 
@@ -20,8 +19,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* prisma-cloud-alert-dismiss
 * aws-iam-get-account-password-policy
+* prisma-cloud-alert-dismiss
 * closeInvestigation
 
 ## Playbook Inputs

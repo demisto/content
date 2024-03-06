@@ -1,0 +1,19 @@
+{
+    "trigger_id": "7ccbb03cb795734415a0b6924a8d7aed",
+    "playbook_id": "Cortex ASM - ASM Alert",
+    "suggestion_reason": "Recommended for ASM alerts",
+    "description": "This trigger is responsible for handling ASM alerts",
+    "trigger_name": "ASM",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "alert_source",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "ASM"
+                }
+            ]
+        }
+    },
+    "fromVersion": "6.10.0"
+}

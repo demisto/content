@@ -1,6 +1,7 @@
 id: Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration v2
 version: -1
-fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
 name: Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration v2
 description: |-
   This playbook remediates Prisma Cloud AWS EC2 alerts.  It calls the following sub-playbooks to perform the remediation:
@@ -19,11 +20,12 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -38,7 +40,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 3bd78b35-5c67-4c29-82d3-56cd93cb2e1a
@@ -47,7 +48,7 @@ tasks:
       id: 3bd78b35-5c67-4c29-82d3-56cd93cb2e1a
       version: -1
       name: Is AWS - EC2 integration available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -60,9 +61,8 @@ tasks:
     scriptarguments:
       brandname:
         simple: AWS - EC2
-    results:
-    - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -77,7 +77,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "3":
     id: "3"
     taskid: 77885611-1518-41c5-8929-0da5c8de85cb
@@ -110,6 +109,7 @@ tasks:
           right:
             value:
               simple: "yes"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -124,7 +124,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "5":
     id: "5"
     taskid: a1526b70-d9ce-4d1c-8e36-4aaa1cf5d850
@@ -133,7 +132,7 @@ tasks:
       id: a1526b70-d9ce-4d1c-8e36-4aaa1cf5d850
       version: -1
       name: Auto remediate?
-      description: Determines whether or not to auto-remediate.
+      description: Determines whether or not to auto-remediate?
       type: condition
       iscommand: false
       brand: ""
@@ -143,6 +142,7 @@ tasks:
       "Yes":
       - "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -175,7 +175,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "6":
     id: "6"
     taskid: f8dfdf9c-3271-4644-89ce-2fdfd9f25e9f
@@ -192,6 +191,7 @@ tasks:
       '#none#':
       - "9"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -206,23 +206,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "7":
     id: "7"
-    taskid: 6875afa1-821e-4015-81a8-97e77b6316f5
+    taskid: 8941af46-893e-47e2-8119-670c65cf561e
     type: regular
     task:
-      id: 6875afa1-821e-4015-81a8-97e77b6316f5
+      id: 8941af46-893e-47e2-8119-670c65cf561e
       version: -1
       name: Close investigation
-      description: Close the current incident.
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
       type: regular
-      iscommand: false
+      iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
       - "8"
+    scriptarguments:
+      id:
+        complex:
+          root: incident
+          accessor: id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -237,7 +243,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "8":
     id: "8"
     taskid: 5bfb7869-0a96-4ca5-875c-1ec4c9072953
@@ -249,8 +254,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -265,7 +271,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "9":
     id: "9"
     taskid: 1b01f096-ed50-4e46-8dfc-1fc611535c7a
@@ -283,7 +288,6 @@ tasks:
       - "7"
       "yes":
       - "17"
-    continueonerror: true
     separatecontext: false
     conditions:
     - label: "yes"
@@ -312,6 +316,8 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -326,7 +332,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "10":
     id: "10"
     taskid: 1ac99665-2df1-40fe-8293-7d2513605e2f
@@ -378,6 +383,7 @@ tasks:
           right:
             value:
               simple: b82f90ce-ed8b-4b49-970c-2268b0a6c2e5
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -392,7 +398,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "14":
     id: "14"
     taskid: 0d732bc3-22a0-4b2e-8b03-4d8aa68b9389
@@ -421,6 +426,7 @@ tasks:
               complex:
                 root: inputs.policyId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -435,7 +441,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "15":
     id: "15"
     taskid: b5281377-31ef-472b-8699-6c94c222e807
@@ -448,7 +453,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -457,6 +462,7 @@ tasks:
         complex:
           root: inputs.policyId
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -476,7 +482,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "16":
     id: "16"
     taskid: 3d9a9afc-e7e3-4be6-8142-57b5ef3bffb2
@@ -489,11 +494,12 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
     separatecontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -508,7 +514,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "17":
     id: "17"
     taskid: f8385099-65e3-47ef-818d-0131c61c0d6f
@@ -549,8 +554,9 @@ tasks:
               field:
                 value:
                   simple: policyId
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -565,7 +571,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -591,12 +597,6 @@ view: |-
     }
   }
 inputs:
-- key: AutoUpdateEC2
-  value:
-    simple: "no"
-  required: false
-  description: Update AWS EC2 instance automatically?
-  playbookInputQuery:
 - key: policyId
   value:
     complex:
@@ -611,10 +611,28 @@ inputs:
               simple: policyId
   required: false
   description: Get the Prisma Cloud policy ID.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: AutoUpdateEC2
+  value:
+    simple: "no"
+  required: false
+  description: Update AWS EC2 instance automatically?
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - policyId
+  name: Incident Data
+  description: Relevant data regarding the incident.
+- inputs:
+  - AutoUpdateEC2
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication,
+    and recovery.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)
-contentitemexportablefields:
-  contentitemfields: {}
-system: true
+fromversion: 6.5.0

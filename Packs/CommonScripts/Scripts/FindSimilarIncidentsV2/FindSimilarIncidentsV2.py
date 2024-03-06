@@ -21,7 +21,7 @@ STATUS_MAP = {
     '2': 'Closed',
     '3': 'Closed'
 }
-INCIDENT_ALIAS = 'incident' if (demisto.demistoVersion().get('platform') == 'xsoar') else 'alert'
+INCIDENT_ALIAS = 'alert' if is_xsiam() else 'incident'
 
 
 def parse_input(csv):
