@@ -1753,7 +1753,8 @@ class IntegrationLogger(object):
             else:
                 if is_debug_mode():
                     #try ??
-                    text = censor_request_logs(text)
+                    if text.startswith('send:' or 'header'):
+                        text = censor_request_logs(text)
                     if text.startswith('send:'):
                         try:
                             
