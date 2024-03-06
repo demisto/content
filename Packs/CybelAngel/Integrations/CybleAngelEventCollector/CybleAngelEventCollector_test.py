@@ -31,6 +31,8 @@ class HttpRequestsMocker:
             start_date = params.get("start-date")
             events = create_events(1, amount_of_events=self.num_of_events, start_date=start_date)
             return create_mocked_response(events)
+        if method == "POST" and kwargs.get("full_url") == "https://auth.cybelangel.com/oauth/token":
+            return {"access_token": "new_access_token"}
         return None
 
     def expired_token_http_request_side_effect(
