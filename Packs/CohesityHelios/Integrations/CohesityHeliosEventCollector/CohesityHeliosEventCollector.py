@@ -307,7 +307,7 @@ def main() -> None:
     # Get helios service API url.
     base_url = urljoin(params.get('url'), API_VERSION)
     max_fetch: int = min(arg_to_number(params.get('max_fetch', MAX_EVENTS_PER_TYPE)),
-                         MAX_EVENTS_PER_TYPE)  # type: ignore[assignment]
+                         MAX_EVENTS_PER_TYPE)  # type: ignore[assignment, type-var]
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
