@@ -25,3 +25,4 @@ engineinfo: {}
 tests:
 - No tests (auto formatted)
 dockerimage45: demisto/ssdeep:1.0.0.23743
+fromversion: 6.10.0
