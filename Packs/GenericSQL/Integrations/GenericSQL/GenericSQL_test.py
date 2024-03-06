@@ -295,6 +295,7 @@ def test_sql_queries_with_empty_table(mocker):
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
     result = sql_query_execute(client, ARGS3)
     assert result[1] == EMPTY_OUTPUT  # entry context is found in the 2nd place in the result of the command
+    assert result[2] == []  # just ensuring a valid table is returned
 
 
 def test_mysql_integration():
