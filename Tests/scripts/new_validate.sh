@@ -16,7 +16,7 @@ if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_
         else
             PREV_VER="origin/master"
         fi
-        python3 -m demisto_sdk validate -a --graph --skip-pack-dependencies --prev-ver $PREV_VER --run-new-validate
+        python3 -m demisto_sdk validate -a --run-new-validate
     fi
 elif [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
     python3 -m demisto_sdk validate -g --post-commit --graph --skip-pack-dependencies --run-new-validate
