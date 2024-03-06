@@ -456,5 +456,3 @@ def main():
 
 if __name__ in ["__builtin__", "builtins", "__main__"]:
     main()
-
-register_module_line('AWS - CloudTrail', 'end', __line__())
