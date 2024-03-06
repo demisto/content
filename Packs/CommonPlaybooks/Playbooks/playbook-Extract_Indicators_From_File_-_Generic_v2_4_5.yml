@@ -215,6 +215,15 @@ tasks:
                     right:
                       value:
                         simple: UTF-8 Unicode text
+                  - operator: containsString
+                    left:
+                      value:
+                        simple: inputs.File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: JSON data
+                    ignorecase: true
                 - - operator: notContainsString
                     left:
                       value:
@@ -303,6 +312,8 @@ tasks:
                 transformers:
                 - operator: uniq
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -364,6 +375,15 @@ tasks:
               right:
                 value:
                   simple: UTF-8 Unicode
+            - operator: containsString
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: JSON data
+              ignorecase: true
           - - operator: notContainsString
               left:
                 value:

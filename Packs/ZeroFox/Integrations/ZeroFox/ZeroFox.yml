@@ -113,13 +113,13 @@ script:
       description: The ID of the rule group.
       type: Number
     - contextPath: ZeroFox.Alert.Status
-      description: The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested", or "Whitelisted".
+      description: The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted".
       type: String
     - contextPath: ZeroFox.Alert.Timestamp
-      description: The date-time string when an the alert was created, in ISO-8601 format.
+      description: The date-time string when an alert was created, in ISO-8601 format.
       type: Date
     - contextPath: ZeroFox.Alert.RuleName
-      description: The name of the rule on which an alert was created. Outputs "null" if the rule was deleted.
+      description: The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
       type: String
     - contextPath: ZeroFox.Alert.LastModified
       description: The date and time at which an alert was last modified.
@@ -140,7 +140,7 @@ script:
       description: The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, (account information or an incoming or outgoing content), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null.
       type: String
     - contextPath: ZeroFox.Alert.Notes
-      description: Notes made on an alert by the user.
+      description: Notes made on an alert.
       type: String
     - contextPath: ZeroFox.Alert.RuleID
       description: The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
@@ -161,11 +161,101 @@ script:
       name: username
       required: true
     outputs:
+    - contextPath: ZeroFox.Alert.AlertType
+      description: The type of an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.OffendingContentURL
+      description: The URL to the site containing content that triggered an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.Assignee
+      description: The user to which an alert is assigned.
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.ID
+      description: The ID of the entity corresponding to the triggered alert.
+      type: Number
+    - contextPath: ZeroFox.Alert.Entity.Name
+      description: The name of the entity corresponding to the triggered alert.
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.Image
+      description: The URL to the profile image of the entity on which an alert was created.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.ID
+      description: The ID of the entity term corresponding to the triggered alert.
+      type: Number
+    - contextPath: ZeroFox.Alert.EntityTerm.Name
+      description: The name of the entity term corresponding to the triggered alert.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.Deleted
+      description: Whether an entity term was deleted.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.ContentCreatedAt
+      description: The date-time string indicating when the alerted content was created, in ISO-8601 format.
+      type: Date
     - contextPath: ZeroFox.Alert.ID
       description: The ID of an alert.
       type: Number
-    - contextPath: ZeroFox.Alert.Assignee
-      description: The user to which an alert is assigned.
+    - contextPath: ZeroFox.Alert.RiskRating
+      description: The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info".
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Name
+      description: For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.URL
+      description: The URL at which you can view the basic details of the perpetrator.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.Timestamp
+      description: The timestamp of a post created by a perpetrator.
+      type: Date
+    - contextPath: ZeroFox.Alert.Perpetrator.Type
+      description: The type of perpetrator on which an alert was created. Can be an account, page, or post.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.ID
+      description: The ZeroFox resource ID of the alert perpetrator.
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Network
+      description: The network containing the offending content.
+      type: String
+    - contextPath: ZeroFox.Alert.RuleGroupID
+      description: The ID of the rule group.
+      type: Number
+    - contextPath: ZeroFox.Alert.Status
+      description: The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted".
+      type: String
+    - contextPath: ZeroFox.Alert.Timestamp
+      description: The date-time string when an alert was created, in ISO-8601 format.
+      type: Date
+    - contextPath: ZeroFox.Alert.RuleName
+      description: The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
+      type: String
+    - contextPath: ZeroFox.Alert.LastModified
+      description: The date and time at which an alert was last modified.
+      type: Date
+    - contextPath: ZeroFox.Alert.DarkwebTerm
+      description: Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details.
+      type: String
+    - contextPath: ZeroFox.Alert.Reviewed
+      description: Whether an alert was reviewed.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Escalated
+      description: Whether an alert was escalated.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Network
+      description: The network on which an alert was created.
+      type: String
+    - contextPath: ZeroFox.Alert.ProtectedSocialObject
+      description: The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, (account information or an incoming or outgoing content), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null.
+      type: String
+    - contextPath: ZeroFox.Alert.Notes
+      description: Notes made on an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.RuleID
+      description: The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
+      type: Number
+    - contextPath: ZeroFox.Alert.Tags
+      description: A list of an alert's tags.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityAccount
+      description: The account associated with the entity.
       type: String
   - name: zerofox-close-alert
     description: Closes an alert.
@@ -174,11 +264,101 @@ script:
       name: alert_id
       required: true
     outputs:
+    - contextPath: ZeroFox.Alert.AlertType
+      description: The type of an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.OffendingContentURL
+      description: The URL to the site containing content that triggered an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.Assignee
+      description: The user to which an alert is assigned.
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.ID
+      description: The ID of the entity corresponding to the triggered alert.
+      type: Number
+    - contextPath: ZeroFox.Alert.Entity.Name
+      description: The name of the entity corresponding to the triggered alert.
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.Image
+      description: The URL to the profile image of the entity on which an alert was created.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.ID
+      description: The ID of the entity term corresponding to the triggered alert.
+      type: Number
+    - contextPath: ZeroFox.Alert.EntityTerm.Name
+      description: The name of the entity term corresponding to the triggered alert.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.Deleted
+      description: Whether an entity term was deleted.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.ContentCreatedAt
+      description: The date-time string indicating when the alerted content was created, in ISO-8601 format.
+      type: Date
     - contextPath: ZeroFox.Alert.ID
       description: The ID of an alert.
       type: Number
+    - contextPath: ZeroFox.Alert.RiskRating
+      description: The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info".
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Name
+      description: For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.URL
+      description: The URL at which you can view the basic details of the perpetrator.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.Timestamp
+      description: The timestamp of a post created by a perpetrator.
+      type: Date
+    - contextPath: ZeroFox.Alert.Perpetrator.Type
+      description: The type of perpetrator on which an alert was created. Can be an account, page, or post.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.ID
+      description: The ZeroFox resource ID of the alert perpetrator.
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Network
+      description: The network containing the offending content.
+      type: String
+    - contextPath: ZeroFox.Alert.RuleGroupID
+      description: The ID of the rule group.
+      type: Number
     - contextPath: ZeroFox.Alert.Status
-      description: The status of an alert.
+      description: The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted".
+      type: String
+    - contextPath: ZeroFox.Alert.Timestamp
+      description: The date-time string when an alert was created, in ISO-8601 format.
+      type: Date
+    - contextPath: ZeroFox.Alert.RuleName
+      description: The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
+      type: String
+    - contextPath: ZeroFox.Alert.LastModified
+      description: The date and time at which an alert was last modified.
+      type: Date
+    - contextPath: ZeroFox.Alert.DarkwebTerm
+      description: Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details.
+      type: String
+    - contextPath: ZeroFox.Alert.Reviewed
+      description: Whether an alert was reviewed.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Escalated
+      description: Whether an alert was escalated.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Network
+      description: The network on which an alert was created.
+      type: String
+    - contextPath: ZeroFox.Alert.ProtectedSocialObject
+      description: The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, (account information or an incoming or outgoing content), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null.
+      type: String
+    - contextPath: ZeroFox.Alert.Notes
+      description: Notes made on an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.RuleID
+      description: The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
+      type: Number
+    - contextPath: ZeroFox.Alert.Tags
+      description: A list of an alert's tags.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityAccount
+      description: The account associated with the entity.
       type: String
   - name: zerofox-alert-request-takedown
     description: Requests a takedown of a specified alert.
@@ -187,11 +367,101 @@ script:
       name: alert_id
       required: true
     outputs:
+    - contextPath: ZeroFox.Alert.AlertType
+      description: The type of an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.OffendingContentURL
+      description: The URL to the site containing content that triggered an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.Assignee
+      description: The user to which an alert is assigned.
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.ID
+      description: The ID of the entity corresponding to the triggered alert.
+      type: Number
+    - contextPath: ZeroFox.Alert.Entity.Name
+      description: The name of the entity corresponding to the triggered alert.
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.Image
+      description: The URL to the profile image of the entity on which an alert was created.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.ID
+      description: The ID of the entity term corresponding to the triggered alert.
+      type: Number
+    - contextPath: ZeroFox.Alert.EntityTerm.Name
+      description: The name of the entity term corresponding to the triggered alert.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.Deleted
+      description: Whether an entity term was deleted.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.ContentCreatedAt
+      description: The date-time string indicating when the alerted content was created, in ISO-8601 format.
+      type: Date
     - contextPath: ZeroFox.Alert.ID
       description: The ID of an alert.
       type: Number
+    - contextPath: ZeroFox.Alert.RiskRating
+      description: The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info".
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Name
+      description: For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.URL
+      description: The URL at which you can view the basic details of the perpetrator.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.Timestamp
+      description: The timestamp of a post created by a perpetrator.
+      type: Date
+    - contextPath: ZeroFox.Alert.Perpetrator.Type
+      description: The type of perpetrator on which an alert was created. Can be an account, page, or post.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.ID
+      description: The ZeroFox resource ID of the alert perpetrator.
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Network
+      description: The network containing the offending content.
+      type: String
+    - contextPath: ZeroFox.Alert.RuleGroupID
+      description: The ID of the rule group.
+      type: Number
     - contextPath: ZeroFox.Alert.Status
-      description: The status of an alert.
+      description: The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted".
+      type: String
+    - contextPath: ZeroFox.Alert.Timestamp
+      description: The date-time string when an alert was created, in ISO-8601 format.
+      type: Date
+    - contextPath: ZeroFox.Alert.RuleName
+      description: The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
+      type: String
+    - contextPath: ZeroFox.Alert.LastModified
+      description: The date and time at which an alert was last modified.
+      type: Date
+    - contextPath: ZeroFox.Alert.DarkwebTerm
+      description: Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details.
+      type: String
+    - contextPath: ZeroFox.Alert.Reviewed
+      description: Whether an alert was reviewed.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Escalated
+      description: Whether an alert was escalated.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Network
+      description: The network on which an alert was created.
+      type: String
+    - contextPath: ZeroFox.Alert.ProtectedSocialObject
+      description: The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, (account information or an incoming or outgoing content), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null.
+      type: String
+    - contextPath: ZeroFox.Alert.Notes
+      description: Notes made on an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.RuleID
+      description: The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
+      type: Number
+    - contextPath: ZeroFox.Alert.Tags
+      description: A list of an alert's tags.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityAccount
+      description: The account associated with the entity.
       type: String
   - name: zerofox-modify-alert-tags
     description: Adds tags to and or removes tags from a specified alert.
@@ -269,7 +539,7 @@ script:
       description: The ID of the rule group.
       type: Number
     - contextPath: ZeroFox.Alert.Status
-      description: The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested", or "Whitelisted".
+      description: The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted".
       type: String
     - contextPath: ZeroFox.Alert.Timestamp
       description: The date-time string when an alert was created, in ISO-8601 format.
@@ -570,11 +840,101 @@ script:
       name: alert_id
       required: true
     outputs:
+    - contextPath: ZeroFox.Alert.AlertType
+      description: The type of an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.OffendingContentURL
+      description: The URL to the site containing content that triggered an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.Assignee
+      description: The user to which an alert is assigned.
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.ID
+      description: The ID of the entity corresponding to the triggered alert.
+      type: Number
+    - contextPath: ZeroFox.Alert.Entity.Name
+      description: The name of the entity corresponding to the triggered alert.
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.Image
+      description: The URL to the profile image of the entity on which an alert was created.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.ID
+      description: The ID of the entity term corresponding to the triggered alert.
+      type: Number
+    - contextPath: ZeroFox.Alert.EntityTerm.Name
+      description: The name of the entity term corresponding to the triggered alert.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.Deleted
+      description: Whether an entity term was deleted.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.ContentCreatedAt
+      description: The date-time string indicating when the alerted content was created, in ISO-8601 format.
+      type: Date
     - contextPath: ZeroFox.Alert.ID
       description: The ID of an alert.
       type: Number
+    - contextPath: ZeroFox.Alert.RiskRating
+      description: The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info".
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Name
+      description: For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.URL
+      description: The URL at which you can view the basic details of the perpetrator.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.Timestamp
+      description: The timestamp of a post created by a perpetrator.
+      type: Date
+    - contextPath: ZeroFox.Alert.Perpetrator.Type
+      description: The type of perpetrator on which an alert was created. Can be an account, page, or post.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.ID
+      description: The ZeroFox resource ID of the alert perpetrator.
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Network
+      description: The network containing the offending content.
+      type: String
+    - contextPath: ZeroFox.Alert.RuleGroupID
+      description: The ID of the rule group.
+      type: Number
     - contextPath: ZeroFox.Alert.Status
-      description: The status of an alert.
+      description: The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted".
+      type: String
+    - contextPath: ZeroFox.Alert.Timestamp
+      description: The date-time string when an alert was created, in ISO-8601 format.
+      type: Date
+    - contextPath: ZeroFox.Alert.RuleName
+      description: The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
+      type: String
+    - contextPath: ZeroFox.Alert.LastModified
+      description: The date and time at which an alert was last modified.
+      type: Date
+    - contextPath: ZeroFox.Alert.DarkwebTerm
+      description: Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details.
+      type: String
+    - contextPath: ZeroFox.Alert.Reviewed
+      description: Whether an alert was reviewed.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Escalated
+      description: Whether an alert was escalated.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Network
+      description: The network on which an alert was created.
+      type: String
+    - contextPath: ZeroFox.Alert.ProtectedSocialObject
+      description: The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, (account information or an incoming or outgoing content), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null.
+      type: String
+    - contextPath: ZeroFox.Alert.Notes
+      description: Notes made on an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.RuleID
+      description: The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
+      type: Number
+    - contextPath: ZeroFox.Alert.Tags
+      description: A list of an alert's tags.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityAccount
+      description: The account associated with the entity.
       type: String
   - name: zerofox-open-alert
     description: Opens an alert.
@@ -583,11 +943,101 @@ script:
       name: alert_id
       required: true
     outputs:
+    - contextPath: ZeroFox.Alert.AlertType
+      description: The type of an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.OffendingContentURL
+      description: The URL to the site containing content that triggered an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.Assignee
+      description: The user to which an alert is assigned.
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.ID
+      description: The ID of the entity corresponding to the triggered alert.
+      type: Number
+    - contextPath: ZeroFox.Alert.Entity.Name
+      description: The name of the entity corresponding to the triggered alert.
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.Image
+      description: The URL to the profile image of the entity on which an alert was created.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.ID
+      description: The ID of the entity term corresponding to the triggered alert.
+      type: Number
+    - contextPath: ZeroFox.Alert.EntityTerm.Name
+      description: The name of the entity term corresponding to the triggered alert.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.Deleted
+      description: Whether an entity term was deleted.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.ContentCreatedAt
+      description: The date-time string indicating when the alerted content was created, in ISO-8601 format.
+      type: Date
     - contextPath: ZeroFox.Alert.ID
       description: The ID of an alert.
       type: Number
+    - contextPath: ZeroFox.Alert.RiskRating
+      description: The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info".
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Name
+      description: For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.URL
+      description: The URL at which you can view the basic details of the perpetrator.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.Timestamp
+      description: The timestamp of a post created by a perpetrator.
+      type: Date
+    - contextPath: ZeroFox.Alert.Perpetrator.Type
+      description: The type of perpetrator on which an alert was created. Can be an account, page, or post.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.ID
+      description: The ZeroFox resource ID of the alert perpetrator.
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Network
+      description: The network containing the offending content.
+      type: String
+    - contextPath: ZeroFox.Alert.RuleGroupID
+      description: The ID of the rule group.
+      type: Number
     - contextPath: ZeroFox.Alert.Status
-      description: The status of an alert.
+      description: The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted".
+      type: String
+    - contextPath: ZeroFox.Alert.Timestamp
+      description: The date-time string when an alert was created, in ISO-8601 format.
+      type: Date
+    - contextPath: ZeroFox.Alert.RuleName
+      description: The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
+      type: String
+    - contextPath: ZeroFox.Alert.LastModified
+      description: The date and time at which an alert was last modified.
+      type: Date
+    - contextPath: ZeroFox.Alert.DarkwebTerm
+      description: Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details.
+      type: String
+    - contextPath: ZeroFox.Alert.Reviewed
+      description: Whether an alert was reviewed.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Escalated
+      description: Whether an alert was escalated.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Network
+      description: The network on which an alert was created.
+      type: String
+    - contextPath: ZeroFox.Alert.ProtectedSocialObject
+      description: The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, (account information or an incoming or outgoing content), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null.
+      type: String
+    - contextPath: ZeroFox.Alert.Notes
+      description: Notes made on an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.RuleID
+      description: The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
+      type: Number
+    - contextPath: ZeroFox.Alert.Tags
+      description: A list of an alert's tags.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityAccount
+      description: The account associated with the entity.
       type: String
   - name: zerofox-list-entities
     description: Lists all entities associated with the company of the authorized user.
@@ -717,7 +1167,7 @@ script:
       description: The ID of the rule group.
       type: Number
     - contextPath: ZeroFox.Alert.Status
-      description: The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested", or "Whitelisted".
+      description: The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted".
       type: String
     - contextPath: ZeroFox.Alert.Timestamp
       description: The date-time string when an alert was created, in ISO-8601 format.
@@ -782,11 +1232,135 @@ script:
       description: Additional notes to include in submission.
       type: textArea
     outputs:
-    - contextPath: ZeroFox.Alert.ID
-      description: The ID of the alert created.
+    - contextPath: ZeroFox.Alert.AlertType
+      description: The type of an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.OffendingContentURL
+      description: The URL to the site containing content that triggered an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.Assignee
+      description: The user to which an alert is assigned.
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.ID
+      description: The ID of the entity corresponding to the triggered alert.
       type: Number
+    - contextPath: ZeroFox.Alert.Entity.Name
+      description: The name of the entity corresponding to the triggered alert.
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.Image
+      description: The URL to the profile image of the entity on which an alert was created.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.ID
+      description: The ID of the entity term corresponding to the triggered alert.
+      type: Number
+    - contextPath: ZeroFox.Alert.EntityTerm.Name
+      description: The name of the entity term corresponding to the triggered alert.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.Deleted
+      description: Whether an entity term was deleted.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.ContentCreatedAt
+      description: The date-time string indicating when the alerted content was created, in ISO-8601 format.
+      type: Date
+    - contextPath: ZeroFox.Alert.ID
+      description: The ID of an alert.
+      type: Number
+    - contextPath: ZeroFox.Alert.RiskRating
+      description: The risk rating of an alert. Can be "Critical", "High", "Medium", "Low", or "Info".
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Name
+      description: For account, post, or page alerts, the perpetrator's social network account display name or the account from which the content was posted.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.URL
+      description: The URL at which you can view the basic details of the perpetrator.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.Timestamp
+      description: The timestamp of a post created by a perpetrator.
+      type: Date
+    - contextPath: ZeroFox.Alert.Perpetrator.Type
+      description: The type of perpetrator on which an alert was created. Can be an account, page, or post.
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.ID
+      description: The ZeroFox resource ID of the alert perpetrator.
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Network
+      description: The network containing the offending content.
+      type: String
+    - contextPath: ZeroFox.Alert.RuleGroupID
+      description: The ID of the rule group.
+      type: Number
+    - contextPath: ZeroFox.Alert.Status
+      description: The status of an alert. Can be "Open", "Closed", "Takedown:Accepted", "Takedown:Denied", "Takedown:Requested" and "Whitelisted".
+      type: String
+    - contextPath: ZeroFox.Alert.Timestamp
+      description: The date-time string when an alert was created, in ISO-8601 format.
+      type: Date
+    - contextPath: ZeroFox.Alert.RuleName
+      description: The name of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
+      type: String
+    - contextPath: ZeroFox.Alert.LastModified
+      description: The date and time at which an alert was last modified.
+      type: Date
+    - contextPath: ZeroFox.Alert.DarkwebTerm
+      description: Details about the dark web term on which an alert was created. Outputs "null" if the alert has no details.
+      type: String
+    - contextPath: ZeroFox.Alert.Reviewed
+      description: Whether an alert was reviewed.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Escalated
+      description: Whether an alert was escalated.
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Network
+      description: The network on which an alert was created.
+      type: String
+    - contextPath: ZeroFox.Alert.ProtectedSocialObject
+      description: The protected object corresponding to an alert. If the alert occurred on an entity term, the protected object will be an entity term name. If the alert occurred on a protected account, (account information or an incoming or outgoing content), and it was network defined, the protected object will be an account username. If the alert was not network-defined, the protected object will default to the account's display name. Otherwise, the protected account will be an account display name. For impersonation alerts, the protected object is null.
+      type: String
+    - contextPath: ZeroFox.Alert.Notes
+      description: Notes made on an alert.
+      type: String
+    - contextPath: ZeroFox.Alert.RuleID
+      description: The ID of the rule on which an alert was created. Outputs "null" if the rule has been deleted.
+      type: Number
+    - contextPath: ZeroFox.Alert.Tags
+      description: A list of an alert's tags.
+      type: String
+    - contextPath: ZeroFox.Alert.EntityAccount
+      description: The account associated with the entity.
+      type: String
     deprecated: false
     execution: false
+  - name: zerofox-send-alert-attachment
+    description: Sends an attachment to a specified alert.
+    arguments:
+    - name: alert_id
+      required: true
+      description: The ID of an alert. Can be retrieved running the zerofox-list-alerts command.
+    - name: attachment_type
+      description: The type of the attachment. Can be evidence "photo_id", "disruption_agreement", "trademark_information", "trademark"or "copyright".
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - evidence
+      - photo_id
+      - disruption_agreement
+      - trademark_information
+      - trademark
+      - copyright
+    - name: entry_id
+      description: The entry ID of the attachment.
+      required: true
+  - name: zerofox-get-alert-attachments
+    description: Retrieves the attachments of a specified alert.
+    arguments:
+    - name: alert_id
+      required: true
+      description: The ID of an alert. Can be retrieved running the zerofox-list-alerts command.
+    outputs:
+    - contextPath: ZeroFox.AlertAttachments.ID
+      description: The ID of an alert.
+    - contextPath: ZeroFox.AlertAttachments.Name
+      description: The name attachment of an alert.
   - name: zerofox-search-compromised-domain
     description: Looks for a given domain in Zerofox's CTI feeds.
     arguments:
@@ -814,14 +1388,14 @@ script:
       type: keyValue
     outputs:
     - contextPath: ZeroFox.CompromisedEmails.Domain
-      type: string
       description: Domain in which the search domain was found.
+      type: string
     - contextPath: ZeroFox.CompromisedEmails.Email
-      type: string
       description: Email involved in the threat.
-    - contextPath: ZeroFox.CompromisedEmails.CreatedAt
       type: string
+    - contextPath: ZeroFox.CompromisedEmails.CreatedAt
       description: Date in which the email was found related to a threat.
+      type: string
   - name: zerofox-search-malicious-ip
     description: Looks for malicious ips in ZeroFox's CTI feeds.
     arguments:
@@ -832,14 +1406,14 @@ script:
       type: keyValue
     outputs:
     - contextPath: ZeroFox.MaliciousIPs.Domain
-      type: string
       description: Domain in which the search domain was found.
+      type: string
     - contextPath: ZeroFox.MaliciousIPs.IPAddress
-      type: string
       description: IP in which the search domain was found.
-    - contextPath: ZeroFox.MaliciousIPs.CreatedAt
       type: string
+    - contextPath: ZeroFox.MaliciousIPs.CreatedAt
       description: Date in which the ip was found related to a threat.
+      type: string
   - name: zerofox-search-malicious-hash
     description: Looks for registered hashes in ZeroFox's CTI feeds.
     arguments:
@@ -888,7 +1462,7 @@ script:
     - contextPath: ZeroFox.Exploits.URLs
       description: URLs associated to the threat separated by commas.
       type: string
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.13.89009
   isfetch: true
   longRunning: false
   longRunningPort: false
