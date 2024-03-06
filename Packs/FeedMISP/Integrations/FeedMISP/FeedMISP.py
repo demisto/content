@@ -539,7 +539,7 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]):
         search_query_per_page = client.search_query(params_dict)
     if error_message := search_query_per_page.get('Error'):
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {error_message}")
-    demisto.setLastRun({'timestamp': last_run, 'params': params_dict})
+    demisto.setLastRun({'timestamp': last_run})
 
 
 def main():
