@@ -556,11 +556,6 @@
   script:
     - section_start "Validate Files and Yaml"
     - |
-      echo "set DEMISTO_SDK_GRAPH_FORCE_CREATE to false to avoid creating graph from scratch"
-      export DEMISTO_SDK_GRAPH_FORCE_CREATE=false
-      echo "DEMISTO_SDK_GRAPH_FORCE_CREATE was set to false to avoid creating graph from scratch"
-      echo $DEMISTO_SDK_GRAPH_FORCE_CREATE
-    - |
       ./Tests/scripts/linters_runner.sh
       ./Tests/scripts/new_validate.sh
     - section_end "Validate Files and Yaml"
