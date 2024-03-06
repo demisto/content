@@ -1,4 +1,4 @@
-Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
+Qualys VMDR lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 This integration was integrated and tested with version 2.0 of QualysVulnerabilityManagement
 
 ## Changes compared to V1
@@ -59,13 +59,15 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
 2. Search for Qualys v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Username | True |
-    | Password | True |
+    | **Parameter**                      | **Required** |
+    |------------------------------------| --- |
+    | Server URL                         | True |
+    | Username                           | True |
+    | Password                           | True |
     | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+    | Use system proxy settings          | False |
+    | First fetch time                   | True |
+    | Fetch event Limit                  | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
