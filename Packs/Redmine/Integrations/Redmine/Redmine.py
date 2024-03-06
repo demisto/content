@@ -43,16 +43,16 @@ ISSUE_PRIORITY_DICT = {
 class Client(BaseClient):
     def __init__(self, server_url, api_key, verify=True, proxy=False, headers=None, auth=None, project_id=None):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
+        
         self._post_put_header = {'Content-Type': 'application/json', 'X-Redmine-API-Key': api_key}
         self._upload_file_header = {'Content-Type': 'application/octet-stream', 'X-Redmine-API-Key': api_key}
         self._get_header = {'X-Redmine-API-Key': api_key}
         self._project_id = project_id
 
-    def create_issue_request(self, params, project_id=None):
-        params['project_id'] = project_id or self._project_id or None
-        params = assign_params(**params)
-        uploads = params.pop('uploads', None)
-        body_for_request = {'issue': params}
+    def create_issue_request(self, args, project_id=None):
+        remove_nulls_from_dictionary(args)
+        uploads = args.pop('uploads', None) ## to remove the out and in of uploads
+        body_for_request = {'issue': args}
         if uploads:
             body_for_request['issue']['uploads'] = uploads
         response = self._http_request('POST', '/issues.json', params={},
@@ -60,7 +60,7 @@ class Client(BaseClient):
         return response
 
     def create_file_token_request(self, args, entry_id):
-        file_content = get_file_name_and_content(entry_id)
+        file_content = get_file_content(entry_id)
         response = self._http_request('POST', '/uploads.json', params=args, headers=self._upload_file_header,
                                       data=file_content)
         return response
@@ -187,7 +187,7 @@ def map_predefined_values_to_id(predefined_value, converter_dict, error_message)
     return None
 
 
-def convert_args_to_request_format(args):
+def convert_args_to_request_format(args): #put pop in line, remove exceptions
     tracker_id = args.pop('tracker_id', None)
     status_id = args.pop('status_id', None)
     priority_id = args.pop('priority_id', None)
@@ -209,10 +209,10 @@ def convert_args_to_request_format(args):
             raise DemistoException("Custom fields not in format, please follow the instructions")
 
     if watcher_user_ids:
-        args['watcher_user_ids'] = f'[{watcher_user_ids}]'
+        args['watcher_user_ids'] = argToList(watcher_user_ids)
 
 
-def get_file_name_and_content(entry_id: str) -> bytes:
+def get_file_content(entry_id: str) -> bytes:
     """Returns the XSOAR file entry's content.
 
     Args:
@@ -247,10 +247,10 @@ def handle_file_attachment(client: Client, args: Dict[str, Any]):
             file_description = args.pop('file_description', '')
             content_type = args.pop('file_content_type', '')
             args_for_file = assign_params(file_name=file_name, content_type=content_type)
-            response = client.create_file_token_request(args_for_file, entry_id)
-            if 'upload' not in response:
+            token_response = client.create_file_token_request(args_for_file, entry_id)
+            if 'upload' not in token_response:
                 raise DemistoException(f"Could not upload file with entry id {entry_id}")
-            uploads = assign_params(token=response['upload'].get('token', ''),
+            uploads = assign_params(token=token_response['upload'].get('token', ''),
                                     content_type=content_type,
                                     filename=file_name,
                                     description=file_description)
@@ -283,7 +283,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
     handle_file_attachment(client, args)
     try:
         convert_args_to_request_format(args)
-        project_id = args.pop('project_id', None)
+        project_id = args.pop('project_id', client._project_id)
         response = client.create_issue_request(args, project_id)
         issue_response = response['issue']
         headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'estimated_hours', 'created_on',

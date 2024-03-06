@@ -118,8 +118,16 @@ script:
       description:  Enter the file content type of the file you attached
       type: textArea
     outputs:
-      - contextPath: Redmine.Issue
-        description: Create a new issue
+      - contextPath: Redmine.Issue.id
+        description: The ID of the new issue.
+      - contextPath: Redmine.Issue.priority.id
+        description: The ID of the priority of the issue.
+      - contextPath: Redmine.Issue.subject.id
+        description: The ID of the subject of the issue.
+      - contextPath: Redmine.Issue.tracker.id
+        description: The ID of the tracker of the issue.
+      - contextPath: Redmine.Issue.project.id
+        description: The ID of the project of the issue.
   - name: redmine-issue-list
     description: Display a list of issues
     arguments:
