@@ -22,7 +22,7 @@ def associate_indicator_to_incident(indicator_value: Any) -> None:
     }
 
     res = execute_command('associateIndicatorToIncident', cmd_args)
-    
+
     if (res != 'done'):
         raise Exception(f"Failed to associate {indicator_value} with incident {incident_id}")
 
