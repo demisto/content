@@ -686,7 +686,7 @@ def resolve_xsoar_close_reason(xdr_close_reason: str):
     """
 
     # Check if incoming XDR close-reason has a non-default mapping to XSOAR close-reason.
-    if demisto.params().get("custom_xdr_to_xsoar_close_reason_mapping"):
+    if demisto.params().get("custom_xdr_to_xsoar_close_reason_mapping"):,
         custom_xdr_to_xsoar_close_reason_mapping = comma_separated_mapping_to_dict(
             demisto.params().get("custom_xdr_to_xsoar_close_reason_mapping")
         )
