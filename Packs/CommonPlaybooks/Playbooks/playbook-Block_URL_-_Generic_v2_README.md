@@ -14,27 +14,27 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* PAN-OS - Block URL - Custom URL Category
 * Sophos Firewall - Block URL
+* Prisma SASE - Block URL
 * Checkpoint - Block URL
+* PAN-OS - Block URL - Custom URL Category
 
 ### Integrations
 
-* Netcraft
 * Forcepoint
 * Zscaler
 
 ### Scripts
 
-* SetAndHandleEmpty
 * IsIntegrationAvailable
+* SetAndHandleEmpty
 
 ### Commands
 
 * fp-add-address-to-category
-* netcraft-report-attack
-* appendIndicatorField
 * zscaler-blacklist-url
+* netcraft-attack-report
+* appendIndicatorField
 
 ## Playbook Inputs
 
@@ -52,6 +52,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | EDLServerIP | EDL Server IP Address |  | Optional |
 | device-group | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
 | Tag | Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query. |  | Optional |
+| Folder | For Prisma SASE usage - Specify the scope for a newly created security rule to be applied.<br/>Remember, this input will only be used when there is no input to the CategoryName.<br/>Default: Shared | Shared | Optional |
 
 ## Playbook Outputs
 
