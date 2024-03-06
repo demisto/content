@@ -6,7 +6,7 @@
     "name": "Phishing Domain Hunting New Suspicious Domain",
     "prevName": "New Suspicious Domain",
     "color": "#F8E7A5",
-    "playbookId": "Phishing Domain Hunting New Suspicious Domain",
+    "playbookId": "New Suspicious Domain Check",
     "hours": 0,
     "days": 0,
     "weeks": 0,
