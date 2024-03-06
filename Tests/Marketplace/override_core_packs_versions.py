@@ -35,9 +35,13 @@ def should_override_locked_corepacks_file(marketplace: str, last_upload_commit: 
     # Get the current file content
     current_override_content = GCPConfig.corepacks_override_contents
 
+
     # If the files are different and the current marketplace is in the override file we override
     if current_override_content != last_commit_content and marketplace in current_override_content:
-        return True
+        updated_corepacks_content = current_override_content.get(marketplace).get('updated_corepacks_content')
+        if updated_corepacks_content:
+            logging.info('current marketplace contains updated core packs content, overriding.')
+            return True
     return False
 
 
