@@ -1,8 +1,8 @@
 commonfields:
-  id: VirusTotal (API v3)
+  id: VirusTotal (API v3) mohl
   version: -1
-name: VirusTotal (API v3)
-display: VirusTotal (API v3)
+name: VirusTotal (API v3) mohl
+display: VirusTotal (API v3) mohl
 fromversion: 5.5.0
 category: Data Enrichment & Threat Intelligence
 description: Analyzes suspicious hashes, URLs, domains, and IP addresses.

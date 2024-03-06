@@ -398,7 +398,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'files/{file_hash}/behaviours',
-            params={'limit': limit}
+            params={'limit': limit},
+            ok_codes=(404, 429, 200)
         )
 
     def passive_dns_data(self, id: dict, limit: int) -> dict:
@@ -2297,26 +2298,31 @@ def file_sandbox_report_command(client: Client, args: dict) -> CommandResults:
     assert isinstance(limit, int)  # mypy fix
     raise_if_hash_not_valid(file_hash)
     raw_response = client.file_sandbox_report(file_hash, limit)
-    data = raw_response['data']
-    return CommandResults(
-        f'{INTEGRATION_ENTRY_CONTEXT}.SandboxReport',
-        'id',
-        readable_output=tableToMarkdown(
-            f'Sandbox Reports for file hash: {file_hash}',
-            [
-                {
-                    'id': item['id'],
-                    **item['attributes'],
-                    'link': item['links']['self']
-                } for item in data
-            ],
-            headers=['analysis_date', 'last_modification_date', 'sandbox_name', 'link'],
-            removeNull=True,
-            headerTransform=underscoreToCamelCase
-        ),
-        outputs=data,
-        raw_response=raw_response
-    )
+    if 'data' in raw_response:
+        data = raw_response['data']
+        return CommandResults(
+            f'{INTEGRATION_ENTRY_CONTEXT}.SandboxReport',
+            'id',
+            readable_output=tableToMarkdown(
+                f'Sandbox Reports for file hash: {file_hash}',
+                [
+                    {
+                        'id': item['id'],
+                        **item['attributes'],
+                        'link': item['links']['self']
+                    } for item in data
+                ],
+                headers=['analysis_date', 'last_modification_date', 'sandbox_name', 'link'],
+                removeNull=True,
+                headerTransform=underscoreToCamelCase
+            ),
+            outputs=data,
+            raw_response=raw_response
+        )
+    elif raw_response.get('error', {}).get('code') == 'NotFoundError':
+        return CommandResults(readable_output=f'{file_hash} not found.')
+    else:
+        return CommandResults(readable_output='Error API Quota Exceeded.')
 
 
 def passive_dns_data(client: Client, args: dict) -> CommandResults:
