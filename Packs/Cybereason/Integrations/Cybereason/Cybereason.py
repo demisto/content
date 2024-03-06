@@ -63,6 +63,10 @@ PROCESS_HEADERS = [element['header'] for element in PROCESS_INFO]
 MALOP_HEADERS = [
     'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects', 'AffectedMachine', 'InvolvedHash']
 
+SINGLE_MALOP_HEADERS = [
+    'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'InvolvedHash']
+
+
 DOMAIN_HEADERS = [
     'Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved', 'WasEverResolvedAsASecondLevelDomain', 'Malicious',
     'SuspicionsCount']
@@ -70,6 +74,8 @@ DOMAIN_HEADERS = [
 USER_HEADERS = ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']
 
 SENSOR_HEADERS = ['MachineID', 'MachineName', 'MachineFQDN', 'GroupID', 'GroupName']
+
+PROCESS_URL_HEADERS = ['URL', 'ProcessID']
 
 CONNECTION_INFO = [
     {'field': 'elementDisplayName', 'header': 'Name', 'type': 'simple'},
@@ -1938,6 +1944,68 @@ def get_machine_details_command(client: Client, args: dict):
             outputs_key_field='MachineID',
             outputs=outputs)
 
+def query_malop_management_command(client:Client, args:dict):
+    malop_guid = args.get('malopGuid')
+    json_body = {
+        "search":{
+            "malop":{
+                "guid":f'{malop_guid}'
+            }
+        },
+        "pagination":{
+            "offset":0
+        }
+    }
+    demisto.info(f"json_body in query_malop_management_command: {json_body}")
+    response = client.cybereason_api_call('POST', '/rest/mmng/v2/malops', json_body=json_body)
+    data = response["data"]
+    demisto.info(f"api response in query_malop_management_command : {data}")
+    if dict_safe_get(response, ['data','data']) == []:
+        raise DemistoException("Could not find details for the provided MalopGuid" + malop_guid)
+    else:
+        for single_malop in response["data"]["data"]:
+            guid = single_malop.get("guid","")
+            creation_time = single_malop.get("creationTime","")
+            malop_last_update_time = single_malop.get("lastUpdateTime","")
+            management_status = single_malop.get("investigationStatus","")
+            involved_hashes = single_malop.get("rootCauseElementHashes",[])
+            if single_malop["isEdr"]:
+                link =  SERVER + '/#/malop/' + guid
+            else:
+                link = SERVER +'/#/detection-malop/' + guid
+                
+        outputs = []
+        malop_output = {
+                'GUID': guid,
+                'Link': link,
+                'CreationTime': creation_time,
+                'LastUpdateTime': malop_last_update_time,
+                'Status': management_status,
+                'InvolvedHash': involved_hashes
+            }
+        outputs.append(malop_output)
+        return CommandResults(
+        readable_output=tableToMarkdown('Cybereason Malop', outputs, headers=SINGLE_MALOP_HEADERS) if outputs else 'No malop found',
+        outputs_prefix='Cybereason.Malops',
+        outputs_key_field='GUID',
+        outputs=outputs)
+
+def cybereason_process_attack_tree_command(client:Client, args:dict):
+    process_guid_list = argToList(args.get('processGuid'))
+    outputs = []
+    for guid in process_guid_list:
+        url = SERVER + "/#/processTree?guid=" + guid + "&viewedGuids=" + guid + "&rootType=Process"
+        process_output = {
+                'ProcessID': guid,
+                'URL': url,
+            }
+        outputs.append(process_output)
+    return CommandResults(
+            readable_output=tableToMarkdown(
+                'Process Attack Tree URL', outputs, headers=PROCESS_URL_HEADERS) if outputs else empty_output_message,
+            outputs_prefix='Cybereason.Process',
+            outputs_key_field='ProcessID',
+            outputs=outputs)
 
 def get_machine_details_command_pagination_params(args: dict) -> dict:
     '''
@@ -2106,6 +2174,12 @@ def main():
 
         elif demisto.command() == 'cybereason-get-machine-details':
             return_results(get_machine_details_command(client, args))
+        
+        elif demisto.command() == 'cybereason-query-malop-management':
+            return_results(query_malop_management_command(client, args))
+        
+        elif demisto.command() == 'cybereason-process-attack-tree':
+            return_results(cybereason_process_attack_tree_command(client, args))
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented.')

@@ -363,6 +363,19 @@ script:
       description: Malop managemant status.
       type: string
   - arguments:
+    - description: malopGuid of the Cybereason Malop.
+      name: malopGuid
+      required: true
+    description: Get Malop Details.
+    name: cybereason-query-malop-management
+  - arguments:
+    - description: processGuid of the Cybereason Malop.
+      name: processGuid
+      required: true
+    description: Get Process Attack Tree URL.
+    name: cybereason-process-attack-tree
+
+  - arguments:
     - description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved with the command cybereason-query-malops command).
       name: malopGuids
       required: true
