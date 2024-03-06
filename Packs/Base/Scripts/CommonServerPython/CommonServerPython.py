@@ -11751,6 +11751,47 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
 
 
+def comma_separated_mapping_to_dict(raw_text):
+    """
+     Transforming a textual comma-separated mapping into a dictionary object.
+
+    :type raw_text: ``str``
+    :param raw_text: Comma-separated mapping e.g ('key1=value1', 'key2=value2', ...)
+
+    :rtype: ``dict``
+    :return: Validated dictionary of the raw mapping e.g {'key1': 'value1', 'key2': 'value2', ...}
+    """
+    demisto.debug("comma_separated_mapping_to_dict "
+                  ">> Resolving comma-separated input mapping: {raw_text}".format(raw_text=raw_text))
+
+    mapping_dict = {}  # type: Dict[str, str]
+    # If a proper mapping was not provided, return an empty dict.
+    if not raw_text:
+        return mapping_dict
+
+    key_value_pairs = raw_text.split(',')
+
+    for pair in key_value_pairs:
+        # Trimming trailing whitespace
+        pair = pair.strip()
+
+        try:
+            key, value = pair.split('=')
+        except ValueError:
+            demisto.error("Error: Invalid mapping was provided. "
+                          "Expected comma-separated mapping of format `key1=value1, key2=value2, ...`")
+            key = value = ''
+
+        if key in mapping_dict:
+            demisto.debug(
+                "comma_separated_mapping_to_dict "
+                "Warning: duplicate key provided for {key}: using latter value: {value}".format(key=key, value=value)
+            )
+        mapping_dict[key] = value
+    demisto.debug("comma_separated_mapping_to_dict << Resolved mapping: {mapping_dict}".format(mapping_dict=mapping_dict))
+    return mapping_dict
+
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################
