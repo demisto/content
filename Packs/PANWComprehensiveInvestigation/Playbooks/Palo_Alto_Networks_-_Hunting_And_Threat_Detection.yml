@@ -58,6 +58,7 @@ tasks:
       - "96"
       - "108"
       - "109"
+      - "175"
     scriptarguments:
       MD5:
         complex:
@@ -84,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 740
+          "y": 640
         }
       }
     note: false
@@ -196,6 +197,7 @@ tasks:
       - "112"
       - "90"
       - "113"
+      - "184"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -205,6 +207,9 @@ tasks:
             value:
               simple: inputs.IPAddresses
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -217,7 +222,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
@@ -251,8 +255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1930,
-          "y": 360
+          "x": 2440,
+          "y": 400
         }
       }
     note: false
@@ -826,7 +830,7 @@ tasks:
       {
         "position": {
           "x": 590,
-          "y": 1600
+          "y": 1610
         }
       }
     note: false
@@ -913,7 +917,7 @@ tasks:
       {
         "position": {
           "x": 1220,
-          "y": 1565
+          "y": 1610
         }
       }
     note: false
@@ -943,8 +947,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1930,
-          "y": 2650
+          "x": 2440,
+          "y": 2715
         }
       }
     note: false
@@ -983,8 +987,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 1600
+          "x": 4210,
+          "y": 1360
         }
       }
     note: false
@@ -1036,8 +1040,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 2090
+          "x": 4050,
+          "y": 1930
         }
       }
     note: false
@@ -1085,8 +1089,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 2460
+          "x": 4050,
+          "y": 2300
         }
       }
     note: false
@@ -1144,8 +1148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5110,
-          "y": 1080
+          "x": -3820,
+          "y": 1095
         }
       }
     note: false
@@ -1203,8 +1207,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2220,
-          "y": 1120
+          "x": 3310,
+          "y": 1190
         }
       }
     note: false
@@ -1321,8 +1325,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5020,
-          "y": 1300
+          "x": 4710,
+          "y": 1170
         }
       }
     note: false
@@ -1701,8 +1705,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5020,
-          "y": 2460
+          "x": 5270,
+          "y": 1825
         }
       }
     note: false
@@ -1747,8 +1751,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5020,
-          "y": 1900
+          "x": 4990,
+          "y": 1610
         }
       }
     note: false
@@ -1788,8 +1792,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 1745
+          "x": 4050,
+          "y": 1610
         }
       }
     note: false
@@ -1921,8 +1925,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 1255
+          "x": 4050,
+          "y": 1170
         }
       }
     note: false
@@ -1952,8 +1956,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 985
+          "x": 4050,
+          "y": 1025
         }
       }
     note: false
@@ -2101,11 +2105,14 @@ tasks:
       id: c537fc45-5e32-4933-8e7a-bd8f11b78b77
       version: -1
       name: Autofocus Query Samples, Sessions and Tags
+      description: |-
+        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
+
+        The playbook supports searching both the Samples API and the sessions API.
       playbookName: Autofocus Query Samples, Sessions and Tags
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -2233,8 +2240,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5020,
-          "y": 1695
+          "x": 4990,
+          "y": 1360
         }
       }
     note: false
@@ -2276,8 +2283,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2280,
-          "y": 1665
+          "x": 3370,
+          "y": 1735
         }
       }
     note: false
@@ -2325,8 +2332,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2280,
-          "y": 2185
+          "x": 3370,
+          "y": 2060
         }
       }
     note: false
@@ -2467,8 +2474,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5020,
-          "y": 985
+          "x": 4710,
+          "y": 1025
         }
       }
     note: false
@@ -2498,8 +2505,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2220,
-          "y": 985
+          "x": 3310,
+          "y": 1025
         }
       }
     note: false
@@ -2560,7 +2567,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5110,
+          "x": -3820,
           "y": 910
         }
       }
@@ -2610,8 +2617,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5110,
-          "y": 1650
+          "x": -4060,
+          "y": 1695
         }
       }
     note: false
@@ -2659,8 +2666,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5110,
-          "y": 2430
+          "x": -4260,
+          "y": 2360
         }
       }
     note: false
@@ -2708,8 +2715,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5110,
-          "y": 2015
+          "x": -4260,
+          "y": 2005
         }
       }
     note: false
@@ -2853,8 +2860,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2280,
-          "y": 1460
+          "x": 3370,
+          "y": 1530
         }
       }
     note: false
@@ -3393,8 +3400,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 2265
+          "x": 4050,
+          "y": 2105
         }
       }
     note: false
@@ -3791,26 +3798,424 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "175":
+    id: "175"
+    taskid: 90434b05-2785-4f62-8592-969be678a1dc
+    type: title
+    task:
+      id: 90434b05-2785-4f62-8592-969be678a1dc
+      version: -1
+      name: Cortex XDR hash search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "182"
+    separatecontext: false
     continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "177":
+    id: "177"
+    taskid: 2661d1f8-17f1-4fcd-8729-13d47ba43311
+    type: regular
+    task:
+      id: 2661d1f8-17f1-4fcd-8729-13d47ba43311
+      version: -1
+      name: Search for the hash in alerts
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "178"
+    scriptarguments:
+      actor_process_image_sha256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "178":
+    id: "178"
+    taskid: b7b37a2f-a6ac-4c05-8588-daee3fc696b5
+    type: condition
+    task:
+      id: b7b37a2f-a6ac-4c05-8588-daee3fc696b5
+      version: -1
+      name: Is the hash detected by Cortex XDR?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "179"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Alert
+                accessor: internal_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "179":
+    id: "179"
+    taskid: d352ae69-ed2f-40c7-87e8-b8b33e48bbb4
+    type: regular
+    task:
+      id: d352ae69-ed2f-40c7-87e8-b8b33e48bbb4
+      version: -1
+      name: Set detected IP's
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedIPs
+      value:
+        complex:
+          root: PaloAltoNetworksXDR.Alert
+          accessor: agent_ip_addresses
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "182":
+    id: "182"
+    taskid: 5a14ea5b-907d-4925-8e96-b1a9430e15ab
+    type: condition
+    task:
+      id: 5a14ea5b-907d-4925-8e96-b1a9430e15ab
+      version: -1
+      name: Is Cortex XDR is enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "177"
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "184":
+    id: "184"
+    taskid: b9ed484d-e2db-48bd-8e42-9b5d5aaf1180
+    type: title
+    task:
+      id: b9ed484d-e2db-48bd-8e42-9b5d5aaf1180
+      version: -1
+      name: Prisma Cloud IP search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "185"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4690,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "185":
+    id: "185"
+    taskid: 1581d291-9a38-483e-842a-91aa3a4b7953
+    type: condition
+    task:
+      id: 1581d291-9a38-483e-842a-91aa3a4b7953
+      version: -1
+      name: Is Prisma Cloud enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "186"
+    scriptarguments:
+      brandname:
+        simple: PrismaCloud v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4690,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "186":
+    id: "186"
+    taskid: 468b88d6-259c-4857-8f97-aa65a5589357
+    type: regular
+    task:
+      id: 468b88d6-259c-4857-8f97-aa65a5589357
+      version: -1
+      name: Prisma Cloud search IP
+      description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to limit the results returning, use "limit search records to" at the end of the RQL query, followed by a value from one of these options: 1, 10, 100, 1000, and 10,000.'
+      script: '|||prisma-cloud-network-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "187"
+    scriptarguments:
+      query:
+        simple: network from vpc.flow_record where source.ip=${inputs.IPAddresses}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4690,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "187":
+    id: "187"
+    taskid: 14629675-a0f1-460b-8f0f-e9d91acead33
+    type: condition
+    task:
+      id: 14629675-a0f1-460b-8f0f-e9d91acead33
+      version: -1
+      name: Are there any relevant IP's?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "188"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Network.Node.ipAddr
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4690,
+          "y": 1585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "188":
+    id: "188"
+    taskid: 5d9a51d2-a163-42c0-815c-cee12e656fcb
+    type: regular
+    task:
+      id: 5d9a51d2-a163-42c0-815c-cee12e656fcb
+      version: -1
+      name: Set detected IPs
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedIPs
+      value:
+        complex:
+          root: PrismaCloud.Network.Node
+          accessor: ipAddr
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4690,
+          "y": 2005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
+      "104_55_#default#": 0.19,
+      "10_110_yes": 0.85,
       "10_55_#default#": 0.19,
-      "26_23_#default#": 0.81,
-      "3_4_#default#": 0.82,
-      "43_4_#default#": 0.61,
-      "48_4_#default#": 0.8,
-      "5_23_#default#": 0.79,
-      "84_55_#default#": 0.81,
-      "92_55_#default#": 0.79
+      "129_23_#default#": 0.12,
+      "178_4_#default#": 0.1,
+      "182_4_#default#": 0.1,
+      "18_100_yes": 0.41,
+      "18_23_#default#": 0.15,
+      "21_23_#default#": 0.32,
+      "21_86_yes": 0.41,
+      "26_23_#default#": 0.11,
+      "31_23_#default#": 0.12,
+      "35_4_#default#": 0.42,
+      "3_2_yes": 0.4,
+      "3_4_#default#": 0.25,
+      "43_4_#default#": 0.19,
+      "48_4_#default#": 0.24,
+      "5_112_yes": 0.49,
+      "5_184_yes": 0.85,
+      "5_23_#default#": 0.24,
+      "66_23_#default#": 0.1,
+      "67_55_#default#": 0.25,
+      "68_4_#default#": 0.1,
+      "69_55_#default#": 0.18,
+      "70_23_#default#": 0.29,
+      "82_4_#default#": 0.26,
+      "84_55_#default#": 0.1,
+      "85_55_#default#": 0.23,
+      "92_55_#default#": 0.11
     },
     "paper": {
       "dimensions": {
         "height": 4225,
-        "width": 10510,
-        "x": -5110,
+        "width": 10340,
+        "x": -4690,
         "y": 10
       }
     }

@@ -3,27 +3,36 @@ With the received indicators, the playbook leverages data received by PANW produ
 The output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Convert file hash to corresponding hashes
-* PAN-OS Query Logs For Indicators
+
 * Autofocus Query Samples, Sessions and Tags
+* PAN-OS Query Logs For Indicators
+* Convert file hash to corresponding hashes
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
-* IsInternalHostName
+
 * SetAndHandleEmpty
+* IsInternalHostName
+* IsIntegrationAvailable
 * IsIPInRanges
 
 ### Commands
-* cdl-query-threat-logs
+
 * cdl-query-url-logs
+* xdr-get-alerts
+* cdl-query-threat-logs
 * cdl-query-traffic-logs
+* prisma-cloud-network-search
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -38,6 +47,7 @@ This playbook does not use any integrations.
 | InternalHostRegex | This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. If the hosts match the organization's naming convention. For example the host testpc1 will have the following regex \\w\{6\}\\d\{1\} |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -49,5 +59,7 @@ This playbook does not use any integrations.
 | PANWHunting.DetectedExternalHosts | External host names detected based on fields and inputs in your search. | string |
 
 ## Playbook Image
+
 ---
-![Palo Alto Networks - Hunting And Threat Detection](https://raw.githubusercontent.com/demisto/content/76c84b8dba7f71dedef605cc1417353222a425b4/Packs/PANWComprehensiveInvestigation/doc_files/Palo_Alto_Networks_-_Hunting_And_Threat_Detection.png)
+
+![Palo Alto Networks - Hunting And Threat Detection](../doc_files/Palo_Alto_Networks_-_Hunting_And_Threat_Detection.png)
