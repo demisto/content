@@ -468,27 +468,6 @@ def fetch_events(client: Client, max_fetch: int, start_date_arg: str = "", end_d
     return alert_events, audit_events, next_run
 
 
-def add_time_field(events: List[Dict[str, Any]]) -> list:
-    """
-    Adds a '_time' field to each event in the list of events.
-
-    This function iterates over the list of events.
-     For each event, it adds a new field '_time' with the value of the 'date' or 'created' field of the event.
-
-    Args:
-        events (List[Dict[str, Any]]): A list of dictionaries. Each dictionary represents an event.
-
-    Returns:
-        list: The updated list of events. Each event now includes a '_time' field.
-    """
-    for event in events:
-        event['_time'] = event.get('date') or event.get('created')
-    return events
-
-
-''' MAIN FUNCTION '''
-
-
 def validate_start_and_end_dates(args):
     """
     Validates the start and end dates provided in the arguments.
@@ -555,6 +534,27 @@ def get_events_command(client, args) -> tuple:
     if events:
         return add_time_field(events), results
     return [], CommandResults(readable_output='No events found')
+
+
+def add_time_field(events: List[Dict[str, Any]]) -> list:
+    """
+    Adds a '_time' field to each event in the list of events.
+
+    This function iterates over the list of events.
+     For each event, it adds a new field '_time' with the value of the 'date' or 'created' field of the event.
+
+    Args:
+        events (List[Dict[str, Any]]): A list of dictionaries. Each dictionary represents an event.
+
+    Returns:
+        list: The updated list of events. Each event now includes a '_time' field.
+    """
+    for event in events:
+        event['_time'] = event.get('date') or event.get('created')
+    return events
+
+
+''' MAIN FUNCTION '''
 
 
 def main() -> None:  # pragma: no cover
