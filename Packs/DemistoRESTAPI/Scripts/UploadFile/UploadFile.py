@@ -2,10 +2,11 @@
 from CommonServerPython import *
 
 
-def upload_file(incident_id: str, entry_id: str, body: str = '', as_incident_attachment: bool = True):
+def upload_file(incident_id: str, entry_id: str, body: str = '', using: str = '', as_incident_attachment: bool = True):
     service_name = 'incident' if as_incident_attachment else 'entry'
     return demisto.executeCommand("core-api-multipart",
-                                  {"uri": f'{service_name}/upload/{incident_id}', "entryID": entry_id, "body": body})
+                                  {"uri": f'{service_name}/upload/{incident_id}', "entryID": entry_id,
+                                   "body": body, "using": using})
 
 
 def upload_file_command(args: dict) -> list[CommandResults]:
@@ -14,8 +15,9 @@ def upload_file_command(args: dict) -> list[CommandResults]:
     entry_ids = argToList(args.get('entryID', ''))
     body = args.get('body', '')
     target = args.get('target', 'war room entry')
+    using = args.get('using', '')
     for entry_id in entry_ids:
-        response = upload_file(incident_id, entry_id, body, target == 'incident attachment')
+        response = upload_file(incident_id, entry_id, body, using, target == 'incident attachment')
         if is_error(response[0]):
             raise DemistoException("There was an issue uploading the file. Check your API key and input arguments.")
 
