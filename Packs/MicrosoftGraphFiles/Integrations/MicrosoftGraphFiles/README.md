@@ -6,10 +6,15 @@ For more details about the authentication used in this integration, see <a href=
 
 ### Required Permissions
 The required permission depends on whether you want to access all sites (Sites.ReadWrite.All) or specific sites (Site.Selected):
-- `Sites.ReadWrite.All - Application`: Provides read and write access to all sites.
+- `Sites.ReadWrite.All`: Provides read and write access to all sites.  
+`Client Credentials Flow` - Application permission.  
+`Authorization Code Flow` - Delegated permission.  
+
+Note: This permission is sufficient for all the commands, but if you want the least privileged permissions for each command, they are listed for each command definition.
 
 OR
-- `Site.Selected - Application`: Provides read and write access to specific sites.
+- `Sites.Selected - Application`: Provides read and write access to specific sites.  
+This option is not supported with the `Authorization Code Flow` according to [Microsoft documentation](https://learn.microsoft.com/en-us/graph/permissions-reference#sitesselected).
 
 Note: Using `Site.Selected` requires additional configuration steps outlined below.
 
@@ -20,7 +25,7 @@ Two applications and two instances are required, one for the administrator and o
 Configuration:
 
 1. In the Microsoft website:
-   1. Create "Admin" application with the `Sites.FullControl.All - Application` permission.
+   1. Create "Admin" application with the `Sites.FullControl.All` permission.
    2. Create "User" application with the `Site.Selected - Application` permission.
 2. In Cortex XSOAR, navigate to **Settings** > **Integrations**.
 3. Search for O365 File Management (Onedrive/Sharepoint/Teams).
@@ -51,19 +56,21 @@ Note: The `msgraph-list-sharepoint-sites` command cannot be run, as it requires 
 2. Search for O365 File Management (Onedrive/Sharepoint/Teams).
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| host | Server URL | True |
-| auth_id | Application ID / Client ID | False |
-| tenant_id | Token / Tenant ID | False |
-| enc_key | Key / Client Secret | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
-| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-| Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
-| insecure | Trust any certificate (not secure) | False |
-| proxy | Use system proxy settings | False |
-| self_deployed | Use a self-deployed Azure Application | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL |  | True |
+    | Application ID / Client ID |  | False |
+    | Token / Tenant ID |  | False |
+    | Key / Client Secret |  | False |
+    | Application redirect URI (for Self Deployed - Authorization Code Flow) |  | False |
+    | Authorization code (for Self Deployed - Authorization Code Flow) |  | False |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+    | Use a self-deployed Azure Application | Select this checkbox if you are using a self-deployed Azure application. | False |
+    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -77,10 +84,14 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Deletes an item from OneDrive.
 
-
 #### Base Command
 
 `msgraph-delete-file`
+
+#### Required Permissions
+
+Client Credentials Flow - `Files.ReadWrite.All - Application`  
+Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 #### Input
 
@@ -100,9 +111,9 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-| 123 |
-| --- |
-| Item was deleted successfully |
+>| 123 |
+>| --- |
+>| Item was deleted successfully |
 
 
 ### msgraph-upload-new-file
@@ -110,10 +121,14 @@ There is no context output for this command.
 ***
 Uploads a file from Cortex XSOAR to the specified MS Graph resource.
 
-
 #### Base Command
 
 `msgraph-upload-new-file`
+
+#### Required Permissions
+
+Client Credentials Flow - `Sites.ReadWrite.All - Application`  
+Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 #### Input
 
@@ -202,9 +217,9 @@ Uploads a file from Cortex XSOAR to the specified MS Graph resource.
 
 #### Human Readable Output
 
-| CreatedBy       | CreatedDateTime      | ID   | LastModifiedBy  | Name     | Size | WebUrl |
-| --- | --- | --- | --- | --- | --- | --- |
-| Microsoft Graph | 2020-01-22T20:03:00Z | Test | Microsoft Graph | test.txt | 15   | Test   |
+>| CreatedBy       | CreatedDateTime      | ID   | LastModifiedBy  | Name     | Size | WebUrl |
+>| --- | --- | --- | --- | --- | --- | --- |
+>| Microsoft Graph | 2020-01-22T20:03:00Z | Test | Microsoft Graph | test.txt | 15   | Test   |
 
 
 ### msgraph-replace-existing-file
@@ -215,6 +230,12 @@ Replaces the content of the file in the specified MS Graph resource.
 #### Base Command
 
 `msgraph-replace-existing-file`
+
+#### Required Permissions
+
+Client Credentials Flow - `Sites.ReadWrite.All - Application`  
+Authorization Code Flow - `Files.ReadWrite.All - Delegated`
+
 
 #### Input
 
@@ -303,11 +324,11 @@ Replaces the content of the file in the specified MS Graph resource.
 
 #### Human Readable Output
 
-### MsGraphFiles - File information:
+>### MsGraphFiles - File information:
 
-| Created By     | Created Date Time    | ID   | Last Modified By | Name     | Size | Web Url |
-| -------------- | -------------------- | ---- | ---------------- | -------- | ---- | ------- |
-| SharePoint DEV | 2020-01-05T15:30:21Z | 123  | Microsoft Graph  | yaya.txt | 15   | 123     |
+>| Created By     | Created Date Time    | ID   | Last Modified By | Name     | Size | Web Url |
+>| -------------- | -------------------- | ---- | ---------------- | -------- | ---- | ------- |
+>| SharePoint DEV | 2020-01-05T15:30:21Z | 123  | Microsoft Graph  | yaya.txt | 15   | 123     |
 
 
 ### msgraph-create-new-folder
@@ -315,10 +336,14 @@ Replaces the content of the file in the specified MS Graph resource.
 ***
 Creates a new folder in a drive with the specified parent item or path.
 
-
 #### Base Command
 
 `msgraph-create-new-folder`
+
+#### Required Permissions
+
+Client Credentials Flow - `Files.ReadWrite.All - Application`  
+Authorization Code Flow - `Files.ReadWrite.All - Delegated`
 
 #### Input
 
@@ -400,11 +425,11 @@ Creates a new folder in a drive with the specified parent item or path.
 
 #### Human Readable Output
 
-### MsGraphFiles - Folder information:
+>### MsGraphFiles - Folder information:
 
-| Child Count   | Created By      | Created Date Time    | ID   | Last Modified By | Name      | Size | Web Url |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| ChildCount: 0 | Microsoft Graph | 2020-01-22T20:03:09Z | 123  | Microsoft Graph  | test11 19 | 0    | 123     |
+>| Child Count   | Created By      | Created Date Time    | ID   | Last Modified By | Name      | Size | Web Url |
+>| --- | --- | --- | --- | --- | --- | --- | --- |
+>| ChildCount: 0 | Microsoft Graph | 2020-01-22T20:03:09Z | 123  | Microsoft Graph  | test11 19 | 0    | 123     |
 
 
 ### msgraph-list-drives-in-site
@@ -412,10 +437,14 @@ Creates a new folder in a drive with the specified parent item or path.
 ***
 Returns the list of document libraries (drives) available for a target site.
 
-
 #### Base Command
 
 `msgraph-list-drives-in-site`
+
+#### Required Permissions
+
+Client Credentials Flow - `Files.Read.All - Application`  
+Authorization Code Flow - `Files.Read - Delegated`
 
 #### Input
 
@@ -482,11 +511,11 @@ Returns the list of document libraries (drives) available for a target site.
 
 #### Human Readable Output
 
-### MsGraphFiles - Drives information:
+>### MsGraphFiles - Drives information:
 
-| Created By     | Created Date Time    | Description | Drive Type      | ID   | Last Modified Date Time | Name      | Web Url |
-| -------------- | -------------------- | ----------- | --------------- | ---- | ----------------------- | --------- | ------- |
-| System Account | 2019-09-21T08:17:20Z |             | documentLibrary | Test | 2019-09-21T08:17:20Z    | Documents | Test    |
+>| Created By     | Created Date Time    | Description | Drive Type      | ID   | Last Modified Date Time | Name      | Web Url |
+>| -------------- | -------------------- | ----------- | --------------- | ---- | ----------------------- | --------- | ------- |
+>| System Account | 2019-09-21T08:17:20Z |             | documentLibrary | Test | 2019-09-21T08:17:20Z    | Documents | Test    |
 
 
 ### msgraph-list-drive-content
@@ -494,10 +523,14 @@ Returns the list of document libraries (drives) available for a target site.
 ***
 Returns a list of files and folders in the specified drive.
 
-
 #### Base Command
 
 `msgraph-list-drive-content`
+
+#### Required Permissions
+
+Client Credentials Flow - `Files.Read.All - Application`  
+Authorization Code Flow - `Files.Read - Delegated`
 
 #### Input
 
@@ -587,22 +620,26 @@ Returns a list of files and folders in the specified drive.
 
 #### Human Readable Output
 
-### MsGraphFiles - drivesItems information:
+>### MsGraphFiles - drivesItems information:
 
-| Created By         | Created Date Time    | Description | ID   | Last Modified Date Time | Name        | Size | Web Url |
-| ------------------ | -------------------- | ----------- | ---- | ----------------------- | ----------- | ---- | ------- |
-| MS Graph Files Dev | 2019-12-29T11:57:41Z |             | 123  | 2019-12-29T11:57:41Z    | Attachments | 0    | 123     |
+>| Created By         | Created Date Time    | Description | ID   | Last Modified Date Time | Name        | Size | Web Url |
+>| ------------------ | -------------------- | ----------- | ---- | ----------------------- | ----------- | ---- | ------- |
+>| MS Graph Files Dev | 2019-12-29T11:57:41Z |             | 123  | 2019-12-29T11:57:41Z    | Attachments | 0    | 123     |
 
 
 ### msgraph-list-sharepoint-sites
 
 ***
-Returns a list of the tenant sites. This command requires the 'Sites.Read.All' permission.
-
+Returns a list of the tenant sites.
 
 #### Base Command
 
 `msgraph-list-sharepoint-sites`
+
+#### Required Permissions
+
+Client Credentials Flow - `Sites.Read.All - Application`  
+Authorization Code Flow - `Sites.Read.All - Delegated`
 
 #### Input
 
@@ -658,9 +695,9 @@ Returns a list of the tenant sites. This command requires the 'Sites.Read.All' p
 
 #### Human Readable Output
 
-| Created Date Time    | ID   | Last Modified Date Time | Name                 | Web Url |
-| -------------------- | ---- | ----------------------- | -------------------- | ------- |
-| 2016-09-14T11:12:59Z | 123  | 2016-09-14T11:13:53Z    | 123                  | 123     |
+>| Created Date Time    | ID   | Last Modified Date Time | Name                 | Web Url |
+>| -------------------- | ---- | ----------------------- | -------------------- | ------- |
+>| 2016-09-14T11:12:59Z | 123  | 2016-09-14T11:13:53Z    | 123                  | 123     |
 
 
 ### msgraph-download-file
@@ -668,10 +705,14 @@ Returns a list of the tenant sites. This command requires the 'Sites.Read.All' p
 ***
 Downloads the file contents of the drive item.
 
-
 #### Base Command
 
 `msgraph-download-file`
+
+#### Required Permissions
+
+Client Credentials Flow - `Files.Read.All - Application`  
+Authorization Code Flow - `Files.Read - Delegated`
 
 #### Input
 
@@ -680,6 +721,7 @@ Downloads the file contents of the drive item.
 | object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required | 
 | object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command. | Required | 
 | item_id | The MS Graph item ID.<br/>To get the ID of the file you want to download, use the msgraph-list-drive-content command. | Required | 
+| file_name | The file name to download.<br/>Use msgraph-list-drive-content to retrieve the name of a file, if not provided, the file name will be the value of the item_id argument. | Optional |
 
 #### Context Output
 
@@ -702,31 +744,14 @@ Downloads the file contents of the drive item.
 ```!msgraph-download-file object_type=drives object_type_id=123 item_id=123```
 
 
-### msgraph-files-auth-reset
-
-***
-Run this command if for some reason you need to rerun the authentication process.
-
-#### Base Command
-
-`msgraph-files-auth-reset`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
 ### msgraph-list-site-permissions
 
 ***
 List of apps with permissions for the site. If permission_id is provided, it will return the details of that permission.
 
-#### Permission required
+#### Required Permissions
 
-`Sites.FullControl.All  - Application`
+`Sites.FullControl.All`
 The command only runs from admin instance.
 
 #### Base Command
@@ -738,8 +763,8 @@ The command only runs from admin instance.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of results to return. Default is 50. | Optional | 
-| site_id | The ID of the site. Must provide either site_id or site_name. | Optional | 
-| site_name | The name of the site. Must provide either site_id or site_name. | Optional | 
+| site_id | The ID of the site. Required if site_name is not provided.<br/>To find a list of all sites, use the msgraph-list-sharepoint-sites command. | Optional | 
+| site_name | The name of the site. Required if site_id is not provided. | Optional | 
 | permission_id | The ID of the permission. | Optional | 
 | all_results | Whether to retrieve all the apps with permission for the site. If true, the "limit" argument will be ignored. Possible values are: true, false. Default is false. | Optional | 
 
@@ -820,9 +845,9 @@ The command only runs from admin instance.
 ***
 Create a new application permission for a site.
 
-#### Permission required
+#### Required Permissions
 
-`Sites.FullControl.All  - Application`
+`Sites.FullControl.All`
 The command only runs from admin instance.
 
 #### Base Command
@@ -833,8 +858,8 @@ The command only runs from admin instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| site_id | The ID of the site. Must provide either site_id or site_name. | Optional | 
-| site_name | The name of the site. Must provide either site_id or site_name. | Optional | 
+| site_id | The ID of the site. Required if site_name is not provided.<br/>To find a list of all sites, use the msgraph-list-sharepoint-sites command. | Optional | 
+| site_name | The name of the site. Required if site_id is not provided. | Optional | 
 | role | read: Provides the ability to read the metadata and contents of the item.<br/>write: Provides the ability to read and modify the metadata and contents of the item.<br/>owner: Site owners can create and manage lists, libraries, and pages within their site, as well as manage user access and permissions. Possible values are: read, write, owner. | Required | 
 | app_id | The ID of the application. | Required | 
 | display_name | The display name of the application. | Required | 
@@ -893,9 +918,9 @@ There is no context output for this command.
 ***
 Updates an existing permission for a site.
 
-#### Permission required
+#### Required Permissions
 
-`Sites.FullControl.All  - Application`
+`Sites.FullControl.All`
 The command only runs from admin instance.
 
 #### Base Command
@@ -906,8 +931,8 @@ The command only runs from admin instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| site_name | The name of the site. Must provide either site_name or site_id. | Optional | 
-| site_id | The ID of the site. Must provide either site_id or site_name. | Optional | 
+| site_name | The name of the site. Required if site_id is not provided. | Optional | 
+| site_id | The ID of the site. Required if site_name is not provided.<br/>To find a list of all sites, use the msgraph-list-sharepoint-sites command. | Optional | 
 | permission_id | The unique identifier of the permission to update. | Required | 
 | role | read: Provides the ability to read the metadata and contents of the item.<br/>write: Provides the ability to read and modify the metadata and contents of the item.<br/>owner: Site owners can create and manage lists, libraries, and pages within their site, as well as manage user access and permissions. Possible values are: read, write, owner. | Required | 
 
@@ -928,9 +953,9 @@ There is no context output for this command.
 ***
 Deletes an app permission from a site.
 
-#### Permission required
+#### Required Permissions
 
-`Sites.FullControl.All  - Application`
+`Sites.FullControl.All`
 The command only runs from admin instance.
 
 #### Base Command
@@ -941,8 +966,8 @@ The command only runs from admin instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| site_id | Unique identifier for SharePoint site. Must provide either site_id or site_name. | Optional | 
-| site_name | The name of the site. Must provide either site_id or site_name. | Optional | 
+| site_id | Unique identifier for SharePoint site. Required if site_name is not provided.<br/>To find a list of all sites, use the msgraph-list-sharepoint-sites command. | Optional | 
+| site_name | The name of the site. Required if site_id is not provided. | Optional | 
 | permission_id | The unique identifier of the permission to delete. | Required | 
 
 #### Context Output
@@ -956,3 +981,53 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Site permission was deleted.
+
+### msgraph-files-auth-test
+
+***
+Tests connectivity to Microsoft.
+
+#### Base Command
+
+`msgraph-files-auth-test`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### msgraph-files-generate-login-url
+
+***
+Generate the login URL used for Authorization code flow.
+
+#### Base Command
+
+`msgraph-files-generate-login-url`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### msgraph-files-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`msgraph-files-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

@@ -16,6 +16,9 @@ description: |
 
   Verdict Handling:
   - Handles malicious incidents by initiating appropriate response actions, including blocking malicious indicators, isolating endpoints, and disabling user accounts.
+  
+  To utilize this playbook as the default for handling XDR incidents, the classifier should be empty, and the selected incident type should be `Cortex XDR - Lite`.
+  The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the selected Mapper (outgoing) should be Cortex `XDR - Outgoing Mapper`.
 starttaskid: "0"
 tasks:
   "0":
@@ -1504,6 +1507,9 @@ tasks:
     - incidentfield: Parent Process CMD
       output:
         simple: ${PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_command_line}
+    - incidentfield: XDR Alerts
+      output:
+        simple: ${incident.xdralerts(val.detectiontimestamp=convertEpoch(val.detectiontimestamp); function convertEpoch(et){if (et < 10000000000) {et *= 1000 };var d=new Date(Number(et));return String(d.toISOString())})}
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -2070,34 +2076,6 @@ view: |-
     }
   }
 inputs:
-- key: incident_id
-  value:
-    complex:
-      root: incident
-      accessor: xdrincidentid
-  required: false
-  description: Incident ID.
-  playbookInputQuery:
-- key: EndpointID
-  value:
-    complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
-      accessor: endpoint_id
-      transformers:
-      - operator: uniq
-  required: false
-  description: XDR endpoint ID.
-  playbookInputQuery:
-- key: Hostname
-  value:
-    complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
-      accessor: host_name
-      transformers:
-      - operator: uniq
-  required: false
-  description: Hostname.
-  playbookInputQuery:
 - key: Username
   value:
     complex:
@@ -2117,45 +2095,33 @@ inputs:
   required: false
   description: Username.
   playbookInputQuery:
-- key: AutoIsolateEndpoint
+- key: incident_id
   value:
-    simple: "False"
+    complex:
+      root: incident
+      accessor: xdrincidentid
   required: false
-  description: Whether to isolate the endpoint automatically.
+  description: Incident ID.
   playbookInputQuery:
-- key: AutoBlockIndicators
+- key: Hostname
   value:
-    simple: "False"
+    complex:
+      root: PaloAltoNetworksXDR.Incident.alerts
+      accessor: host_name
+      transformers:
+      - operator: uniq
   required: false
-  description: |-
-    Possible values: True/False.  Default: True.
-    Should the given indicators be automatically blocked, or should the user be given the option to choose?
-
-    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
-    If set to True - the user will be prompted to select which indicators to block.
+  description: Hostname.
   playbookInputQuery:
-- key: UserVerification
+- key: EndpointID
   value:
-    simple: "False"
+    complex:
+      root: PaloAltoNetworksXDR.Incident.alerts
+      accessor: endpoint_id
+      transformers:
+      - operator: uniq
   required: false
-  description: "Possible values: True/False.  Default: False.\nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
-  playbookInputQuery:
-- key: XDRRelatedAlertsThreshold
-  value:
-    simple: "5"
-  required: false
-  description: |-
-    This is the minimum threshold for XDR-related alerts of medium severity or higher, based on MITRE tactics used to identify malicious activity on the endpoint and by the user.
-    Example: If this input is set to '5' and it detects '6' XDR-related alerts, it will classify this check as indicating malicious activity.
-    The default value is '5'.
-  playbookInputQuery:
-- key: InternalRange
-  value:
-    simple: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
-  required: false
-  description: |-
-    This input is used in the "Entity Enrichment - Generic v3" playbook.
-    A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).
+  description: XDR endpoint ID.
   playbookInputQuery:
 - key: XDRDomain
   value:
@@ -2174,6 +2140,73 @@ inputs:
   required: false
   description: XDR instance domain.
   playbookInputQuery:
+- key: InternalRange
+  value:
+    simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+  required: false
+  description: |-
+    This input is used in the "Entity Enrichment - Generic v3" playbook.
+    A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).
+  playbookInputQuery:
+- key: XDRRelatedAlertsThreshold
+  value:
+    simple: "5"
+  required: false
+  description: |-
+    This is the minimum threshold for XDR-related alerts of medium severity or higher, based on MITRE tactics used to identify malicious activity on the endpoint and by the user.
+    Example: If this input is set to '5' and it detects '6' XDR-related alerts, it will classify this check as indicating malicious activity.
+    The default value is '5'.
+  playbookInputQuery:
+- key: AutoBlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Possible values: True/False.  Default: True.
+    Should the given indicators be automatically blocked, or should the user be given the option to choose?
+
+    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
+    If set to True - the user will be prompted to select which indicators to block.
+  playbookInputQuery:
+- key: AutoIsolateEndpoint
+  value:
+    simple: "False"
+  required: false
+  description: Whether to isolate the endpoint automatically.
+  playbookInputQuery:
+- key: UserVerification
+  value:
+    simple: "False"
+  required: false
+  description: "Possible values: True/False.  Default: False.\nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - Username
+  - incident_id
+  - Hostname
+  - EndpointID
+  - XDRDomain
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, user engagements, and ticketing methods.
+- inputs:
+  - InternalRange
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
+  - XDRRelatedAlertsThreshold
+  name: Investigation
+  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - AutoBlockIndicators
+  - AutoIsolateEndpoint
+  - UserVerification
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)

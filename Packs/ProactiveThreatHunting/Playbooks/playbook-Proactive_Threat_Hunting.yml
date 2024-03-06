@@ -537,12 +537,6 @@ inputs:
   required: false
   description: A tag that will be attached to Threat Hunting incidents.
   playbookInputQuery:
-- key: HuntingTimeFrame
-  value:
-    simple: 7 Days
-  required: false
-  description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The query execution script default is the last 24 hours.'
-  playbookInputQuery:
 - key: StringSimilarityThreshold
   value:
     simple: "0.5"
@@ -551,6 +545,26 @@ inputs:
     StringSimilarity automation threshold. StringSimilarity is being used in this playbook to compare between pattern of malicious use in a tool and command-line arguments found in the environment.
     Please provide number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.
   playbookInputQuery:
+- key: HuntingTimeFrame
+  value:
+    simple: 7 Days
+  required: false
+  description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The query execution script default is the last 24 hours.'
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - IncidentTag
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, and user engagements.
+- inputs:
+  - StringSimilarityThreshold
+  - HuntingTimeFrame
+  name: Investigation
+  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)

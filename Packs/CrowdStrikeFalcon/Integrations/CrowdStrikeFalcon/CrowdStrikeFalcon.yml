@@ -77,6 +77,12 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+- display: Mobile Detections fetch query
+  name: mobile_detections_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
 - display: IOM fetch query
   name: iom_fetch_query
   type: 0
@@ -90,13 +96,13 @@ configuration:
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. For more information, refer to the integration docs."
+  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to the integration docs."
 - display: Fetch incidents
   name: isFetch
   type: 8
-  defaultvalue: 'true'
   section: Collect
   required: false
+  defaultvalue: 'true'
 - display: Incident type
   name: incidentType
   type: 13
@@ -120,42 +126,43 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Use system proxy settings
+- display: 'Use system proxy settings'
   name: proxy
   type: 8
   section: Connect
   advanced: true
   required: false
-- additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
-  defaultvalue: 'false'
+- defaultvalue: 'false'
   display: 'Close Mirrored XSOAR Incident'
   name: close_incident
   type: 8
   section: Collect
   advanced: true
   required: false
-- defaultvalue: 'false'
+  additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
+- additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
+  defaultvalue: 'false'
   display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
   name: close_in_cs_falcon
   type: 8
   section: Collect
   advanced: true
   required: false
-  additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
-- additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
-  defaultvalue: 'Endpoint Detection'
+- defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
   type: 16
   section: Collect
   advanced: true
   required: false
+  additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
   options:
   - IDP Detection
   - Endpoint Incident
   - Endpoint Detection
   - Indicator of Misconfiguration
   - Indicator of Attack
+  - Mobile Detection
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
@@ -185,29 +192,35 @@ script:
       auto: PREDEFINED
     - description: The query to filter the device.
       name: filter
-    - description: A comma-separated list of device IDs to limit the results.
+    - description: The maximum records to return [1-5000].
+      name: limit
+      defaultValue: 50
+    - description: The offset to start retrieving records from.
+      name: offset
+      defaultValue: 0
+    - description: 'A comma-separated list of device IDs to limit the results.'
       name: ids
-    - auto: PREDEFINED
-      description: 'The status of the device. Possible values are: "Normal", "containment_pending", "contained", and "lift_containment_pending".'
+    - description: 'The status of the device. Possible values are: "Normal", "containment_pending", "contained", and "lift_containment_pending".'
       name: status
+      auto: PREDEFINED
       predefined:
-      - normal
+      - 'normal'
       - containment_pending
       - contained
       - lift_containment_pending
-    - auto: PREDEFINED
-      description: The host name of the device.
+    - description: 'The host name of the device.'
       name: hostname
+      auto: PREDEFINED
       predefined:
       - ''
-    - auto: PREDEFINED
-      description: 'The platform name of the device. Possible values are: Windows, Mac, and Linux.'
+    - description: 'The platform name of the device. Possible values are: Windows, Mac, and Linux.'
       name: platform_name
+      auto: PREDEFINED
       predefined:
-      - Windows
+      - 'Windows'
       - Mac
       - Linux
-    - description: The site name of the device.
+    - description: 'The site name of the device.'
       name: site_name
     description: Searches for a device that matches the query.
     name: cs-falcon-search-device
@@ -386,7 +399,7 @@ script:
       name: ids
       required: true
     - auto: PREDEFINED
-      description: 'The status to transition a detection to. Possible values: "new", "in_progress", "true_positive", "false_positive", "closed", "reopened" and "ignored".'
+      description: 'The status to transition a detection to.'
       name: status
       predefined:
       - new
@@ -1669,7 +1682,7 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
-      description: 'The type of indicator. Possible values are: "domain", "ipv4", "ipv6", "md5", "sha1", or "sha256".'
+      description: 'The type of indicator.'
       name: type
       predefined:
       - domain
@@ -2385,8 +2398,17 @@ script:
       - In Progress
       - Reopened
       - Closed
-      required: true
-    description: Resolve incidents.
+    - description: UUID of a user to assign the incident to. Mutually exclusive with the 'username' argument.
+      name: assigned_to_uuid
+    - description: Username of a user to assign the incident to. Mutually exclusive with the 'assigned_to_uuid' argument. Using this parameter instead of 'assigned_to_uuid' will result in an additional API call in order to fetch the UUID of the user.
+      name: username
+    - description: Add a new tag to the incidents.
+      name: add_tag
+    - description: Remove a tag from the incidents.
+      name: remove_tag
+    - description: Add a comment to the incident.
+      name: add_comment
+    description: Resolve and update incidents using the specified settings.
     name: cs-falcon-resolve-incident
   - arguments:
     - description: A JSON object with list of CS Falcon indicators to upload.
@@ -2623,7 +2645,7 @@ script:
     polling: true
   - arguments:
     - default: true
-      description: The incident ID to get detections for.
+      description: The incident ID to get detections for. A list of all available incident IDs can be retrieved by running the 'cs-falcon-list-incident-summaries' command.
       name: incident_id
       required: true
     description: Gets the detections for a specific incident.
@@ -3592,8 +3614,9 @@ script:
     - description: A comment added to the CrowdStrike incident.
       name: comment
       required: true
-    description: Updates CrowdStrike Incident with the comment.
+    description: Deprecated. Use the 'cs-falcon-resolve-incident' command using the 'add_comment' parameter instead.
     name: cs-falcon-update-incident-comment
+    deprecated: true
   - arguments:
     - description: Whether to poll for results.
       auto: PREDEFINED
@@ -4699,9 +4722,296 @@ script:
       - 'false'
       - 'true'
       auto: PREDEFINED
-    description: Perform actions on alerts.
+    description: Perform actions on identity detection alerts.
     name: cs-falcon-resolve-identity-detection
-  dockerimage: demisto/py3-tools:1.0.0.84136
+  - arguments:
+    - description: IDs of the alerts to update.
+      name: ids
+      isArray: true
+      required: true
+    - description: 'Assign the specified detections to a user based on their username.'
+      name: assign_to_name
+    - description: Assign the specified detections to a user based on their UUID.
+      name: assign_to_uuid
+    - description: Appends a new comment to any existing comments for the specified detections.
+      name: append_comment
+    - description: Add a tag to the specified detections.
+      name: add_tag
+    - description: Remove a tag from the specified detections.
+      name: remove_tag
+    - description: Update status of the alert to the specified value.
+      name: update_status
+      predefined:
+      - 'new'
+      - 'in_progress'
+      - 'closed'
+      - 'reopened'
+      auto: PREDEFINED
+    - description: Whether to unassign any assigned users to the specified detections.
+      name: unassign
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    - description: If true, displays the detection in the UI.
+      name: show_in_ui
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    description: Perform actions on mobile detection alerts.
+    name: cs-falcon-resolve-mobile-detection
+  - arguments:
+    - description: IDs (UUID) of specific users to list.
+      name: id
+      isArray: true
+    - description: 'The filter expression that should be used to limit the results. FQL syntax. Available values: assigned_cids, cid, first_name, last_name, name, uid. Example: "first_name:''John''".'
+      name: filter
+    - description: The integer offset to start retrieving records from.
+      name: offset
+      defaultValue: 0
+    - description: The maximum number of records to return.
+      name: limit
+      defaultValue: 50
+    description: List users.
+    name: cs-falcon-list-users
+    outputs:
+    - contextPath: CrowdStrike.Users.uuid
+      description: The user's UUID.
+      type: String
+    - contextPath: CrowdStrike.Users.cid
+      description: The customer ID.
+      type: String
+    - contextPath: CrowdStrike.Users.uid
+      description: The user's ID.
+      type: String
+    - contextPath: CrowdStrike.Users.first_name
+      description: The user's first name.
+      type: String
+    - contextPath: CrowdStrike.Users.last_name
+      description: The user's last name.
+      type: String
+    - contextPath: CrowdStrike.Users.last_login_at
+      description: The timestamp of the user's last login.
+      type: String
+    - contextPath: CrowdStrike.Users.created_at
+      description: The timestamp of the user's creation.
+      type: String
+  - arguments:
+    - description: ID(s) of behaviors to list. Behavior IDs can be retrieved by running the 'cs-falcon-get-detections-for-incident' command.
+      name: behavior_ids
+      isArray: true
+      required: true
+    description: Get incident behavior information.
+    name: cs-falcon-get-incident-behavior
+    outputs:
+    - contextPath: CrowdStrike.IncidentBehavior.behavior_id
+      description: The behavior ID.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.cid
+      description: The customer ID.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.aid
+      description: The agent ID.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.incident_id
+      description: The incident ID.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.incident_ids
+      description: The incident IDs.
+      type: List
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_id
+      description: The pattern ID.
+      type: Number
+    - contextPath: CrowdStrike.IncidentBehavior.template_instance_id
+      description: The template instance ID.
+      type: Number
+    - contextPath: CrowdStrike.IncidentBehavior.timestamp
+      description: The timestamp.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.cmdline
+      description: The command line.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.filepath
+      description: The file path.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.domain
+      description: The domain.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition
+      description: The pattern disposition.
+      type: Number
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.indicator
+      description: Whether the pattern disposition is an indicator.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.detect
+      description: Whether the pattern disposition is a detect.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.inddet_mask
+      description: The pattern disposition indicator detect mask.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.sensor_only
+      description: Whether the pattern disposition is sensor only.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.rooting
+      description: Whether the pattern disposition is rooting.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_process
+      description: Whether the process was killed.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_subprocess
+      description: Whether the subprocess was killed.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.quarantine_machine
+      description: Whether the machine was quarantined.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.quarantine_file
+      description: Whether the file was quarantined.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.policy_disabled
+      description: Whether the policy was disabled.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_parent
+      description: Whether the parent was killed.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.operation_blocked
+      description: Whether the operation was blocked.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.process_blocked
+      description: Whether the process was blocked.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.registry_operation_blocked
+      description: Whether the registry operation was blocked.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.critical_process_disabled
+      description: Whether the critical process was disabled.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.bootup_safeguard_enabled
+      description: Whether the bootup safeguard was enabled.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.fs_operation_blocked
+      description: Whether the file system operation was blocked.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.handle_operation_downgraded
+      description: Whether the handle operation was downgraded.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_action_failed
+      description: Whether the kill action failed.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.blocking_unsupported
+      description: Whether the blocking is unsupported.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.suspend_process
+      description: Whether the process was suspended.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.pattern_disposition_details.suspend_parent
+      description: Whether the parent was suspended.
+      type: Boolean
+    - contextPath: CrowdStrike.IncidentBehavior.sha256
+      description: The SHA256 hash.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.user_name
+      description: The user name.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.tactic
+      description: The tactic used.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.tactic_id
+      description: The tactic ID.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.technique
+      description: The technique used.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.technique_id
+      description: The technique ID.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.display_name
+      description: The display name.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.objective
+      description: The objective.
+      type: String
+    - contextPath: CrowdStrike.IncidentBehavior.compound_tto
+      description: The compound TTO.
+      type: String
+  - arguments:
+    - description: The rule ID to get IOA rules for.
+      name: rule_ids
+      isArray: true
+      required: true
+    description: Get IOA Rules.
+    name: cs-falcon-get-ioarules
+    outputs:
+    - contextPath: CrowdStrike.IOARules.instance_id
+      description: The IOA Rule's instance ID.
+      type: String
+    - contextPath: CrowdStrike.IOARules.customer_id
+      description: The customer ID.
+      type: String
+    - contextPath: CrowdStrike.IOARules.action_label
+      description: The IOA Rule's action label.
+      type: String
+    - contextPath: CrowdStrike.IOARules.comment
+      description: The IOA Rule's comment.
+      type: String
+    - contextPath: CrowdStrike.IOARules.committed_on
+      description: The timestamp of the IOA Rule's commitment.
+      type: String
+    - contextPath: CrowdStrike.IOARules.created_by
+      description: The IOA Rule's creator.
+      type: String
+    - contextPath: CrowdStrike.IOARules.created_on
+      description: The timestamp of the IOA Rule's creation.
+      type: String
+    - contextPath: CrowdStrike.IOARules.deleted
+      description: Whether the IOA Rule is in deleted status.
+      type: Boolean
+    - contextPath: CrowdStrike.IOARules.description
+      description: The IOA Rule's description.
+      type: String
+    - contextPath: CrowdStrike.IOARules.disposition_id
+      description: The disposition ID used by the IOA Rule.
+      type: String
+    - contextPath: CrowdStrike.IOARules.enabled
+      description: Whether the IOA Rule is enabled.
+      type: Boolean
+    - contextPath: CrowdStrike.IOARules.field_values
+      description: The IOA Rule's field values.
+      type: String
+    - contextPath: CrowdStrike.IOARules.instance_version
+      description: The IOA Rule's instance version.
+      type: String
+    - contextPath: CrowdStrike.IOARules.magic_cookie
+      description: The IOA Rule's magic cookie.
+      type: String
+    - contextPath: CrowdStrike.IOARules.modified_by
+      description: The last user who modified the IOA Rule.
+      type: String
+    - contextPath: CrowdStrike.IOARules.modified_on
+      description: The timestamp of the IOA Rule's last modification.
+      type: String
+    - contextPath: CrowdStrike.IOARules.name
+      description: The IOA Rule name.
+      type: String
+    - contextPath: CrowdStrike.IOARules.pattern_id
+      description: The IOA Rule's pattern ID.
+      type: String
+    - contextPath: CrowdStrike.IOARules.pattern_severity
+      description: The IOA Rule's pattern severity.
+      type: String
+    - contextPath: CrowdStrike.IOARules.rulegroup_id
+      description: The IOA Rule's Rule group ID.
+      type: String
+    - contextPath: CrowdStrike.IOARules.ruletype_id
+      description: The IOA Rule's Rule type ID.
+      type: String
+    - contextPath: CrowdStrike.IOARules.ruletype_name
+      description: The IOA Rule's Rule type name.
+      type: String
+    - contextPath: CrowdStrike.IOARules.version_ids
+      description: The IOA Rule's version ID.
+      type: String
+  dockerimage: demisto/py3-tools:1.0.0.88283
   isfetch: true
   ismappable: true
   isremotesyncin: true

@@ -38,6 +38,18 @@ configuration:
   displaypassword: Key / Client Secret
   hiddenusername: true
   required: false
+- display: Application redirect URI (for Self Deployed - Authorization Code Flow)
+  name: redirect_uri
+  type: 0
+  section: Connect
+  required: false
+- display: ''
+  name: auth_code_creds
+  type: 9
+  displaypassword: Authorization code (for Self Deployed - Authorization Code Flow)
+  hiddenusername: true
+  section: Connect
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
@@ -54,6 +66,11 @@ configuration:
   display: Private Key
   name: private_key
   type: 14
+  required: false
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure Application
+  name: self_deployed
+  type: 8
   required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
@@ -72,11 +89,6 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  type: 8
-  required: false
-- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-  display: Use a self-deployed Azure Application
-  name: self_deployed
   type: 8
   required: false
 description: Use the O365 File Management (Onedrive/Sharepoint/Teams) integration to enable your app to get authorized access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires admin consent.
@@ -605,6 +617,12 @@ script:
         To get the ID of the file you want to download, use the msgraph-list-drive-content command.
       name: item_id
       required: true
+    - name: file_name
+      description: |-
+        The file name to download.
+        Use msgraph-list-drive-content to retrieve the name of a file,
+        if not provided, the file name will be the value of the item_id argument.
+      required: false
     description: Downloads the file contents of the drive item.
     name: msgraph-download-file
     outputs:
@@ -737,6 +755,13 @@ script:
       required: true
     name: msgraph-delete-site-permissions
     description: Deletes an app permission from a site.
+  - description: Tests connectivity to Microsoft.
+    execution: false
+    name: msgraph-files-auth-test
+    arguments: []
+  - description: Generate the login URL used for Authorization code flow.
+    name: msgraph-files-generate-login-url
+    arguments: []
   dockerimage: demisto/python_pancloud:1.0.0.77747
   script: ''
   subtype: python3

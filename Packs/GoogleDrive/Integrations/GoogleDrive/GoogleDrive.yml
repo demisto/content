@@ -3076,7 +3076,34 @@ script:
     - contextPath: GoogleDrive.File.File.mimeType
       description: The MIME type of the copied file.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.83805
+  - name: google-drive-file-get-parents
+    description: Get parents of a Google Drive file.
+    arguments:
+    - name: file_id
+      description: ID of the requested file. Can be retrieved using the `google-drive-files-list` command.
+      required: true
+    - name: user_id
+      description: The user's primary email address.
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: 'Whether both My Drive and shared drive items should be included in the results.'
+      name: include_items_from_all_drives
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: Whether the requesting application supports both My Drives and shared drives.
+      name: supports_all_drives
+      defaultValue: "False"
+      predefined:
+      - "True"
+      - "False"
+    outputs:
+    - contextPath: GoogleDrive.File.Parents
+      description: The IDs of the parent folders which contain the file.
+      type: String
+  dockerimage: demisto/googleapi-python3:1.0.0.87804
   isfetch: true
   runonce: false
   script: "-"

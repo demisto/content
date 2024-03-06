@@ -130,6 +130,7 @@ class TestGetRequestsKwargs:
 
 class TestPrepareCommands:
 
+    @freeze_time('2022-04-14T00:00:00Z')
     def test_prepare_get_changes(self):
         """
             Given:
@@ -219,7 +220,7 @@ class TestCreateFile:
             Then:
                 - Verify sync file data.
         """
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         create_file_sync(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
         expected_data = ''
@@ -290,7 +291,7 @@ class TestCreateFile:
                 - Verify iocs to keep file data.
         """
 
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         create_file_iocs_to_keep(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
         expected_data = ' '
@@ -375,7 +376,8 @@ class TestDemistoIOCToXDR:
     data_test_demisto_types_to_xdr = [
         ('File', 'HASH'),
         ('IP', 'IP'),
-        ('Domain', 'DOMAIN_NAME')
+        ('Domain', 'DOMAIN_NAME'),
+        ('URL', 'PATH')
     ]
 
     @pytest.mark.parametrize('demisto_type, xdr_type', data_test_demisto_types_to_xdr)
@@ -580,7 +582,7 @@ class TestXDRIOCToDemisto:
             Then:
                 - IOC in demisto format.
         """
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         output = xdr_ioc_to_demisto(xdr_ioc)
         del output['rawJSON']
         assert output == demisto_ioc, f'xdr_ioc_to_demisto({xdr_ioc})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(demisto_ioc)}'    # noqa: E501
@@ -603,7 +605,7 @@ class TestCommands:
             enable_ioc = mocker.patch('XDR_iocs.prepare_enable_iocs', side_effect=prepare_enable_iocs)
             iocs_command(client)
             output = outputs.call_args.args[0]
-            assert output == 'indicators 11.11.11.11 enabled.', f'enable command\n\tprints:  {output}\n\tinstead: indicators 11.11.11.11 enabled.'    # noqa: E501
+            assert output == "IOCs command: enabled indicators='11.11.11.11'", f"enable command\n\tprints:  {output}\n\tinstead: IOCs command: enabled indicators='11.11.11.11'."    # noqa: E501
             assert enable_ioc.call_count == 1, 'enable command not called'
 
         def test_iocs_command_with_disable(self, mocker):
@@ -621,7 +623,7 @@ class TestCommands:
             disable_ioc = mocker.patch('XDR_iocs.prepare_disable_iocs', side_effect=prepare_disable_iocs)
             iocs_command(client)
             output = outputs.call_args.args[0]
-            assert output == 'indicators 11.11.11.11 disabled.', f'disable command\n\tprints:  {output}\n\tinstead: indicators 11.11.11.11 disabled.'    # noqa: E501
+            assert output == "IOCs command: disabled indicators='11.11.11.11'", f"enable command\n\tprints:  {output}\n\tinstead: IOCs command: disabled indicators='11.11.11.11'."    # noqa: E501
             assert disable_ioc.call_count == 1, 'disable command not called'
 
     def test_sync(self, mocker):
@@ -632,13 +634,16 @@ class TestCommands:
         sync(client)
         assert http_request.call_args.args[0] == 'sync_tim_iocs', 'sync command url changed'
 
-    def test_get_sync_file(self, mocker):
+    @pytest.mark.parametrize("zip_value, expected_file_name", [pytest.param(False, 'xdr-sync-file', id="no zip"),
+                                                               pytest.param(True, "xdr-sync-file-zipped.zip", id="zip")])
+    def test_get_sync_file(self, mocker, zip_value: bool, expected_file_name: str):
         iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
         return_results_mock = mocker.patch('XDR_iocs.return_results')
-        get_sync_file()
-        assert return_results_mock.call_args[0][0]['File'] == 'xdr-sync-file'
+        get_sync_file(zip=zip_value)
+        assert return_results_mock.call_args[0][0]['File'] == expected_file_name
 
+    @pytest.mark.xfail(reason="Until API issue is fixed (XSUP-33235)")
     @freeze_time('2020-06-03T02:00:00Z')
     def test_iocs_to_keep(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
@@ -660,7 +665,7 @@ class TestCommands:
     def test_get_changes(self, mocker):
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
         mocker.patch.object(demisto, 'createIndicators')
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         xdr_res = {'reply': [xdr_ioc[0] for xdr_ioc in TestXDRIOCToDemisto.data_test_xdr_ioc_to_demisto]}
         mocker.patch.object(Client, 'http_request', return_value=xdr_res)
         get_changes(client)
@@ -704,10 +709,10 @@ class TestParams:
             Then:
                 - IOC in demisto format.
         """
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         mocker.patch.object(demisto, 'params', return_value=param_value)
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         outputs = mocker.patch.object(demisto, 'createIndicators')
         Client.tag = demisto.params().get('feedTags', demisto.params().get('tag', Client.tag))
         Client.tlp_color = demisto.params().get('tlp_color')
@@ -730,13 +735,14 @@ def test_file_deleted_for_create_file_sync(mocker):
 
     mocker.patch('XDR_iocs.create_file_sync', new=raise_function)
     with pytest.raises(DemistoException):
-        get_sync_file()
+        get_sync_file(set_time=False, zip=False)
     assert os.path.exists(file_path) is False
 
 
 data_test_test_file_deleted = [
     (sync, 'create_file_sync'),
-    (iocs_to_keep, 'create_file_iocs_to_keep'),
+    pytest.param(iocs_to_keep, 'create_file_iocs_to_keep', marks=pytest.mark.xfail(
+        reason="Until API issue is fixed (XSUP-33235)"))
 ]
 
 
@@ -1034,3 +1040,61 @@ def test_set_new_iocs_to_keep_time(random_int, expected_next_time, mocker):
     set_integration_context_mock = mocker.patch.object(demisto, 'setIntegrationContext')
     set_new_iocs_to_keep_time()
     set_integration_context_mock.assert_called_once_with({'next_iocs_to_keep_time': expected_next_time})
+
+
+def test_parse_demisto_comments_url_xsoar_6_default(mocker):
+    """
+    Given:
+        -  xsoar version 6, a custom field name, and comma-separated comments in it
+    When:
+        -  parsing a comment of the url indicator field
+    Then:
+        - check the output values
+    """
+    from XDR_iocs import _parse_demisto_comments
+    inc_id = '111111'
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    assert _parse_demisto_comments(
+        ioc={'id': inc_id},
+        comment_field_name='indicator_link',
+        comments_as_tags=False
+    ) == [f'url/#/indicator/{inc_id}']
+
+
+def test_parse_demisto_comments_url_xsoar_8_default(mocker):
+    """
+    Given:
+        -  xsoar version that is greater than 8, a custom field name, and comma-separated comments in it
+    When:
+        -  parsing a comment of the url indicator field
+    Then:
+        - check the output values
+    """
+    import XDR_iocs
+    os.environ['CRTX_HTTP_PROXY'] = 'xsoar_8_proxy'
+    inc_id = '111111'
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    mocker.patch.object(XDR_iocs, 'is_xsoar_saas', return_value=True)
+    assert XDR_iocs._parse_demisto_comments(
+        ioc={'id': inc_id},
+        comment_field_name='indicator_link',
+        comments_as_tags=False
+    ) == [f'url/indicator/{inc_id}']
+
+
+def test_parse_demisto_list_of_comments_default(mocker):
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    parsing a comment of the url indicator field
+    Then    check the output values
+    """
+    from XDR_iocs import _parse_demisto_comments
+    inc_id = '111111'
+    comment_value = 'here be comment'
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'url'})
+    assert _parse_demisto_comments(
+        ioc={Client.xsoar_comments_field: [{'type': 'IndicatorCommentRegular', 'content': comment_value}],
+             'id': inc_id},
+        comment_field_name=['indicator_link', Client.xsoar_comments_field],
+        comments_as_tags=False
+    ) == [f'url/#/indicator/{inc_id}, {comment_value}']

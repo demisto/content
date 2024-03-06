@@ -1,0 +1,581 @@
+category: Analytics & SIEM
+commonfields:
+  id: VaronisSaaS
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+  defaultvalue: Varonis SaaS Incident
+- display: The FQDN/IP the integration should connect to
+  hidden: false
+  name: url
+  required: true
+  type: 0
+- displaypassword: X-API-Key
+  hidden: false
+  name: apiKey
+  required: true
+  type: 9
+  hiddenusername: true
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: '1000'
+  display: Maximum number of incidents per fetch
+  additionalinfo:
+  name: max_fetch
+  type: 0
+  required: false
+- defaultvalue: 1 week
+  display: First fetch time
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: Low
+  display: Minimum severity of alerts to fetch
+  hidden: false
+  name: severity
+  options:
+  - Low
+  - Medium
+  - High
+  required: false
+  type: 15
+- display: Varonis threat model name
+  additionalinfo: Comma-separated list of threat model names of alerts to fetch. Use "varonis-get-threat-models" command to retrieve the full list
+  hidden: false
+  name: threat_model
+  required: false
+  type: 0
+- defaultvalue: New
+  display: Varonis alert status
+  hidden: false
+  name: status
+  options:
+  - New
+  - Under Investigation
+  - Closed
+  - Action Required
+  - Auto-Resolved
+  required: false
+  type: 15
+description: Streamline alerts and related forensic information from Varonis SaaS.
+display: Varonis SaaS
+name: VaronisSaaS
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: List of requested threat models to retrieve.
+      isArray: true
+      name: threat_model_name
+      required: false
+      secret: false
+    - default: false
+      description: Start time of alert range.
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: End time of alert range.
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: List of required alerts status.
+      isArray: true
+      name: alert_status
+      required: false
+      secret: false
+    - default: false
+      description: List of required alerts severity.
+      isArray: true
+      name: alert_severity
+      required: false
+      secret: false
+    - default: false
+      description: List of required alerts device name.
+      isArray: true
+      name: device_name
+      required: false
+      secret: false
+    - default: false
+      description: User domain name (cannot be provided without user_name).
+      isArray: false
+      name: user_name
+      required: false
+      secret: false
+    - default: false
+      description: Number of days you want the search to go back to.
+      isArray: false
+      name: last_days
+      required: false
+      secret: false
+    - default: false
+      description: Extra fields.
+      isArray: false
+      name: extra_fields
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: True
+      description: Indicates whether alerts should be ordered in newest to oldest order.
+      predefined:
+      - 'True'
+      - 'False'
+      isArray: false
+      name: descending_order
+      required: false
+      secret: false
+    deprecated: false
+    description: Get alerts from Varonis DA.
+    execution: false
+    name: varonis-get-alerts
+    outputs:
+    - contextPath: Varonis.Alert.ID
+      description: Varonis ID for alert.
+      type: Number
+    - contextPath: Varonis.Alert.Rule.Name
+      description: Name of retrieved alert.
+      type: String
+    - contextPath: Varonis.Alert.TimeUTC
+      description: When was the alert triggered.
+      type: Date
+    - contextPath: Varonis.Alert.Rule.Severity.Name
+      description: Alert severity.
+      type: String
+    - contextPath: Varonis.Alert.Rule.Category.Name
+      description: "Alert category.\nOptions are:\n- Reconnaissance \n- Intrusion \n- Exploitation \n- Privilege Escalation \n- Lateral Movement."
+      type: String
+    - contextPath: Varonis.Alert.Location.CountryName
+      description: Name of the country from which the event occurred.
+      type: String
+    - contextPath: Varonis.Alert.Location.SubdivisionName
+      description: Name of the state or regional subdivision from which the event occurred.
+      type: String
+    - contextPath: Varonis.Alert.Status.Name
+      description: |-
+        Alert state. Options are:
+        - New
+        - Under investigation
+        - Closed
+        - Action Required
+        - Auto-Resolved.
+      type: String
+    - contextPath: Varonis.Alert.CloseReason.Name
+      description: |-
+        Reason the alert was closed. Options are:
+        - Resolved
+        - Misconfiguration
+        - Threat model disabled or deleted
+        - Account misclassification
+        - Legitimate activity
+        - Other.
+      type: String
+    - contextPath: Varonis.Alert.Location.BlacklistedLocation
+      description: Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred.
+      type: Boolean
+    - contextPath: Varonis.Alert.Location.AbnormalLocation
+      description: Whether any of the geographical locations from which an alerted activity originated is new or abnormal to the organization, the user and peers, or only the user.
+      type: Boolean
+    - contextPath: Varonis.Alert.EventsCount
+      description: Number of events with alerts.
+      type: Number
+    - contextPath: Varonis.Alert.User.Name
+      description: Name of the users triggered alerts.
+      type: String
+    - contextPath: Varonis.Alert.User.SamAccountName
+      description: |-
+        Logon name used to support clients and servers running earlier versions of Windows operating system, such as Windows NT 4.0.
+        In the dashboards (other than the Alert dashboard), this is the SAM account name of the user or group.
+      type: String
+    - contextPath: Varonis.Alert.User.AccountType.Name
+      description: |-
+        Privileged account associated with the user in the alert. Options are:
+        - Service accounts
+        - Admin accounts
+        - Executive accounts.
+      type: String
+    - contextPath: Varonis.Alert.Data.IsFlagged
+      description: Whether the data affected by the alerted events has global flags.
+      type: Boolean
+    - contextPath: Varonis.Alert.Data.IsSensitive
+      description: Filters according to whether the resource on which the event was performed is sensitive (including subfolders).
+      type: Boolean
+    - contextPath: Varonis.Alert.Filer.Platform.Name
+      description: Type of platform on which the server resides. For example, Windows, Exchange, or SharePoint.
+      type: String
+    - contextPath: Varonis.Alert.Asset.Path
+      description: Path of the alerted asset.
+      type: String
+    - contextPath: Varonis.Alert.Filer.Name
+      description: Associated file server/domain.
+      type: String
+    - contextPath: Varonis.Alert.Device.HostName
+      description: Name of the device from which the user generated the event.
+      type: String
+    - contextPath: Varonis.Alert.Device.IsMaliciousExternalIP
+      description: Whether the alert contains IPs known to be malicious.
+      type: Boolean
+    - contextPath: Varonis.Alert.Device.ExternalIPThreatTypesName
+      description: Whether the alert contains IPs known to be malicious.
+      type: String
+    - contextPath: Varonis.Alert.Status.ID
+      description: Id for the status of the alert.
+      type: String
+    - contextPath: Varonis.Alert.Rule.ID
+      description: Id for the rule that triggered the alert.
+      type: String
+    - contextPath: Varonis.Alert.Rule.Severity.ID
+      description: Severity level identifier.
+      type: String
+    - contextPath: Varonis.Alert.Initial.Event.TimeUTC
+      description: UTC time of the initial event that triggered the alert.
+      type: Date
+    - contextPath: Varonis.Alert.User.SidID
+      description: Security Identifier (SID) of the user associated with the alert.
+      type: String
+    - contextPath: Varonis.Alert.IngestTime
+      description: Time when the alert was ingested into the system.
+      type: Date
+  - arguments:
+    - default: false
+      description: Requested alerts.
+      isArray: true
+      name: alert_id
+      required: true
+      secret: false
+    - default: false
+      description: Note.
+      isArray: false
+      name: note
+      required: true
+      secret: false
+    deprecated: false
+    description: Add note to alerts.
+    execution: false
+    name: varonis-alert-add-note
+  - arguments:
+    - default: false
+      description: Requested alerts.
+      isArray: true
+      name: alert_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      predefined:
+      - New
+      - Under Investigation
+      - Action Required
+      - Auto-Resolved
+      default: false
+      description: Alert new status.
+      isArray: false
+      name: status
+      required: true
+      secret: false
+    - default: false
+      description: Note.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Update alert status.
+    execution: false
+    name: varonis-update-alert-status
+  - arguments:
+    - default: false
+      description: Requested alerts.
+      isArray: true
+      name: alert_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The reason the alert was closed.
+      predefined:
+      - Resolved
+      - Misconfiguration
+      - Threat model disabled or deleted
+      - Account misclassification
+      - Legitimate activity
+      - Other
+      isArray: false
+      name: close_reason
+      required: true
+      secret: false
+    - default: false
+      description: Note.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Close the alert.
+    execution: false
+    name: varonis-close-alert
+  - arguments:
+    - default: false
+      description: List of alert IDs.
+      isArray: true
+      name: alert_id
+      required: true
+      secret: false
+    - default: false
+      description: Start UTC time of alert range.
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: End UTC time of alert range.
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: Number of days you want the search to go back to.
+      isArray: false
+      name: last_days
+      required: false
+      secret: false
+    - default: false
+      description: Extra fields.
+      isArray: false
+      name: extra_fields
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: True
+      description: Indicates whether events should be ordered in newest to oldest order.      
+      predefined:
+      - 'True'
+      - 'False'
+      isArray: false
+      name: descending_order
+      required: false
+      secret: false
+    deprecated: false
+    description: Get events applied to specific alerts.
+    execution: false
+    name: varonis-get-alerted-events
+    outputs:
+    - contextPath: Varonis.Event.ID
+      description: Event ID.
+      type: String
+    - contextPath: Varonis.Event.Alert.ID
+      description: Alert ID.
+      type: String
+    - contextPath: Varonis.Event.Type.Name
+      description: Event type.
+      type: String
+    - contextPath: Varonis.Event.TimeUTC
+      description: Event time in UTC format.
+      type: Date
+    - contextPath: Varonis.Event.Status.Name
+      description: |-
+        Filters according to the status of the event. Options are:
+        - Fail
+        - Success.
+      type: String
+    - contextPath: Varonis.Event.Description
+      description: Description of the activity.
+      type: String
+    - contextPath: Varonis.Event.Location.Country.Name
+      description: Name of the country from which the event occurred.
+      type: String
+    - contextPath: Varonis.Event.Location.Subdivision.Name
+      description: Name of the state or regional subdivision from which the event occurred.
+      type: String
+    - contextPath: Varonis.Event.Device.ExternalIP.IP
+      description: Device external IP address.
+      type: String
+    - contextPath: Varonis.Event.Location.BlacklistedLocation
+      description: Indicates whether the geographical location from which the event originated was blacklisted.
+      type: Boolean
+    - contextPath: Varonis.Event.Operation.Name
+      description: |-
+        Type of operation that occurred during the event. Options are:
+        - Accessed
+        - Added
+        - Changed
+        - Removed
+        - Sent
+        - Received
+        - Requested.
+      type: String
+    - contextPath: Varonis.Event.ByAccount.Identity.Name
+      description: Name of the user that triggered the event.
+      type: String
+    - contextPath: Varonis.Event.ByAccount.Type.Name
+      description: Type of account, i.e., user or computer.
+      type: String
+    - contextPath: Varonis.Event.ByAccount.SamAccountName
+      description: SAM account name of the user or group for clients and servers running earlier versions of Windows.
+      type: String
+    - contextPath: Varonis.Event.ByAccount.Domain.Name
+      description: Domain of the user that triggered the event.
+      type: String
+    - contextPath: Varonis.Event.ByAccount.IsDisabled
+      description: Indicates whether the account is disabled.
+      type: Boolean
+    - contextPath: Varonis.Event.ByAccount.IsStale
+      description: Indicates whether the account is stale.
+      type: Boolean
+    - contextPath: Varonis.Event.ByAccount.IsLockout
+      description: Indicates whether the account is locked out.
+      type: Boolean
+    - contextPath: Varonis.Event.IP
+      description: Source IP address of the device that triggered the event.
+      type: String
+    - contextPath: Varonis.Event.Device.ExternalIP.IsMalicious
+      description: Indicates whether the external IP is known to be malicious.
+      type: Boolean
+    - contextPath: Varonis.Event.Device.ExternalIP.Reputation.Name
+      description: Reputation score of the external IP, a numeric value from 1-100.
+      type: Number
+    - contextPath: Varonis.Event.Device.ExternalIP.ThreatTypes.Name
+      description: List of threat types associated with the external IP.
+      type: String
+    - contextPath: Varonis.Event.OnObjectName
+      description: Name of the object on which the event was performed.
+      type: String
+    - contextPath: Varonis.Event.OnResource.ObjectType.Name
+      description: Type of the object on which the event was performed.
+      type: String
+    - contextPath: Varonis.Event.Filer.Platform.Name
+      description: Type of platform on which the server resides, like Windows, Exchange, SharePoint.
+      type: String
+    - contextPath: Varonis.Event.OnResource.IsSensitive
+      description: Indicates whether the resource on which the event was performed is sensitive.
+      type: Boolean
+    - contextPath: Varonis.Event.Filer.Name
+      description: File server of the object on which the event was performed.
+      type: String
+    - contextPath: Varonis.Event.OnAccount.IsDisabled
+      description: Indicates whether the account is disabled.
+      type: Boolean
+    - contextPath: Varonis.Event.OnAccount.IsLockout
+      description: Indicates whether the account is locked out.
+      type: Boolean
+    - contextPath: Varonis.Event.OnAccount.SamAccountName
+      description: SAM account name of the user or group for clients and servers running earlier versions of Windows.
+      type: Boolean
+    - contextPath: Varonis.Event.Destination.IP
+      description: Destination IP address within the organization.
+      type: String
+    - contextPath: Varonis.Event.Device.Name
+      description: Name of the device that triggered the event.
+      type: String
+    - contextPath: Varonis.Event.Destination.DeviceName
+      description: Destination host name for relevant services.
+      type: String
+    - contextPath: Varonis.Event.OnResource.Path
+      description: Path of the resource.
+      type: String
+  - arguments:
+    - default: false
+      description: List of requested threat model ids.
+      isArray: true
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: List of requested threat model names.
+      isArray: true
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: List of requested threat model categories.
+      isArray: true
+      name: category
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'Exfiltration'
+      - 'Reconnaissance'
+      - 'Intrusion'
+      - 'Privilege Escalation'
+      - 'Lateral movement'
+      - 'Exploitation'
+      - 'Obfuscation (anti-forensics)'
+      - 'Denial of Service'
+      - 'Other'
+    - default: false
+      description: List of requested threat model severities.
+      isArray: true
+      name: severity
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'Emergency'
+      - 'Alert'
+      - 'Critical'
+      - 'Error'
+      - 'Warning'
+      - 'Notice'
+      - 'Informational'
+    - default: false
+      description: List of requested threat model sources.
+      isArray: true
+      name: source
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'Predefined'
+      - 'User-defined'
+    deprecated: false
+    description: Get Varonis threat models.
+    execution: false
+    outputs:
+    - contextPath: ID
+      description: ID of the threat model.
+      type: String
+    - contextPath: Name
+      description: Name of the threat model.
+      type: String
+    - contextPath: Category
+      description: Category of the threat model.
+      type: String
+    - contextPath: Severity
+      description: Severity of the threat model.
+      type: String
+    - contextPath: Source
+      description: Predefined/User-defined.
+      type: String
+    name: varonis-get-threat-models
+  dockerimage: demisto/python3:3.10.13.88772
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+defaultmapperin: Varonis SaaS Incident - Incoming Mapper
+

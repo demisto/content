@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e968c9b5-1e01-4b7e-82ca-09a8f27cd9c8
+    taskid: 4471fb64-f541-4278-869d-c5729ea7f592
     type: condition
     task:
-      id: e968c9b5-1e01-4b7e-82ca-09a8f27cd9c8
+      id: 4471fb64-f541-4278-869d-c5729ea7f592
       version: -1
       name: Is Google Cloud Compute enabled and are Input values defined?
       description: Determines if the AWS - EC2 integration instance is configured and Input values are defined to pull enrichment data.
@@ -214,10 +214,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: aa684231-c806-443f-8fdf-82e0851b6481
+    taskid: e03bdde0-6637-42fc-8ba6-7cea1b2fa278
     type: regular
     task:
-      id: aa684231-c806-443f-8fdf-82e0851b6481
+      id: e03bdde0-6637-42fc-8ba6-7cea1b2fa278
       version: -1
       name: Get network tags information.
       description: Returns the tags of instance.
@@ -242,6 +242,8 @@ tasks:
       project_id:
         complex:
           root: inputs.GcpProject
+      using:
+        simple: ${inputs.instance_name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -260,10 +262,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 14b113a7-7ea2-4f73-83ef-4a5518a51761
+    taskid: 9fb75ebf-313b-44e3-8698-5184e20f397e
     type: regular
     task:
-      id: 14b113a7-7ea2-4f73-83ef-4a5518a51761
+      id: 9fb75ebf-313b-44e3-8698-5184e20f397e
       version: -1
       name: Add block everything firewall rule
       description: Creates a firewall rule in the specified project using the data included in the request.
@@ -349,6 +351,8 @@ tasks:
       project_id:
         complex:
           root: inputs.GcpProject
+      using:
+        simple: ${inputs.instance_name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -367,10 +371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 5f41cfdc-5db4-4767-82d7-8e23a8fc2190
+    taskid: de50c1d9-0557-45c2-822c-dc56dc96b981
     type: regular
     task:
-      id: 5f41cfdc-5db4-4767-82d7-8e23a8fc2190
+      id: de50c1d9-0557-45c2-822c-dc56dc96b981
       version: -1
       name: Add allow rule
       description: Creates a firewall rule in the specified project using the data included in the request.
@@ -455,6 +459,8 @@ tasks:
       project_id:
         complex:
           root: inputs.GcpProject
+      using:
+        simple: ${inputs.instance_name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -544,10 +550,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: d571805e-25ca-495e-8657-9a9bf89039a1
+    taskid: 3d2f4027-fb88-4a53-892f-f9a798a49c03
     type: regular
     task:
-      id: d571805e-25ca-495e-8657-9a9bf89039a1
+      id: 3d2f4027-fb88-4a53-892f-f9a798a49c03
       version: -1
       name: Add and set network tags
       description: Add network tag for the specified instance.
@@ -592,6 +598,8 @@ tasks:
       project_id:
         complex:
           root: inputs.GcpProject
+      using:
+        simple: ${inputs.instance_name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -610,10 +618,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 7536bbb8-8400-499a-8bf9-94e872d1e252
+    taskid: f92c805d-5e4c-4bed-8c96-2c6dd7cb8401
     type: regular
     task:
-      id: 7536bbb8-8400-499a-8bf9-94e872d1e252
+      id: f92c805d-5e4c-4bed-8c96-2c6dd7cb8401
       version: -1
       name: Lookup firewall remediation allow rule
       description: Retrieves the list of firewall rules available to the specified project. If these don't exist, the allow and block rules are created of the format remediation-[allow|block]-port-{port#}-{protocol}.
@@ -640,6 +648,8 @@ tasks:
       project_id:
         complex:
           root: inputs.GcpProject
+      using:
+        simple: ${inputs.instance_name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -689,10 +699,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 7f52a39a-f221-4b20-8dd5-89dc29e1f0cc
+    taskid: 41eff6bc-6aa4-4ef1-835e-6b0f1916661c
     type: regular
     task:
-      id: 7f52a39a-f221-4b20-8dd5-89dc29e1f0cc
+      id: 41eff6bc-6aa4-4ef1-835e-6b0f1916661c
       version: -1
       name: Lookup firewall remediation block rule
       description: Retrieves the list of firewall rules available to the specified project. If these don't exist, the allow and block rules are created of the format remediation-[allow|block]-port-{port#}-{protocol}.
@@ -719,6 +729,8 @@ tasks:
       project_id:
         complex:
           root: inputs.GcpProject
+      using:
+        simple: ${inputs.instance_name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -797,10 +809,10 @@ tasks:
       version: -1
       name: Set VPCNetwork temporary context
       description: Set a value in context for the VPC network and truncate to 30 characters so that firewall rule name isn't too long.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "40"
@@ -850,10 +862,10 @@ tasks:
       version: -1
       name: Set RuleSuffix temporary context
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "32"
@@ -954,7 +966,14 @@ inputs:
   required: true
   description: The name of the GCP project associated with the instance and related objects.
   playbookInputQuery:
+- description: Google Cloud Compute integration instance to use if you have multiple instances configured (optional).
+  key: instance_name
+  playbookInputQuery:
+  required: false
+  value: {}
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}

@@ -1,6 +1,5 @@
 id: Prisma Cloud Remediation - Azure Network Misconfiguration v2
 version: -1
-fromversion: 6.5.0
 contentitemexportablefields:
   contentitemfields: {}
 name: Prisma Cloud Remediation - Azure Network Misconfiguration v2
@@ -31,7 +30,7 @@ description: |-
   - Azure Network Security Group allows NetBIOS (UDP Port 137)
   - Azure Network Security Group allows NetBIOS (UDP Port 138)
   - Azure Network Security Group allows SQLServer (UDP Port 1434)
-  - Azure Network Security Group allows DNS (UDP Port 53)
+  - Azure Network Security Group allows DNS (UDP Port 53).
 starttaskid: "0"
 tasks:
   "0":
@@ -42,13 +41,14 @@ tasks:
       id: 61bee172-14d4-4a48-815c-913b49bef800
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -61,6 +61,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 1826b574-2085-4229-82f2-8dc09b963292
@@ -82,9 +84,8 @@ tasks:
     scriptarguments:
       brandname:
         simple: Azure Network Security Groups
-    results:
-    - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -97,6 +98,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
@@ -105,11 +108,12 @@ tasks:
       id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -122,6 +126,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 223403a2-356c-4acb-813a-a8286d359ebb
@@ -130,7 +136,7 @@ tasks:
       id: 223403a2-356c-4acb-813a-a8286d359ebb
       version: -1
       name: Is there a policy to remediate?
-      description: Checks for a Prisma Cloud policy ID.
+      description: Checks for a Prisma Cloud policy Id.
       type: condition
       iscommand: false
       brand: ""
@@ -149,6 +155,7 @@ tasks:
               complex:
                 root: inputs.policyId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -161,6 +168,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: a2344123-1f43-4a53-8cf4-ea7474e2af8e
@@ -193,6 +202,7 @@ tasks:
           right:
             value:
               simple: "yes"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -205,6 +215,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: fdee1b8a-3337-49e1-8fef-d1409e5563fb
@@ -223,6 +235,7 @@ tasks:
       "Yes":
       - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -246,11 +259,15 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
       replyOptions:
       - "Yes"
       - "No"
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 25c06945-d2ac-4126-85b8-94618b8563fb
@@ -259,7 +276,7 @@ tasks:
       id: 25c06945-d2ac-4126-85b8-94618b8563fb
       version: -1
       name: Execute playbook
-      description: Execute the appropriate remediation sub-playbook based on the Prisma Cloud policy ID.
+      description: Execute the appropriate remediation sub-playbook based on the Prisma Cloud policy Id.
       type: condition
       iscommand: false
       brand: ""
@@ -479,6 +496,7 @@ tasks:
           right:
             value:
               simple: 543c6a0a-a50c-11e8-98d0-529269fb1459
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -491,6 +509,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: cfe6460f-9ef9-4da7-80d1-0e90a50b1351
@@ -514,6 +534,7 @@ tasks:
       '#none#':
       - "11"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -526,6 +547,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: c3d736e6-e9ab-4cfc-8ed0-7276f754c074
@@ -543,17 +566,12 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
       id:
         complex:
           root: incident
           accessor: id
-      mndadone: {}
-      phishingsubtype: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -566,6 +584,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: edf547ca-7606-4d2b-8c3c-fc5cb0348c6e
@@ -583,7 +603,6 @@ tasks:
       - "9"
       "yes":
       - "14"
-    continueonerror: true
     separatecontext: false
     conditions:
     - label: "yes"
@@ -612,6 +631,8 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -624,19 +645,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: ff1ae442-5e53-498e-884c-afa86f9bf22e
+    taskid: 4cd723db-5316-406b-8513-d44fce4ce286
     type: regular
     task:
-      id: ff1ae442-5e53-498e-884c-afa86f9bf22e
+      id: 4cd723db-5316-406b-8513-d44fce4ce286
       version: -1
       name: Dismiss Prisma Cloud alert
       description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
-      script: PrismaCloud v2|||prisma-cloud-alert-dismiss
+      script: '|||prisma-cloud-alert-dismiss'
       type: regular
       iscommand: true
-      brand: PrismaCloud v2
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -653,8 +676,9 @@ tasks:
                   simple: id
       dismissal_note:
         simple: ${incident.labels.id} has been remediated by Cortex XSOAR.
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -667,6 +691,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: ea7af525-a8bc-40d6-82d8-70f8f139f28d
@@ -718,6 +744,7 @@ tasks:
         complex:
           root: inputs.portNumber
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -735,6 +762,9 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -761,12 +791,6 @@ view: |-
     }
   }
 inputs:
-- key: AutoRemediateAzureNetwork
-  value:
-    simple: "no"
-  required: false
-  description: Execute Azure Network remediation automatically?
-  playbookInputQuery:
 - key: policyId
   value:
     complex:
@@ -805,10 +829,33 @@ inputs:
       - operator: ParseJSON
   required: false
   description: Port number.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: AutoRemediateAzureNetwork
+  value:
+    simple: "no"
+  required: false
+  description: Execute Azure Network remediation automatically?
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - policyId
+  - portNumber
+  name: Incident Data
+  description: Relevant data regarding the incident.
+- inputs:
+  - AutoRemediateAzureNetwork
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication,
+    and recovery.
+outputSections:
+- outputs:
+  - incident.resourcename
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs:
 - contextPath: incident.resourcename
   description: Security group name.
   type: string
 tests:
-- No Test
+- Prisma Cloud V2 Test
+fromversion: 6.5.0

@@ -5,7 +5,8 @@ This playbook supports the following integrations:
 - Cybereason
 - Carbon Black Enterprise Response
 - Cylance Protect v2
-
+- Crowdstrike Falcon
+- Microsoft Defender for Endpoint.
 
 ## Dependencies
 
@@ -14,9 +15,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Cortex XDR - Block File
-* Block File - Cybereason
 * Block File - Carbon Black Response
+* MDE - Block File
 * Block File - Cylance Protect v2
+* Block File - Cybereason
+* CrowdStrike Falcon - Block File
 
 ### Integrations
 
@@ -46,9 +49,9 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| CbResponse.BlockedHashes.LastBlock.Time | Last block time | unknown |
-| CbResponse.BlockedHashes.LastBlock.Hostname | Last block hostname | unknown |
-| CbResponse.BlockedHashes.LastBlock.CbSensorID | Last block sensor ID | unknown |
+| CbResponse.BlockedHashes.LastBlock.Time | Last block time. | unknown |
+| CbResponse.BlockedHashes.LastBlock.Hostname | Last block hostname. | unknown |
+| CbResponse.BlockedHashes.LastBlock.CbSensorID | Last block sensor ID. | unknown |
 
 ## Playbook Image
 

@@ -625,7 +625,7 @@ tasks:
       AutoCloseAlert:
         simple: "false"
       AutoContainment:
-        simple: "false"
+        simple: "true"
       AutoRecovery:
         simple: "false"
       CommentToAdd:
@@ -2029,7 +2029,7 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:

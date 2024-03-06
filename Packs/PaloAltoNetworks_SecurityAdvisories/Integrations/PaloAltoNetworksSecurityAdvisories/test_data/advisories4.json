@@ -1,0 +1,313 @@
+{
+    "response": 
+            {
+                "data_type": "CVE",
+                "data_format": "MITRE",
+                "data_version": "4.0",
+                "generator": {
+                    "engine": "vulnogram 0.1.0-rc1"
+                },
+                "CVE_data_meta": {
+                    "ID": "CVE-2023-38802",
+                    "ASSIGNER": "psirt@dummy.com",
+                    "DATE_PUBLIC": "2023-09-13T16:00:00.000Z",
+                    "TITLE": " PAN-OS: Denial-of-Service (DoS) Vulnerability in BGP Software",
+                    "STATE": "PUBLIC"
+                },
+                "source": {
+                    "defect": [
+                        "PAN-227523"
+                    ],
+                    "discovery": "EXTERNAL"
+                },
+                "affects": {
+                    "vendor": {
+                        "vendor_data": [
+                            {
+                                "vendor_name": "Palo Alto Networks",
+                                "product": {
+                                    "product_data": [
+                                        {
+                                            "product_name": "Cloud NGFW",
+                                            "version": {
+                                                "version_data": [
+                                                    {
+                                                        "version_affected": "!",
+                                                        "version_value": "All"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "product_name": "PAN-OS",
+                                            "version": {
+                                                "version_data": [
+                                                    {
+                                                        "version_name": "11.0",
+                                                        "version_affected": "<",
+                                                        "version_value": "11.0.3"
+                                                    },
+                                                    {
+                                                        "version_name": "10.2",
+                                                        "version_affected": "<",
+                                                        "version_value": "10.2.6"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "product_name": "Prisma Access",
+                                            "version": {
+                                                "version_data": [
+                                                    {
+                                                        "version_affected": "=",
+                                                        "version_value": "Customers whose most recent software upgrade was before 09/30"
+                                                    },
+                                                    {
+                                                        "version_affected": "!",
+                                                        "version_value": " Customers who have received a software upgrade or are using new software on or after 09/30"
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "product_name": "Prisma SD-WAN ION",
+                                            "version": {
+                                                "version_data": [
+                                                    {
+                                                        "version_name": "5.6",
+                                                        "version_affected": "!",
+                                                        "version_value": "All"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                "problemtype": {
+                    "problemtype_data": [
+                        {
+                            "description": [
+                                {
+                                    "lang": "eng",
+                                    "value": "CWE-754 Improper Check for Unusual or Exceptional Conditions"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "description": {
+                    "description_data": [
+                        {
+                            "lang": "eng",
+                            "value": "BGP software such as FRRouting FRR included as part of the PAN-OS"
+                        }
+                    ]
+                },
+                "references": {
+                    "reference_data": [
+                        {
+                            "refsource": "CONFIRM",
+                            "url": "https://dummy.com/CVE-2023-38802",
+                            "name": "https://dummy.com/CVE-2023-38802"
+                        },
+                        {
+                            "refsource": "CONFIRM",
+                            "url": "https://dummy.com/post/bgp-path-attributes-grave-error-handling",
+                            "name": "https://dummy.com/post/bgp-path-attributes-grave-error-handling"
+                        }
+                    ]
+                },
+                "configuration": [
+                    {
+                        "lang": "eng",
+                        "value": "This issue is applicable only to devices and appliances that are configured with BGP routing features enabled. You can verify whether BGP is enabled for a router by selecting it from Virtual Routers or Network > Logical Routers’ in the web interface of PAN-OS firewalls.\n\nTo exploit this issue, the remote attacker must control at least one established BGP session that is propagated to the router."
+                    }
+                ],
+                "impact": {
+                    "cvss": {
+                        "version": "4.0",
+                        "attackVector": "NETWORK",
+                        "attackComplexity": "LOW",
+                        "attackRequirements": "PRESENT",
+                        "privilegesRequired": "NONE",
+                        "userInteraction": "NONE",
+                        "vulnConfidentialityImpact": "NONE",
+                        "subConfidentialityImpact": "NONE",
+                        "vulnIntegrityImpact": "NONE",
+                        "subIntegrityImpact": "NONE",
+                        "vulnAvailabilityImpact": "HIGH",
+                        "subAvailabilityImpact": "NONE",
+                        "Safety": "NOT_DEFINED",
+                        "Automatable": "YES",
+                        "Recovery": "AUTOMATIC",
+                        "valueDensity": "CONCENTRATED",
+                        "vulnerabilityResponseEffort": "LOW",
+                        "providerUrgency": "AMBER",
+                        "baseSeverity": "HIGH",
+                        "baseScore": 8.2,
+                        "vectorString": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N/AU:Y/R:A/V:C/RE:L/U:Amber"
+                    }
+                },
+                "exploit": [
+                    {
+                        "lang": "eng",
+                        "value": "Palo Alto Networks is not aware of any malicious exploitation of this issue targeting our customers. However, knowledge of invalid BGP attributes that trigger this issue is publicly available."
+                    }
+                ],
+                "work_around": [
+                    {
+                        "lang": "eng",
+                        "value": "You can prevent exploitation of this issue by inserting an unaffected BGP router—configured to drop the invalid BGP update instead of propagating it—between the attacker-originated BGP update and PAN-OS, Prisma SD-WAN ION, and Prisma Access devices. This stops the invalid BGP update from reaching the affected router."
+                    }
+                ],
+                "solution": [
+                    {
+                        "lang": "eng",
+                        "value": "This issue is fixed in PAN-OS 9.1.16-h3, PAN-OS 10.1.11, PAN-OS 10.2.6, PAN-OS 11.0.3, and all later PAN-OS versions.\n\nA fix for this issue is being developed for PAN-OS 8.1 and PAN-OS 9.0 versions and this advisory will be updated once the fixed PAN-OS versions are available.\n\nThis issue is fixed in Prisma SD-WAN ION 6.1.5 and will be fixed in Prisma SD-WAN ION 6.2.3 (ETA: Week of 11/27), and all later Prisma SD-WAN ION versions. This issue does not impact Prisma SD-WAN ION 5.6 versions.\n\nFor Prisma Access customers, the upgrade to fix this issue will be available on 09/30. Customers should work with their Prisma Access contacts and support to secure a maintenance window for the on-demand software upgrade.\n\nPlease note that full Prisma Access data plane upgrades scheduled on and after 09/30 will have this fix incorporated by default. No additional action is necessary for these customers to remediate this issue."
+                    }
+                ],
+                "credit": [
+                    {
+                        "lang": "eng",
+                        "value": "Palo Alto Networks thanks Ben Cartwright-Cox for discovering this issue in BGP implementations."
+                    }
+                ],
+                "timeline": [
+                    {
+                        "time": "2023-11-08T17:00:00.000Z",
+                        "lang": "eng",
+                        "value": "Updated availability of the fix in PAN-OS 11.0.3 and added CVSS 4.0 scoring"
+                    },
+                    {
+                        "time": "2023-11-08T17:00:00.000Z",
+                        "lang": "eng",
+                        "value": "A fix for this issue is being developed for PAN-OS 8.1 and PAN-OS 9.0"
+                    }
+                ],
+                "x_affectedList": [
+                    "Prisma SD-WAN ION 6.2",
+                    "Prisma SD-WAN ION 6.1"
+                ],
+                "x_advisoryEoL": false
+            }
+        ,
+    "excepted_response": {
+        "fields": {
+            "tags": [
+                "CWE-754"
+            ],
+            "publications": [
+                {
+                    "link": "https://dummy.com/CVE-2023-38802",
+                    "title": "https://dummy.com/CVE-2023-38802",
+                    "source": "CONFIRM"
+                },
+                {
+                    "link": "https://dummy.com/post/bgp-path-attributes-grave-error-handling",
+                    "title": "https://dummy.com/post/bgp-path-attributes-grave-error-handling",
+                    "source": "CONFIRM"
+                }
+            ],
+            "cvss": 8.2,
+            "cvssscore": 8.2,
+            "cvssvector": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N/AU:Y/R:A/V:C/RE:L/U:Amber",
+            "sourceoriginalseverity": "HIGH",
+            "cvedescription": "BGP software such as FRRouting FRR included as part of the PAN-OS",
+            "description": "BGP software such as FRRouting FRR included as part of the PAN-OS",
+            "published": "2023-09-13T16:00:00.000Z",
+            "name": " PAN-OS: Denial-of-Service (DoS) Vulnerability in BGP Software",
+            "cvssversion": "4.0",
+            "cvsstable": [
+                {
+                    "metrics": "Version",
+                    "value": "4.0"
+                },
+                {
+                    "metrics": "Attack Vector",
+                    "value": "NETWORK"
+                },
+                {
+                    "metrics": "Attack Complexity",
+                    "value": "LOW"
+                },
+                {
+                    "metrics": "Attack Requirements",
+                    "value": "PRESENT"
+                },
+                {
+                    "metrics": "Privileges Required",
+                    "value": "NONE"
+                },
+                {
+                    "metrics": "User Interaction",
+                    "value": "NONE"
+                },
+                {
+                    "metrics": "Vuln Confidentiality Impact",
+                    "value": "NONE"
+                },
+                {
+                    "metrics": "Sub Confidentiality Impact",
+                    "value": "NONE"
+                },
+                {
+                    "metrics": "Vuln Integrity Impact",
+                    "value": "NONE"
+                },
+                {
+                    "metrics": "Sub Integrity Impact",
+                    "value": "NONE"
+                },
+                {
+                    "metrics": "Vuln Availability Impact",
+                    "value": "HIGH"
+                },
+                {
+                    "metrics": "Sub Availability Impact",
+                    "value": "NONE"
+                },
+                {
+                    "metrics": "Safety",
+                    "value": "NOT_DEFINED"
+                },
+                {
+                    "metrics": "Automatable",
+                    "value": "YES"
+                },
+                {
+                    "metrics": "Recovery",
+                    "value": "AUTOMATIC"
+                },
+                {
+                    "metrics": "Value Density",
+                    "value": "CONCENTRATED"
+                },
+                {
+                    "metrics": "Vulnerability Response Effort",
+                    "value": "LOW"
+                },
+                {
+                    "metrics": "Provider Urgency",
+                    "value": "AMBER"
+                },
+                {
+                    "metrics": "Base Severity",
+                    "value": "HIGH"
+                },
+                {
+                    "metrics": "Base Score",
+                    "value": 8.2
+                },
+                {
+                    "metrics": "Vector String",
+                    "value": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N/AU:Y/R:A/V:C/RE:L/U:Amber"
+                }
+            ]
+        }
+    }
+}
