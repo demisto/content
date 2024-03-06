@@ -7358,7 +7358,7 @@ def test_panorama_list_security_profile_group_command(mocker):
                          'default |  |  |  |\n| test2 |  | default | default | default | default | basic file blocking | test '\
                          'data filtering | test wildfire analysis |\n'
 
-    command_results = Panorama.pan_os_list_security_profile_group_command({})
+    command_results = Panorama.pan_os_list_security_profile_groups_command({})
 
     assert command_results.outputs == expected_outputs_tags_list
     assert command_results.readable_output == expected_hr_result
@@ -7385,7 +7385,7 @@ def test_pan_os_create_security_profile_group_command(mocker):
     command_results = Panorama.pan_os_create_security_profile_group_command({"group_name": "test_spg"})
 
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-    assert command_results.readable_output == 'Successfull created Security Profile Group: "test_spg"'
+    assert command_results.readable_output == 'Successfully created Security Profile Group: "test_spg"'
 
 
 def test_pan_os_edit_security_profile_group_command(mocker):
@@ -7409,7 +7409,7 @@ def test_pan_os_edit_security_profile_group_command(mocker):
     command_results = Panorama.pan_os_edit_security_profile_group_command({"group_name": "test_spg"})
 
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-    assert command_results.readable_output == 'Successfull edited Security Profile Group: "test_spg"'
+    assert command_results.readable_output == 'Successfully edited Security Profile Group: "test_spg"'
 
 
 def test_pan_os_delete_security_profile_group_command(mocker):
@@ -7434,4 +7434,4 @@ def test_pan_os_delete_security_profile_group_command(mocker):
 
     command_results = Panorama.pan_os_delete_security_profile_group_command({"group_name": "test_spg"})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
-    assert command_results.readable_output == 'Successfull deleted Security Profile Group: "test_spg"'
+    assert command_results.readable_output == 'Successfully deleted Security Profile Group: "test_spg"'
