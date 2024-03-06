@@ -151,7 +151,7 @@ def fetch_events_per_type(client: Client, event_type: str, fetch_start_timestamp
         data_field = 'alertsList'
 
     elif event_type == EventType.audit_log:
-        event_pulling_function = client.get_audit_logs
+        event_pulling_function = client.get_audit_logs  # type: ignore[assignment]
         data_field = 'auditLogs'
     else:
         raise DemistoException(f'Event Type: {event_type} is not supported by the integration')
@@ -192,9 +192,9 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
 
     ids_for_dedup = cache.get('ids_for_dedup', [])
     fetch_start_timestamp = cache.get('next_start_timestamp') or \
-                            int(arg_to_datetime('1 min').timestamp() * 1000000)  # type: ignore[union-attr]
+        int(arg_to_datetime('1 min').timestamp() * 1000000)  # type: ignore[union-attr]
     fetch_end_timestamp = cache.get('next_end_timestamp') or \
-                          int(arg_to_datetime('Now').timestamp() * 1000000)  # type: ignore[union-attr]
+        int(arg_to_datetime('Now').timestamp() * 1000000)  # type: ignore[union-attr]
 
     # The latest_event_fetched_timestamp acts like a pointer to the newest event we ever fetched.
     latest_fetched_event_timestamp = cache.get('latest_event_fetched_timestamp')
@@ -288,7 +288,7 @@ def get_events_command(client: Client, args: dict):
     end_time = int(arg_to_datetime(args.get('end_time'), 'now').timestamp() * 1000000)   # type: ignore[union-attr]
     raw_audit_logs = client.get_audit_logs(start_time, end_time)
     raw_alerts = client.get_alerts(start_time, end_time)
-    events = raw_audit_logs.get('auditLogs') + raw_alerts.get('alertsList')
+    events = raw_audit_logs.get('auditLogs', []) + raw_alerts.get('alertsList', [])
     if argToBoolean(args.get('should_push_events')):
         send_events_to_xsiam(events=events, vendor='cohesity', product='helios')
     return CommandResults(readable_output=tableToMarkdown('Events returned from Cohesity Helios', t=events),
@@ -306,7 +306,8 @@ def main() -> None:
 
     # Get helios service API url.
     base_url = urljoin(params.get('url'), API_VERSION)
-    max_fetch: int = min(arg_to_number(params.get('max_fetch', MAX_EVENTS_PER_TYPE)), MAX_EVENTS_PER_TYPE)  # type: ignore[type-var]
+    max_fetch: int = min(arg_to_number(params.get('max_fetch', MAX_EVENTS_PER_TYPE)),
+                         MAX_EVENTS_PER_TYPE)  # type: ignore[assignment]
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
