@@ -81,12 +81,11 @@ def adjust_and_dedup_elements(new_elements: list[dict], existing_element_ids: li
     for element in new_elements:
         if element.get('id') not in existing_element_ids:
             try:
-                element['_time'] = timestamp_to_datestring(element.get(time_field_name) / 1000)
+                element['_time'] = timestamp_to_datestring(element.get(time_field_name) / 1000)  # type: ignore[operator]
 
             except TypeError as e:
                 # modeling rule will default on ingestion time if _time is missing
                 demisto.error(f'Could not parse _time field, for event {element}: {e}')
-                pass
 
             filtered_list.append(element)
     return filtered_list
@@ -108,7 +107,7 @@ def get_earliest_event_ids_with_the_same_time(events: list, time_field: str) -> 
         for event in reversed(events):
             # Once we found an event which i newer than the earliest event we know we have saved all the events that had the same
             # timestamp.
-            if arg_to_number(event.get(time_field)) > earliest_event_fetched_timestamp:
+            if arg_to_number(event.get(time_field)) > earliest_event_fetched_timestamp:  # type: ignore[operator]
                 break
             # Audit logs don't have an ID, so we create it from the other fields
             event_id = event.get('id') if event.get('id') else hash_fields_to_create_id(event)
@@ -173,7 +172,7 @@ def fetch_events_per_type(client: Client, event_type: str, fetch_start_timestamp
     return events
 
 
-def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: int) -> (list, dict):
+def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: int) -> tuple[list, dict, bool]:
     """
     This is the main loop to retrieve events, it is called twice - once for each event type (Audit Log, Alert).
     For each API response we check for duplicates and add the '_time' field.
@@ -192,12 +191,15 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
     time_field_name = ALERT_TIME_FIELD if event_type == EventType.alert else AUDIT_LOGS_TIME_FIELD
 
     ids_for_dedup = cache.get('ids_for_dedup', [])
-    fetch_start_timestamp = cache.get('next_start_timestamp') or int(arg_to_datetime('1 min').timestamp() * 1000000)
-    fetch_end_timestamp = cache.get('next_end_timestamp') or int(arg_to_datetime('Now').timestamp() * 1000000)
+    fetch_start_timestamp = cache.get('next_start_timestamp') or \
+                            int(arg_to_datetime('1 min').timestamp() * 1000000)  # type: ignore[union-attr]
+    fetch_end_timestamp = cache.get('next_end_timestamp') or \
+                          int(arg_to_datetime('Now').timestamp() * 1000000)  # type: ignore[union-attr]
 
     # The latest_event_fetched_timestamp acts like a pointer to the newest event we ever fetched.
     latest_fetched_event_timestamp = cache.get('latest_event_fetched_timestamp')
-    aggregated_events = temp_events = []
+    aggregated_events: list = []
+    temp_events: list = []
     while len(aggregated_events) < max_fetch:
         temp_events = fetch_events_per_type(client, event_type, fetch_start_timestamp, fetch_end_timestamp)
         demisto.debug(f'Number of events before de-duping {len(temp_events)}:\n{temp_events}')
@@ -220,7 +222,7 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
     # We only update latest_fetched_event_timestamp if it is empty, o/w it means we are still fetch past events.
     if not latest_fetched_event_timestamp:
         latest_fetched_event_timestamp = aggregated_events[0].get(time_field_name) + 1 if aggregated_events else \
-            fetch_end_timestamp
+            fetch_end_timestamp  # type: ignore[operator]
         demisto.debug(f'latest_fetched_event_timestamp is empty, setting it to \'{latest_fetched_event_timestamp}\'')
 
     in_progress_pagination: bool = False
@@ -245,7 +247,7 @@ def fetch_events_loop(client: Client, event_type: str, cache: dict, max_fetch: i
     else:
         in_progress_pagination = True
         next_start_timestamp = fetch_start_timestamp
-        next_end_timestamp = fetch_end_timestamp
+        next_end_timestamp = fetch_end_timestamp    # type: ignore[assignment]
         demisto.debug(f'Last events list has {len(temp_events)} events. The aggregated events list has {len(aggregated_events)} '
                       f'events which should equal to {max_fetch=}. This means we are missing more events.')
 
@@ -282,15 +284,15 @@ def fetch_events_command(client: Client, last_run: dict, max_fetch: int):
 
 
 def get_events_command(client: Client, args: dict):
-    start_time = int(arg_to_datetime(args.get('start_time')).timestamp() * 1000000)
-    end_time = int(arg_to_datetime(args.get('end_time'), 'now').timestamp() * 1000000)
+    start_time = int(arg_to_datetime(args.get('start_time')).timestamp() * 1000000)  # type: ignore[union-attr]
+    end_time = int(arg_to_datetime(args.get('end_time'), 'now').timestamp() * 1000000)   # type: ignore[union-attr]
     raw_audit_logs = client.get_audit_logs(start_time, end_time)
     raw_alerts = client.get_alerts(start_time, end_time)
     events = raw_audit_logs.get('auditLogs') + raw_alerts.get('alertsList')
     if argToBoolean(args.get('should_push_events')):
         send_events_to_xsiam(events=events, vendor='cohesity', product='helios')
     return CommandResults(readable_output=tableToMarkdown('Events returned from Cohesity Helios', t=events),
-                          raw_response=raw_audit_logs.get('auditLogs') + raw_alerts.get('alertsList'))
+                          raw_response=raw_audit_logs.get('auditLogs', []) + raw_alerts.get('alertsList', []))
 
 
 def main() -> None:
@@ -304,7 +306,7 @@ def main() -> None:
 
     # Get helios service API url.
     base_url = urljoin(params.get('url'), API_VERSION)
-    max_fetch = min(arg_to_number(params.get('max_fetch', MAX_EVENTS_PER_TYPE)), MAX_EVENTS_PER_TYPE)
+    max_fetch: int = min(arg_to_number(params.get('max_fetch', MAX_EVENTS_PER_TYPE)), MAX_EVENTS_PER_TYPE)  # type: ignore[type-var]
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
