@@ -1,5 +1,4 @@
 This is the Cohesity Helios Event Collector integration for XSIAM.
-This integration was integrated and tested with version xx of Cohesity Helios.
 
 ## Configure Cohesity Helios Event Collector on Cortex XSOAR
 
