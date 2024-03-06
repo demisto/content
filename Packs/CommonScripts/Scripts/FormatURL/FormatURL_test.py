@@ -298,6 +298,28 @@ class TestFormatURL:
         hex = non_formatted_url.find('%')
         assert url.hex_check(hex)
 
+    cidr_strings = [
+        ("192.168.0.0/16", True),  # Valid CIDR
+        ("192.168.0.0/16.", True),  # Valid CIDR with an extra char caught by the regex
+        ("192.168.0.1/16", False),  # Invalid CIDR
+        ("192.168.0.1/16.", False),  # Invalid CIDR with an extra char caught by the regex
+    ]
+
+    @pytest.mark.parametrize('input, expected', cidr_strings)
+    def test_is_valid_cidr(self, input: str, expected: str):
+        from FormatURL import _is_valid_cidr
+        """
+        Given:
+        - non_formatted_url: A CIDR input.
+
+        When:
+        - Regex caught a string with a CIDR structure.
+
+        Then:
+        - Ensure the formatter avoids valid CIDRs.
+        """
+        assert _is_valid_cidr(input) == expected
+
     @pytest.mark.parametrize('url_, expected', FORMAT_URL_TEST_DATA)
     def test_format_url(self, url_: str, expected: str):
         """

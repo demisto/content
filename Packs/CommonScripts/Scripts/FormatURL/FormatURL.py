@@ -732,6 +732,9 @@ def _is_valid_cidr(cidr: str) -> bool:
         True if inout is a valid CIDR
 
     """
+    if not cidr[-1].isdigit():  # precaution incase the regex caught an extra char by mistake
+        cidr = cidr[:-1]
+
     try:
         ipaddress.ip_network(cidr)
         return True
