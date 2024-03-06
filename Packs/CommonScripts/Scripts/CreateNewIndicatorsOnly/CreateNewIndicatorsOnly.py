@@ -21,9 +21,9 @@ def associate_indicator_to_incident(indicator_value: Any) -> None:
         'value': f"{indicator_value}"  # Force an error
     }
 
-    res = demisto.executeCommand('associateIndicatorToIncident', cmd_args)
-
-    if (len(res) != 1 or 'Contents' not in res[0] or 'done' not in res[0]['Contents']):
+    res = execute_command('associateIndicatorToIncident', cmd_args)
+    
+    if (res != 'done'):
         raise Exception(f"Failed to associate {indicator_value} with incident {incident_id}")
 
 
