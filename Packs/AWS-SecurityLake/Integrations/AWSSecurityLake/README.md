@@ -1,7 +1,7 @@
 Amazon Security Lake is a fully managed security data lake service.
 This integration was integrated and tested with version 1.34.20 of AWS Security Lake SDK (boto3).
 
-## Configure AWS-SecurityLake on Cortex XSOAR
+## Configure Amazon Security Lake on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for AWS-SecurityLake.

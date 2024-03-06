@@ -1,4 +1,3 @@
-import io
 import json
 
 '''CONSTANTS'''
@@ -9,7 +8,7 @@ SECRET_KEY = "secret_key"
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -276,6 +275,6 @@ def test_create_intel(requests_mock):
     }
     response = create_intel_command(client, post_data)
 
-    assert 'data', 'status' in response['CTIX']['Intel']['response']
+    assert all(k in response['CTIX']['Intel']['response'] for k in ('data', 'status'))
     assert 'status' in response['CTIX']['Intel']
     assert response['CTIX']['Intel']['response']['status'] == 201
