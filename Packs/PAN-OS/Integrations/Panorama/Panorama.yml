@@ -9448,7 +9448,7 @@ script:
       - 'Data Filtering  Profile'
       - 'WildFire Analysis Profile'
       required: true
-    - description: The value to set in the profile. Set the value "None" if you want to empty the profile value. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+    - description: The value to set in the profile. If you want the profile value to be empty, set the value to "None". You can get the possible values for this argument by running the pan-os-get-security-profile command.
       name: profile_value
       required: true
     - description: The device group that the security profile group is part of.

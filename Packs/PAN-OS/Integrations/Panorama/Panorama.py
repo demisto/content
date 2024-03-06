@@ -13894,6 +13894,9 @@ def pan_os_edit_security_profile_group_command(args: dict) -> CommandResults:
 
     if profile_value.lower() == "none":
         _, sp_group = pan_os_list_security_profile_groups(args=args)
+
+        if not sp_group:
+            raise Exception(f'Could not find security profile group "{group_name}"')
         sp_group = sp_group[0]
 
         xpath, element = build_edit_sp_group_xpath_and_element(group_name, profile_to_change, profile_value, sp_group)
