@@ -682,6 +682,48 @@ Submits potential threats into the ZF alert registry for disruption.
 | ZeroFox.Alert.Tags | String | A list of an alert's tags. |
 | ZeroFox.Alert.EntityAccount | String | The account associated with the entity. |
 
+### zerofox-send-alert-attachment
+
+***
+Sends an attachment to a specified alert.
+
+#### Base Command
+
+`zerofox-send-alert-attachment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The ID of an alert. Can be retrieved running the zerofox-list-alerts command. | Required |
+| attachment_type | The type of the attachment. Can be evidence "photo_id", "disruption_agreement", "trademark_information", "trademark"or "copyright". Possible values are: evidence, photo_id, disruption_agreement, trademark_information, trademark, copyright. | Required |
+| entry_id | The entry ID of the attachment. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+### zerofox-get-alert-attachments
+
+***
+Retrieves the attachments of a specified alert.
+
+#### Base Command
+
+`zerofox-get-alert-attachments`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The ID of an alert. Can be retrieved running the zerofox-list-alerts command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ZeroFox.AlertAttachments.ID | unknown | The ID of an alert. |
+| ZeroFox.AlertAttachments.Name | unknown | The name attachment of an alert. |
+
 ### zerofox-search-compromised-domain
 
 ***

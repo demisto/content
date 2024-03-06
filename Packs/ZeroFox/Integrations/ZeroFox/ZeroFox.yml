@@ -1330,6 +1330,37 @@ script:
       type: String
     deprecated: false
     execution: false
+  - name: zerofox-send-alert-attachment
+    description: Sends an attachment to a specified alert.
+    arguments:
+    - name: alert_id
+      required: true
+      description: The ID of an alert. Can be retrieved running the zerofox-list-alerts command.
+    - name: attachment_type
+      description: The type of the attachment. Can be evidence "photo_id", "disruption_agreement", "trademark_information", "trademark"or "copyright".
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - evidence
+      - photo_id
+      - disruption_agreement
+      - trademark_information
+      - trademark
+      - copyright
+    - name: entry_id
+      description: The entry ID of the attachment.
+      required: true
+  - name: zerofox-get-alert-attachments
+    description: Retrieves the attachments of a specified alert.
+    arguments:
+    - name: alert_id
+      required: true
+      description: The ID of an alert. Can be retrieved running the zerofox-list-alerts command.
+    outputs:
+    - contextPath: ZeroFox.AlertAttachments.ID
+      description: The ID of an alert.
+    - contextPath: ZeroFox.AlertAttachments.Name
+      description: The name attachment of an alert.
   - name: zerofox-search-compromised-domain
     description: Looks for a given domain in Zerofox's CTI feeds.
     arguments:
@@ -1357,14 +1388,14 @@ script:
       type: keyValue
     outputs:
     - contextPath: ZeroFox.CompromisedEmails.Domain
-      type: string
       description: Domain in which the search domain was found.
+      type: string
     - contextPath: ZeroFox.CompromisedEmails.Email
-      type: string
       description: Email involved in the threat.
-    - contextPath: ZeroFox.CompromisedEmails.CreatedAt
       type: string
+    - contextPath: ZeroFox.CompromisedEmails.CreatedAt
       description: Date in which the email was found related to a threat.
+      type: string
   - name: zerofox-search-malicious-ip
     description: Looks for malicious ips in ZeroFox's CTI feeds.
     arguments:
@@ -1375,14 +1406,14 @@ script:
       type: keyValue
     outputs:
     - contextPath: ZeroFox.MaliciousIPs.Domain
-      type: string
       description: Domain in which the search domain was found.
+      type: string
     - contextPath: ZeroFox.MaliciousIPs.IPAddress
-      type: string
       description: IP in which the search domain was found.
-    - contextPath: ZeroFox.MaliciousIPs.CreatedAt
       type: string
+    - contextPath: ZeroFox.MaliciousIPs.CreatedAt
       description: Date in which the ip was found related to a threat.
+      type: string
   - name: zerofox-search-malicious-hash
     description: Looks for registered hashes in ZeroFox's CTI feeds.
     arguments:
@@ -1431,7 +1462,7 @@ script:
     - contextPath: ZeroFox.Exploits.URLs
       description: URLs associated to the threat separated by commas.
       type: string
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.13.89009
   isfetch: true
   longRunning: false
   longRunningPort: false
