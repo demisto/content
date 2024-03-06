@@ -357,6 +357,61 @@ def test_splunk_submit_event_hec_command(mocker):
     assert err_msg == f"Could not send event to Splunk {text}"
 
 
+def check_request_channel(args: dict):
+    """
+    Check if args contains a request_channel, return the proper text.
+    Args:
+        args: A dict of args.
+    Returns: A MockResRequestChannel with the correct text value.
+    """
+    if args.get('request_channel'):
+        return MockResRequestChannel('{"text":"Success","code":0,"ackId":1}')
+    else:
+        return MockResRequestChannel('{"text":"Data channel is missing","code":10}')
+
+
+class MockResRequestChannel:
+    def __init__(self, text):
+        self.text = text
+
+
+def test_splunk_submit_event_hec_command_request_channel(mocker):
+    """
+    Given
+    - An args dict that contains a request_channel and a dummy params.
+    When
+    - Executing splunk_submit_event_hec_command function
+    Then
+    - The return result object contains the correct message.
+    """
+    args = {"request_channel": "11111111-1111-1111-1111-111111111111"}
+    mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=check_request_channel(args))
+    moc = mocker.patch.object(demisto, 'results')
+    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
+                                           args=args)
+    readable_output = moc.call_args[0][0]
+    assert readable_output == "The event was sent successfully to Splunk. AckID: 1"
+
+
+def test_splunk_submit_event_hec_command_without_request_channel(mocker):
+    """
+    Given
+    - An args dict that doesn't contain a request_channel and a dummy params.
+    When
+    - Executing splunk_submit_event_hec_command function
+    Then
+    - The return result object contains the correct message.
+    """
+    args = {}
+    mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=check_request_channel(args))
+
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
+                                           args=args)
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == 'Could not send event to Splunk {"text":"Data channel is missing","code":10}'
+
+
 def test_parse_time_to_minutes_invalid_time_unit(mocker):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
