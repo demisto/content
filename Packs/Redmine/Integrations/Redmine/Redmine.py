@@ -65,15 +65,16 @@ class Client(BaseClient):
                                       data=file_content)
         return response
 
-    def update_issue_request(self, args):
+    def update_issue_request(self, args, project_id):
         issue_id = args.pop('issue_id')
-        params = assign_params(**args)
-        response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": params}, headers=self._post_put_header,
+        args['project_id'] = project_id
+        remove_nulls_from_dictionary(args)
+        response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": args}, headers=self._post_put_header,
                                       empty_valid_codes=[204], return_empty_response=True)
         return response
 
-    def get_issues_list_request(self, project_id, status_id, offset_to_dict, limit_to_dict, args: dict[str, Any]):
-        params = assign_params(project_id=project_id, status_id=status_id, offset=offset_to_dict, limit=limit_to_dict, **args)
+    def get_issues_list_request(self, project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, args: dict[str, Any]):
+        params = assign_params(tracker_id=tracker_id, project_id=project_id, status_id=status_id, offset=offset_to_dict, limit=limit_to_dict, **args)
         response = self._http_request('GET', '/issues.json', params=params, headers=self._get_header)
         return response
 
@@ -283,8 +284,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
     handle_file_attachment(client, args)
     try:
         convert_args_to_request_format(args)
-        project_id = args.pop('project_id', client._project_id)
-        response = client.create_issue_request(args, project_id)
+        response = client.create_issue_request(args, args.pop('project_id', client._project_id))
         issue_response = response['issue']
         headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'estimated_hours', 'created_on',
                    'subject', 'description', 'start_date', 'estimated_hours', 'custom_fields']
@@ -312,7 +312,7 @@ def update_issue_command(client: Client, args: dict[str, Any]):
     handle_file_attachment(client, args)
     try:
         convert_args_to_request_format(args)
-        client.update_issue_request(args)
+        client.update_issue_request(args, args.pop('project_id', client._project_id))
         command_results = CommandResults(
             readable_output=f'Issue with id {issue_id} was successfully updated.')
         return (command_results)
@@ -333,8 +333,14 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
                 status_id = ISSUE_STATUS_DICT[status_id]
             else:
                 raise DemistoException("Invalid status ID, please use only predefined values")
+        tracker_id = args.pop('tracker_id', None)
+        if tracker_id:
+            if tracker_id in ISSUE_TRACKER_DICT:
+                tracker_id = ISSUE_TRACKER_DICT[tracker_id]
+            else:
+                raise DemistoException("Invalid tracker ID, please use only predefined values")
         project_id = args.pop('project_id', None) or client._project_id
-        response = client.get_issues_list_request(project_id, status_id, offset_to_dict, limit_to_dict, args)
+        response = client.get_issues_list_request(project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, args)
         issues_response = response['issues']
         page_header = create_paging_header(len(issues_response), page_number_for_header)
 

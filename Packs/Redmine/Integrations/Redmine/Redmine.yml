@@ -48,9 +48,9 @@ script:
       auto: PREDEFINED
       description: Enter the tracker ID for this issue
       predefined:
-      - 'Bug'
-      - 'Feature'
-      - 'Support'
+      - Bug
+      - Feature
+      - Support
       required: true
     - name: status_id
       auto: PREDEFINED
@@ -68,11 +68,11 @@ script:
       required: true
       description: Enter the priority ID for this issue
       predefined:
-      - 'Low'
-      - 'Normal'
-      - 'High'
-      - 'Urgent'
-      - 'Immediate'
+      - Low
+      - Normal
+      - High
+      - Urgent
+      - Immediate
       type: textArea
     - name: subject
       required: true
@@ -158,8 +158,12 @@ script:
       description: Specify a subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!*" to exclude subprojects)
       type: textArea
     - name: tracker_id
+      auto: PREDEFINED
       description: Specify a tracker ID to display issues of this tracker ID
-      type: textArea
+      predefined:
+      - Bug
+      - Feature
+      - Support
     - name: status_id
       auto: PREDEFINED
       description: Specify a status ID to display issues of this status ID (* means all)

@@ -1,5 +1,5 @@
 id: 3900afd6-a237-4a7e-8042-b99ef0ad3231
-version: 13
+version: 14
 vcShouldKeepItemLegacyProdMachine: false
 name: Redmine_Test
 description: Tests the Redmine Integrations command
@@ -345,7 +345,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "22"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -816,7 +816,47 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 2590
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 6c55e194-56e8-4dc8-869b-f0bcefb8a21e
+    type: regular
+    task:
+      id: 6c55e194-56e8-4dc8-869b-f0bcefb8a21e
+      version: -1
+      name: Delete All context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 2610
         }
       }
     note: false
@@ -831,7 +871,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2905,
+        "height": 3125,
         "width": 380,
         "x": 640,
         "y": -250
