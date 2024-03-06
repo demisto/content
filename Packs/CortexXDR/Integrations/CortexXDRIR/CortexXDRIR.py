@@ -22,7 +22,7 @@ FIELDS_TO_EXCLUDE = [
     'network_artifacts',
     'file_artifacts',
     'received'
-] #  can also remove 'alerts'
+] # can also remove 'alerts'
 
 
 XDR_INCIDENT_FIELDS = {
@@ -926,13 +926,15 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                 raw_incidents.append(client.get_multiple_incidents_extra_data(gte_creation_time_milliseconds=last_fetch,
                                                                               status=status,
                                                                               limit=max_fetch, starred=starred,
-                                                                              starred_incidents_fetch_window=starred_incidents_fetch_window,
+                                                                              starred_incidents_fetch_window=\
+                                                                                  starred_incidents_fetch_window,
                                                                               fields_to_exclude=fields_to_exclude))
             raw_incidents = sorted(raw_incidents, key=lambda inc: inc['incident']['creation_time'])
         else:
             raw_incidents = client.get_multiple_incidents_extra_data(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
                                                                      starred=starred,
-                                                                     starred_incidents_fetch_window=starred_incidents_fetch_window,
+                                                                     starred_incidents_fetch_window=\
+                                                                         starred_incidents_fetch_window,
                                                                      fields_to_exclude=fields_to_exclude)
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
