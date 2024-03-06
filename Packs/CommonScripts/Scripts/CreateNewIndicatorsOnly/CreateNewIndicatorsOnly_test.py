@@ -73,6 +73,8 @@ def test_all_indicators_exist_with_single_value(mocker):
                 'score': 0,
                 'indicator_type': args.get('type', 'Unknown')
             }]
+        elif cmd == 'associateIndicatorToIncident':
+            return 'done'
         raise ValueError('Unexpected calls')
 
     mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
@@ -119,6 +121,8 @@ def test_all_indicators_exist_with_multiple_value(mocker):
                 'score': 0,
                 'indicator_type': args.get('type', 'Unknown')
             }]
+        elif cmd == 'associateIndicatorToIncident':
+            return 'done'
         raise ValueError('Unexpected calls')
 
     mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
@@ -185,6 +189,8 @@ def test_some_indicators_exist_with_multiple_value(mocker):
                 'score': 0,
                 'indicator_type': args.get('type', 'Unknown')
             }
+        elif cmd == 'associateIndicatorToIncident':
+            return 'done'
         raise ValueError('Unexpected calls')
 
     mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
@@ -246,6 +252,8 @@ def test_some_indicators_are_excluded(mocker):
                     'score': 0,
                     'indicator_type': args.get('type', 'Unknown')
                 }
+        elif cmd == 'associateIndicatorToIncident':
+            return 'done'
         raise ValueError('Unexpected calls')
 
     mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
@@ -301,6 +309,8 @@ def test_indicator_including_commas(mocker):
                 'score': 0,
                 'indicator_type': args.get('type', 'Unknown')
             }
+        elif cmd == 'associateIndicatorToIncident':
+            return 'done'
         raise ValueError('Unexpected calls')
 
     mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
@@ -349,6 +359,8 @@ def test_print_verbose(mocker):
                 'score': 0,
                 'indicator_type': args.get('type', 'Unknown')
             }
+        elif cmd == 'associateIndicatorToIncident':
+            return 'done'
         raise ValueError('Unexpected calls')
 
     mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
@@ -401,6 +413,8 @@ def test_findIndicators_called_with_escaped_quotes(mocker):
                 'score': 0,
                 'indicator_type': args.get('type', 'Unknown')
             }]
+        elif cmd == 'associateIndicatorToIncident':
+            return 'done'
         return None
 
     mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
