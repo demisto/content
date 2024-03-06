@@ -1068,6 +1068,28 @@ There is no context output for this command.
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 >and paste it in your instance configuration under the **Authorization code** parameter.
 >
+
+### microsoft-teams-graph-auth-reset
+
+***
+Run this command if for some reason you need to rerun the graph authentication process.
+Notes:
+- Use this command to switch between authentication flows and ensure the integration uses the appropriate token.
+- After making any changes to permissions in the Azure Portal, it is necessary to reset the authentication to ensure that the token reflects the updated permissions.
+- When using the `Authorization Code Flow`, after executing the command, you will need to regenerate the **Authorization code** parameter. Then, run *!microsoft-teams-auth-test* to verify the authentication.
+
+#### Base Command
+
+`microsoft-teams-graph-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
 ## Running commands from Microsoft Teams
 You can run Cortex XSOAR commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
 
