@@ -28,7 +28,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
     remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
     response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
-    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam
+    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam, censor_request_logs
 
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
@@ -9554,3 +9554,9 @@ def test_create_clickable_test_wrong_text_value():
 
     assert e.type == AssertionError
     assert 'The URL list and the text list must be the same length.' in e.value.args
+    
+    
+def test_censor_request_logs():
+    text= "send: b'GET /v1.0/deviceManagement/managedDevices?$top=10& HTTP/1.1 \r\nHost: graph.microsoft.com \r\nUser-Agent: python-requests/2.31.0 \r\nAccept-Encoding: gzip, deflate \r\nAccept: application/json \r\nConnection: keep-alive \r\nAuthorization: Bearer <XX_REPLACED> \r\nContent-Type: application/json \r\n \r\n"
+    res = censor_request_logs(text)
+    assert res == "abc"
