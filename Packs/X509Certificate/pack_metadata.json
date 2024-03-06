@@ -15,11 +15,11 @@
     "useCases": [],
     "dependencies": {
         "CommonTypes": {
-            "mandatory": "true",
+            "mandatory": true,
             "display_name": "Common Types"
         },
         "CommonScripts": {
-            "mandatory": "true",
+            "mandatory": true,
             "display_name": "Common Scripts"
         }
     },
