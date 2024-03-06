@@ -71,14 +71,21 @@ function validateCIDR(cidrRange) {
   return true; // CIDR range is well-formed
 }
 
+function getNetworkAddress(cidrRange) {
+  return cidrRange.split('/')[0]
+}
+
+function getSubnetMask(cidrRange) {
+  return cidrRange.split('/')[0]
+}
+
 function isIPInCIDR(ipAddress, cidrRange) {
-  if (!validateCIDR(cidrRange)) {
+    if (!validateCIDR(cidrRange)) {
       return false;
   }
 
-  var parts = cidrRange.split('/');
-  var networkAddress = parts[0];
-  var subnetMask = parts[1];
+  var networkAddress = getNetworkAddress(cidrRange);
+  var subnetMask = getSubnetMask(cidrRange);
 
   // Convert IP address and network address to binary
   var ipBinary = ipToBinary(ipAddress);
@@ -98,6 +105,14 @@ for (let i = 0; i < ipAddresses.length; i++) {
   isInRange = false;
 
   for (let j = 0; j < cidrRanges.length; j++) {
+    // Mismatches always return false
+    if ((!isIPv6(ipAddresses[i]) &&  isIPv6(getNetworkAddress(cidrRanges[i])))
+     || ( isIPv6(ipAddresses[i]) && !isIPv6(getNetworkAddress(cidrRanges[i])))) {
+      results[i] = 'False';
+      // Keep going, it might be in another CIDR
+      continue;
+    }
+
     if (isIPInCIDR(ipAddresses[i], cidrRanges[j])) {
       isInRange = true;
       results[i] = 'True';
