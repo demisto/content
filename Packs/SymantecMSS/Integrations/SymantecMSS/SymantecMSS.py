@@ -32,10 +32,10 @@ def pfx_to_pem(pfx, pfx_password):
         private_key, certificate, additional_certificates = pkcs12.load_key_and_certificates(pfx, str.encode(pfx_password))
         if private_key:
             f_pem.write(private_key.private_bytes(
-                    encoding=serialization.Encoding.PEM,
-                    format=serialization.PrivateFormat.TraditionalOpenSSL,
-                    encryption_algorithm=serialization.NoEncryption()
-                ))
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=serialization.NoEncryption()
+            ))
         if certificate:
             f_pem.write(certificate.public_bytes(serialization.Encoding.PEM))
 
