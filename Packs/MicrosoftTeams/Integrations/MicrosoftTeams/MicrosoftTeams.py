@@ -160,21 +160,23 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
 def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     """
     Reset the Graph API authorization in the integration context.
-    This function clears the current authorization data and informs the user to regenerate the Authorization code.
-    :raises DemistoException: Raised with a message instructing the user to regenerate the authorization code.
+    This function clears the current authorization data.
     """
-    integration_context: dict = get_integration_context()
 
     integration_context['current_refresh_token'] = ''
     integration_context['graph_access_token'] = ''
     integration_context['graph_valid_until'] = ''
     set_integration_context(integration_context)
 
-    demisto.debug(f"Detected Error: {error_codes}, Successfully reset the current_refresh_token and graph_access_token.")
-    re_search = re.search(REGEX_SEARCH_ERROR_DESC, error_desc)
-    err_str = re_search['desc'] if re_search else ""
-    raise DemistoException(f"{err_str} Please regenerate the 'Authorization code' "
-                           "parameter and then run !microsoft-teams-auth-test to re-authenticate")
+    if error_codes or error_desc:
+        demisto.debug(f"Detected Error: {error_codes}, Successfully reset the current_refresh_token and graph_access_token.")
+        re_search = re.search(REGEX_SEARCH_ERROR_DESC, error_desc)
+        err_str = re_search['desc'] if re_search else ""
+        raise DemistoException(f"{err_str} Please regenerate the 'Authorization code' "
+                               "parameter and then run !microsoft-teams-auth-test to re-authenticate")
+
+    demisto.debug("Successfully reset the current_refresh_token, graph_access_token and graph_valid_until.")
+    return CommandResults(readable_output='Authorization was reset successfully.')
 
 
 def translate_severity(severity: str) -> float:
@@ -2724,7 +2726,7 @@ def main():   # pragma: no cover
         elif command in commands_auth_code:
             validate_auth_code_flow_params(command)  # raises error in case one of the required params is missing
             commands_auth_code[command]()
-        elif command == 'microsoft-teams-reset-auth-code':
+        elif command == 'microsoft-teams-graph-auth-reset':
             reset_graph_auth()
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
