@@ -1,7 +1,7 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto
+from CommonServerPython import *
 
-from CommonServerUserPython import *  # noqa
+from CommonServerUserPython import *
 
 from typing import Any
 
@@ -51,18 +51,18 @@ class Client(BaseClient):
         self._get_header = {'X-Redmine-API-Key': api_key}
         self._project_id = project_id
 
+    def create_file_token_request(self, args, entry_id):
+        file_content = get_file_content(entry_id)
+        response = self._http_request('POST', '/uploads.json', params=args, headers=self._upload_file_header,
+                                      data=file_content)
+        return response
+    
     def create_issue_request(self, args, project_id=None):
         remove_nulls_from_dictionary(args)
         args['project_id'] = project_id
         body_for_request = {'issue': args}
         response = self._http_request('POST', '/issues.json', params={},
                                       json_data=body_for_request, headers=self._post_put_header)
-        return response
-
-    def create_file_token_request(self, args, entry_id):
-        file_content = get_file_content(entry_id)
-        response = self._http_request('POST', '/uploads.json', params=args, headers=self._upload_file_header,
-                                      data=file_content)
         return response
 
     def update_issue_request(self, args, project_id):
@@ -74,7 +74,8 @@ class Client(BaseClient):
         return response
 
     def get_issues_list_request(self, project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, args: dict[str, Any]):
-        params = assign_params(tracker_id=tracker_id, project_id=project_id, status_id=status_id, offset=offset_to_dict, limit=limit_to_dict, **args)
+        params = assign_params(tracker_id=tracker_id, project_id=project_id, status_id=status_id,
+                               offset=offset_to_dict, limit=limit_to_dict, **args)
         response = self._http_request('GET', '/issues.json', params=params, headers=self._get_header)
         return response
 
@@ -174,6 +175,9 @@ def map_header(header_string: str) -> str:
         'custom_fields': 'Custom Fields',
         'description': 'Description',
         'subject': 'Subject',
+        'update_on': 'Updated On',
+        'is_private': 'Is Private',
+        'tracker': 'Tracker',
     }
     return header_mapping.get(header_string, header_string)
 
@@ -249,7 +253,7 @@ def handle_file_attachment(client: Client, args: Dict[str, Any]):
             content_type = args.pop('file_content_type', '')
             args_for_file = assign_params(file_name=file_name, content_type=content_type)
             token_response = client.create_file_token_request(args_for_file, entry_id)
-            if 'upload' not in token_response:
+            if 'upload' not in token_response and 'token' not in token_response['upload']:
                 raise DemistoException(f"Could not upload file with entry id {entry_id}")
             uploads = assign_params(token=token_response['upload'].get('token', ''),
                                     content_type=content_type,
@@ -259,7 +263,6 @@ def handle_file_attachment(client: Client, args: Dict[str, Any]):
     except Exception as e:
         raise DemistoException("Could not create a token for your file- please try again."
                                f"With error {e}.")
-
 
 ''' COMMAND FUNCTIONS '''
 
@@ -271,7 +274,7 @@ def test_module(client: Client) -> None:
             message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+            message = f'Authorization Error: make sure API Key is correctly set with error {e}'
         else:
             raise e
     return return_results(message)
@@ -296,7 +299,15 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
             outputs=issue_response,
             raw_response=issue_response,
             readable_output=tableToMarkdown('The issue you created:', issue_response, headers=headers,
-                                            removeNull=True, is_auto_json_transform=True, headerTransform=map_header)
+                                            removeNull=True, headerTransform=map_header,
+                                            json_transform_mapping={
+                                                            "tracker": JsonTransformer(keys=["name"]),
+                                                            "status": JsonTransformer(keys=["name"]),
+                                                            "priority": JsonTransformer(keys=["name"]),
+                                                            "author": JsonTransformer(keys=["name"]),
+                                                            "project": JsonTransformer(keys=["name"]),
+                                                            "custom_fields": JsonTransformer(keys=["name","value"]),
+                                                          })
         )
         return command_results
     except Exception as e:
@@ -327,7 +338,7 @@ def update_issue_command(client: Client, args: dict[str, Any]):
 def get_issues_list_command(client: Client, args: dict[str, Any]):
     try:
         offset_to_dict, limit_to_dict, page_number_for_header = adjust_paging_to_request(args)
-        status_id = args.pop('status_id', None)
+        status_id = args.pop('status_id', 'open')
         if status_id:
             if status_id in ISSUE_STATUS_DICT:
                 status_id = ISSUE_STATUS_DICT[status_id]
@@ -339,7 +350,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
                 tracker_id = ISSUE_TRACKER_DICT[tracker_id]
             else:
                 raise DemistoException("Invalid tracker ID, please use only predefined values")
-        project_id = args.pop('project_id', None) or client._project_id
+        project_id = args.pop('project_id', client._project_id)
         response = client.get_issues_list_request(project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, args)
         issues_response = response['issues']
         page_header = create_paging_header(len(issues_response), page_number_for_header)
@@ -360,13 +371,14 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
                                                           issues_response,
                                                           headers=headers,
                                                           removeNull=True,
-                                                          headerTransform=pascalToSpace,
+                                                          headerTransform=map_header,
                                                           is_auto_json_transform=True,
                                                           json_transform_mapping={
                                                               "tracker": JsonTransformer(keys=["name"]),
                                                               "status": JsonTransformer(keys=["name"]),
                                                               "priority": JsonTransformer(keys=["name"]),
                                                               "author": JsonTransformer(keys=["name"]),
+                                                              "custom_fields": JsonTransformer(keys=["name", "value"]),
                                                           }
                                                           )
         )
@@ -381,10 +393,10 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
 
 def get_issue_by_id_command(client: Client, args: dict[str, Any]):
     try:
-        issue_id = args.pop('issue_id', None)
+        issue_id = args.get('issue_id')
         include_possible_values = {'children', 'attachments', 'relations',
                                    'changesets', 'journals', 'watchers', 'allowed_statuses'}
-        included_fields = args.pop('include', None)
+        included_fields = args.get('include')
         if included_fields and not all(field_value in include_possible_values for field_value in included_fields.split(',')):
             raise DemistoException("You can only include the following values: 'changesets', 'children', 'attachments', "
                                    "'journals', 'relations', 'watchers', 'allowed_statuses'}, separated with comma")
@@ -412,6 +424,7 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                                                                              "author": JsonTransformer(keys=["name"]),
                                                                              "custom_fields": JsonTransformer(keys=["name", "value"]),
                                                                              "watchers": JsonTransformer(keys=["name"]),
+                                                                             "attachments": JsonTransformer(keys=["filename", "content_url","content_type", "description"]),
                                                                          }))
         return command_results
     except Exception as e:
@@ -471,7 +484,7 @@ def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
 
 def get_project_list_command(client: Client, args: dict[str, Any]):
     try:
-        INCLUDE_SET = {'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields'}
+        INCLUDE_SET = ['trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields']
         include_arg = args.get('include', None)
         if include_arg:
             included_values = include_arg.split(',')
@@ -483,7 +496,8 @@ def get_project_list_command(client: Client, args: dict[str, Any]):
         response = client.get_project_list_request(args)
         projects_response = response['projects']
         headers = ['id', 'name', 'identifier', 'description', 'status', 'is_public', 'time_entry_activities', 'created_on',
-                   'updated_on', 'default_value', 'visible', 'roles']
+                   'updated_on', 'default_value', 'visible', 'roles', 'issue_custom_fields', 'enabled_modules', 
+                   'issue_categories', 'trackers']
         for project in projects_response:
             project['id'] = str(project['id'])
         command_results = CommandResults(outputs_prefix='Redmine.Project',
@@ -509,10 +523,13 @@ def get_custom_fields_command(client: Client, args):
     try:
         response = client.get_custom_fields_request()
         custom_fields_response = response['custom_fields']
-        headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter', 'searchable',
-                   'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields']
+        headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter',
+                   'searchable', 'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities',
+                   'issue_custom_fields']
         for custom_field in custom_fields_response:
             custom_field['id'] = str(custom_field['id'])
+            custom_field['is_required'] = str(custom_field['is_required'])
+            custom_field['is_filter'] = str(custom_field['is_filter'])
         command_results = CommandResults(outputs_prefix='Redmine.CustomField',
                                          outputs_key_field='id',
                                          outputs=custom_fields_response,
@@ -545,6 +562,7 @@ def get_users_command(client: Client, args: dict[str, Any]):
         headers = ['id', 'login', 'admin', 'firstname', 'lastname', 'mail', 'created_on', 'last_login_on']
         for user in response:
             user['id'] = str(user['id'])
+            user['admin'] = str(user['admin'])
         command_results = CommandResults(outputs_prefix='Redmine.Users',
                                          outputs_key_field='id',
                                          outputs=response,
