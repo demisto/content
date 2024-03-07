@@ -29,10 +29,10 @@ script:
       description: Autonomous System details for an IP Address.
     - contextPath: SpurContextAPI.Context.organization
       type: string
-      description: The organization operating this IP address.
+      description: The organization using this IP address.
     - contextPath: SpurContextAPI.Context.infrastructure
       type: string
-      description: The primary type of infrastructure this IP is supporting. Common tags are MOBILE and DATACENTER.
+      description: The primary infracstructure type that this IP address supports. Common tags are MOBILE and DATACENTER.
     - contextPath: SpurContextAPI.Context.location
       type: object
       description: Data-center or IP Hosting location based on MaxMind GeoLite.
