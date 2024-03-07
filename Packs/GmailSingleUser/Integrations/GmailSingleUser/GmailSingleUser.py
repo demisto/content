@@ -1048,6 +1048,7 @@ def mail_command(client, args, email_from, send_as, subject_prefix='', in_reply_
 def send_mail_command(client):
 
     args = demisto.args()
+    args['subject'] = 'פורים שמח'
     return mail_command(client, args, EMAIL, SEND_AS or EMAIL)
 
 
