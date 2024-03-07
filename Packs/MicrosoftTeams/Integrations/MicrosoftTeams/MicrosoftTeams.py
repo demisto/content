@@ -191,6 +191,7 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     This function clears the current authorization data.
     """
 
+    integration_context: dict = get_integration_context()
     integration_context['current_refresh_token'] = ''
     integration_context['graph_access_token'] = ''
     integration_context['graph_valid_until'] = ''
