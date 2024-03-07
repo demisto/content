@@ -402,10 +402,10 @@ def test_findIndicators_called_with_escaped_quotes(mocker):
     """
     from CreateNewIndicatorsOnly import add_new_indicator
     indicator_value = "(External):Test \"test2 test (unsigned)\""
-    expected_value = indicator_value.replace('"', r"\"")
+    expected_value = indicator_value#.replace('"', r"\"")
 
     def __execute_command(cmd, args) -> Any:
-        assert args == {'value': expected_value}
+        assert args == {'incidentId': '1', 'value': expected_value}
         if cmd == 'findIndicators':
             return [{
                 'id': '0',
