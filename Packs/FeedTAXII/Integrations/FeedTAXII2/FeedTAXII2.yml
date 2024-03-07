@@ -8,7 +8,7 @@ configuration:
   name: feed
   type: 8
   required: false
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -18,7 +18,7 @@ configuration:
   - Bad
   type: 18
   required: false
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   display: Source Reliability
   name: feedReliability
   options:
@@ -30,7 +30,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -72,8 +72,8 @@ configuration:
   name: credentials
   type: 9
   required: false
-- additionalinfo: The API Root to use (e.g. default, public). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead.
-  display: API Root to use
+- additionalinfo: The API root to use (for example default or public). If left empty, the server default API root is used. If the server has no default root, the first available API root is used instead.
+  display: API Root to Use
   name: default_api_root
   type: 0
   required: false
@@ -104,7 +104,7 @@ configuration:
   defaultvalue: 1 year
   type: 0
   required: false
-  additionalinfo: 'The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day/year. For example, 1 minute, 12 hour'
+  additionalinfo: 'The time interval for the first retroactive fetch, formatted as <time unit of type minute/hour/day/year>. For example: 1 minute, 12 hours.'
 - display: STIX Objects To Fetch
   name: objects_to_fetch
   type: 16
@@ -158,7 +158,7 @@ configuration:
   name: limit_per_request
   type: 0
   required: false
-- additionalinfo: "Choose how to handle complex observations. Two or more Observation Expressions MAY be combined using a complex observation operator such as \"AND\", \"OR\". e.g. `[ IP = 'b' ] AND [ URL = 'd' ]`"
+- additionalinfo: "Choose how to handle complex observations. Two or more observation expressions may be combined using a complex observation operator such as \"AND\" or \"OR\". For example: [ IP = 'b' ] AND [ URL = 'd' ]"
   display: Complex Observation Mode
   name: observation_operator_mode
   type: 15
@@ -171,7 +171,7 @@ configuration:
   name: update_custom_fields
   type: 8
   required: false
-  additionalinfo: "Choose whether to import the XSOAR custom fields. Note: this might overwrite the data pulled from other sources."
+  additionalinfo: "Choose whether to import Cortex XSOAR custom fields. Note: this may overwrite data pulled from other sources."
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
