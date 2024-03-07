@@ -255,6 +255,20 @@ def test_get_issues_list_command(mocker, redmine_client):
     http_request.assert_called_with('GET', '/issues.json', params={'offset': 0, 'limit': 1, 'sort': 'priority:desc'},
                                     headers={'X-Redmine-API-Key': True})
 
+def test_get_issues_list_command_invalid_custom_field(mocker, redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed with asset id
+    When:
+        - redmine-issue-list command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Redmine import get_issues_list_command
+    from CommonServerPython import DemistoException
+    with pytest.raises(DemistoException) as e:
+        get_issues_list_command(redmine_client, {'custom_field': 'frf2rg2'})
+    assert e.value.message == "Invalid custom field format, please follow the command description. Error: list index out of range."
 
 def test_get_issues_list_command_invalid_status(mocker, redmine_client):
     """
@@ -269,7 +283,7 @@ def test_get_issues_list_command_invalid_status(mocker, redmine_client):
     from CommonServerPython import DemistoException
     with pytest.raises(DemistoException) as e:
         get_issues_list_command(redmine_client, {'status_id': 'hhjuhkk'})
-    assert e.value.message == "Invalid status ID, please use only predefined values"
+    assert e.value.message == "Invalid status ID, please use only predefined values."
 
 
 def test_get_issue_by_id_command(mocker, redmine_client):
@@ -303,7 +317,7 @@ def test_get_issue_by_id_command_invalid_include_argument(mocker, redmine_client
     args = {'sort': 'priority:desc', 'limit': '1', 'include': 'beikbfqi'}
     with pytest.raises(DemistoException) as e:
         get_issue_by_id_command(redmine_client, args)
-    assert e.value.message == "You can only include the following values: 'changesets', 'children', 'attachments', 'journals', 'relations', 'watchers', 'allowed_statuses'}, separated with comma"
+    assert e.value.message == "The 'include' argument should only contain values from ['children', 'attachments', 'relations', 'changesets', 'journals', 'watchers', 'allowed_statuses'], separated by commas. These values are not in options ['beikbfqi']."
 
 
 def test_delete_issue_by_id_command(mocker, redmine_client):
@@ -410,7 +424,7 @@ def test_get_project_list_command_invalid_include(redmine_client):
     args = {'include': 'time_entry_activities,jissue_categories'}
     with pytest.raises(DemistoException) as e:
         get_project_list_command(redmine_client, args)
-    assert e.value.message == "The 'include' argument should only contain values from trackers/issue_categories/enabled_modules/time_entry_activities/issue_custom_fields, separated by commas. These values are not in options ['jissue_categories']"
+    assert e.value.message == "The 'include' argument should only contain values from ['trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields'], separated by commas. These values are not in options ['jissue_categories']."
 
 
 def test_get_custom_fields_command(mocker, redmine_client):

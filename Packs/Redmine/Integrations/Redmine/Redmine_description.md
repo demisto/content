@@ -5,13 +5,21 @@
 
 ## Authentication:
 
-1. Use your server URL to enter to your account.
+1. Navigate to your server URL to access your account.
 2. Enter your username and password.
-3. Navigate to "My Account" at the top right corner of the page.
-4. Click on the API access key -> Show - this is your API key.
-5. Fill it in the Redmine integration authentication window.
-6. If you would like to display data related only to a project with id x- Fill it in the Redmine integration authentication window.
+3. Go to "My Account" located at the top right corner of the page.
+4. Click on "API access key" and select "Show" to reveal your API key.
+5. Input the API key into the Redmine integration authentication window.
  
+## Configuring a Project ID
+
+1. If you would like to display data related only to a project with id x- Fill it in the Redmine integration authentication window.
+2. If you mention a Project ID in the command- it will override the configured Project ID.
+3. You can leave the project ID blank.
+
+## General noted
+
+1. When using commands such as "update" or "create," certain fields may remain unchanged due to insufficient privileges. In such cases, while the command itself will not fail, those particular fields will not be updated.
 
 ### Your API key carries all your privileges, so keep it secure and don’t share it with anyone.
          
