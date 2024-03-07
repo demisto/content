@@ -299,11 +299,11 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
             readable_output=tableToMarkdown('The issue you created:', issue_response, headers=headers,
                                             removeNull=True, headerTransform=map_header,
                                             json_transform_mapping={
-                                                            "tracker": JsonTransformer(keys=["name"]),
-                                                            "status": JsonTransformer(keys=["name"]),
-                                                            "priority": JsonTransformer(keys=["name"]),
-                                                            "author": JsonTransformer(keys=["name"]),
-                                                            "project": JsonTransformer(keys=["name"]),
+                                                            "tracker": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                                            "status": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                                            "priority": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                                            "author": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                                            "project": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
                                                             "custom_fields": JsonTransformer(keys=["name","value"]),
                                                           })
         )
