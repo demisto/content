@@ -319,14 +319,14 @@ def main() -> None:  # pragma: no cover
         # first fetch of the collector, will fetch events
         demisto.debug("GG: first fetch of the collector.")
         last_run = {
-            "incident": {"from_fetch_time": '2019-01-12T13:08:16Z',
-                         "to_fetch_time": '2019-01-12T13:08:16Z',
+            "incident": {"from_fetch_time": current_fetch_time,
+                         "to_fetch_time": current_fetch_time,
                          "last_fetched_event_ids": [],
                          "next_url_link": "",
                          "is_pagination_in_progress": False},
             "audit_log": {
-                "from_fetch_time": '2019-01-12T13:08:16Z',
-                "to_fetch_time": '2019-01-12T13:08:16Z',
+                "from_fetch_time": current_fetch_time,
+                "to_fetch_time": current_fetch_time,
                 "last_fetched_event_ids": [],
                 "next_url_link": "",
                 "is_pagination_in_progress": False
