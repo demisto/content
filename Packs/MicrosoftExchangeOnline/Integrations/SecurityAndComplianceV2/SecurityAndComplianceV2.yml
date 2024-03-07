@@ -542,10 +542,10 @@ Msg: Export to .msg message files."
       predefined:
       - 'true'
       - 'false'
-    - description: Specifies the email address target for the search results when you use the export action.
+    - description: Specifies the email address target for the search results when you use the Export action.
       name: notify_email
       required: false
-    - description: Specifies the cc email address target for the search results when you use the export action.
+    - description: Specifies the cc email address target for the search results when you use the Export action.
       name: notify_email_cc
       required: false
     - description: Specifies the scenario type when you use the Export action.
