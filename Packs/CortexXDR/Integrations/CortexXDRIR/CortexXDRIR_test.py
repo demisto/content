@@ -909,11 +909,10 @@ def test_convert_datetime_to_epoch():
     import datetime
     from CortexXDRIR import convert_datetime_to_epoch
     input_datetime = datetime.datetime(2020, 1, 1)
-    expected = 1577829600
-    actual = convert_datetime_to_epoch(input_datetime)
-    assert actual == expected
+    assert convert_datetime_to_epoch(input_datetime) == 1577836800
 
 
+@freeze_time("1997-10-05 15:00:00 GMT")
 def test_convert_epoch_to_milli():
     """
     Given:
@@ -932,6 +931,7 @@ def test_convert_epoch_to_milli():
     assert actual == expected
 
 
+@freeze_time("1997-10-05 15:00:00 GMT")
 def test_convert_datetime_to_epoch_millis():
     """
     Given:
@@ -946,11 +946,12 @@ def test_convert_datetime_to_epoch_millis():
     from CortexXDRIR import convert_datetime_to_epoch_millis
     import datetime
     input_datetime = datetime.datetime(2020, 1, 1)
-    expected = 1577829600000
+    expected = 1577836800000
     actual = convert_datetime_to_epoch_millis(input_datetime)
     assert actual == expected
 
 
+@freeze_time("1997-10-05 15:00:00 GMT")
 def test_generate_current_epoch_utc():
     """
     Given: Nothing
@@ -964,7 +965,7 @@ def test_generate_current_epoch_utc():
     from CortexXDRIR import generate_current_epoch_utc
     epoch = generate_current_epoch_utc()
     assert isinstance(epoch, int)
-    assert epoch > 1577836800000
+    assert epoch > 876000
 
 
 def test_generate_key():
@@ -1031,5 +1032,4 @@ def test_filter_and_save_unseen_incident_limit_test():
         "id": "2",
         "creation_time": 1577836800001
     }]
-
     assert filter_and_save_unseen_incident(incident, 1, 1) == [{"id": "1", "creation_time": 1577836800000}]

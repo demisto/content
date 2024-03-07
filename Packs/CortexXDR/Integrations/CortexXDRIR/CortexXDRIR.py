@@ -963,37 +963,6 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
 
-def create_incidents_dictionary(incidents_data: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """creating a dictionary of incidents data  according to the old extra data api format
-    fields in a dictionary format for easy access later
-
-    Args:
-        incidents_data (dict): incidents multiple extra data retrieved by the upgraded api
-
-    Returns:
-        dict: dictionary of incidents data
-    """
-    result = {}
-    for incident_data in incidents_data:
-        incident_id = incident_data.get('incident', {}).get('incident_id')
-        hosts = incident_data.get('incident', {}).get('hosts')
-        users = incident_data.get('incident', {}).get('users')
-        incident_sources = incident_data.get('incident', {}).get('incident_sources')
-        alerts = incident_data.get('alerts', {}).get('data')
-        file_artifacts = incident_data.get('file_artifacts', {}).get('data')
-        network_artifacts = incident_data.get('network_artifacts', {}).get('data')
-        result[incident_id] = {
-            'incident': incident_data.get('incident', {}),
-            'hosts': hosts,
-            'users': users,
-            'incident_sources': incident_sources,
-            'alerts': alerts,
-            'file_artifacts': file_artifacts,
-            'network_artifacts': network_artifacts
-        }
-    return result
-
-
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
                     fields_to_exclude: bool = True):
@@ -1016,17 +985,19 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         if statuses:
             raw_incidents = []
             for status in statuses:
-                raw_incidents.append(client.get_multiple_incidents_extra_data(gte_creation_time_milliseconds=last_fetch,
-                                                                              status=status,
-                                                                              limit=max_fetch, starred=starred,
-                                                                              starred_incidents_fetch_window=starred_incidents_fetch_window,
-                                                                              fields_to_exclude=fields_to_exclude))
+                raw_incidents.append(client.get_multiple_incidents_extra_data(
+                                      gte_creation_time_milliseconds=last_fetch,
+                                      status=status,
+                                      limit=max_fetch, starred=starred,
+                                      starred_incidents_fetch_window=starred_incidents_fetch_window,
+                                      fields_to_exclude=fields_to_exclude))
             raw_incidents = sorted(raw_incidents, key=lambda inc: inc['incident']['creation_time'])
         else:
-            raw_incidents = client.get_multiple_incidents_extra_data(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
-                                                                     starred=starred,
-                                                                     starred_incidents_fetch_window=starred_incidents_fetch_window,
-                                                                     fields_to_exclude=fields_to_exclude)
+            raw_incidents = client.get_multiple_incidents_extra_data(
+                gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
+                starred=starred,
+                starred_incidents_fetch_window=starred_incidents_fetch_window,
+                fields_to_exclude=fields_to_exclude)
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
