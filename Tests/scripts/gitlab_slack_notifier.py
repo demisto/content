@@ -684,8 +684,11 @@ def main():
                                                              options.name_mapping_path)
                         computed_slack_channel = "test_slack_notifier_when_master_is_broken"
 
-    slack_msg_data, threaded_messages, threaded_messages_for_machines = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request,
-                                                            shame_message)
+    slack_msg_data, threaded_messages, threaded_messages_for_machines = construct_slack_msg(triggering_workflow,
+                                                                                            pipeline_url,
+                                                                                            pipeline_failed_jobs,
+                                                                                            pull_request,
+                                                                                            shame_message)
 
     with contextlib.suppress(Exception):
         output_file = ROOT_ARTIFACTS_FOLDER / 'slack_msg.json'
@@ -707,8 +710,8 @@ def main():
                 )
 
         if threaded_messages:
-            data: dict = response.data  # type: ignore[assignment]
-            thread_ts: str = data['ts']
+            data = response.data  # type: ignore[assignment]
+            thread_ts = data['ts']
             for slack_msg in threaded_messages:
                 slack_client.chat_postMessage(
                     channel=CONTENT_CHANNEL, attachments=[slack_msg], username=SLACK_USERNAME,
