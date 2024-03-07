@@ -5,7 +5,7 @@ import pytest
 from freezegun import freeze_time
 
 import demistomock as demisto
-from CommonServerPython import Common, urljoin, DemistoException
+from CommonServerPython import urljoin, DemistoException
 from CoreIRApiModule import XDR_RESOLVED_STATUS_TO_XSOAR
 from CortexXDRIR import XSOAR_TO_XDR, XDR_TO_XSOAR
 XDR_URL = 'https://api.xdrurl.com'
@@ -776,6 +776,8 @@ def test_get_incident_extra_data(mocker):
     assert raw_incident == get_incident_extra_data_response[0]
     assert expected_output['Process(val.Name && val.Name == obj.Name)'] == outputs['Process(val.Name && val.Name == obj.Name)']
     assert expected_output['Endpoint(val.Hostname==obj.Hostname)'] == outputs['Endpoint(val.Hostname==obj.Hostname)']
+
+
 @pytest.mark.parametrize('custom_mapping, expected_resolved_status',
                          [
                              ("Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,"
@@ -891,3 +893,143 @@ def test_test_module(capfd, custom_mapping, direction, should_raise_error):
                 client.validate_custom_mapping(mapping=custom_mapping, direction=direction)
             except DemistoException as e:
                 pytest.fail(f"Unexpected exception raised for input {input}: {e}")
+
+
+def test_convert_datetime_to_epoch():
+    """
+    Given:
+      - Datetime object
+
+    When:
+      - Calling convert_datetime_to_epoch()
+
+    Then:
+      - Returned epoch int matches expected
+    """
+    import datetime
+    from CortexXDRIR import convert_datetime_to_epoch
+    input_datetime = datetime.datetime(2020, 1, 1)
+    expected = 1577829600
+    actual = convert_datetime_to_epoch(input_datetime)
+    assert actual == expected
+
+
+def test_convert_epoch_to_milli():
+    """
+    Given:
+      - Epoch timestamp
+
+    When:
+      - Calling convert_epoch_to_milli()
+
+    Then:
+      - Returned timestamp matches expected milliseconds
+    """
+    from CortexXDRIR import convert_epoch_to_milli
+    input_epoch = 1577836800
+    expected = 1577836800000
+    actual = convert_epoch_to_milli(input_epoch)
+    assert actual == expected
+
+
+def test_convert_datetime_to_epoch_millis():
+    """
+    Given:
+      - Datetime object
+
+    When:
+      - Calling convert_datetime_to_epoch_millis()
+
+    Then:
+      - Returned epoch timestamp matches expected milliseconds
+    """
+    from CortexXDRIR import convert_datetime_to_epoch_millis
+    import datetime
+    input_datetime = datetime.datetime(2020, 1, 1)
+    expected = 1577829600000
+    actual = convert_datetime_to_epoch_millis(input_datetime)
+    assert actual == expected
+
+
+def test_generate_current_epoch_utc():
+    """
+    Given: Nothing
+
+    When:
+      - Calling generate_current_epoch_utc()
+
+    Then:
+      - Returned value is integer epoch timestamp
+    """
+    from CortexXDRIR import generate_current_epoch_utc
+    epoch = generate_current_epoch_utc()
+    assert isinstance(epoch, int)
+    assert epoch > 1577836800000
+
+
+def test_generate_key():
+    """
+    Given: None
+
+    When: Calling generate_key()
+
+    Then: Verify the returned result is as we expected
+    """
+    from CortexXDRIR import generate_key
+    key = generate_key()
+    assert len(key) == 128
+
+
+def test_create_auth():
+    """
+    Given: Client ID and client secret
+
+    When: Calling create_auth()
+
+    Then: Verify the returned result is as we expected
+    """
+    from CortexXDRIR import create_auth
+    auth = create_auth('client_id')
+    assert len(auth) == 3
+
+
+def test_clear_trailing_whitespace():
+    """
+    Given:
+      - list of dictionary containing a value of String with trailing whitespace
+
+    When:
+      - Calling clear_trailing_whitespace()
+
+    Then:
+      - Trailing whitespace should be removed
+    """
+    from CortexXDRIR import clear_trailing_whitespace
+    alerts = [{"example": "value  "}]
+    actual = clear_trailing_whitespace(alerts)
+    assert actual == [{'example': 'value'}]
+
+
+def test_filter_and_save_unseen_incident_limit_test():
+    """
+    Given:
+      - List of incidents with creation times
+      - Last fetch time
+
+    When:
+      - Calling filter_and_save_unseen_incident multiple times
+
+    Then:
+      - Returns maximum number of incidents per run
+    """
+    from CortexXDRIR import filter_and_save_unseen_incident
+    incident = [{
+        "id": "1",
+        "creation_time": 1577836800000
+    },
+        {
+        "id": "2",
+        "creation_time": 1577836800001
+    }]
+
+    assert filter_and_save_unseen_incident(incident, 1, 1) == [{"id": "1", "creation_time": 1577836800000}]
