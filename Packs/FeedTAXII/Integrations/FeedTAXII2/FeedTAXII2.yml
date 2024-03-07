@@ -8,7 +8,7 @@ configuration:
   name: feed
   type: 8
   required: false
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -18,7 +18,7 @@ configuration:
   - Bad
   type: 18
   required: false
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   display: Source Reliability
   name: feedReliability
   options:
@@ -30,7 +30,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -72,38 +72,44 @@ configuration:
   name: credentials
   type: 9
   required: false
+- additionalinfo: The API root to use (for example default or public). If left empty, the server default API root is used. If the server has no default root, the first available API root is used instead.
+  display: API Root to Use
+  name: default_api_root
+  type: 0
+  required: false
 - additionalinfo: Indicators will be fetched from this collection. Run "taxii2-get-collections" command to get a valid value. If left empty, the instance will try to fetch from all the collections in the given discovery service.
   display: Collection Name To Fetch Indicators From
   name: collection_to_fetch
   type: 0
   required: false
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+  defaultvalue: 'false'
   display: Incremental Feed
   name: feedIncremental
-  defaultvalue: 'false'
   type: 8
   required: false
 - additionalinfo: When enabled, fetch-indicators will try to fetch the entire feed for every fetch. When disabled, fetch-indicators will try to fetch just the latest entries (since the last fetch).
-  defaultvalue: 'true'
   display: Full Feed Fetch
   name: fetch_full_feed
   type: 8
   required: false
+  defaultvalue: 'true'
 - additionalinfo: The maximum number of indicators that can be fetched per fetch. If this field is left empty, there will be no limit on the number of indicators fetched.
   display: Max Indicators Per Fetch (disabled for Full Feed Fetch)
   name: limit
   type: 0
   required: false
-- additionalinfo: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day/year. For example, 1 minute, 12 hour
-  defaultvalue: 1 year
-  display: First Fetch Time
+- display: First Fetch Time
   name: initial_interval
+  defaultvalue: 1 year
   type: 0
   required: false
+  additionalinfo: 'The time interval for the first retroactive fetch, formatted as <time unit of type minute/hour/day/year>. For example: 1 minute, 12 hours.'
 - display: STIX Objects To Fetch
   name: objects_to_fetch
-  defaultvalue: indicator,report,malware,campaign,attack-pattern,course-of-action,intrusion-set,tool,threat-actor,infrastructure
   type: 16
+  required: false
+  defaultvalue: indicator,report,malware,campaign,attack-pattern,course-of-action,intrusion-set,tool,threat-actor,infrastructure
   options:
   - indicator
   - report
@@ -128,13 +134,12 @@ configuration:
   - identity
   - location
   - vulnerability
-  required: false
   additionalinfo: 'Choose which STIX object types to fetch from the TAXII server. If left empty, all available object types will be fetched.'
 - display: Certificate File as Text
   name: creds_certificate
   type: 9
-  displaypassword: Key File as Text
   required: false
+  displaypassword: Key File as Text
 - additionalinfo: Add a certificate file as text to connect to the TAXII server
   display: Certificate File as Text
   name: certificate
@@ -145,28 +150,28 @@ configuration:
   display: Key File as Text
   name: key
   type: 4
-  hidden: true
   required: false
+  hidden: true
 - additionalinfo: Set the number of stix object that will be requested with each taxii poll (http request). A single fetch is made of several taxii polls. Changing this setting can help speed up fetches, or fix issues on slower networks. Please note server restrictions may apply, overriding and limiting the "requested limit".
   defaultvalue: '100'
   display: Max STIX Objects Per Poll
   name: limit_per_request
   type: 0
   required: false
-- additionalinfo: Choose how to handle complex observations. Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR". e.g. `[ IP = 'b' ] AND [ URL = 'd' ]`
-  defaultvalue: Skip indicators with more than a single observation
+- additionalinfo: "Choose how to handle complex observations. Two or more observation expressions may be combined using a complex observation operator such as \"AND\" or \"OR\". For example: [ IP = 'b' ] AND [ URL = 'd' ]"
   display: Complex Observation Mode
   name: observation_operator_mode
+  type: 15
+  required: false
+  defaultvalue: Skip indicators with more than a single observation
   options:
   - Create indicator for each observation
   - Skip indicators with more than a single observation
-  type: 15
-  required: false
-- additionalinfo: "Choose whether to import the XSOAR custom fields. Note: this might overwrite the data pulled from other sources."
-  display: Update custom fields
+- display: Update custom fields
   name: update_custom_fields
   type: 8
   required: false
+  additionalinfo: "Choose whether to import Cortex XSOAR custom fields. Note: this may overwrite data pulled from other sources."
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -178,11 +183,6 @@ configuration:
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  type: 0
-  required: false
-- additionalinfo: The Default API Root to use (e.g. default, public). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead.
-  display: Default API Root to use
-  name: default_api_root
   type: 0
   required: false
 description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
@@ -227,7 +227,7 @@ script:
   - deprecated: true
     description: 'WARNING: This command will reset your fetch history.'
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.87504
+  dockerimage: demisto/taxii2:1.0.0.89439
   feed: true
   runonce: false
   script: '-'
