@@ -39,8 +39,8 @@ Enrich indicators using the Spur Context API.
 | --- | --- | --- |
 | SpurContextAPI.Context.ip | string | IP that was enriched | 
 | SpurContextAPI.Context.as | object | Autonomous System details for an IP Address. | 
-| SpurContextAPI.Context.organization | string | The organization operating this IP address. | 
-| SpurContextAPI.Context.infrastructure | string | The primary type of infrastructure this IP is supporting. Common tags are MOBILE and DATACENTER. | 
+| SpurContextAPI.Context.organization | string | The organization using this IP address. | 
+| SpurContextAPI.Context.infrastructure | string | The primary infrastructure type that this IP address supports. Common tags are MOBILE and DATACENTER. | 
 | SpurContextAPI.Context.location | object | Data-center or IP Hosting location based on MaxMind GeoLite. | 
 | SpurContextAPI.Context.services | array | The different types of proxy or VPN services that are running on this IP address | 
 | SpurContextAPI.Context.tunnels | array | Different VPN or proxy tunnels that are currently in-use on this IP address | 
