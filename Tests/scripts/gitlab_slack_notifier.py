@@ -114,11 +114,11 @@ def get_test_report_pipeline_url(pipeline_url: str) -> str:
 def get_msg_machines(
     failed_jobs: dict, job_cause_fail: list[str], job_cause_warning: list[str], msg: str
 ):
-    if (True for server_ga in job_cause_fail if server_ga in failed_jobs):
+    if [True for server_ga in job_cause_fail if server_ga in failed_jobs]:
         color = "danger"
-    elif (
+    elif [
         True for xsiam_test_job in job_cause_warning if xsiam_test_job in failed_jobs
-    ):
+    ]:
         color = "warning"
     else:
         color = "good"
@@ -434,7 +434,7 @@ def construct_slack_msg(triggering_workflow: str,
                         pipeline_url: str,
                         pipeline_failed_jobs: list[ProjectPipelineJob],
                         pull_request: GithubPullRequest | None,
-                        shame_message: tuple[str, str, str, str] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+                        shame_message: tuple[str, str, str, str] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
     # report failing jobs
     content_fields = []
 
@@ -465,6 +465,7 @@ def construct_slack_msg(triggering_workflow: str,
         content_fields += unit_tests_results()
 
     # report pack updates
+    threaded_messages_for_machines = []
     threaded_messages = []
     slack_msg_append = []
     if 'upload' in triggering_workflow_lower:
@@ -486,7 +487,7 @@ def construct_slack_msg(triggering_workflow: str,
         has_failed_tests |= (test_playbooks_has_failure_xsoar or test_playbooks_has_failure_xsiam
                              or test_modeling_rules_has_failure_xsiam)
         slack_msg_append += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE)
-        threaded_messages += machines_saas_and_xsiam(failed_jobs_names)
+        threaded_messages_for_machines += machines_saas_and_xsiam(failed_jobs_names)
     if triggering_workflow == CONTENT_NIGHTLY:
         # The coverage Slack message is only relevant for nightly and not for PRs.
         slack_msg_append += construct_coverage_slack_msg()
@@ -527,7 +528,7 @@ def construct_slack_msg(triggering_workflow: str,
         'title': title,
         'title_link': pipeline_url,
         'fields': content_fields
-    }] + slack_msg_append, threaded_messages
+    }] + slack_msg_append, threaded_messages, threaded_messages_for_machines
 
 
 def missing_content_packs_test_conf(artifact_folder: Path) -> list[dict[str, Any]]:
@@ -683,7 +684,7 @@ def main():
                                                              options.name_mapping_path)
                         computed_slack_channel = "test_slack_notifier_when_master_is_broken"
 
-    slack_msg_data, threaded_messages = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request,
+    slack_msg_data, threaded_messages, threaded_messages_for_machines = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request,
                                                             shame_message)
 
     with contextlib.suppress(Exception):
@@ -697,6 +698,13 @@ def main():
         response = slack_client.chat_postMessage(
             channel=CONTENT_CHANNEL, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
         )
+        if threaded_messages_for_machines:
+            data: dict = response.data  # type: ignore[assignment]
+            thread_ts: str = data['ts']
+            slack_client.chat_postMessage(
+                    channel=CONTENT_CHANNEL, attachments=threaded_messages_for_machines, username=SLACK_USERNAME,
+                    thread_ts=thread_ts
+                )
 
         if threaded_messages:
             data: dict = response.data  # type: ignore[assignment]
