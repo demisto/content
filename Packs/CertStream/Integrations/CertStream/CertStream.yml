@@ -45,7 +45,7 @@ configuration:
 script:
   script: ""
   type: python
-  dockerimage: demisto/websockets:12.0.79460
+  dockerimage: demisto/netutils:1.0.0.89320
   longRunning: true
   subtype: python3
 marketplaces:
