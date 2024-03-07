@@ -1766,7 +1766,7 @@ tasks:
     task:
       id: 4ee7917b-6813-4e61-8612-5f7116bd30eb
       version: -1
-      name: Extract Text From QR code
+      name: Extract Text from QR Code
       description: Extracts the text from a QR code. The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
       scriptName: ReadQRCode
       type: regular
@@ -1828,7 +1828,7 @@ tasks:
     task:
       id: 35ed31ed-41e9-4108-8580-e94786764ae8
       version: -1
-      name: Convert PDF to image
+      name: Convert PDF to Image
       description: Converts a PDF file to an image file.
       script: '|||rasterize-pdf'
       type: regular
@@ -2159,7 +2159,7 @@ outputs:
   description: The actual score.
   type: number
 - contextPath: QRCodeReader
-  description: QRCodeReader primary key object.
+  description: The QR code reader primary key object.
   type: unknown
 - contextPath: QRCodeReader.Text
   description: The raw text extracted from the QR code image.

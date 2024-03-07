@@ -2963,7 +2963,7 @@ tasks:
     task:
       id: e8aecf09-e057-48c2-8fcb-d67de5afbc91
       version: -1
-      name: Read QR Code from image files
+      name: Read QR code from image files
       description: Extracts the text from a QR code. The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
       scriptName: ReadQRCode
       type: regular
@@ -3215,7 +3215,7 @@ outputs:
   type: string
 - contextPath: QRCodeReader
   type: unknown
-  description: QRCodeReader parent key.
+  description: The QR code reader primary key object.
 - contextPath: QRCodeReader.Text
   description: The raw text extracted from the QR code image.
   type: String
