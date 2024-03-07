@@ -402,8 +402,6 @@ script:
         description: Display names of custom fields.
       - contextPath: Redmine.CustomField.customized_type
         description: Display customized_type of custom fields.
-      - contextPath: Redmine.CustomField.customized_type
-        description: Display customized_type of custom fields.
   - name: redmine-user-id-list
     description: |
       - Retrieve a list of users with optional filtering options.
