@@ -12,6 +12,7 @@ import json
 from pikepdf import Pdf, PasswordError
 import contextlib
 import io
+import html
 
 URL_EXTRACTION_REGEX = (
     r"(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+"
@@ -239,9 +240,9 @@ def get_pdf_htmls_content(pdf_path: str, output_folder: str) -> str:
     html_file_names = get_files_names_in_path(output_folder, "*.html")
     html_content = ""
     for file_name in html_file_names:
-        with open(file_name, "rb") as f:
+        with open(file_name) as f:
             for line in f:
-                html_content += str(line)
+                html_content += html.unescape(line)
     return html_content
 
 
