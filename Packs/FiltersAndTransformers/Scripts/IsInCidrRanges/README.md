@@ -1,5 +1,5 @@
 Determines whether an IPv4 or IPv6 address is in part of at least one of the comma-delimited CIDR ranges given. Multiple IPv4/IPv6
-addresses can be passed as comma-delimited list to be checked. A mix of IPv4 and IPv6 will always return false.
+addresses can be passed as comma-delimited list to be checked. A mix of IPv4 and IPv6 addresses will always return false.
 
 ## Script Data
 
