@@ -4,12 +4,15 @@ from CommonServerUserPython import *
 import warnings
 import numpy as np
 import re
+from copy import deepcopy
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.base import BaseEstimator, TransformerMixin
 import json
 import pandas as pd
 from scipy.spatial.distance import cdist
 from typing import Any
+
+from GetIncidentsApiModule import *  # noqa: E402
 
 warnings.simplefilter("ignore")
 warnings.filterwarnings('ignore', category=UserWarning)
@@ -29,7 +32,7 @@ MESSAGE_WARNING_TRUNCATED = f"- {INCIDENT_ALIAS.capitalize()} fetched have been 
 MESSAGE_NO_CURRENT_INCIDENT = f"- {INCIDENT_ALIAS.capitalize()} %s does not exist within the given time range. " \
                               f"Please check incidentId value or that you are running the command within an {INCIDENT_ALIAS}."
 MESSAGE_NO_FIELD = f"- %s field(s) does not exist in the current {INCIDENT_ALIAS}."
-MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched {INCIDENT_ALIAS}s."
+MESSAGE_INCORRECT_FIELD = f"- %s field(s) don't/doesn't exist within the fetched {INCIDENT_ALIAS}s."
 
 SIMILARITY_COLUNM_NAME = f'similarity {INCIDENT_ALIAS}'
 SIMILARITY_COLUNM_NAME_INDICATOR = 'similarity indicators'
@@ -72,15 +75,39 @@ def keep_high_level_field(incidents_field: list[str]) -> list[str]:
     return [x.split('.')[0] if '.' in x else x for x in incidents_field]
 
 
-def wrapped_list(obj: list) -> list:
+def extract_values(data: dict | list, path: str, values_to_exclude: list) -> list:
+    """Recursively extracts values from nested object by path (dot notation).
+
+    For example: extract_values(
+        data={"A": [
+            {"B": 1, "C": 0},
+            {"B": 2},
+            {"B": None},
+            {"B": "N/A"},
+        ]},
+        path="A.B",
+        values_to_exclude=[None, "N/A"],
+    ) == [1, 2]
+
+    Args:
+        data (dict | list): The object to extract values from.
+        path (str): The path (dot notation) to the values to extract.
+        values_to_exclude (list): A list of values to exclude from result.
+
+    Returns:
+        list: The extracted values.
     """
-    Wrapped object into a list if not list
-    :param obj:
-    :return:
-    """
-    if not isinstance(obj, list):
-        return [obj]
-    return obj
+    def recurse(obj: Any, keys: list[str]):
+        if not keys:
+            result = obj if isinstance(obj, list) else [obj]
+            return [val for val in result if val not in values_to_exclude]
+        if isinstance(obj, dict):
+            if keys[0] in obj:
+                return recurse(obj[keys[0]], keys[1:])
+        elif isinstance(obj, list):
+            return [result for item in obj for result in recurse(item, keys)]
+        return []
+    return recurse(data, path.split("."))
 
 
 def preprocess_incidents_field(incidents_field: str, prefix_to_remove: list[str]) -> str:
@@ -190,20 +217,13 @@ def normalize_command_line(command: str) -> str:
         return ''
 
 
-def fill_nested_fields(incidents_df: pd.DataFrame, incidents: pd.DataFrame, *list_of_field_list: list[str]) -> \
+def fill_nested_fields(incidents_df: pd.DataFrame, incidents: dict | list, *list_of_field_list: list[str]) -> \
         pd.DataFrame:
     for field_type in list_of_field_list:
         for field in field_type:
             if '.' in field:
-                if isinstance(incidents, list):
-                    value_list = [wrapped_list(demisto.dt(incident, field)) for incident in incidents]
-                    value_list = [' '.join(set(filter(lambda x: x not in ['None', None, 'N/A'], x))) for x in
-                                  value_list]
-                else:
-                    value_list = wrapped_list(demisto.dt(incidents, field))
-                    value_list = ' '.join(  # type: ignore
-                        set(filter(lambda x: x not in ['None', None, 'N/A'], value_list)))  # type: ignore
-                incidents_df[field] = value_list
+                value_list = extract_values(incidents, field, values_to_exclude=['None', None, 'N/A'])
+                incidents_df[field] = ' '.join(value_list)
     return incidents_df
 
 
@@ -537,20 +557,14 @@ def get_incident_by_id(incident_id: str, populate_fields: list[str], from_date: 
     """
     populate_fields_value = ' , '.join(populate_fields)
     message_of_values = build_message_of_values([incident_id, populate_fields_value, from_date, to_date])
-    demisto.debug(f'Executing GetIncidentsByQuery, {message_of_values}')
-    res = demisto.executeCommand('GetIncidentsByQuery', {
-        'query': "id:(%s)" % incident_id,
+    demisto.debug(f'Calling get_incidents_by_query, {message_of_values}')
+    incidents = get_incidents_by_query({
+        'query': f"id:({incident_id})",
         'populateFields': populate_fields_value,
         'fromDate': from_date,
         'toDate': to_date,
     })
-    if is_error(res):
-        return_error(res)
-    if not json.loads(res[0]['Contents']):
-        return None
-    else:
-        incident = json.loads(res[0]['Contents'])
-        return incident[0]
+    return incidents[0] if incidents else None
 
 
 def get_all_incidents_for_time_window_and_exact_match(exact_match_fields: list[str], populate_fields: list[str],
@@ -580,17 +594,15 @@ def get_all_incidents_for_time_window_and_exact_match(exact_match_fields: list[s
         query += " %s" % query_sup
 
     populate_fields_value = ' , '.join(populate_fields)
-    demisto.debug(f'Executing GetIncidentsByQuery, {build_message_of_values([populate_fields_value, from_date, to_date, limit])}')
-    res = demisto.executeCommand('GetIncidentsByQuery', {
+    msg_of_values = build_message_of_values([populate_fields_value, from_date, to_date, limit])
+    demisto.debug(f'Calling get_incidents_by_query, {msg_of_values}')
+    incidents = get_incidents_by_query({
         'query': query,
         'populateFields': populate_fields_value,
         'fromDate': from_date,
         'toDate': to_date,
         'limit': limit
     })
-    if is_error(res):
-        return_error(res)
-    incidents = json.loads(res[0]['Contents'])
     if len(incidents) == 0:
         msg += "%s \n" % MESSAGE_NO_INCIDENT_FETCHED
         return None, msg
@@ -954,7 +966,7 @@ def main():
                                       incorrect_fields=incorrect_fields)
 
     # Dumps all dict in the current incident
-    incident_df = dumps_json_field_in_incident(incident)
+    incident_df = dumps_json_field_in_incident(deepcopy(incident))
     incident_df = fill_nested_fields(incident_df, incident, similar_text_field, similar_categorical_field)
 
     # Model prediction
