@@ -90,7 +90,7 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-- additionalinfo: 'Maximum number of results for commands that fetch '
+- additionalinfo: Maximum amount of search results for listing commands.
   defaultvalue: '100'
   display: Search Limit
   name: search_limit
