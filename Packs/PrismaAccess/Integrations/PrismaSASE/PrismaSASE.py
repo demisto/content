@@ -2017,11 +2017,11 @@ def run_push_jobs_polling_command(client: Client, args: dict):
     polling_interval = args.get('interval_in_seconds') or DEFAULT_POLLING_INTERVAL
     polling_timeout = arg_to_number(args.get('polling_timeout_in_seconds')) or DEFAULT_POLLING_TIMEOUT
     tsg_id = args.get('tsg_id')
-    if folders := argToList(args.get('folders')):
+    if (folders := argToList(args.get('folders'))) and folders[0] != "done":
         # first call, folder in args. We make the first push
         res = client.push_candidate_config(folders=folders, tsg_id=tsg_id)
         # remove folders, not needed for the rest
-        args['folders'] = []
+        args['folders'] = ["done"]
         # The result from the push returns a job id
         job_id = res.get('job_id', '')
         args['job_id'] = job_id
