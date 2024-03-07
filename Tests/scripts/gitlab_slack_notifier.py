@@ -111,7 +111,28 @@ def get_test_report_pipeline_url(pipeline_url: str) -> str:
     return f"{pipeline_url}/test_report"
 
 
-def extract_machines_saas_and_xsiam(failed_jobs):
+def get_msg_machines(
+    failed_jobs: dict, job_cause_fail: list[str], job_cause_warning: list[str], msg: str
+):
+    if (True for server_ga in job_cause_fail if server_ga in failed_jobs):
+        color = "danger"
+    elif (
+        True for xsiam_test_job in job_cause_warning if xsiam_test_job in failed_jobs
+    ):
+        color = "warning"
+    else:
+        color = "good"
+
+    return [
+        {
+            "fallback": msg,
+            "color": color,
+            "title": msg,
+        }
+    ]
+
+
+def machines_saas_and_xsiam(failed_jobs):
     lock_xsoar_machine_raw_txt = get_artifact_data(
         ARTIFACTS_FOLDER_XSOAR / "logs", "lock_file.txt"
     )
@@ -123,49 +144,42 @@ def extract_machines_saas_and_xsiam(failed_jobs):
     if lock_xsoar_machine_raw_txt and (
         xsoar_machine := REGEX_EXTRACT_MACHINE.findall(lock_xsoar_machine_raw_txt)
     ):
-        if "xsoar_ng_server_ga" in failed_jobs:
-            color_xsoar_ng = "danger"
-        elif "xsoar-test_playbooks_results" in failed_jobs:
-            color_xsoar_ng = "warning"
-        else:
-            color_xsoar_ng = "good"
-
         machines.extend(
-            [
-                {
-                    "fallback": f"XSOAR SAAS: {xsoar_machine[0]}",
-                    "color": color_xsoar_ng,
-                    "title": f"XSOAR SAAS: {xsoar_machine[0]}",
-                }
-            ]
+            get_msg_machines(
+                failed_jobs,
+                ["xsoar_ng_server_ga"],
+                ["xsoar-test_playbooks_results"],
+                f"XSOAR SAAS: {xsoar_machine[0]}",
+            )
         )
+
     if lock_xsiam_machine_raw_txt and (
         xsiam_machine := REGEX_EXTRACT_MACHINE.findall(lock_xsiam_machine_raw_txt)
     ):
-        if "xsiam_server_ga" in failed_jobs:
-            color_xsiam = "danger"
-        elif (
-            True
-            for xsiam_test_job in (
-                "xsiam-test_playbooks_results",
-                "xsiam-test_modeling_rule_results",
-            )
-            if xsiam_test_job in failed_jobs
-        ):
-            color_xsiam = "warning"
-        else:
-            color_xsiam = "good"
         machines.extend(
-            [
-                {
-                    "fallback": f"XSIAM: {xsiam_machine[0]}",
-                    "color": color_xsiam,
-                    "title": f"XSIAM: {xsiam_machine[0]}",
-                }
-            ]
+            get_msg_machines(
+                failed_jobs,
+                ["xsiam_server_ga"],
+                ["xsiam-test_playbooks_results", "xsiam-test_modeling_rule_results"],
+                f"XSIAM: {xsiam_machine[0]}",
+            )
         )
 
-    return machines
+    if not machines:
+        return machines
+    return (
+        get_msg_machines(
+            failed_jobs,
+            ["xsoar_ng_server_ga", "xsiam_server_ga"],
+            [
+                "xsoar-test_playbooks_results",
+                "xsiam-test_playbooks_results",
+                "xsiam-test_modeling_rule_results",
+            ],
+            f"Used {len(machines)} machine(s)",
+        )
+        + machines
+    )
 
 
 def test_modeling_rules_results(artifact_folder: Path,
@@ -472,7 +486,7 @@ def construct_slack_msg(triggering_workflow: str,
         has_failed_tests |= (test_playbooks_has_failure_xsoar or test_playbooks_has_failure_xsiam
                              or test_modeling_rules_has_failure_xsiam)
         slack_msg_append += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE)
-        threaded_messages += extract_machines_saas_and_xsiam(failed_jobs_names)
+        threaded_messages += machines_saas_and_xsiam(failed_jobs_names)
     if triggering_workflow == CONTENT_NIGHTLY:
         # The coverage Slack message is only relevant for nightly and not for PRs.
         slack_msg_append += construct_coverage_slack_msg()
