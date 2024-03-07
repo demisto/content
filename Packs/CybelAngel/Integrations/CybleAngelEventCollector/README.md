@@ -1,9 +1,9 @@
-CybleAngel Event Collector collects reports from Cyble Angel platform which specializes in external attack surface protection and management.
+CybelAngel Event Collector collects reports from the CybelAngel platform, which specializes in external attack surface protection and management.
 
-## Configure CybleAngel Event Collector On XSIAM
+## Configure CybleAngel Event Collector in XSIAM
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
-2. Search for CybleAngel Event Collector.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
+2. Search for CybelAngel Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -22,21 +22,21 @@ CybleAngel Event Collector collects reports from Cyble Angel platform which spec
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### cybleangel-get-events
+### cybelangel-get-events
 
 ***
-Collect reports from cyble angel, used mainly for debugging.
+Collect reports from CybleAngel. Used mainly for debugging.
 
 #### Base Command
 
-`cybleangel-get-events`
+`cybelangel-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | start_date | Get reports from a specific start date. | Required | 
-| end_date | Get reports until a specific end date. | Required | 
+| end_date | Get reports until a specific end date. If not provided, uses current date. | Required | 
 
 #### Context Output
 
