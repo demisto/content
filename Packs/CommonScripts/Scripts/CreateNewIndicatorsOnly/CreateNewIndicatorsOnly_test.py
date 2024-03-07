@@ -405,8 +405,8 @@ def test_findIndicators_called_with_escaped_quotes(mocker):
     expected_value = indicator_value.replace('"', r"\"")
 
     def __execute_command(cmd, args) -> Any:
-        assert args == {'value': expected_value} #{'incidentId': '1', 'value': expected_value}
         if cmd == 'findIndicators':
+            assert args == {'value': expected_value}
             return [{
                 'id': '0',
                 'value': '(External):Test "test2 test (unsigned)"',
@@ -414,6 +414,7 @@ def test_findIndicators_called_with_escaped_quotes(mocker):
                 'indicator_type': args.get('type', 'Unknown')
             }]
         elif cmd == 'associateIndicatorToIncident':
+            assert args == {'incidentId': '1', 'value': indicator_value}
             return 'done'
         return None
 
