@@ -47,7 +47,7 @@ function deleteKeys(keys, isSubPlaybookKey) {
     for (let key of keys) {
         key = key.trim();
         if (isSubPlaybookKey) {
-            key = 'subplaybook-${currentPlaybookID}.${key}';
+            key = 'subplaybook-${currentPlaybookID}.' + key;
         }
 
         if (keyExists(invContext, key)) {
