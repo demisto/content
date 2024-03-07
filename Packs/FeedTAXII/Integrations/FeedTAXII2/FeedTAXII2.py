@@ -65,7 +65,7 @@ def filter_previously_fetched_indicators(indicators: list, last_run: dict) -> li
         indicator_id = indicator.get("rawJSON", {}).get('id', "")
 
         # check if the indicator is stored in latest_indicators
-        saved_indicator = list(filter(lambda ind: indicator_id in ind.keys(), last_indicators))
+        saved_indicator = list(filter(lambda ind: indicator_id in ind, last_indicators))
 
         # if the indicator is stored in latest_indicators -> check if it was modified
         if saved_indicator:
