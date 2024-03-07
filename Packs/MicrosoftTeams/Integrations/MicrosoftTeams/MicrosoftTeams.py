@@ -188,7 +188,7 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
 def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     """
     Reset the Graph API authorization in the integration context.
-    This function clears the current authorization data.
+    This function clears the current graph authorization data: current_refresh_token, graph_access_token, graph_valid_until
     """
 
     integration_context: dict = get_integration_context()
