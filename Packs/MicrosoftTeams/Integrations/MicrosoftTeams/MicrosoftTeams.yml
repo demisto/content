@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Microsoft Teams test
+  id: Microsoft Teams
   version: -1
 configuration:
 - display: "Bot ID"
@@ -142,8 +142,8 @@ configuration:
   section: Connect
   required: false
 description: Send messages and notifications to your team members.
-display: Microsoft Teams test
-name: Microsoft Teams test
+display: Microsoft Teams
+name: Microsoft Teams
 script:
   commands:
   - arguments:
