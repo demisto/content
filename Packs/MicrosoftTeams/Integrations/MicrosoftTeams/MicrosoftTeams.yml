@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Microsoft Teams
+  id: Microsoft Teams test
   version: -1
 configuration:
 - display: "Bot ID"
@@ -142,8 +142,8 @@ configuration:
   section: Connect
   required: false
 description: Send messages and notifications to your team members.
-display: Microsoft Teams
-name: Microsoft Teams
+display: Microsoft Teams test
+name: Microsoft Teams test
 script:
   commands:
   - arguments:
@@ -705,6 +705,9 @@ script:
     name: microsoft-teams-chat-update
   - description: Generate the login url used for Authorization code flow.
     name: microsoft-teams-generate-login-url
+    arguments: []
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    name: microsoft-teams-graph-auth-reset
     arguments: []
   dockerimage: demisto/teams:1.0.0.89409
   longRunning: true
