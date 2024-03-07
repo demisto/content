@@ -324,6 +324,9 @@ script:
     - description: The ID of the quarantined file.
       name: file_id
       required: true
+    - description: The file name of the quarantined file.
+      name: file_name
+      required: false
     description: Download a quarantined file.
     name: netskope-quarantined-file-get
     outputs:
