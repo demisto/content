@@ -2,16 +2,15 @@ CybelAngel is a cybersecurity firm specializing in external attack surface prote
 
 
 ## CybleAngel EventCollector Authentication
-CybelAngel API uses the OAuth 2.0 protocol for authentication and authorization.
+The CybelAngel API uses the OAuth 2.0 protocol for authentication and authorization.
 
-For each request on for the API, a Bearer token will be requested to authenticate your action.
+For each request sent to the API, a bearer token will be requested to authenticate your action.
 
-You can retrieve the API credentials following instructions from [here](https://developers.cybelangel.com/docs/cybelangel-platform-api/b6b6c2d4906e9-authentication#get-your-api-credentials)
+You can retrieve your API credentials by following the instructions in the [CybelAngel developer documentation](https://developers.cybelangel.com/docs/cybelangel-platform-api/b6b6c2d4906e9-authentication#get-your-api-credentials).
 
 ## CybleAngel EventCollector Rate Limits
-You are limited to 2000 bearer tokens/month, each token is valid for a period of 1 hour.
+You are limited to 2000 bearer tokens per month, each token is valid for a period of 1 hour.
 
-This limitation should not affect fetching, **however if the api is used by other sources which require bearer tokens, that could make the integration to not function properly**
+This limitation should not affect fetching, as the integration uses an average of 720 tokens each month. **If you use bearer tokens to interact with the CybelAngel API for other purposes outside of this integration, you could potentially run out of bearer tokens before the end of the month. In that case, the integration will not continue to fetch.**
 
-The integration uses on average 720 tokens every month.
 
