@@ -235,7 +235,7 @@ def main() -> None:
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to XSIAM')
             demisto.setLastRun(last_run)
-        elif command == "cybleangel-get-events":
+        elif command == "cybelangel-get-events":
             return_results(get_events_command(client, demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())

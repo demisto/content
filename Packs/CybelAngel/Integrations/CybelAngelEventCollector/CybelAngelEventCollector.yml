@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: CybleAngel Event Collector
+  id: CybelAngel Event Collector
   version: -1
 configuration:
 - defaultvalue: https://platform.cybelangel.com
