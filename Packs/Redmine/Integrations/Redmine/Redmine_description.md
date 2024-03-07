@@ -15,7 +15,7 @@
 
 1. If you would like to display data related only to a project with id x- Fill it in the Redmine integration authentication window.
 2. If you mention a Project ID in the command- it will override the configured Project ID.
-3. You can leave the project ID blank.
+3. You can leave the project ID blank (if not required).
 
 ## General noted
 
