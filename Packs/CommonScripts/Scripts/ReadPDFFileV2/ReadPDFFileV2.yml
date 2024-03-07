@@ -8,7 +8,7 @@ args:
 - defaultValue: "20"
   description: Maximum number of images to extract from the PDF file.
   name: maxImages
-- defaultValue: true
+- defaultValue: 'true'
   description: To unescape URLs that have been escaped as part of the URLs extraction.
   name: unescape
 
