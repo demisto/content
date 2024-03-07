@@ -111,7 +111,7 @@ def get_test_report_pipeline_url(pipeline_url: str) -> str:
     return f"{pipeline_url}/test_report"
 
 
-def extract_machines_saas_and_xsiam():
+def extract_machines_saas_and_xsiam(failed_jobs):
     lock_xsoar_machine_raw_txt = get_artifact_data(
         ARTIFACTS_FOLDER_XSOAR / "logs", "lock_file.txt"
     )
@@ -123,30 +123,49 @@ def extract_machines_saas_and_xsiam():
     if lock_xsoar_machine_raw_txt and (
         xsoar_machine := REGEX_EXTRACT_MACHINE.findall(lock_xsoar_machine_raw_txt)
     ):
-        machines.append(f"XSOAR SAAS: {xsoar_machine[0]}")
+        if "xsoar_ng_server_ga" in failed_jobs:
+            color_xsoar_ng = "danger"
+        elif "xsoar-test_playbooks_results" in failed_jobs:
+            color_xsoar_ng = "warning"
+        else:
+            color_xsoar_ng = "good"
+
+        machines.extend(
+            [
+                {
+                    "fallback": f"XSOAR SAAS: {xsoar_machine[0]}",
+                    "color": color_xsoar_ng,
+                    "title": f"XSOAR SAAS: {xsoar_machine[0]}",
+                }
+            ]
+        )
     if lock_xsiam_machine_raw_txt and (
         xsiam_machine := REGEX_EXTRACT_MACHINE.findall(lock_xsiam_machine_raw_txt)
     ):
-        machines.append(f"XSIAM: {xsiam_machine[0]}")
-
-    if not machines:
-        return []
-
-    title = f"Used {len(machines)} machines"
-    return [
-        {
-            "fallback": title,
-            "color": "warning",
-            "title": title,
-            "fields": [
+        if "xsiam_server_ga" in failed_jobs:
+            color_xsiam = "danger"
+        elif (
+            True
+            for xsiam_test_job in (
+                "xsiam-test_playbooks_results",
+                "xsiam-test_modeling_rule_results",
+            )
+            if xsiam_test_job in failed_jobs
+        ):
+            color_xsiam = "warning"
+        else:
+            color_xsiam = "good"
+        machines.extend(
+            [
                 {
-                    "title": "The following machines are used:",
-                    "value": "\n".join(machines),
-                    "short": False,
+                    "fallback": f"XSIAM: {xsiam_machine[0]}",
+                    "color": color_xsiam,
+                    "title": f"XSIAM: {xsiam_machine[0]}",
                 }
-            ],
-        }
-    ]
+            ]
+        )
+
+    return machines
 
 
 def test_modeling_rules_results(artifact_folder: Path,
@@ -453,7 +472,7 @@ def construct_slack_msg(triggering_workflow: str,
         has_failed_tests |= (test_playbooks_has_failure_xsoar or test_playbooks_has_failure_xsiam
                              or test_modeling_rules_has_failure_xsiam)
         slack_msg_append += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE)
-        slack_msg_append += extract_machines_saas_and_xsiam()
+        threaded_messages += extract_machines_saas_and_xsiam(failed_jobs_names)
     if triggering_workflow == CONTENT_NIGHTLY:
         # The coverage Slack message is only relevant for nightly and not for PRs.
         slack_msg_append += construct_coverage_slack_msg()
