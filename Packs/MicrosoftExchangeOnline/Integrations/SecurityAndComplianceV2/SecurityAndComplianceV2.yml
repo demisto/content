@@ -526,7 +526,7 @@ script:
       - 'IndividualMessage'
       - 'PerUserZip'
       - 'SingleZip'
-    - description: "The Format parameter specifies the format of the search results when you use the Export switch. Valid values are:
+    - description: "The Format parameter specifies the format of the search results when you use the Export action. Valid values are:
 FxStream: Export to PST files. This is the only option that's available when you export search results from the Microsoft Purview compliance portal.
 Mime: Export to .eml message files. This is the default value when you use cmdlets to export the search results.
 Msg: Export to .msg message files."
@@ -536,19 +536,19 @@ Msg: Export to .msg message files."
       - 'FxStream'
       - 'Mime'
       - 'Msg'
-    - description: Specifies whether to export previous versions of the document when you use the Export switch.
+    - description: Specifies whether to export previous versions of the document when you use the Export action.
       name: include_sharepoint_document_versions
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Specifies the email address target for the search results when you use the export switch.
+    - description: Specifies the email address target for the search results when you use the export action.
       name: notify_email
       required: false
-    - description: Specifies the cc email address target for the search results when you use the export switch.
+    - description: Specifies the cc email address target for the search results when you use the export action.
       name: notify_email_cc
       required: false
-    - description: Specifies the scenario type when you use the Export switch.
+    - description: Specifies the scenario type when you use the Export action.
       name: scenario
       auto: PREDEFINED
       predefined:
