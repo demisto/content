@@ -96,7 +96,9 @@ def test_block_builder_command_list(mocker):
             return [{'Type': entryTypes['note'], 'Contents': 'some-guid'}]
         elif command == 'send-notification':
             return [{'Type': entryTypes['note'], 'HumanReadable': 'Message sent to Slack successfully.\nThread ID is: '
-                                                                  '1660645689.649679'}]
+                                                                  '1660645689.649679',
+                     'Contents': {'ts': 'ts', 'channel': 'channel',
+                                  'message': {'text': 'text', 'bot_id': 'bot_id', 'username': 'username', 'app_id': 'app_id'}}}]
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     COMMAND_ARGS["list_name"] = "SomeList"
@@ -123,7 +125,9 @@ def test_block_builder_command_url(mocker):
             return [{'Type': entryTypes['note'], 'Contents': 'some-guid'}]
         elif command == 'send-notification':
             return [{'Type': entryTypes['note'], 'HumanReadable': 'Message sent to Slack successfully.\nThread ID is: '
-                                                                  '1660645689.649679'}]
+                                                                  '1660645689.649679',
+                     'Contents': {'ts': 'ts', 'channel': 'channel',
+                                  'message': {'text': 'text', 'bot_id': 'bot_id', 'username': 'username', 'app_id': 'app_id'}}}]
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     COMMAND_ARGS["blocks_url"] = BLOCKS_URL
