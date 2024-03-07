@@ -79,7 +79,7 @@ configuration:
   type: 8
   advanced: true
 description: "Amazon Security Lake is a fully managed security data lake service."
-display: AWS-SecurityLake
+display: Amazon Security Lake
 name: AWS Security Lake
 script:
   commands:
