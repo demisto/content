@@ -1,5 +1,5 @@
 fromversion: 8.5.0
-id: Tenable_io_ModelingRule
+id: Tenable_io_AssetsModelingRule
 name: Tenable_io Asset Collection
 rules: ''
 schema: ''
