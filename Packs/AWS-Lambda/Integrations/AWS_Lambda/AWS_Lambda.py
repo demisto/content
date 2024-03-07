@@ -138,26 +138,37 @@ def prepare_create_function_kwargs(args: dict[str, str]):
     """
     Prepare arguments to be sent to the API
     """
-    create_function_api_keys = ['FunctionName', 'Runtime', 'Role', 'Handler', 'Description', 'VpcConfig', 'PackageType']
+    create_function_api_keys = ['FunctionName', 'Runtime', 'Role', 'Handler', 'Description', 'PackageType']
     kwargs = {}
 
-    if args.get('code'):
-        kwargs.update({'Code': {'ZipFile': (args.get('code').encode())}})
-    elif args.get('S3-bucket'):
-        kwargs.update({'Code': {'S3Bucket': args.get('S3-bucket')}})
+    if code_path := args.get('code'):
+        # file_path = demisto.getFilePath(code_path).get('path')
+        file_path = '/Users/epintzov/Desktop/lambda_function.py'
+        with open(file_path, 'r') as f:
+            method_code = f.read().encode()
+        kwargs.update({'Code': {'ZipFile': method_code}})
+    elif s3_bucket := args.get('S3-bucket'):
+        kwargs.update({'Code': {'S3Bucket': s3_bucket}})
     else:
         raise DemistoException('code or S3-bucket must be provided.')
 
     for key in create_function_api_keys:
-        kwargs.update({key: args.get(key[0].upper() + key[1:])})
+        kwargs.update({key: args.get(key[0].lower() + key[1:])})
 
-    kwargs.update({'Publish': argToBoolean(args.get('publish')),
-                   'Environment': {'Variables': {json.loads(args.get('environment'))}},
-                   'Tags': {json.loads(args.get('tags'))},
-                   'TracingConfig': {'Mode': args.get('tracingConfig')},
-                   'Layers': argToList(args.get('layers')),
-                   'Timeout': arg_to_number(args.get('timeout')),
-                   'MemorySize': arg_to_number(args.get('memorySize'))})
+    if publish := args.get('publish'):
+        kwargs['Publish'] = argToBoolean(publish)
+    if env := args.get('environment'):
+        kwargs['Environment'] = {'Variables': {json.loads(env)}}
+    if tags := args.get('tags'):
+        kwargs['Tags'] = argToBoolean(tags)
+    if tracing_config := args.get('tracingConfig'):
+        kwargs['TracingConfig'] = {'Mode': tracing_config}
+    if layers := args.get('layers'):
+        kwargs['Layers'] = argToList(layers)
+    if memory := args.get('memorySize'):
+        kwargs['MemorySize'] = argToList(memory)
+    if vpc := args.get('vpcConfig'):
+        kwargs['VpcConfig'] = json.loads(vpc)
 
     return kwargs
 
@@ -575,7 +586,8 @@ def create_function_command(args: dict[str, str], aws_client) -> CommandResults:
         readable_output=readable_output
     )
 
-def publish_layer_version_command(args: dict[str,str], aws_client) -> CommandResults:
+
+def publish_layer_version_command(args: dict[str, str], aws_client) -> CommandResults:
     """
     Creates an Lambda layer from a ZIP archive.
 
@@ -606,6 +618,7 @@ def publish_layer_version_command(args: dict[str,str], aws_client) -> CommandRes
         outputs_key_field='FunctionArn',
         readable_output=readable_output
     )
+
 
 """TEST FUNCTION"""
 
