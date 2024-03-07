@@ -32,23 +32,23 @@ configuration:
   required: false
   section: Connect
   advanced: true
-description: 'CybleAngel Event Collector collects reports from Cyble Angel platform which specializes in external attack surface protection and management.'
-display: CybleAngel Event Collector
-name: CybleAngel Event Collector
+description: 'CybelAngel Event Collector collects reports from the CybelAngel platform, which specializes in external attack surface protection and management.'
+display: CybelAngel Event Collector
+name: CybelAngel Event Collector
 script:
   commands:
   - arguments:
     - description: 'Get reports from a specific start date.'
       name: start_date
       required: true
-    - description: 'Get reports until a specific end date, if not provided will take the current time.'
+    - description: 'Get reports until a specific end date. If not provided, uses current date.'
       name: end_date
       required: true
     - description: 'The maximum number of events to return.'
       name: limit
       required: true
-    description: 'Collect reports from cyble angel, used mainly for debugging.'
-    name: cybleangel-get-events
+    description: 'Collect reports from CybelAngel. Used mainly for debugging.'
+    name: cybelangel-get-events
     outputs: []
   runonce: false
   script: '-'
