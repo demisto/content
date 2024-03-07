@@ -23,8 +23,7 @@ def test_create_issue_command(mocker, redmine_client):
     http_request = mocker.patch.object(redmine_client, '_http_request')
     args = {'project_id': '1', 'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': 'Bug', 'watcher_user_ids': '[1]'}
     create_issue_command(redmine_client, args=args)
-    http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue': {'issue_id': '1', 'subject': 'changeFromCode',
-                                    'watcher_user_ids': '[1]', 'tracker_id': '1', 'project_id': '1'}}, headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
+    http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue': {'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': '1', 'watcher_user_ids': [1], 'project_id': '1'}}, headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
 
 def test_create_issue_command_invalid_tracker_id(redmine_client):
@@ -117,7 +116,7 @@ def test_create_issue_command_no_token_created_for_file(mocker, redmine_client):
     with pytest.raises(DemistoException) as e:
         create_issue_command(redmine_client, args)
         create_file_token_request_mock.assert_called_with({}, 'a.png')
-    assert e.value.message == "Could not create a token for your file- please try again.With error Could not upload file with entry id a.png."
+    assert e.value.message == "Could not create a token for your file- please try again.With error 'upload'."
 
 
 def test_create_issue_command_with_file(mocker, redmine_client):
@@ -137,9 +136,7 @@ def test_create_issue_command_with_file(mocker, redmine_client):
             'watcher_user_ids': '[1]'}
     create_issue_command(redmine_client, args=args)
     create_file_token_request_mock.assert_called_with({}, 'a.png')
-    http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue': {'issue_id': '1', 'subject': 'testSub',
-                                    'watcher_user_ids': '[1]', 'tracker_id': '1', 'project_id': '1', 'uploads':
-                                                                                            [{'token': 'token123'}]}}, headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
+    http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue': {'issue_id': '1', 'subject': 'testSub', 'uploads': [{'token': 'token123'}], 'tracker_id': '1', 'watcher_user_ids': [1], 'project_id': '1'}}, headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
 
 def test_update_issue_command(mocker, redmine_client):
@@ -155,7 +152,7 @@ def test_update_issue_command(mocker, redmine_client):
     http_request = mocker.patch.object(redmine_client, '_http_request')
     args = {'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': 'Bug', 'watcher_user_ids': '[1]'}
     update_issue_command(redmine_client, args=args)
-    http_request.assert_called_with('PUT', '/issues/1.json', json_data={'issue': {}}, headers={'Content-Type': 'application/json',
+    http_request.assert_called_with('PUT', '/issues/1.json', json_data={'issue': {'subject': 'changeFromCode', 'tracker_id': '1', 'watcher_user_ids': [1]}}, headers={'Content-Type': 'application/json',
                                     'X-Redmine-API-Key': True}, empty_valid_codes=[204], return_empty_response=True)
 
 
@@ -216,7 +213,7 @@ def test_update_issue_command_no_token_created_for_file(mocker, redmine_client):
     with pytest.raises(DemistoException) as e:
         update_issue_command(redmine_client, args)
         create_file_token_request_mock.assert_called_with({}, 'a.png')
-    assert e.value.message == "Couldn't create file token for the file you are trying to upload. with error: 'upload'"
+    assert e.value.message == "Could not create a token for your file- please try again.With error 'upload'."
 
 
 def test_update_issue_command_with_file(mocker, redmine_client):
@@ -235,7 +232,7 @@ def test_update_issue_command_with_file(mocker, redmine_client):
     args = {'file_entry_id': 'a.png', 'issue_id': '1', 'subject': 'testSub', 'tracker_id': 'Bug', 'watcher_user_ids': '[1]'}
     update_issue_command(redmine_client, args=args)
     create_file_token_request_mock.assert_called_with({}, 'a.png')
-    http_request.assert_called_with('PUT', '/issues/1.json', json_data={'issue': {'uploads': [{'token': 'token123', 'filename': '', 'description': '', 'content_type': ''}]}}, headers={
+    http_request.assert_called_with('PUT', '/issues/1.json', json_data={'issue': {'subject': 'testSub', 'tracker_id': '1', 'uploads': [{'token': 'token123'}], 'watcher_user_ids': [1]}}, headers={
                                     'Content-Type': 'application/json', 'X-Redmine-API-Key': True}, empty_valid_codes=[204], return_empty_response=True)
 
 
@@ -252,8 +249,8 @@ def test_get_issues_list_command(mocker, redmine_client):
     http_request = mocker.patch.object(redmine_client, '_http_request')
     args = {'sort': 'priority:desc', 'limit': '1'}
     get_issues_list_command(redmine_client, args)
-    http_request.assert_called_with('GET', '/issues.json', params={'offset': 0, 'limit': 1, 'sort': 'priority:desc'},
-                                    headers={'X-Redmine-API-Key': True})
+    http_request.assert_called_with('GET', '/issues.json', params={'status_id': 'open', 'offset': 0, 'limit': 1,
+                                                                   'sort': 'priority:desc'}, headers={'X-Redmine-API-Key': True})
 
 def test_get_issues_list_command_invalid_custom_field(mocker, redmine_client):
     """

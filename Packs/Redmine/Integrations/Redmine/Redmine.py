@@ -409,6 +409,7 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
         headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date',
                    'due_date', 'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'closed_on',
                    'attachments', 'watchers', 'children', 'relations', 'changesets', 'journals', 'allowed_statuses']
+        '''Issue id is a number and tableToMarkdown can't transform it'''
         response_issue['id'] = str(response_issue['id'])
         command_results = CommandResults(outputs_prefix='Redmine.Issue',
                                          outputs_key_field='id',
@@ -497,6 +498,7 @@ def get_project_list_command(client: Client, args: dict[str, Any]):
         headers = ['id', 'name', 'identifier', 'description', 'status', 'is_public', 'time_entry_activities', 'created_on',
                    'updated_on', 'default_value', 'visible', 'roles', 'issue_custom_fields', 'enabled_modules',
                    'issue_categories', 'trackers']
+        '''Some project fields are numbers and tableToMarkdown can't transform it'''
         for project in projects_response:
             project['id'] = str(project['id'])
             project['status'] = str(project['status'])
@@ -527,6 +529,7 @@ def get_custom_fields_command(client: Client, args):
         headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter',
                    'searchable', 'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities',
                    'issue_custom_fields']
+        '''Some custom fields are numbers and tableToMarkdown can't transform it'''
         for custom_field in custom_fields_response:
             custom_field['id'] = str(custom_field['id'])
             custom_field['is_required'] = str(custom_field['is_required'])
@@ -562,6 +565,7 @@ def get_users_command(client: Client, args: dict[str, Any]):
         response = client.get_users_request(args)
         users_response = response['users']
         headers = ['id', 'login', 'admin', 'firstname', 'lastname', 'mail', 'created_on', 'last_login_on']
+        '''Some issue fields are numbers and tableToMarkdown can't transform it'''
         for user in users_response:
             user['id'] = str(user['id'])
             user['admin'] = str(user['admin'])
