@@ -237,7 +237,6 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
     | Name | The integration instance name.<br />If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint. | True |
     | Bot ID | Bot ID. | True |
     | Bot Password | Bot Password. | True |
-    | Tenant ID |  | False |
     | Authentication Type |  | True |
     | Application redirect URI (for Authorization Code mode) |  | False |
     | Authorization code | For Authorization Code flow mode. Received from the authorization step. See the Detailed Instructions \(?\) section | False |
