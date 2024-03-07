@@ -205,7 +205,7 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
                                "parameter and then run !microsoft-teams-auth-test to re-authenticate")
 
     demisto.debug("Successfully reset the current_refresh_token, graph_access_token and graph_valid_until.")
-    return CommandResults(readable_output='Authorization was reset successfully.')
+    return_results(CommandResults(readable_output='Authorization was reset successfully.'))
 
 
 def translate_severity(severity: str) -> float:
