@@ -13,19 +13,16 @@ comment: |-
   For more information, see the section about permissions here:
   https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 enabled: true
-
 args:
 - name: key
   default: true
   description: List of comma-separated keys to delete from context.
-
 - name: all
   auto: PREDEFINED
   predefined:
   - "yes"
   - "no"
   description: If you choose yes - all context will be deleted.
-
 - name: subplaybook
   auto: PREDEFINED
   predefined:
@@ -33,12 +30,10 @@ args:
   - "no"
   - "auto"
   description: Specify "yes" if the context key is inside of a sub-playbook. Use **auto** to delete either from the sub-playbook context (if the playbook is called as a sub-playbook) or from the global context (if the playbook is the top playbook).
-
 - name: keysToKeep
   description: Context keys to keep when deleting all context. Supports comma separated values and nested objects, e.g. URL.Data,IP.Address
-
 - name: index
-  description: index to delete in case 'key' argument was specified
+  description: index to delete in case 'key' argument was specified.
 scripttarget: 0
 runas: DBotRole
 sensitive: true
