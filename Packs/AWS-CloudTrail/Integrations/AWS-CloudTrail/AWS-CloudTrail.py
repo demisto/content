@@ -103,7 +103,7 @@ def aws_session(service='cloudtrail', region=None, roleArn=None, roleSessionName
     return client
 
 
-def handle_returning_date_to_string(date_obj: datetime | str | None) -> str:
+def handle_returning_date_to_string(date_obj: datetime | str) -> str:
     """Gets date object to string"""
     # if the returning date is a string or None, leave it as is.
     if date_obj is None or isinstance(date_obj, str):
