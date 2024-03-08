@@ -1,0 +1,28 @@
+{
+    "autorun": false,
+    "color": "#FF00B6",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "XSOAR 8 Validation Checks",
+    "layout": "XSOAR 8 Validation Checks",
+    "locked": false,
+    "name": "XSOAR 8 Validation Checks",
+    "onChangeRepAlg": 1,
+    "playbookId": "XSOAR8APIEndpointsUsageCheck",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

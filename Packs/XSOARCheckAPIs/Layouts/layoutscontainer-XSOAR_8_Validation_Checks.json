@@ -1,0 +1,609 @@
+{
+	"cacheVersn": 0,
+	"close": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_closereason",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_closenotes",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Closing Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"definitionId": "",
+	"description": "",
+	"detached": false,
+	"details": null,
+	"detailsV2": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "API Endpoints",
+				"sections": [
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 7,
+						"hideItemTitleOnlyOne": true,
+						"hideName": true,
+						"i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-kkq7tnozrg-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 4,
+								"fieldId": "apicalls",
+								"height": 44,
+								"id": "4c02d040-ae7a-11ee-8fa5-2d3ad4fbf543",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "dbotsource",
+								"height": 22,
+								"id": "incident-source-field",
+								"index": 2,
+								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "API Calls",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"description": "This custom content pack **`XSOAR 8 Migration - API Endpoints Check`** allows XSOAR Administrators to identify API endpoints in use within Automations and Integrations. It does this by collecting a content bundle and parsing out automations and integrations that make use of **`core-api-*`** or **`demisto-api-*`** calls in the code. \n\nPlease be patient, the results will be displayed in the section below once the playbook execution is finished. \n\nOnce the results are ready, a button will display to export the results. Click the **`Export to CSV`** button on the right to export the results. The resulting file will be available for download in the warroom.\n",
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-22927d60-dd72-11ee-855c-330f5359e502",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Description",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-d1005ce0-dd78-11ee-8796-d96228eb77ac",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "playbookstatus",
+								"height": 22,
+								"id": "d111de80-dd77-11ee-8796-d96228eb77ac",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"csvArray": {
+										"simple": "${Results}"
+									},
+									"fileName": {
+										"simple": "APICalls.csv"
+									}
+								},
+								"buttonClass": "primary",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "playbookstatus"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "Completed"
+												}
+											},
+											"type": "shortText"
+										}
+									]
+								],
+								"height": 44,
+								"id": "7423c470-dd74-11ee-962a-e352012ceda4",
+								"index": 1,
+								"name": "Export API Calls to CSV",
+								"scriptId": "ExportToCSV",
+								"sectionItemType": "button",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Status",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": true,
+				"id": "kkq7tnozrg",
+				"name": "General",
+				"sections": [
+					{
+						"h": 3,
+						"i": "caseinfoid-field-changed-kkq7tnozrg-caseinfoid-kkq7tnozrg-caseinfoid-kkq7tnozrg-c4515bf0-a4df-11ea-8c29-db553c036fb9",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Indicators",
+						"query": "",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 3,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-2b761360-9b20-11ec-a77a-f7e2032aa20a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "incident_labels",
+								"height": 22,
+								"id": "2b74b3d1-9b20-11ec-a77a-f7e2032aa20a",
+								"index": 0,
+								"isVisible": true,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Labels",
+						"static": false,
+						"type": "labels",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-3a8387c0-9b20-11ec-a77a-f7e2032aa20a",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sourceusername",
+								"height": 22,
+								"id": "53855af0-9b20-11ec-a77a-f7e2032aa20a",
+								"index": 0,
+								"listId": "caseinfoid-3a8387c0-9b20-11ec-a77a-f7e2032aa20a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcehostname",
+								"height": 22,
+								"id": "d27c6b80-ddf8-11ec-a585-5fb0e6a4ec3a",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sourceip",
+								"height": 22,
+								"id": "4dd6e330-9b20-11ec-a77a-f7e2032aa20a",
+								"index": 2,
+								"listId": "caseinfoid-3a8387c0-9b20-11ec-a77a-f7e2032aa20a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "destinationip",
+								"height": 22,
+								"id": "7ff25750-9b20-11ec-a77a-f7e2032aa20a",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "destinationhostname",
+								"height": 22,
+								"id": "da2f17b0-ddf8-11ec-a585-5fb0e6a4ec3a",
+								"index": 4,
+								"listId": "caseinfoid-3a8387c0-9b20-11ec-a77a-f7e2032aa20a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "detectedips",
+								"height": 22,
+								"id": "5d62af50-9b20-11ec-a77a-f7e2032aa20a",
+								"index": 0,
+								"listId": "caseinfoid-3a8387c0-9b20-11ec-a77a-f7e2032aa20a",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "detectedinternalips",
+								"height": 22,
+								"id": "5c698240-9b20-11ec-a77a-f7e2032aa20a",
+								"index": 1,
+								"listId": "caseinfoid-3a8387c0-9b20-11ec-a77a-f7e2032aa20a",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "detectedexternalips",
+								"height": 22,
+								"id": "5957ae60-9b20-11ec-a77a-f7e2032aa20a",
+								"index": 2,
+								"listId": "caseinfoid-3a8387c0-9b20-11ec-a77a-f7e2032aa20a",
+								"sectionItemType": "field",
+								"startCol": 2
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Investigation Data",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-9f29f350-9b23-11ec-a77a-f7e2032aa20a",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 2,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"i": "caseinfoid-a2577540-eba3-11ec-adef-e5ef9f1f7b57",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "incident_attachment",
+								"height": 53,
+								"id": "a251a8e1-eba3-11ec-adef-e5ef9f1f7b57",
+								"index": 0,
+								"isVisible": true,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Attachments",
+						"static": false,
+						"type": "",
+						"w": 1,
+						"x": 2,
+						"y": 5
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"hidden": true,
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"hidden": true,
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"hidden": true,
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"edit": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_name",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_details",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"fromServerVersion": "",
+	"group": "incident",
+	"id": "XSOAR 8 Validation Checks",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_name",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_details",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotstatus",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_roles",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_dbotcreated",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotduedate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotmodified",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbottotaltime",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Timeline Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_labels",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Labels",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "labels"
+			}
+		]
+	},
+	"name": "XSOAR 8 Validation Checks",
+	"packID": "fa0f6cdb-842f-4aac-8917-9f059a4459ed",
+	"packName": "XSOAR Check APIs",
+	"propagationLabels": [],
+	"quickView": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_name",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_details",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotstatus",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_roles",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_dbotcreated",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotduedate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotmodified",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbottotaltime",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Timeline Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"quickViewV2": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1
+}

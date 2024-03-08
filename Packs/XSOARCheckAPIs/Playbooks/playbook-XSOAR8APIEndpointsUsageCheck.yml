@@ -1,0 +1,283 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: fa0f6cdb-842f-4aac-8917-9f059a4459ed
+    packName: XSOAR Check APIs
+    prevname: ''
+    propagationLabels:
+    - all
+    toServerVersion: ''
+id: XSOAR8APIEndpointsUsageCheck
+inputs: []
+name: XSOAR8APIEndpointsUsageCheck
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '11'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 693e0232-d961-4b61-8a18-215af0f1de25
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 693e0232-d961-4b61-8a18-215af0f1de25
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '4':
+    continueonerrortype: ''
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "Validate if API Integration was defined correctly.\nIf not detect what is the problem and warn about it."
+      id: b6a6b45e-0fca-47e4-8e58-31e269ae380f
+      iscommand: false
+      name: Validate API Integration
+      scriptName: APIvalidation
+      type: regular
+      version: -1
+    taskid: b6a6b45e-0fca-47e4-8e58-31e269ae380f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '7':
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Collect content bundle and parse data
+      id: 59821e89-3133-4d7f-8c2f-7548e21421ec
+      iscommand: false
+      name: Collect Content Bundle
+      playbookId: Collect Content Bundle
+      type: playbook
+      version: -1
+    taskid: 59821e89-3133-4d7f-8c2f-7548e21421ec
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '8':
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      File:
+        complex:
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: File.Extension
+              operator: isEqualString
+              right:
+                value:
+                  simple: yml
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: isNotEqualString
+              right:
+                value:
+                  simple: automation-FindDemistoAPICalls.yml
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: containsGeneral
+              right:
+                value:
+                  simple: automation
+            - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: containsGeneral
+              right:
+                value:
+                  simple: integration
+          root: File
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: bb1bc82a-3906-419b-8c3c-6086a65f7dbd
+      iscommand: false
+      name: Parse YML Files
+      playbookId: Parse YML Files
+      type: playbook
+      version: -1
+    taskid: bb1bc82a-3906-419b-8c3c-6086a65f7dbd
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      apicalls:
+        complex:
+          root: Results
+          transformers:
+          - args:
+              headers: {}
+              is_auto_json_transform: {}
+              json_transform_properties: {}
+              title:
+                value:
+                  simple: API Calls
+            operator: JsonToTable
+      playbookstatus:
+        simple: Completed
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 044d09f4-877f-464d-8b5d-60da34bed16f
+      iscommand: true
+      name: Populate Layout with API Calls
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 044d09f4-877f-464d-8b5d-60da34bed16f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '10':
+    continueonerrortype: ''
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 8081a1eb-99e1-4cbf-8e2a-2ee4a2d083e3
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 8081a1eb-99e1-4cbf-8e2a-2ee4a2d083e3
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      playbookstatus:
+        simple: Running
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: ac08b620-9bcb-4f55-8f48-405cee13369e
+      iscommand: true
+      name: Set Playbook Status to Running
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: ac08b620-9bcb-4f55-8f48-405cee13369e
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '12':
+    continueonerrortype: ''
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: cb19a57d-1904-4c42-85e5-8deaa0ae8e7b
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: cb19a57d-1904-4c42-85e5-8deaa0ae8e7b
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1260,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
