@@ -283,6 +283,22 @@ def test_query_malops_command(mocker):
     assert command_output.outputs[0]['AffectedMachine'] == ['desktop-j60ivd0']
 
 
+def test_query_malop_management_command(mocker):
+    from Cybereason import query_malop_management_command
+    from Cybereason import Client
+    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
+    client = Client(
+        base_url="https://test.server.com:8888",
+        verify=False,
+        headers=HEADERS,
+        proxy=True)
+    args = {"guid": "AAAA0w7GERjl3oae"}
+    query_malop_management_raw_response = json.loads(load_mock_response('query_malop_management_raw_response.json'))
+    mocker.patch("Cybereason.Client.cybereason_api_call", return_value=query_malop_management_raw_response)
+    command_output = query_malop_management_command(client, args)
+    assert command_output.outputs[0]['GUID'] == 'AAAA0w7GERjl3oae'
+
+
 def test_update_malop_status_command(mocker):
     from Cybereason import update_malop_status_command
     from Cybereason import Client
