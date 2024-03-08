@@ -1,9 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from typing import Any
 
 import urllib3
-from typing import Dict, Any, Tuple
+from CommonServerUserPython import *  # noqa
+
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -35,8 +36,9 @@ class Client(BaseClient):
         proxy (bool): Specifies if to use XSOAR proxy settings.
     """
 
-    def __init__(self, base_url: str, token: str, validate_certificate: bool, proxy: bool):
-        self.fetch_status: dict = {event_type: False for event_type in ALL_SUPPORTED_EVENT_TYPES}
+    def __init__(self, base_url: str, token: str, validate_certificate: bool, proxy: bool, event_types_to_fetch: list[str]):
+        self.fetch_status: dict = {event_type: False for event_type in event_types_to_fetch}
+        self.event_types_to_fetch: list[str] = event_types_to_fetch
 
         headers = {'Netskope-Api-Token': token}
         super().__init__(base_url, verify=validate_certificate, proxy=proxy, headers=headers)
@@ -77,7 +79,7 @@ def honor_rate_limiting(headers, endpoint):
                     time.sleep(1)
 
     except ValueError as ve:
-        logging.error("Value error when honoring the rate limiting wait time {} {}".format(headers, str(ve)))
+        logging.error(f"Value error when honoring the rate limiting wait time {headers} {str(ve)}")
 
 
 def populate_parsing_rule_fields(event: dict, event_type: str):
@@ -150,7 +152,7 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     return secs_from_beginning > EXECUTION_TIMEOUT_SECONDS
 
 
-def setup_last_run(last_run_dict: dict) -> dict:
+def setup_last_run(last_run_dict: dict, event_types_to_fetch: list[str]) -> dict:
     """
     Setting the last_tun object with the right operation to be used throughout the integration run.
 
@@ -161,7 +163,7 @@ def setup_last_run(last_run_dict: dict) -> dict:
         dict: the modified last run dictionary with the needed operation
     """
     first_fetch = int(arg_to_datetime('now').timestamp())  # type: ignore[union-attr]
-    for event_type in ALL_SUPPORTED_EVENT_TYPES:
+    for event_type in event_types_to_fetch:
         if not last_run_dict.get(event_type, {}).get('operation'):
             last_run_dict[event_type] = {'operation': first_fetch}
 
@@ -234,7 +236,7 @@ def handle_data_export_single_event_type(client: Client, event_type: str, operat
     return events, False
 
 
-def get_all_events(client: Client, last_run: dict, limit: int = MAX_EVENTS_PAGE_SIZE) -> Tuple[list, dict]:
+def get_all_events(client: Client, last_run: dict, limit: int = MAX_EVENTS_PAGE_SIZE) -> tuple[list, dict]:
     """
     Iterates over all supported event types and call the handle data export logic. Once each event type is done the operation for
     next run is set to 'next'.
@@ -251,7 +253,7 @@ def get_all_events(client: Client, last_run: dict, limit: int = MAX_EVENTS_PAGE_
 
     all_types_events_result = []
     execution_start_time = datetime.utcnow()
-    for event_type in ALL_SUPPORTED_EVENT_TYPES:
+    for event_type in client.event_types_to_fetch:
         event_type_operation = last_run.get(event_type, {}).get('operation')
 
         events, time_out = handle_data_export_single_event_type(client=client, event_type=event_type,
@@ -271,11 +273,11 @@ def get_all_events(client: Client, last_run: dict, limit: int = MAX_EVENTS_PAGE_
 
 
 def test_module(client: Client, last_run: dict, max_fetch: int) -> str:
-    get_all_events(client, last_run, limit=max_fetch)
+    get_all_events(client, last_run, limit=max_fetch, )
     return 'ok'
 
 
-def get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> Tuple[CommandResults, list]:
+def get_events_command(client: Client, args: dict[str, Any], last_run: dict) -> tuple[CommandResults, list]:
     limit = arg_to_number(args.get('limit')) or MAX_EVENTS_PAGE_SIZE
     events, _ = get_all_events(client=client, last_run=last_run, limit=limit)
 
@@ -296,6 +298,16 @@ def get_events_command(client: Client, args: Dict[str, Any], last_run: dict) -> 
     return results, events
 
 
+def handle_event_types_to_fetch(event_types_to_fetch) -> list[str]:
+    """ Handle event_types_to_fetch parameter.
+        Transform the event_types_to_fetch parameter into a pythonic list with lowercase values.
+    """
+    return argToList(
+        arg=event_types_to_fetch if event_types_to_fetch else ALL_SUPPORTED_EVENT_TYPES,
+        transform=lambda x: x.lower(),
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -310,11 +322,13 @@ def main() -> None:  # pragma: no cover
         proxy = params.get('proxy', False)
         max_fetch: int = arg_to_number(params.get('max_fetch')) or 10000
         vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope')
+        event_types_to_fetch = handle_event_types_to_fetch(params.get('event_types_to_fetch'))
+        demisto.debug(f'Event types that will be fetched in this instance: {event_types_to_fetch}')
         command_name = demisto.command()
         demisto.debug(f'Command being called is {command_name}')
 
-        client = Client(base_url, token, verify_certificate, proxy)
-        last_run = setup_last_run(demisto.getLastRun())
+        client = Client(base_url, token, verify_certificate, proxy, event_types_to_fetch)
+        last_run = setup_last_run(demisto.getLastRun(), event_types_to_fetch)
         demisto.debug(f'Running with the following last_run - {last_run}')
 
         events: list[dict] = []
@@ -347,6 +361,11 @@ def main() -> None:  # pragma: no cover
 
                 end = datetime.utcnow()
                 demisto.debug(f'Handled {len(events)} total events in {(end - start).seconds} seconds')
+
+                # set nextTrigger key in the lastRun dictionary to 0 (seconds) - this will trigger the next
+                # fetch-events to start immediately after the current fetch-events ends (CRTX-89345)
+                new_last_run['nextTrigger'] = '0'
+
                 demisto.setLastRun(new_last_run)
 
     # Log exceptions and return errors

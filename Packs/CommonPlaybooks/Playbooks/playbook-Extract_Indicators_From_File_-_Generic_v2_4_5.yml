@@ -116,7 +116,7 @@ tasks:
       {
         "position": {
           "x": 915,
-          "y": 1410
+          "y": 1740
         }
       }
     note: false
@@ -215,6 +215,15 @@ tasks:
                     right:
                       value:
                         simple: UTF-8 Unicode text
+                  - operator: containsString
+                    left:
+                      value:
+                        simple: inputs.File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: JSON data
+                    ignorecase: true
                 - - operator: notContainsString
                     left:
                       value:
@@ -303,6 +312,8 @@ tasks:
                 transformers:
                 - operator: uniq
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -364,6 +375,15 @@ tasks:
               right:
                 value:
                   simple: UTF-8 Unicode
+            - operator: containsString
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: JSON data
+              ignorecase: true
           - - operator: notContainsString
               left:
                 value:
@@ -543,6 +563,7 @@ tasks:
     nexttasks:
       '#none#':
       - "19"
+      - "25"
     scriptarguments:
       entryID:
         complex:
@@ -585,7 +606,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": 720
+          "y": 900
         }
       }
     note: false
@@ -1054,8 +1075,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2150,
-          "y": 720
+          "x": 2190,
+          "y": 900
         }
       }
     note: false
@@ -1131,14 +1152,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2150,
-          "y": 1040
+          "x": 2190,
+          "y": 1310
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1463,7 +1484,7 @@ tasks:
       {
         "position": {
           "x": 915,
-          "y": 1230
+          "y": 1550
         }
       }
     note: false
@@ -1517,7 +1538,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -290,
+          "x": -330,
           "y": 460
         }
       }
@@ -1546,6 +1567,7 @@ tasks:
       - "10"
       "yes":
       - "13"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1601,7 +1623,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2150,
+          "x": 2190,
           "y": 460
         }
       }
@@ -1737,10 +1759,142 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 4ee7917b-6813-4e61-8612-5f7116bd30eb
+    type: regular
+    task:
+      id: 4ee7917b-6813-4e61-8612-5f7116bd30eb
+      version: -1
+      name: Extract Text from QR Code
+      description: Extracts the text from a QR code. The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
+      scriptName: ReadQRCode
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: image
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: InfoFile.EntryID
+                iscontext: true
+          - operator: uniq
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 35ed31ed-41e9-4108-8580-e94786764ae8
+    type: regular
+    task:
+      id: 35ed31ed-41e9-4108-8580-e94786764ae8
+      version: -1
+      name: Convert PDF to Image
+      description: Converts a PDF file to an image file.
+      script: '|||rasterize-pdf'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+              ignorecase: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ${File(val.Info=="application/pdf").EntryID}
+                iscontext: true
+          - operator: uniq
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "13_19_#default#": 0.14,
+      "13_19_#default#": 0.11,
       "15_10_#default#": 0.11,
       "15_16_yes": 0.38,
       "1_10_#default#": 0.17,
@@ -1749,15 +1903,15 @@ view: |-
       "23_22_yes": 0.43,
       "5_10_#default#": 0.33,
       "5_6_yes": 0.36,
-      "7_10_#default#": 0.15,
-      "7_8_yes": 0.38,
+      "7_10_#default#": 0.1,
+      "7_8_yes": 0.24,
       "9_10_#default#": 0.18,
       "9_11_yes": 0.35
     },
     "paper": {
       "dimensions": {
-        "height": 1485,
-        "width": 3085,
+        "height": 1815,
+        "width": 3125,
         "x": -555,
         "y": -10
       }
@@ -2004,11 +2158,24 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score.
   type: number
+- contextPath: QRCodeReader
+  description: The QR code reader primary key object.
+  type: unknown
+- contextPath: QRCodeReader.Text
+  description: The raw text extracted from the QR code image.
+  type: String
+- contextPath: QRCodeReader.Domain
+  description: The domains extracted from the QR code image if they are present.
+  type: String
+- contextPath: QRCodeReader.URL
+  description: The URLs extracted from the QR code image if they are present.
+  type: String
+- contextPath: QRCodeReader.IP
+  description: The IPs extracted from the QR code image if they are present.
+  type: String
 tests:
 - Extract Indicators From File - Generic v2 - Test
 fromversion: 5.0.0
-marketplaces:
-- xsoar
-- marketplacev2
 contentitemexportablefields:
   contentitemfields: {}
+system: true

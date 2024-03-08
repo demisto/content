@@ -1087,6 +1087,10 @@ def file_get_parents(client: 'GSuiteClient', args: dict[str, str]) -> CommandRes
             file_id = parent.get('id', '')
             break
 
+        # break loop if no items
+        if len(response.get('items', [])) == 0:
+            break
+
     outputs: dict = {
         OUTPUT_PREFIX['PARENTS']: parents
     }

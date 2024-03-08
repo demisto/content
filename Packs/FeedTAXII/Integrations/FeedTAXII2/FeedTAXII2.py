@@ -48,6 +48,53 @@ def module_test_command(client, limit, fetch_full_feed):
         return_error("Could not connect to server")
 
 
+def filter_previously_fetched_indicators(indicators: list, last_run: dict) -> list:
+    """
+    Filter the indicators returned from the taxii server, by taking out indicators that we're ingested in the previous fetch
+    call and their modified date was not updated,
+    """
+    last_indicators = last_run.get("latest_indicators")  # indicators from prev fetch
+    new_indicators: list = []
+    skipped_indicators: list = []
+    if not last_indicators:    # first fetch
+        last_run["latest_indicators"] = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("modified")}
+                                         if obj.get("value") != "$$DummyIndicator$$" else obj
+                                         for obj in indicators]
+        return indicators
+    for indicator in indicators:
+        indicator_id = indicator.get("rawJSON", {}).get('id', "")
+
+        # check if the indicator is stored in latest_indicators
+        saved_indicator = list(filter(lambda ind: indicator_id in ind, last_indicators))
+
+        # if the indicator is stored in latest_indicators -> check if it was modified
+        if saved_indicator:
+            modified_date = saved_indicator[0].get(indicator_id)
+
+            # the indicator is stored in latest_indicators, but got modified -> add to new_indicators
+            if indicator.get("rawJSON", {}).get("modified", "") > modified_date:
+                new_indicators.append(indicator)
+            else:
+                skipped_indicators.append(indicator_id)
+
+        # the indicator is not stored in latest_indicators -> add to new_indicators
+        else:
+            new_indicators.append(indicator)
+
+    if skipped_indicators:
+        demisto.info(f"{len(skipped_indicators)} indicators were already ingested in the previous fetch...skipping.")
+        demisto.debug(f"Skipped indicators: {skipped_indicators}")
+
+    demisto.debug(f"found {len(new_indicators)} new indicators from {len(indicators)} fetched indicators")
+
+    # updated lastrun with the indicators fetched in the current round
+    last_run["latest_indicators"] = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("modified")}
+                                     if obj.get("value") != "$$DummyIndicator$$" else obj
+                                     for obj in indicators]
+
+    return new_indicators
+
+
 def fetch_indicators_command(
     client,
     initial_interval,
@@ -86,6 +133,7 @@ def fetch_indicators_command(
                 fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
             )
             fetched_iocs = client.build_iterator(limit, added_after=added_after)
+            demisto.debug(f"fetched {len(fetched_iocs)} iocs from {collection} collection")
             indicators.extend(fetched_iocs)
             last_run_ctx[collection.id] = client.last_fetched_indicator__modified \
                 if client.last_fetched_indicator__modified \
@@ -98,11 +146,14 @@ def fetch_indicators_command(
         # fetch from a single collection
         added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
         indicators = client.build_iterator(limit, added_after=added_after)
+        demisto.debug(f"fetched {len(indicators)} iocs")
         last_run_ctx[client.collection_to_fetch.id] = (
             client.last_fetched_indicator__modified
             if client.last_fetched_indicator__modified
             else added_after
         )
+
+    indicators = filter_previously_fetched_indicators(indicators, last_run_ctx)
     demisto.debug(f'{indicators=}')
     return indicators, last_run_ctx
 
@@ -285,6 +336,7 @@ def main():  # pragma: no cover
                 fetch_full_feed,
             )
             demisto.debug(f'After fetch command last run: {last_run_indicators}')
+            demisto.debug(f"returning {len(indicators)} indicators")
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 

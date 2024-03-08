@@ -462,6 +462,8 @@ script:
       name: source
     - description: Epoch-formatted time.
       name: time
+    - description: A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). If the indexer acknowledgment is turned on, a channel is required.
+      name: request_channel
     description: Sends events to an HTTP Event Collector using the Splunk platform JSON event protocol.
     name: splunk-submit-event-hec
   - arguments:
@@ -666,7 +668,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.86438
+  dockerimage: demisto/splunksdk-py3:1.0.0.89431
   isfetch: true
   ismappable: true
   isremotesyncin: true
