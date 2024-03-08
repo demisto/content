@@ -1,7 +1,4 @@
 category: Authentication & Identity Management
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: FireMonSecurityManager
   version: -1
@@ -117,11 +114,28 @@ script:
     - contextPath: FireMonSecurityManager.SIQL.matchId
       description: Resposne for the SIQL query.
       type: Unknown
-  dockerimage: demisto/python3:3.10.13.88772
+  - arguments:
+    - name: page
+    - name: pageSize
+    description: Get all the collectors in the inventory.
+    name: firemon-collector-get-all
+    outputs:
+    - contextPath: FireMonSecurityManager.Collector
+      description: Firemon Collector Infomation.
+  - arguments:
+    - description: collector id.
+      name: id
+    description: Get collector status.
+    name: firemon-collector-get-status-byid
+    outputs:
+    - contextPath: FireMonSecurityManager.CollectorStatus
+      description: Firemon Collector Status.
+  dockerimage: demisto/python3:3.10.13.89009
   isfetch: true
   script: ''
   subtype: python3
   type: python
+  runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
