@@ -657,7 +657,8 @@ script:
       name: fr_due_by
     - description: The ID of the group to which the ticket has been assigned. The default value is the ID of the group that is associated with the given email_config_id. Use freshservice-agent-group-list to get the agent group ID.
       name: group_id
-    - name: resolution_notes
+    - description: The resolution note outlines the actions taken to resolve an issue, providing a clear record of the steps and solutions applied.
+      name: resolution_notes
     description: Update an existing ticket in Freshservice.
     name: freshservice-ticket-update
     outputs:
