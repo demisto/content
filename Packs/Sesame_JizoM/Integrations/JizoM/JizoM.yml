@@ -1,0 +1,47 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: JizoM
+  version: -1
+configuration:
+  - display: Server URL
+    name: url
+    required: true
+    type: 0
+  - display: API Key
+    name: apikey
+    required: true
+    type: 4
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    required: false
+  - display: Use system proxy settings
+    name: proxy
+    type: 8
+    required: false
+
+description: " "
+display: JizoM
+name: JizoM
+script:
+  commands:
+    - arguments:
+        - description: SHA256 Value
+          name: file_hash
+          required: false
+      description: Download a sample with file hash
+      name: protocols
+    - arguments:
+        - description: SHA256 Value
+          name: file_hash
+          required: false
+      description: Search for sample with file hash
+      name: peers
+  dockerimage: demisto/python3:3.10.12.63474
+  runonce: false
+  script: ""
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+  - No tests (auto formatted)

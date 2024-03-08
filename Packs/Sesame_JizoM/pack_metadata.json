@@ -1,0 +1,21 @@
+{
+    "name": "JizoM",
+    "description": "This integration allows to interact with the JizoM API",
+    "support": "partner",
+    "currentVersion": "",
+    "author": "SesameIT",
+    "url": "https://sesame-it.com/",
+    "email": "",
+    "categories": [
+        
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "githubUser": [
+        
+    ]
+}
