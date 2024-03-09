@@ -71,6 +71,46 @@
             "new": "Configure 'Nmap' to enable network discovery information."
           },
           "description": "Configure Nmap to network discovery information."
+        },
+        {
+            "name": "AWS-EC2",
+            "action": {
+              "existing": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities.",
+              "new": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."
+            },
+            "description": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."            
+        },
+        {
+            "name": "GoogleCloudComputer",
+            "action": {
+              "existing": "Configure 'Google Cloud Compute' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities.",
+              "new": "Configure 'Google Cloud Compute' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."
+            },
+            "description": "Configure 'Google Cloud Compute' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."            
+        },
+        {
+            "name": "AzureCompute_v2",
+            "action": {
+              "existing": "Configure 'Azure Compute v2' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities.",
+              "new": "Configure 'Azure Compute v2' to enable cloud enrichment to add additional investigation enrichments and remediation capabilitiesn."
+            },
+            "description": "Configure 'Azure Compute v2' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."            
+        },
+        {
+            "name": "AzureADIdentityProtection",
+            "action": {
+              "existing": "Configure 'Azure Active Directory Identity and Access' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities.",
+              "new": "Configure 'Azure Active Directory Identity and Access' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."
+            },
+            "description": "Configure 'Azure Active Directory Identity and Access' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."            
+        },
+        {
+            "name": "MicrosoftGraphUser",
+            "action": {
+              "existing": "Configure 'Microsoft Graph' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities.",
+              "new": "Configure 'Microsoft Graph' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."
+            },
+            "description": "Configure Microsoft Graph to enable file detonation to improve investigation."            
         }
       ],
       "next": [
