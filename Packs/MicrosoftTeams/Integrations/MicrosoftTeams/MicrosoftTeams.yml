@@ -706,7 +706,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: microsoft-teams-generate-login-url
     arguments: []
-  - description: Run this command if for some reason you need to rerun the authentication process.
+  - description: Run this command if you need to rerun the authentication process.
     name: microsoft-teams-graph-auth-reset
     arguments: []
   dockerimage: demisto/teams:1.0.0.89409
