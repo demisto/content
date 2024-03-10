@@ -13,5 +13,6 @@ stages:
   - unittests-and-validations
 
 trigger-contribution-build:
+  stage: unittests-and-validations
   script:
   - echo "This is a test!!!"
