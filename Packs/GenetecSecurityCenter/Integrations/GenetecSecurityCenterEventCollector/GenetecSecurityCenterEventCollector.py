@@ -100,10 +100,7 @@ def fetch_events_command(
 def test_func(client: Client):
     url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q=TimeRange.SetTimeRange(2016-12-15T21:17:00,2023-12-15T21:18:00),MaximumResultCount=10"
     events: list[dict] = client._http_request('GET', url_suffix=url_suffix)
-    print(f"got the following events: {events}")
     new_last_run = {"start_time": events[-1].get("ModificationTimeStamp")}
-    print(f"Done fetching, got {len(events)} events.")
-    print(f"New last run is {new_last_run}")
 
     return events, new_last_run
 

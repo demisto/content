@@ -41,15 +41,14 @@ display: Genetec Security Center Event Collector
 name: Genetec Security Center Event Collector
 script:
   commands:
-  - arguments:
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+  - description: Manual execution of fetch-events, use this for debugging purposes.'
     name: genetec-security-center-get-events
-    outputs:
   runonce: false
   script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.12.63474
+  isfetchevents: true
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
