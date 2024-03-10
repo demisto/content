@@ -367,7 +367,7 @@
       echo "machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
       section_start "Create Testing Branch"
       export BRANCH="${CI_COMMIT_BRANCH}-cleanup-branch-${CI_PIPELINE_ID}"
-      git checkout -B $CI_COMMIT_BRANCH $BRANCH
+      git checkout -B $BRANCH $CI_COMMIT_BRANCH
       echo "Created test branch:${BRANCH}"
       section_end "Create Testing Branch"
       # retry mechanism for trigger upload pipeline in case it failed because of gitlab connectivity issues.
