@@ -1,0 +1,19 @@
+commonfields:
+  id: c4e44f1c-c085-487f-8a90-bfcc37bdfaca
+  version: 1
+vcShouldKeepItemLegacyProdMachine: false
+name: MSEScoreWidget
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: This dynamic automation parses the CVSS score of a CVE and presents it in the layout in color according to its score.
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ''
+runonce: false
+dockerimage: demisto/python3:3.10.13.74666
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

@@ -15,21 +15,21 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* imagecompare
-* HttpV2
-* html_difflib_check
+* HtmlDifflibCheck
 * Set
+* imagecompare
 * IsIntegrationAvailable
+* HttpV2
 
 ### Commands
 
 * url
-* domain
-* expireIndicators
 * setIndicators
-* whois
 * closeInvestigation
+* whois
+* expireIndicators
 * rasterize
+* domain
 
 ## Playbook Inputs
 
@@ -37,7 +37,8 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| contactEmail | Email address to receive feedback from the domain registrant | oitzhak@paloaltonetworks.com | Optional |
+| contactEmail | Email address to receive feedback from the domain registrant |  | Optional |
+| similarityThreshold | The minimum threshold value for similarity comparison | 0.5 | Optional |
 
 ## Playbook Outputs
 

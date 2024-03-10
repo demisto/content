@@ -1,0 +1,19 @@
+commonfields:
+  id: 08acf853-2e81-420d-8302-2282289478b1
+  version: 1
+vcShouldKeepItemLegacyProdMachine: false
+name: VerdictResults
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: This widget displays the incident verdict based on the 'Verdict' field.
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ''
+runonce: false
+dockerimage: demisto/python3:3.10.13.80014
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
