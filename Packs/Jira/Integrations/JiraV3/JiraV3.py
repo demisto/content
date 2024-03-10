@@ -632,6 +632,13 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             resp_type='response',
         )
 
+    def delete_attachment_file(self, attachment_id: str):
+        return self.http_request(
+            method='DELETE',
+            url_suffix=f'rest/api/{self.api_version}/attachment/{attachment_id}',
+            resp_type='response',
+        )
+
     def update_assignee(self, issue_id_or_key: str, assignee_body: Dict[str, Any]) -> requests.Response:
         """This method is in charge of assigning an assignee to a specific issue.
 
@@ -2074,6 +2081,12 @@ def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
                                           issue_key=args.get('issue_key', ''))
     client.delete_issue(issue_id_or_key=issue_id_or_key)
     return CommandResults(readable_output='Issue deleted successfully.')
+
+
+def delete_attachment_file_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    attachment_id = args.get('attachment_id', '')
+    client.delete_attachment_file(attachment_id=attachment_id)
+    return CommandResults(readable_output=f'Attachment id {attachment_id} was deleted successfully.')
 
 
 def update_issue_assignee_command(client: JiraBaseClient, args: Dict) -> CommandResults:
@@ -4055,6 +4068,7 @@ def main():  # pragma: no cover
         'jira-epic-issue-list': epic_issues_list_command,
         'jira-issue-link-type-get': get_issue_link_types_command,
         'jira-issue-to-issue-link': link_issue_to_issue_command,
+        'jira-issue-delete-file': delete_attachment_file_command,
     }
     try:
         client: JiraBaseClient
