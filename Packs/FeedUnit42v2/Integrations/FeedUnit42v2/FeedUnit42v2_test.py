@@ -204,7 +204,7 @@ def test_get_indicator_publication():
     - run the get_indicator_publication
     Validate The grid field extracted successfully.
     """
-    assert StixParser.get_indicator_publication(ATTACK_PATTERN_DATA[0], ignore_external_id=True) == PUBLICATIONS
+    assert STIX2XSOARParser.get_indicator_publication(ATTACK_PATTERN_DATA[0], ignore_external_id=True) == PUBLICATIONS
 
 
 @pytest.mark.parametrize('indicator_name, expected_result', [

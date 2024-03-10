@@ -3,9 +3,9 @@ import json
 import pytest
 from requests.auth import _basic_auth_str
 from TAXII2Server import TAXII2Server, APP, uuid, create_fields_list, MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V20, \
-    create_query, convert_sco_to_indicator_sdo, build_sco_object
+    create_query
 import demistomock as demisto
-
+from TAXII2ApiModule import XSOAR2STIXParser, PAWN_UUID
 HEADERS = {
     'Authorization': _basic_auth_str("username", "password"),
     'Accept': 'application/taxii+json',
@@ -607,9 +607,11 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
     """
     xsoar_indicator = util_load_json('test_data/sco_indicator_file.json').get('objects', {})[0]
     ioc = util_load_json('test_data/objects21_file.json').get('objects', {})[0]
-    mocker.patch('TAXII2Server.create_sdo_stix_uuid', return_value={})
-
-    output = convert_sco_to_indicator_sdo(ioc, xsoar_indicator)
+    mocker.patch('XSOAR2STIXParser.create_sdo_stix_uuid', return_value={})
+    uuid_for_cilent = uuid.uuid5(PAWN_UUID, 'test')
+    cilent = XSOAR2STIXParser(server_version='2.0', fields_to_present=set(),
+                              types_for_indicator_sdo=[], namespace_uuid=uuid_for_cilent)
+    output = cilent.convert_sco_to_indicator_sdo(ioc, xsoar_indicator, uuid_for_cilent)
     assert 'file:hashes.' in output.get('pattern', '')
     assert 'SHA-1' in output.get('pattern', '')
     assert 'pattern_type' in output
@@ -637,7 +639,10 @@ def test_build_sco_object(indicator, sco_indicator):
             Case 2: validate that the resulted object has all key-values data of the registry key
             Case 3: validate that the ASN has a "number" key as well as a "name" key.
     """
-    output = build_sco_object(indicator["stix_type"], indicator["xsoar_indicator"])
+    uuid_for_cilent = uuid.uuid5(PAWN_UUID, 'test')
+    cilent = XSOAR2STIXParser(server_version='2.0', fields_to_present=set(),
+                              types_for_indicator_sdo=[], namespace_uuid=uuid_for_cilent)
+    output = cilent.build_sco_object(indicator["stix_type"], indicator["xsoar_indicator"])
     assert output == sco_indicator
 
 
@@ -694,8 +699,9 @@ def test_reports_objects_with_relationships(mocker, taxii2_server_v21):
             Validate that each report contained its relationship in the object_refs.
 
     """
-    from TAXII2Server import handle_report_relationships
-
+    uuid_for_cilent = uuid.uuid5(PAWN_UUID, 'test')
+    cilent = XSOAR2STIXParser(server_version='2.0', fields_to_present=set(), types_for_indicator_sdo=[],
+                              namespace_uuid=uuid_for_cilent)
     objects = [
         {
             "created": "2023-07-04T14:08:17.389246Z",
@@ -736,7 +742,7 @@ def test_reports_objects_with_relationships(mocker, taxii2_server_v21):
         }
     ]
 
-    handle_report_relationships(relationships, objects)
+    cilent.handle_report_relationships(relationships, objects)
 
     object_refs_with_data = objects[0]['object_refs']
     assert len(object_refs_with_data) == 2
@@ -754,13 +760,14 @@ def test_create_entity_b_stix_objects_with_file_object(mocker, taxii2_server_v21
             Validate that there is not a None ioc key in the ioc_value_to_id dict.
 
     """
-    from TAXII2Server import create_entity_b_stix_objects
-    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
+    uuid_for_cilent = uuid.uuid5(PAWN_UUID, 'test')
+    cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present=set(), types_for_indicator_sdo=[],
+                              namespace_uuid=uuid_for_cilent)
     ioc_value_to_id = {'report': 'report--b1d2c45b-50ea-58b1-b543-aaf94afe07b4'}
     relationships = util_load_json('test_data/relationship_report_file.json')
     iocs = util_load_json('test_data/ioc_for_report_relationship.json')
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
-    create_entity_b_stix_objects(relationships, ioc_value_to_id, [])
+    cilent.create_entity_b_stix_objects(relationships, ioc_value_to_id, [])
 
     assert None not in ioc_value_to_id
 
@@ -775,12 +782,13 @@ def test_create_entity_b_stix_objects_with_revoked_relationship(mocker, taxii2_s
             Validate that the report not contained the revoked relationship in the object_refs.
 
     """
-    from TAXII2Server import create_entity_b_stix_objects
-    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
+    uuid_for_cilent = uuid.uuid5(PAWN_UUID, 'test')
+    cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present=set(), types_for_indicator_sdo=[],
+                              namespace_uuid=uuid_for_cilent)
     ioc_value_to_id = {'report': 'report--b1d2c45b-50ea-58b1-b543-aaf94afe07b4'}
     relationships = util_load_json('test_data/relationship_report_file.json')
     iocs = util_load_json('test_data/ioc_for_report_relationship.json')
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
-    create_entity_b_stix_objects(relationships, ioc_value_to_id, [])
+    cilent.create_entity_b_stix_objects(relationships, ioc_value_to_id, [])
 
     assert '127.0.0.1' not in ioc_value_to_id

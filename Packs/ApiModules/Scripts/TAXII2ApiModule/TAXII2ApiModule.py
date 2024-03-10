@@ -15,7 +15,8 @@ from taxii2client import v20, v21
 from taxii2client.common import TokenAuth, _HTTPConnection
 from taxii2client.exceptions import InvalidJSONError
 import tempfile
-
+import uuid
+from dateutil.parser import parse
 # disable insecure warnings
 urllib3.disable_warnings()
 
@@ -36,7 +37,7 @@ v21_logger.addFilter(SuppressWarningFilter())
 # CONSTANTS
 TAXII_VER_2_0 = "2.0"
 TAXII_VER_2_1 = "2.1"
-
+SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 DFLT_LIMIT_PER_REQUEST = 100
 API_USERNAME = "_api_token_key"
 HEADER_USERNAME = "_header:"
@@ -90,6 +91,32 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "identity": FeedIndicatorType.Identity,
     "location": FeedIndicatorType.Location,
     "vulnerability": FeedIndicatorType.CVE,
+}
+
+STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
+    'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
+    'attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    'report': ThreatIntel.ObjectsNames.REPORT,
+    'malware': ThreatIntel.ObjectsNames.MALWARE,
+    'course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+    'intrusion-set': ThreatIntel.ObjectsNames.INTRUSION_SET,
+    'tool': ThreatIntel.ObjectsNames.TOOL,
+    'threat-actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    'infrastructure': ThreatIntel.ObjectsNames.INFRASTRUCTURE,
+    'vulnerability': FeedIndicatorType.CVE,
+    'ipv4-addr': FeedIndicatorType.IP,
+    'ipv6-addr': FeedIndicatorType.IPv6,
+    'domain-name': (FeedIndicatorType.DomainGlob, FeedIndicatorType.Domain),
+    'user-account': FeedIndicatorType.Account,
+    'email-addr': FeedIndicatorType.Email,
+    'url': FeedIndicatorType.URL,
+    'file': FeedIndicatorType.File,
+    'windows-registry-key': FeedIndicatorType.Registry,
+    'indicator': (FeedIndicatorType.IP, FeedIndicatorType.IPv6, FeedIndicatorType.DomainGlob,
+                  FeedIndicatorType.Domain, FeedIndicatorType.Account, FeedIndicatorType.Email,
+                  FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry),
+    'software': FeedIndicatorType.Software,
+    'asn': FeedIndicatorType.AS,
 }
 
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
@@ -192,11 +219,505 @@ COUNTRY_CODES_TO_NAMES = {'AD': 'Andorra', 'AE': 'United Arab Emirates', 'AF': '
                           'ZA': 'South Africa', 'ZM': 'Zambia', 'ZW': 'Zimbabwe'}
 
 
+PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
+XSOAR_TYPES_TO_STIX_SDO = {
+    ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'attack-pattern',
+    ThreatIntel.ObjectsNames.CAMPAIGN: 'campaign',
+    ThreatIntel.ObjectsNames.COURSE_OF_ACTION: 'course-of-action',
+    ThreatIntel.ObjectsNames.INFRASTRUCTURE: 'infrastructure',
+    ThreatIntel.ObjectsNames.INTRUSION_SET: 'intrusion-set',
+    ThreatIntel.ObjectsNames.REPORT: 'report',
+    ThreatIntel.ObjectsNames.THREAT_ACTOR: 'threat-actor',
+    ThreatIntel.ObjectsNames.TOOL: 'tool',
+    ThreatIntel.ObjectsNames.MALWARE: 'malware',
+    FeedIndicatorType.CVE: 'vulnerability',
+}
+
+XSOAR_TYPES_TO_STIX_SCO = {
+    FeedIndicatorType.CIDR: 'ipv4-addr',
+    FeedIndicatorType.DomainGlob: 'domain-name',
+    FeedIndicatorType.IPv6: 'ipv6-addr',
+    FeedIndicatorType.IPv6CIDR: 'ipv6-addr',
+    FeedIndicatorType.Account: 'user-account',
+    FeedIndicatorType.Domain: 'domain-name',
+    FeedIndicatorType.Email: 'email-addr',
+    FeedIndicatorType.IP: 'ipv4-addr',
+    FeedIndicatorType.Registry: 'windows-registry-key',
+    FeedIndicatorType.File: 'file',
+    FeedIndicatorType.URL: 'url',
+    FeedIndicatorType.Software: 'software',
+    FeedIndicatorType.AS: 'asn',
+}
+
+HASH_TYPE_TO_STIX_HASH_TYPE = {
+    'md5': 'MD5',
+    'sha1': 'SHA-1',
+    'sha256': 'SHA-256',
+    'sha512': 'SHA-512',
+}
+
+STIX_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+
+
 def reached_limit(limit: int, element_count: int):
     return element_count >= limit > -1
 
 
-class StixParser(BaseClient):
+class XSOAR2STIXParser:
+    def __init__(self, server_version, namespace_uuid, fields_to_present,
+                 types_for_indicator_sdo):
+        self.server_version = server_version
+        self.namespace_uuid = namespace_uuid
+        self.fields_to_present = fields_to_present
+        self.has_extension = fields_to_present != {'name', 'type'}
+        self.types_for_indicator_sdo = types_for_indicator_sdo or []
+
+    def create_manifest_entry(self, xsoar_indicator: dict, xsoar_type: str) -> dict:
+        """
+
+        Args:
+            xsoar_indicator: to create manifest entry from
+            xsoar_type: type of indicator in xsoar system
+
+        Returns:
+            manifest entry for given indicator.
+        """
+        if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type):
+            stix_id = self.create_sco_stix_uuid(xsoar_indicator, stix_type)
+        elif stix_type := XSOAR_TYPES_TO_STIX_SDO.get(xsoar_type):
+            stix_id = self.create_sdo_stix_uuid(xsoar_indicator, stix_type, self.namespace_uuid)
+        else:
+            demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
+            return {}
+        entry = {
+            'id': stix_id,
+            'date_added': parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT),  # type: ignore[arg-type]
+        }
+        if self.server_version == TAXII_VER_2_1:
+            entry['version'] = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+        return entry
+
+    def create_stix_object(self, xsoar_indicator: dict, xsoar_type: str, extensions_dict: dict = {}) -> tuple:
+        """
+
+        Args:
+            xsoar_indicator: to create stix object entry from
+            xsoar_type: type of indicator in xsoar system
+            extensions_dict: dict contains all object types that already have their extension defined
+        Returns:
+            Stix object entry for given indicator, and extension. Format described here:
+            (https://docs.google.com/document/d/1wE2JibMyPap9Lm5-ABjAZ02g098KIxlNQ7lMMFkQq44/edit#heading=h.naoy41lsrgt0)
+            extensions_dict: dict contains all object types that already have their extension defined
+        """
+        is_sdo = False
+        if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type):
+            stix_id = self.create_sco_stix_uuid(xsoar_indicator, stix_type)
+            object_type = stix_type
+        elif stix_type := XSOAR_TYPES_TO_STIX_SDO.get(xsoar_type):
+            stix_id = self.create_sdo_stix_uuid(xsoar_indicator, stix_type, self.namespace_uuid)
+            object_type = stix_type
+            is_sdo = True
+        else:
+            demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
+            return {}, {}
+
+        created_parsed = parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+
+        try:
+            modified_parsed = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+        except Exception:
+            modified_parsed = ''
+
+        stix_object: Dict[str, Any] = {
+            'id': stix_id,
+            'type': object_type,
+            'spec_version': self.server_version,
+            'created': created_parsed,
+            'modified': modified_parsed,
+        }
+        if xsoar_type == ThreatIntel.ObjectsNames.REPORT:
+            stix_object['object_refs'] = []
+        if is_sdo:
+            stix_object['name'] = xsoar_indicator.get('value')
+        else:
+            stix_object = self.build_sco_object(stix_object, xsoar_indicator)
+
+        xsoar_indicator_to_return = {}
+
+        # filter only requested fields
+        if self.has_extension and self.fields_to_present:
+            # if Server fields_to_present is None - no filters, return all. If Existing fields - filter
+            for field in self.fields_to_present:
+                value = xsoar_indicator.get(field)
+                if not value:
+                    value = (xsoar_indicator.get('CustomFields') or {}).get(field)
+                xsoar_indicator_to_return[field] = value
+        else:
+            xsoar_indicator_to_return = xsoar_indicator
+        extension_definition = {}
+
+        if self.has_extension and object_type not in self.types_for_indicator_sdo:
+            stix_object, extension_definition, extensions_dict = \
+                self.create_extension_definition(object_type, extensions_dict, xsoar_type,
+                                                 created_parsed, modified_parsed,
+                                                 stix_object, xsoar_indicator_to_return)
+
+        if is_sdo:
+            stix_object['description'] = (xsoar_indicator.get('CustomFields') or {}).get('description', "")
+        return stix_object, extension_definition, extensions_dict
+
+    def handle_report_relationships(self, relationships: list[dict[str, Any]], stix_iocs: list[dict[str, Any]]):
+        """Handle specific behavior of report relationships.
+
+        Args:
+            relationships (list[dict[str, Any]]): the created relationships list.
+            stix_iocs (list[dict[str, Any]]): the ioc objects.
+        """
+        id_to_report_objects = {
+            stix_ioc.get('id'): stix_ioc
+            for stix_ioc in stix_iocs
+            if stix_ioc.get('type') == 'report'}
+
+        for relationship in relationships:
+            if source_report := id_to_report_objects.get(relationship.get('source_ref')):
+                object_refs = source_report.get('object_refs', [])
+                object_refs.extend(
+                    [relationship.get('target_ref'), relationship.get('id')]
+                )
+                source_report['object_refs'] = sorted(object_refs)
+            if target_report := id_to_report_objects.get(relationship.get('target_ref')):
+                object_refs = target_report.get('object_refs', [])
+                object_refs.extend(
+                    [relationship.get('source_ref'), relationship.get('id')]
+                )
+                target_report['object_refs'] = sorted(object_refs)
+
+    @staticmethod
+    def get_stix_object_value(stix_ioc):
+        demisto.debug(f'{stix_ioc=}')
+        if stix_ioc.get('type') == "file":
+            for hash_type in ["SHA-256", "MD5", "SHA-1", "SHA-512"]:
+                if hash_value := stix_ioc.get("hashes").get(hash_type):
+                    return hash_value
+            return None
+
+        else:
+            return stix_ioc.get('value') or stix_ioc.get('name')
+
+    def create_extension_definition(self, object_type, extensions_dict, xsoar_type,
+                                    created_parsed, modified_parsed, stix_object, xsoar_indicator_to_return):
+        """
+        Args:
+            object_type: the type of the stix_object.
+            xsoar_type: type of indicator in xsoar system.
+            extensions_dict: dict contains all object types that already have their extension defined.
+            created_parsed: the stix object creation time.
+            modified_parsed: the stix object last modified time.
+            stix_object: Stix object entry.
+            xsoar_indicator_to_return: the xsoar indicator to return.
+
+        Create an extension definition and update the stix object and extensions dict accordingly.
+
+        Returns:
+            the updated Stix object, its extension and updated extensions_dict.
+        """
+        extension_definition = {}
+        xsoar_indicator_to_return['extension_type'] = 'property_extension'
+        extension_id = f'extension-definition--{uuid.uuid4()}'
+        if object_type not in extensions_dict:
+            extension_definition = {
+                'id': extension_id,
+                'type': 'extension-definition',
+                'spec_version': self.server_version,
+                'name': f'Cortex XSOAR TIM {xsoar_type}',
+                'description': 'This schema adds TIM data to the object',
+                'created': created_parsed,
+                'modified': modified_parsed,
+                'created_by_ref': f'identity--{str(PAWN_UUID)}',
+                'schema':
+                    'https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/'
+                    'Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json',
+                'version': '1.0',
+                'extension_types': ['property-extension']
+            }
+            extensions_dict[object_type] = True
+        stix_object['extensions'] = {
+            extension_id: xsoar_indicator_to_return
+        }
+        return stix_object, extension_definition, extensions_dict
+
+    def convert_sco_to_indicator_sdo(self, stix_object: dict, xsoar_indicator: dict, uuid_value: uuid.UUID) -> dict:
+        """
+        Create a STIX domain object of 'indicator' type from a STIX Cyber Observable Objects.
+
+        Args:
+            stix_object: The STIX Cyber Observable Object
+            xsoar_indicator: The stix object entry from which the 'stix_object' has been created.
+
+        Returns:
+            Stix indicator domain object for given indicator. Format described here:
+            https://docs.oasis-open.org/cti/stix/v2.1/cs01/stix-v2.1-cs01.html#_muftrcpnf89v
+        """
+        try:
+            expiration_parsed = parse(xsoar_indicator.get('expiration')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+        except Exception:
+            expiration_parsed = ''
+
+        indicator_value = xsoar_indicator.get('value')
+        if isinstance(indicator_value, str):
+            indicator_pattern_value: Any = indicator_value.replace("'", "\\'")
+        else:
+            indicator_pattern_value = json.dumps(indicator_value)
+
+        object_type = stix_object['type']
+        stix_type = 'indicator'
+
+        pattern = ''
+        if object_type == 'file':
+            hash_type = HASH_TYPE_TO_STIX_HASH_TYPE.get(get_hash_type(indicator_value), 'Unknown')
+            pattern = f"[file:hashes.'{hash_type}' = '{indicator_pattern_value}']"
+        else:
+            pattern = f"[{object_type}:value = '{indicator_pattern_value}']"
+
+        labels = self.get_labels_for_indicator(xsoar_indicator.get('score'))
+
+        stix_domain_object: Dict[str, Any] = assign_params(
+            type=stix_type,
+            id=self.create_sdo_stix_uuid(xsoar_indicator, stix_type, self.namespace_uuid),
+            pattern=pattern,
+            valid_from=stix_object['created'],
+            valid_until=expiration_parsed,
+            description=(xsoar_indicator.get('CustomFields') or {}).get('description', ''),
+            pattern_type='stix',
+            labels=labels
+        )
+        return dict({k: v for k, v in stix_object.items()
+                    if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
+
+    @staticmethod
+    def create_sdo_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str],
+                             uuid_value: uuid.UUID, value: Optional[str] = None) -> str:
+        """
+        Create uuid for SDO objects.
+        Args:
+            xsoar_indicator: dict - The XSOAR representation of the indicator.
+            stix_type: Optional[str] - The indicator type according to STIX.
+            value: str - The value of the indicator.
+        Returns:
+            The uuid that represents the indicator according to STIX.
+        """
+        if stixid := xsoar_indicator.get('CustomFields', {}).get('stixid'):
+            return stixid
+        value = value if value else xsoar_indicator.get('value')
+        if stix_type == 'attack-pattern':
+            if mitre_id := xsoar_indicator.get('CustomFields', {}).get('mitreid'):
+                unique_id = uuid.uuid5(uuid_value, f'{stix_type}:{mitre_id}')
+            else:
+                unique_id = uuid.uuid5(uuid_value, f'{stix_type}:{value}')
+        else:
+            unique_id = uuid.uuid5(uuid_value, f'{stix_type}:{value}')
+
+        return f'{stix_type}--{unique_id}'
+
+    @staticmethod
+    def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str], value: Optional[str] = None) -> str:
+        """
+        Create uuid for sco objects.
+        """
+        if stixid := (xsoar_indicator.get('CustomFields') or {}).get('stixid'):
+            return stixid
+        if not value:
+            value = xsoar_indicator.get('value')
+        if stix_type == 'user-account':
+            account_type = (xsoar_indicator.get('CustomFields') or {}).get('accounttype')
+            user_id = (xsoar_indicator.get('CustomFields') or {}).get('userid')
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE,
+                                   f'{{"account_login":"{value}","account_type":"{account_type}","user_id":"{user_id}"}}')
+        elif stix_type == 'windows-registry-key':
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"key":"{value}"}}')
+        elif stix_type == 'file':
+            if get_hash_type(value) == 'md5':
+                unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"MD5":"{value}"}}}}')
+            elif get_hash_type(value) == 'sha1':
+                unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-1":"{value}"}}}}')
+            elif get_hash_type(value) == 'sha256':
+                unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-256":"{value}"}}}}')
+            elif get_hash_type(value) == 'sha512':
+                unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-512":"{value}"}}}}')
+            else:
+                unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
+        else:
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
+
+        stix_id = f'{stix_type}--{unique_id}'
+        return stix_id
+
+    def create_entity_b_stix_objects(self, relationships: list[dict[str, Any]], iocs_value_to_id: dict, extensions: list) -> list:
+        """
+        Generates a list of STIX objects for the 'entityB' values in the provided 'relationships' list.
+        :param relationships: A list of dictionaries representing relationships between entities
+        :param iocs_value_to_id: A dictionary mapping IOC values to their corresponding ID values.
+        :param extensions: A list of dictionaries representing extension properties to include in the generated STIX objects.
+        :return: A list of dictionaries representing STIX objects for the 'entityB' values
+        """
+        entity_b_objects: list[dict[str, Any]] = []
+        entity_b_values = ""
+        for relationship in relationships:
+            if relationship:
+                if (relationship.get('CustomFields') or {}).get('revoked', False):
+                    continue
+                if (entity_b_value := relationship.get('entityB')) and entity_b_value not in iocs_value_to_id:
+                    iocs_value_to_id[entity_b_value] = ""
+                    entity_b_values += f'\"{entity_b_value}\" '
+            else:
+                demisto.debug(f'relationship is empty {relationship=}')
+        if not entity_b_values:
+            return entity_b_objects
+
+        try:
+            found_indicators = demisto.searchIndicators(query=f'value:({entity_b_values})').get('iocs') or []
+        except AttributeError:
+            demisto.debug(f'Could not find indicators from using query value:({entity_b_values})')
+            found_indicators = []
+
+        extensions_dict: dict = {}
+        for xsoar_indicator in found_indicators:
+            if xsoar_indicator:
+                xsoar_type = xsoar_indicator.get('indicator_type')
+                stix_ioc, extension_definition, extensions_dict = self.create_stix_object(
+                    xsoar_indicator, xsoar_type, extensions_dict)
+                if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in self.types_for_indicator_sdo:
+                    stix_ioc = self.convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator, self.namespace_uuid)
+                if self.has_extension and stix_ioc:
+                    entity_b_objects.append(stix_ioc)
+                    if extension_definition:
+                        extensions.append(extension_definition)
+                elif stix_ioc:
+                    entity_b_objects.append(stix_ioc)
+            else:
+                demisto.debug(f"{xsoar_indicator=} is emtpy")
+
+                iocs_value_to_id[(self.get_stix_object_value(stix_ioc))] = stix_ioc.get('id') if stix_ioc else None
+        demisto.debug(f"Generated {len(entity_b_objects)} STIX objects for 'entityB' values.")
+        return entity_b_objects
+
+    def create_relationships_objects(self, stix_iocs: list[dict[str, Any]], extensions: list) -> list[dict[str, Any]]:
+        """
+        Create entries for the relationships returned by the searchRelationships command.
+        :param stix_iocs: Entries for the Stix objects associated with given indicators
+        :param extensions: A list of dictionaries representing extension properties to include in the generated STIX objects.
+        :return: A list of dictionaries representing the relationships objects, including entityBs objects
+        """
+        relationships_list: list[dict[str, Any]] = []
+        iocs_value_to_id = {self.get_stix_object_value(stix_ioc): stix_ioc.get('id') for stix_ioc in stix_iocs}
+        search_relationships = demisto.searchRelationships({'entities': list(iocs_value_to_id.keys())}).get('data') or []
+        demisto.debug(f"Found {len(search_relationships)} relationships for {len(iocs_value_to_id)} Stix IOC values.")
+
+        relationships_list.extend(self.create_entity_b_stix_objects(search_relationships, iocs_value_to_id, extensions))
+
+        for relationship in search_relationships:
+
+            if demisto.get(relationship, 'CustomFields.revoked'):
+                continue
+
+            if not iocs_value_to_id.get(relationship.get('entityB')):
+                demisto.debug(f'TAXII: {iocs_value_to_id=} When {relationship.get("entityB")=}')
+                demisto.debug(f"WARNING: Invalid entity B - Relationships will not be created to entity A:"
+                              f" {relationship.get('entityA')} with relationship name {relationship.get('name')}")
+                continue
+            try:
+                created_parsed = parse(relationship.get('createdInSystem')).strftime(STIX_DATE_FORMAT)
+                modified_parsed = parse(relationship.get('modified')).strftime(STIX_DATE_FORMAT)
+            except Exception as e:
+                created_parsed, modified_parsed = '', ''
+                demisto.debug(f"Error parsing dates for relationship {relationship.get('id')}: {e}")
+
+            relationship_unique_id = uuid.uuid5(self.namespace_uuid, f'relationship:{relationship.get("id")}')
+            relationship_stix_id = f'relationship--{relationship_unique_id}'
+
+            relationship_object: dict[str, Any] = {
+                'type': "relationship",
+                'spec_version': self.server_version,
+                'id': relationship_stix_id,
+                'created': created_parsed,
+                'modified': modified_parsed,
+                "relationship_type": relationship.get('name'),
+                'source_ref': iocs_value_to_id.get(relationship.get('entityA')),
+                'target_ref': iocs_value_to_id.get(relationship.get('entityB')),
+            }
+            if description := demisto.get(relationship, 'CustomFields.description'):
+                relationship_object['Description'] = description
+
+            relationships_list.append(relationship_object)
+        self.handle_report_relationships(relationships_list, stix_iocs)
+        return relationships_list
+
+    def build_sco_object(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Builds a correct JSON object for specific SCO types
+
+        Args:
+            stix_object (Dict[str, Any]): A JSON object of a STIX indicator
+            xsoar_indicator (Dict[str, Any]): A JSON object of an XSOAR indicator
+
+        Returns:
+            Dict[str, Any]: A JSON object of a STIX indicator
+        """
+
+        custom_fields = xsoar_indicator.get('CustomFields') or {}
+
+        if stix_object['type'] == 'asn':
+            stix_object['number'] = xsoar_indicator.get('value', '')
+            stix_object['name'] = custom_fields.get('name', '')
+
+        elif stix_object['type'] == 'file':
+            value = xsoar_indicator.get('value')
+            stix_object['hashes'] = {HASH_TYPE_TO_STIX_HASH_TYPE[get_hash_type(value)]: value}
+            for hash_type in ('md5', 'sha1', 'sha256', 'sha512'):
+                try:
+                    stix_object['hashes'][HASH_TYPE_TO_STIX_HASH_TYPE[hash_type]] = custom_fields[hash_type]
+
+                except KeyError:
+                    pass
+
+        elif stix_object['type'] == 'windows-registry-key':
+            stix_object['key'] = xsoar_indicator.get('value')
+            stix_object['values'] = []
+
+            for keyvalue in custom_fields['keyvalue']:
+                if keyvalue:
+                    stix_object['values'].append(keyvalue)
+                    stix_object['values'][-1]['data_type'] = stix_object['values'][-1]['type']
+                    del stix_object['values'][-1]['type']
+                else:
+                    pass
+
+        elif stix_object['type'] in ('mutex', 'software'):
+            stix_object['name'] = xsoar_indicator.get('value')
+
+        else:
+            stix_object['value'] = xsoar_indicator.get('value')
+
+        return stix_object
+
+    @staticmethod
+    def get_labels_for_indicator(score):
+        """Get indicator label based on the DBot score"""
+        if int(score) == 0:
+            return ['']
+        elif int(score) == 1:
+            return ['benign']
+        elif int(score) == 2:
+            return ['anomalous-activity']
+        elif int(score) == 3:
+            return ['malicious-activity']
+        return None
+
+
+''' HELPER FUNCTIONS '''
+
+
+class STIX2XSOARParser(BaseClient):
 
     def __init__(self, id_to_object: dict[str, Any], verify: bool = True,
                  base_url: Optional[str] = None, proxy: bool = False,
@@ -1244,7 +1765,7 @@ class StixParser(BaseClient):
         return indicators
 
 
-class Taxii2FeedClient(StixParser):
+class Taxii2FeedClient(STIX2XSOARParser):
     def __init__(
         self,
         url: str,

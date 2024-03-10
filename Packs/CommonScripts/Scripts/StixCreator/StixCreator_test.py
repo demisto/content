@@ -1,8 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import pytest
-from StixCreator import main, guess_indicator_type, create_sco_stix_uuid, create_sdo_stix_uuid, \
-    add_file_fields_to_indicator, create_stix_sco_indicator
+from StixCreator import main, guess_indicator_type, add_file_fields_to_indicator, create_stix_sco_indicator
+from TAXII2ApiModule import XSOAR2STIXParser, PAWN_UUID
 
 FILE_INDICATOR = \
     {
@@ -174,7 +174,10 @@ def test_create_sco_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_i
      - Case 2: Assert the ID looks like 'file--3e26aab3-dfc3-57c5-8fe2-45cfde8fe7c8'.
      - Case 3: Assert the ID looks like 'ipv4-addr--2f689bf9-0ff2-545f-aa61-e495eb8cecc7'.
     """
-    stix_id = create_sco_stix_uuid(xsoar_indicator, stix_type, value)
+    uuid_for_cilent = PAWN_UUID
+    cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present=set(), types_for_indicator_sdo=[],
+                              namespace_uuid=uuid_for_cilent)
+    stix_id = cilent.create_sco_stix_uuid(xsoar_indicator, stix_type, value)
     assert expected_stix_id == stix_id
 
 
@@ -221,7 +224,10 @@ def test_create_sdo_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_i
      - Case 1: Assert the ID looks like 'attack-pattern--116d410f-50f9-5f0d-b677-2a9b95812a3e'.
      - Case 2: Assert the ID looks like 'malware--bddcf01f-9fd0-5107-a013-4b174285babc'.
     """
-    stix_id = create_sdo_stix_uuid(xsoar_indicator, stix_type, value)
+    uuid_for_cilent = PAWN_UUID
+    cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present=set(), types_for_indicator_sdo=[],
+                              namespace_uuid=uuid_for_cilent)
+    stix_id = cilent.create_sdo_stix_uuid(xsoar_indicator, stix_type, uuid_for_cilent, value)
     assert expected_stix_id == stix_id
 
 
