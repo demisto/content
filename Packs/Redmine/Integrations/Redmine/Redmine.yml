@@ -11,7 +11,6 @@ configuration:
 - section: Connect
   display: Server URL (e.g. https://1.1.1.1)
   name: url
-  defaultvalue: https://1.1.1.1
   type: 0
   required: true
 - display: Trust any certificate (not secure)
@@ -28,6 +27,7 @@ configuration:
 - section: Collect
   display: Project Id
   name: project_id
+  additionalinfo: This project ID will be overridden by command project ID if one is provided within a command.
   type: 0
   required: false
 script: 
@@ -296,9 +296,6 @@ script:
     - name: file_content_type
       description: The content type of the attached file (image/jpg or image/png or text/txt etc...)
       type: textArea
-    outputs:
-      - contextPath: 
-        description: The issue was updated
   - name: redmine-issue-show
     description: Show an issue by id
     arguments:

@@ -6,7 +6,12 @@ from CommonServerUserPython import *
 from typing import Any
 
 ''' CONSTANTS '''
-
+PAGE_SIZE_DEFAULT = '50'
+DEFAULT_LIMIT_NUMBER = 25
+PAGE_NUMBER_DEFAULT = '1'
+DEFAULT_PAGE_NUMBER_INT = 1
+DEFAULT_OFFSET_NUMBER = 0
+    
 USER_STATUS_DICT = {
     'Active': '1',
     'Registered': '2',
@@ -125,34 +130,18 @@ def create_paging_header(page_size: int, page_number: int):
     return '#### Showing' + (f' {page_size}') + ' results' + (f' from page {page_number}') + ':\n'
 
 
-def adjust_paging_to_request(args: dict[str, Any]):
-    page_number = args.pop('page_number', None)
-    page_size = args.pop('page_size', None)
-    limit = args.pop('limit', None)
-    offset_to_dict = None
-    limit_to_dict = None
+def adjust_paging_to_request(page_number, page_size, limit):
     if page_number or page_size:
-        if page_size:
-            page_size = int(page_size)
-        else:
-            page_size = 50
-        if page_number:
-            page_number = int(page_number)
-        else:
-            page_number = 1
-        offset_to_dict = (page_number - 1) * page_size
-        limit_to_dict = page_size
-        page_number_for_header = page_number
-    else:
-        if limit:
-            offset_to_dict = 0
-            limit_to_dict = int(limit) if int(limit) <= 100 else 100
-        else:
-            offset_to_dict = 0
-            limit_to_dict = 25
-        page_number_for_header = 1
-    return offset_to_dict, limit_to_dict, page_number_for_header
-
+        page_size =  arg_to_number(page_size or PAGE_SIZE_DEFAULT)
+        page_number =  arg_to_number(page_number or PAGE_NUMBER_DEFAULT)
+        generated_offset = (page_number - 1) * page_size
+        return generated_offset, page_size, page_number
+    if limit:
+        if arg_to_number(limit) > 100 or arg_to_number(limit) <= 0:
+            raise DemistoException(f"Maximum limit is 100 and Minimum limit is 0, you provided {limit}")
+        limit = arg_to_number(limit) or 100
+        return DEFAULT_OFFSET_NUMBER, limit, DEFAULT_PAGE_NUMBER_INT
+    return DEFAULT_OFFSET_NUMBER, DEFAULT_LIMIT_NUMBER, DEFAULT_PAGE_NUMBER_INT
 
 def map_header(header_string: str) -> str:
     header_mapping = {
@@ -264,7 +253,6 @@ def handle_file_attachment(client: Client, args: Dict[str, Any]):
 
 ''' COMMAND FUNCTIONS '''
 
-
 def test_module(client: Client) -> None:
     message: str = ''
     try:
@@ -277,15 +265,15 @@ def test_module(client: Client) -> None:
             raise e
     return return_results(message)
 
-
 def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
     if not args.get('project_id', None) and not client._project_id:
         raise DemistoException('project_id field is missing in order to create an issue')
-    '''Checks if a file needs to be added'''
+    #Checks if a file needs to be added
     handle_file_attachment(client, args)
     try:
         convert_args_to_request_format(args)
-        response = client.create_issue_request(args, args.pop('project_id', client._project_id))
+        project_id = args.pop('project_id', None) or client._project_id
+        response = client.create_issue_request(args, project_id)
         issue_response = response['issue']
         headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'estimated_hours', 'created_on',
                    'subject', 'description', 'start_date', 'estimated_hours', 'custom_fields']
@@ -321,7 +309,8 @@ def update_issue_command(client: Client, args: dict[str, Any]):
     handle_file_attachment(client, args)
     try:
         convert_args_to_request_format(args)
-        client.update_issue_request(args, args.pop('project_id', client._project_id))
+        project_id = args.pop('project_id', client._project_id)
+        client.update_issue_request(args, project_id)
         command_results = CommandResults(
             readable_output=f'Issue with id {issue_id} was successfully updated.')
         return (command_results)
@@ -350,7 +339,10 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
                 raise DemistoException(f"Invalid custom field format, please follow the command description. Error: {e}.")
         return status_id, tracker_id
     try:
-        offset_to_dict, limit_to_dict, page_number_for_header = adjust_paging_to_request(args)
+        page_number = args.pop('page_number', None)
+        page_size = args.pop('page_size', None)
+        limit = args.pop('limit', None)
+        offset_to_dict, limit_to_dict, page_number_for_header = adjust_paging_to_request(page_number, page_size, limit)
         status_id = args.pop('status_id', 'open')
         tracker_id = args.pop('tracker_id', None)
         custom_field = args.pop('custom_field', None)
@@ -529,7 +521,7 @@ def get_custom_fields_command(client: Client, args):
         headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter',
                    'searchable', 'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities',
                    'issue_custom_fields']
-        '''Some custom fields are numbers and tableToMarkdown can't transform it'''
+        # Some custom fields are numbers and tableToMarkdown can't transform it
         for custom_field in custom_fields_response:
             custom_field['id'] = str(custom_field['id'])
             custom_field['is_required'] = str(custom_field['is_required'])
@@ -555,15 +547,20 @@ def get_custom_fields_command(client: Client, args):
 
 
 def get_users_command(client: Client, args: dict[str, Any]):
-    try:
         status_string = args.get('status')
         if status_string:
             try:
                 args['status'] = USER_STATUS_DICT[status_string]
-            except Exception:
-                raise DemistoException("Invalid status value- please use the predefined options only")
-        response = client.get_users_request(args)
-        users_response = response['users']
+            except:
+                raise DemistoException("Invalid status value- please use the predefined options only.")
+        try:
+            response = client.get_users_request(args)
+        except Exception as e:
+            raise DemistoException(f"Error in request to API. Error: {e}.")
+        try:
+            users_response = response['users']
+        except:
+            raise DemistoException("Request Succeeded, Response not in correct format.")
         headers = ['id', 'login', 'admin', 'firstname', 'lastname', 'mail', 'created_on', 'last_login_on']
         '''Some issue fields are numbers and tableToMarkdown can't transform it'''
         for user in users_response:
@@ -577,12 +574,6 @@ def get_users_command(client: Client, args: dict[str, Any]):
                                                                          removeNull=True, headerTransform=map_header,
                                                                          is_auto_json_transform=True))
         return command_results
-    except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
-            raise DemistoException("Invalid ID for one or more fields that request IDs "
-                                   "Please make sure all IDs are correct")
-        else:
-            raise DemistoException(e.args[0])
 
 
 def main() -> None:

@@ -489,7 +489,7 @@ def test_create_paging_header(page_size, page_number, expected_output):
 
 
 @pytest.mark.parametrize('args, expected_output',
-                         [({'page_number': '2', 'page_size': '20'}, '20, 20, 2')])
+                         [({'page_number': '2', 'page_size': '20'}, (20, 20, 2))])
 def test_adjust_paging_to_request(args, expected_output):
     """
     Given:
@@ -499,9 +499,8 @@ def test_adjust_paging_to_request(args, expected_output):
     Then:
         - The http request is called with the right arguments
     """
-    expected_output = expected_output.split(', ')
     from Redmine import adjust_paging_to_request
-    assert adjust_paging_to_request(args) == (int(expected_output[0]), int(expected_output[1]), int(expected_output[2]))
+    assert adjust_paging_to_request(args['page_number'], args['page_size'], None) == expected_output
 
 
 @pytest.mark.parametrize('header_name, expected_output',
