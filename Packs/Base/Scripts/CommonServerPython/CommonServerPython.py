@@ -1573,7 +1573,21 @@ def stringUnEscape(st):
     """
     return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
 
+class RedactingFormatter(object):
+    def __init__(self, orig_formatter, patterns):
+        self.orig_formatter = orig_formatter
+        self._patterns = patterns
 
+    def format(self, record):
+        msg = self.orig_formatter.format(record)
+        for pattern in self._patterns:
+            msg = msg.replace(pattern, "jjjj***")
+        return msg
+
+    def __getattr__(self, attr):
+        return getattr(self.orig_formatter, attr)
+
+    
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -1595,6 +1609,8 @@ class IntegrationLogger(object):
         self.curl = []  # type: list
         self.buffering = True
         self.debug_logging = debug_logging
+
+
         # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
@@ -1752,12 +1768,10 @@ class IntegrationLogger(object):
                 self.messages.append(text)
             else:
                 if is_debug_mode():
-                    #try ??
-                    if text.startswith('send:' or 'header'):
-                        text = censor_request_logs(text)
+                    # if text.startswith(('send:', 'header:')):
+                    #     text = censor_request_logs(text)
                     if text.startswith('send:'):
                         try:
-                            
                             self.build_curl(text)
                         except Exception as e:  # should fail silently
                             demisto.debug('Failed generating curl - {}'.format(str(e)))
