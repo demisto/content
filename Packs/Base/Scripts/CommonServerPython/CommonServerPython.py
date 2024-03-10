@@ -8411,6 +8411,8 @@ def censor_request_logs(request_log: str) -> str:
                     request_log_lst[i + 2] = MASK
                 else:
                     request_log_lst[i + 1] = MASK
+
+    # Rebuild the request log so that the only change is the masked information.
     censored_string = SEND_PREFIX + \
         ' '.join(request_log_lst) if request_log.startswith(SEND_PREFIX) else ' '.join(request_log_lst)
     censored_string = censored_string.replace(" \\r\\n", "\\r\\n")
