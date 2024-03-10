@@ -1763,7 +1763,7 @@ class IntegrationLogger(object):
                             self.build_curl(text)
                         except Exception as e:  # should fail silently
                             demisto.debug('Failed generating curl - {}'.format(str(e)))
-                    demisto.info(text)
+                demisto.info(text)
             self.write_buf = []
 
     def print_override(self, *args, **kwargs):
