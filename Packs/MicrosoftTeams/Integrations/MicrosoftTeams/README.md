@@ -1082,8 +1082,8 @@ There is no context output for this command.
 Run this command if for some reason you need to rerun the graph authentication process.
 Notes:
 - Use this command to switch between authentication flows and ensure the integration uses the appropriate token.
-- After making any changes to permissions in the Azure Portal, it is necessary to reset the authentication to ensure that the token reflects the updated permissions.
-- When using the `Authorization Code Flow`, after executing the command, you will need to regenerate the **Authorization code** parameter. Then, run *!microsoft-teams-auth-test* to verify the authentication.
+- After making changes to permissions in the Azure Portal, reset the authentication to ensure that the token reflects the updated permissions.
+- When using the `Authorization Code Flow`, after executing the command, regenerate the **Authorization code** parameter, and then run the *!microsoft-teams-auth-test* command to verify the authentication.
 
 #### Base Command
 
