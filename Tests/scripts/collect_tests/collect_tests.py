@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 from collections.abc import Iterable, Sequence
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
@@ -810,8 +810,45 @@ class BranchTestCollector(TestCollector):
 
         return CollectionResult.union([
             self.__collect_from_changed_files(collect_from.changed_files),
-            self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from)
+            self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
+            self.__collect_packs_diff_master_bucket()
         ])
+
+    def __collect_packs_diff_master_bucket(self) -> Optional[CollectionResult]:
+        repo = PATHS.content_repo
+        collected_packs: list[Optional[CollectionResult]] = []
+
+        logger.info('bucket upload: getting last commit from index')
+        previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
+        current_commit = 'origin/master'
+
+        # diff between master and the last upload
+        diff = repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
+        logger.debug(f'raw changed files string:\n{diff}')
+
+        # extract file path from lines
+        for line in diff.splitlines():
+
+            match len(parts := line.split('\t')):
+                case 2:
+                    git_status, file_path = parts
+                case 3:
+                    git_status, old_file_path, file_path = parts  # R <old location> <new location>
+
+                case _:
+                    raise ValueError(f'unexpected line format '
+                                     f'(expected `<modifier>\t<file>` or `<modifier>\t<old_location>\t<new_location>`'
+                                     f', got {line}')
+
+
+            path = PATHS.content_path / file_path
+            collected_packs.append(self._collect_pack(
+                pack_id=find_pack_folder(path).name,
+                reason=CollectionReason.PACK_CHOSEN_TO_UPLOAD,
+                reason_description=file_path,
+            ))
+
+        return CollectionResult.union(collected_packs)
 
     def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult | None:
         """NOTE: this should only be used from _collect"""
