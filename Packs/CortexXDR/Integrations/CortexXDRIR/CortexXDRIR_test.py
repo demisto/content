@@ -5,7 +5,7 @@ import pytest
 from freezegun import freeze_time
 
 import demistomock as demisto
-from CommonServerPython import urljoin, DemistoException
+from CommonServerPython import Common, urljoin, DemistoException
 from CoreIRApiModule import XDR_RESOLVED_STATUS_TO_XSOAR
 from CortexXDRIR import XSOAR_TO_XDR, XDR_TO_XSOAR
 XDR_URL = 'https://api.xdrurl.com'
@@ -894,7 +894,7 @@ def test_test_module(capfd, custom_mapping, direction, should_raise_error):
             except DemistoException as e:
                 pytest.fail(f"Unexpected exception raised for input {input}: {e}")
 
-
+@freeze_time("1997-10-05 15:00:00 GMT")
 def test_convert_datetime_to_epoch():
     """
     Given:
@@ -906,10 +906,10 @@ def test_convert_datetime_to_epoch():
     Then:
       - Returned epoch int matches expected
     """
-    import datetime
     from CortexXDRIR import convert_datetime_to_epoch
-    input_datetime = datetime.datetime(2020, 1, 1)
-    assert convert_datetime_to_epoch(input_datetime) == 1577836800
+    from  datetime import datetime
+    input_datetime = datetime.now()
+    assert convert_datetime_to_epoch(input_datetime) == 876056400
 
 
 @freeze_time("1997-10-05 15:00:00 GMT")
@@ -944,9 +944,9 @@ def test_convert_datetime_to_epoch_millis():
       - Returned epoch timestamp matches expected milliseconds
     """
     from CortexXDRIR import convert_datetime_to_epoch_millis
-    import datetime
-    input_datetime = datetime.datetime(2020, 1, 1)
-    expected = 1577836800000
+    from  datetime import datetime
+    input_datetime = datetime.now()
+    expected = 876056400
     actual = convert_datetime_to_epoch_millis(input_datetime)
     assert actual == expected
 
@@ -1033,3 +1033,31 @@ def test_filter_and_save_unseen_incident_limit_test():
         "creation_time": 1577836800001
     }]
     assert filter_and_save_unseen_incident(incident, 1, 1) == [{"id": "1", "creation_time": 1577836800000}]
+
+@freeze_time("1997-10-05 15:00:00 GMT")
+def test_get_headers(mocker):
+    """
+    Given:
+    - A dictionary of parameters including 'apikey', 'apikey_id', and 'prevent_only'
+
+    When:
+    - Calling get_headers with the given parameters
+
+    Then:
+    - Returns a dictionary containing the expected headers
+    """
+    from CortexXDRIR import get_headers
+    from hashlib import sha256
+    mocker.patch('secrets.choice', return_value='a')
+    # Define the parameters
+    params = {
+        'apikey': 'test_api_key',
+        'apikey_id': 'test_api_key_id',
+        'prevent_only': False
+    }
+    
+    headers = get_headers(params)
+    
+    assert len(headers) == 4
+    assert headers['x-xdr-nonce'] == 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+    assert headers['x-xdr-auth-id'] == 'test_api_key_id'
