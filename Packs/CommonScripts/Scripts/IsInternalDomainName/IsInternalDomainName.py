@@ -7,6 +7,15 @@ MAXIMUM_NUMBER_OF_RECORDS = 10
 
 
 def extract_main_domain(main_domain: str, sub_domain: str) -> bool:
+    """Check if the subdomain is contained within the main domain.
+
+    Args:
+        main_domain (str): The main domain.
+        sub_domain (str): The sub domain.
+
+    Returns:
+        bool: True if the main_domain contains the sub_domain, False otherwise
+    """
     main_domain_parts = list(reversed(main_domain.split(".")))
     sub_domain_pats = list(reversed(sub_domain.split(".")))
 

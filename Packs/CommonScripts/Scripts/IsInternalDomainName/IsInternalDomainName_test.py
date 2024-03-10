@@ -52,4 +52,14 @@ def test_check_in_domain(domain_name, domain_to_check, expected_output):
                           ("cd.com", "ab-cd.com", False),
                           ("cig.eu", "abcdcig.eu", False)])
 def test_extract_main_domain(main_domain, sub_domain, expected_output):
+    """
+    Given:
+        - A main domain and a sub domain
+
+    When:
+        - Checking if the main_domain contains the sub_domain
+
+    Then:
+        - Return True if the main_domain contains the sub_domain, False otherwise
+    """
     assert extract_main_domain(main_domain, sub_domain) == expected_output
