@@ -28,10 +28,10 @@ alter
      xdm.target.file.path = malware_location,
      xdm.alert.original_threat_name = malware_name,
      xdm.source.interface = if(origin_type != null and origin_val != null, concat(origin_type,": ",origin_val), origin_type != null, origin_type),
-     xdm.source.port = to_integer(port),
+     xdm.source.port = port,
      xdm.alert.name = report_type,
      xdm.alert.risks = arr_risks,
-     xdm.alert.severity = rtrim(to_string(severity),".0"),
+     xdm.alert.severity = to_string(severity),
      xdm.event.operation_sub_type = if(source != "None" and source !="",source),
      xdm.network.http.domain = threat, //The potentially malicious domain in question.
      xdm.target.location.city = if(city != "",city),
