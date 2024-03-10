@@ -36,20 +36,22 @@ This script uses the following commands and scripts.
 ## Inputs
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| blocks_url | The URL copied from Slack's Block Builder. |
-| list_name | The name of the Cortex XSOAR list to use as the block's input. |
-| user | The Slack user to which to send the message. Can be either an email address or a Slack user name. |
-| channel | The Slack channel to send the message to. |
-| channel_id | The Slack channel ID to send the message to. |
-| task | The task to close with the reply. If empty, then no playbook tasks will be closed. |
-| replyEntriesTag | Tag to add to email reply entries. |
-| persistent | Indicates whether to use one-time entitlement or persistent entitlement. |
+| **Argument Name** | **Description**                                                                                                                                                               |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| blocks_url | The URL copied from Slack's Block Builder.                                                                                                                                    |
+| list_name | The name of the Cortex XSOAR list to use as the block's input.                                                                                                                |
+| user | The Slack user to which to send the message. Can be either an email address or a Slack user name.                                                                             |
+| channel | The Slack channel to send the message to.                                                                                                                                     |
+| channel_id | The Slack channel ID to send the message to.                                                                                                                                  |
+| task | The task to close with the reply. If empty, then no playbook tasks will be closed.                                                                                            |
+| replyEntriesTag | Tag to add to email reply entries.                                                                                                                                            |
+| persistent | Indicates whether to use one-time entitlement or persistent entitlement.                                                                                                      |
 | reply | The reply to send to the user. Use the templates \{user\} and \{response\} to incorporate these in the reply. \(i.e., "Thank you \{user\}. You have answered \{response\}."\) |
-| lifetime | Time until the question expires. For example - 1 day. When it expires, a default response is sent. |
-| defaultResponse | Default response in case the question expires. |
-| slackInstance | The instance of SlackV3 this script should use. |
+| lifetime | Time until the question expires. For example - 1 day. When it expires, a default response is sent.                                                                            |
+| defaultResponse | Default response in case the question expires.                                                                                                                                |
+| slackInstance | The instance of SlackV3 this script should use.                                                                                                                               |
+| thread_id | The ID of the thread to which to reply. Can be retrieved from a previous send-notification command.                                                                           |
+
 
 ## Outputs
 ---
