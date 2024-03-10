@@ -1,6 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 import boto3
 from botocore.config import Config
 from botocore.parsers import ResponseParserError
@@ -104,8 +105,8 @@ def aws_session(service='cloudtrail', region=None, roleArn=None, roleSessionName
 
 def handle_returning_date_to_string(date_obj: datetime | str) -> str:
     """Gets date object to string"""
-    # if the returning date is a string leave it as is.
-    if isinstance(date_obj, str):
+    # if the returning date is a string or None, leave it as is.
+    if date_obj is None or isinstance(date_obj, str):
         return date_obj
 
     # if event time is datetime object - convert it to string.
@@ -235,6 +236,40 @@ def describe_trails(args: dict) -> CommandResults:
         outputs_key_field="Name",
         outputs=raw,
         readable_output=tableToMarkdown('AWS CloudTrail Trails', data),
+    )
+
+
+def get_trail_status(args: dict) -> CommandResults:
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+
+    kwargs = {'Name': args.get('name')}
+
+    response = client.get_trail_status(**kwargs)
+
+    data = {
+        'IsLogging': response.get('IsLogging'),
+        'LatestDeliveryTime': handle_returning_date_to_string(response.get('LatestDeliveryTime')),
+        'LatestCloudWatchLogsDeliveryError': response.get('LatestCloudWatchLogsDeliveryError'),
+        'LatestDeliveryErrorDetails': response.get('LatestDeliveryErrorDetails'),
+        'LatestNotificationError': response.get('LatestNotificationError'),
+        'LatestNotificationTime': handle_returning_date_to_string(response.get('LatestNotificationTime')),
+        'StartLoggingTime': handle_returning_date_to_string(response.get('StartLoggingTime')),
+        'StopLoggingTime': handle_returning_date_to_string(response.get('StopLoggingTime')),
+        'LatestCloudWatchLogsDeliveryTime': handle_returning_date_to_string(response.get('LatestCloudWatchLogsDeliveryTime')),
+        'LatestDigestDeliveryTime': handle_returning_date_to_string(response.get('LatestDigestDeliveryTime')),
+        'LatestDigestDeliveryError': response.get('LatestDigestDeliveryError')
+    }
+
+    return CommandResults(
+        outputs_prefix="AWS.CloudTrail.TrailStatus",
+        outputs_key_field="Name",
+        outputs=data,
+        readable_output=tableToMarkdown('AWS CloudTrail TrailStatus', data),
     )
 
 
@@ -409,6 +444,8 @@ def main():
             return_results(stop_logging(args))
         if command == 'aws-cloudtrail-lookup-events':
             return_results(lookup_events(args))
+        if command == 'aws-cloudtrail-get-trail-status':
+            return_results(get_trail_status(args))
 
     except Exception as e:
         err = "Error has occurred in the AWS CloudTrail Integration."
