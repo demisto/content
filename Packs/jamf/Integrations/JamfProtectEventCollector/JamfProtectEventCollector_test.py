@@ -1,7 +1,6 @@
 import datetime
 
 from freezegun import freeze_time
-import demistomock as demisto
 import json
 import pytest
 
@@ -14,7 +13,6 @@ MOCK_TIME_UTC_NOW = "2024-01-01T00:00:00Z"
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
-
 
 
 @pytest.fixture(autouse=True)
@@ -121,7 +119,7 @@ def test_calculate_fetch_dates_without_arguments(client):
 
 
 @pytest.mark.parametrize("with_alert_next_page, with_audit_next_page",
-                        [(False, False), (True, False), (False, True), (True, True)],
+                         [(False, False), (True, False), (False, True), (True, True)],
                          ids=["Case 1: No next pages for alerts and audits",
                               "Case 2: Next page for alerts, no next page for audits",
                               "Case 3: No next page for alerts, next page for audits",
@@ -144,7 +142,7 @@ def test_nextTrigger(with_alert_next_page, with_audit_next_page, mocker):
                         side_effect=[mocked_alerts, mocked_audits])
     mocker.patch.object(Client, '_login', return_value="ExampleToken")
     client = Client(base_url=MOCK_BASEURL, verify=False, proxy=False, client_id=MOCK_CLIENT_ID,
-           client_password=MOCK_CLIENT_PASSWORD)
+                    client_password=MOCK_CLIENT_PASSWORD)
 
     _, _, next_run = fetch_events(client, 1, 1)
     if with_alert_next_page:
