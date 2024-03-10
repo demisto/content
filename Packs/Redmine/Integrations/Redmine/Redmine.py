@@ -95,7 +95,7 @@ class Client(BaseClient):
 
     def get_issue_by_id_request(self, issue_id, included_fields):
         response = self._http_request('GET', f'/issues/{issue_id}.json', params={"include": included_fields},
-                                      headers=self._post_put_header)
+                                      headers=self._get_header)
         return response
 
     def add_issue_watcher_request(self, issue_id, watcher_id):
@@ -126,7 +126,16 @@ class Client(BaseClient):
 
 
 def check_include_validity(include_arg, include_options):
-    included_values = include_arg.split(',')
+    """Checks if all include string is valid- all arguments are from predefined options
+
+    Args:
+        include_arg (str): The string argument.
+        include_options (str): The include options for the request.
+
+    Raises:
+        Raises a demisto error if one or more from the include are not given in the predefined options.
+    """
+    included_values = argToList(include_arg)
     invalid_values = [value for value in included_values if value not in include_options]
     if invalid_values:
         raise DemistoException(f"The 'include' argument should only contain values from {include_options}, separated by commas. "
@@ -246,7 +255,7 @@ def handle_file_attachment(client: Client, args: Dict[str, Any]):
             content_type = args.pop('file_content_type', '')
             args_for_file = assign_params(file_name=file_name, content_type=content_type)
             token_response = client.create_file_token_request(args_for_file, entry_id)
-            if 'upload' not in token_response and 'token' not in token_response['upload']:
+            if 'upload' not in token_response or 'token' not in token_response['upload']:
                 raise DemistoException(f"Could not upload file with entry id {entry_id}")
             uploads = assign_params(token=token_response['upload'].get('token', ''),
                                     content_type=content_type,
@@ -280,7 +289,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
     # Checks if a file needs to be added
     handle_file_attachment(client, args)
     convert_args_to_request_format(args)
-    project_id = args.pop('project_id', None) or client._project_id
+    project_id = args.pop('project_id', client._project_id)
     try:
         response = client.create_issue_request(args, project_id)
     except DemistoException as e:

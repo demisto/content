@@ -16,6 +16,4 @@
 1. Your API key determines your role in Redmine. 
 2. If you have insufficient permissions when using commands such as "update" or "create," certain fields may remain unchanged due to insufficient privileges. In such cases, while the command itself will not fail, those particular fields will not be updated.
 3. If you would like to display data related only to a project with id x- Fill it in the Redmine integration authentication window.
-
-### Your API key carries all your privileges, so keep it secure and don’t share it with anyone.
          
