@@ -11,12 +11,10 @@ try:
         def __init__(self, context):
             super().__init__(context)
 
-
     class DemistoWrapperScript(DemistoWrapper):
         def getFilePath(self, id):
             self.debug("Wrapper Class: Getting file path with id: {id}.".format(id=id))
             return super().getFilePath(id)
-
 
     class DemistoWrapperIntegration(DemistoWrapper):
         def incidents(self, incidents):
