@@ -5,6 +5,8 @@ from ZeroFox import (
     # Constants
     DATE_FORMAT,
 
+    demisto,
+
     # Client
     ZFClient,
 
@@ -26,6 +28,8 @@ from ZeroFox import (
     get_policy_types_command,
     modify_alert_notes_command,
     submit_threat_command,
+    send_alert_attachment_command,
+    get_alert_attachments_command,
     compromised_domain_command,
     compromised_email_command,
     malicious_ip_command,
@@ -1296,3 +1300,82 @@ def test_search_exploits_command(requests_mock, mocker):
     assert since_called_arg == since
     assert len(results.outputs) == 10
     assert results.outputs_prefix == "ZeroFox.Exploits"
+
+
+def test_send_alert_attachment_command(requests_mock, mocker):
+    """
+    Given
+        There is an alert id
+        And an attachment
+    When
+        Calling send_alert_attachment_command
+    Then
+        It should call the send alert attachment with the alert id
+        And the attachment
+        And return the alert as output
+        And with the correct output prefix
+    """
+    alert_id = "123"
+    entry_id = "ab@123"
+    attachment_type = "evidence"
+    alert_response = load_json("test_data/alerts/opened_alert.json")
+    requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
+    requests_mock.post(f"/1.0/alerts/{alert_id}/attachments/", json={})
+    requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
+    client = build_zf_client()
+    spy_send_attachment = mocker.spy(client, "send_alert_attachment")
+    mocker.patch('builtins.open', mocker.mock_open(read_data=b"data"))
+    mocker.patch.object(
+        demisto, 'getFilePath', return_value={
+            'id': entry_id,
+            'name': entry_id,
+            'path': './test_data/attachments/attachment.txt',
+        },
+    )
+    spy_fetch = mocker.spy(client, "get_alert")
+    args = {
+        "alert_id": alert_id,
+        "entry_id": entry_id,
+        "attachment_type": attachment_type,
+    }
+
+    results = send_alert_attachment_command(client, args)
+
+    spy_send_attachment.assert_called_once()
+    alert_id_called, file_name, _, attachment_type_called = spy_send_attachment.call_args[0]
+    assert alert_id == alert_id_called
+    assert file_name == entry_id
+    assert attachment_type == attachment_type_called
+    spy_fetch.assert_called_once()
+    alert_id_called_in_fetch, = spy_fetch.call_args[0]
+    assert alert_id == alert_id_called_in_fetch
+    assert isinstance(results.outputs, dict)
+    assert results.outputs_prefix == "ZeroFox.Alert"
+
+
+def test_get_alert_attachments_command(requests_mock, mocker):
+    """
+    Given
+        There is an alert id
+    When
+        Calling get_alert_attachments_command
+    Then
+        It should call the get alert attachments with the alert id
+        And return the alert as output
+        And with the correct output prefix
+    """
+    alert_id = "123"
+    attachments_response = load_json("test_data/alerts/attachments.json")
+    requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
+    requests_mock.get(f"/1.0/alerts/{alert_id}/attachments/", json=attachments_response)
+    client = build_zf_client()
+    spy_get_attachments = mocker.spy(client, "get_alert_attachments")
+    args = {"alert_id": alert_id}
+
+    results = get_alert_attachments_command(client, args)
+
+    spy_get_attachments.assert_called_once()
+    alert_id_called, = spy_get_attachments.call_args[0]
+    assert alert_id == alert_id_called
+    assert isinstance(results.outputs, list)
+    assert results.outputs_prefix == "ZeroFox.AlertAttachments"

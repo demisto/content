@@ -279,7 +279,7 @@ script:
     - name: vm_id
       description: vm cloud provider id.
       required: true
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.13.88772
   isfetch: true
   runonce: false
   script: '-'

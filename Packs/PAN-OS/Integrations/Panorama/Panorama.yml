@@ -5148,6 +5148,8 @@ script:
       - bottom
     - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument.
       name: dst
+    - description: An audit comment for the rule.
+      name: audit_comment
     description: Creates a policy rule.
     execution: true
     name: pan-os-create-rule
@@ -8674,6 +8676,8 @@ script:
       predefined:
       - forward
       - reverse
+    - description: An audit comment for the rule.
+      name: audit_comment
     description: Creates a new NAT rule in a Panorama/firewall instance.
     name: pan-os-create-nat-rule
   - arguments:
@@ -8735,6 +8739,7 @@ script:
       - destination_translation_dynamic_ip
       - destination_translation_dynamic_distribution_method
       - disabled
+      - audit-comment
     - description: The value of the element to change. Can be a list for certain elements.
       isArray: true
       name: element_value
@@ -9113,6 +9118,8 @@ script:
     - description: The nexthop addresses list for the symmetric return.
       isArray: true
       name: nexthop_address_list
+    - description: An audit comment for the rule.
+      name: audit_comment
     description: Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance.
     name: pan-os-create-pbf-rule
   - arguments:
@@ -9148,6 +9155,7 @@ script:
       - action_forward_discard
       - action_forward_no_pbf
       - disabled
+      - audit-comment
     - description: The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically.
       isArray: true
       name: element_value
@@ -9364,7 +9372,39 @@ script:
       description: The job ID to use when polling.
     description: Exports a tech support file (TSF).
     polling: true
-  dockerimage: demisto/pan-os-python:1.0.0.87401
+  - arguments:
+    - description: The rule name to apply.
+      name: rule_name
+      required: true
+    - auto: PREDEFINED
+      description: The rule type. 
+      name: rule_type
+      required: true
+      predefined:
+      - Security Rule
+      - NAT Rule
+      - PBF Rule
+    - auto: PREDEFINED
+      description: The pre-rule or post-rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - Pre
+      - Post
+    - description: The device group that the rule is part of.
+      name: device-group
+    description: Gets the audit comment of a rule.
+    name: pan-os-get-audit-comment
+    outputs:
+    - contextPath: Panorama.AuditComment.comment
+      description: The audit comment ot the rule.
+      type: String
+    - contextPath: Panorama.AuditComment.rule_name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.AuditComment.rule_type
+      description: The rule type.
+      type: String
+  dockerimage: demisto/pan-os-python:1.0.0.88899
   isfetch: true
   runonce: false
   script: ''
