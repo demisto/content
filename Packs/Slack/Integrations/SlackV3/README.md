@@ -15,30 +15,31 @@ to learn about configuring SlackV3 using the app manifest.
 2. Search for SlackV3.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    |---|---|---|
-    | `bot_token` | Slack API bot token. | False |
-    | `user_token` | Slack API user token. | False |
-    | `app_token` | Slack API app token. | False |
-    | `incidentNotificationChannel` | Dedicated Slack channel to receive notifications. | False |
-    | `min_severity` | Minimum incident severity by which to send messages to Slack. | False |
-    | `incidentType` | Type of incidents created in Slack. | False |
-    | `allow_incidents` | Allow external users to create incidents via direct messages. | False |
-    | `proxy` | Use system proxy settings. | False |
-    | `unsecure` | Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context. | False |
-    | `longRunning` | Long running instance. Required for investigation mirroring and direct messages. | False |
-    | `bot_name` | Bot display name in Slack (Cortex XSOAR by default). | False |
-    | `bot_icon` | Bot icon in Slack - Image URL (Cortex XSOAR icon by default). | False |
-    | `max_limit_time` | Maximum time to wait for a rate limiting call in seconds. | False |
-    | `paginated_count` | Number of objects to return in each paginated call. | False |
-    | `proxy_url` | Proxy URL to use in Slack API calls. | False |
-    | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from Cortex XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
-    | `permitted_notifications` | Types of notifications to send (to individual users and to the dedicated Slack channel, if specified). | False |
-    | `common_channels` | For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID. | False |
+    | **Parameter** | **Description**                                                                                                                                                                                                                                                                       | **Required** |
+    |---|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|
+    | `bot_token` | Slack API bot token.                                                                                                                                                                                                                                                                  | False |
+    | `user_token` | Slack API user token.                                                                                                                                                                                                                                                                 | False |
+    | `app_token` | Slack API app token.                                                                                                                                                                                                                                                                  | False |
+    | `incidentNotificationChannel` | Dedicated Slack channel to receive notifications.                                                                                                                                                                                                                                     | False |
+    | `min_severity` | Minimum incident severity by which to send messages to Slack.                                                                                                                                                                                                                         | False |
+    | `incidentType` | Type of incidents created in Slack.                                                                                                                                                                                                                                                   | False |
+    | `allow_incidents` | Allow external users to create incidents via direct messages.                                                                                                                                                                                                                         | False |
+    | `proxy` | Use system proxy settings.                                                                                                                                                                                                                                                            | False |
+    | `unsecure` | Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context.                                                                                                                        | False |
+    | `longRunning` | Long running instance. Required for investigation mirroring and direct messages.                                                                                                                                                                                                      | False |
+    | `bot_name` | Bot display name in Slack (Cortex XSOAR by default).                                                                                                                                                                                                                                  | False |
+    | `bot_icon` | Bot icon in Slack - Image URL (Cortex XSOAR icon by default).                                                                                                                                                                                                                         | False |
+    | `max_limit_time` | Maximum time to wait for a rate limiting call in seconds.                                                                                                                                                                                                                             | False |
+    | `paginated_count` | Number of objects to return in each paginated call.                                                                                                                                                                                                                                   | False |
+    | `proxy_url` | Proxy URL to use in Slack API calls.                                                                                                                                                                                                                                                  | False |
+    | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from Cortex XSOAR. Only supported in Cortex XSOAR V6.1 and above.                                                                                                                                                   | False |
+    | `permitted_notifications` | Types of notifications to send (to individual users and to the dedicated Slack channel, if specified).                                                                                                                                                                                | False |
+    | `common_channels` | For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID.                                                                                                                                                | False |
     | `disable_caching` | When configured, Disable Caching will prevent the integration from paginating to search for Users or Conversations. Additionally, it will prevent excess data from being stored to the integration context. If this parameter is disabled, the instance may create high memory usage. | False |
-    | `mirroring` | Enable Incident Mirroring. | False |
-    | `ignore_event_retries` | In some cases, events may not be processed fast enough. If you wish to attempt to retry the event, select `false`. Note that this can result in some responses being double-posted. Default is `True`. | False |
-    | `extensive_logging` | Extensive Logging. This parameter will write additional data to the logs and should only be used when you are directed to by XSOAR support. | False |
+    | `mirroring` | Enable Incident Mirroring.                                                                                                                                                                                                                                                            | False |
+    | `enable_outbound_file_mirroring` | Enable Outbound File Mirroring. Whether to enable mirroring from xsoar to slack, mark it file mirroring is required in investigations.                                                                                                                                                | False |
+    | `ignore_event_retries` | In some cases, events may not be processed fast enough. If you wish to attempt to retry the event, select `false`. Note that this can result in some responses being double-posted. Default is `True`.                                                                                | False |
+    | `extensive_logging` | Extensive Logging. This parameter will write additional data to the logs and should only be used when you are directed to by XSOAR support.                                                                                                                                           | False |
 
 5. Click **Test** to validate the URLs, token, and connection.
 
@@ -607,24 +608,24 @@ There is no context output for this command.
 
 > The message was successfully pinned.
 
-### Known Limitations
 
-- All commands which use `channel` as a parameter, it is now advised to use `channel-id` using the channel ID found in
-  the incident's context under the `Slack.Channels.ID` value. Using `channel-id` as opposed to `channel` will improve
-  the performance of the integration.
-- SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
-  Because of this, you may have some users in Slack who are not users in Cortex XSOAR. This will occasionally cause the
-  module
-  health to indicate that an error has occurred because a user was unable to be found. In this circumstance, the error
-  is expected and is purely cosmetic in nature.
-- In some cases when mirroring an investigation, kicking the admin will cause no further actions to be able to be
-  performed by the bot. Any subsequent actions taken on the channel (such as mirror out) will result in a "not in
-  channel" error.
-- Note: If a dedicated channel is configured, however there are no notifications being sent, verify that the *Types of
-  Notifications* to send parameter is populated.
-- ***mirror-investigation*** will only mirror chat messages between XSOAR and Slack. Images, threads, and files are not
-  supported at this tme.
+### slack-get-integration-context
 
+***
+Returns the integration context as a file. Use this command for debug purposes only.
+
+#### Base Command
+
+`slack-get-integration-context`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
 ### slack-get-integration-context
 
 ***
@@ -691,6 +692,26 @@ List all of the channels in the organization workspace. This command required sc
 ### slack-get-conversation-history
 
 ***
+Fetches a conversation's history of messages and events.
+
+#### Base Command
+
+`slack-get-conversation-history`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel_id | The channel ID associated with the Slack channel. | Required | 
+| limit | Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results. Default is 100. | Optional | 
+| conversation_id | The conversation ID. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### slack-get-conversation-history
+
+***
 Fetches a conversation's history of messages and events
 
 #### Base Command
@@ -722,16 +743,52 @@ Retrieves replies to specific messages, regardless of whether it's from a public
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | channel_id | ID of the channel. | Required | 
+| thread_timestamp | The timestamp of the thread, that can be extracted using "slack-get-conversation-history" command. | Required | 
+| limit | Set this argument to specify how many results to return. Default is 100. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### slack-get-conversation-replies
+
+***
+Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
+
+#### Base Command
+
+`slack-get-conversation-replies`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel_id | ID of the channel. | Required | 
 | thread_id | ID of the thread. | Required | 
 | limit | limit. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-```
+
+## Known Limitations
+
+- All commands which use `channel` as a parameter, it is now advised to use `channel-id` using the channel ID found in
+  the incident's context under the `Slack.Channels.ID` value. Using `channel-id` as opposed to `channel` will improve
+  the performance of the integration.
+- SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
+  Because of this, you may have some users in Slack who are not users in Cortex XSOAR. This will occasionally cause the
+  module
+  health to indicate that an error has occurred because a user was unable to be found. In this circumstance, the error
+  is expected and is purely cosmetic in nature.
+- In some cases when mirroring an investigation, kicking the admin will cause no further actions to be able to be
+  performed by the bot. Any subsequent actions taken on the channel (such as mirror out) will result in a "not in
+  channel" error.
+- Note: If a dedicated channel is configured, however there are no notifications being sent, verify that the *Types of
+  Notifications* to send parameter is populated.
+- ***mirror-investigation*** will only mirror chat messages between Cortex XSOAR and Slack. Images, threads, and files are not supported at this tme.
 
 ## Troubleshooting
----
+
 **Issue**: The survey sent from SlackBlockBuilder is sent to Slack and submitted successfully, but the response does not show up in context data in Cortex XSOAR.
 
 **Resolution**: The most likely cause is that there is no API key entered into the Slack v3 integration instance settings, or the API key was not created by the default admin user. Ensure that an API key created by a default admin user is entered into the Slack v3 integration instance settings. Also, make sure to mark the **Trust any certificate (not secure)** integration parameter.
