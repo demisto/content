@@ -50,6 +50,7 @@ ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
 MASK = '<XX_REPLACED>'
+SEND_PREFIX = "send: b"
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
@@ -1699,7 +1700,7 @@ class IntegrationLogger(object):
         :rtype: ``None``
         """
         http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
-        data = text.split("send: b'")[1]
+        data = text.split(SEND_PREFIX)[1]
         if data and data[0] in {'{', '<'}:
             # it is the request url query params/post body - will always come after we already have the url and headers
             # `<` is for xml body
@@ -8391,11 +8392,10 @@ def censor_request_logs(request_log:str) -> str:
     Censors the request logs by replacing sensitive information such as tokens and cookies with a mask.
     Im most cases, the sensitive value is the first word after the keyword, but in some cases it is the second one.
     """
-    keywords_to_replace = ['Authorization:','Cookie' ]
+    keywords_to_replace = ['Authorization:','Cookie']
     lower_keywords_to_replace = [word.lower() for word in keywords_to_replace]
-    replacement = MASK
     
-    trimed_request_log=request_log.lstrip("send: b")
+    trimed_request_log=request_log.lstrip(SEND_PREFIX)
     request_log_with_spaces = trimed_request_log.replace("\\r\\n", " \\r\\n")
     request_log_lst = request_log_with_spaces.split()
     
@@ -8407,11 +8407,13 @@ def censor_request_logs(request_log:str) -> str:
             if next_word is not None:
                 # If the next word is "Bearer" or "Basic" then we replace the word after it since thats the token
                 if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
-                    request_log_lst[i + 2] = replacement
+                    request_log_lst[i + 2] = MASK
                 else:
-                    request_log_lst[i + 1] = replacement
-    censored_string = "send: b'" + ' '.join(request_log_lst) if request_log.startswith("send: b") else ' '.join(request_log_lst)
+                    request_log_lst[i + 1] = MASK
+    censored_string = SEND_PREFIX + ' '.join(request_log_lst) if request_log.startswith(SEND_PREFIX) else ' '.join(request_log_lst)
+    censored_string = censored_string.replace(" \\r\\n", "\\r\\n")
     return censored_string
+
 
 class DebugLogger(object):
     """

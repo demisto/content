@@ -9582,7 +9582,7 @@ def test_censor_request_logs(request_log, expected_output):
     """
     Given:
         A request log.
-        case 1: A request log with a sensitive data, under the 'Authorization' header, but the Authorization is not capitalized and within a string.
+        case 1: A request log with a sensitive data, under the 'Authorization' header, but the 'Authorization' is not capitalized and within a string.
         case 2: A request log with a sensitive data, under the 'Cookie' header.
         case 3: A request log with a sensitive data, under the 'Authorization' header, but with no 'Bearer' prefix.
         case 4: A request log with a sensitive data, under the 'Authorization' header, but with no 'send b' prefix at the beginning.
