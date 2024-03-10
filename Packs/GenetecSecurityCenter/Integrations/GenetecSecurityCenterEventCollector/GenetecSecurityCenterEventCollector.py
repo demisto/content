@@ -48,7 +48,7 @@ class Client(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
 
-    def _encode_authorization(self, username: str, password: str, app_id:str):
+    def _encode_authorization(self, username: str, password: str, app_id: str):
         updated_username = f"{username};{app_id}"
         return HTTPBasicAuth(updated_username, password)
 
