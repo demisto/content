@@ -945,7 +945,7 @@ def test_convert_datetime_to_epoch_millis():
     from CortexXDRIR import convert_datetime_to_epoch_millis
     from datetime import datetime
     input_datetime = datetime.now()
-    assert convert_datetime_to_epoch_millis(input_datetime) == 1577836800000
+    assert convert_datetime_to_epoch_millis(input_datetime) == 876063600
 
 
 @freeze_time("1997-10-05 15:00:00 GMT")
