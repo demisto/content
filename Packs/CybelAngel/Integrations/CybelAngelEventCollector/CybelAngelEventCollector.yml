@@ -17,6 +17,7 @@ configuration:
 - display: The maximum number of events per fetch
   name: max_fetch
   defaultvalue: "5000"
+  advanced: true
   type: 0
   required: true
   section: Collect
