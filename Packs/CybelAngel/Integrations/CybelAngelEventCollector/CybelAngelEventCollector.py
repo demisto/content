@@ -59,10 +59,6 @@ class Client(BaseClient):
             "end-date": end_date
         }
         reports = self.http_request(method='GET', url_suffix="/api/v2/reports", params=params).get("reports") or []
-        # sort the reports by their date as their order is returned randomly
-
-        reports = reports[:limit]
-
         for report in reports:
             if updated_at := report.get("updated_at"):
                 _time_field = updated_at
@@ -71,9 +67,10 @@ class Client(BaseClient):
 
             report["_time"] = _time_field
 
-        return sorted(
+        reports = sorted(
             reports, key=lambda _report: dateparser.parse(_report["_time"])  # type: ignore[arg-type, return-value]
         )
+        return reports[:limit]
 
     def get_access_token(self, create_new_token: bool = False) -> str:
         """
@@ -101,7 +98,7 @@ class Client(BaseClient):
         """
         Sends request to retrieve token.
 
-       Returns:
+        Returns:
            tuple[str, str]: token and its expiration date
         """
         url = 'https://auth.cybelangel.com/oauth/token'
@@ -125,7 +122,9 @@ def dedup_fetched_events(
     events: List[dict],
     last_run_fetched_event_ids: Set[str],
 ) -> List[dict]:
-
+    """
+    Dedup events, removes events which were already fetched.
+    """
     un_fetched_events = []
 
     for event in events:
@@ -141,11 +140,17 @@ def dedup_fetched_events(
 
 
 def get_latest_event_time_and_ids(reports: List[Dict[str, Any]]) -> tuple[str, List[str]]:
+    """
+    Returns the latest event time and all the events that were fetched in the latest event time
+    """
     latest_report_time = reports[-1]["_time"]
     return latest_report_time, [report["id"] for report in reports if report["_time"] == latest_report_time]
 
 
 def test_module(client: Client) -> str:
+    """
+    Tests that the authentication to the api is ok.
+    """
     client.get_reports(
         start_date=(datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT),
         end_date=datetime.now().strftime(DATE_FORMAT)
@@ -157,6 +162,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int) -> tuple[List[d
     last_run_time = last_run.get(LastRun.LATEST_REPORT_TIME)
     now = datetime.now()
     if not last_run_time:
+        # if its the first fetch - get only reports from last minute
         # TODO - get only events from last minute
         last_run_time = (now - timedelta(days=3000)).strftime(DATE_FORMAT)
 
