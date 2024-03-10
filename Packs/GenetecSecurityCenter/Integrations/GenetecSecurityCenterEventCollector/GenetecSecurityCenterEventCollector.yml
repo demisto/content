@@ -36,27 +36,15 @@ configuration:
   name: proxy
   type: 8
   required: false
-- display: Maximum number of events per fetch
-  name: max_fetch
-  additionalinfo: Alerts and activity events.
-  type: 0
-  defaultvalue: 1000
-  section: Collect
 description: Genetec Security Center Audit Trail Event Collector.
 display: Genetec Security Center Event Collector
 name: Genetec Security Center Event Collector
 script:
   commands:
   - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      name: dummy
-      required: true
     description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    name: baseintegration-dummy
+    name: genetec-security-center-get-events
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
   runonce: false
   script: '-'
   type: python

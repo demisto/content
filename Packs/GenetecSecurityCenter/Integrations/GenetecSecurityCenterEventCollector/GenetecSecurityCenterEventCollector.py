@@ -1,17 +1,17 @@
-from enum import Enum
 import demistomock as demisto
 from urllib3 import disable_warnings
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-import base64
+from requests.auth import HTTPBasicAuth
 
 disable_warnings()
 
 """ CONSTANTS """
 
 VENDOR = "Genetec"
-PRODUCT = "email_security"
-DATE_FORMAT_EVENT = "Security center"
+PRODUCT = "Security center"
+DATE_FORMAT_EVENT = "%Y-%m-%dT%H:%M:%S"
+AUDIT_TRAIL_ENDPOINT = "/WebSdk/report/AuditTrail"
 
 
 """ CLIENT CLASS """
@@ -43,15 +43,14 @@ class Client(BaseClient):
     def __init__(
         self, base_url: str, username: str, password: str, verify: bool, proxy: bool, max_fetch: str, app_id: str
     ):
-        authorization_encoded = self._encode_authorization(username, password, app_id)
-        headers = {"Authorization": f"Basic {authorization_encoded}"}
+        self._auth = self._encode_authorization(username, password, app_id)
         self.limit = max_fetch
 
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
 
-    def _encode_authorization(self, username: str, password: str, app_id:str) -> str:
-        authorization_bytes = f"{username};{app_id}:{password}".encode()
-        return base64.b64encode(authorization_bytes).decode()
+    def _encode_authorization(self, username: str, password: str, app_id:str):
+        updated_username = f"{username};{app_id}"
+        return HTTPBasicAuth(updated_username, password)
 
 
 """ COMMAND FUNCTIONS """
@@ -61,22 +60,6 @@ def test_module(client: Client):
     """
     Testing we have a valid connection to trend_micro.
     """
-    try:
-        client.get_logs(
-            EventType.POLICY_LOGS,
-            {
-                "limit": 1,
-                "start": parse_start_time("6 hours"),
-                "end": datetime.now().strftime(DATE_FORMAT_EVENT),
-            },
-        )
-        demisto.debug("test module: got logs")
-    except NoContentException:
-        # This type of error is raised when events are not returned, but the API call was successful,
-        # therefore `ok` will be returned
-        demisto.debug("test module: got no logs, but connection is successful")
-        pass
-
     return "ok"
 
 
@@ -104,12 +87,23 @@ def fetch_events_command(
     time_range = f"TimeRange.SetTimeRange({start_time.strftime(DATE_FORMAT_EVENT)},{time_now.strftime(DATE_FORMAT_EVENT)})"
     limit: str = args.get("max_fetch", "1000") or client.limit
     demisto.info(f"fetching events with the following time_range: {time_range}")
-    url_suffix = f"?q={time_range},MaximumResultCount={limit}"
+    url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q={time_range},MaximumResultCount={limit}"
     events: list[dict] = client._http_request('GET', url_suffix=url_suffix)
     demisto.info(f"got the following events: {events}")
     new_last_run = {"start_time": events[-1].get("ModificationTimeStamp")}
     demisto.debug(f"Done fetching, got {len(events)} events.")
     demisto.debug(f"New last run is {new_last_run}")
+
+    return events, new_last_run
+
+
+def test_func(client: Client):
+    url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q=TimeRange.SetTimeRange(2016-12-15T21:17:00,2023-12-15T21:18:00),MaximumResultCount=10"
+    events: list[dict] = client._http_request('GET', url_suffix=url_suffix)
+    print(f"got the following events: {events}")
+    new_last_run = {"start_time": events[-1].get("ModificationTimeStamp")}
+    print(f"Done fetching, got {len(events)} events.")
+    print(f"New last run is {new_last_run}")
 
     return events, new_last_run
 
@@ -143,17 +137,11 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             return_results(test_module(client))
 
-        # elif command == "genetec-security-center-get-events":
-        #     should_update_last_run = False
-        #     since = parse_start_time(args.get("since") or "1 days")
-        #     events, _ = fetch_events_command(client, args, since, last_run={})
-
-        #     # By default return as an md table
-        #     # when the argument `should_push_events` is set to true
-        #     # will also be returned as events
-        #     return_results(
-        #         CommandResults(readable_output=tableToMarkdown("Events:", events))
-        #     )
+        elif command == "genetec-security-center-get-events":
+            events, _ = test_func(client)
+            return_results(
+                CommandResults(readable_output=tableToMarkdown("Events:", events))
+            )
 
         elif command == "fetch-events":
             should_push_events = True
