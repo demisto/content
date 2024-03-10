@@ -161,7 +161,7 @@ def main() -> None:  # pragma: no cover
 
     except Exception as e:
         return_error(
-            f"Failed to execute {command} command. Error in TrendMicro EmailSecurity Event Collector Integration [{e}]."
+            f"Failed to execute {command} command. Error in Genetec Security Center Event Collector Integration [{e}]."
         )
 
 
