@@ -1,9 +1,6 @@
 [file:Get_Original_Email_-_EWS.yml]
 ignore=BA101
 
-[file:incidentfield-Additional_Email_Addresses.json]
-ignore=IF113
-
 [file:Process_Email_-_Generic.yml]
 ignore=BA101
 
