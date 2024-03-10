@@ -2115,6 +2115,13 @@ script:
       description: The file's Entry ID.
     - name: parent
       description: The ID of the parent folder which contains the file. If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: 'Whether the requesting application supports both My Drives and shared drives.'
+      name: supports_all_drives
+      predefined:
+      - "true"
+      - "false"
     outputs:
     - contextPath: GoogleDrive.File.File.id
       description: The ID of the file.
