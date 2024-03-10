@@ -50,7 +50,7 @@ ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
 MASK = '<XX_REPLACED>'
-SEND_PREFIX = "send: b"
+SEND_PREFIX = "send: b'"
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
