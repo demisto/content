@@ -1,4 +1,3 @@
-from math import exp
 from IsInternalDomainName import check_sub_domains_in_domain, extract_main_domain
 import pytest
 
@@ -27,7 +26,7 @@ import pytest
     (["cig.eu"], ["abcdcig.eu"], [("abcdcig.eu", ["cig.eu"], False)]),
     (["cd.com"], ["ab-cd.com"], [("ab-cd.com", ["cd.com"], False)]),
     (["ab-cd.com"], ["zz.ab-cd.com"], [("zz.ab-cd.com", ["ab-cd.com"], True)]),
-    
+
 ])
 def test_check_in_domain(domain_name, domain_to_check, expected_output):
     """
