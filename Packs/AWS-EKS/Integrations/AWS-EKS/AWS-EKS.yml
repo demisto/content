@@ -1,0 +1,116 @@
+category: Cloud Services
+commonfields:
+  id: AWS-EKS
+  version: -1
+configuration:
+- display: AWS Default Region
+  name: defaultRegion
+  options:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
+  type: 15
+  section: Connect
+  advanced: true
+  required: true
+- display: Access Key
+  name: credentials
+  type: 9
+  displaypassword: Secret Key
+  section: Connect
+  required: false
+- display: Retries
+  name: retries
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: The AWS EKS integration allows for the management and operation of Amazon Elastic Kubernetes Service (EKS) clusters.
+display: AWS-EKS
+name: AWS-EKS
+script:
+  commands:
+  - name: aws-eks-list-clusters
+    description: Lists the Amazon EKS clusters in your Amazon Web Services account in the specified Amazon Web Services Region.
+    arguments:
+      - name: limit
+        description: The maximum number of clusters to return. This value can be between 1 and 100.
+        defaultValue: 50
+      - name: page
+        description: The specific result page to display.
+      - name: page_size
+        description: The number of records in a page. This value can be between 1 and 100.
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  - name: aws-eks-update-cluster-config
+    description: Updates an Amazon EKS cluster configuration.
+    arguments:
+      - name: name
+        description: The name of the Amazon EKS cluster to update.
+        required: true
+        isArray: false
+      - name: resources_vpc_config
+        description: The VPC configuration used by the cluster control plane.
+        required: false
+        isArray: false
+      - name: logging
+        description: The logging configuration for the cluster.
+        required: false
+        isArray: false
+    outputs:
+      - contextPath: AWS.EKS.Cluster.Update.name
+        description: The name of the cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.Update.id
+        description: The ID of the update.
+        type: Integer
+      - contextPath: AWS.EKS.Cluster.Update.status
+        description: The status of the update.
+        type: String
+      - contextPath: AWS.EKS.Cluster.Update.type
+        description: The type of the update.
+        type: String
+      - contextPath: AWS.EKS.Cluster.Update.params
+        description: The parameters of the update.
+        type: Object
+      - contextPath: AWS.EKS.Cluster.Update.createdAt
+        description: The Unix epoch timestamp at object creation.
+        type: Unknown
+      - contextPath: AWS.EKS.Cluster.Update.errors
+        description: Any errors associated with a Failed update.
+        type: Object
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/boto3py3:1.0.0.87582
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
