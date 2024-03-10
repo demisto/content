@@ -2,7 +2,7 @@ id: Palo Alto Networks - Hunting And Threat Detection
 version: -1
 fromversion: 5.0.0
 name: Palo Alto Networks - Hunting And Threat Detection
-description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nWith the received indicators, the playbook leverages data received by PANW products including, Strata Logging Service, Autofocus, Prisma Cloud and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users."
+description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nWith the received indicators, the playbook leverages data received by PANW products including, Strata Logging Service, Autofocus, Prisma Cloud ,Cortex XDR and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users."
 starttaskid: "0"
 tasks:
   "0":
