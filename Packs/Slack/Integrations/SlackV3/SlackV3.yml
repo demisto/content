@@ -1,6 +1,3 @@
-sectionOrder:
-- Connect
-- Collect
 category: Messaging and Conferencing
 commonfields:
   id: SlackV3
@@ -105,84 +102,82 @@ configuration:
   type: 8
   section: Collect
   required: false
-- defaultvalue: 'true'
-  display: Long running instance. Required for investigation mirroring and direct messages.
+- display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning
   type: 8
   section: Connect
-  advanced: true
   required: false
   additionalinfo: If your organization does not require incident mirroring, or data collection, it is possible to disable the `longRunning` parameter. For those organizations who do want to use these features, the parameter should be set to `True` to enable the long-running container.
-- defaultvalue: Cortex XSOAR
+  advanced: true
+  defaultvalue: 'true'
+- defaultvalue: 'Cortex XSOAR'
   display: Bot display name in Slack
   name: bot_name
   type: 0
   section: Connect
   advanced: true
   required: false
-- defaultvalue: 'https://avatars.slack-edge.com/2020-05-24/1142885630851_5529c7f034d9b96ec39c_512.png'
+- defaultvalue: https://avatars.slack-edge.com/2020-05-24/1142885630851_5529c7f034d9b96ec39c_512.png
   display: Bot icon in Slack - Image URL (Cortex XSOAR icon by default)
   name: bot_icon
   type: 0
   section: Connect
   advanced: true
   required: false
-- display: Maximum time to wait for a rate limiting call in seconds
+- defaultvalue: '60'
+  display: Maximum time to wait for a rate limiting call in seconds
   name: max_limit_time
   type: 0
-  defaultvalue: '60'
   section: Connect
   advanced: true
   required: false
 - display: Number of objects to return in each paginated call
   name: paginated_count
   type: 0
+  defaultvalue: '200'
   section: Collect
   advanced: true
   required: false
-  defaultvalue: '200'
-- display: 'Comma-separated list of tags to filter the messages sent from Cortex XSOAR.'
+- display: Comma-separated list of tags to filter the messages sent from Cortex XSOAR.
   name: filtered_tags
   type: 0
-  additionalinfo: Only supported in Cortex XSOAR V6.1 and above.
   section: Collect
   advanced: true
   required: false
+  additionalinfo: Only supported in Cortex XSOAR V6.1 and above.
 - display: ''
   name: demisto_api_key
   type: 9
+  additionalinfo: Adding an API key will enable the integration to handle blocks that contain a state and is necessary for the SlackBlockBuilder script.
   section: Connect
   advanced: true
   required: false
   displaypassword: XSOAR API Key
+  hidden: true
   hiddenusername: true
-  additionalinfo: Adding an API key will enable the integration to handle blocks that contain a state and is necessary for the SlackBlockBuilder script.
-  hidden:
-  - marketplacev2
-  - xsoar
-- display: Enable DMs to the bot
+- display: 'Enable DMs to the bot'
   name: enable_dm
   type: 8
-  defaultvalue: 'false'
   section: Collect
   advanced: true
   required: false
+  defaultvalue: 'false'
 - display: Disable Caching of Users and Channels
   name: disable_caching
-  additionalinfo: This parameter prevents this integration from storing Users and Channels in the integration context. This parameter also prevents paginated calls which can result in timeout errors for large workspaces.
   type: 8
   defaultvalue: 'false'
   section: Collect
   advanced: true
   required: false
+  additionalinfo: This parameter prevents this integration from storing Users and Channels in the integration context. This parameter also prevents paginated calls which can result in timeout errors for large workspaces.
 - display: Extensive Logging
   name: extensive_logging
-  type: 8
   additionalinfo: This parameter will write additional data to the logs and should only be used when you are directed to by XSOAR support.
+  type: 8
+  defaultvalue: 'false'
   section: Connect
   advanced: true
   required: false
-  defaultvalue: 'false'
 - display: Common Channels
   name: common_channels
   type: 12
@@ -395,6 +390,7 @@ script:
   - description: Returns the integration context as a file. Use this command for debug purposes only.
     hidden: true
     name: slack-get-integration-context
+    arguments: []
   - arguments:
     - description: The channel containing the message.
       name: channel
@@ -446,7 +442,7 @@ script:
     - defaultValue: 'true'
       description: Default is true (exclude archived channels). This setting allows the command to read channels that have been archived.
       name: exclude_archived
-    - defaultValue: 100
+    - defaultValue: '100'
       description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
       name: limit
     - description: 'Default is the first page of results. If you have more results than your limit, you need to paginate your results with this argument.  This is found with the next_cursor attribute returned by a previous request''s response_metadata.'
@@ -473,7 +469,7 @@ script:
     - description: The channel ID associated with the Slack channel.
       name: channel_id
       required: true
-    - defaultValue: 100
+    - defaultValue: '100'
       description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
       name: limit
     - description: The conversation ID.
@@ -487,15 +483,15 @@ script:
     - name: thread_timestamp
       description: The timestamp of the thread, that can be extracted using "slack-get-conversation-history" command.
       required: true
-    - defaultValue: 100
+    - defaultValue: '100'
       name: limit
       description: Set this argument to specify how many results to return.
     description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
     name: slack-get-conversation-replies
-  dockerimage: demisto/slackv3:1.0.0.83424
+  dockerimage: demisto/slackv3:1.0.0.89434
   longRunning: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 fromversion: 5.5.0
