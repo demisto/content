@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional
 from collections.abc import Iterable, Sequence
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
@@ -814,9 +814,9 @@ class BranchTestCollector(TestCollector):
             self.__collect_packs_diff_master_bucket()
         ])
 
-    def __collect_packs_diff_master_bucket(self) -> Optional[CollectionResult]:
+    def __collect_packs_diff_master_bucket(self) -> CollectionResult | None:
         repo = PATHS.content_repo
-        collected_packs: list[Optional[CollectionResult]] = []
+        collected_packs: list[CollectionResult | None] = []
 
         logger.info('bucket upload: getting last commit from index')
         previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
@@ -839,7 +839,6 @@ class BranchTestCollector(TestCollector):
                     raise ValueError(f'unexpected line format '
                                      f'(expected `<modifier>\t<file>` or `<modifier>\t<old_location>\t<new_location>`'
                                      f', got {line}')
-
 
             path = PATHS.content_path / file_path
             collected_packs.append(self._collect_pack(
