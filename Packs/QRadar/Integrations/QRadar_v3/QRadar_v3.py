@@ -454,7 +454,7 @@ class Client(BaseClient):
         self.server = server
 
     def http_request(self, method: str, url_suffix: str, params: Optional[dict] = None,
-                     json_data: Optional[dict] = None, data: Optional[dict] = None, additional_headers: Optional[dict] = None,
+                     json_data: Optional[dict | list[dict]] = None, data: Optional[dict] = None, additional_headers: Optional[dict] = None,
                      timeout: Optional[int] = None, resp_type: str = 'json'):
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
         for _time in range(1, CONNECTION_ERRORS_RETRIES + 1):
@@ -897,11 +897,11 @@ class Client(BaseClient):
             json_data=log_source
         )
     
-    def update_log_source(self, log_source: dict):
+    def update_log_source(self, log_source: dict[str, Any]):
         return self.http_request(
             method='PATCH',
             url_suffix='/config/event_sources/log_source_management/log_sources',
-            json_data=log_source,
+            json_data=[log_source],
             resp_type='response'
         )
 
@@ -1748,7 +1748,7 @@ def convert_dict_values_string_to_number(obj: dict) -> dict:
             clone[key] = int(value)
     return clone
 
-def convert_to_actual_values_recursive(input_dict: dict) -> dict:
+def convert_to_actual_values_recursive(input_dict: dict) -> dict[str, Any]:
     output_dict = {}
     for key, value in input_dict.items():
         if isinstance(value, dict):
@@ -4760,7 +4760,7 @@ def qradar_log_source_update_command(client: Client, args: dict) -> CommandResul
         log_source_str['group_ids'] = group_ids
     if wincollect_external_destination_ids:
         log_source_str['wincollect_external_destination_ids'] = wincollect_external_destination_ids
-    log_source =[convert_to_actual_values_recursive(log_source_str)]
+    log_source = convert_to_actual_values_recursive(log_source_str)
     client.update_log_source(log_source)
     return CommandResults(readable_output=f'Log source  {id} was updated successfully')
 

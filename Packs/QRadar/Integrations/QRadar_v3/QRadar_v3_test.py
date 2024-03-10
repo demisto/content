@@ -1723,4 +1723,25 @@ def test_get_log_source_by_id(mocker):
     get_by_id_mock.assert_called_with(mock_id, endpoint, None, expected_additional_headers)    
 
 def test_create_log_source(mocker):
+    args =  command_test_data['create_log_source']['args']
+    expected_body =  command_test_data['create_log_source']['expected_body']
+    create_log_source_mock = mocker.patch.object(client, 'create_log_source', return_value={})
     
+    try:
+        qradar_log_source_create_command(client, args)
+    except KeyError:
+        demisto.log('command create_log_source_command raised key error')
+    
+    create_log_source_mock.assert_called_with(expected_body)
+
+def test_update_log_source(mocker):
+    args =  command_test_data['update_log_source']['args']
+    expected_body =  command_test_data['update_log_source']['expected_body']
+    create_log_source_mock = mocker.patch.object(client, 'update_log_source', return_value={})
+    
+    try:
+        qradar_log_source_create_command(client, args)
+    except KeyError:
+        demisto.log('command create_log_source_command raised key error')
+    
+    create_log_source_mock.assert_called_with(expected_body)

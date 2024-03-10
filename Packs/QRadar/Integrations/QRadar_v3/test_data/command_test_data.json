@@ -2428,6 +2428,60 @@
  "remote_network_cidr_delete": {
   "readable_output":  "### Successfully deleted the following remote network(s)\n|ID|\n|---|\n| 46 |\n"
  },
+ "create_log_source": {
+  "args": {
+    "name": "test_create_log_source",
+    "protocol_type_id": "0",
+    "type_id": "11",
+    "target_event_collector_id": "7",
+    "protocol_parameters": "incomingPayloadEncoding=UTF-8,identifier=example.org"
+  },
+  "expected_body": {
+    "name": "test_create_log_source",
+        "protocol_type_id": 0,
+        "protocol_parameters": [
+            {
+                "name": "incomingPayloadEncoding",
+                "value": "UTF-8"
+            },
+            {
+                "name": "identifier",
+                "value": "example.org"
+            }
+        ],
+        "type_id":11,
+        "target_event_collector_id":7,
+        "group_ids": [],
+        "wincollect_external_destination_ids": []
+  }
+ },
+ "update_log_source": {
+  "args": {
+    "name": "test_create_log_source",
+    "protocol_type_id": "0",
+    "type_id": "11",
+    "target_event_collector_id": "7",
+    "protocol_parameters": "incomingPayloadEncoding=UTF-8,identifier=example.org"
+  },
+  "expected_body": {
+    "name": "test_create_log_source",
+        "protocol_type_id": 0,
+        "protocol_parameters": [
+            {
+                "name": "incomingPayloadEncoding",
+                "value": "UTF-8"
+            },
+            {
+                "name": "identifier",
+                "value": "example.org"
+            }
+        ],
+        "type_id":11,
+        "target_event_collector_id":7,
+        "group_ids": [],
+        "wincollect_external_destination_ids": []
+  }
+ },
  "all_events_query": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(16)  limit 20 START 1613399051536",
  "correlation_events_query": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(16)  AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine'  limit 20 START 1613399051536"
 }
