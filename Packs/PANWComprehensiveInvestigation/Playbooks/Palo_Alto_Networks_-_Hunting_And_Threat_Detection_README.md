@@ -1,5 +1,5 @@
 This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. 
-With the received indicators, the playbook leverages data received by PANW products including, Strata Logging Service, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.
+With the received indicators, the playbook leverages data received by PANW products including, Strata Logging Service, Autofocus, Prisma Cloud ,Cortex XDR and Pan-OS to search for IP addresses, host names and users related to the provided indicators.
 The output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users.
 
 ## Dependencies
@@ -8,9 +8,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Autofocus Query Samples, Sessions and Tags
 * PAN-OS Query Logs For Indicators
 * Convert file hash to corresponding hashes
+* Autofocus Query Samples, Sessions and Tags
 
 ### Integrations
 
@@ -18,18 +18,18 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SetAndHandleEmpty
 * IsInternalHostName
-* IsIntegrationAvailable
 * IsIPInRanges
+* IsIntegrationAvailable
+* SetAndHandleEmpty
 
 ### Commands
 
-* cdl-query-url-logs
-* xdr-get-alerts
-* cdl-query-threat-logs
-* cdl-query-traffic-logs
 * prisma-cloud-network-search
+* cdl-query-traffic-logs
+* cdl-query-url-logs
+* cdl-query-threat-logs
+* xdr-get-alerts
 
 ## Playbook Inputs
 

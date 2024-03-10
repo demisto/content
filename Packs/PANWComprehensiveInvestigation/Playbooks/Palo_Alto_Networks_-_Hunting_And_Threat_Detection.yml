@@ -392,7 +392,7 @@ tasks:
       {
         "position": {
           "x": -940,
-          "y": 2630
+          "y": 2780
         }
       }
     note: false
@@ -1653,6 +1653,9 @@ tasks:
                       iscontext: true
                 - operator: uniq
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1665,7 +1668,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "83":
@@ -2607,6 +2609,8 @@ tasks:
                 root: Panorama
                 accessor: Monitor.Logs.DestinationAddress
             iscontext: true
+          right:
+            value: {}
         - operator: isNotEmpty
           left:
             value:
@@ -2614,6 +2618,7 @@ tasks:
                 root: Panorama
                 accessor: Monitor.Logs.SourceAddress
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2626,7 +2631,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "132":
@@ -2763,8 +2767,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5110,
-          "y": 1425
+          "x": -4060,
+          "y": 1350
         }
       }
     note: false
@@ -2892,8 +2896,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 2860
+          "x": 900,
+          "y": 3090
         }
       }
     note: false
@@ -2933,8 +2937,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 3140
+          "x": 1250,
+          "y": 3370
         }
       }
     note: false
@@ -2964,8 +2968,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 4015
+          "x": 1250,
+          "y": 4245
         }
       }
     note: false
@@ -3001,8 +3005,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 3310
+          "x": 1490,
+          "y": 3540
         }
       }
     note: false
@@ -3053,8 +3057,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 3560
+          "x": 1490,
+          "y": 3790
         }
       }
     note: false
@@ -3105,8 +3109,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 3780
+          "x": 1490,
+          "y": 4010
         }
       }
     note: false
@@ -3441,8 +3445,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 3140
+          "x": 570,
+          "y": 3370
         }
       }
     note: false
@@ -3472,8 +3476,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 3000
+          "x": 1250,
+          "y": 3230
         }
       }
     note: false
@@ -3503,8 +3507,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 3000
+          "x": 570,
+          "y": 3230
         }
       }
     note: false
@@ -3534,8 +3538,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 4015
+          "x": 570,
+          "y": 4245
         }
       }
     note: false
@@ -3562,8 +3566,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4170
+          "x": 920,
+          "y": 4400
         }
       }
     note: false
@@ -3605,8 +3609,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
-          "y": 3520
+          "x": -100,
+          "y": 3750
         }
       }
     note: false
@@ -3657,8 +3661,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
-          "y": 3665
+          "x": -100,
+          "y": 3895
         }
       }
     note: false
@@ -3709,8 +3713,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
-          "y": 3840
+          "x": -100,
+          "y": 4070
         }
       }
     note: false
@@ -3750,8 +3754,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 3310
+          "x": 330,
+          "y": 3540
         }
       }
     note: false
@@ -3789,8 +3793,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 3520
+          "x": 330,
+          "y": 3750
         }
       }
     note: false
@@ -3917,7 +3921,7 @@ tasks:
     task:
       id: d352ae69-ed2f-40c7-87e8-b8b33e48bbb4
       version: -1
-      name: Set detected IP's
+      name: Set Cortex XDR agent detected IP's
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -4038,6 +4042,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "23"
       "yes":
       - "186"
     scriptarguments:
@@ -4049,7 +4055,7 @@ tasks:
       {
         "position": {
           "x": -4690,
-          "y": 1100
+          "y": 1075
         }
       }
     note: false
@@ -4107,6 +4113,8 @@ tasks:
       brand: ""
       description: ""
     nexttasks:
+      '#default#':
+      - "23"
       "yes":
       - "188"
     separatecontext: false
@@ -4167,8 +4175,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4690,
-          "y": 2005
+          "x": -5050,
+          "y": 2025
         }
       }
     note: false
@@ -4187,6 +4195,9 @@ view: |-
       "129_23_#default#": 0.12,
       "178_4_#default#": 0.1,
       "182_4_#default#": 0.1,
+      "185_23_#default#": 0.1,
+      "187_188_yes": 0.46,
+      "187_23_#default#": 0.1,
       "18_100_yes": 0.41,
       "18_23_#default#": 0.15,
       "21_23_#default#": 0.32,
@@ -4213,9 +4224,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4225,
-        "width": 10340,
-        "x": -4690,
+        "height": 4455,
+        "width": 10700,
+        "x": -5050,
         "y": 10
       }
     }
