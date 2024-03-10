@@ -52,6 +52,7 @@ DATA_TYPES = [EVENTS, ASSETS]
 MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b"
 
+
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
         Register a module in the line mapping for the traceback line correction algorithm.
@@ -8387,18 +8388,18 @@ class DemistoHandler(logging.Handler):
         except Exception:  # noqa: disable=broad-except
             pass
 
-def censor_request_logs(request_log:str) -> str:
+
+def censor_request_logs(request_log: str) -> str:
     """
     Censors the request logs by replacing sensitive information such as tokens and cookies with a mask.
     Im most cases, the sensitive value is the first word after the keyword, but in some cases it is the second one.
     """
-    keywords_to_replace = ['Authorization:','Cookie']
+    keywords_to_replace = ['Authorization:', 'Cookie']
     lower_keywords_to_replace = [word.lower() for word in keywords_to_replace]
-    
-    trimed_request_log=request_log.lstrip(SEND_PREFIX)
+
+    trimed_request_log = request_log.lstrip(SEND_PREFIX)
     request_log_with_spaces = trimed_request_log.replace("\\r\\n", " \\r\\n")
     request_log_lst = request_log_with_spaces.split()
-    
 
     for i, word in enumerate(request_log_lst):
         # Check if the word is a keyword or contains a keyword (e.g "Cookies")
@@ -8410,7 +8411,8 @@ def censor_request_logs(request_log:str) -> str:
                     request_log_lst[i + 2] = MASK
                 else:
                     request_log_lst[i + 1] = MASK
-    censored_string = SEND_PREFIX + ' '.join(request_log_lst) if request_log.startswith(SEND_PREFIX) else ' '.join(request_log_lst)
+    censored_string = SEND_PREFIX + \
+        ' '.join(request_log_lst) if request_log.startswith(SEND_PREFIX) else ' '.join(request_log_lst)
     censored_string = censored_string.replace(" \\r\\n", "\\r\\n")
     return censored_string
 
