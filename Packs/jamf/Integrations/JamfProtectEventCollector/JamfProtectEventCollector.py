@@ -74,7 +74,7 @@ class Client(BaseClient):
             res = self._generate_token(client_id, client_password)
         except DemistoException as e:
             if "Unauthorized" in str(e):
-                raise DemistoException(f"Failed to generate a token. Either the Client ID or the Client Password is incorrect.")
+                raise DemistoException("Failed to generate a token. Either the Client ID or the Client Password is incorrect.")
             raise e
         new_token = res.get("access_token", "")
         expire_in = arg_to_number(res.get("expires_in")) or 1
