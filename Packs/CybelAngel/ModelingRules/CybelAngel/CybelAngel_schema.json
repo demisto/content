@@ -1,37 +1,5 @@
 {
-    "cybelangel_platform_raw": {        
-        "origins": {
-            "type": "string",
-            "is_array": false
-        },
-        "ip": {
-            "type": "string",
-            "is_array": false
-        },
-        "usergroups": {
-            "type": "string",
-            "is_array": false
-        },
-        "risks": {
-            "type": "string",
-            "is_array": false
-        },
-        "tags": {
-            "type": "string",
-            "is_array": false
-        },
-        "liveness": {
-            "type": "string",
-            "is_array": false
-        },
-        "hostnames": {
-            "type": "string",
-            "is_array": false
-        },
-        "asset_urls": {
-            "type": "string",
-            "is_array": false
-        },
+    "cybelangel_platform_raw": {
         "id": {
             "type": "string",
             "is_array": false
@@ -52,7 +20,11 @@
             "type": "string",
             "is_array": false
         },
-        "incident_type": {
+        "ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "liveness": {
             "type": "string",
             "is_array": false
         },
@@ -76,15 +48,19 @@
             "type": "string",
             "is_array": false
         },
+        "risks": {
+            "type": "string",
+            "is_array": false
+        },
         "severity": {
             "type": "int",
             "is_array": false
         },
-        "source": {
+        "threat": {
             "type": "string",
             "is_array": false
         },
-        "threat": {
+        "title":{
             "type": "string",
             "is_array": false
         },
@@ -96,7 +72,15 @@
             "type": "string",
             "is_array": false
         },
-        "url": {
+        "hostnames": {
+            "type": "string",
+            "is_array": false
+        },
+        "tags": {
+            "type": "string",
+            "is_array": false
+        },
+        "asset_urls": {
             "type": "string",
             "is_array": false
         }
