@@ -371,7 +371,7 @@ script:
     - contextPath: AWS.CloudTrail.Events.CloudTrailEvent
       description: A JSON string that contains a representation of the event returned.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.88114
+  dockerimage: demisto/boto3py3:1.0.0.89556
   runonce: false
   script: '-'
   subtype: python3
