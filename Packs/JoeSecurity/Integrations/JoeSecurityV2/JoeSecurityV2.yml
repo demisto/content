@@ -1262,7 +1262,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/vendors-sdk:1.0.0.87491
+  dockerimage: demisto/vendors-sdk:1.0.0.89427
 fromversion: 6.8.0
 tests:
-- testplaybook- JoeSecuirtyV2
+- testplaybook-JoeSecuirtyV2
