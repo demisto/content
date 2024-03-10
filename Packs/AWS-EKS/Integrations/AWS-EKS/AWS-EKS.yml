@@ -106,6 +106,125 @@ script:
       - contextPath: AWS.EKS.Cluster.Update.errors
         description: Any errors associated with a Failed update.
         type: Object
+  - name: aws-eks-describe-cluster
+    description: Describes an Amazon EKS cluster.
+    arguments:
+      - name: name
+        description: The name of the cluster to describe.
+        required: true
+        isArray: false
+    outputs:
+      - contextPath: AWS.EKS.Cluster.name
+        description: The name of your cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.arn
+        description: The Amazon Resource Name (ARN) of the cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.createdAt
+        description: The creation date ob the object.
+        type: String
+      - contextPath: AWS.EKS.Cluster.version
+        description: The Kubernetes server version for the cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.endpoint
+        description: The endpoint for your Kubernetes API server.
+        type: String
+      - contextPath: AWS.EKS.Cluster.roleArn
+        description: The Amazon Resource Name (ARN) of the IAM role that provides permissions for the Kubernetes control plane to make calls to Amazon Web Services API operations on your behalf.
+        type: String
+      - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.subnetIds
+        description: The subnets associated with your cluster.
+        type: List
+      - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.securityGroupIds
+        description: The security groups associated with the cross-account elastic network interfaces that are used to allow communication between your nodes and the Kubernetes control plane.
+        type: List
+      - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.clusterSecurityGroupId
+        description: The cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication.
+        type: String
+      - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.vpcId
+        description: The VPC associated with your cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.endpointPublicAccess
+        description: Whether the public API server endpoint is enabled.
+        type: Boolean
+      - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.endpointPrivateAccess
+        description: This parameter indicates whether the Amazon EKS private API server endpoint is enabled.
+        type: Boolean
+      - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.publicAccessCidrs
+        description: The CIDR blocks that are allowed access to your cluster’s public Kubernetes API server endpoint.
+        type: List
+      - contextPath: AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv4Cidr
+        description: The CIDR block that Kubernetes Pod and Service object IP addresses are assigned from.
+        type: String
+      - contextPath: AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv6Cidr
+        description: The CIDR block that Kubernetes pod and service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.kubernetesNetworkConfig.ipFamily
+        description: The IP family used to assign Kubernetes Pod and Service objects IP addresses.
+        type: String
+      - contextPath: AWS.EKS.Cluster.logging.clusterLogging
+        description: The cluster control plane logging configuration for your cluster.
+        type: Object
+      - contextPath: AWS.EKS.Cluster.identity
+        description: The identity provider information for the cluster.
+        type: Object
+      - contextPath: AWS.EKS.Cluster.status
+        description: The current status of the cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.certificateAuthority.data
+        description: The Base64-encoded certificate data required to communicate with your cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.clientRequestToken
+        description: A unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+        type: String
+      - contextPath: AWS.EKS.Cluster.platformVersion
+        description: The platform version of your Amazon EKS cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.tags
+        description: Metadata that assists with categorization and organization.
+        type: Object
+      - contextPath: AWS.EKS.Cluster.encryptionConfig.resources
+        description: Specifies the resources to be encrypted. The only supported value is secrets.
+        type: List
+      - contextPath: AWS.EKS.Cluster.encryptionConfig.provider
+        description: Key Management Service (KMS) key.
+        type: Object
+      - contextPath: AWS.EKS.Cluster.connectorConfig.activationId
+        description: A unique ID associated with the cluster for registration purposes.
+        type: String
+      - contextPath: AWS.EKS.Cluster.connectorConfig.activationCode
+        description: A unique code associated with the cluster for registration purposes.
+        type: String
+      - contextPath: AWS.EKS.Cluster.connectorConfig.activationExpiry
+        description: The expiration time of the connected cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.connectorConfig.provider
+        description: The cluster’s cloud service provider.
+        type: String
+      - contextPath: AWS.EKS.Cluster.connectorConfig.roleArn
+        description: The Amazon Resource Name (ARN) of the role to communicate with services from the connected Kubernetes cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.id
+        description: The ID of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+        type: String
+      - contextPath: AWS.EKS.Cluster.health.issues
+        description: An object representing the health issues of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+        type: List
+      - contextPath: AWS.EKS.Cluster.outpostConfig.outpostArns
+        description: An object representing the configuration of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+        type: Object
+      - contextPath: AWS.EKS.Cluster.outpostConfig.controlPlaneInstanceType
+        description: The Amazon EC2 instance type used for the control plane.
+        type: String
+      - contextPath: AWS.EKS.Cluster.outpostConfig.controlPlanePlacement
+        description: An object representing the placement configuration for all the control plane instances of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+        type: Object
+      - contextPath: AWS.EKS.Cluster.accessConfig.bootstrapClusterCreatorAdminPermissions
+        description: Specifies whether or not the cluster creator IAM principal was set as a cluster admin access entry during cluster creation time.
+        type: Boolean
+      - contextPath: AWS.EKS.Cluster.accessConfig.authenticationMode
+        description: The current authentication mode of the cluster.
+        type: String
   runonce: false
   script: '-'
   type: python

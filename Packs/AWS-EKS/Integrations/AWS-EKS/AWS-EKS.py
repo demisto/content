@@ -19,6 +19,20 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 ''' HELPER FUNCTIONS '''
 
 
+def datetime_to_str(data: dict, param_name: str):
+    """
+    Updates an Amazon EKS cluster configuration.
+    Args:
+        data: a dictionary with the response data
+        param_name: the name of the parameter that should be converted from datetime object to string.
+
+    Returns:
+        A Command Results object
+    """
+    if param_value := data.get(param_name):
+        data[param_name] = param_value.strftime(DATE_FORMAT)
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -35,10 +49,12 @@ def list_clusters_command(aws_client: AWSClient, args: dict) -> CommandResults:
     else:
         response = client.list_clusters(maxResults=limit)
 
-    return CommandResults()
+    return CommandResults(readable_output='ok',
+                          raw_response=response,
+                          outputs=response)
 
 
-def update_cluster_config_command(aws_client: AWSClient, args: dict) -> CommandResults:
+def update_cluster_config_command(aws_client: AWSClient, args: dict)-> CommandResults:
     """
     Updates an Amazon EKS cluster configuration.
     Args:
@@ -64,6 +80,8 @@ def update_cluster_config_command(aws_client: AWSClient, args: dict) -> CommandR
     )
     response_data = response.get('update', {})
     response_data['name'] = name
+    datetime_to_str(response_data, 'createdAt')
+
     md_table = {
         'Cluster Name': response_data.get('name'),
         'ID': response_data.get('id'),
@@ -84,6 +102,47 @@ def update_cluster_config_command(aws_client: AWSClient, args: dict) -> CommandR
         outputs=response_data,
         raw_response=response_data,
         outputs_key_field='id'
+    )
+
+
+def describe_cluster_command(aws_client: AWSClient, args: dict) -> CommandResults:
+    """
+    Describes an Amazon EKS cluster.
+    Args:
+        aws_client: AWS client
+        args: command arguments
+
+    Returns:
+        A Command Results object
+    """
+    client = aws_client.aws_session(service='eks')
+    name = args.get('name')
+
+    response = client.describe_cluster(name=name)
+    response_data = response.get('cluster', {})
+    datetime_to_str(response_data, 'createdAt')
+    datetime_to_str(response_data.get('connectorConfig', {}), 'activationExpiry')
+    md_table = {
+        'Cluster Name': response_data.get('name'),
+        'ID': response_data.get('id'),
+        'Status': response_data.get('status'),
+        'ARN': response_data.get('arn'),
+        'Created At': response_data.get('createdAt'),
+        'Version': response_data.get('version'),
+    }
+    headers = ['Cluster Name', 'ID', 'Status', 'ARN', 'Created At', 'Version']
+    readable_output = tableToMarkdown(
+        name='Describe Cluster Information',
+        t=md_table,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AWS.EKS.Cluster',
+        outputs=response_data,
+        raw_response=response_data,
+        outputs_key_field='name'
     )
 
 
@@ -145,6 +204,9 @@ def main():
 
         elif demisto.command() == 'aws-eks-update-cluster-config':
             return_results(update_cluster_config_command(aws_client, args))
+
+        elif demisto.command() == 'aws-eks-describe-cluster':
+            return_results(describe_cluster_command(aws_client, args))
 
         else:
             return_error(f"The command {demisto.command()} isn't implemented")
