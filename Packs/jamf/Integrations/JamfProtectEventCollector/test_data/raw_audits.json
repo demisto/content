@@ -1,6 +1,6 @@
 {
     "data": {
-        "listAlerts": {
+        "listAuditLogsByDate": {
             "items": [
                 {
                     "date": "2024-01-01T14:17:38.552096Z",

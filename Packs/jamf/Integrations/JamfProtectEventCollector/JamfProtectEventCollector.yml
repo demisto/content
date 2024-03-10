@@ -25,26 +25,28 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- additionalinfo: The unique identifier for the client application, provided by Jamf when the application is registered. This is used to authenticate the client with the Jamf Protect server.
-  displaypassword: Client ID
-  hiddenusername: true
-  name: client_id
-  required: true
-  type: 9
-  section: Connect
 - additionalinfo: The password for the client application. This is used to authenticate the client with the Jamf Protect server.
   displaypassword: Password
-  hiddenusername: true
-  name: client_password
+  name: client
+  display: Client ID
   required: true
   type: 9
   section: Connect
-- additionalinfo: Maximum number of events (both Alerts and Audits) to fetch at a time.
-  defaultvalue: '2000'
-  display: Max events per fetch
-  name: max_fetch
+- additionalinfo: Maximum number of alert events to fetch at a time.
+  defaultvalue: '1000'
+  display: Max alert events per fetch
+  name: max_fetch_alerts
   required: false
   type: 0
+  advanced: true
+  section: Collect
+- additionalinfo: Maximum number of audit events to fetch at a time.
+  defaultvalue: '20000'
+  display: Max audit events per fetch
+  name: max_fetch_audits
+  required: false
+  type: 0
+  advanced: true
   section: Collect
 description: Use this integration to fetch Audits and Alerts from Jamf Protect as events in XSIAM.
 display: Jamf Protect Event Collector

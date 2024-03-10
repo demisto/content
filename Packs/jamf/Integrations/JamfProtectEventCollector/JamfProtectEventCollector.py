@@ -12,7 +12,8 @@ VENDOR = 'Jamf'
 PRODUCT = 'Protect'
 ALERT_PAGE_SIZE = 200
 AUDIT_PAGE_SIZE = 5000
-DEFAULT_MAX_FETCH = 10000
+DEFAULT_MAX_FETCH_ALERT = 1000
+DEFAULT_MAX_FETCH_AUDIT = 20000
 DEFAULT_LIMIT = 10
 MINUTES_BEFORE_TOKEN_EXPIRED = 2
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -23,11 +24,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, client_id: str = "", client_password: str = "", proxy: bool = False):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-
-        """ due to deprecating the basic auth option from the classical API versions 10.35 and up
-            the client will try to generate an auth token first, if it failed to do generate the token,
-            the client will use basic auth instead.
-        """
         self.token = self._login(client_id, client_password)
 
     def _login(self, client_id: str, client_password: str) -> str:
@@ -269,7 +265,7 @@ def test_module(client: Client) -> str:
     Returns:
         str: Returns "ok" if the client is able to interact with the API successfully, raises an exception otherwise.
     """
-    fetch_events(client, max_fetch=1)
+    fetch_events(client, max_fetch_audits=1, max_fetch_alerts=1)
     return "ok"
 
 
@@ -321,6 +317,8 @@ def get_events_alert_type(client: Client, start_date: str, max_fetch: int, last_
 
     demisto.debug(f"Jamf Protect- Fetching alerts from {created}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
+    for event in events:
+        event["source_log_type"] = "alert"
     if next_page:
         demisto.debug(
             f"Jamf Protect- Fetched {len(events)} which is the maximum number of alerts."
@@ -357,13 +355,15 @@ def get_events_audit_type(client: Client, start_date: str, end_date: str, max_fe
              - A dictionary with new last run values,
               the end date of the fetched events and a continuance token if the fetched reached the max limit.
      """
-    start_date, end_date = calculate_fetch_dates(start_date, last_run=last_run, last_run_key="alert")
+    start_date, end_date = calculate_fetch_dates(start_date, end_date=end_date, last_run=last_run, last_run_key="alert")
     command_args = {"start_date": start_date, "end_date": end_date}
     client_event_type_func = client.get_audits
     next_page = last_run.get("audit", {}).get("next_page", "")
 
     demisto.debug(f"Jamf Protect- Fetching audits from {start_date} to {end_date}")
     events, next_page = get_events(command_args, client_event_type_func, max_fetch, next_page)
+    for event in events:
+        event["source_log_type"] = "audit"
     if next_page:
         demisto.debug(
             f" Jamf Protect - Fetched {len(events)}"
@@ -437,11 +437,11 @@ def calculate_fetch_dates(start_date: str, last_run_key: str, last_run: dict, en
         (now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
     # argument > current time
     end_date = end_date or now_utc_time.strftime(DATE_FORMAT)
-
     return start_date, end_date
 
 
-def fetch_events(client: Client, max_fetch: int, start_date_arg: str = "", end_date_arg: str = "") -> tuple:
+def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, start_date_arg: str = "",
+                 end_date_arg: str = "") -> tuple:
     """
     Fetches events from the Jamf Protect API within a specified date range.
 
@@ -459,13 +459,15 @@ def fetch_events(client: Client, max_fetch: int, start_date_arg: str = "", end_d
     last_run = demisto.getLastRun()
     alert_events, alert_next_run = [], {}
     audit_events, audit_next_run = [], {}
+    alert_next_page = last_run.get("alert", {}).get("next_page", "")
+    audit_next_page = last_run.get("audit", {}).get("next_page", "")
 
-    if not last_run.get("audit", {}).get("next_page", ""):
+    if not (alert_next_page or audit_next_page) or alert_next_page:
         # If the last run contains a next page token for audit events, it will not fetch alert events.
-        alert_events, alert_next_run = get_events_alert_type(client, start_date_arg, max_fetch, last_run)
-    if not last_run.get("alert", {}).get("next_page", ""):
+        alert_events, alert_next_run = get_events_alert_type(client, start_date_arg, max_fetch_alerts, last_run)
+    if not (alert_next_page or audit_next_page) or audit_next_page:
         # If the last run does not contain a next page token for alert events, it will fetch audit events.
-        audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch, last_run)
+        audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch_audits, last_run)
     next_run: Dict[str, Any] = {"alert": alert_next_run, "audit": audit_next_run}
     if "next_page" in (alert_next_run | audit_next_run):
         # Will instantly re-trigger the fetch command.
@@ -524,7 +526,8 @@ def get_events_command(client, args) -> tuple:
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
     results = []
     start_date, end_date = validate_start_and_end_dates(args)
-    alert_events, audit_events, _ = fetch_events(client=client, max_fetch=limit, start_date_arg=start_date,
+    alert_events, audit_events, _ = fetch_events(client=client, max_fetch_alerts=limit, max_fetch_audits=limit,
+                                                 start_date_arg=start_date,
                                                  end_date_arg=end_date)
 
     if alert_events:
@@ -570,9 +573,10 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     try:
-        client_id = params.get('client_id', {}).get('password', '')
-        client_password = params.get('client_password', {}).get('password', '')
-        max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_FETCH
+        client_id = params.get('client', {}).get('identifier', '')
+        client_password = params.get('client', {}).get('password', '')
+        max_fetch_audits = arg_to_number(params.get('max_fetch_audits')) or DEFAULT_MAX_FETCH_AUDIT
+        max_fetch_alerts = arg_to_number(params.get('max_fetch_alerts')) or DEFAULT_MAX_FETCH_ALERT
 
         demisto.debug(f'Command being called is {demisto.command()}')
 
@@ -594,7 +598,8 @@ def main() -> None:  # pragma: no cover
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
         elif demisto.command() == 'fetch-events':
             alert_events, audit_events, new_last_run = fetch_events(client=client,
-                                                                    max_fetch=max_fetch)
+                                                                    max_fetch_alerts=max_fetch_alerts,
+                                                                    max_fetch_audits=max_fetch_audits)
             events = alert_events + audit_events
             if events:
                 add_time_field(events)

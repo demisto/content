@@ -16,23 +16,14 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def mock_params(mocker, params=None):
-    if params is None:
-        params = {'max_fetch': '2', 'insecure': True,
-                  'proxy': False, 'base_url': MOCK_BASEURL,
-                  'client_id': {'password': MOCK_CLIENT_ID, },
-                  'client_password': {
-                      'password': MOCK_CLIENT_PASSWORD}
-                  }
-    mocker.patch.object(demisto, "params", return_value=params)
-
 
 @pytest.fixture(autouse=True)
-def client(mocker):
+def client(mocker, with_alert_next_page=False, with_audit_next_page=False):
     from JamfProtectEventCollector import Client
-
+    mocked_alerts = util_load_json('test_data/raw_alerts.json')
+    mocked_audits = util_load_json('test_data/raw_audits.json')
     mocker.patch.object(Client, '_http_request',
-                        side_effect=[util_load_json('test_data/raw_alerts.json'), util_load_json('test_data/raw_audits.json')])
+                        side_effect=[mocked_alerts, mocked_audits])
     mocker.patch.object(Client, '_login', return_value="ExampleToken")
     return Client(base_url=MOCK_BASEURL, verify=False, proxy=False, client_id=MOCK_CLIENT_ID,
                   client_password=MOCK_CLIENT_PASSWORD)
@@ -127,3 +118,42 @@ def test_calculate_fetch_dates_without_arguments(client):
     start_date, end_date = calculate_fetch_dates(start_date="", last_run_key="", last_run={})
     assert start_date == (dateparser.parse(MOCK_TIME_UTC_NOW) - datetime.timedelta(minutes=1)).strftime(DATE_FORMAT)
     assert end_date == MOCK_TIME_UTC_NOW
+
+
+@pytest.mark.parametrize("with_alert_next_page, with_audit_next_page",
+                        [(False, False), (True, False), (False, True), (True, True)],
+                         ids=["Case 1: No next pages for alerts and audits",
+                              "Case 2: Next page for alerts, no next page for audits",
+                              "Case 3: No next page for alerts, next page for audits",
+                              "Case 4: Next pages for both alerts and audits"]
+                         )
+def test_nextTrigger(with_alert_next_page, with_audit_next_page, mocker):
+    """
+    Given: A mock JamfProtect client.
+    When: Running fetch_events with different next pages for alerts and audits.
+    Then: Ensure the nextTrigger is set to 0 when there are no next pages, and the next page is set when there are next pages.
+    """
+    from JamfProtectEventCollector import fetch_events, Client
+    mocked_alerts = util_load_json('test_data/raw_alerts.json')
+    mocked_audits = util_load_json('test_data/raw_audits.json')
+    if with_alert_next_page:
+        mocked_alerts["data"]["listAlerts"]["pageInfo"]["next"] = "example_next_page"
+    if with_audit_next_page:
+        mocked_audits["data"]["listAuditLogsByDate"]["pageInfo"]["next"] = "example_next_page"
+    mocker.patch.object(Client, '_http_request',
+                        side_effect=[mocked_alerts, mocked_audits])
+    mocker.patch.object(Client, '_login', return_value="ExampleToken")
+    client = Client(base_url=MOCK_BASEURL, verify=False, proxy=False, client_id=MOCK_CLIENT_ID,
+           client_password=MOCK_CLIENT_PASSWORD)
+
+    _, _, next_run = fetch_events(client, 1, 1)
+    if with_alert_next_page:
+        assert next_run.get("nextTrigger") == "0"
+        assert next_run.get("alert").get("next_page") == "example_next_page"
+    else:
+        assert not next_run.get("alert").get("next_page")
+    if with_audit_next_page:
+        assert next_run.get("nextTrigger") == "0"
+        assert next_run.get("audit").get("next_page") == "example_next_page"
+    else:
+        assert not next_run.get("audit").get("next_page")
