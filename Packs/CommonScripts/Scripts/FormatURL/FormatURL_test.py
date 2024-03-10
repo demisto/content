@@ -177,7 +177,9 @@ FORMAT_QUERY = [
     ('https://www.test.test.com/test.html?paramaters=testagain',  # disable-secrets-detection
      'https://www.test.test.com/test.html?paramaters=testagain'),  # disable-secrets-detection
     ('https://test.test.com/v2/test?test&test=[test]test',  # disable-secrets-detection
-     'https://test.test.com/v2/test?test&test=[test]test')  # disable-secrets-detection
+     'https://test.test.com/v2/test?test&test=[test]test'),  # disable-secrets-detection
+    ('https://test.dev?email=some@email.addres',  # disable-secrets-detection
+     'https://test.dev?email=some@email.addres'),  # disable-secrets-detection
 ]
 
 FORMAT_FRAGMENT = [
@@ -186,6 +188,8 @@ FORMAT_FRAGMENT = [
      'http://_23_11.redacted.com./#redactedredactedredacted'),  # disable-secrets-detection
     ('https://test.com?a=b#fragment3', 'https://test.com?a=b#fragment3'),  # disable-secrets-detection
     ('https://test.com/?a=b#fragment3', 'https://test.com/?a=b#fragment3'),  # disable-secrets-detection
+    ('https://test.dev#fragment',  # disable-secrets-detection
+     'https://test.dev#fragment')  # disable-secrets-detection
 ]
 
 FORMAT_REFANG = [
