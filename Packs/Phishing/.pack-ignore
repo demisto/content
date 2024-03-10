@@ -61,6 +61,7 @@ DeleteReportedEmail
 GetBrandDeleteReportedEmail
 CommonTypes
 UseOldHTMLFields
+QR
 
 [file:LinkToPhishingCampaign.yml]
 ignore=BA124
