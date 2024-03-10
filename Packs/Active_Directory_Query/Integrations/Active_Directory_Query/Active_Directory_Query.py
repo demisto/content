@@ -400,6 +400,7 @@ def get_user_dn_by_email(default_base_dn, email):
 def modify_user_ou(dn, new_ou):
     assert connection is not None
     cn = dn.split(',OU=', 1)[0]
+    cn = cn.split(',DC=', 1)[0]
     # removing // to fix customers bug
     cn = cn.replace('\\', '')
     dn = dn.replace('\\', '')
