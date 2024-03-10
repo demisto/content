@@ -855,21 +855,32 @@ class Client(BaseClient):
             json_data=body
         )
     
-    def get_resource_list(self, range_: str, endpoint: str, filter_: Optional[str] = None, fields: Optional[str] = None):
+    def get_resource_list(
+            self,
+            range_: str,
+            endpoint: str,
+            filter_: Optional[str] = None,
+            fields: Optional[str] = None,
+            additional_headers_: Optional[dict] = None):
         return self.http_request(
             method='GET',
             url_suffix=endpoint,
             params=assign_params(filter=filter_, fields=fields),
             additional_headers={
                 'Range': range_
+            } if additional_headers_ is None \
+            else {
+                'Range': range_,
+                **additional_headers_
             }
         )
     
-    def get_resource(self, id: str, endpoint: str, fields: Optional[str] = None):
+    def get_resource(self, id: str, endpoint: str, fields: Optional[str] = None, additional_headers: Optional[dict] = None):
         return self.http_request(
             method='GET',
             url_suffix=endpoint + f'/{id}',
-            params=assign_params(fields=fields)
+            params=assign_params(fields=fields),
+            additional_headers=additional_headers
         )
     
     def delete_log_source(self, id: str):
@@ -3302,15 +3313,19 @@ def qradar_log_sources_list_command(client: Client, args: dict) -> CommandResult
     """
     qrd_encryption_algorithm: str = args.get('qrd_encryption_algorithm', 'AES128')
     qrd_encryption_password: str = args.get('qrd_encryption_password', secrets.token_urlsafe(20))
+    endpoint = '/config/event_sources/log_source_management/log_sources'
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
+    additional_headers = {
+                'x-qrd-encryption-algorithm': qrd_encryption_algorithm,
+                'x-qrd-encryption-password': qrd_encryption_password
+    }
     id = args.get('id')
     
     # if this call fails, raise an error and stop command execution
-    response = (
-        client.log_sources_list(qrd_encryption_algorithm, qrd_encryption_password, range_, filter_, fields) if id is None
-        else [client.get_log_source(qrd_encryption_algorithm, qrd_encryption_password, id, fields)])
+    response = client.get_resource_list(range_, endpoint, filter_, fields, additional_headers) if id is None \
+        else [client.get_resource(id, endpoint, fields, additional_headers)]
     outputs = sanitize_outputs(response, LOG_SOURCES_OLD_NEW_MAP)
     headers = build_headers(['ID', 'Name', 'Description'], set(LOG_SOURCES_OLD_NEW_MAP.values()))
 

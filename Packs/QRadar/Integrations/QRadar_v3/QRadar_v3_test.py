@@ -35,6 +35,11 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_remote_network_cidr_list_command, verify_args_for_remote_network_cidr_list, is_positive, \
     qradar_remote_network_cidr_delete_command, qradar_remote_network_cidr_update_command, \
     qradar_remote_network_deploy_execution_command, qradar_indicators_upload_command, migrate_integration_ctx, \
+    qradar_event_collectors_list_command, qradar_wincollect_destinations_list_command, \
+    qradar_disconnected_log_collectors_list_command, qradar_log_source_types_list_command, \
+    qradar_log_source_protocol_types_list_command, qradar_log_source_extensions_list_command, \
+    qradar_log_source_languages_list_command, qradar_log_source_groups_list_command, qradar_log_source_create_command, \
+    qradar_log_source_delete_command, qradar_log_source_update_command, \
     enrich_offense_with_events, perform_long_running_loop, validate_integration_context, FetchMode, \
     MIRRORED_OFFENSES_FETCHED_CTX_KEY, IndicatorsSearcher
 
@@ -848,7 +853,6 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_reference_set_value_upsert_command, 'reference_set_bulk_load'),
                              (qradar_domains_list_command, 'domains_list'),
                              (qradar_geolocations_for_ip_command, 'geolocations_for_ip'),
-                             (qradar_log_sources_list_command, 'log_sources_list'),
                              (qradar_get_custom_properties_command, 'custom_properties'),
                              (qradar_remote_network_cidr_list_command, 'get_remote_network_cidr'),
                              (qradar_remote_network_cidr_update_command, 'create_and_update_remote_network_cidr'),
@@ -1645,3 +1649,78 @@ def test_qradar_reference_set_value_upsert_command_continue_polling_with_connect
     result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
     # make sure when status is COMPLETED that outputs are returned
     assert result.outputs
+
+@pytest.mark.parametrize('command_func, endpoint, id', [
+    (qradar_log_sources_list_command,  '/config/event_sources/log_source_management/log_sources/', 0),
+    (qradar_event_collectors_list_command,  '/config/event_sources/event_collectors', 0),
+    (qradar_wincollect_destinations_list_command,  '/config/event_sources/wincollect/wincollect_destinations', 0),
+    (qradar_disconnected_log_collectors_list_command,  '/config/event_sources/disconnected_log_collectors', 0),
+    (qradar_log_source_types_list_command,  '/config/event_sources/log_source_management/log_source_types', 0),
+    (qradar_log_source_protocol_types_list_command, '/config/event_sources/log_source_management/protocol_types', 0),
+    (qradar_log_source_extensions_list_command,  '/config/event_sources/log_source_management/log_source_extensions', 0),
+    (qradar_log_source_languages_list_command,  '/config/event_sources/log_source_management/log_source_languages', 0),
+    (qradar_log_source_groups_list_command, '/config/event_sources/log_source_management/log_source_groups',  0)
+    ])
+def test_id_commands(mocker, command_func: Callable[[Client, dict], CommandResults], endpoint:str , id: int):
+    args = {"id": id}
+    get_by_id_mock = mocker.patch.object(client, 'get_resource', return_value={})
+    try:
+        command_func(client, args)
+    except KeyError:
+        demisto.log(f'command {command_func.__name__} raised key error')
+    get_by_id_mock.assert_called_with(id, endpoint, None)
+
+@pytest.mark.parametrize('command_func, endpoint', [
+    (qradar_log_sources_list_command,  '/config/event_sources/log_source_management/log_sources'),
+    (qradar_event_collectors_list_command,  '/config/event_sources/event_collectors'),
+    (qradar_wincollect_destinations_list_command,  '/config/event_sources/wincollect/wincollect_destinations'),
+    (qradar_disconnected_log_collectors_list_command,  '/config/event_sources/disconnected_log_collectors'),
+    (qradar_log_source_types_list_command,  '/config/event_sources/log_source_management/log_source_types'),
+    (qradar_log_source_protocol_types_list_command, '/config/event_sources/log_source_management/protocol_types'),
+    (qradar_log_source_extensions_list_command,  '/config/event_sources/log_source_management/log_source_extensions'),
+    (qradar_log_source_languages_list_command,  '/config/event_sources/log_source_management/log_source_languages'),
+    (qradar_log_source_groups_list_command, '/config/event_sources/log_source_management/log_source_groups',)
+    ])
+def test_list_commands(mocker, command_func: Callable[[Client, dict], CommandResults], endpoint:str):
+    args = {'range': '0-49'}
+    get_list_mock = mocker.patch.object(client, 'get_resource_list', return_value=[{}])
+    try:
+        command_func(client, args)
+    except KeyError:
+        demisto.log(f'command {command_func.__name__} raised key error')
+    get_list_mock.assert_called_with(f"items={args['range']}", endpoint, None, None)
+
+
+def test_get_log_sources_list(mocker):
+    qrd_encryption_details = {
+        'qrd_encryption_algorithm': 'algorithm',
+        'qrd_encryption_password': 'password'
+    }
+    args = {'range': '0-49', **qrd_encryption_details}
+    get_list_mock = mocker.patch.object(client, 'get_resource_list', return_value=[{}])
+    endpoint = '/config/event_sources/log_source_management/log_sources'
+    expected_additional_headers = {'x-qrd-encryption-algorithm': 'algorithm', 'x-qrd-encryption-password': 'password'}
+    try:
+        qradar_log_sources_list_command(client, args)
+    except KeyError:
+        demisto.log('command log_sources_list_command raised key error')
+    get_list_mock.assert_called_with(f"items={args['range']}", endpoint, None, None, expected_additional_headers)
+
+def test_get_log_source_by_id(mocker):
+    mock_id = 1880
+    qrd_encryption_details = {
+        'qrd_encryption_algorithm': 'algorithm',
+        'qrd_encryption_password': 'password'
+    }
+    args = {'id': mock_id, **qrd_encryption_details}
+    get_by_id_mock = mocker.patch.object(client, 'get_resource', return_value={})
+    endpoint = '/config/event_sources/log_source_management/log_sources'
+    expected_additional_headers = {'x-qrd-encryption-algorithm': 'algorithm', 'x-qrd-encryption-password': 'password'}
+    try:
+        qradar_log_sources_list_command(client, args)
+    except KeyError:
+        demisto.log('command log_sources_list_command raised key error')
+    get_by_id_mock.assert_called_with(mock_id, endpoint, None, expected_additional_headers)    
+
+def test_create_log_source(mocker):
+    
