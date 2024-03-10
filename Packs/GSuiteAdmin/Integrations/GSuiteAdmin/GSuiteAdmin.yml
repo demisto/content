@@ -2236,5 +2236,5 @@ script:
   type: python
 tests:
 - GSuiteAdmin-Test
-- GSuiteAdmin-MobileDevices-Test
+- playbook-GSuiteAdmin-MobileDevices-Test
 fromversion: 5.0.0

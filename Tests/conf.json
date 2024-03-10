@@ -4220,7 +4220,7 @@
             ]
         },
         {
-            "playbookID": "X509Certificate Test Playbook",
+            "playbookID": "X509Certificate_Test_Playbook",
             "fromversion": "6.0.0"
         },
         {
