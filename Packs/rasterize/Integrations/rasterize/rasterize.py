@@ -488,7 +488,7 @@ def backoff(polled_item, wait_time=DEFAULT_WAIT_TIME, polling_interval=DEFAULT_P
 
 
 def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_screen=False,
-                     include_url=False, include_source=False):  # pragma: no cover
+                     include_url=False, include_source=False, return_errors=True):  # pragma: no cover
     """
     :param include_source: Whether to include the page source in the response
     """
@@ -547,7 +547,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     response_body = None
     if include_source:
         request_id, operation_time = backoff(tab_event_handler.request_id)
-        demisto.debug('screenshot_image, include_source, {request_id=}, {operation_time=}')
+        demisto.debug(f'screenshot_image, {include_source=}, {request_id=}, {operation_time=}')
         if request_id:
             demisto.debug(f"request_id available after {operation_time} seconds.")
         else:
@@ -556,8 +556,10 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
 
         try:
             response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)['body']
-            demisto.debug('screenshot_image, include_source, {response_body=}')
-        except Exception as ex:
+            demisto.debug(f'screenshot_image, {include_source=}, {response_body=}')
+        except Exception as ex:  # This exception is raised when a non-existent URL is provided.
+            if return_errors:
+                return str(ex)
             demisto.info(f'Failed to get page body due to {ex}')
             raise ex
         response_body, operation_time = backoff(response_body)
@@ -598,8 +600,9 @@ def rasterize_thread(browser, chrome_port, path: str,
                      navigation_timeout: int = DEFAULT_PAGE_LOAD_TIME,
                      include_url: bool = False,
                      full_screen: bool = False,
-                     width=DEFAULT_WIDTH,
-                     height=DEFAULT_HEIGHT
+                     width: int = DEFAULT_WIDTH,
+                     height: int = DEFAULT_HEIGHT,
+                     return_errors: bool = False
                      ):
     demisto.debug(f'rasterize_thread, starting TabLifecycleManager, {path=}, {rasterize_type=}')
     with TabLifecycleManager(browser, chrome_port, offline_mode) as tab:
@@ -619,7 +622,8 @@ def rasterize_thread(browser, chrome_port, path: str,
 
         elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower() == RasterizeType.JSON.value:
             return screenshot_image(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout,
-                                    full_screen=full_screen, include_url=include_url, include_source=True)
+                                    full_screen=full_screen, include_url=include_url, include_source=True,
+                                    return_errors=return_errors)
         else:
             raise DemistoException(f'Unsupported rasterization type: {rasterize_type}.')
 
@@ -631,8 +635,9 @@ def perform_rasterize(path: str | list[str],
                       navigation_timeout: int = DEFAULT_PAGE_LOAD_TIME,
                       include_url: bool = False,
                       full_screen: bool = False,
-                      width=DEFAULT_WIDTH,
-                      height=DEFAULT_HEIGHT
+                      width: int = DEFAULT_WIDTH,
+                      height: int = DEFAULT_HEIGHT,
+                      return_errors: bool = False
                       ):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
@@ -664,13 +669,14 @@ def perform_rasterize(path: str | list[str],
                     executor.submit(
                         rasterize_thread, browser=browser, chrome_port=chrome_port, path=current_path,
                         rasterize_type=rasterize_type, wait_time=wait_time, offline_mode=offline_mode,
-                        navigation_timeout=navigation_timeout, include_url=include_url, full_screen=full_screen, width=width,
-                        height=height
+                        navigation_timeout=navigation_timeout, include_url=include_url, full_screen=full_screen,
+                        width=width, height=height, return_errors=return_errors
                     )
                 )
             # Wait for all tasks to complete
             executor.shutdown(wait=True)
-            demisto.info(f"Finished {len(rasterization_threads)} rasterizations, active tabs len: {len(browser.list_tab())}")
+            demisto.info(
+                f"Finished {len(rasterization_threads)} rasterize operations, active tabs len: {len(browser.list_tab())}")
 
             previous_rasterizations_counter_from_file = read_info_file(RASTERIZATIONS_COUNTER_FILE_PATH)
             if previous_rasterizations_counter_from_file:
@@ -849,7 +855,6 @@ def rasterize_command():  # pragma: no cover
     urls = argToList(demisto.getArg('url'))
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
-
     rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
     wait_time = int(demisto.args().get('wait_time', 0))
     navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
@@ -863,12 +868,17 @@ def rasterize_command():  # pragma: no cover
 
     rasterize_output = perform_rasterize(path=urls, rasterize_type=rasterize_type, wait_time=wait_time,
                                          navigation_timeout=navigation_timeout, include_url=include_url,
-                                         full_screen=full_screen)
+                                         full_screen=full_screen, return_errors=True)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
-    for current_rasterize_output, current_url in zip(rasterize_output, urls):
-        # demisto.debug(f"rasterize_command response, {current_rasterize_output=}")
 
-        if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower() == RasterizeType.JSON.value:
+    for current_rasterize_output, current_url in zip(rasterize_output, urls):
+        if isinstance(current_rasterize_output, str):
+            return_results(CommandResults(
+                readable_output=f'Error for URL {current_url!r}:\n{current_rasterize_output}',
+                raw_response=current_rasterize_output,
+                entry_type=EntryType.ERROR,
+            ))
+        elif rasterize_type == RasterizeType.JSON or str(rasterize_type).lower() == RasterizeType.JSON.value:
             output = {'image_b64': base64.b64encode(current_rasterize_output[0]).decode('utf8'),
                       'html': current_rasterize_output[1], 'current_url': current_url}
             return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {current_url}"))

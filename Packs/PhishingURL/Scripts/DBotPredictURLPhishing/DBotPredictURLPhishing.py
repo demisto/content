@@ -458,16 +458,10 @@ def extract_created_date(entry: dict):
     return None
 
 
-def validate_rasterize(res_rasterize: list[dict]):
-    if is_error(res_rasterize):
-        error = yaml.safe_dump(get_error(res_rasterize))
-        raise DemistoException(f'Rasterize on URLs returned an error:\n{error}')
-
-
 def weed_rasterize_errors(urls: list[str], res_rasterize: list[dict]):
     '''Remove the URLs that failed rasterization and return them.'''
 
-    error_idx = (i for (i, res) in enumerate(res_rasterize) if isinstance(res['Contents'], str))
+    error_idx = [i for (i, res) in enumerate(res_rasterize) if isinstance(res['Contents'], str)]
     if error_idx:
         return_results(CommandResults(readable_output=tableToMarkdown(
             'The following URLs failed rasterize and were skipped:',
@@ -487,7 +481,6 @@ def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
         }
     )
     demisto.debug(f'Rasterize Data: {res_rasterize}')
-    validate_rasterize(res_rasterize)
     weed_rasterize_errors(urls, res_rasterize)
     return [res['Contents'] for res in res_rasterize]
 
