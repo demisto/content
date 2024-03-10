@@ -11792,9 +11792,6 @@ def comma_separated_mapping_to_dict(raw_text):
     return mapping_dict
 
 
-from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
-
-
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################
