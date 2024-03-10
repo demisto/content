@@ -1,0 +1,14 @@
+# This rule is to not run the build for docker update branches (for non-nightly packs)
+.filter-non-nightly-docker-updates-rule:
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^demisto\// && $CI_COMMIT_BRANCH !~ /^demisto\/.*-nightly$/'
+      when: never
+
+.push-rule:
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
+trigger-contribution-build:
+  script:
+  - echo "This is a test!!!"

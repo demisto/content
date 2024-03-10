@@ -34,3 +34,4 @@ include:
   - local: .gitlab/ci/.gitlab-ci.security-scans.yml
   - local: .gitlab/ci/.gitlab-ci.build-machines-cleanup.yml
   - local: .gitlab/ci/.gitlab-ci.sdk-release.yml
+  - local: .gitlab/ci/.gitlab-ci.trigger-contribution-build.yml
