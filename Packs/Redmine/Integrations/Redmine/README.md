@@ -9,7 +9,7 @@ This integration was integrated and tested with version xx of Redmine.
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://1.1.1.1) | True |
+    | Server URL (e.g. <https://1.1.1.1>) | True |
     | Trust any certificate (not secure) | False |
     | API Key | True |
     | Project id | False |
@@ -28,6 +28,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### redmine-issue-create
 
 ***
+
 - Create a new issue
 - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
 - To create a custom field, navigate to the server URL with administrative privileges, click on 'Administration' (located at the top left), select 'Custom fields,' then proceed to create a new custom field. Once created, you can add values as needed
@@ -286,6 +287,7 @@ There are no input arguments for this command.
 ### redmine-user-id-list
 
 ***
+
 - Retrieve a list of users with optional filtering options.
 - This command requires admin privileges in your Redmine account.
 
