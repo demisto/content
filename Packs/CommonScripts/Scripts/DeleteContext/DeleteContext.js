@@ -13,63 +13,32 @@ function hasDuplicates(arr) {
 }
 
 /**
- * Checks if a nested key path exists within an object.
- * 
- * This function takes a context object and a string representing a nested key path (e.g., 'key1.innerkey.innerinnerkey').
- * It then recursively checks whether the full path specified by the key exists within the context object.
- *
- * @param {Object} context The nested object to search within.
- * @param {string} key The nested key path, with each level separated by '.' (e.g., 'key1.innerkey2.innerinnerkey3').
- * @returns {boolean} Returns true if the key exists in the object, false otherwise.
- */
-function keyExists(context, key) {
-    const keys = key.split('.'); 
-    let currentContext = context;
-
-    for (let i = 0; i < keys.length; i++) {
-        if (!(keys[i] in currentContext)) {
-            return false;
-        }
-        // Move deeper into the context for the next iteration.
-        currentContext = currentContext[keys[i]];
-    }
-    return true;
-}
-
-/**
  * Deletes keys from the context and handles errors.
  * @param {Array<string>} keys - An array of keys to delete.
  * @returns {string} A message summarizing the outcome of the delete operation.
  */
-function deleteKeys(keys, isSubPlaybookKey) {
-    let deletedKeys = [];
-    let errorsStr = "";
-    for (let key of keys) {
-        key = key.trim();
-        if (isSubPlaybookKey) {
-            key = 'subplaybook-${currentPlaybookID}.' + key;
+function deleteKeys(keysToDelete) {
+    var deletedKeys = []
+    var errors = []
+    var message = "";
+    for (var key of keysToDelete) {
+        const originalKey = key.trim();
+        if (!dq(invContext, originalKey)) {
+            errors.push(`key does not exist: ${originalKey}`);
+            continue;
         }
-
-        if (keyExists(invContext, key)) {
-            var result = executeCommand('delContext', { key: key });
-            if (!result || result.type === entryTypes.error) {
-                errorsStr += `\n${result.Contents}`;
-            } else {
-                deletedKeys.push(key);
-            }
+        const keyToDelete = isSubPlaybookKey ? 'subplaybook-${currentPlaybookID}.' + originalKey: originalKey;
+        const result = executeCommand('delContext', { key: keyToDelete });
+    
+        if (!result || result.type === entryTypes.error) {
+            errors.push(result.Contents);
         } else {
-            errorsStr += `\nKey '${key}' does not exist.`;
+            deletedKeys.push(key);
         }
-    }
-
-    let message = '';
-    if (errorsStr) {
-        message += "Encountered errors deleting keys: " + errorsStr;
     }
     if (deletedKeys.length > 0) {
         message += `\nSuccessfully deleted keys '${deletedKeys.join("', '")}' from context.`;
     }
-
     return message;
 }
 
@@ -177,26 +146,6 @@ if (shouldDeleteAll) {
 } else {
     // Supporting comma separated list of keys to be deleted.
     var keysToDelete = args.key.split(',')
-    var deletedKeys = []
-    var errorsStr = "";
-    for (let key of keysToDelete){
-        key = key.trim()
-        if (isSubPlaybookKey) {
-            key = 'subplaybook-${currentPlaybookID}.' + key;
-        }
-
-        if (keyExists(invContext, key)){
-            var result = executeCommand('delContext', {key: key});
-            if (!result || result.type === entryTypes.error) {
-                errorsStr +=`\n${result.Contents}`
-            } else {
-                deletedKeys.push(key)
-            }
-        } else {
-            errorsStr += `\nKey '${key}' does not exist.`
-        }
-    }
-
     var message = deleteKeys(keysToDelete, isSubPlaybookKey)
     return {
         Type: entryTypes.note,
