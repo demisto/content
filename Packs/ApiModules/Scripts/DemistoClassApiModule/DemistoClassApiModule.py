@@ -22,10 +22,6 @@ try:
                 self.debug("Wrapper Class: Creating {num_incidents} incidents.".format(num_incidents=len(incidents)))
             super().incidents(incidents)
 
-        def command(self):
-            self.debug("calling command - darya")
-            return super().command()
-
     if demisto.callingContext.get('context', {}).get('IntegrationBrand', '') in DEMISTO_WRAPPER_INTEGRATIONS:
         demisto.__class__ = DemistoWrapperIntegration
     elif demisto.callingContext.get('context', {}).get('ScriptName', '') in DEMISTO_WRAPPER_SCRIPTS:
