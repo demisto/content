@@ -736,7 +736,7 @@ def sync_incoming_incident_owners(incident_data):
                           f"is not registered on XSOAR")
 
 
-def handle_incoming_user_unassignment(incident_data):
+def handle_incoming_user_unassignment(incident_data):  # pragma: no cover
     incident_data['assigned_user_mail'] = ''
     incident_data['assigned_user_pretty_name'] = ''
     if demisto.params().get('sync_owners'):

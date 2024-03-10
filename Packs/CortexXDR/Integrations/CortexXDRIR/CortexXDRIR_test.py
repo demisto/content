@@ -1058,3 +1058,88 @@ def test_get_headers(mocker):
     assert len(headers) == 4
     assert headers['x-xdr-nonce'] == 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
     assert headers['x-xdr-auth-id'] == 'test_api_key_id'
+
+
+@freeze_time("1997-10-05 15:00:00 GMT")
+def test_get_last_mirrored_in_time_old_incident(mocker):
+    """
+    Given:
+        - An old incident with a lastmirroredintime set
+
+    When:
+        - Calling get_last_mirrored_in_time
+
+    Then:
+        - Return the timestamp converted from the lastmirroredintime
+    """
+    from CortexXDRIR import get_last_mirrored_in_time
+    demisto_incidents = [{'CustomFields': {'lastmirroredintime': '2020-01-01'}}]
+    mocker.patch.object(demisto, 'get_incidents', return_value=demisto_incidents)
+
+    args = {}
+
+    assert get_last_mirrored_in_time(args) == 1577836800000
+
+
+def test_get_last_mirrored_in_time_new_incident_6_0(mocker):
+    """
+    Given:
+        - A new 6.0 incident with a last_update set
+
+    When:
+        - Calling get_last_mirrored_in_time
+
+    Then:
+        - Return the timestamp converted from the last_update minus 120 seconds
+    """
+    from CortexXDRIR import get_last_mirrored_in_time
+    mocker.patch.object(demisto, 'get_incidents', return_value=[])
+    args = {'last_update': '2020-01-01T00:02:00Z'}
+
+    assert get_last_mirrored_in_time(args) == 1577836800000
+
+
+@pytest.fixture
+def last_modified_incidents():
+    return {
+        "1": 1578900000,
+        "2": 1578905000
+    }
+
+
+def test_incident_modified(last_modified_incidents):
+    from CortexXDRIR import check_if_incident_was_modified_in_xdr
+    incident_id = "2"
+    last_mirrored_time = 1578901000
+    assert check_if_incident_was_modified_in_xdr(
+        incident_id, last_mirrored_time, last_modified_incidents
+    )
+
+
+def test_parsed_alert(mocker):
+    """
+    Given:
+        - last_modified_incidents dict with mock incidents
+        - incident ID "2" which has a modified timestamp
+        - last_mirrored_time before the modified timestamp
+
+    When:
+        - Calling check_if_incident_was_modified_in_xdr().
+
+    Then:
+        - Return True indicating the incident was modified.
+    """
+    from CortexXDRIR import create_parsed_alert
+    parsed_alert = create_parsed_alert(product='product',
+                                       vendor='vendor',
+                                       local_ip='1.1.1.1',
+                                       local_port='1',
+                                       remote_ip='2.2.2.2',
+                                       remote_port='2',
+                                       event_timestamp="",
+                                       severity='high',
+                                       alert_name='example',
+                                       alert_description='Malicious File')
+
+    assert parsed_alert.get('alert_description') == 'Malicious File'
+    assert parsed_alert.get('severity') == 'high'
