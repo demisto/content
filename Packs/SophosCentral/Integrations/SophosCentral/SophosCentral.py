@@ -1,9 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Main integration script."""
+from CommonServerUserPython import *
+
+'''IMPORTS'''
 import dateparser
 from typing import Dict, Tuple
-from CommonServerUserPython import *
+
+'''GLOBAL VARS'''
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 COMMON_BASE_URL = "https://api.central.sophos.com"
@@ -1996,7 +1999,7 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
     results = client.list_endpoint(
         argToList(args.get("health_status")),
         argToList(args.get("endpoint_type")),
-        args.get("tamper_protection_enabled") == "true",
+        args.get("tamper_protection_enabled") == "true" if args.get("tamper_protection_enabled") else None,
         argToList(args.get("lockdown_status")),
         args.get("last_seen_before"),
         args.get("last_seen_after"),
