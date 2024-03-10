@@ -261,7 +261,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     if indicator_type in ['Tool', 'STIX Tool', 'Malware', 'STIX Malware']:
         tags.extend(indicator_json.get('labels', ''))
 
-    tlp = StixParser.get_tlp(indicator_json)
+    tlp = STIX2XSOARParser.get_tlp(indicator_json)
     indicator_json['description'] = remove_citations(indicator_json.get('description', ''))
 
     generic_mapping_fields = {
