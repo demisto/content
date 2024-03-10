@@ -1,4 +1,4 @@
-from IsInternalDomainName import check_sub_domains_in_domain, extract_main_domain
+from IsInternalDomainName import check_sub_domains_in_domain, is_sub_domain_contained
 import pytest
 
 
@@ -60,4 +60,4 @@ def test_extract_main_domain(main_domain, sub_domain, expected_output):
     Then:
         - Return True if the main_domain contains the sub_domain, False otherwise
     """
-    assert extract_main_domain(main_domain, sub_domain) == expected_output
+    assert is_sub_domain_contained(main_domain, sub_domain) == expected_output
