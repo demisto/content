@@ -23,5 +23,5 @@ for i in "${IGNORED_FILES[@]}"; do
     DIFF_FILES_LIST=${DIFF_FILES_LIST[*]/$i} 
 done
 
-echo "${DIFF_FILES_LIST[*]}" | grep -E "Tests/|Utils/|.gitlab/|poetry.lock|poetry.toml|pyproject.toml|package.json|package-lock.json|tox.ini|.pylintrc"
+echo "${DIFF_FILES_LIST[*]}" | grep -E "Tests/|Utils/|.gitlab/|poetry.lock|poetry.toml|pyproject.toml|package.json|package-lock.json|tox.ini|.pylintrc|.pre-commit-config_template.yaml"
 exit 0
