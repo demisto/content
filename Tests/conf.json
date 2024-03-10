@@ -22,6 +22,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Endpoint Investigation Plan - Test",
+            "timeout": 600
+        },
+        {
             "playbookID": "playbook-AzureLogAnalytics-test",
             "integrations": "Azure Log Analytics",
             "instance_names": "Azure_Log_Analytics_client_cred",
