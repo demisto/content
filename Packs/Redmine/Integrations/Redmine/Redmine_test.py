@@ -23,7 +23,8 @@ def test_create_issue_command(mocker, redmine_client):
     http_request = mocker.patch.object(redmine_client, '_http_request')
     args = {'project_id': '1', 'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': 'Bug', 'watcher_user_ids': '[1]'}
     create_issue_command(redmine_client, args=args)
-    http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue': {'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': '1', 'watcher_user_ids': [1], 'project_id': '1'}}, headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
+    http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue': {'issue_id': '1', 'subject': 'changeFromCode',
+                                    'tracker_id': '1', 'watcher_user_ids': [1], 'project_id': '1'}}, headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
 
 def test_create_issue_command_invalid_tracker_id(redmine_client):
@@ -136,7 +137,8 @@ def test_create_issue_command_with_file(mocker, redmine_client):
             'watcher_user_ids': '[1]'}
     create_issue_command(redmine_client, args=args)
     create_file_token_request_mock.assert_called_with({}, 'a.png')
-    http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue': {'issue_id': '1', 'subject': 'testSub', 'uploads': [{'token': 'token123'}], 'tracker_id': '1', 'watcher_user_ids': [1], 'project_id': '1'}}, headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
+    http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue': {'issue_id': '1', 'subject': 'testSub', 'uploads': [
+                                    {'token': 'token123'}], 'tracker_id': '1', 'watcher_user_ids': [1], 'project_id': '1'}}, headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
 
 def test_update_issue_command(mocker, redmine_client):
@@ -252,6 +254,7 @@ def test_get_issues_list_command(mocker, redmine_client):
     http_request.assert_called_with('GET', '/issues.json', params={'status_id': 'open', 'offset': 0, 'limit': 1,
                                                                    'sort': 'priority:desc'}, headers={'X-Redmine-API-Key': True})
 
+
 def test_get_issues_list_command_invalid_custom_field(mocker, redmine_client):
     """
     Given:
@@ -266,6 +269,7 @@ def test_get_issues_list_command_invalid_custom_field(mocker, redmine_client):
     with pytest.raises(DemistoException) as e:
         get_issues_list_command(redmine_client, {'custom_field': 'frf2rg2'})
     assert e.value.message == "Invalid custom field format, please follow the command description. Error: list index out of range."
+
 
 def test_get_issues_list_command_invalid_status(mocker, redmine_client):
     """
@@ -334,6 +338,26 @@ def test_delete_issue_by_id_command(mocker, redmine_client):
                                     'X-Redmine-API-Key': True}, empty_valid_codes=[200, 204, 201], return_empty_response=True)
 
 
+def test_delete_issue_by_id_command_invalid_issue_id(mocker, redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-issue-delete command is executed
+    Then:
+        - No issue id raises a DemistoException
+    """
+    from Redmine import add_issue_watcher_command
+    from CommonServerPython import DemistoException
+    args = {'issue_id': '-1'}
+    http_request = mocker.patch.object(redmine_client, '_http_request')
+    http_request.side_effect = DemistoException(
+        "Invalid ID for one or more fields that request IDs. Please make sure all IDs are correct.")
+    with pytest.raises(DemistoException) as e:
+        add_issue_watcher_command(redmine_client, args)
+    assert e.value.message == "Invalid ID for one or more fields that request IDs. Please make sure all IDs are correct."
+
+
 def test_add_issue_watcher_command(mocker, redmine_client):
     """
     Given:
@@ -350,6 +374,26 @@ def test_add_issue_watcher_command(mocker, redmine_client):
     http_request.assert_called_with('POST', '/issues/1/watchers.json', params={'user_id': '1'},
                                     headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True},
                                     empty_valid_codes=[200, 204, 201], return_empty_response=True)
+
+
+def test_add_issue_watcher_command_invalid_issue_watcher_id(mocker, redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-issue-watcher-add command is executed
+    Then:
+        - No issue id raises a DemistoException
+    """
+    from Redmine import add_issue_watcher_command
+    from CommonServerPython import DemistoException
+    args = {'issue_id': '-1', 'watcher_id': '-20'}
+    http_request = mocker.patch.object(redmine_client, '_http_request')
+    http_request.side_effect = DemistoException(
+        "Invalid ID for one or more fields that request IDs. Please make sure all IDs are correct.")
+    with pytest.raises(DemistoException) as e:
+        add_issue_watcher_command(redmine_client, args)
+    assert e.value.message == "Invalid ID for one or more fields that request IDs. Please make sure all IDs are correct."
 
 
 def test_remove_issue_watcher_command(mocker, redmine_client):
@@ -370,7 +414,7 @@ def test_remove_issue_watcher_command(mocker, redmine_client):
                                     empty_valid_codes=[200, 204, 201], return_empty_response=True)
 
 
-def test_remove_issue_watcher_command_invalid_status_id(mocker, redmine_client):
+def test_remove_issue_watcher_command_invalid_issue_watcher_id(mocker, redmine_client):
     """
     Given:
         - All relevant arguments for the command that is executed
@@ -381,7 +425,7 @@ def test_remove_issue_watcher_command_invalid_status_id(mocker, redmine_client):
     """
     from Redmine import remove_issue_watcher_command
     from CommonServerPython import DemistoException
-    args = {'issue_id': '1', 'watcher_id': '-20'}
+    args = {'issue_id': '-1', 'watcher_id': '-20'}
     http_request = mocker.patch.object(redmine_client, '_http_request')
     http_request.side_effect = DemistoException(
         "Invalid ID for one or more fields that request IDs. Please make sure all IDs are correct.")
@@ -412,7 +456,7 @@ def test_get_project_list_command_invalid_include(redmine_client):
     Given:
         - All relevant arguments for the command that is executed
     When:
-        - redmine-issue-watcher-remove command is executed
+        - redmine-project-list command is executed
     Then:
         - No issue id raises a DemistoException
     """
@@ -422,6 +466,25 @@ def test_get_project_list_command_invalid_include(redmine_client):
     with pytest.raises(DemistoException) as e:
         get_project_list_command(redmine_client, args)
     assert e.value.message == "The 'include' argument should only contain values from ['trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields'], separated by commas. These values are not in options ['jissue_categories']."
+
+
+def test_get_project_list_command_response(mocker, redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-user-id-list command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Redmine import get_project_list_command
+    from CommonServerPython import DemistoException
+    args = {'status_id': 'open'}
+    mocker.patch.object(Client, 'get_project_list_request', return_value={'projectsss': {}})
+    # Execute and assert
+    with pytest.raises(DemistoException) as e:
+        get_project_list_command(redmine_client, args)
+    assert str(e.value) == "Request Succeeded, Response not in correct format."
 
 
 def test_get_custom_fields_command(mocker, redmine_client):
@@ -454,6 +517,25 @@ def test_get_users_command(mocker, redmine_client):
     http_request.assert_called_with('GET', '/users.json', params={'status': '1'}, headers={'X-Redmine-API-Key': True})
 
 
+def test_get_users_command_invalid_response(mocker, redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-user-id-list command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Redmine import get_users_command
+    from CommonServerPython import DemistoException
+    args = {'status_id': 'open'}
+    mocker.patch.object(Client, 'get_users_request', return_value={'usersss': {}})
+    # Execute and assert
+    with pytest.raises(DemistoException) as e:
+        get_users_command(redmine_client, args)
+    assert str(e.value) == "Request Succeeded, Response not in correct format."
+
+
 def test_get_users_command_status_invalid(mocker, redmine_client):
     """
     Given:
@@ -467,7 +549,7 @@ def test_get_users_command_status_invalid(mocker, redmine_client):
     from CommonServerPython import DemistoException
     with pytest.raises(DemistoException) as e:
         get_users_command(redmine_client, {'status': 'hbvkbk'})
-    assert e.value.message == "Invalid status value- please use the predefined options only"
+    assert e.value.message == "Invalid status value- please use the predefined options only."
 
 
 ''' HELPER FUNCTIONS TESTS '''

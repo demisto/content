@@ -383,7 +383,6 @@ script:
           5. issue_custom_fields
         - Separate multiple values with comma ONLY.
       isArray: true
-      type: textArea
     outputs:
       - contextPath: Redmine.Project
         description: Display a list of projects accessible to the user.

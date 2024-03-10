@@ -7,11 +7,15 @@ from typing import Any
 
 ''' CONSTANTS '''
 PAGE_SIZE_DEFAULT = '50'
+PAGE_SIZE_DEFAULT_INT = 50
 DEFAULT_LIMIT_NUMBER = 25
 PAGE_NUMBER_DEFAULT = '1'
-DEFAULT_PAGE_NUMBER_INT = 1
-DEFAULT_OFFSET_NUMBER = 0
-    
+BASE_DEFAULT_PAGE_NUMBER_INT = 1
+BASE_DEFAULT_OFFSET_NUMBER = 0
+
+INVALID_ID_DEMISTO_ERROR = "Invalid ID for one or more fields that request IDs. Please make sure all IDs are correct."
+RESPONSE_NOT_IN_FORMAT_ERROR = "Request Succeeded, Response not in correct format."
+
 USER_STATUS_DICT = {
     'Active': '1',
     'Registered': '2',
@@ -61,7 +65,7 @@ class Client(BaseClient):
         response = self._http_request('POST', '/uploads.json', params=args, headers=self._upload_file_header,
                                       data=file_content)
         return response
-    
+
     def create_issue_request(self, args, project_id=None):
         remove_nulls_from_dictionary(args)
         args['project_id'] = project_id
@@ -78,7 +82,7 @@ class Client(BaseClient):
                                       empty_valid_codes=[204], return_empty_response=True)
         return response
 
-    def get_issues_list_request(self, project_id, tracker_id, status_id, offset_to_dict, limit_to_dict ,args: dict[str, Any]):
+    def get_issues_list_request(self, project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, args: dict[str, Any]):
         params = assign_params(tracker_id=tracker_id, project_id=project_id, status_id=status_id,
                                offset=offset_to_dict, limit=limit_to_dict, **args)
         response = self._http_request('GET', '/issues.json', params=params, headers=self._get_header)
@@ -119,12 +123,15 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
 def check_include_validity(include_arg, include_options):
     included_values = include_arg.split(',')
     invalid_values = [value for value in included_values if value not in include_options]
     if invalid_values:
         raise DemistoException(f"The 'include' argument should only contain values from {include_options}, separated by commas. "
-                                    f"These values are not in options {invalid_values}.")
+                               f"These values are not in options {invalid_values}.")
+
 
 def create_paging_header(page_size: int, page_number: int):
     return '#### Showing' + (f' {page_size}') + ' results' + (f' from page {page_number}') + ':\n'
@@ -132,16 +139,15 @@ def create_paging_header(page_size: int, page_number: int):
 
 def adjust_paging_to_request(page_number, page_size, limit):
     if page_number or page_size:
-        page_size =  arg_to_number(page_size or PAGE_SIZE_DEFAULT)
-        page_number =  arg_to_number(page_number or PAGE_NUMBER_DEFAULT)
+        page_size = arg_to_number(page_size) or PAGE_SIZE_DEFAULT_INT
+        page_number = arg_to_number(page_number) or BASE_DEFAULT_PAGE_NUMBER_INT
         generated_offset = (page_number - 1) * page_size
         return generated_offset, page_size, page_number
-    if limit:
-        if arg_to_number(limit) > 100 or arg_to_number(limit) <= 0:
-            raise DemistoException(f"Maximum limit is 100 and Minimum limit is 0, you provided {limit}")
-        limit = arg_to_number(limit) or 100
-        return DEFAULT_OFFSET_NUMBER, limit, DEFAULT_PAGE_NUMBER_INT
-    return DEFAULT_OFFSET_NUMBER, DEFAULT_LIMIT_NUMBER, DEFAULT_PAGE_NUMBER_INT
+    limit = arg_to_number(limit) or DEFAULT_LIMIT_NUMBER
+    if limit > 100 or limit <= 0:
+        raise DemistoException(f"Maximum limit is 100 and Minimum limit is 0, you provided {limit}")
+    return BASE_DEFAULT_OFFSET_NUMBER, limit, BASE_DEFAULT_PAGE_NUMBER_INT
+
 
 def map_header(header_string: str) -> str:
     header_mapping = {
@@ -251,7 +257,9 @@ def handle_file_attachment(client: Client, args: Dict[str, Any]):
         raise DemistoException("Could not create a token for your file- please try again."
                                f"With error {e}.")
 
+
 ''' COMMAND FUNCTIONS '''
+
 
 def test_module(client: Client) -> None:
     message: str = ''
@@ -265,67 +273,67 @@ def test_module(client: Client) -> None:
             raise e
     return return_results(message)
 
+
 def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
     if not args.get('project_id', None) and not client._project_id:
         raise DemistoException('project_id field is missing in order to create an issue')
-    #Checks if a file needs to be added
+    # Checks if a file needs to be added
     handle_file_attachment(client, args)
+    convert_args_to_request_format(args)
+    project_id = args.pop('project_id', None) or client._project_id
     try:
-        convert_args_to_request_format(args)
-        project_id = args.pop('project_id', None) or client._project_id
         response = client.create_issue_request(args, project_id)
-        issue_response = response['issue']
-        headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'estimated_hours', 'created_on',
-                   'subject', 'description', 'start_date', 'estimated_hours', 'custom_fields']
-        issue_response['id'] = str(issue_response['id'])
-
-        command_results = CommandResults(
-            outputs_prefix='Redmine.Issue',
-            outputs_key_field='id',
-            outputs=issue_response,
-            raw_response=issue_response,
-            readable_output=tableToMarkdown('The issue you created:', issue_response, headers=headers,
-                                            removeNull=True, headerTransform=map_header,
-                                            json_transform_mapping={
-                                                            "tracker": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                            "status": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                            "priority": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                            "author": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                            "project": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                            "custom_fields": JsonTransformer(keys=["name","value"]),
-                                                          })
-        )
-        return command_results
-    except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
-            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
-                                   "Please make sure all IDs are correct")
+    except DemistoException as e:
+        if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
+            raise DemistoException(INVALID_ID_DEMISTO_ERROR)
         else:
-            raise DemistoException(e.args[0])
+            raise DemistoException(e.message)
+    try:
+        issue_response = response['issue']
+    except Exception:
+        raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
+    headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'estimated_hours', 'created_on',
+                'subject', 'description', 'start_date', 'estimated_hours', 'custom_fields']
+    issue_response['id'] = str(issue_response['id'])
 
+    command_results = CommandResults(
+        outputs_prefix='Redmine.Issue',
+        outputs_key_field='id',
+        outputs=issue_response,
+        raw_response=issue_response,
+        readable_output=tableToMarkdown('The issue you created:', issue_response, headers=headers,
+                                        removeNull=True, headerTransform=map_header,
+                                        json_transform_mapping={
+                                            "tracker": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                            "status": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                            "priority": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                            "author": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                            "project": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                            "custom_fields": JsonTransformer(keys=["name", "value"]),
+                                        })
+    )
+    return command_results
 
 def update_issue_command(client: Client, args: dict[str, Any]):
     issue_id = args.get('issue_id')
     handle_file_attachment(client, args)
+    convert_args_to_request_format(args)
+    project_id = args.pop('project_id', client._project_id)
     try:
-        convert_args_to_request_format(args)
-        project_id = args.pop('project_id', client._project_id)
         client.update_issue_request(args, project_id)
-        command_results = CommandResults(
-            readable_output=f'Issue with id {issue_id} was successfully updated.')
-        return (command_results)
-    except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
-            raise DemistoException("Invalid ID for one or more fields that request IDs "
-                                   "Please make sure all IDs are correct")
+    except DemistoException as e:
+        if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
+            raise DemistoException(INVALID_ID_DEMISTO_ERROR)
         else:
-            raise DemistoException(e.args[0])
-
+            raise DemistoException(e.message)
+    command_results = CommandResults(
+        readable_output=f'Issue with id {issue_id} was successfully updated.')
+    return (command_results)
 
 def get_issues_list_command(client: Client, args: dict[str, Any]):
     def check_args_validity_and_convert_to_id(status_id: str, tracker_id: str, custom_field: str):
         if status_id and status_id not in ['open', 'closed', '*']:
-                raise DemistoException("Invalid status ID, please use only predefined values.")
+            raise DemistoException("Invalid status ID, please use only predefined values.")
         if tracker_id:
             if tracker_id in ISSUE_TRACKER_DICT:
                 tracker_id = ISSUE_TRACKER_DICT[tracker_id]
@@ -334,69 +342,86 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
         if custom_field:
             try:
                 cf_in_format = custom_field.split(':')
-                args[f'cf_{cf_in_format[0]}']=cf_in_format[1]
+                args[f'cf_{cf_in_format[0]}'] = cf_in_format[1]
             except Exception as e:
                 raise DemistoException(f"Invalid custom field format, please follow the command description. Error: {e}.")
         return status_id, tracker_id
+    
+    page_number = args.pop('page_number', None)
+    page_size = args.pop('page_size', None)
+    limit = args.pop('limit', None)
+    offset_to_dict, limit_to_dict, page_number_for_header = adjust_paging_to_request(page_number, page_size, limit)
+    status_id = args.pop('status_id', 'open')
+    tracker_id = args.pop('tracker_id', None)
+    custom_field = args.pop('custom_field', None)
+    status_id, tracker_id = check_args_validity_and_convert_to_id(status_id, tracker_id, custom_field)
+    project_id = args.pop('project_id', client._project_id)
+    
     try:
-        page_number = args.pop('page_number', None)
-        page_size = args.pop('page_size', None)
-        limit = args.pop('limit', None)
-        offset_to_dict, limit_to_dict, page_number_for_header = adjust_paging_to_request(page_number, page_size, limit)
-        status_id = args.pop('status_id', 'open')
-        tracker_id = args.pop('tracker_id', None)
-        custom_field = args.pop('custom_field', None)
-        status_id, tracker_id = check_args_validity_and_convert_to_id(status_id, tracker_id, custom_field)
-        project_id = args.pop('project_id', client._project_id)
         response = client.get_issues_list_request(project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, args)
-        issues_response = response['issues']
-        page_header = create_paging_header(len(issues_response), page_number_for_header)
-
-        '''Issue id is a number and tableToMarkdown can't transform it'''
-        for issue in issues_response:
-            issue['id'] = str(issue['id'])
-
-        headers = ['id', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date', 'due_date',
-                   'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'updated_on',
-                   'closed_on', 'attachments', 'relations']
-        
-        command_results = CommandResults(
-            outputs_prefix='Redmine.Issue',
-            outputs_key_field='id',
-            outputs=issues_response,
-            raw_response=issues_response,
-            readable_output=page_header + tableToMarkdown('Issues Results:',
-                                                          issues_response,
-                                                          headers=headers,
-                                                          removeNull=True,
-                                                          headerTransform=map_header,
-                                                          is_auto_json_transform=True,
-                                                          json_transform_mapping={
-                                                              "tracker": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                              "status": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                              "priority": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                              "author": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                              "custom_fields": JsonTransformer(keys=["name", "value"]),
-                                                            }
-                                                          )
-        )
-        return command_results
-    except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
-            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
-                                   "Please make sure all IDs are correct")
+    except DemistoException as e:
+        if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
+            raise DemistoException(INVALID_ID_DEMISTO_ERROR)
         else:
-            raise DemistoException(e.args[0])
+            raise DemistoException(e.message)
+        
+    try:
+        issues_response = response['issues']
+    except Exception:
+        raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
+    page_header = create_paging_header(len(issues_response), page_number_for_header)
 
+    '''Issue id is a number and tableToMarkdown can't transform it'''
+    for issue in issues_response:
+        issue['id'] = str(issue['id'])
+
+    headers = ['id', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date', 'due_date',
+                'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'updated_on',
+                'closed_on', 'attachments', 'relations']
+
+    command_results = CommandResults(
+        outputs_prefix='Redmine.Issue',
+        outputs_key_field='id',
+        outputs=issues_response,
+        raw_response=issues_response,
+        readable_output=page_header + tableToMarkdown('Issues Results:',
+                                                        issues_response,
+                                                        headers=headers,
+                                                        removeNull=True,
+                                                        headerTransform=map_header,
+                                                        is_auto_json_transform=True,
+                                                        json_transform_mapping={
+                                                            "tracker": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                                            "status": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                                            "priority": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                                            "author": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                                            "custom_fields": JsonTransformer(keys=["name", "value"]),
+                                                        }
+                                                        )
+    )
+    return command_results
 
 def get_issue_by_id_command(client: Client, args: dict[str, Any]):
     try:
         issue_id = args.get('issue_id')
         included_fields = args.get('include')
-        check_include_validity(included_fields, ['children', 'attachments', 'relations',
-                                   'changesets', 'journals', 'watchers', 'allowed_statuses'])
-        response = client.get_issue_by_id_request(issue_id, included_fields)
-        response_issue = response['issue']
+        if included_fields:
+            check_include_validity(included_fields, ['children', 'attachments', 'relations',
+                                                     'changesets', 'journals', 'watchers', 'allowed_statuses'])
+        try:
+            response = client.get_issue_by_id_request(issue_id, included_fields)
+        except DemistoException as e:
+            if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
+                raise DemistoException(INVALID_ID_DEMISTO_ERROR)
+            elif 'Error in API call [403]' in e.message:
+                raise DemistoException(f"{e.message} It can be due to Invalid ID for one or more fields that request IDs, "
+                                       "Please make sure all IDs are correct")
+            else:
+                raise DemistoException(e.message)
+        try:
+            response_issue = response['issue']
+        except Exception:
+            raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
 
         headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date',
                    'due_date', 'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'closed_on',
@@ -420,7 +445,7 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                                                                              "author": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
                                                                              "custom_fields": JsonTransformer(keys=["name", "value"]),
                                                                              "watchers": JsonTransformer(keys=["name"]),
-                                                                             "attachments": JsonTransformer(keys=["filename", "content_url","content_type", "description"]),
+                                                                             "attachments": JsonTransformer(keys=["filename", "content_url", "content_type", "description"]),
                                                                          }))
         return command_results
     except Exception as e:
@@ -435,15 +460,14 @@ def delete_issue_by_id_command(client: Client, args: dict[str, Any]):
     issue_id = args.get('issue_id')
     try:
         client.delete_issue_by_id_request(issue_id)
-        command_results = CommandResults(
-            readable_output=f'Issue with id {issue_id} was deleted successfully.')
-        return (command_results)
-    except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
-            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
-                                   "Please make sure all IDs are correct")
+    except DemistoException as e:
+        if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
+            raise DemistoException(INVALID_ID_DEMISTO_ERROR)
         else:
-            raise DemistoException(e.args[0])
+            raise DemistoException(e.message)
+    command_results = CommandResults(
+        readable_output=f'Issue with id {issue_id} was deleted successfully.')
+    return (command_results)
 
 
 def add_issue_watcher_command(client: Client, args: dict[str, Any]):
@@ -451,129 +475,128 @@ def add_issue_watcher_command(client: Client, args: dict[str, Any]):
     watcher_id = args.get('watcher_id')
     try:
         client.add_issue_watcher_request(issue_id, watcher_id)
-        command_results = CommandResults(
-            readable_output=f'Watcher with id {watcher_id} was added successfully to issue with id {issue_id}.')
-        return (command_results)
-    except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0] or 'Error in API call [403]' in e.args[0]:
-            raise DemistoException("Invalid ID for one or more fields that request IDs "
+    except DemistoException as e:
+        if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
+            raise DemistoException(INVALID_ID_DEMISTO_ERROR)
+        elif 'Error in API call [403]' in e.message:
+            raise DemistoException(f"{e.message} It can be due to Invalid ID for one or more fields that request IDs, "
                                    "Please make sure all IDs are correct")
         else:
-            raise DemistoException(e.args[0])
+            raise DemistoException(e.message)
+    command_results = CommandResults(
+        readable_output=f'Watcher with id {watcher_id} was added successfully to issue with id {issue_id}.')
+    return (command_results)
 
 
 def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
+    issue_id = args.get('issue_id')
+    watcher_id = args.get('watcher_id')
     try:
-        issue_id = args.get('issue_id')
-        watcher_id = args.get('watcher_id')
         client.remove_issue_watcher_request(issue_id, watcher_id)
-        command_results = CommandResults(
-            readable_output=f'Watcher with id {watcher_id} was removed successfully from issue with id {issue_id}.')
-        return command_results
-    except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
-            raise DemistoException("Invalid ID for one or more fields that request IDs "
+    except DemistoException as e:
+        if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
+            raise DemistoException(INVALID_ID_DEMISTO_ERROR)
+        elif 'Error in API call [403]' in e.message:
+            raise DemistoException(f"{e.message} It can be due to Invalid ID for one or more fields that request IDs, "
                                    "Please make sure all IDs are correct")
         else:
-            raise DemistoException(e.args[0])
+            raise DemistoException(e.message)
+    command_results = CommandResults(
+        readable_output=f'Watcher with id {watcher_id} was removed successfully from issue with id {issue_id}.')
+    return command_results
 
 
 def get_project_list_command(client: Client, args: dict[str, Any]):
+    include_arg = args.get('include', None)
+    if include_arg:
+        check_include_validity(include_arg,
+                               ['trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields']
+                               )
     try:
-        include_arg = args.get('include', None)
-        if include_arg:
-            check_include_validity(include_arg,
-                                   ['trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields']
-                                )
         response = client.get_project_list_request(args)
-        projects_response = response['projects']
-        headers = ['id', 'name', 'identifier', 'description', 'status', 'is_public', 'time_entry_activities', 'created_on',
-                   'updated_on', 'default_value', 'visible', 'roles', 'issue_custom_fields', 'enabled_modules',
-                   'issue_categories', 'trackers']
-        '''Some project fields are numbers and tableToMarkdown can't transform it'''
-        for project in projects_response:
-            project['id'] = str(project['id'])
-            project['status'] = str(project['status'])
-            project['is_public'] = str(project['is_public'])
-        command_results = CommandResults(outputs_prefix='Redmine.Project',
-                                         outputs_key_field='id',
-                                         outputs=projects_response,
-                                         raw_response=projects_response,
-                                         readable_output=tableToMarkdown('Projects List:', projects_response,
-                                                                         headers=headers,
-                                                                         removeNull=True,
-                                                                         headerTransform=underscoreToCamelCase,
-                                                                         is_auto_json_transform=True),
-                                         )
-        return command_results
     except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
-            raise DemistoException("Invalid ID for one or more fields that request IDs "
-                                   "Please make sure all IDs are correct")
-        else:
-            raise DemistoException(e.args[0])
+        raise DemistoException(f"Error in request to API. Error: {e}.")
+    try:
+        projects_response = response['projects']
+    except Exception:
+        raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
+
+    headers = ['id', 'name', 'identifier', 'description', 'status', 'is_public', 'time_entry_activities', 'created_on',
+               'updated_on', 'default_value', 'visible', 'roles', 'issue_custom_fields', 'enabled_modules',
+               'issue_categories', 'trackers']
+    # Some project fields are numbers and tableToMarkdown can't transform it
+    for project in projects_response:
+        project['id'] = str(project['id'])
+        project['status'] = str(project['status'])
+        project['is_public'] = str(project['is_public'])
+
+    command_results = CommandResults(outputs_prefix='Redmine.Project',
+                                     outputs_key_field='id',
+                                     outputs=projects_response,
+                                     raw_response=projects_response,
+                                     readable_output=tableToMarkdown('Projects List:', projects_response,
+                                                                     headers=headers,
+                                                                     removeNull=True,
+                                                                     headerTransform=underscoreToCamelCase,
+                                                                     is_auto_json_transform=True),
+                                     )
+    return command_results
 
 
 def get_custom_fields_command(client: Client, args):
-    try:
-        response = client.get_custom_fields_request()
-        custom_fields_response = response['custom_fields']
-        headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter',
-                   'searchable', 'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities',
-                   'issue_custom_fields']
-        # Some custom fields are numbers and tableToMarkdown can't transform it
-        for custom_field in custom_fields_response:
-            custom_field['id'] = str(custom_field['id'])
-            custom_field['is_required'] = str(custom_field['is_required'])
-            custom_field['is_filter'] = str(custom_field['is_filter'])
-        command_results = CommandResults(outputs_prefix='Redmine.CustomField',
-                                         outputs_key_field='id',
-                                         outputs=custom_fields_response,
-                                         raw_response=custom_fields_response,
-                                         readable_output=tableToMarkdown('Custom Fields List:', custom_fields_response,
-                                                                         headers=headers,
-                                                                         removeNull=True,
-                                                                         headerTransform=underscoreToCamelCase,
-                                                                         is_auto_json_transform=True
-                                                                         )
-                                         )
-        return command_results
-    except Exception as e:
-        if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
-            raise DemistoException("Invalid ID for one or more fields that request IDs \n"
-                                   "Please make sure all IDs are correct")
-        else:
-            raise DemistoException(e.args[0])
+    response = client.get_custom_fields_request()
+    custom_fields_response = response['custom_fields']
+    headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter',
+               'searchable', 'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities',
+               'issue_custom_fields']
+    # Some custom fields are numbers and tableToMarkdown can't transform it
+    for custom_field in custom_fields_response:
+        custom_field['id'] = str(custom_field['id'])
+        custom_field['is_required'] = str(custom_field['is_required'])
+        custom_field['is_filter'] = str(custom_field['is_filter'])
+
+    command_results = CommandResults(outputs_prefix='Redmine.CustomField',
+                                     outputs_key_field='id',
+                                     outputs=custom_fields_response,
+                                     raw_response=custom_fields_response,
+                                     readable_output=tableToMarkdown('Custom Fields List:', custom_fields_response,
+                                                                     headers=headers,
+                                                                     removeNull=True,
+                                                                     headerTransform=underscoreToCamelCase,
+                                                                     is_auto_json_transform=True
+                                                                     )
+                                     )
+    return command_results
 
 
 def get_users_command(client: Client, args: dict[str, Any]):
-        status_string = args.get('status')
-        if status_string:
-            try:
-                args['status'] = USER_STATUS_DICT[status_string]
-            except:
-                raise DemistoException("Invalid status value- please use the predefined options only.")
+    status_string = args.get('status')
+    if status_string:
         try:
-            response = client.get_users_request(args)
-        except Exception as e:
-            raise DemistoException(f"Error in request to API. Error: {e}.")
-        try:
-            users_response = response['users']
-        except:
-            raise DemistoException("Request Succeeded, Response not in correct format.")
-        headers = ['id', 'login', 'admin', 'firstname', 'lastname', 'mail', 'created_on', 'last_login_on']
-        '''Some issue fields are numbers and tableToMarkdown can't transform it'''
-        for user in users_response:
-            user['id'] = str(user['id'])
-            user['admin'] = str(user['admin'])
-        command_results = CommandResults(outputs_prefix='Redmine.Users',
-                                         outputs_key_field='id',
-                                         outputs=users_response,
-                                         raw_response=users_response,
-                                         readable_output=tableToMarkdown('Users List:', users_response, headers=headers,
-                                                                         removeNull=True, headerTransform=map_header,
-                                                                         is_auto_json_transform=True))
-        return command_results
+            args['status'] = USER_STATUS_DICT[status_string]
+        except Exception:
+            raise DemistoException("Invalid status value- please use the predefined options only.")
+    try:
+        response = client.get_users_request(args)
+    except Exception as e:
+        raise DemistoException(f"Error in request to API. Error: {e}.")
+    try:
+        users_response = response['users']
+    except Exception:
+        raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
+    headers = ['id', 'login', 'admin', 'firstname', 'lastname', 'mail', 'created_on', 'last_login_on']
+    # Some issue fields are numbers and tableToMarkdown can't transform it.
+    for user in users_response:
+        user['id'] = str(user['id'])
+        user['admin'] = str(user['admin'])
+    command_results = CommandResults(outputs_prefix='Redmine.Users',
+                                     outputs_key_field='id',
+                                     outputs=users_response,
+                                     raw_response=users_response,
+                                     readable_output=tableToMarkdown('Users List:', users_response, headers=headers,
+                                                                     removeNull=True, headerTransform=map_header,
+                                                                     is_auto_json_transform=True))
+    return command_results
 
 
 def main() -> None:
