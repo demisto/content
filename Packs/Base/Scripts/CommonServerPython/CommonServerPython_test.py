@@ -28,7 +28,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
     remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
     response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
-    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam, censor_request_logs
+    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam, censor_request_logs, censor_request_logs, MASK
 
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
@@ -9554,9 +9554,42 @@ def test_create_clickable_test_wrong_text_value():
 
     assert e.type == AssertionError
     assert 'The URL list and the text list must be the same length.' in e.value.args
-    
-    
-def test_censor_request_logs():
-    text= "send: b'GET /v1.0/deviceManagement/managedDevices?$top=10& HTTP/1.1 \r\nHost: graph.microsoft.com \r\nUser-Agent: python-requests/2.31.0 \r\nAccept-Encoding: gzip, deflate \r\nAccept: application/json \r\nConnection: keep-alive \r\nAuthorization: Bearer <XX_REPLACED> \r\nContent-Type: application/json \r\n \r\n"
-    res = censor_request_logs(text)
-    assert res == "abc"
+
+
+@pytest.mark.parametrize("request_log, expected_output", [
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nmy_authorization: Bearer token123\\r\\n'",
+        f"send: b''GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nmy_authorization: Bearer {MASK}\\r\\n'"
+    ),
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nCookie: session_id=123\\r\\n'",
+        f"send: b''GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nCookie: {MASK}\\r\\n'"
+    ),
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: token123\\r\\n'",
+        f"send: b''GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: {MASK}\\r\\n'"
+    ),
+    (
+        "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: Bearer token123\\r\\n",
+        f"GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: Bearer {MASK}\\r\\n"
+    ),
+    (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\n'",
+        str("send: b''GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\n'")
+    ),
+])
+def test_censor_request_logs(request_log, expected_output):
+    """
+    Given:
+        A request log.
+        case 1: A request log with a sensitive data, under the 'Authorization' header, but the Authorization is not capitalized and within a string.
+        case 2: A request log with a sensitive data, under the 'Cookie' header.
+        case 3: A request log with a sensitive data, under the 'Authorization' header, but with no 'Bearer' prefix.
+        case 4: A request log with a sensitive data, under the 'Authorization' header, but with no 'send b' prefix at the beginning.
+        case 5: A request log with no sensitive data.
+    When:
+        Running censor_request_logs function.
+    Then:
+        Assert the function returns the exactly same log with the sensitive data masked. 
+    """
+    assert censor_request_logs(request_log) == expected_output
