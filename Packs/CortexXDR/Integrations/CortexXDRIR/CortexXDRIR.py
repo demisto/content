@@ -20,8 +20,7 @@ INTEGRATION_NAME = 'Cortex XDR - IR'
 ALERTS_LIMIT_PER_INCIDENTS = -1
 FIELDS_TO_EXCLUDE = [
     'network_artifacts',
-    'file_artifacts',
-    'received'
+    'file_artifacts'
 ]  # can also remove 'alerts'
 
 
