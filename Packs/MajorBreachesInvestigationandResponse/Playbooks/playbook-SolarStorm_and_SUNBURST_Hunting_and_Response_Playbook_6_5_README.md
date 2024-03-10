@@ -74,7 +74,7 @@ This playbook does not use any integrations.
 | Mialboxes_Retrieve_Limit | The maximum number of results to retrieve. Default is 10. | 10 | Optional |
 | AutoBlockIndicators | The input setting indicates whether to Automatically Block Indicators related to the SolarStrom Attack Default: True | True | Optional |
 | UserVerification | The input indicates whether the user should verify the indicators before continuing with the playbook Default: Fasle | False | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | lists.PrivateIPs | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 | None | Generic group for outputs |  | Optional |
 
 ## Playbook Outputs

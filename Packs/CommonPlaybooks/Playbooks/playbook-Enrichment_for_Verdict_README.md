@@ -37,7 +37,7 @@ This playbook does not use any commands.
 | CloseReason | The closing reason of the previous alerts to search for.<br/>Possible values are:<br/>- Resolved - Threat Handled<br/>- Resolved - True Positive<br/>- Resolved - False Positive<br/>- Resolved - Security Testing<br/>- Resolved - Known Issue<br/>- Resolved - Duplicate Incident<br/>- Resolved - Other<br/>- Resolved - Auto | Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue | Optional |
 | FileSHA256 | File SHA256 to enrich and give verdict. | alert.initiatorsha256 | Optional |
 | IP | IP address to enrich and give verdict. | alert.hostip | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | lists.PrivateIPs | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 | ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). |  | Optional |
 | URL | URL to enrich and give verdict. | alert.url | Optional |
 | User | User to enrich and give verdict. \(AWS IAM or Active Directory\). | alert.username | Optional |

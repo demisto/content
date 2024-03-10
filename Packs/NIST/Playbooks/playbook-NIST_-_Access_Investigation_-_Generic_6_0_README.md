@@ -46,7 +46,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Username | The email address of the account that was used to access the DstIP. |  | Optional |
 | NotifyEmail | Email addresses to notify about the incident. |  | Optional |
 | RemediationSLA | The Remediation SLA for the 'Containment, Eradication, and Recovery' stage \(in minutes\). |  | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | lists.PrivateIPs | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 
 ## Playbook Outputs
 

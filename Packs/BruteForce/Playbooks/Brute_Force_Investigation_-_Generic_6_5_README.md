@@ -54,7 +54,7 @@ This playbook does not use any integrations.
 | traps_endpoint_id | Traps endpoint ID, used for endpoint isolation. | incident.agentid | Optional |
 | logins_count_threshold | The threshold for number of logins, from which the investigation and remediation will start automatically without waiting for the user"s reply. Default is 10. | 10 | Optional |
 | severity_threshold | The threshold for the severity value from which an automatic remediation takes place. Specify the severity number \(default is Critical\): 0 - Unknown, 0.5 - Informational. 1 - Low, 2 - Medium, 3 - High, 4 - Critical | 4 | Optional |
-| internal_range | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: '172.16.0.0/12,10.0.0.0/8,192.168.0.0/16' \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | lists.PrivateIPs | Optional |
+| internal_range | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: '172.16.0.0/12,10.0.0.0/8,192.168.0.0/16' \(without quotes\). | lists.PrivateIPs | Optional |
 | critical_users | Critical users, separated by comma. |  | Optional |
 | critical_endpoints | Critical endpoints, separated by comma. |  | Optional |
 | critical_groups | Critical groups, separated by comma. |  | Optional |
