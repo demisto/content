@@ -78,7 +78,7 @@ script:
       defaultValue: 3 days
     description: Get events.
     name: dropbox-get-events
-  dockerimage: demisto/fastapi:1.0.0.70530
+  dockerimage: demisto/fastapi:1.0.0.89411
   runonce: false
   script: '-'
   subtype: python3
