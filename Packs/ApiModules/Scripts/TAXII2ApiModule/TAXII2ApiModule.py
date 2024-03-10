@@ -1198,13 +1198,13 @@ class STIX2XSOARParser(BaseClient):
 
         return [campaign]
 
-    def parse_intrusion_set(self, intrusion_set_obj: dict[str, Any]) -> list[dict[str, Any]]:
+    def parse_intrusion_set(self, intrusion_set_obj: dict[str, Any], ignore_external_id: bool = False) -> list[dict[str, Any]]:
         """
         Parses a single intrusion set object
         :param intrusion_set_obj: intrusion set object
         :return: intrusion set extracted from the intrusion set object in cortex format
         """
-        publications = self.get_indicator_publication(intrusion_set_obj)
+        publications = self.get_indicator_publication(intrusion_set_obj, ignore_external_id)
 
         intrusion_set = {
             "value": intrusion_set_obj.get('name'),

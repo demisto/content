@@ -361,8 +361,9 @@ def test_get_ioc_value_from_ioc_name():
 
 
 def test_change_attack_pattern_to_stix_attack_pattern():
-    assert StixParser.change_attack_pattern_to_stix_attack_pattern({"type": "ind", "fields":
-                                                                    {"killchainphases": "kill chain", "description": "des"}}) == \
+    assert STIX2XSOARParser.change_attack_pattern_to_stix_attack_pattern({"type": "ind", "fields":
+                                                                          {"killchainphases": "kill chain",
+                                                                           "description": "des"}}) == \
         {"type": "STIX ind", "fields": {"stixkillchainphases": "kill chain", "stixdescription": "des"}}
 
 
