@@ -9,9 +9,6 @@
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
-stages:
-  - unittests-and-validations
-
 trigger-contribution-build:
   stage: unittests-and-validations
   script:
