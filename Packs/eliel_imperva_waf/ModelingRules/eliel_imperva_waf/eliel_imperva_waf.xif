@@ -1,0 +1,23 @@
+// Eliel Demo modeling rule
+[MODEL: dataset = imperva_inc_securesphere_raw]
+// convert raw data 
+alter xdm.source.port  = to_number(spt),
+    xdm.target.port  = to_number(dpt)
+
+// XDM Mapping 
+|alter
+    xdm.alert.subcategory = cs1 ,
+    xdm.source.host.device_category = cs2 ,
+    xdm.observer.name = cs3 ,
+    xdm.source.application.name = cs4,
+    xdm.alert.description = cs5, 
+    xdm.event.description = cefName ,
+    xdm.alert.severity = cefSeverity, 
+    xdm.target.user.username = duser ,
+    xdm.network.ip_protocol = proto ,
+    xdm.observer.action = act,
+    xdm.event.type = cat ,
+    xdm.source.ipv4 = src ,
+    xdm.target.ipv4 = dst, 
+    xdm.source.application.version = cefDeviceVersion ,
+    xdm.event.operation_sub_type = cefDeviceEventClassId ;

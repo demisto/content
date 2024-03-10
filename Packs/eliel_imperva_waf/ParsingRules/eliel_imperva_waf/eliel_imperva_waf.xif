@@ -1,0 +1,11 @@
+/*
+Eliel Demo parsing rule
+*/
+// [INGEST:vendor="Imperva_inc", product="SecureSphere", target_dataset="imperva_inc_securesphere_raw", no_hit = keep]
+// alter
+//     _time = to_timestamp(to_integer(rt), "MILLIS");
+
+// checking if the under score effecting the values
+[INGEST:vendor="Imperva", product="Inc_SecureSphere", target_dataset="imperva_inc_securesphere_raw", no_hit = keep]
+alter
+    _time = to_timestamp(to_integer(rt), "MILLIS");
