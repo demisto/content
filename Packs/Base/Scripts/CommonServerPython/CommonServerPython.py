@@ -8391,21 +8391,21 @@ class DemistoHandler(logging.Handler):
 
 def censor_request_logs(request_log: str) -> str:
     """
-    Censors the request logs by replacing sensitive information such as tokens and cookies with a mask.
-    Im most cases, the sensitive value is the first word after the keyword, but in some cases it is the second one.
+    Censors the request logs generated from the urllib library directly by replacing sensitive information such as tokens and cookies with a mask. 
+    In most cases, the sensitive value is the first word after the keyword, but in some cases, it is the second one.
     """
-    keywords_to_replace = ['Authorization:', 'Cookie']
-    lower_keywords_to_replace = [word.lower() for word in keywords_to_replace]
+    keywords_to_censor = ['Authorization:', 'Cookie', "Token"]
+    lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
 
     trimed_request_log = request_log.lstrip(SEND_PREFIX)
     request_log_with_spaces = trimed_request_log.replace("\\r\\n", " \\r\\n")
     request_log_lst = request_log_with_spaces.split()
 
     for i, word in enumerate(request_log_lst):
-        # Check if the word is a keyword or contains a keyword (e.g "Cookies")
-        if any(x in word.lower() for x in lower_keywords_to_replace):
+        # Check if the word is a keyword or contains a keyword (e.g "Cookies" containes "Cookie")
+        if any(keyword in word.lower() for keyword in lower_keywords_to_censor):
             next_word = request_log_lst[i + 1] if i + 1 < len(request_log_lst) else None
-            if next_word is not None:
+            if next_word:
                 # If the next word is "Bearer" or "Basic" then we replace the word after it since thats the token
                 if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
                     request_log_lst[i + 2] = MASK

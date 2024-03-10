@@ -9562,8 +9562,8 @@ def test_create_clickable_test_wrong_text_value():
         f"send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nmy_authorization: Bearer {MASK}\\r\\n'"
     ),
     (
-        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nCookie: session_id=123\\r\\n'",
-        f"send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nCookie: {MASK}\\r\\n'"
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nSet_Cookie: session_id=123\\r\\n'",
+        f"send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nSet_Cookie: {MASK}\\r\\n'"
     ),
     (
         "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: token123\\r\\n'",
@@ -9583,7 +9583,7 @@ def test_censor_request_logs(request_log, expected_output):
     Given:
         A request log.
         case 1: A request log with a sensitive data under the 'Authorization' header, but the 'Authorization' is not capitalized and within a string.
-        case 2: A request log with a sensitive data under the 'Cookie' header.
+        case 2: A request log with a sensitive data under the 'Cookie' header, but with a 'Set_Cookie' prefix.
         case 3: A request log with a sensitive data under the 'Authorization' header, but with no 'Bearer' prefix.
         case 4: A request log with a sensitive data under the 'Authorization' header, but with no 'send b' prefix at the beginning.
         case 5: A request log with no sensitive data.
