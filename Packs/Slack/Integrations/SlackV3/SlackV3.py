@@ -27,6 +27,7 @@ SEVERITY_DICT = {
     'High': 3,
     'Critical': 4
 }
+print("RESUBMIT")
 
 USER_TAG_EXPRESSION = '<@(.*?)>'
 CHANNEL_TAG_EXPRESSION = '<#(.*?)>'
