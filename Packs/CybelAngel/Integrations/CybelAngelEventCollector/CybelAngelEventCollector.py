@@ -163,7 +163,9 @@ def fetch_events(client: Client, first_fetch: str, last_run: dict, max_fetch: in
     last_run_time = last_run.get(LastRun.LATEST_REPORT_TIME)
     now = datetime.now()
     if not last_run_time:
-        last_run_time = dateparser.parse(first_fetch).strftime(DATE_FORMAT)
+        last_run_time = dateparser.parse(first_fetch).strftime(DATE_FORMAT)  # type: ignore[union-attr]
+        if not last_run_time:
+            raise ValueError('First fetch is not valid')
     reports = client.get_reports(start_date=last_run_time, end_date=now.strftime(DATE_FORMAT), limit=max_fetch)
     if not reports:
         demisto.debug(f'No reports found when last run is {last_run}')
