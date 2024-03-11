@@ -887,3 +887,141 @@ Deletes a Lambda function. To delete a specific function version, use the Qualif
 #### Context Output
 
 There is no context output for this command.
+### aws-lambda-create-function
+
+***
+Creates a Lambda function. To create a function, you need a deployment package and an execution role.
+
+#### Base Command
+
+`aws-lambda-create-function`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                     | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| functionName | The name of the Lambda function.                                                                                                                                                                                                                                              | Required | 
+| runtime | The runtime environment for the function.                                                                                                                                                                                                                                     | Required | 
+| role | The Amazon Resource Name (ARN) of the function's.                                                                                                                                                                                                                             | Required | 
+| handler | The name of the method within your code that Lambda calls to execute your function.                                                                                                                                                                                           | Required | 
+| code | The base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you.                                                                                                                                                   | Optional | 
+| S3-bucket | An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account.                                                                                                                                    | Optional | 
+| description | A description of the function.                                                                                                                                                                                                                                                | Optional | 
+| timeout | The amount of time that Lambda allows a function to run before stopping it.                                                                                                                                                                                                   | Optional | 
+| memorySize | The amount of memory available to the function at runtime.                                                                                                                                                                                                                    | Optional | 
+| publish | Set to true to publish the first version of the function during creation. Possible values are: True, False.                                                                                                                                                                                         | Optional | 
+| vpcConfig | For network connectivity to Amazon Web Services resources in a VPC, specify a list of security groups and subnets in the VPC. A list of VPC subnet IDs. Json formatted string should be given.                                                                                                                      | Optional | 
+| packageType | The type of deployment package. Possible values are: Image, Zip.                                                                                                                                                                                                                                    | Optional | 
+| environment | The environment variables for the function. Should be given as key-value pairs as json string.                                                                                                                                                                                | Optional | 
+| tracingConfig | The tracing configuration for the function. Json formatted string should be given.                                                                                                                                                                                            | Optional | 
+| tags | The list of tags to apply to the function. Json formatted string should be given.                                                                                                                                                                                             | Optional | 
+| layers | A list of function layers to add to the function's execution environment.                                                                                                                                                                                                     | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume.                                                                                                                                                                                                                                               | Optional | 
+| roleSessionName | An identifier for the assumed role session.                                                                                                                                                                                                                                                         | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.                                                                                                                                           | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Functions.FunctionName | string | The name of the function. | 
+| AWS.Lambda.Functions.FunctionArn | string | The function’s Amazon Resource Name \(ARN\). | 
+| AWS.Lambda.Functions.Runtime | string | The identifier of the function’s runtime. Runtime is required if the deployment package is a .zip file archive. | 
+| AWS.Lambda.Functions.Role | string | The function’s execution role. | 
+| AWS.Lambda.Functions.Handler | string | The function that Lambda calls to begin running your function. | 
+| AWS.Lambda.Functions.CodeSize | number | The size of the function’s deployment package, in bytes. | 
+| AWS.Lambda.Functions.Description | string | The function’s description. | 
+| AWS.Lambda.Functions.Timeout | number | The amount of time in seconds that Lambda allows a function to run before stopping it. | 
+| AWS.Lambda.Functions.MemorySize | number | The amount of memory available to the function at runtime. | 
+| AWS.Lambda.Functions.Version | string | The version of the Lambda function. | 
+| AWS.Lambda.Functions.VpcConfig.SubnetIds | list | A list of VPC subnet IDs. | 
+| AWS.Lambda.Functions.VpcConfig.SecurityGroupIds | list | A list of VPC security group IDs. | 
+| AWS.Lambda.Functions.VpcConfig.VpcId | string | The ID of the VPC. | 
+| AWS.Lambda.Functions.VpcConfig.Ipv6AllowedForDualStack | boolean | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. | 
+| AWS.Lambda.Functions.PackageType | string | The type of deployment package. Set to Image for container image and set Zip for .zip file archive. | 
+| AWS.Lambda.Functions.LastModified | string | The date and time that the function was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
+
+#### Command example
+```!aws-lambda-get-function-configuration functionName=test runtime=nodejs role=test-role handler=test.handler vpcConfig="{\"SubnetIds\": [\"subnet-1\",\"subnet-2\"], \"SecurityGroupIds\":[\"sg-1\"]}" ```
+
+#### Context Example
+```json
+{
+    "AWS": {
+        "Lambda": {
+            "Functions": {
+                "FunctionName": "test",
+                "FunctionArn": "test",
+                "Runtime": "nodejs",
+                "Role": "test-role",
+                "Handler": "test.handler",
+                "CodeSize": 30,
+                "Description": "test function",
+                "Timeout": 30,
+                "MemorySize": 123,
+                "Version": "test",
+                "VpcConfig": {
+                    "SubnetIds": ["subnet-1","subnet-2"],
+                    "SecurityGroupIds": ["sg-1"],
+                    "VpcId": "test",
+                    "Ipv6AllowedForDualStack": true},
+                "PackageType": "Zip",
+                "LastModified": "test"}
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Create Function
+>| Function Name |Function Arn|Runtime| Role      | Handler      |Code Size|Description|Timeout|Memory Size|Version| Vpc Config                                                                                                            |Package Type|Last Modified|
+>|---------------|---|---|-----------|--------------|---|---|---|---|---|-----------------------------------------------------------------------------------------------------------------------|---|---|
+>| test          | test | nodejs | test-role | test.handler | 30 | test function | 30 | 123 | test | SubnetIds: subnet-1,<br>subnet-2<br>SecurityGroupIds: sg-1<br>VpcId: test<br>Ipv6AllowedForDualStack: true | Zip | test |
+
+
+### aws-lambda-publish-layer-version
+
+***
+Creates an Lambda layer from a ZIP archive.
+
+#### Base Command
+
+`aws-lambda-publish-layer-version`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| layer-name | The name or Amazon Resource Name (ARN) of the layer.  | Required | 
+| description | The description of the version.  | Optional | 
+| content | The layer's software package, specified as an Amazon S3 object.  | Required | 
+| compatible-runtimes |  The name of the method within your code that Lambda calls to execute your function.  | Optional | 
+| code | The base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you.  | Optional | 
+| S3-bucket | An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account.  | Optional | 
+| description | A description of the function.  | Optional | 
+| timeout | The amount of time that Lambda allows a function to run before stopping it.  | Optional | 
+| memorySize | The amount of memory available to the function at runtime.  | Optional | 
+| publish | Set to true to publish the first version of the function during creation. Possible values are: True, False. | Optional | 
+| vpcConfig | For network connectivity to Amazon Web Services resources in a VPC, specify a list of security groups and subnets in the VPC. A list of VPC subnet IDs.  | Optional | 
+| packageType | The type of deployment package. Possible values are: Image, Zip. | Optional | 
+| environment | The environment variables for the function. Should be given as key-value pairs.  | Optional | 
+| tracingConfig | The tracing configuration for the function.  | Optional | 
+| tags | The list of tags to apply to the function.  | Optional | 
+| layers | A list of function layers to add to the function's execution environment.  | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Functions.LayerVersionArn | string | The ARN of the layer version. | 
+| AWS.Lambda.Functions.LayerArn | string | The ARN of the layer. | 
+| AWS.Lambda.Functions.Description | string | The description of the version. | 
+| AWS.Lambda.Functions.CreatedDate | string | The date that the layer version was created, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
+| AWS.Lambda.Functions.Version | number | The version number. | 
+| AWS.Lambda.Functions.CompatibleRuntimes | list | The layer’s compatible runtimes. | 

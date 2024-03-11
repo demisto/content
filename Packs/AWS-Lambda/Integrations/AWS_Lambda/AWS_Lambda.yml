@@ -27,32 +27,27 @@ configuration:
   type: 15
   required: true
   defaultvalue:
-  additionalinfo:
 - display: Role Arn
   name: roleArn
   type: 0
   required: false
   defaultvalue:
-  additionalinfo:
 - display: Role Session Name
   name: roleSessionName
   type: 0
   required: false
   defaultvalue:
-  additionalinfo:
 - display: Role Session Duration
   name: sessionDuration
   type: 0
   required: false
   defaultvalue:
-  additionalinfo:
 - display: Access Key
   name: credentials
   type: 9
   displaypassword: Secret Key
   required: false
   defaultvalue:
-  additionalinfo:
   hiddenusername: false
 - display: Access Key
   name: access_key
@@ -60,14 +55,12 @@ configuration:
   hidden: true
   required: false
   defaultvalue:
-  additionalinfo:
 - display: Secret Key
   name: secret_key
   type: 4
   hidden: true
   required: false
   defaultvalue:
-  additionalinfo:
 - display: Timeout
   name: timeout
   defaultvalue: 60,10
@@ -85,25 +78,21 @@ configuration:
   type: 0
   required: false
   defaultvalue:
-  additionalinfo:
 - display: STS PrivateLink URL
   name: sts_endpoint_url
   type: 0
   required: false
   defaultvalue:
-  additionalinfo:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
   defaultvalue: "true"
-  additionalinfo:
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
   defaultvalue: "true"
-  additionalinfo:
 description: Amazon Web Services Serverless Compute service (lambda).
 display: AWS - Lambda
 name: AWS - Lambda
@@ -1055,14 +1044,14 @@ script:
       description: The amount of time that Lambda allows a function to run before stopping it.
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: "3"
       predefined:
       - ""
     - name: memorySize
       description: The amount of memory available to the function at runtime.
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: "128"
       predefined:
       - ""
     - name: publish
@@ -1101,7 +1090,7 @@ script:
       description: The tracing configuration for the function.
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: "Active"
       predefined:
       - ""
     - name: tags

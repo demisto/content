@@ -1,3 +1,6 @@
+import io
+import json
+
 import pytest
 from typing import Any, Callable
 from AWS_Lambda import (
@@ -7,7 +10,9 @@ from AWS_Lambda import (
     get_function_url_config_command,
     get_function_configuration_command,
     delete_function_command,
-    delete_function_url_config_command
+    delete_function_url_config_command,
+    create_function_command,
+    publish_layer_version_command
 )
 
 
@@ -35,6 +40,17 @@ class MockClient:
 
     def delete_function_url_config(self) -> None:
         return
+
+    def create_function(self) -> None:
+        return
+
+    def publish_layer_version(self) -> None:
+        return
+
+
+def util_load_json(path: str):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 @pytest.mark.parametrize(
@@ -272,8 +288,8 @@ def test_list_versions_by_function_command(
     )
     if test_data.get("NextMarker") and res.readable_output:
         assert (
-            "To get the next version run the command with the Marker argument with the value: test"
-        ) in res.readable_output
+                   "To get the next version run the command with the Marker argument with the value: test"
+               ) in res.readable_output
     assert res.outputs == excepted_data
 
 
@@ -458,3 +474,67 @@ def test_delete_function_and_url_config_commands(
     result = func_command(args, client)
 
     assert result.readable_output == "Deleted test-function Successfully"
+
+
+def test_create_function_command(mocker):
+    """
+        Given: Params for create lambda function command
+        When: Running the command
+        Then: Assert that the correct command result is returned.
+    """
+    client = MockClient()
+    mocker.patch.object(client, 'create_function', return_value=util_load_json('test_data/create_function.json'))
+
+    args = {"functionName": "TestLambdaFunction",
+            "code": "lambda_function.py.zip",
+            "runtime": "python3.8",
+            "description": "test lambda function",
+            "role": "test-role",
+            "handler": "test handler",
+            "layers": "test layer",
+            "vpcConfig": "{\"SubnetIds\": [\"subnet-1\",\"subnet-2\",\"3\"], \"SecurityGroupIds\":[\"sg-1\"]}",
+            "packageType": "Zip"}
+
+    kwargs = {'Code': {'ZipFile': b"test"},
+              'FunctionName': 'TestLambdaFunction',
+              'Runtime': 'python3.8',
+              'Role': 'test-role',
+              'Handler': 'test handler',
+              'Description': 'test lambda function',
+              'PackageType': 'Zip',
+              'Layers': ['test layer'],
+              'VpcConfig': {'SubnetIds': ['subnet-1', 'subnet-2', 'subnet-3'],
+                            'SecurityGroupIds': ['sg-1']}}
+
+    mocker.patch('AWS_Lambda.prepare_create_function_kwargs', return_value=kwargs)
+
+    results = create_function_command(args, client)
+
+    assert results.outputs_key_field == 'FunctionArn'
+    assert results.outputs_prefix == 'AWS.Lambda.Functions'
+    assert len(results.outputs.keys()) == 13
+
+
+def test_publish_layer_version_command(mocker):
+    """
+        Given: Params for create lambda function command
+        When: Running the command
+        Then: Assert that the correct command result is returned.
+    """
+    client = MockClient()
+    mocker.patch.object(client, 'publish_layer_version', return_value=util_load_json('test_data/publish_layer.json'))
+
+    args = {"layer-name": "testLayer",
+            "description": "test lambda function",
+            "content": "{\"S3Bucket\": \"test\","
+                       " \"S3Key\": \"test\","
+                       " \"S3ObjectVersion\": \"test\","
+                       "\"ZipFile\": \"test\"}",
+            "CompatibleRuntimes": "nodejs",
+            }
+
+    results = publish_layer_version_command(args, client)
+
+    assert results.outputs_key_field == 'LayerArn'
+    assert results.outputs_prefix == 'AWS.Lambda.Functions'
+    assert len(results.outputs.keys()) == 6

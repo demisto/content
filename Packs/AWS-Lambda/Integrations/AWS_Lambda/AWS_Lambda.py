@@ -152,6 +152,10 @@ def prepare_create_function_kwargs(args: dict[str, str]):
     else:
         raise DemistoException('code or S3-bucket must be provided.')
 
+    kwargs['TracingConfig'] = {'Mode': args.get('tracingConfig') or "Active"}
+    kwargs['MemorySize'] = arg_to_number(args.get('memorySize') or 128)
+    kwargs['Timeout'] = arg_to_number(args.get('timeout') or 3)
+
     for key in create_function_api_keys:
         kwargs.update({key: args.get(key[0].lower() + key[1:])})
 
@@ -161,8 +165,6 @@ def prepare_create_function_kwargs(args: dict[str, str]):
         kwargs['Environment'] = {'Variables': {json.loads(env)}}
     if tags := args.get('tags'):
         kwargs['Tags'] = argToBoolean(tags)
-    if tracing_config := args.get('tracingConfig'):
-        kwargs['TracingConfig'] = {'Mode': tracing_config}
     if layers := args.get('layers'):
         kwargs['Layers'] = argToList(layers)
     if memory := args.get('memorySize'):
@@ -604,7 +606,7 @@ def publish_layer_version_command(args: dict[str, str], aws_client) -> CommandRe
     kwargs = {
         'LayerName': args.get('layer-name'),
         'Description': args.get('description'),
-        'Content': json.loads(args.get('description')),
+        'Content': json.loads(args.get('content')),
         'CompatibleRuntimes': argToList(args.get('compatible-runtimes'))
     }
 
@@ -615,7 +617,7 @@ def publish_layer_version_command(args: dict[str, str], aws_client) -> CommandRe
     return CommandResults(
         outputs=outputs,
         outputs_prefix='AWS.Lambda.Functions',
-        outputs_key_field='FunctionArn',
+        outputs_key_field='LayerArn',
         readable_output=readable_output
     )
 
