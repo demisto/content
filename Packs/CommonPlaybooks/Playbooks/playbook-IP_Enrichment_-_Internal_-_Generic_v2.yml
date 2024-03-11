@@ -574,7 +574,7 @@ inputs:
             value:
               simple: ','
   required: false
-  description: "A CSV list of IP address ranges (in CIDR notation). Use this list to check if an IP address is found within a set of IP address ranges. \nFor example: \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes)."
+  description: "A comma-separated list of IP address ranges (in CIDR notation). Use this list to check if an IP address is found within a set of IP address ranges. \nFor example: \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes)."
   playbookInputQuery:
 - key: ResolveIP
   value:

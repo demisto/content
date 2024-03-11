@@ -51,7 +51,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| InternalIPRanges | A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
+| InternalIPRanges | A list of IP ranges to check the IP against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 | Username | The user name used for port scanning. | PaloAltoNetworksXDR.Incident.alerts.user_name | Optional |
 | SrcIPAddress | The source IP address from which the port scanning was initiated. | PaloAltoNetworksXDR.Incident.alerts.action_local_ip | Optional |
 | DstIPAddress | Scanned destination IP address. | PaloAltoNetworksXDR.Incident.alerts.action_remote_ip | Optional |

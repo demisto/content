@@ -37,7 +37,7 @@ This playbook does not use any integrations.
 | Username | The username of the account that was used to access the DstIP. | incident.srcuser | Optional |
 | Role | The default role to assign the incident to. | Administrator | Required |
 | OnCall | Set to true to assign only the users that are currently on shift. Requires Cortex XSOAR v5.5 or later. | false | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 
 ## Playbook Outputs
 
