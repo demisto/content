@@ -1565,7 +1565,7 @@ class STIX2XSOARParser(BaseClient):
             "type": type_,
             "rawJSON": ioc_obj_copy,
         }
-        fields = {}
+        fields = self.set_default_fields(indicator_obj)
         tags = list(self.tags)
         # create tags from labels:
         for label in ioc_obj_copy.get("labels", []):
@@ -1601,6 +1601,7 @@ class STIX2XSOARParser(BaseClient):
         fields["tags"] = list(set(tags))
 
         indicator["fields"] = fields
+        fields["publications"] = self.get_indicator_publication(indicator_obj)
         return indicator
 
     @staticmethod
