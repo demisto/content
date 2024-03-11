@@ -5,9 +5,9 @@ import pytest
 from freezegun import freeze_time
 
 import demistomock as demisto
-from CommonServerPython import Common
-from CortexXDRIR import XDR_RESOLVED_STATUS_TO_XSOAR
-
+from CommonServerPython import Common, urljoin, DemistoException
+from CoreIRApiModule import XDR_RESOLVED_STATUS_TO_XSOAR
+from CortexXDRIR import XSOAR_TO_XDR, XDR_TO_XSOAR
 XDR_URL = 'https://api.xdrurl.com'
 
 ''' HELPER FUNCTIONS '''
@@ -499,7 +499,7 @@ def test_get_remote_data_command_should_update(requests_mock, mocker):
 def test_get_remote_data_command_with_rate_limit_exception(mocker):
     """
     Given:
-        -  an XDR client
+        - an XDR client
         - arguments (id and lastUpdate time set to a lower than incident modification time)
         - a Rate limit exception is raises from get_extra_data_command method
     When
@@ -792,3 +792,120 @@ def test_update_remote_system_command(incident_changed, delta):
             }
     actual_remote_id = update_remote_system_command(client, args)
     assert actual_remote_id == expected_remote_id
+
+
+@pytest.mark.parametrize('custom_mapping, expected_resolved_status',
+                         [
+                             ("Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,"
+                              "True Positive=Resolved,Security Testing=Other,Other=Other",
+                              ["Other", "Duplicate", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
+
+                             ("Known Issue=Other,Duplicate Incident=Other,False Positive=False Positive,"
+                              "True Positive=Resolved,Security Testing=Other,Other=Other",
+                              ["Other", "Other", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
+
+                             ("Duplicate Incident=Other,Security Testing=Other,Other=Other",
+                              ["Other", "Other", "False Positive", "Resolved", "Other", "Other", "Resolved"]),
+
+                             # Expecting default mapping to be used when no mapping provided.
+                             ("", list(XDR_RESOLVED_STATUS_TO_XSOAR.values())),
+
+                             # Expecting default mapping to be used when improper mapping is provided.
+                             ("Duplicate=RANDOM1, Other=Random2", list(XDR_RESOLVED_STATUS_TO_XSOAR.values())),
+
+                             ("Duplicate Incident=Random3", list(XDR_RESOLVED_STATUS_TO_XSOAR.values())),
+
+                             # Expecting default mapping to be used when improper mapping *format* is provided.
+                             ("Duplicate Incident=Other False Positive=Other", list(XDR_RESOLVED_STATUS_TO_XSOAR.values())),
+
+                             # Expecting default mapping to be used for when improper key-value pair *format* is provided.
+                             ("Duplicate Incident=Other, False Positive=Other True Positive=Other",
+                              ["Other", "Other", "False Positive", "Resolved", "Security Testing", "Other",
+                               "Resolved"]),
+
+                         ],
+                         ids=["case-1", "case-2", "case-3", "empty-case", "improper-input-case-1", "improper-input-case-2",
+                              "improper-input-case-3", "improper-input-case-4"]
+                         )
+def test_xdr_to_xsoar_flexible_close_reason_mapping(capfd, mocker, custom_mapping, expected_resolved_status):
+    """
+    Given:
+        - A custom XDR->XSOAR close-reason mapping
+        - Expected resolved XSOAR status according to the custom mapping.
+    When
+        - Handling incoming closing-incident (handle_incoming_closing_incident(...) executed).
+    Then
+        - The resolved XSOAR statuses match the expected statuses for all possible XDR close-reasons.
+    """
+    from CortexXDRIR import handle_incoming_closing_incident
+    mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
+                                                         "custom_xdr_to_xsoar_close_reason_mapping": custom_mapping})
+
+    all_xdr_close_reasons = XDR_RESOLVED_STATUS_TO_XSOAR.keys()
+
+    for i, xdr_close_reason in enumerate(all_xdr_close_reasons):
+        # Mock an xdr incident with "resolved" status.
+        incident_data = load_test_data('./test_data/resolved_incident_data.json')
+        # Set incident status to be tested close-reason.
+        incident_data["status"] = xdr_close_reason
+
+        # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
+        with capfd.disabled():
+            close_entry = handle_incoming_closing_incident(incident_data)
+        assert close_entry["Contents"]["closeReason"] == expected_resolved_status[i]
+
+
+@pytest.mark.parametrize('custom_mapping, direction, should_raise_error',
+                         [
+                             ("Other=Other,Duplicate=Other,False Positive=False Positive,Resolved=True Positive",
+                              XSOAR_TO_XDR, False),
+
+                             ("Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive",
+                              XDR_TO_XSOAR, False),
+
+                             ("Duplicate Incident=Random", XSOAR_TO_XDR, True),
+
+                             ("Duplicate=RANDOM1, Other=Random2", XDR_TO_XSOAR, True),
+                             # Inverted map provided
+                             ("Duplicate=Duplicate Incident", XDR_TO_XSOAR, True),
+                             ("Duplicate Incident=Duplicate", XSOAR_TO_XDR, True),
+                             # Improper mapping
+                             ("Random1, Random2", XDR_TO_XSOAR, True),
+                             ("Random1, Random2", XSOAR_TO_XDR, True),
+
+                         ],
+                         ids=["case-1", "case-2", "case-3", "case-4", "case-5", "case-6", "case-7", "case-8"]
+                         )
+def test_test_module(capfd, custom_mapping, direction, should_raise_error):
+    """
+        Given:
+            - mock client with username and api_key (basic auth)
+        When:
+            - run `test_module` function
+        Then:
+            - Ensure no error is raised, and return `ok`
+        """
+    from CortexXDRIR import Client
+
+    # using two different credentials object as they both fields need to be encrypted
+    base_url = urljoin("dummy_url", '/public_api/v1')
+    proxy = demisto.params().get('proxy')
+    verify_cert = not demisto.params().get('insecure', False)
+
+    client = Client(
+        base_url=base_url,
+        proxy=proxy,
+        verify=verify_cert,
+        timeout=120,
+        params=demisto.params()
+    )
+    # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
+    with capfd.disabled():
+        if should_raise_error:
+            with pytest.raises(DemistoException):
+                client.validate_custom_mapping(mapping=custom_mapping, direction=direction)
+        else:
+            try:
+                client.validate_custom_mapping(mapping=custom_mapping, direction=direction)
+            except DemistoException as e:
+                pytest.fail(f"Unexpected exception raised for input {input}: {e}")

@@ -85,9 +85,9 @@ def test_incident_to_incident_context():
     assert res == incident_context
 
 
-def test_idp_detectionin_to_incident_context():
-    from CrowdStrikeFalcon import idp_detection_to_incident_context
-    res = idp_detection_to_incident_context(input_data.response_idp_detection.copy())
+def test_detection_to_incident_context():
+    from CrowdStrikeFalcon import detection_to_incident_context
+    res = detection_to_incident_context(input_data.response_idp_detection.copy(), "IDP Detection")
     assert res == input_data.context_idp_detection
 
 
@@ -2220,7 +2220,7 @@ class TestFetch:
                                           })
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == [
-            {'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}, {}, {}]
+            {'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}, {}, {}, {}]
 
     @freeze_time("2020-09-04T09:16:10Z")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
@@ -3517,7 +3517,7 @@ def test_get_endpoint_command(requests_mock, mocker):
      - The user is running cs-falcon-search-device with an id
     Then
      - Return an Endpoint context output
-     """
+    """
     from CrowdStrikeFalcon import get_endpoint_command
     response = {'resources': {'meta': {'query_time': 0.010188508, 'pagination': {'offset': 1, 'limit': 100, 'total': 1},
                                        'powered_by': 'device-api', 'trace_id': 'c876614b-da71-4942-88db-37b939a78eb3'},
@@ -3560,13 +3560,14 @@ def test_get_endpoint_command(requests_mock, mocker):
         status_code=200,
     )
 
-    mocker.patch.object(demisto, 'args', return_value={'id': 'dentifier_numbe', 'hostname': 'falcon-crowdstr'})
+    mocker.patch.object(demisto, 'args', return_value={'id': 'identifier_numbe', 'hostname': 'falcon-crowdstr'})
 
     outputs = get_endpoint_command()
     result = outputs[0].to_context()
     context = result.get('EntryContext')
 
-    assert unquote(query_mocker.last_request.query) == "filter=device_id:'dentifier_numbe',hostname:'falcon-crowdstr'"
+    api_query = "filter=device_id:'identifier_numbe',hostname:'falcon-crowdstr'&limit=50&offset=0"
+    assert unquote(query_mocker.last_request.query) == api_query
     assert context['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [endpoint_context]
 
 
@@ -4233,7 +4234,7 @@ def test_get_modified_remote_data_command(mocker):
     Given
         - arguments - lastUpdate time
         - raw incidents, detection, and idp_detection (results of get_incidents_ids, get_fetch_detections,
-          and get_idp_detections_ids)
+          and get_detections_ids)
     When
         - running get_modified_remote_data_command
     Then
@@ -5918,12 +5919,12 @@ class TestCSFalconResolveIdentityDetectionCommand:
         Then
             - Validate that the arguments are mapped correctly to the json body.
         """
-        from CrowdStrikeFalcon import resolve_identity_detection_request
+        from CrowdStrikeFalcon import resolve_detections_request
         http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
         ids = ['1,2']
         action_param_values = {'update_status': 'new', 'assign_to_name': 'bot'}
         action_params_http_body = [{'name': 'update_status', 'value': 'new'}, {'name': 'assign_to_name', 'value': 'bot'}]
-        resolve_identity_detection_request(ids=ids, **action_param_values)
+        resolve_detections_request(ids=ids, **action_param_values)
         assert http_request_mocker.call_args_list[0][1].get('json') == {'action_parameters': action_params_http_body,
                                                                         'ids': ids}
 
@@ -5941,6 +5942,21 @@ class TestCSFalconResolveIdentityDetectionCommand:
         command_results = cs_falcon_resolve_identity_detection(args={'ids': '1,2'})
         assert isinstance(command_results.readable_output, str)
         assert 'IDP Detection(s) 1, 2 were successfully updated' in command_results.readable_output
+
+    def test_resolve_mobile_detection(self, mocker: MockerFixture):
+        """
+        Given:
+            - Arguments for the command.
+        When
+            - Calling the cs-falcon-resolve-mobile-detection command.
+        Then
+            - Validate the data of the CommandResults object returned.
+        """
+        from CrowdStrikeFalcon import cs_falcon_resolve_mobile_detection
+        mocker.patch('CrowdStrikeFalcon.http_request', return_value=requests.Response())
+        command_results = cs_falcon_resolve_mobile_detection(args={'ids': '1,2'})
+        assert isinstance(command_results.readable_output, str)
+        assert 'Mobile Detection(s) 1, 2 were successfully updated' in command_results.readable_output
 
 
 class TestIOAFetch:
