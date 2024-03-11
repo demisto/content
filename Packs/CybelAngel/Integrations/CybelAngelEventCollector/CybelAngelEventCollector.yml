@@ -21,6 +21,13 @@ configuration:
   type: 0
   required: true
   section: Collect
+- defaultvalue: 30 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

@@ -158,14 +158,11 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_events(client: Client, last_run: dict, max_fetch: int) -> tuple[List[dict[str, Any]], dict[str, Any]]:
+def fetch_events(client: Client, first_fetch: str, last_run: dict, max_fetch: int) -> tuple[List[dict[str, Any]], dict[str, Any]]:
     last_run_time = last_run.get(LastRun.LATEST_REPORT_TIME)
     now = datetime.now()
     if not last_run_time:
-        # if its the first fetch - get only reports from last minute
-        # TODO - get only events from last minute
-        last_run_time = (now - timedelta(days=3000)).strftime(DATE_FORMAT)
-
+        last_run_time = dateparser.parse(first_fetch).strftime(DATE_FORMAT)
     reports = client.get_reports(start_date=last_run_time, end_date=now.strftime(DATE_FORMAT), limit=max_fetch)
     if not reports:
         demisto.debug(f'No reports found when last run is {last_run}')
@@ -223,6 +220,7 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    first_fetch = params.get("first_fetch")
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -237,7 +235,7 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'fetch-events':
-            events, last_run = fetch_events(client, last_run=demisto.getLastRun(), max_fetch=max_fetch)
+            events, last_run = fetch_events(client, first_fetch=first_fetch, last_run=demisto.getLastRun(), max_fetch=max_fetch)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to XSIAM')
             demisto.setLastRun(last_run)
