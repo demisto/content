@@ -28,14 +28,14 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* IsIntegrationAvailable
-* LoadJSON
 * PrintErrorEntry
+* LoadJSON
+* IsIntegrationAvailable
 
 ### Commands
 
-* cdl-query-logs
 * prisma-sase-quarantine-host
+* cdl-query-logs
 
 ## Playbook Inputs
 
@@ -51,4 +51,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Prisma SASE - Quarantine Host With Active Threat](../doc_files/Prisma_SASE_-_Quarantine_Host_With_Active_Threat.png)
+![Prisma SASE - Quarantine a SentinelOne Host With Active Threat](../doc_files/Prisma_SASE_-_Quarantine_Host_With_Active_Threat.png)
