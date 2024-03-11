@@ -185,6 +185,7 @@ def map_header(header_string: str) -> str:
     }
     return header_mapping.get(header_string, header_string)
 
+
 def convert_args_to_request_format(tracker_id, status_id, priority_id, custom_fields, args):
     try:
         if tracker_id:
@@ -201,6 +202,7 @@ def convert_args_to_request_format(tracker_id, status_id, priority_id, custom_fi
             args['custom_fields'] = [{'id': field.split(':')[0], 'value': field.split(':')[1]} for field in custom_fields]
         except Exception:
             raise DemistoException("Custom fields not in format, please follow the instructions")
+
 
 def get_file_content(entry_id: str) -> bytes:
     """Returns the XSOAR file entry's content.
@@ -252,6 +254,7 @@ def handle_file_attachment(client: Client, args: Dict[str, Any]):
 
 ''' COMMAND FUNCTIONS '''
 
+
 def test_module(client: Client) -> None:
     message: str = ''
     try:
@@ -263,6 +266,7 @@ def test_module(client: Client) -> None:
         else:
             raise e
     return return_results(message)
+
 
 def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
     if not args.get('project_id', None) and not client._project_id:

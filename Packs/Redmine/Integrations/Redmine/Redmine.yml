@@ -95,8 +95,8 @@ script:
       description: Is the issue private?
       auto: PREDEFINED
       predefined:
-      - True
-      - False
+      - 'True'
+      - 'False'
     - name: estimated_hours
       description: Enter the number of hours estimated for this issue
     - name: file_entry_id
@@ -241,7 +241,7 @@ script:
       isArray: true
     - name: is_private
       auto: PREDEFINED
-      description: Is the issue private? (True/False)
+      description: Is the issue private?
       predefined:
       - 'True'
       - 'False'
@@ -251,7 +251,7 @@ script:
       description: Additional comments about the update
     - name: private_notes
       auto: PREDEFINED
-      description: Specifies if the notes are private (True/False)
+      description: Specifies if the notes are private
       predefined:
       - 'True'
       - 'False'    

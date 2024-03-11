@@ -26,6 +26,7 @@ def test_create_issue_command(mocker, redmine_client):
     http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue': {'issue_id': '1', 'subject': 'changeFromCode',
                                     'tracker_id': '1', 'watcher_user_ids': [1], 'project_id': '1'}}, headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
+
 def test_create_issue_command_invalid_custom_fields(redmine_client):
     """
     Given:
@@ -101,6 +102,7 @@ def test_update_issue_command(mocker, redmine_client):
     update_issue_command(redmine_client, args=args)
     http_request.assert_called_with('PUT', '/issues/1.json', json_data={'issue': {'subject': 'changeFromCode', 'tracker_id': '1', 'watcher_user_ids': [1]}}, headers={'Content-Type': 'application/json',
                                     'X-Redmine-API-Key': True}, empty_valid_codes=[204], return_empty_response=True)
+
 
 def test_update_issue_command_invalid_custom_fields(redmine_client):
     from Redmine import update_issue_command
@@ -215,7 +217,8 @@ def test_get_issue_by_id_command(mocker, redmine_client):
     http_request = mocker.patch.object(redmine_client, '_http_request')
     args = {'issue_id': '1', 'include': 'watchers,attachments'}
     get_issue_by_id_command(redmine_client, args)
-    http_request.assert_called_with('GET', '/issues/1.json', params={'include': 'watchers,attachments'}, headers={'X-Redmine-API-Key': True})
+    http_request.assert_called_with('GET', '/issues/1.json',
+                                    params={'include': 'watchers,attachments'}, headers={'X-Redmine-API-Key': True})
 
 
 def test_get_issue_by_id_command_invalid_include_argument(mocker, redmine_client):
@@ -524,6 +527,6 @@ def test_convert_args_to_request_format():
         - The key or value is being converted
     """
     from Redmine import convert_args_to_request_format
-    args={}
+    args = {}
     convert_args_to_request_format('Bug', None, None, None, args)
     assert args['tracker_id'] == '1'
