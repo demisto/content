@@ -1076,7 +1076,7 @@ There is no context output for this command.
 >and paste it in your instance configuration under the **Authorization code** parameter.
 >
 
-### microsoft-teams-graph-auth-reset
+### microsoft-teams-auth-reset
 
 ***
 Run this command if for some reason you need to rerun the graph authentication process.
@@ -1087,7 +1087,7 @@ Notes:
 
 #### Base Command
 
-`microsoft-teams-graph-auth-reset`
+`microsoft-teams-auth-reset`
 
 #### Input
 

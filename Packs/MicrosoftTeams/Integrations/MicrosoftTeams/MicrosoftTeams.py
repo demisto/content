@@ -2794,7 +2794,7 @@ def main():   # pragma: no cover
         'microsoft-teams-channel-user-list': channel_user_list_command,
         'microsoft-teams-user-remove-from-channel': user_remove_from_channel_command,
         'microsoft-teams-generate-login-url': generate_login_url_command,
-        'microsoft-teams-graph-auth-reset': reset_graph_auth
+        'microsoft-teams-auth-reset': reset_graph_auth
 
     }
 
