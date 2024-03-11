@@ -253,4 +253,3 @@ def test_test_module_without_health_check(requests_mock, client):
     }
     requests_mock.get(SERVER_URL + '/quarantine?' + urlencode(args), json={'id': '1'})
     test_module(client)
-    
