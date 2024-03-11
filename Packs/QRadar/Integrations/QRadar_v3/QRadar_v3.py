@@ -455,7 +455,7 @@ class Client(BaseClient):
 
     def http_request(self, method: str, url_suffix: str, params: Optional[dict] = None,
                      json_data: Optional[dict | list[dict]] = None, data: Optional[dict] = None, additional_headers: Optional[dict] = None,
-                     timeout: Optional[int] = None, resp_type: str = 'json'):
+                     timeout: Optional[int] = None, resp_type: str = 'json') -> Any:
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
         for _time in range(1, CONNECTION_ERRORS_RETRIES + 1):
             try:
@@ -907,7 +907,7 @@ class Client(BaseClient):
         return self.get_resource_list(range_, endpoint, filter_, fields, additional_headers_) if id is None \
             else [self.get_resource_by_id(id, endpoint, fields, additional_headers_)]
     
-    def delete_log_source(self, id: str):
+    def delete_log_source(self, id: str) -> requests.Response:
         return self.http_request(
             method='DELETE',
             url_suffix=f'/config/event_sources/log_source_management/log_sources/{id}',
@@ -1749,6 +1749,58 @@ def get_min_id_from_first_fetch(first_fetch: str, client: Client):
     raw_offenses = client.offenses_list(filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER, range_="items=0-0", fields="id")
     return int(raw_offenses[0].get('id')) - 1 if raw_offenses else 0
 
+def arg_to_real_number(arg, arg_name=None, required=False):
+    # type: (Any, Optional[str], bool) -> Optional[int | float]
+    """Converts an XSOAR argument to a Python int or float
+
+    This function acts exactly like CommonServerPython's arg_to_number, but is able to return float
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :return:
+        returns an ``int | float`` if arg can be converted
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[int | float]``
+    """
+
+    if arg is None or arg == '':
+        if required is True:
+            if arg_name:
+                raise ValueError('Missing "{}"'.format(arg_name))
+            else:
+                raise ValueError('Missing required argument')
+
+        return None
+
+    arg = encode_string_results(arg)
+
+    if isinstance(arg, str):
+        if arg.isdigit():
+            return int(arg)
+
+        try:
+            return float(arg)
+        except Exception:
+            if arg_name:
+                raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+            else:
+                raise ValueError('"{}" is not a valid number'.format(arg))
+    if isinstance(arg, int):
+        return arg
+
+    if arg_name:
+        raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+    else:
+        raise ValueError('"{}" is not a valid number'.format(arg))
+
 
 def convert_start_fetch_to_milliseconds(fetch_start_time: str):
     """
@@ -1766,16 +1818,27 @@ def convert_start_fetch_to_milliseconds(fetch_start_time: str):
     return int(date.timestamp() * 1000)
 
 def convert_to_actual_values_recursive(input_dict: dict) -> dict[str, Any]:
+    """
+    Recursively converts string representations of values in a dictionary to their actual data types.
+
+    Args:
+        input_dict (dict): A dictionary with string representations of values.
+
+    Returns:
+        dict: A dictionary with actual values (numbers, booleans, etc.).
+    """
     output_dict = {}
     for key, value in input_dict.items():
         if isinstance(value, dict):
             output_dict[key] = convert_to_actual_values_recursive(value)
+        elif isinstance(value, list):
+            output_dict[key] = [convert_to_actual_values_recursive(list_item) for list_item in value]
         elif isinstance(value, str):
             try:
                 output_dict[key] = argToBoolean(value)
             except ValueError:
                 try:
-                    output_dict[key] = arg_to_number(value)
+                    output_dict[key] = arg_to_real_number(value)
                 except ValueError:
                     output_dict[key] = value
         else:

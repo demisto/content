@@ -12,7 +12,7 @@ from requests.exceptions import ReadTimeout
 import QRadar_v3  # import module separately for mocker
 import pytest
 import pytz
-from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
+from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_RAW_FORMATTED, \
     Client, ASSET_PROPERTIES_NAME_MAP, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, \
     MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus, LAST_MIRROR_CLOSED_KEY
@@ -39,7 +39,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_disconnected_log_collectors_list_command, qradar_log_source_types_list_command, \
     qradar_log_source_protocol_types_list_command, qradar_log_source_extensions_list_command, \
     qradar_log_source_languages_list_command, qradar_log_source_groups_list_command, qradar_log_source_create_command, \
-    qradar_log_source_delete_command, qradar_log_source_update_command, \
+    qradar_log_source_delete_command, qradar_log_source_update_command, convert_to_actual_values_recursive, \
     enrich_offense_with_events, perform_long_running_loop, validate_integration_context, FetchMode, \
     MIRRORED_OFFENSES_FETCHED_CTX_KEY, IndicatorsSearcher
 
@@ -338,7 +338,7 @@ def test_get_minimum_id_to_fetch(last_run_offense_id, user_query, expected, mock
 
 @pytest.mark.parametrize('outputs, key_replace_dict, expected',
                          [({'a': 2, 'number_of_elements': 3, 'creation_time': 1600000000000},
-                           REFERENCE_SETS_OLD_NEW_MAP,
+                           REFERENCE_SETS_RAW_FORMATTED,
                            [{'NumberOfElements': 3, 'CreationTime': '2020-09-13T12:26:40+00:00'}]),
                           ({'a': 2, 'number_of_elements': 3, 'creation_time': 1600000000000},
                            None,
@@ -1760,7 +1760,20 @@ def test_update_log_source(mocker):
 def test_delete_log_source(mocker):
     id = 0
     args = {"id": id}
-    update_log_source_mock = mocker.patch.object(client, 'delete_log_source', return_value={})
+    update_log_source_mock = mocker.patch.object(client, 'delete_log_source')
     
     qradar_log_source_delete_command(client, args)
     update_log_source_mock.assert_called_with(id)
+
+def test_dict_converter():
+    input_dict = {'enabled': 'true', 'year': '2024', 'name': 'Moshe'}
+    expected_output = {'enabled': True, 'year': 2024, 'name': 'Moshe'}
+    assert convert_to_actual_values_recursive(input_dict) == expected_output
+
+    input_nested_dict = {'enabled': 'true', 'year': '2024', 'name': 'Moshe', 'details': {'age': '30', 'score': '95.5'}}
+    expected_nested_output = {'enabled': True, 'year': 2024, 'name': 'Moshe', 'details': {'age': 30, 'score': 95.5}}
+    assert convert_to_actual_values_recursive(input_nested_dict) == expected_nested_output
+
+    input_dict_with_list = {'enabled': 'true', 'year': '2024', 'name': 'Moshe', 'lst': ['true', '22', 'str']}
+    expectedoutput_with_list = {'enabled': True, 'year': 2024, 'name': 'Moshe', 'lst': [True, 22, 'str']}
+    assert convert_to_actual_values_recursive(input_nested_dict) == expected_nested_output
