@@ -64,7 +64,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | alert_id | The alert ID. | alert.investigationId | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. | lists.PrivateIPs | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in a CIDR notation. | lists.PrivateIPs | Optional |
 | ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
 | earlyContainment | Whether to execute early containment.<br/>This action allows you to respond rapidly but have higher probability for false positives. | False | Optional |
 | VPNIPList | This input can process to types of data:<br/>1. A comma separated list of IP addresses assigned by the VPN provider. \(using a XSIAM list or an hardcoded array\)<br/>2. A comma separated list of CIDRs.<br/>3. A link to an IP addresses list which will be processed and extract the IP dynamically with each execution.<br/> |  | Optional |
