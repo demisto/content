@@ -658,23 +658,21 @@ def perform_rasterize(path: str,
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
-            paths = argToList(path)
-            demisto.debug(f"rasterize, {paths=}, {rasterize_type=}")
+            demisto.debug(f"rasterize, {path=}, {rasterize_type=}")
             rasterization_threads = []
             rasterization_results = []
-            for current_path in paths:
-                if not current_path.startswith('http') and not current_path.startswith('file:///'):
-                    current_path = f'http://{current_path}'
+            if not path.startswith('http') and not path.startswith('file:///'):
+                path = f'http://{path}'
 
-                # Start a new thread in group of max_tabs
-                rasterization_threads.append(
-                    executor.submit(
-                        rasterize_thread, browser=browser, chrome_port=chrome_port, path=current_path,
-                        rasterize_type=rasterize_type, wait_time=wait_time, offline_mode=offline_mode,
-                        navigation_timeout=navigation_timeout, include_url=include_url, full_screen=full_screen, width=width,
-                        height=height
-                    )
+            # Start a new thread in group of max_tabs
+            rasterization_threads.append(
+                executor.submit(
+                    rasterize_thread, browser=browser, chrome_port=chrome_port, path=path,
+                    rasterize_type=rasterize_type, wait_time=wait_time, offline_mode=offline_mode,
+                    navigation_timeout=navigation_timeout, include_url=include_url, full_screen=full_screen, width=width,
+                    height=height
                 )
+            )
             # Wait for all tasks to complete
             executor.shutdown(wait=True)
             demisto.info(f"Finished {len(rasterization_threads)} rasterizations, active tabs len: {len(browser.list_tab())}")

@@ -65,7 +65,6 @@ script:
           description: The URL to rasterize. Must be the full URL, including the http
             prefix.
           name: url
-          isArray: true
           required: true
         - defaultValue: 1024px
           description: The page width, for example, 1024px. Specify with or without the px
@@ -355,7 +354,7 @@ script:
         - contextPath: InfoFile.Type
           description: The type of the image/pdf file.
           type: string
-  dockerimage: demisto/chromium:122.0.6261.88727
+  dockerimage: demisto/chromium:122.0.6261.89236
   runonce: false
   script: "-"
   subtype: python3
