@@ -626,7 +626,7 @@ def main() -> None:
     try:
         commands = {'redmine-issue-create': create_issue_command,
                     'redmine-issue-update': update_issue_command,
-                    'redmine-issue-show': get_issue_by_id_command,
+                    'redmine-issue-get': get_issue_by_id_command,
                     'redmine-issue-delete': delete_issue_by_id_command,
                     'redmine-issue-watcher-add': add_issue_watcher_command,
                     'redmine-issue-watcher-remove': remove_issue_watcher_command,
