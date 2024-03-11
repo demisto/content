@@ -393,13 +393,13 @@ script:
       required: true
     description: Get Process Attack Tree URL.
     name: cybereason-process-attack-tree
-  outputs:
-  - contextPath: Cybereason.Process.ProcessID
-    description: Cybereason Process ID
-    type: string
-  - contextPath: Cybereason.Process.URL
-    description: Attack tree url for a given Process.
-    type: string
+    outputs:
+    - contextPath: Cybereason.Process.ProcessID
+      description: Cybereason Process ID
+      type: string
+    - contextPath: Cybereason.Process.URL
+      description: Attack tree url for a given Process.
+      type: string
   - arguments:
     - description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved with the command cybereason-query-malops command).
       name: malopGuids
