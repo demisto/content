@@ -3712,7 +3712,7 @@ inputs:
   required: false
   description: |-
     This input is used in the "Entity Enrichment - Phishing v2" playbook.
-    A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
+    A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
   playbookInputQuery:
 - key: PhishingModelName
   value: {}
