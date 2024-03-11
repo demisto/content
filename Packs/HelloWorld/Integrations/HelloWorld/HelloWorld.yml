@@ -1,7 +1,4 @@
 category: Utilities
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: HelloWorld
   version: -1
@@ -19,49 +16,41 @@ configuration:
   - F - Reliability cannot be judged
   defaultvalue: C - Fairly reliable
   type: 15
-  section: Collect
   required: false
 - defaultvalue: https://api.xsoar-example.com
   display: Server URL (e.g., https://api.xsoar-example.com)
   name: url
   required: true
   type: 0
-  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
-  section: Collect
   required: false
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
   required: false
 - defaultvalue: '10'
   display: Maximum number of alerts per fetch
   name: max_fetch
   type: 0
-  section: Collect
   required: false
 - displaypassword: API Key
   name: credentials
   required: true
   type: 9
   hiddenusername: true
-  section: Connect
+  display: ''
 - defaultvalue: '65'
   display: Score threshold for IP reputation command
   additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
   name: threshold_ip
   type: 0
-  section: Collect
-  advanced: true
   required: false
 - defaultvalue: "low"
   display: Severity of alerts to fetch
   name: severity
   type: 15
-  section: Collect
   required: true
   options:
   - low
@@ -72,20 +61,34 @@ configuration:
   display: First fetch time
   name: first_fetch
   type: 0
-  section: Collect
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  section: Connect
-  advanced: true
   required: false
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-  section: Connect
-  advanced: true
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- additionalinfo: The language to greet in
+  display: Greeting language
+  name: language
+  options:
+  - English
+  - Spanish
+  - French
+  - German
+  - Italian
+  - Japanese
+  - Russian
+  - Mandarin Chinese
+  required: false
+  type: 15
 description: This is the Hello World integration for getting started.
 display: HelloWorld
 name: HelloWorld
@@ -131,7 +134,8 @@ script:
       required: true
     - description: The comment to add to the note.
       name: note_text
-      required: true
+      default: true
+      defaultValue: Please fill out this note!
     description: Example of creating a new item in the API.
     name: helloworld-alert-note-create
     outputs:
@@ -150,6 +154,8 @@ script:
     - contextPath: HelloWorld.alert.status
       description: The status of the alert.
       type: String
+    - contextPath: HelloWorld.alert.source
+      description: The source of the alert.
   - arguments:
     - description: A comma-separated list of IPs.
       name: ip
@@ -157,7 +163,7 @@ script:
       isArray: true
     - description: If the IP has a reputation above the threshold, then the IP is defined as malicious. If a threshold not set, then threshold from the instance configuration is used.
       name: threshold
-      defaultValue: 65
+      defaultValue: '65'
     description: Return IP information and reputation.
     name: ip
     outputs:
@@ -290,14 +296,33 @@ script:
     - contextPath: IP.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-  dockerimage: demisto/python3:3.10.13.87159
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: English
+      description: The language to greet in.
+      name: language
+      predefined:
+      - English.Spanish
+      - French
+      - German
+      - Italian
+      - Japanese
+      - Russian
+      - Mandarin Chinese
+      type: textArea
+    description: Get the greeting for a specific language.
+    name: helloworld-get-greeting
+    outputs:
+    - contextPath: HelloWorld.Greeting
+      description: The greeting.
+      type: string
+  dockerimage: demisto/python3:3.10.13.89009
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-defaultclassifier: HelloWorld
-defaultmapperin: HelloWorld-mapper
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)

@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 """HelloWorld Integration for Cortex XSOAR (aka Demisto)
 
 This integration is a good example on you can build a Cortex XSOAR Integration
@@ -233,8 +234,6 @@ from typing import Any
 
 import dateparser
 
-from CommonServerUserPython import *
-
 
 ''' CONSTANTS '''
 LOG_LINE = 'HelloWorldDebugLog: '  # Make sure to use a line easily to search and read in logs.
@@ -414,6 +413,22 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def random_greeting(language: str) -> str:
+
+    greetings = {
+        'English': 'Hello!',
+        'Spanish': '¡Hola!',
+        'French': 'Bonjour!',
+        'German': 'Hallo!',
+        'Italian': 'Ciao!',
+        'Japanese': 'こんにちは！ (Konnichiwa!)',
+        'Russian': 'Привет! (Privet!)',
+        'Mandarin Chinese': '你好！(Nǐ hǎo!)'
+    }
+
+    return greetings.get(language)
+
+
 def validate_api_key(api_key: str) -> None:
     """
     This is a validation that the api-key is valid. It is not needed when dealing with a real API.
@@ -574,6 +589,20 @@ def say_hello_command(client: Client, args: dict[str, Any]) -> CommandResults:
         outputs_prefix='hello',
         outputs_key_field='',
         outputs=result
+    )
+
+
+def get_greeting_command(client: Client, args: dict[str, Any]) -> CommandResults:
+
+    language = args.get("language", "English")
+    greeting = random_greeting(language)
+
+    readable_output = f"## {greeting}"
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="HelloWorld.Greeting",
+        outputs=greeting
     )
 
 
@@ -1000,6 +1029,9 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'helloworld-say-hello':
             return_results(say_hello_command(client, args))
+
+        elif command == "helloworld-get-greeting":
+            return_results(get_greeting_command(client, args))
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
