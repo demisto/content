@@ -17,6 +17,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 DEFAULT_MAX_FETCH = 5000
 VENDOR = "cybelangel"
 PRODUCT = "platform"
+DEFAULT_FIRST_FETCH = "30 days"
 
 
 class LastRun(str, Enum):
@@ -220,7 +221,7 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
-    first_fetch = params.get("first_fetch")
+    first_fetch = params.get("first_fetch") or DEFAULT_FIRST_FETCH
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
