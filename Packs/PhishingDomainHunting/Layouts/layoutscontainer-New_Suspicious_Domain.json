@@ -464,7 +464,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Phishing Indicators Check",
+                        "name": "Suspicious Site Elements",
                         "query": "HtmlPhishingCheck",
                         "queryType": "script",
                         "static": false,
@@ -610,6 +610,7 @@
                         "y": 2
                     }
                 ],
+                "showEmptyFields": true,
                 "type": "custom"
             },
             {
