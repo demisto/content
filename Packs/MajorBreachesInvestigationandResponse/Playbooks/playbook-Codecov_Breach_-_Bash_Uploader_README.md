@@ -47,7 +47,7 @@ This playbook does not use any scripts.
 | EWSSearchQuery | The EWS query to find the Codecov security notice email | From:security@codecov.io AND Subject:Bash Uploader Security Notice AND Received:three months | Optional |
 | EWSSearchQuery_Limit | The limit of results to return from the search | 50 | Optional |
 | Github_Code_Search_query | Github query to search for Codecov bash uploader use. | https://codecov.io/bash+in:file | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 
 ## Playbook Outputs
 
