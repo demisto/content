@@ -265,8 +265,8 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 2. Enter your Client/Application ID in the *Bot ID* parameter. 
 3. Enter your Client Secret in the *Bot Password* parameter.
 4. Save the instance.
-5. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
-6. Click **Test** to validate the URLs, token, and connection.
+5. Click **Test** to validate the URLs, token, and connection.
+6. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
 
 ##### Authentication Using the Authorization Code Flow
 
