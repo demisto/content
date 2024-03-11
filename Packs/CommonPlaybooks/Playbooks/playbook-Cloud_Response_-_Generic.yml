@@ -11,7 +11,7 @@ description: |-
   - Terminate/Shut down/Power off an instance
   - Delete/Disable a user
   - Delete/Revoke/Disable credentials
-  - Block indicators.
+  - Block indicators
 starttaskid: "0"
 tasks:
   "0":
