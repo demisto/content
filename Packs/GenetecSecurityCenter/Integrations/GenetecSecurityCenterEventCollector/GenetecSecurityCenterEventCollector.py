@@ -3,6 +3,7 @@ from urllib3 import disable_warnings
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from requests.auth import HTTPBasicAuth
+import json
 
 disable_warnings()
 
@@ -43,10 +44,10 @@ class Client(BaseClient):
     def __init__(
         self, base_url: str, username: str, password: str, verify: bool, proxy: bool, max_fetch: str, app_id: str
     ):
-        self._auth = self._encode_authorization(username, password, app_id)
+        auth = self._encode_authorization(username, password, app_id)
         self.limit = max_fetch
 
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
 
     def _encode_authorization(self, username: str, password: str, app_id: str):
         updated_username = f"{username};{app_id}"
