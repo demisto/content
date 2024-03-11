@@ -1108,32 +1108,45 @@ def test_get_last_mirrored_in_time_new_incident_6_0(mocker):
     assert get_last_mirrored_in_time(args) == 1577836800000
 
 
-@pytest.fixture
-def last_modified_incidents():
-    return {
-        "1": 1578900000,
-        "2": 1578905000
-    }
+def test_incident_modified():
+    """
+    Given:
+        - incident_id
+        - last_mirrored_time
+        - last_modified_incidents
+    When:
+        - Calling check_if_incident_was_modified_in_xdr
 
-
-def test_incident_modified(last_modified_incidents):
+    Then:
+        - Verify the returned result is as we expected
+    """
     from CortexXDRIR import check_if_incident_was_modified_in_xdr
     incident_id = "2"
     last_mirrored_time = 1578901000
+    last_modified_incidents ={
+        "1": 1578900000,
+        "2": 1578905000
+    }
     assert check_if_incident_was_modified_in_xdr(
         incident_id, last_mirrored_time, last_modified_incidents
     )
 
 
-def test_parsed_alert(mocker):
+def test_create_parsed_alert(mocker):
     """
     Given:
-        - last_modified_incidents dict with mock incidents
-        - incident ID "2" which has a modified timestamp
-        - last_mirrored_time before the modified timestamp
-
+            - product
+            - vendor
+            - local_ip
+            - local_port
+            - remote_ip
+            - remote_port
+            - event_timestamp
+            - severity
+            - alert_name
+            - alert_description
     When:
-        - Calling check_if_incident_was_modified_in_xdr().
+        - Calling create_parsed_alert().
 
     Then:
         - Verify the returned result is as we expected
