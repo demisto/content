@@ -124,6 +124,7 @@ configuration:
   - USER_AUTHENTICATE_OAUTH2_ACCESS_TOKEN_CREATE
   - WATERMARK_LABEL_CREATE
   - WATERMARK_LABEL_DELETE
+  - DELETE_THIS
   required: false
 - additionalinfo: 'When the as-user argument is not provided, the command will be executed using this user ID.'
   display: Default User
