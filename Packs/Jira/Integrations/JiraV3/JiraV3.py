@@ -632,13 +632,6 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             resp_type='response',
         )
 
-    def delete_attachment_file(self, attachment_id: str):
-        return self.http_request(
-            method='DELETE',
-            url_suffix=f'rest/api/{self.api_version}/attachment/{attachment_id}',
-            resp_type='response',
-        )
-
     def update_assignee(self, issue_id_or_key: str, assignee_body: Dict[str, Any]) -> requests.Response:
         """This method is in charge of assigning an assignee to a specific issue.
 
@@ -766,6 +759,21 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         """
         return self.http_request(
             method='GET', url_suffix=f'rest/api/{self.api_version}/attachment/{attachment_id}'
+        )
+
+    def delete_attachment_file(self, attachment_id: str):
+        """This method is in charge of deleting an attached file.
+
+        Args:
+            attachment_id (str): The id of the attachment file.
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
+        return self.http_request(
+            method='DELETE',
+            url_suffix=f'rest/api/{self.api_version}/attachment/{attachment_id}',
+            resp_type='response',
         )
 
     @abstractmethod
@@ -2084,7 +2092,16 @@ def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 
 
 def delete_attachment_file_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
-    attachment_id = args.get('attachment_id', '')
+    """This command is in charge of deleting an attachment file.
+
+    Args:
+        client (JiraBaseClient): The jira client
+        args (Dict[str, str]): The argument supplied by the user
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    attachment_id = args['attachment_id']
     client.delete_attachment_file(attachment_id=attachment_id)
     return CommandResults(readable_output=f'Attachment id {attachment_id} was deleted successfully.')
 

@@ -688,6 +688,39 @@ There is no context output for this command.
 >|---|---|---|---|
 >| https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/attachment/16505 | dummy.pdf | 16505 | PROJECTKEY-31 |
 
+
+### jira-issue-delete-file
+
+
+***
+Deletes an attachment from an issue.
+
+Scope: `write:jira-work`
+
+#### Base Command
+
+`jira-issue-delete-file
+`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attachment_id | The attachment ID. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!jira-issue-delete-file attachment_id=16777```
+
+#### Human Readable Output
+
+>Attachment id 16777 was deleted successfully.
+
+
 ### jira-list-transitions
 
 ***
