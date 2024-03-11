@@ -1,3 +1,4 @@
+import itertools
 import json
 import os
 import sys
@@ -66,6 +67,7 @@ class CollectionReason(str, Enum):
     README_FILE_CHANGED = 'readme file was changed'
     PACK_CHOSEN_TO_UPLOAD = 'pack chosen to upload'
     PACK_TEST_E2E = "pack was chosen to be tested in e2e tests"
+    PACK_MASTER_BUCKET_DISCREPANCY = "pack version on master is ahead of bucket"
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
@@ -808,16 +810,13 @@ class BranchTestCollector(TestCollector):
             if self.private_pack_path \
             else self._get_git_diff()
 
-        changed_packs, packs_with_removed_files = self.__collect_packs_diff_master_bucket()
-
         return CollectionResult.union([
             self.__collect_from_changed_files(collect_from.changed_files),
             self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
-            changed_packs,
-            packs_with_removed_files
+            self.__collect_packs_diff_master_bucket()
         ])
 
-    def __collect_packs_diff_master_bucket(self) -> tuple[CollectionResult | None, CollectionResult | None]:
+    def __collect_packs_diff_master_bucket(self) -> CollectionResult | None:
 
         collected_packs: list[CollectionResult | None] = []
 
@@ -833,13 +832,15 @@ class BranchTestCollector(TestCollector):
 
             collected_packs.append(self._collect_pack(
                 pack_id=find_pack_folder(path).name,
-                reason=CollectionReason.PACK_CHOSEN_TO_UPLOAD,
+                reason=CollectionReason.PACK_MASTER_BUCKET_DISCREPANCY,
                 reason_description=file_path,
+                only_to_install=False
             ))
 
         # union with collected_packs since changed_files and since files were removed
-        return CollectionResult.union(collected_packs), \
-            self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from)
+        return CollectionResult.union(tuple(itertools.chain(collected_packs,
+                                                            [self.__collect_packs_from_which_files_were_removed
+                                                             (collect_from.pack_ids_files_were_removed_from)])))
 
     def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult | None:
         """NOTE: this should only be used from _collect"""
