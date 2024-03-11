@@ -1180,3 +1180,23 @@ def test_handle_incoming_user_unassignment(mocker):
     mocker.patch.object(demisto, 'params', return_value={"sync_owners": True})
     handle_incoming_user_unassignment(incident_data)
     assert not incident_data.get('owner')
+
+
+def test_get_endpoints_by_status_command(mocker):
+    """
+    Given:
+        - incident_data dict with incident_id, owner.
+
+    When:
+        - Calling get_endpoints_by_status_command().
+
+    Then:
+        - Verify the returned result is as we expected.
+    """
+    from CortexXDRIR import get_endpoints_by_status_command, Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+    args = {'status': ['new', 'in_progress'], 'last_seen_gte': '11',  'last_seen_lte': '1' }
+    mocker.patch.object(Client, 'get_endpoints_by_status', return_value=['1', { "endpoint_count": 2 }])
+    res = get_endpoints_by_status_command(client, args)
+    assert res.readable_output == "['new', 'in_progress'] endpoints count: 1"
