@@ -1123,7 +1123,7 @@ def test_incident_modified():
     from CortexXDRIR import check_if_incident_was_modified_in_xdr
     incident_id = "2"
     last_mirrored_time = 1578901000
-    last_modified_incidents ={
+    last_modified_incidents = {
         "1": 1578900000,
         "2": 1578905000
     }
@@ -1218,7 +1218,7 @@ def test_get_endpoints_by_status_command(mocker):
     from CortexXDRIR import get_endpoints_by_status_command, Client
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
-    args = {'status': ['new', 'in_progress'], 'last_seen_gte': '11',  'last_seen_lte': '1' }
-    mocker.patch.object(Client, 'get_endpoints_by_status', return_value=['1', { "endpoint_count": 2 }])
+    args = {'status': ['new', 'in_progress'], 'last_seen_gte': '11', 'last_seen_lte': '1'}
+    mocker.patch.object(Client, 'get_endpoints_by_status', return_value=['1', {"endpoint_count": 2}])
     res = get_endpoints_by_status_command(client, args)
     assert res.readable_output == "['new', 'in_progress'] endpoints count: 1"
