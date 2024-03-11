@@ -65,6 +65,11 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
 script:
   script: ''
   type: python
@@ -335,7 +340,7 @@ script:
       description: The name of the log stream.
     - name: timestamp
       required: true
-      description: The time the event occurred, expressed as the number of milliseconds fter Jan 1, 1970 00:00:00 UTC. (Unix Time)
+      description: The time the event occurred, expressed as the number of milliseconds fter Jan 1, 1970 00:00:00 UTC. (Unix Time).
     - name: message
       required: true
       description: The raw event message.
@@ -447,7 +452,7 @@ script:
       description: The name of the log group.
       type: string
     description: Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace.
-  dockerimage: demisto/boto3py3:1.0.0.52713
+  dockerimage: demisto/boto3py3:1.0.0.88114
 tests:
 - No Tests
 fromversion: 5.0.0

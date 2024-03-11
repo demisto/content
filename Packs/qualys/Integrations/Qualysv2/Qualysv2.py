@@ -323,6 +323,23 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: dict[str, dict[Any, Any]] = {
         "human_readable_massage": "Asset tag deleted.",
         "json_path": ["ServiceResponse", "data", "Tag"],
     },
+    "qualys-update-vmware-record": {
+        "json_path": ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
+    },
+    "qualys-update-vcenter-record": {
+        "json_path": ["BATCH_RETURN", "RESPONSE", "BATCH_LIST", "BATCH"],
+    },
+    "qualys-vcenter-esxi-mapped-record-list": {
+        "collection_name": "VCENTER_ESXI_MAP",
+        "table_name": "Vcenter ESXI IP List",
+        "json_path": ["VCENTER_ESXI_MAP_LIST_OUTPUT", "RESPONSE", "VCENTER_ESXI_MAP_LIST", "VCENTER_ESXI_MAP"],
+    },
+    "qualys-vcenter-esxi-mapped-record-import": {
+        "json_path": ["SIMPLE_RETURN", "RESPONSE"],
+    },
+    "qualys-vcenter-esxi-mapped-record-purge": {
+        "json_path": ["SIMPLE_RETURN", "RESPONSE"],
+    },
 }
 
 # Context prefix and key for each command
@@ -522,6 +539,26 @@ COMMANDS_CONTEXT_DATA = {
         "context_key": "",
     },
     "qualys-asset-tag-delete": {
+        "context_prefix": "",
+        "context_key": "",
+    },
+    "qualys-update-vmware-record": {
+        "context_prefix": "",
+        "context_key": "",
+    },
+    "qualys-update-vcenter-record": {
+        "context_prefix": "",
+        "context_key": "",
+    },
+    "qualys-vcenter-esxi-mapped-record-list": {
+        "context_prefix": "Qualys.VcenterToEsxi",
+        "context_key": "VCENTER_IP",
+    },
+    "qualys-vcenter-esxi-mapped-record-import": {
+        "context_prefix": "",
+        "context_key": "",
+    },
+    "qualys-vcenter-esxi-mapped-record-purge": {
         "context_prefix": "",
         "context_key": "",
     },
@@ -773,6 +810,31 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
         "api_route": "/msp/time_zone_code_list.php",
         "call_method": "GET",
         "resp_type": "text",
+    },
+    "qualys-update-vmware-record": {
+        "api_route": API_SUFFIX + "auth/vmware/?action=update",
+        "call_method": "POST",
+        "resp_type": "text",
+    },
+    "qualys-update-vcenter-record": {
+        "api_route": API_SUFFIX + "auth/vcenter/?action=update",
+        "call_method": "POST",
+        "resp_type": "text",
+    },
+    "qualys-vcenter-esxi-mapped-record-list": {
+        "api_route": API_SUFFIX + "auth/vcenter/vcenter_mapping/?action=list&output_format=xml",
+        "call_method": "POST",
+        "resp_type": "text",
+    },
+    "qualys-vcenter-esxi-mapped-record-import": {
+        "api_route": API_SUFFIX + "auth/vcenter/vcenter_mapping/?action=import",
+        "call_method": "POST",
+        "resp_type": "text",
+    },
+    "qualys-vcenter-esxi-mapped-record-purge": {
+        "api_route": API_SUFFIX + "auth/vcenter/vcenter_mapping/?action=purge",
+        "call_method": "POST",
+        "resp_type": "text"
     },
 }
 
@@ -1265,6 +1327,22 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
     },
     "qualys-update-unix-record": {
         "args": ["ids", "add_ips"],
+    },
+    "qualys-update-vmware-record": {
+        "args": ["ids", "add_ips"],
+    },
+    "qualys-update-vcenter-record": {
+        "args": ["ids", "add_ips"],
+    },
+    "qualys-vcenter-esxi-mapped-record-list": {
+        "args": [],
+        "inner_args": ["limit"],
+    },
+    "qualys-vcenter-esxi-mapped-record-import": {
+        "args": ["csv_data"],
+    },
+    "qualys-vcenter-esxi-mapped-record-purge": {
+        "args": ["csv_data"],
     },
     "qualys-asset-group-add": {
         "args": [
@@ -2806,6 +2884,26 @@ def main():  # pragma: no cover
         "qualys-asset-tag-delete": {
             "result_handler": handle_asset_tag_result,
             "output_builder": build_tag_asset_output,
+        },
+        "qualys-update-vmware-record": {
+            "result_handler": handle_asset_tag_result,
+            "output_builder": build_single_text_output,
+        },
+        "qualys-update-vcenter-record": {
+            "result_handler": handle_asset_tag_result,
+            "output_builder": build_single_text_output,
+        },
+        "qualys-vcenter-esxi-mapped-record-list": {
+            "result_handler": handle_general_result,
+            "output_builder": build_unparsed_output,
+        },
+        "qualys-vcenter-esxi-mapped-record-import": {
+            "result_handler": handle_asset_tag_result,
+            "output_builder": build_single_text_output,
+        },
+        "qualys-vcenter-esxi-mapped-record-purge": {
+            "result_handler": handle_asset_tag_result,
+            "output_builder": build_single_text_output,
         },
     }
 

@@ -77,6 +77,12 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+- display: Mobile Detections fetch query
+  name: mobile_detections_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
 - display: IOM fetch query
   name: iom_fetch_query
   type: 0
@@ -90,14 +96,13 @@ configuration:
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234.
-  The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to the integration docs."
+  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to the integration docs."
 - display: Fetch incidents
   name: isFetch
   type: 8
-  defaultvalue: 'true'
   section: Collect
   required: false
+  defaultvalue: 'true'
 - display: Incident type
   name: incidentType
   type: 13
@@ -121,42 +126,43 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Use system proxy settings
+- display: 'Use system proxy settings'
   name: proxy
   type: 8
   section: Connect
   advanced: true
   required: false
-- additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
-  defaultvalue: 'false'
+- defaultvalue: 'false'
   display: 'Close Mirrored XSOAR Incident'
   name: close_incident
   type: 8
   section: Collect
   advanced: true
   required: false
-- defaultvalue: 'false'
+  additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
+- additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
+  defaultvalue: 'false'
   display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
   name: close_in_cs_falcon
   type: 8
   section: Collect
   advanced: true
   required: false
-  additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
-- additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
-  defaultvalue: 'Endpoint Detection'
+- defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
   type: 16
   section: Collect
   advanced: true
   required: false
+  additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
   options:
   - IDP Detection
   - Endpoint Incident
   - Endpoint Detection
   - Indicator of Misconfiguration
   - Indicator of Attack
+  - Mobile Detection
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
@@ -186,29 +192,35 @@ script:
       auto: PREDEFINED
     - description: The query to filter the device.
       name: filter
-    - description: A comma-separated list of device IDs to limit the results.
+    - description: The maximum records to return [1-5000].
+      name: limit
+      defaultValue: 50
+    - description: The offset to start retrieving records from.
+      name: offset
+      defaultValue: 0
+    - description: 'A comma-separated list of device IDs to limit the results.'
       name: ids
-    - auto: PREDEFINED
-      description: 'The status of the device. Possible values are: "Normal", "containment_pending", "contained", and "lift_containment_pending".'
+    - description: 'The status of the device. Possible values are: "Normal", "containment_pending", "contained", and "lift_containment_pending".'
       name: status
+      auto: PREDEFINED
       predefined:
-      - normal
+      - 'normal'
       - containment_pending
       - contained
       - lift_containment_pending
-    - auto: PREDEFINED
-      description: The host name of the device.
+    - description: 'The host name of the device.'
       name: hostname
+      auto: PREDEFINED
       predefined:
       - ''
-    - auto: PREDEFINED
-      description: 'The platform name of the device. Possible values are: Windows, Mac, and Linux.'
+    - description: 'The platform name of the device. Possible values are: Windows, Mac, and Linux.'
       name: platform_name
+      auto: PREDEFINED
       predefined:
-      - Windows
+      - 'Windows'
       - Mac
       - Linux
-    - description: The site name of the device.
+    - description: 'The site name of the device.'
       name: site_name
     description: Searches for a device that matches the query.
     name: cs-falcon-search-device
@@ -4710,8 +4722,45 @@ script:
       - 'false'
       - 'true'
       auto: PREDEFINED
-    description: Perform actions on alerts.
+    description: Perform actions on identity detection alerts.
     name: cs-falcon-resolve-identity-detection
+  - arguments:
+    - description: IDs of the alerts to update.
+      name: ids
+      isArray: true
+      required: true
+    - description: 'Assign the specified detections to a user based on their username.'
+      name: assign_to_name
+    - description: Assign the specified detections to a user based on their UUID.
+      name: assign_to_uuid
+    - description: Appends a new comment to any existing comments for the specified detections.
+      name: append_comment
+    - description: Add a tag to the specified detections.
+      name: add_tag
+    - description: Remove a tag from the specified detections.
+      name: remove_tag
+    - description: Update status of the alert to the specified value.
+      name: update_status
+      predefined:
+      - 'new'
+      - 'in_progress'
+      - 'closed'
+      - 'reopened'
+      auto: PREDEFINED
+    - description: Whether to unassign any assigned users to the specified detections.
+      name: unassign
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    - description: If true, displays the detection in the UI.
+      name: show_in_ui
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    description: Perform actions on mobile detection alerts.
+    name: cs-falcon-resolve-mobile-detection
   - arguments:
     - description: IDs (UUID) of specific users to list.
       name: id
@@ -4962,7 +5011,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA Rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.86612
+  dockerimage: demisto/py3-tools:1.0.0.88283
   isfetch: true
   ismappable: true
   isremotesyncin: true

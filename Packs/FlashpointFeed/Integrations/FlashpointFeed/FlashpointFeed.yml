@@ -135,7 +135,7 @@ script:
       name: types
     description: Retrieves indicators from the Flashpoint API. It displays the content of the fetch-indicators command.
     name: flashpoint-get-indicators
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.13.88772
   feed: true
   runonce: false
   script: '-'

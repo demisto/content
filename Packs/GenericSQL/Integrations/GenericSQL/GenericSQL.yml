@@ -12,6 +12,7 @@ configuration:
   - Microsoft SQL Server
   - Microsoft SQL Server - MS ODBC Driver
   - Oracle
+  - Teradata
   required: true
   type: 15
 - display: Database host
@@ -88,12 +89,16 @@ configuration:
   name: insecure
   type: 8
   required: false
+- display: Use LDAP (Teradata only)
+  name: use_ldap
+  type: 8
+  required: false
 - display: Connection Pool Time to Live (seconds)
-  additionalinfo: After this time the connection pool will be refreshed
-  defaultvalue: 600
   name: pool_ttl
   type: 0
   required: false
+  additionalinfo: After this time the connection pool will be refreshed
+  defaultvalue: 600
 - display: Incident type
   name: incidentType
   type: 13
@@ -157,9 +162,9 @@ script:
     - description: 'A comma-separated list of value, for example: 7,"foo",3.'
       isArray: true
       name: bind_variables_values
-    description: Running a sql query
+    description: Running a sql query.
     name: sql-command
-  dockerimage: demisto/genericsql:1.1.0.87288
+  dockerimage: demisto/genericsql:1.1.0.89212
   isfetch: true
   runonce: false
   script: '-'

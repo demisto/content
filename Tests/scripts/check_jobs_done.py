@@ -15,7 +15,7 @@ CONTENT_NIGHTLY_JOBS = [
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',
     'xsiam_server_ga',
-    'xsoar_ng_server_ga',
+    # 'xsoar_ng_server_ga',
     'tests_xsoar_server: [Server 6.9]',
     'tests_xsoar_server: [Server 6.10]',
     'tests_xsoar_server: [Server 6.11]',
@@ -25,7 +25,7 @@ CONTENT_NIGHTLY_JOBS = [
     'xsiam-test_playbooks_results',
     'xsiam-test_modeling_rule_results',
     'cloning-content-repo-last-upload-commit',
-    'xsoar-saas_test_e2e_results',
+    # 'xsoar-saas_test_e2e_results',
 ]
 
 SDK_NIGHTLY_JOBS = [

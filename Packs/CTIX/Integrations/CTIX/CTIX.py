@@ -13,7 +13,7 @@ import json
 import requests
 import urllib.parse
 import urllib3
-from typing import Any, Dict
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -233,7 +233,7 @@ def test_module(client: Client):
     demisto.results('ok')
 
 
-def ip_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def ip_details_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """
     ip command: Returns IP details for a list of IPs
     """
@@ -304,7 +304,7 @@ def ip_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     return ip_data_list
 
 
-def domain_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def domain_details_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """
     domain command: Returns domain details for a list of domains
     """
@@ -374,7 +374,7 @@ def domain_details_command(client: Client, args: Dict[str, Any]) -> List[Command
     return domain_data_list
 
 
-def url_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def url_details_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """
     url command: Returns URL details for a list of URL
     """
@@ -443,7 +443,7 @@ def url_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
     return url_data_list
 
 
-def file_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def file_details_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """
     file command: Returns FILE details for a list of FILE
     """
@@ -489,7 +489,7 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
             elif hash_type == "sha256":
                 file_standard_context.sha256 = file_key
             elif hash_type == "sha512":
-                file_standard_context.sha512 == file_key
+                file_standard_context.sha512 = file_key
 
             file_data_list.append(CommandResults(
                 readable_output=tableToMarkdown('File Data', file_data, removeNull=True),
@@ -517,7 +517,7 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
             elif hash_type == "sha256":
                 file_standard_context.sha256 = file_key
             elif hash_type == "sha512":
-                file_standard_context.sha512 == file_key
+                file_standard_context.sha512 = file_key
 
             file_data_list.append(CommandResults(
                 readable_output=f'No matches found for FILE {file_key}',
@@ -529,7 +529,7 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
     return file_data_list
 
 
-def create_intel_command(client: Client, args: Dict[str, Any]) -> Dict:
+def create_intel_command(client: Client, args: dict[str, Any]) -> dict:
     """
     create_intel command: Creates Intel in CTIX
     """
