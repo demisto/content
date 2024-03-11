@@ -10,7 +10,7 @@ from ProofpointProtectionServerV2 import (Client, delete_message,
                                           download_message, forward_message,
                                           list_quarantined_messages,
                                           move_message, release_message,
-                                          resubmit_message, smart_search)
+                                          resubmit_message, smart_search, test_module)
 
 SERVER_URL = "https://server:10000"
 
@@ -237,3 +237,20 @@ def test_download_message_negative(requests_mock, client):
     requests_mock.get(SERVER_URL + '/quarantine?' + urlencode(args), status_code=404)
     result = download_message(client=client, args=args)
     assert result.readable_output == 'No message found.'
+
+
+def test_test_module_without_health_check(requests_mock, client):
+    """
+    Given:
+        - client
+    When:
+        - Running test-module command
+    Then:
+        - Ensure there is only one http call being made
+    """
+    args = {
+        'subject': 'Test'
+    }
+    requests_mock.get(SERVER_URL + '/quarantine?' + urlencode(args), json={'id': '1'})
+    test_module(client)
+    

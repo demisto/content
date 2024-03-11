@@ -167,7 +167,6 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    client.health_check()  # test pss managed module
     client.list_quarantined_messages_request(subject='Test')  # test Quarantine managed module
     return 'ok'
 
