@@ -11,5 +11,12 @@
 
 trigger-contribution-build:
   stage: unittests-and-validations
+  variables:
+    GITHUB_TOKEN: $GITHUB_TOKEN
+    PR_NUMBER: $PR_NUMBER
+    BASE_BRANCH: $BASE_BRANCH
+    CONTRIB_BRANCH: $CONTRIB_BRANCH
   script:
-  - echo "This is a test!!!"
+    - section_start "Trigger contribution build" --collapsed
+    - python3 ./Utils/trigger_private_build.py --github-token "${GITHUB_TOKEN}" --gitlab-api-token "${GITLAB_API_TOKEN}"
+    - section_end "Trigger contribution build"
