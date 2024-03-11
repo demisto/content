@@ -7,14 +7,18 @@ This integration was integrated and tested with version xx of Redmine.
 2. Search for Redmine.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. https://1.1.1.1) |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | API Key |  | True |
-    | Project Id | This project ID will be overridden by command project ID if one is provided within a command. | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Server URL (e.g. <https://1.1.1.1>) | True |
+    | Trust any certificate (not secure) | False |
+    | API Key | True |
+    | Project id | False |
+4. Getting your API key:
+    - Use your **server URL** to enter to your Redmine instance.
+    - Authenticate with your username and password.
+    - Navigate to **My Account** (at the top right corner).
+    - Click on API **Access key** > **Show** - This is your API key
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
