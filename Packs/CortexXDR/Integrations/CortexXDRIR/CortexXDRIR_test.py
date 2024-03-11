@@ -749,6 +749,15 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
 
 
 def test_get_incident_extra_data(mocker):
+    """
+    Given:
+        -  an XDR client
+        - arguments (id)
+    When
+        - Running get_incident_extra_data_command
+    Then
+        - Verify the returned result is as we expected
+    """
     from CortexXDRIR import get_incident_extra_data_command, Client
 
     get_incident_extra_data_response = load_test_data('./test_data/get_incident_extra_data_host_id_array.json')\
