@@ -1461,7 +1461,7 @@ script:
       description: 'The name of the WinCollect destination.'
       type: String
     - contextPath: QRadar.WinCollectDestination.Host
-      description: ' The IP or hostname of the WinCollect destination. WinCollect agents that use this destination send syslog event data to this host.'
+      description: 'The IP or hostname of the WinCollect destination. WinCollect agents that use this destination send syslog event data to this host.'
       type: String
     - contextPath: QRadar.WinCollectDestination.TlsCertificate
       description: 'The TLS Certificate of the WinCollect destination.'
