@@ -214,6 +214,10 @@ validate-content-conf:
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
     - section_end "Prepare Content Packs for Testing"
 
+    - section_start "Override and upload core packs versions"
+    - ./Tests/Marketplace/upload_versions_core_files.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION" "$LAST_UPLOAD_COMMIT"
+    - section_end "Override and upload core packs versions"
+
     - section_start "Create Instances for XSOAR"
     - |
       if [[ ${MARKETPLACE_VERSION} = "xsoar" ]]; then
