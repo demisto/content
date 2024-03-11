@@ -41,8 +41,7 @@ script:
       - To create a category/version, navigate to the server URL -> Click on the Settings (top bar) -> Versions tab and Issue categories tab
     arguments:
     - name: project_id
-      description: Enter the project ID for this issue (If given, by default- project_id from authentication, this field override it)
-      type: textArea
+      description: Enter the project ID for this issue. If not specified, the value from integration configuration will be taken.
       required: false
     - name: tracker_id
       auto: PREDEFINED
@@ -73,26 +72,19 @@ script:
       - High
       - Urgent
       - Immediate
-      type: textArea
     - name: subject
       required: true
       description: Enter the subject for this issue
-      type: textArea
     - name: description
       description: Enter a description for this issue
-      type: textArea
     - name: category_id
       description: Enter the category ID for this issue
-      type: textArea
     - name: fixed_version_id
       description: Enter the target version ID for this issue
-      type: textArea
     - name: assigned_to_id
       description: Enter the ID of the user to assign the issue to
-      type: textArea
     - name: parent_issue_id
       description: Enter the ID of the parent issue
-      type: textArea
     - name: custom_fields
       description: Insert the custom field to update, THE FORMAT is costumFieldID:Value,costumFieldID:Value etc...
       isArray: true
@@ -100,23 +92,21 @@ script:
       description: Add an array with watcher user IDs for this issue -> 1,2,3
       isArray: true
     - name: is_private
-      description: Is the issue private? (True/False)
-      type: textArea
+      description: Is the issue private?
+      auto: PREDEFINED
+      predefined:
+      - True
+      - False
     - name: estimated_hours
       description: Enter the number of hours estimated for this issue
-      type: textArea
     - name: file_entry_id
       description: Enter the entry ID of the file to upload
-      type: textArea
     - name: file_name
       description: Enter the name of the file to attach. Make sure the file name ends with .jpg/png/txt
-      type: textArea
     - name: file_description
       description: Enter the description of the file you attached
-      type: textArea
     - name: file_content_type
       description:  Enter the file content type of the file you attached
-      type: textArea
     outputs:
       - contextPath: Redmine.Issue.id
         description: The ID of the new issue.
@@ -135,13 +125,12 @@ script:
     arguments:
     - name: page_number
       description: Enter the page number
-      type: textArea
     - name: page_size
-      description: Enter the page size (default is 50)
-      type: textArea
+      description: Enter the page size 
+      defaultValue: '50'
     - name: limit
-      description: Specify the number of issues to display in the response (default is 25, maximum is 100)
-      type: textArea
+      description: Specify the number of issues to display in the response (maximum is 100)
+      defaultValue: '25'
     - name: sort
       description: |
         - Specify a field to sort according to. Append ":desc" to invert the order.
@@ -153,7 +142,6 @@ script:
         5. subproject.
         6. assigned_to.
         - For example: sort=tracker:desc.
-      type: textArea
     - name: include
       description: | 
         - Specify an array of extra fields to fetch.
@@ -165,11 +153,9 @@ script:
       description: Specify an array of issue IDs to display -> 1,2,3
       isArray: true
     - name: project_id
-      description: Specify a project ID to display issues of this project
-      type: textArea
+      description: Specify a project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed.
     - name: subproject_id
-      description: Specify a subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!*" to exclude subprojects)
-      type: textArea
+      description: Specify a subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!name_of_subproject" to exclude subprojects)
     - name: tracker_id
       auto: PREDEFINED
       description: Specify a tracker ID to display issues of this tracker ID
@@ -186,17 +172,14 @@ script:
       - '*'
     - name: assigned_to_id
       description: Specify an assigned-to ID to display issues assigned to this user ID
-      type: textArea
     - name: parent_id
       description: Specify a parent ID to display issues that are under this parent ID
-      type: textArea
     - name: custom_field
       description: | 
         - Insert the custom field to filter with, THE FORMAT is costumFieldID:Value.
         - To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  
         - You can only filter one custom field at a time. 
         - Make sure the custom field id you entered is valid, or the request won't fail but will not be filtered correctly   
-      type: textArea
     outputs:
       - contextPath: Redmine.Issue
         description: Display a list of issues
@@ -210,11 +193,9 @@ script:
     arguments:
     - name: issue_id
       description: The ID of the issue to be updated
-      type: textArea
       required: true
     - name: project_id
-      description: The ID of the project to associate with the issue
-      type: textArea
+      description: The ID of the project to associate with the issue. If not specified, the value from integration configuration will be taken if specified.
     - name: tracker_id
       auto: PREDEFINED
       description: The ID of the tracker type
@@ -243,25 +224,18 @@ script:
       - Immediate
     - name: subject
       description: The subject of the issue
-      type: textArea
     - name: description
       description: The description of the issue
-      type: textArea
     - name: category_id
       description: The ID of the category to assign to the issue
-      type: textArea
     - name: fixed_version_id
       description: The ID of the fixed version for the issue
-      type: textArea
     - name: assigned_to_id
       description: The ID of the user to whom the issue is assigned
-      type: textArea
     - name: parent_issue_id
       description: The ID of the parent issue, if applicable
-      type: textArea
     - name: custom_fields
       description: Insert the custom field to update, THE FORMAT is costumFieldID:Value,costumFieldID:Value etc...
-      predefined:
       isArray: true
     - name: watcher_user_ids
       description: Add an array of watcher ids seperated with comma -> 1,2,3
@@ -274,10 +248,8 @@ script:
       - 'False'
     - name: estimated_hours
       description: The estimated number of hours to complete the issue
-      type: textArea
     - name: notes
       description: Additional comments about the update
-      type: textArea
     - name: private_notes
       auto: PREDEFINED
       description: Specifies if the notes are private (True/False)
@@ -286,22 +258,17 @@ script:
       - 'False'    
     - name: file_entry_id
       description: Required if uploading a file- The entry ID of the file to upload
-      type: textArea
     - name: file_name
       description: The name of the file to upload (should end with .jpg/.png/.txt etc...)
-      type: textArea
     - name: file_description
       description: The description of the attached file
-      type: textArea
     - name: file_content_type
       description: The content type of the attached file (image/jpg or image/png or text/txt etc...)
-      type: textArea
   - name: redmine-issue-show
     description: Show an issue by id
     arguments:
     - name: issue_id
       description: Add the id of the issue you want to show
-      type: textArea
       required: true
     - name: include
       description: |
@@ -336,39 +303,25 @@ script:
     arguments:
     - name: issue_id
       description: The ID of the issue you want to delete
-      type: textArea
       required: true
-    outputs:
-      - contextPath:
-        description: The issue was deleted
   - name: redmine-issue-watcher-add
     description: Add a watcher to the specified issue
     arguments:
     - name: issue_id
       description: The ID of the issue to which you want to add a watcher
-      type: textArea
       required: true
     - name: watcher_id
       description: The ID of the watcher you want to add to the issue
-      type: textArea
       required: true
-    outputs:
-      - contextPath: 
-        description: Added a watcher to an issue
   - name: redmine-issue-watcher-remove
     description: Remove a watcher of an issue
     arguments:
     - name: issue_id
       description: The ID of the issue from which you want to remove the watcher
-      type: textArea
       required: true
     - name: watcher_id
       description: The ID of the watcher you want to remove from the issue
-      type: textArea
       required: true
-    outputs:
-      - contextPath: 
-        description: Removed a watcher from an issue
   - name: redmine-project-list
     description: Retrieve a list of all projects, including both public and private ones that the user has access to.
     arguments:
@@ -412,10 +365,8 @@ script:
         - 'Locked'
     - name: name
       description: Search for users matching a specific name (searches in first name, last name, and email).
-      type: textArea
     - name: group_id
       description: Specify the group ID to filter users by.
-      type: textArea
     outputs:
       - contextPath: Redmine.Users
         description: Display a list of users.

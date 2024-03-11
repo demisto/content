@@ -302,7 +302,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
     except Exception:
         raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
     headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'estimated_hours', 'created_on',
-                'subject', 'description', 'start_date', 'estimated_hours', 'custom_fields']
+               'subject', 'description', 'start_date', 'estimated_hours', 'custom_fields']
     issue_response['id'] = str(issue_response['id'])
 
     command_results = CommandResults(
@@ -323,6 +323,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
     )
     return command_results
 
+
 def update_issue_command(client: Client, args: dict[str, Any]):
     issue_id = args.get('issue_id')
     handle_file_attachment(client, args)
@@ -338,6 +339,7 @@ def update_issue_command(client: Client, args: dict[str, Any]):
     command_results = CommandResults(
         readable_output=f'Issue with id {issue_id} was successfully updated.')
     return (command_results)
+
 
 def get_issues_list_command(client: Client, args: dict[str, Any]):
     def check_args_validity_and_convert_to_id(status_id: str, tracker_id: str, custom_field: str):
@@ -355,7 +357,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
             except Exception as e:
                 raise DemistoException(f"Invalid custom field format, please follow the command description. Error: {e}.")
         return status_id, tracker_id
-    
+
     page_number = args.pop('page_number', None)
     page_size = args.pop('page_size', None)
     limit = args.pop('limit', None)
@@ -365,7 +367,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
     custom_field = args.pop('custom_field', None)
     status_id, tracker_id = check_args_validity_and_convert_to_id(status_id, tracker_id, custom_field)
     project_id = args.pop('project_id', client._project_id)
-    
+
     try:
         response = client.get_issues_list_request(project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, args)
     except DemistoException as e:
@@ -373,7 +375,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
             raise DemistoException(INVALID_ID_DEMISTO_ERROR)
         else:
             raise DemistoException(e.message)
-        
+
     try:
         issues_response = response['issues']
     except Exception:
@@ -385,8 +387,8 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
         issue['id'] = str(issue['id'])
 
     headers = ['id', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date', 'due_date',
-                'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'updated_on',
-                'closed_on', 'attachments', 'relations']
+               'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'updated_on',
+               'closed_on', 'attachments', 'relations']
 
     command_results = CommandResults(
         outputs_prefix='Redmine.Issue',
@@ -394,21 +396,22 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
         outputs=issues_response,
         raw_response=issues_response,
         readable_output=page_header + tableToMarkdown('Issues Results:',
-                                                        issues_response,
-                                                        headers=headers,
-                                                        removeNull=True,
-                                                        headerTransform=map_header,
-                                                        is_auto_json_transform=True,
-                                                        json_transform_mapping={
-                                                            "tracker": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                            "status": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                            "priority": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                            "author": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                            "custom_fields": JsonTransformer(keys=["name", "value"]),
-                                                        }
-                                                        )
+                                                      issues_response,
+                                                      headers=headers,
+                                                      removeNull=True,
+                                                      headerTransform=map_header,
+                                                      is_auto_json_transform=True,
+                                                      json_transform_mapping={
+                                                          "tracker": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                                          "status": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                                          "priority": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                                          "author": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                                          "custom_fields": JsonTransformer(keys=["name", "value"]),
+                                                      }
+                                                      )
     )
     return command_results
+
 
 def get_issue_by_id_command(client: Client, args: dict[str, Any]):
     try:
