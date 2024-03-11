@@ -65,12 +65,12 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.Issue.id | unknown | The ID of the new issue. | 
-| Redmine.Issue.priority.id | unknown | The ID of the priority of the issue. | 
-| Redmine.Issue.tracker.id | unknown | The ID of the tracker of the issue. | 
-| Redmine.Issue.project.id | unknown | The ID of the project of the issue. | 
-| Redmine.Issue.status.id | unknown | The ID of the status of the issue. | 
-| Redmine.Issue.subject | unknown | The subject of the issue. | 
+| Redmine.Issue.id | srt | The ID of the new issue. | 
+| Redmine.Issue.priority.id | str | The ID of the priority of the issue. | 
+| Redmine.Issue.tracker.id | str | The ID of the tracker of the issue. | 
+| Redmine.Issue.project.id | str | The ID of the project of the issue. | 
+| Redmine.Issue.status.id | str | The ID of the status of the issue. | 
+| Redmine.Issue.subject | str | The subject of the issue. | 
 
 #### Command example
 ```!redmine-issue-create priority_id=High status_id=Closed subject=helloExample tracker_id=Bug project_id=1 watcher_user_ids=5,6 custom_fields=1:helloCustom```
@@ -148,8 +148,8 @@ Display a list of issues
 | page_number | Enter the page number. | Optional | 
 | page_size | Enter the page size (default value is 50, if limit not specified). | Optional | 
 | limit | Specify the number of issues to display in the response (maximum is 100). If page_number or page_size are specified, this field will be ignored. Default is 25. | Optional | 
-| sort | - Specify a field to sort according to. Append ":desc" to invert the order.<br/>- Possible values:<br/>1. tracker.<br/>2. status.<br/>3. priority.<br/>4. project.<br/>5. subproject.<br/>6. assigned_to.<br/>- For example: sort=tracker:desc.<br/>. | Optional | 
-| include | - Specify an array of extra fields to fetch.<br/>- Possible values:<br/>    1. attachments.<br/>    2. relations.<br/>. | Optional | 
+| sort | - Specify a field to sort according to. Append ":desc" to invert the order.<br/>- Possible values:<br/>1. tracker.<br/>2. status.<br/>3. priority.<br/>4. project.<br/>5. subproject.<br/>6. assigned_to.<br/>- For example: sort=tracker:desc.<br/> | Optional | 
+| include | - Specify an array of extra fields to fetch.<br/>- Possible values:<br/>    1. attachments.<br/>    2. relations.<br/> | Optional | 
 | issue_id | Specify an array of issue IDs to display -&gt; 1,2,3. | Optional | 
 | project_id | Specify a project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed. | Optional | 
 | subproject_id | Specify a subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!name_of_subproject" to exclude subprojects). | Optional | 
@@ -157,14 +157,14 @@ Display a list of issues
 | status_id | Specify a status ID to display issues of this status ID (* means all). Possible values are: open, closed, *. | Optional | 
 | assigned_to_id | Specify an assigned-to ID to display issues assigned to this user ID. | Optional | 
 | parent_id | Specify a parent ID to display issues that are under this parent ID. | Optional | 
-| custom_field | - Insert the custom field to filter with, THE FORMAT is costumFieldID:Value.<br/>- To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  <br/>- You can only filter one custom field at a time. <br/>- Make sure the custom field id you entered is valid, or the request won't fail but will not be filtered correctly   <br/>. | Optional | 
+| custom_field | - Insert the custom field to filter with, THE FORMAT is costumFieldID:Value.<br/>- To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  <br/>- You can only filter one custom field at a time. <br/>- Make sure the custom field id you entered is valid, or the request won't fail but will not be filtered correctly   <br/>| Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.Issue | unknown | Display a list of issues | 
-| Redmine.Issue.id | unknown | Display a list of issues | 
+| Redmine.Issue | dict | Display a list of issues | 
+| Redmine.Issue.id | str | Display a list of issues | 
 
 #### Command example
 ```!redmine-issue-list limit=2```
@@ -334,7 +334,7 @@ Show an issue by id
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | issue_id | Add the id of the issue you want to show. | Required | 
-| include | - fields to add to the response.<br/>- Possible values:<br/>  1.children.<br/>  2.attachments.<br/>  3.relations.<br/>  4.changesets.<br/>  5.journals.<br/>  6.watchers.<br/>  7.allowed_statuses.<br/>- Separate multiple values with comma ONLY.<br/>. | Optional | 
+| include | - fields to add to the response.<br/>- Possible values:<br/>  1.children.<br/>  2.attachments.<br/>  3.relations.<br/>  4.changesets.<br/>  5.journals.<br/>  6.watchers.<br/>  7.allowed_statuses.<br/>- Separate multiple values with comma ONLY.<br/> | Optional | 
 
 #### Context Output
 
@@ -507,7 +507,7 @@ Retrieve a list of all projects, including both public and private ones that the
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| include | - Specify which additional fields to include in the response.<br/>- Choose from the following options:<br/>  1. trackers.<br/>  2. issue_categories<br/>  3. enabled_modules <br/>  4. time_entry_activities<br/>  5. issue_custom_fields<br/>- Separate multiple values with comma ONLY.<br/>. | Optional | 
+| include | - Specify which additional fields to include in the response.<br/>- Choose from the following options:<br/>  1. trackers.<br/>  2. issue_categories<br/>  3. enabled_modules <br/>  4. time_entry_activities<br/>  5. issue_custom_fields<br/>- Separate multiple values with comma ONLY.<br/> | Optional | 
 
 #### Context Output
 
@@ -569,10 +569,10 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.CustomField | unknown | Retrieve details of all custom fields. | 
-| Redmine.CustomField.id | unknown | Display ids of custom fields. | 
-| Redmine.CustomField.name | unknown | Display names of custom fields. | 
-| Redmine.CustomField.customized_type | unknown | Display customized_type of custom fields. | 
+| Redmine.CustomField | dict | Retrieve details of all custom fields. | 
+| Redmine.CustomField.id | str | Display ids of custom fields. | 
+| Redmine.CustomField.name | str | Display names of custom fields. | 
+| Redmine.CustomField.customized_type | str | Display customized_type of custom fields. | 
 
 #### Command example
 ```!redmine-custom-field-list```
@@ -665,13 +665,13 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.Users | unknown | Display a list of users. | 
-| Redmine.Users.id | unknown | Display a list of users ids. | 
-| Redmine.Users.login | unknown | Display a list of users login usernames. | 
-| Redmine.Users.admin | unknown | Display a list of users admins permission. | 
-| Redmine.Users.firstname | unknown | Display a list of users first name. | 
-| Redmine.Users.lastname | unknown | Display a list of users last name. | 
-| Redmine.Users.mail | unknown | Display a list of users mails. | 
+| Redmine.Users | dict | Display a list of users. | 
+| Redmine.Users.id | str | Display a list of users ids. | 
+| Redmine.Users.login | str | Display a list of users login usernames. | 
+| Redmine.Users.admin | str | Display a list of users admins permission. | 
+| Redmine.Users.firstname | str | Display a list of users first name. | 
+| Redmine.Users.lastname | str | Display a list of users last name. | 
+| Redmine.Users.mail | str | Display a list of users mails. | 
 
 #### Command example
 ```!redmine-user-id-list```
