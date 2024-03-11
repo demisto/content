@@ -782,7 +782,9 @@ class STIX2XSOARParser(BaseClient):
     @staticmethod
     def parse_report_relationships(report_obj: dict[str, Any],
                                    id_to_object: dict[str, dict[str, Any]],
-                                   relationships_prefix: str = '') -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+                                   relationships_prefix: str = '',
+                                   ignore_reports_relationships: bool = False) \
+            -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         obj_refs = report_obj.get('object_refs', [])
         relationships: list[dict[str, Any]] = []
         obj_refs_excluding_relationships_prefix = []
@@ -790,6 +792,8 @@ class STIX2XSOARParser(BaseClient):
         for related_obj in obj_refs:
             # relationship-- objects ref handled in parse_relationships
             if not related_obj.startswith('relationship--'):
+                if ignore_reports_relationships and related_obj.startswith('report--'):
+                    continue
                 obj_refs_excluding_relationships_prefix.append(related_obj)
                 if (entity_b_obj := id_to_object.get(related_obj, {})):
                     entity_b_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(entity_b_obj.get('type', ''), '')
@@ -950,7 +954,9 @@ class STIX2XSOARParser(BaseClient):
 
         return [attack_pattern]
 
-    def parse_report(self, report_obj: dict[str, Any], relationships_prefix: str = '') -> list[dict[str, Any]]:
+    def parse_report(self, report_obj: dict[str, Any],
+                     relationships_prefix: str = '',
+                     ignore_reports_relationships: bool = False) -> list[dict[str, Any]]:
         """
         Parses a single report object
         :param report_obj: report object
@@ -979,7 +985,8 @@ class STIX2XSOARParser(BaseClient):
         fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
 
         relationships, obj_refs_excluding_relationships_prefix = self.parse_report_relationships(report_obj, self.id_to_object,
-                                                                                                 relationships_prefix)
+                                                                                                 relationships_prefix,
+                                                                                                 ignore_reports_relationships)
         report['relationships'] = relationships
         if obj_refs_excluding_relationships_prefix:
             fields['Report Object References'] = [{'objectstixid': object} for object in obj_refs_excluding_relationships_prefix]

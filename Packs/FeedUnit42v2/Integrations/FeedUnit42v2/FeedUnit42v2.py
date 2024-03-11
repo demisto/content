@@ -185,7 +185,7 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
     for report_object in report_objects:
         if is_sub_report(report_object):
             continue
-        report_list = client.parse_report(report_object, '[Unit42 ATOM] ')
+        report_list = client.parse_report(report_object, '[Unit42 ATOM] ', ignore_reports_relationships=True)
         report = report_list[0]
         report['value'] = f"[Unit42 ATOM] {report_object.get('name')}"
         report['fields']['tags'] = list((set(report_object.get('labels') or [])).union(set(feed_tags)))
