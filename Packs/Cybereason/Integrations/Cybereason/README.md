@@ -1627,7 +1627,12 @@ Get the results related to machines.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cybereason.Malops.GUID | string | Malop ID | 
+| Cybereason.Malops.GUID | string | The unique globally unique identifier \(guid\) for the Malop. | 
+| Cybereason.Malops.CreationTime | string | The time reported as when the malicious behavior began on the system. This is not the time that the Malop was first detected by Cybereason. |
+| Cybereason.Malops.Link | string | Link to the Malop on Cybereason. | 
+| Cybereason.Malops.LastUpdatedTime | string | Last updated time of malop | 
+| Cybereason.Malops.InvolvedHash | string | List of file hashes involved in this Malop | 
+| Cybereason.Malops.Status | string | Malop managemant status | 
 
 #### Command example
 
@@ -1654,14 +1659,15 @@ Get the results related to machines.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| malopGuid | malopGuid of the Cybereason Malop. | Required | 
+| malopGuid | malopGuid of the Cybereason Malop | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cybereason.Process.ProcessID | string | Process ID | 
+|Cybereason.Process.ProcessID | string | Cybereason Process ID |
+|Cybereason.Process.URL | string | Attack tree url for a given Process |
 
 #### Command example
 
@@ -1671,8 +1677,16 @@ Get the results related to machines.
 
 ```json
 {
-    "ProcessID": "<process-id>",
-    "URL": "<url>",
+    "Process": [
+        {
+        "ProcessID": "<process-id>",
+        "URL": "<url>"
+        },
+        {
+        "ProcessID": "<process-id>",
+        "URL": "<url>"
+        } 
+    ]
 }
 ```
 

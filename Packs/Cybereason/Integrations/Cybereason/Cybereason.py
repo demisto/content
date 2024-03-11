@@ -66,7 +66,6 @@ MALOP_HEADERS = [
 SINGLE_MALOP_HEADERS = [
     'GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'InvolvedHash']
 
-
 DOMAIN_HEADERS = [
     'Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved', 'WasEverResolvedAsASecondLevelDomain', 'Malicious',
     'SuspicionsCount']
