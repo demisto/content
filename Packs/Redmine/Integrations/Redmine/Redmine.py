@@ -138,7 +138,7 @@ def check_include_validity(included_args, include_options):
         Raises a demisto error if one or more from the include are not given in the predefined options.
     """
     included_args = argToList(included_args)
-    invalid_values = set(included_args) - set(include_options) if included_args else set()
+    invalid_values = set(included_args) - set(include_options)
     if invalid_values:
         raise DemistoException(f"The 'include' argument should only contain values from {include_options}, separated by commas. "
                                f"These values are not in options {invalid_values}.")
@@ -525,10 +525,7 @@ def get_project_list_command(client: Client, args: dict[str, Any]):
         check_include_validity(include_arg,
                                ['trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields']
                                )
-    try:
-        response = client.get_project_list_request(args)
-    except Exception as e:
-        raise DemistoException(f"Error in request to API. Error: {e}.")
+    response = client.get_project_list_request(args)
     try:
         projects_response = response['projects']
     except Exception:
