@@ -4,35 +4,34 @@ commonfields:
   version: -1
 configuration:
 - display: Service Account Private Key file contents (JSON)
-  hidden: true
   name: service_account_json
-  required: false
   type: 4
-- display: ""
-  displaypassword: Service Account Private Key file contents (JSON)
-  hiddenusername: true
-  name: credentials_service_account_json
+  hidden: true
   required: false
+- displaypassword: Service Account Private Key file contents (JSON)
+  name: credentials_service_account_json
+  hiddenusername: true
   type: 9
+  required: false
+  display: ""
 - display: Default Bucket
   name: default_bucket
-  required: false
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 description: Google Cloud Storage is a RESTful online file storage web service for storing and accessing data on Google Cloud Platform infrastructure.
 display: Google Cloud Storage
 name: Google Cloud Storage
 script:
   commands:
-  - arguments: []
-    description: Retrieves the list of buckets.
+  - description: Retrieves the list of buckets.
     name: gcs-list-buckets
     outputs:
     - contextPath: GCS.Bucket.Name
@@ -47,6 +46,7 @@ script:
     - contextPath: GCS.Bucket.OwnerID
       description: Bucket owner ID.
       type: String
+    arguments: []
   - arguments:
     - default: true
       description: Name of the bucket to retrieve. If not specified, operation will be performed on the default bucket parameter.
@@ -94,12 +94,12 @@ script:
       description: The location of the bucket, The default value is US.
       name: location
     - auto: PREDEFINED
-      defaultValue: "false"
       description: Whether the bucket is configured to allow only IAM, The default value is false.
       name: uniform_bucket_level_access
+      defaultValue: 'false'
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
     description: Creates a new bucket.
     name: gcs-create-bucket
   - arguments:
@@ -108,12 +108,12 @@ script:
       name: bucket_name
       required: true
     - auto: PREDEFINED
-      defaultValue: "false"
+      defaultValue: 'false'
       description: Forces the bucket to delete (if not empty).
       name: force
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       required: true
     description: Deletes a bucket.
     name: gcs-delete-bucket
@@ -351,19 +351,21 @@ script:
   - arguments:
     - description: Name of the Bucket to copy the object from. If not specified, operation will be performed on the default bucket parameter.
       name: source_bucket_name
-    - description: Name of the Bucket to copy the object to
+    - description: Name of the Bucket to copy the object to.
       name: destination_bucket_name
       required: true
-    - description: Name of the object to copy
+    - description: Name of the object to copy.
       name: source_object_name
       required: true
     - description: Name of the object in the destination bucket. If not specified, operation will be performed with the source_object_name parameter.
       name: destination_object_name
-    description: Copies a file (object) from one bucket to another
+    description: Copies a file (object) from one bucket to another.
     name: gcs-copy-file
-  dockerimage: demisto/google-cloud-storage:1.0.0.83364
+  dockerimage: demisto/google-cloud-storage:1.0.0.89308
   runonce: false
   script: ''
-  subtype: python3
   type: python
-sourcemoduleid: Google Cloud Storage
+  subtype: python3
+tests:
+- GCS - Test
+fromversion: 5.0.0
