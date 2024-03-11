@@ -1611,3 +1611,68 @@ Get the results related to machines.
     "GroupName": "example-group-name"
 }
 ```
+
+#### Base Command
+
+`cybereason-query-malop-management`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | malopGuid of the Cybereason Malop. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Malops.GUID | string | Malop ID | 
+
+#### Command example
+
+```!cybereason-query-malop-management malopGuid=<malop-guid>```
+
+#### Context Example
+
+```json
+{
+    "GUID": "malop-guid",
+    "Link": "malop-url",
+    "CreationTime": 1686720403740,
+    "LastUpdateTime": 1686720403743,
+    "Status": "Pending",
+    "InvolvedHash": "involed-hash"
+}
+```
+
+#### Base Command
+
+`cybereason_process_attack_tree_command`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | malopGuid of the Cybereason Malop. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Process.ProcessID | string | Process ID | 
+
+#### Command example
+
+```!cybereason-process-attack-tree processGuid=<process-guid>```
+
+#### Context Example
+
+```json
+{
+    "ProcessID": "<process-id>",
+    "URL": "<url>",
+}
+```
+

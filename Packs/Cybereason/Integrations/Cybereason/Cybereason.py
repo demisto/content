@@ -1957,10 +1957,7 @@ def query_malop_management_command(client: Client, args: dict):
             "offset": 0
         }
     }
-    demisto.info(f"json_body in query_malop_management_command: {json_body}")
     response = client.cybereason_api_call('POST', '/rest/mmng/v2/malops', json_body=json_body)
-    data = response["data"]
-    demisto.info(f"api response in query_malop_management_command : {data}")
     if dict_safe_get(response, ['data', 'data']) == []:
         raise DemistoException(f"Could not find details for the provided MalopGuid {malop_guid}")
     else:
