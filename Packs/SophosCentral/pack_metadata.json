@@ -1,11 +1,11 @@
 {
     "name": "Sophos Central",
     "description": "The unified console for managing Sophos products",
-    "support": "partner",
-    "currentVersion": "1.2.10",
+    "support": "xsoar",
+    "currentVersion": "1.3.0",
     "author": "Sophos",
-    "url": "https://www.sophos.com",
-    "email": "apis@sophos.com",
+    "url": "",
+    "email": "",
     "created": "2020-11-25T17:22:30Z",
     "categories": [
         "Network Security"
