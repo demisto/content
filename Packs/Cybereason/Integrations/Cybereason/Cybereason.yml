@@ -395,7 +395,7 @@ script:
     name: cybereason-process-attack-tree
     outputs:
     - contextPath: Cybereason.Process.ProcessID
-      description: Cybereason Process ID
+      description: Cybereason Process ID.
       type: string
     - contextPath: Cybereason.Process.URL
       description: Attack tree url for a given Process.
