@@ -1919,7 +1919,7 @@ def handle_html(htmlBody):
         re.finditer(  # pylint: disable=E1101
             r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"',
             htmlBody,
-            re.I  # pylint: disable=E1101
+            re.I | re.S  # pylint: disable=E1101
         )
     ):
         maintype, subtype = m.group(2).split('/', 1)

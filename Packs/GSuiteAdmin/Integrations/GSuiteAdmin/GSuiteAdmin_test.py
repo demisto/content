@@ -238,7 +238,7 @@ def test_user_create_command(gsuite_client, mocker):
     - Ensure CommandResult entry should be as expected.
     """
     from GSuiteAdmin import user_create_command
-    with open('test_data/user_create_args.json', 'r') as file:
+    with open('test_data/user_create_args.json') as file:
         args = json.load(file)
     with open('test_data/user_create_response.json') as file:
         api_response = json.load(file)
@@ -918,7 +918,7 @@ def test_user_update_command(gsuite_client, mocker):
     - Ensure CommandResult entry should be as expected.
     """
     from GSuiteAdmin import user_update_command
-    with open('test_data/user_create_args.json', 'r') as file:
+    with open('test_data/user_create_args.json') as file:
         args = json.load(file)
     args['archived'] = 'true'
     args['org_unit_path'] = '\\'
@@ -938,7 +938,7 @@ def test_user_update_command(gsuite_client, mocker):
 
 
 def util_load_json(path):
-    with open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
