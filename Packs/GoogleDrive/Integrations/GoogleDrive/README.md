@@ -820,6 +820,7 @@ Creates a new file.
 | file_name | The name of the file to upload. | Optional | 
 | entry_id | The file's Entry ID. | Optional | 
 | parent | The ID of the parent folder which contains the file. If not specified as part of a create request, the file will be placed directly in the user's My Drive folder. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Default is "false". | Optional | 
 
 #### Context Output
 
