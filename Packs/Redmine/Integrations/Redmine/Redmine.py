@@ -260,6 +260,7 @@ def test_module(client: Client) -> None:
     try:
         if (get_users_command(client, {})):
             message = 'ok'
+        return return_results(message)
     except DemistoException as e:
         if '401' in str(e) or 'Unauthorized' in str(e):
             message = f'Authorization Error: make sure API Key is correctly set. Error: {e}'
