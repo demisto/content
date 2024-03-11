@@ -1,8 +1,7 @@
-id: 3900afd6-a237-4a7e-8042-b99ef0ad3231
-version: 14
-vcShouldKeepItemLegacyProdMachine: false
+id: Redmine_Test
+version: -1
 name: Redmine_Test
-description: Tests the Redmine Integrations command
+description: Tests the Redmine Integrations command.
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -810,6 +810,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -880,3 +881,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)

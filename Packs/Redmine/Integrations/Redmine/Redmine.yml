@@ -126,10 +126,9 @@ script:
     - name: page_number
       description: Enter the page number
     - name: page_size
-      description: Enter the page size 
-      defaultValue: '50'
+      description: Enter the page size (default value is 50, if limit not specified)
     - name: limit
-      description: Specify the number of issues to display in the response (maximum is 100)
+      description: Specify the number of issues to display in the response (maximum is 100). If page_number or page_size are specified, this field will be ignored.
       defaultValue: '25'
     - name: sort
       description: |

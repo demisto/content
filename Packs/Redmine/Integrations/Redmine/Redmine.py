@@ -66,17 +66,19 @@ class Client(BaseClient):
                                       data=file_content)
         return response
 
-    def create_issue_request(self, args, project_id=None):
-        remove_nulls_from_dictionary(args)
+    def create_issue_request(self, args, watcher_user_ids, project_id=None):
         args['project_id'] = project_id
+        args['watcher_user_ids'] = watcher_user_ids
+        remove_nulls_from_dictionary(args)
         body_for_request = {'issue': args}
         response = self._http_request('POST', '/issues.json', params={},
                                       json_data=body_for_request, headers=self._post_put_header)
         return response
 
-    def update_issue_request(self, args, project_id):
+    def update_issue_request(self, args, project_id, watcher_user_ids):
         issue_id = args.pop('issue_id')
         args['project_id'] = project_id
+        args['watcher_user_ids'] = watcher_user_ids
         remove_nulls_from_dictionary(args)
         response = self._http_request('PUT', f'/issues/{issue_id}.json', json_data={"issue": args}, headers=self._post_put_header,
                                       empty_valid_codes=[204], return_empty_response=True)
@@ -183,41 +185,22 @@ def map_header(header_string: str) -> str:
     }
     return header_mapping.get(header_string, header_string)
 
-
-def map_predefined_values_to_id(predefined_value, converter_dict, error_message):
-    if predefined_value is not None:
-        predefined_id = converter_dict.get(predefined_value)
-        if predefined_id is not None:
-            return predefined_id
-        else:
-            raise DemistoException(error_message)
-    return None
-
-
-def convert_args_to_request_format(args):  # put pop in line, remove exceptions
-    tracker_id = args.pop('tracker_id', None)
-    status_id = args.pop('status_id', None)
-    priority_id = args.pop('priority_id', None)
-    custom_fields = args.pop('custom_fields', None)
-    watcher_user_ids = args.pop('watcher_user_ids', None)
-
-    args['tracker_id'] = map_predefined_values_to_id(
-        tracker_id, ISSUE_TRACKER_DICT, "Tracker_id invalid, please make sure you use only predefined values")
-    args['status_id'] = map_predefined_values_to_id(
-        status_id, ISSUE_STATUS_DICT, "Status_id invalid, please make sure you use only predefined values")
-    args['priority_id'] = map_predefined_values_to_id(
-        priority_id, ISSUE_PRIORITY_DICT, "Priority_id invalid, please make sure you use only predefined values")
-
+def convert_args_to_request_format(tracker_id, status_id, priority_id, custom_fields, args):
+    try:
+        if tracker_id:
+            args['tracker_id'] = ISSUE_TRACKER_DICT[tracker_id]
+        if status_id:
+            args['status_id'] = ISSUE_STATUS_DICT[status_id]
+        if priority_id:
+            args['priority_id'] = ISSUE_PRIORITY_DICT[priority_id]
+    except DemistoException as e:
+        raise DemistoException(f"Predefined value is not in format for {e.message}.")
     if custom_fields:
-        custom_fields = custom_fields.split(',')
+        custom_fields = argToList(custom_fields)
         try:
             args['custom_fields'] = [{'id': field.split(':')[0], 'value': field.split(':')[1]} for field in custom_fields]
         except Exception:
             raise DemistoException("Custom fields not in format, please follow the instructions")
-
-    if watcher_user_ids:
-        args['watcher_user_ids'] = argToList(watcher_user_ids)
-
 
 def get_file_content(entry_id: str) -> bytes:
     """Returns the XSOAR file entry's content.
@@ -269,7 +252,6 @@ def handle_file_attachment(client: Client, args: Dict[str, Any]):
 
 ''' COMMAND FUNCTIONS '''
 
-
 def test_module(client: Client) -> None:
     message: str = ''
     try:
@@ -282,16 +264,23 @@ def test_module(client: Client) -> None:
             raise e
     return return_results(message)
 
-
 def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
     if not args.get('project_id', None) and not client._project_id:
         raise DemistoException('project_id field is missing in order to create an issue')
     # Checks if a file needs to be added
     handle_file_attachment(client, args)
-    convert_args_to_request_format(args)
+    # Change predefined values to id
+    tracker_id = args.pop('tracker_id', None)
+    status_id = args.pop('status_id', None)
+    priority_id = args.pop('priority_id', None)
+    custom_fields = args.pop('custom_fields', None)
+    convert_args_to_request_format(tracker_id, status_id, priority_id, custom_fields, args)
+    watcher_user_ids = args.pop('watcher_user_ids', None)
+    if watcher_user_ids:
+        watcher_user_ids = argToList(watcher_user_ids)
     project_id = args.pop('project_id', client._project_id)
     try:
-        response = client.create_issue_request(args, project_id)
+        response = client.create_issue_request(args, watcher_user_ids, project_id)
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
             raise DemistoException(INVALID_ID_DEMISTO_ERROR)
@@ -327,10 +316,17 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
 def update_issue_command(client: Client, args: dict[str, Any]):
     issue_id = args.get('issue_id')
     handle_file_attachment(client, args)
-    convert_args_to_request_format(args)
+    tracker_id = args.pop('tracker_id', None)
+    status_id = args.pop('status_id', None)
+    priority_id = args.pop('priority_id', None)
+    custom_fields = args.pop('custom_fields', None)
+    convert_args_to_request_format(tracker_id, status_id, priority_id, custom_fields, args)
+    watcher_user_ids = args.pop('watcher_user_ids', None)
+    if watcher_user_ids:
+        watcher_user_ids = argToList(watcher_user_ids)
     project_id = args.pop('project_id', client._project_id)
     try:
-        client.update_issue_request(args, project_id)
+        client.update_issue_request(args, project_id, watcher_user_ids)
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
             raise DemistoException(INVALID_ID_DEMISTO_ERROR)
