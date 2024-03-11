@@ -7,7 +7,7 @@ import requests
 urllib3.disable_warnings()
 
 
-class JizoMClient(BaseClient):
+class JizoMClient():
     """
     Add description
     """
@@ -28,69 +28,63 @@ class JizoMClient(BaseClient):
             check_cert: True to validate server certificate and False instead.
             proxies: Requests proxies. Default to no proxies.
         """
-        super().__init__(base_url=url, proxy=proxy, verify=verify)
-        # self.url = url
+        self.url = url
         self.headers = headers
         self.credentials = credentials
+        self.proxy = proxy
+        self.verify = verify
 
     def test_module(self):
+        return True
+
+
+def get_token(client: JizoMClient):
+    try:
+        url = f"https://{client.url}/login"
+
+        # Include username and password as JSON in the request body
         data = {
-            "username": self.credentials["username"],
-            "password": self.credentials["password"],
+            "username": client.credentials["username"],
+            "password": client.credentials["password"],
         }
-        url = f"http://{self._base_url}/login"
-        try:
-            return self._http_request(method="POST", full_url=url, data=data)
-        except Exception as e:
-            return e
 
-    def get_token(self):
-        try:
-            url = f"https://{self._base_url}/login"
+        # Define headers
+        headers = {"Content-Type": "application/json"}
 
-            # Include username and password as JSON in the request body
-            data = {
-                "username": self.credentials["username"],
-                "password": self.credentials["password"],
-            }
+        # Sending POST request to the API endpoint with the specified headers and request body
+        response = requests.post(
+            url, headers=headers, json=data, verify=False
+        )  # Setting verify=False ignores SSL certificate verification. Be cautious about using it in a production environment.
+        # Checking if the request was successful (status code 200)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return_error(f"Error: {response.status_code} - {response.text}")
 
-            # Define headers
-            headers = {"Content-Type": "application/json"}
+    except Exception as e:
+        return_error(f"An error occurred: {e}")
 
-            # Sending POST request to the API endpoint with the specified headers and request body
-            response = requests.post(
-                url, headers=headers, json=data, verify=False
-            )  # Setting verify=False ignores SSL certificate verification. Be cautious about using it in a production environment.
-            print(response)
-            # Checking if the request was successful (status code 200)
-            if response.status_code == 200:
-                return response.json()
-            else:
-                return_error(f"Error: {response.status_code} - {response.text}")
 
-        except Exception as e:
-            return_error(f"An error occurred: {e}")
+def get_info(client: JizoMClient, token: str, endpoint: str):
+    try:
+        url = f"https://{client.url}{endpoint}"
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        }
+        # Sending GET request to the API endpoint with the specified headers
+        response = requests.get(
+            url, headers=headers, verify=False
+        )  # Setting verify=False ignores SSL certificate verification. Be cautious about using it in a production environment.
 
-    def get_info(self, token, endpoint):
-        try:
-            url = f"https://{self.url}{endpoint}"
-            headers = {
-                "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json",
-            }
-            # Sending GET request to the API endpoint with the specified headers
-            response = requests.get(
-                url, headers=headers, verify=False
-            )  # Setting verify=False ignores SSL certificate verification. Be cautious about using it in a production environment.
+        # Checking if the request was successful (status code 200)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return_error(f"Error: {response.status_code} - {response.text}")
 
-            # Checking if the request was successful (status code 200)
-            if response.status_code == 200:
-                return response.json()
-            else:
-                return_error(f"Error: {response.status_code} - {response.text}")
-
-        except Exception as e:
-            return_error(f"An error occurred: {e}")
+    except Exception as e:
+        return_error(f"An error occurred: {e}")
 
 
 def test_module(client: JizoMClient) -> str:
@@ -110,31 +104,24 @@ def test_module(client: JizoMClient) -> str:
 
 
 def main():
-    """
-    PARSE AND VALIDATE INTEGRATION PARAMS
-    """
+
     # Parse parameters
     params = demisto.params()
     command = demisto.command()
-    args = demisto.args()
-    # api_url = params.get("url")
-    api_url = "127.0.0.1:9001"
-    # credentials = {
-    #     "username": params.get("username"),
-    #     "password": params.get("password"),
-    # }
+    demisto.args()
+    api_url = params.get("url")
+    # api_url = "127.0.0.1:9001"
     credentials = {
-        "username": "operator",
-        "password": "Sesame@debian01",
+        "username": params.get("username"),
+        "password": params.get("password"),
     }
+    # credentials = {
+    #     "username": "operator",
+    #     "password": "Sesame@debian01",
+    # }
     headers = {"Accept": "application/json"}
     demisto.debug(f"Command being called is {command}")
     try:
-        login_url = f"http://{api_url}/login"
-        print(login_url)
-        response = requests.post(
-            login_url, headers=headers, json=credentials, verify=True
-        )  # Setting verify=False ignores SSL certificate verification. Be cautious about using it in a production environment.
         client = JizoMClient(
             url=api_url,
             headers=headers,
@@ -142,35 +129,41 @@ def main():
             proxy=False,
             verify=False,
         )
+        # Get token to connect
+        connect = get_token(client)
+        token = connect["token"]
+        if command == "test-module":
+            # This is the call made when clicking the integration Test button.
+            return_results(test_module(client))
 
-        # token = client.get_token()
-        # if command == "test-module":
-        # This is the call made when clicking the integration Test button.
-        return_results(test_module(client))
-        token = client.get_token()
-        if command == "protocols":
-            return_results(client.get_info(token=token, endpoint="/jizo_get_protocols"))
+        elif command == "protocols":
+            return_results(
+                get_info(client, token=token, endpoint="/jizo_get_protocols")
+            )
         elif command == "peers":
-            return_results(client.get_info(token=token, endpoint="/jizo_get_peers"))
+            return_results(
+                get_info(client, token=token, endpoint="/jizo_get_peers")
+            )
         elif command == "query_records":
-            return_results(client.get_info(token=token, endpoint="/jizo_query_records"))
+            return_results(
+                get_info(client, token=token, endpoint="/jizo_query_records")
+            )
         elif command == "alert_rules":
             return_results(
-                client.get_info(token=token, endpoint="/jizo_get_alert_rules")
+                get_info(client, token=token, endpoint="/jizo_get_alert_rules")
             )
         elif command == "device_records":
             return_results(
-                client.get_info(token=token, endpoint="/jizo_device_records")
+                get_info(client, token=token, endpoint="/jizo_device_records")
             )
         elif command == "device_alerts":
             return_results(
-                client.get_info(token=token, endpoint="/jizo_get_devicealerts")
+                get_info(client, token=token, endpoint="/jizo_get_devicealerts")
             )
         else:
             f"{command} command is not implemented."
     # Log exceptions
     except Exception as e:
-        print(e)
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
