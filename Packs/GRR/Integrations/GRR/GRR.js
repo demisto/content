@@ -252,7 +252,7 @@ switch (command) {
         return sendRequest('GET', server) ? 'ok' : 'No body in response';
     case 'grr-set-flows':
     case 'grr_set_flows'://deprecated
-        return getFlows('POST', server + '/dummy/pathents/' + args.client_id + '/flows', 'post flow', '{"flow": ' + args.flow + '}',null,"Set Flow");
+        return getFlows('POST', server + '/api/clients/' + args.client_id + '/flows', 'post flow', '{"flow": ' + args.flow + '}',null,"Set Flow");
     case 'grr-get-files': 
     case 'grr_get_files'://deprecated
         var pathsArr;
@@ -274,7 +274,7 @@ switch (command) {
     case 'grr_set_hunts'://deprecated
         return getHunts('POST', server + '/api/hunts', 'set hunts', JSON.stringify(args),null,null,"Set Hunt");
     case 'grr-get-clients':
-        return getClients('GET',server + '/dummy/pathents' + encodeToURLQuery(args), 'get client',null,"items","Clients");
+        return getClients('GET',server + 'api/clients' + encodeToURLQuery(args), 'get client',null,"items","Clients");
     case 'grr-get-flows':
     case 'grr_get_flows'://deprecated
         var urlArgs = {};
@@ -284,5 +284,5 @@ switch (command) {
         if (args.offset) {
             urlArgs.offset = args.offset;
         }
-        return getFlows('GET', server + '/dummy/pathents/' + args.client_id + '/flows' + encodeToURLQuery(urlArgs), 'get flow',null,"items","Flows");
+        return getFlows('GET', server + '/api/clients/' + args.client_id + '/flows' + encodeToURLQuery(urlArgs), 'get flow',null,"items","Flows");
 }

@@ -84,7 +84,7 @@ def test_get_indicators_command(client, mocker):
 
     # Verifying the result
     assert result.outputs == expected_result
-    assert result.outputs_prefix == "indicator_details"
+    assert result.outputs_prefix == "SafeBreach.Indicator"
 
 
 def test_get_users_list(client, mocker):
@@ -99,7 +99,7 @@ def test_get_users_list(client, mocker):
 
     # Verifying the result
     assert result.outputs == expected_result
-    assert result.outputs_prefix == "services_status"
+    assert result.outputs_prefix == "SafeBreach.ServiceStatus"
 
 
 def modify_mocker_with_common_data(mocker, test_input_data, test_output_data):
@@ -128,7 +128,7 @@ def test_get_all_users(client, mocker):
         # Running the command
         result = get_all_users(client)
 
-        assert result.outputs_prefix == "user_data"
+        assert result.outputs_prefix == "SafeBreach.UserData"
 
         assert result.outputs == expected_result["outputs"][key].get("data")
         assert result.readable_output == tableToMarkdown(
@@ -164,7 +164,7 @@ def test_get_user_id_by_name_or_email(client, mocker):
 
         command_results = get_user_id_by_name_or_email(client)
 
-        assert command_results.outputs_prefix == "filtered_users"
+        assert command_results.outputs_prefix == "SafeBreach.UserData"
         assert command_results.readable_output == tableToMarkdown(
             name="user data", t=command_results.outputs, headers=["id", "name", "email"]
         )
@@ -195,7 +195,7 @@ def test_create_user(client, mocker):
         main()
 
         command_results = create_user(client)
-        assert command_results.outputs_prefix == "created_user_data"
+        assert command_results.outputs_prefix == "SafeBreach.CreatedUserData"
         assert command_results.readable_output == tableToMarkdown(
             name="Created User Data",
             t=command_results.outputs,
@@ -250,7 +250,7 @@ def test_update_user_with_details(client, mocker):
             main()
         command_results = update_user_with_details(client)
 
-        assert command_results.outputs_prefix == "updated_user_data"
+        assert command_results.outputs_prefix == "SafeBreach.UpdatedUserData"
         assert command_results.readable_output == tableToMarkdown(
             name="Updated User Data",
             t=command_results.outputs,
@@ -300,7 +300,7 @@ def test_delete_user_with_details(client, mocker):
             main()
         command_results = delete_user_with_details(client)
 
-        assert command_results.outputs_prefix == "deleted_user_data"
+        assert command_results.outputs_prefix == "SafeBreach.DeletedUserData"
         assert command_results.readable_output == tableToMarkdown(
             name="Deleted User Data",
             t=command_results.outputs,
@@ -330,7 +330,7 @@ def test_create_deployment(client, mocker):
         main()
         command_results = create_deployment(client)
 
-        assert command_results.outputs_prefix == "created_deployment_data"
+        assert command_results.outputs_prefix == "SafeBreach.CreateDeployment"
         assert command_results.readable_output == tableToMarkdown(
             name="Created Deployment",
             headerTransform=deployment_transformer,
@@ -365,7 +365,7 @@ def test_update_deployment(client, mocker):
         main()
         command_results = update_deployment(client)
 
-        assert command_results.outputs_prefix == "updated_deployment_data"
+        assert command_results.outputs_prefix == "SafeBreach.UpdatedDeployment"
         assert command_results.readable_output == tableToMarkdown(
             name="Updated Deployment",
             headerTransform=deployment_transformer,
@@ -403,7 +403,7 @@ def test_delete_deployment(client, mocker):
         main()
         command_results = delete_deployment(client)
 
-        assert command_results.outputs_prefix == "deleted_deployment_data"
+        assert command_results.outputs_prefix == "SafeBreach.DeletedDeployment"
         assert command_results.readable_output == tableToMarkdown(
             name="Deleted Deployment",
             headerTransform=deployment_transformer,
@@ -437,7 +437,7 @@ def test_create_api_key(client, mocker):
         main()
         command_results = create_api_key(client)
 
-        assert command_results.outputs_prefix == "generated_api_key"
+        assert command_results.outputs_prefix == "SafeBreach.GeneratedAPIKey"
         assert command_results.readable_output == tableToMarkdown(
             name="Generated API key Data",
             t=command_results.outputs,
@@ -451,7 +451,6 @@ def test_create_api_key(client, mocker):
             assert test_output["outputs"][key].get("data")["name"] == test_input[key]["args"]["name"]
             assert test_output["outputs"][key].get("data")["description"] == test_input[key]["args"]["description"]
             assert test_output["outputs"][key].get("data")["deletedAt"] is None
-
         else:
             assert isinstance(test_output["outputs"][key]["error"], dict)
             assert test_output["outputs"][key]["error"].get("errors") is not None
@@ -485,7 +484,7 @@ def test_delete_api_key(client, mocker):
             continue
         command_results = delete_api_key(client)
 
-        assert command_results.outputs_prefix == "deleted_api_key"
+        assert command_results.outputs_prefix == "SafeBreach.DeletedAPIKey"
         assert command_results.readable_output == tableToMarkdown(
             name="Deleted API key Data",
             t=command_results.outputs,
@@ -515,7 +514,7 @@ def test_return_rotated_verification_token(client, mocker):
         main()
         command_results = return_rotated_verification_token(client)
 
-        assert command_results.outputs_prefix == "secret"
+        assert command_results.outputs_prefix == "SafeBreach.Token"
         assert command_results.readable_output == tableToMarkdown(
             name="new Token Details", t=command_results.outputs, headers=["secret"]
         )
@@ -540,7 +539,7 @@ def test_get_all_tests_summary(client, mocker):
         main()
         command_results = get_all_tests_summary(client)
 
-        assert command_results.outputs_prefix == "tests_data"
+        assert command_results.outputs_prefix == "SafeBreach.Test"
         assert command_results.outputs == {"tests_data": test_output["outputs"][key]}
         for test in test_output["outputs"][key]:
             assert test["status"] == test_input[key]["args"]["status"]
@@ -566,7 +565,7 @@ def test_get_all_tests_summary_with_scenario_id(client, mocker):
             assert bool(test_input[key]["args"]["plan_id"]) is True
         else:
             assert bool(test_input[key]["args"]["plan_id"]) is False
-        assert command_results.outputs_prefix == "tests_data"
+        assert command_results.outputs_prefix == "SafeBreach.Test"
         assert command_results.outputs == {"tests_data": test_output["outputs"][key]}
         for test in test_output["outputs"][key]:
             assert test["status"] == test_input[key]["args"]["status"]
@@ -593,7 +592,7 @@ def test_delete_test_result_of_test(client, mocker):
         else:
             assert bool(test_input[key]["args"]["test_id"]) is False
             continue
-        assert command_results.outputs_prefix == "deleted_test_results"
+        assert command_results.outputs_prefix == "SafeBreach.DeletedTest"
         assert command_results.readable_output == tableToMarkdown(
             name="Deleted Test", t=command_results.outputs, headers=["id"]
         )
@@ -616,7 +615,7 @@ def test_get_all_integration_error_logs(client, mocker):
         main()
         command_results = get_all_integration_error_logs(client)
         assert test_output["outputs"][key].get("error") is not None
-        assert command_results.outputs_prefix == "Integration Error Data"
+        assert command_results.outputs_prefix == "SafeBreach.IntegrationErrors"
         assert len(test_output["outputs"][key].keys()) == 2
 
 
@@ -641,7 +640,7 @@ def test_delete_integration_error_logs(client, mocker):
             continue
         else:
             assert test_output["outputs"][key].get("error") is not None
-        assert command_results.outputs_prefix == "errors_cleared"
+        assert command_results.outputs_prefix == "SafeBreach.ClearIntegrationIssues"
         assert command_results.readable_output == tableToMarkdown(
             name="Integration errors status", t=command_results.outputs, headers=["result", "error"]
         )
@@ -663,7 +662,7 @@ def test_get_all_running_tests_summary(client, mocker):
         main()
         command_results = get_all_running_tests_summary(client)
         if key == "success":
-            assert command_results.outputs_prefix == "tests_data"
+            assert command_results.outputs_prefix == "SafeBreach.ActiveTest"
             assert command_results.outputs == test_output["outputs"][key]
         else:
             assert bool(test_output["outputs"][key]) is False
@@ -684,7 +683,7 @@ def test_get_all_running_simulations_summary(client, mocker):
 
         main()
         command_results = get_all_running_simulations_summary(client)
-        assert command_results.outputs_prefix == "active_simulations"
+        assert command_results.outputs_prefix == "SafeBreach.ActiveSimulations"
         assert command_results.outputs == test_output["outputs"][key]
         if key == "success_with_data":
             assert test_output["outputs"][key].get("data").get("RUNNING") is not None
@@ -709,7 +708,7 @@ def test_pause_resume_tests_and_simulations(client, mocker):
 
         main()
         command_results = pause_resume_tests_and_simulations(client)
-        assert command_results.outputs_prefix == "simulations_tests_status"
+        assert command_results.outputs_prefix == "SafeBreach.TestStatus"
         assert command_results.outputs == test_output["outputs"][key].get("data")
         if key != "fail":
             assert test_output["outputs"][key].get("data").get("status") == "OK"
@@ -732,7 +731,7 @@ def test_get_schedules(client, mocker):
 
         main()
         command_results = get_schedules(client)
-        assert command_results.outputs_prefix == "schedules"
+        assert command_results.outputs_prefix == "SafeBreach.Schedules"
         assert command_results.outputs == test_output["outputs"][key].get("data")
         if key != "fail":
             assert test_output["outputs"][key].get("data") is not None
@@ -764,7 +763,7 @@ def test_delete_schedules(client, mocker):
             assert test_output["outputs"][key].get("data") is not None
             main()
             command_results = delete_schedules(client)
-            assert command_results.outputs_prefix == "deleted_scheduled_scenario"
+            assert command_results.outputs_prefix == "SafeBreach.DeletedScheduledScenario"
             assert command_results.outputs == test_output["outputs"][key]
         else:
             main()
@@ -785,7 +784,7 @@ def test_get_prebuilt_scenarios(client, mocker):
 
         main()
         command_results = get_prebuilt_scenarios(client)
-        assert command_results.outputs_prefix == "prebuilt_scenarios"
+        assert command_results.outputs_prefix == "SafeBreach.PrebuiltScenario"
         assert command_results.outputs == test_output["outputs"][key]
         if key != "fail":
             assert bool(test_output["outputs"][key]) is True
@@ -809,7 +808,7 @@ def test_get_custom_scenarios(client, mocker):
 
         main()
         command_results = get_custom_scenarios(client)
-        assert command_results.outputs_prefix == "custom_scenarios"
+        assert command_results.outputs_prefix == "SafeBreach.CustomScenario"
         assert command_results.outputs == test_output["outputs"][key]
         if key != "fail":
             assert bool(test_output["outputs"][key].get("data")) is True
@@ -835,7 +834,7 @@ def test_get_services_status(client, mocker):
 
         main()
         command_results = get_services_status(client)
-        assert command_results.outputs_prefix == "services_status"
+        assert command_results.outputs_prefix == "SafeBreach.ServiceStatus"
         assert command_results.outputs == test_output["outputs"][key]
         assert bool(test_output["outputs"][key]) is True
         if key == "success":
@@ -859,7 +858,7 @@ def test_get_verification_token(client, mocker):
 
         main()
         command_results = get_verification_token(client)
-        assert command_results.outputs_prefix == "verification_token"
+        assert command_results.outputs_prefix == "SafeBreach.VerificationToken"
         assert command_results.outputs == test_output["outputs"][key]
         if key != "fail":
             assert test_output["outputs"][key].get("data", {}).get("secret") is not None
@@ -880,7 +879,7 @@ def test_rerun_test(client, mocker):
 
         main()
         command_results = rerun_test(client)
-        assert command_results.outputs_prefix == "changed_data"
+        assert command_results.outputs_prefix == "SafeBreach.Test"
         assert command_results.outputs == test_output["outputs"][key]
         if key != "fail":
             assert isinstance(test_output["outputs"][key]["data"]["planRunId"], str)
@@ -903,7 +902,7 @@ def test_get_simulator_quota_with_table(client, mocker):
         if key == "success":
             main()
             command_results = get_simulator_quota_with_table(client)
-            assert command_results.outputs_prefix == "account_details"
+            assert command_results.outputs_prefix == "SafeBreach.AccountDetails"
             assert command_results.outputs.get("account_details") == test_output["outputs"][key].get("data")
             assert command_results.outputs.get("simulator_quota") == test_output["outputs"][key].get("data").get(
                 "nodesQuota"
@@ -925,7 +924,7 @@ def test_get_all_simulator_details(client, mocker):
 
         main()
         command_results = get_all_simulator_details(client)
-        assert command_results.outputs_prefix == "simulator_details"
+        assert command_results.outputs_prefix == "SafeBreach.Simulator"
         assert command_results.outputs == test_output["outputs"][key].get("data").get("rows")
         assert len(test_output["outputs"][key].get("data").get("rows")) == test_output["outputs"][key].get("data").get(
             "count"
@@ -948,7 +947,7 @@ def test_get_simulator_with_name(client, mocker):
         mocker.patch.object(Client, "get_simulators_details", returns=test_output["outputs"][key])
         main()
         command_results = get_simulator_with_name(client)
-        assert command_results.outputs_prefix == "simulator_details_with_id"
+        assert command_results.outputs_prefix == "SafeBreach.Simulator"
         assert command_results.outputs == test_output["outputs"][key].get("data")
 
 
@@ -968,7 +967,7 @@ def test_delete_simulator_with_given_name(client, mocker):
         mocker.patch.object(Client, "get_simulators_details", returns=test_output["outputs"][key])
         main()
         command_results = delete_simulator_with_given_name(client)
-        assert command_results.outputs_prefix == "deleted_simulator_details"
+        assert command_results.outputs_prefix == "SafeBreach.DeletedSimulator"
         assert command_results.outputs == test_output["outputs"][key].get("data")
 
 
@@ -988,7 +987,7 @@ def test_approve_simulator(client, mocker):
         if key == "success":
             main()
             command_results = approve_simulator(client)
-            assert command_results.outputs_prefix == "approved_simulator_details"
+            assert command_results.outputs_prefix == "SafeBreach.Simulator"
             assert command_results.outputs == test_output["outputs"][key].get("data")
 
 
@@ -1008,7 +1007,7 @@ def test_get_simulations(client, mocker):
         if key == "success":
             main()
             command_results = get_simulations(client)
-            assert command_results.outputs_prefix == "simulation_details"
+            assert command_results.outputs_prefix == "SafeBreach.Simulation"
             assert command_results.outputs == test_output["outputs"][key]
 
 
@@ -1028,7 +1027,7 @@ def test_get_simulators_versions_list(client, mocker):
         if key == "success":
             main()
             command_results = get_simulators_versions_list(client)
-            assert command_results.outputs_prefix == "simulator_details"
+            assert command_results.outputs_prefix == "SafeBreach.Simulator"
             assert command_results.outputs == test_output["outputs"][key]
 
 
@@ -1048,7 +1047,7 @@ def test_update_simulator_with_id(client, mocker):
         if key == "success":
             main()
             command_results = update_simulator_with_id(client)
-            assert command_results.outputs_prefix == "updated_simulator_details"
+            assert command_results.outputs_prefix == "SafeBreach.UpdatedSimulator"
             assert command_results.outputs == test_output["outputs"][key]
 
 
@@ -1068,5 +1067,5 @@ def test_get_installation_links(client, mocker):
         if key == "success":
             main()
             command_results = get_installation_links(client)
-            assert command_results.outputs_prefix == "installation_links"
+            assert command_results.outputs_prefix == "SafeBreach.InstallationLinks"
             assert command_results.outputs == test_output["outputs"][key]

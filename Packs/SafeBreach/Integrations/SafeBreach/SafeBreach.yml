@@ -12,10 +12,11 @@ configuration:
   required: true
   additionalinfo: This is base URL for your instance.
 - display: API Key
-  name: api_key
-  type: 4
+  name: credentials
+  type: 9
+  section: Connect
   required: true
-  additionalinfo: This is API key for your instance, this can be created in safebreach user                       administration>APIkeys and then it must be saved as there is no way to view this again
+  additionalinfo: This is API key for your instance, this can be created in Safe Breach User                      Administration -> API keys, it must be saved as there is no way to view it again.
 - display: Account ID
   name: account_id
   type: 1
@@ -44,103 +45,103 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: approved_simulator_details.is_enabled
+    - contextPath: SafeBreach.Simulator.IsEnabled
       description: Whether the simulator is enabled or not.
       type: String
-    - contextPath: approved_simulator_details.simulator_id
+    - contextPath: SafeBreach.Simulator.SimulatorId
       description: The Id of given simulator.
       type: String
-    - contextPath: approved_simulator_details.name
+    - contextPath: SafeBreach.Simulator.Name
       description: name for given simulator.
       type: String
-    - contextPath: approved_simulator_details.account_id
+    - contextPath: SafeBreach.Simulator.AccountId
       description: Account Id of account Hosting given simulator.
       type: String
-    - contextPath: approved_simulator_details.is_critical
+    - contextPath: SafeBreach.Simulator.IsCritical
       description: Whether the simulator is critical.
       type: String
-    - contextPath: approved_simulator_details.is_exfiltration
+    - contextPath: SafeBreach.Simulator.IsExfiltration
       description: If Simulator is exfiltration target.
       type: String
-    - contextPath: approved_simulator_details.is_infiltration
+    - contextPath: SafeBreach.Simulator.IsInfiltration
       description: If simulator is infiltration target.
       type: String
-    - contextPath: approved_simulator_details.is_mail_target
+    - contextPath: SafeBreach.Simulator.IsMailTarget
       description: If simulator is mail target.
       type: String
-    - contextPath: approved_simulator_details.is_mail_attacker
+    - contextPath: SafeBreach.Simulator.IsMailAttacker
       description: If simulator is mail attacker.
       type: String
-    - contextPath: approved_simulator_details.is_pre_executor
+    - contextPath: SafeBreach.Simulator.IsPreExecutor
       description: Whether the simulator is pre executor.
       type: String
-    - contextPath: approved_simulator_details.is_aws_attacker
+    - contextPath: SafeBreach.Simulator.IsAwsAttacker
       description: if the given simulator is aws attacker.
       type: String
-    - contextPath: approved_simulator_details.is_azure_attacker
+    - contextPath: SafeBreach.Simulator.IsAzureAttacker
       description: If the given simulator is azure attacker.
       type: String
-    - contextPath: approved_simulator_details.external_ip
+    - contextPath: SafeBreach.Simulator.ExternalIp
       description: external ip of given simulator.
       type: String
-    - contextPath: approved_simulator_details.internal_ip
+    - contextPath: SafeBreach.Simulator.InternalIp
       description: internal ip of given simulator.
       type: String
-    - contextPath: approved_simulator_details.is_web_application_attacker
+    - contextPath: SafeBreach.Simulator.IsWebApplicationAttacker
       description: Whether the simulator is Web application attacker.
       type: String
-    - contextPath: approved_simulator_details.preferred_interface
+    - contextPath: SafeBreach.Simulator.PreferredInterface
       description: Preferred simulator interface.
       type: String
-    - contextPath: approved_simulator_details.preferred_ip
+    - contextPath: SafeBreach.Simulator.PreferredIp
       description: Preferred Ip of simulator.
       type: String
-    - contextPath: approved_simulator_details.hostname
+    - contextPath: SafeBreach.Simulator.Hostname
       description: Hostname of given simulator.
       type: String
-    - contextPath: approved_simulator_details.connection_type
+    - contextPath: SafeBreach.Simulator.ConnectionType
       description: connection_type of given simulator.
       type: String
-    - contextPath: approved_simulator_details.simulator_status
+    - contextPath: SafeBreach.Simulator.SimulatorStatus
       description: status of the simulator.
       type: String
-    - contextPath: approved_simulator_details.connection_status
+    - contextPath: SafeBreach.Simulator.ConnectionStatus
       description: connection status of simulator.
       type: String
-    - contextPath: approved_simulator_details.simulator_framework_version
+    - contextPath: SafeBreach.Simulator.SimulatorFrameworkVersion
       description: Framework version of simulator.
       type: String
-    - contextPath: approved_simulator_details.operating_system_type
+    - contextPath: SafeBreach.Simulator.OperatingSystemType
       description: operating system type of given simulator.
       type: String
-    - contextPath: approved_simulator_details.operating_system
+    - contextPath: SafeBreach.Simulator.OperatingSystem
       description: Operating system of given simulator.
       type: String
-    - contextPath: approved_simulator_details.execution_hostname
+    - contextPath: SafeBreach.Simulator.ExecutionHostname
       description: Execution Hostname of the given simulator.
       type: String
-    - contextPath: approved_simulator_details.deployments
+    - contextPath: SafeBreach.Simulator.Deployments
       description: deployments simulator is part of.
       type: String
-    - contextPath: approved_simulator_details.created_at
+    - contextPath: SafeBreach.Simulator.CreatedAt
       description: Creation datetime of simulator.
       type: String
-    - contextPath: approved_simulator_details.updated_at
+    - contextPath: SafeBreach.Simulator.UpdatedAt
       description: Update datetime of given simulator.
       type: String
-    - contextPath: approved_simulator_details.deleted_at
+    - contextPath: SafeBreach.Simulator.DeletedAt
       description: deletion datetime of given simulator.
       type: String
-    - contextPath: approved_simulator_details.assets
+    - contextPath: SafeBreach.Simulator.Assets
       description: Assets of given simulator.
       type: String
-    - contextPath: approved_simulator_details.simulation_users
+    - contextPath: SafeBreach.Simulator.SimulationUsers
       description: simulator users list.
       type: String
-    - contextPath: approved_simulator_details.proxies
+    - contextPath: SafeBreach.Simulator.Proxies
       description: Proxies of simulator.
       type: String
-    - contextPath: approved_simulator_details.advanced_actions
+    - contextPath: SafeBreach.Simulator.AdvancedActions
       description: Advanced simulator details.
       type: String
   - deprecated: false
@@ -160,19 +161,19 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: generated_api_key.name
+    - contextPath: SafeBreach.GeneratedAPIKey.Name
       description: The Name of API Key generated through this command,                           This will match the input name of the command.
       type: String
-    - contextPath: generated_api_key.description
+    - contextPath: SafeBreach.GeneratedAPIKey.Description
       description: The Description of API Key created.                           this will be same as input description given for the command.
       type: String
-    - contextPath: generated_api_key.created_by
+    - contextPath: SafeBreach.GeneratedAPIKey.CreatedBy
       description: The id of user who generated this API key.
       type: String
-    - contextPath: generated_api_key.created_bt
+    - contextPath: SafeBreach.GeneratedAPIKey.CreatedBt
       description: The creation date and time of API key.
       type: String
-    - contextPath: generated_api_key.key
+    - contextPath: SafeBreach.GeneratedAPIKey.Key
       description: The value of API key generated. store this for further use as this will only be shown once.
       type: String
   - deprecated: false
@@ -198,22 +199,22 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: created_deployment_data.id
+    - contextPath: SafeBreach.CreateDeployment.Id
       description: The ID of deployment created. this Id can be used to update ,delete deployment as                      deployment_id field of the deployment.
       type: Number
-    - contextPath: created_deployment_data.account_id
+    - contextPath: SafeBreach.CreateDeployment.AccountId
       description: This field shows account ID of user who has created the account.
       type: String
-    - contextPath: created_deployment_data.name
+    - contextPath: SafeBreach.CreateDeployment.Name
       description: The name of deployment created. this will be name which will be shown on deployments page                      of safebreach and name that is given as input to the command.
       type: String
-    - contextPath: created_deployment_data.created_at
+    - contextPath: SafeBreach.CreateDeployment.CreatedAt
       description: The creation date and time of deployment , this will be closer to                      command execution time if the deployment creation is successful.
       type: String
-    - contextPath: created_deployment_data.description
+    - contextPath: SafeBreach.CreateDeployment.Description
       description: The description of the deployment created will be shown in description                           part of the table in safebreach.
       type: String
-    - contextPath: created_deployment_data.simulators
+    - contextPath: SafeBreach.CreateDeployment.Simulators
       description: The simulators that are part of deployment.
       type: String
   - deprecated: false
@@ -291,28 +292,28 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: created_user_data.id
+    - contextPath: SafeBreach.CreatedUserData.Id
       description: The ID of User created.
       type: Number
-    - contextPath: created_user_data.name
+    - contextPath: SafeBreach.CreatedUserData.Name
       description: The name of User created.
       type: String
-    - contextPath: created_user_data.email
+    - contextPath: SafeBreach.CreatedUserData.Email
       description: The email of User created.
       type: String
-    - contextPath: created_user_data.createdAt
+    - contextPath: SafeBreach.CreatedUserData.Createdat
       description: The creation time of User.
       type: String
-    - contextPath: created_user_data.roles
+    - contextPath: SafeBreach.CreatedUserData.Roles
       description: The roles and permissions of User created.
       type: String
-    - contextPath: created_user_data.description
+    - contextPath: SafeBreach.CreatedUserData.Description
       description: The description of User if any is given at creation time, it will be populated here.
       type: String
-    - contextPath: created_user_data.role
+    - contextPath: SafeBreach.CreatedUserData.Role
       description: The role assigned to user during creation.
       type: String
-    - contextPath: created_user_data.deployments
+    - contextPath: SafeBreach.CreatedUserData.Deployments
       description: The deployments user is part of.
       type: String
   - deprecated: false
@@ -326,19 +327,19 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: deleted_api_key.name
+    - contextPath: SafeBreach.DeletedAPIKey.Name
       description: The Name of API Key deleted.
       type: Number
-    - contextPath: deleted_api_key.description
+    - contextPath: SafeBreach.DeletedAPIKey.Description
       description: Description of API Key deleted.
       type: String
-    - contextPath: deleted_api_key.created_by
+    - contextPath: SafeBreach.DeletedAPIKey.CreatedBy
       description: The id of user who generated this API key.
       type: String
-    - contextPath: deleted_api_key.created_at
+    - contextPath: SafeBreach.DeletedAPIKey.CreatedAt
       description: The creation time and date of API key.
       type: String
-    - contextPath: deleted_api_key.deleted_at
+    - contextPath: SafeBreach.DeletedAPIKey.DeletedAt
       description: The deletion time and date of API key. The deletion date and time are generally                      close to the command execution time and date.
       type: String
   - deprecated: false
@@ -352,22 +353,22 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: deleted_deployment_data.id
+    - contextPath: SafeBreach.DeletedDeployment.Id
       description: The ID of deployment which has been deleted.
       type: Number
-    - contextPath: deleted_deployment_data.account_id
+    - contextPath: SafeBreach.DeletedDeployment.AccountId
       description: The account Id of user who deleted the deployment.
       type: String
-    - contextPath: deleted_deployment_data.name
+    - contextPath: SafeBreach.DeletedDeployment.Name
       description: The name of deployment before the deployment was deleted.
       type: String
-    - contextPath: deleted_deployment_data.created_at
+    - contextPath: SafeBreach.DeletedDeployment.CreatedAt
       description: The creation date and time of deployment which has been deleted.
       type: String
-    - contextPath: deleted_deployment_data.description
+    - contextPath: SafeBreach.DeletedDeployment.Description
       description: The description of deployment before it was deleted.
       type: String
-    - contextPath: deleted_deployment_data.simulators
+    - contextPath: SafeBreach.DeletedDeployment.Simulators
       description: The simulators that are part of deployment before it was deleted.
       type: String
   - deprecated: false
@@ -381,10 +382,10 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: errors_cleared.error
+    - contextPath: SafeBreach.ClearIntegrationIssues.Error
       description: Error count after deletion of errors for the given Integration.
       type: Number
-    - contextPath: errors_cleared.result
+    - contextPath: SafeBreach.ClearIntegrationIssues.Result
       description: error deletion status whether true or false.
       type: String
   - deprecated: false
@@ -398,34 +399,34 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: deleted_scheduled_scenario.id
+    - contextPath: SafeBreach.DeletedScheduledScenario.Id
       description: the Id of the scheduled scenario.
       type: String
-    - contextPath: deleted_scheduled_scenario.is_enabled
+    - contextPath: SafeBreach.DeletedScheduledScenario.IsEnabled
       description: if scheduled scenario is enabled.
       type: Boolean
-    - contextPath: deleted_scheduled_scenario.user_schedule
+    - contextPath: SafeBreach.DeletedScheduledScenario.UserSchedule
       description: the user readable form of the scheduled scenario.
       type: String
-    - contextPath: deleted_scheduled_scenario.run_date
+    - contextPath: SafeBreach.DeletedScheduledScenario.RunDate
       description: the run date of the scheduled scenario.
       type: String
-    - contextPath: deleted_scheduled_scenario.cron_timezone
+    - contextPath: SafeBreach.DeletedScheduledScenario.CronTimezone
       description: the time zone of the scheduled scenario.
       type: String
-    - contextPath: deleted_scheduled_scenario.description
+    - contextPath: SafeBreach.DeletedScheduledScenario.Description
       description: the description of the scheduled scenario.
       type: String
-    - contextPath: deleted_scheduled_scenario.scenario_id
+    - contextPath: SafeBreach.DeletedScheduledScenario.ScenarioId
       description: the test ID of the scheduled scenario.
       type: String
-    - contextPath: deleted_scheduled_scenario.created_at
+    - contextPath: SafeBreach.DeletedScheduledScenario.CreatedAt
       description: the creation datetime of the scheduled scenario.
       type: String
-    - contextPath: deleted_scheduled_scenario.updated_at
+    - contextPath: SafeBreach.DeletedScheduledScenario.UpdatedAt
       description: the updated datetime of the scheduled scenario.
       type: String
-    - contextPath: deleted_scheduled_scenario.deleted_at
+    - contextPath: SafeBreach.DeletedScheduledScenario.DeletedAt
       description: the deletion time of the scheduled scenario.
       type: String
   - deprecated: false
@@ -439,103 +440,103 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: deleted_simulator_details.is_enabled
+    - contextPath: SafeBreach.DeletedSimulator.IsEnabled
       description: Whether the simulator is enabled or not.
       type: String
-    - contextPath: deleted_simulator_details.simulator_id
+    - contextPath: SafeBreach.DeletedSimulator.SimulatorId
       description: The Id of given simulator.
       type: String
-    - contextPath: deleted_simulator_details.name
+    - contextPath: SafeBreach.DeletedSimulator.Name
       description: name for given simulator.
       type: String
-    - contextPath: deleted_simulator_details.account_id
+    - contextPath: SafeBreach.DeletedSimulator.AccountId
       description: Account Id of account Hosting given simulator.
       type: String
-    - contextPath: deleted_simulator_details.is_critical
+    - contextPath: SafeBreach.DeletedSimulator.IsCritical
       description: Whether the simulator is critical.
       type: String
-    - contextPath: deleted_simulator_details.is_exfiltration
+    - contextPath: SafeBreach.DeletedSimulator.IsExfiltration
       description: If Simulator is exfiltration target.
       type: String
-    - contextPath: deleted_simulator_details.is_infiltration
+    - contextPath: SafeBreach.DeletedSimulator.IsInfiltration
       description: If simulator is infiltration target.
       type: String
-    - contextPath: deleted_simulator_details.is_mail_target
+    - contextPath: SafeBreach.DeletedSimulator.IsMailTarget
       description: If simulator is mail target.
       type: String
-    - contextPath: deleted_simulator_details.is_mail_attacker
+    - contextPath: SafeBreach.DeletedSimulator.IsMailAttacker
       description: If simulator is mail attacker.
       type: String
-    - contextPath: deleted_simulator_details.is_pre_executor
+    - contextPath: SafeBreach.DeletedSimulator.IsPreExecutor
       description: Whether the simulator is pre executor.
       type: String
-    - contextPath: deleted_simulator_details.is_aws_attacker
+    - contextPath: SafeBreach.DeletedSimulator.IsAwsAttacker
       description: if the given simulator is aws attacker.
       type: String
-    - contextPath: deleted_simulator_details.is_azure_attacker
+    - contextPath: SafeBreach.DeletedSimulator.IsAzureAttacker
       description: If the given simulator is azure attacker.
       type: String
-    - contextPath: deleted_simulator_details.external_ip
+    - contextPath: SafeBreach.DeletedSimulator.ExternalIp
       description: external ip of given simulator.
       type: String
-    - contextPath: deleted_simulator_details.internal_ip
+    - contextPath: SafeBreach.DeletedSimulator.InternalIp
       description: internal ip of given simulator.
       type: String
-    - contextPath: deleted_simulator_details.is_web_application_attacker
+    - contextPath: SafeBreach.DeletedSimulator.IsWebApplicationAttacker
       description: Whether the simulator is Web application attacker.
       type: String
-    - contextPath: deleted_simulator_details.preferred_interface
+    - contextPath: SafeBreach.DeletedSimulator.PreferredInterface
       description: Preferred simulator interface.
       type: String
-    - contextPath: deleted_simulator_details.preferred_ip
+    - contextPath: SafeBreach.DeletedSimulator.PreferredIp
       description: Preferred Ip of simulator.
       type: String
-    - contextPath: deleted_simulator_details.hostname
+    - contextPath: SafeBreach.DeletedSimulator.Hostname
       description: Hostname of given simulator.
       type: String
-    - contextPath: deleted_simulator_details.connection_type
+    - contextPath: SafeBreach.DeletedSimulator.ConnectionType
       description: connection_type of given simulator.
       type: String
-    - contextPath: deleted_simulator_details.simulator_status
+    - contextPath: SafeBreach.DeletedSimulator.SimulatorStatus
       description: status of the simulator.
       type: String
-    - contextPath: deleted_simulator_details.connection_status
+    - contextPath: SafeBreach.DeletedSimulator.ConnectionStatus
       description: connection status of simulator.
       type: String
-    - contextPath: deleted_simulator_details.simulator_framework_version
+    - contextPath: SafeBreach.DeletedSimulator.SimulatorFrameworkVersion
       description: Framework version of simulator.
       type: String
-    - contextPath: deleted_simulator_details.operating_system_type
+    - contextPath: SafeBreach.DeletedSimulator.OperatingSystemType
       description: operating system type of given simulator.
       type: String
-    - contextPath: deleted_simulator_details.operating_system
+    - contextPath: SafeBreach.DeletedSimulator.OperatingSystem
       description: Operating system of given simulator.
       type: String
-    - contextPath: deleted_simulator_details.execution_hostname
+    - contextPath: SafeBreach.DeletedSimulator.ExecutionHostname
       description: Execution Hostname of the given simulator.
       type: String
-    - contextPath: deleted_simulator_details.deployments
+    - contextPath: SafeBreach.DeletedSimulator.Deployments
       description: deployments simulator is part of.
       type: String
-    - contextPath: deleted_simulator_details.created_at
+    - contextPath: SafeBreach.DeletedSimulator.CreatedAt
       description: Creation datetime of simulator.
       type: String
-    - contextPath: deleted_simulator_details.updated_at
+    - contextPath: SafeBreach.DeletedSimulator.UpdatedAt
       description: Update datetime of given simulator.
       type: String
-    - contextPath: deleted_simulator_details.deleted_at
+    - contextPath: SafeBreach.DeletedSimulator.DeletedAt
       description: deletion datetime of given simulator.
       type: String
-    - contextPath: deleted_simulator_details.assets
+    - contextPath: SafeBreach.DeletedSimulator.Assets
       description: Assets of given simulator.
       type: String
-    - contextPath: deleted_simulator_details.simulation_users
+    - contextPath: SafeBreach.DeletedSimulator.SimulationUsers
       description: simulator users list.
       type: String
-    - contextPath: deleted_simulator_details.proxies
+    - contextPath: SafeBreach.DeletedSimulator.Proxies
       description: Proxies of simulator.
       type: String
-    - contextPath: deleted_simulator_details.advanced_actions
+    - contextPath: SafeBreach.DeletedSimulator.AdvancedActions
       description: Advanced simulator details.
       type: String
   - deprecated: false
@@ -549,55 +550,55 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: deleted_test_results.scenario_id
+    - contextPath: SafeBreach.DeletedTest.ScenarioId
       description: scenario ID of the test.
       type: String
-    - contextPath: deleted_test_results.simulation_name
+    - contextPath: SafeBreach.DeletedTest.SimulationName
       description: Name of the simulation.
       type: String
-    - contextPath: deleted_test_results.security_action_per_control
+    - contextPath: SafeBreach.DeletedTest.SecurityActionPerControl
       description: Security Actions of the simulation.
       type: String
-    - contextPath: deleted_test_results.test_id
+    - contextPath: SafeBreach.DeletedTest.TestId
       description: Test id of the test.
       type: String
-    - contextPath: deleted_test_results.status
+    - contextPath: SafeBreach.DeletedTest.Status
       description: status of the test.
       type: String
-    - contextPath: deleted_test_results.planned_simulations_amount
+    - contextPath: SafeBreach.DeletedTest.PlannedSimulationsAmount
       description: Planned simulations count of the test.
       type: String
-    - contextPath: deleted_test_results.simulator_executions
+    - contextPath: SafeBreach.DeletedTest.SimulatorExecutions
       description: simulator executions of the test.
       type: String
-    - contextPath: deleted_test_results.attack_executions
+    - contextPath: SafeBreach.DeletedTest.AttackExecutions
       description: list of attacks that are part of the simulation.
       type: String
-    - contextPath: deleted_test_results.ran_by
+    - contextPath: SafeBreach.DeletedTest.RanBy
       description: user who started the simulation.
       type: String
-    - contextPath: deleted_test_results.simulator_count
+    - contextPath: SafeBreach.DeletedTest.SimulatorCount
       description: simulators count per account.
       type: String
-    - contextPath: deleted_test_results.end_time
+    - contextPath: SafeBreach.DeletedTest.EndTime
       description: End Time of the test.
       type: String
-    - contextPath: deleted_test_results.start_time
+    - contextPath: SafeBreach.DeletedTest.StartTime
       description: start time of the test.
       type: String
-    - contextPath: deleted_test_results.finalStatus.stopped
+    - contextPath: SafeBreach.DeletedTest.finalStatus.stopped
       description: stopped count of attacks.
       type: String
-    - contextPath: deleted_test_results.finalStatus.missed
+    - contextPath: SafeBreach.DeletedTest.finalStatus.missed
       description: missed count of attacks.
       type: String
-    - contextPath: deleted_test_results.finalStatus.logged
+    - contextPath: SafeBreach.DeletedTest.finalStatus.logged
       description: logged count of attacks.
       type: String
-    - contextPath: deleted_test_results.finalStatus.detected
+    - contextPath: SafeBreach.DeletedTest.finalStatus.detected
       description: detected count of attacks.
       type: String
-    - contextPath: deleted_test_results.finalStatus.prevented
+    - contextPath: SafeBreach.DeletedTest.finalStatus.prevented
       description: prevented count of attacks.
       type: String
   - deprecated: false
@@ -611,34 +612,34 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: deleted_user_data.id
+    - contextPath: SafeBreach.DeletedUserData.Id
       description: The ID of User whose data has been deleted.
       type: Number
-    - contextPath: deleted_user_data.name
+    - contextPath: SafeBreach.DeletedUserData.Name
       description: The name of User deleted.
       type: String
-    - contextPath: deleted_user_data.email
+    - contextPath: SafeBreach.DeletedUserData.Email
       description: The email of User deleted.
       type: String
-    - contextPath: deleted_user_data.createdAt
+    - contextPath: SafeBreach.DeletedUserData.Createdat
       description: the time at which the user who has been selected has been created.
       type: String
-    - contextPath: deleted_user_data.updatedAt
+    - contextPath: SafeBreach.DeletedUserData.Updatedat
       description: last updated time.
       type: String
-    - contextPath: deleted_user_data.deletedAt
+    - contextPath: SafeBreach.DeletedUserData.Deletedat
       description: Deletion time of user.
       type: String
-    - contextPath: deleted_user_data.roles
+    - contextPath: SafeBreach.DeletedUserData.Roles
       description: The roles of User before they were deleted.
       type: String
-    - contextPath: deleted_user_data.description
+    - contextPath: SafeBreach.DeletedUserData.Description
       description: The description of User who has been deleted.
       type: String
-    - contextPath: deleted_user_data.role
+    - contextPath: SafeBreach.DeletedUserData.Role
       description: The roles and permissions of User who has been deleted.
       type: String
-    - contextPath: deleted_user_data.deployments
+    - contextPath: SafeBreach.DeletedUserData.Deployments
       description: The deployments related to user before he was deleted.
       type: String
   - deprecated: false
@@ -657,22 +658,22 @@ script:
       - WARNING
       auto: PREDEFINED
     outputs:
-    - contextPath: integration_errors.integration_id
+    - contextPath: SafeBreach.IntegrationErrors.IntegrationId
       description: The ID of Integration. A general notation that has been followed here is                      as follows, if the  id has _default at the end then its a default connector else its a custom connector.
       type: Number
-    - contextPath: integration_errors.integration_name
+    - contextPath: SafeBreach.IntegrationErrors.IntegrationName
       description: Name of the integration.
       type: String
-    - contextPath: integration_errors.action
+    - contextPath: SafeBreach.IntegrationErrors.Action
       description: The action of Integration error. This describes where exactly did the error occur,                        if its search,then it implies error/warning happened when connector was trying that process.
       type: String
-    - contextPath: integration_errors.success_state
+    - contextPath: SafeBreach.IntegrationErrors.SuccessState
       description: status of integration error. This implies whether the connector was able to                       successfully perform the operation or if it failed partway.                       So false implies it failed partway and true implies it was successfully completed.
       type: String
-    - contextPath: integration_errors.error_description
+    - contextPath: SafeBreach.IntegrationErrors.ErrorDescription
       description: This is the exact error description shown on safebreach integration error/warning page.                        This description can be used for understanding of what exactly happened for the integration to fail.
       type: String
-    - contextPath: integration_errors.timestamp
+    - contextPath: SafeBreach.IntegrationErrors.Timestamp
       description: Time at which error/warning occurred. This can be used to pinpoint error which occurred                      across integrations if time of origin was remembered.
       type: String
   - deprecated: false
@@ -680,13 +681,13 @@ script:
     name: safebreach-get-running-simulations
     arguments: []
     outputs:
-    - contextPath: active_simulations.test id
+    - contextPath: SafeBreach.ActiveSimulations.test id
       description: this is test ID of the simulation.
       type: String
-    - contextPath: active_simulations.simulation_id
+    - contextPath: SafeBreach.ActiveSimulations.SimulationId
       description: the simulation id of the simulation.
       type: String
-    - contextPath: active_simulations.attack_id
+    - contextPath: SafeBreach.ActiveSimulations.AttackId
       description: the attack ID of the simulation.
       type: String
   - deprecated: false
@@ -694,73 +695,73 @@ script:
     name: safebreach-get-running-tests
     arguments: []
     outputs:
-    - contextPath: active_tests.id
+    - contextPath: SafeBreach.ActiveTest.Id
       description: Id of Actively running test.
       type: Number
-    - contextPath: active_tests.name
+    - contextPath: SafeBreach.ActiveTest.Name
       description: Name of the test being run.
       type: String
-    - contextPath: active_tests.description
+    - contextPath: SafeBreach.ActiveTest.Description
       description: Details related to the test being run.
       type: String
-    - contextPath: active_tests.success_criteria
+    - contextPath: SafeBreach.ActiveTest.SuccessCriteria
       description: success criterion for the test.
       type: String
-    - contextPath: active_tests.original_scenario_id
+    - contextPath: SafeBreach.ActiveTest.OriginalScenarioId
       description: Original scenario ID of the running test.
       type: String
-    - contextPath: active_tests.actions_count
+    - contextPath: SafeBreach.ActiveTest.ActionsCount
       description: number of actions.
       type: String
-    - contextPath: active_tests.edges_count
+    - contextPath: SafeBreach.ActiveTest.EdgesCount
       description: number of edges.
       type: String
-    - contextPath: active_tests.created_at
+    - contextPath: SafeBreach.ActiveTest.CreatedAt
       description: details related to when test is created.
       type: String
-    - contextPath: active_tests.updated_at
+    - contextPath: SafeBreach.ActiveTest.UpdatedAt
       description: details related to when test is last updated/changed.
       type: String
-    - contextPath: active_tests.steps_count
+    - contextPath: SafeBreach.ActiveTest.StepsCount
       description: number of steps in simulator.
       type: String
-    - contextPath: active_tests.scenario_id
+    - contextPath: SafeBreach.ActiveTest.ScenarioId
       description: scenario_id of the test.
       type: String
-    - contextPath: active_tests.original_scenario_id
+    - contextPath: SafeBreach.ActiveTest.OriginalScenarioId
       description: scenario_id for reference.
       type: String
-    - contextPath: active_tests.ran_by
+    - contextPath: SafeBreach.ActiveTest.RanBy
       description: User who ran the scenario.
       type: String
-    - contextPath: active_tests.ran_from
+    - contextPath: SafeBreach.ActiveTest.RanFrom
       description: Where the test ran from.
       type: String
-    - contextPath: active_tests.test_id
+    - contextPath: SafeBreach.ActiveTest.TestId
       description: test id of the test.
       type: String
-    - contextPath: active_tests.priority
+    - contextPath: SafeBreach.ActiveTest.Priority
       description: priority of tests.
       type: String
-    - contextPath: active_tests.retry_simulations
+    - contextPath: SafeBreach.ActiveTest.RetrySimulations
       description: Should simulations be retried.
       type: String
-    - contextPath: active_tests.pause_duration
+    - contextPath: SafeBreach.ActiveTest.PauseDuration
       description: is the test paused and if so till when.
       type: String
-    - contextPath: active_tests.paused_date
+    - contextPath: SafeBreach.ActiveTest.PausedDate
       description: when the test is paused.
       type: String
-    - contextPath: active_tests.expected_simulations_amount
+    - contextPath: SafeBreach.ActiveTest.ExpectedSimulationsAmount
       description: number of simulations expected.
       type: String
-    - contextPath: active_tests.dispatched_simulations_amount
+    - contextPath: SafeBreach.ActiveTest.DispatchedSimulationsAmount
       description: the number of simulations dispatched.
       type: String
-    - contextPath: active_tests.skipped_simulations_amount
+    - contextPath: SafeBreach.ActiveTest.SkippedSimulationsAmount
       description: The number of simulations skipped.
       type: String
-    - contextPath: active_tests.failed_simulations_amount
+    - contextPath: SafeBreach.ActiveTest.FailedSimulationsAmount
       description: The number of simulations failed.
       type: String
   - deprecated: false
@@ -850,103 +851,103 @@ script:
       - ALL
       auto: PREDEFINED
     outputs:
-    - contextPath: simulator_details.is_enabled
+    - contextPath: SafeBreach.Simulator.IsEnabled
       description: Whether the simulator is enabled or not.
       type: String
-    - contextPath: simulator_details.simulator_id
+    - contextPath: SafeBreach.Simulator.SimulatorId
       description: The Id of given simulator.
       type: String
-    - contextPath: simulator_details.name
+    - contextPath: SafeBreach.Simulator.Name
       description: name for given simulator.
       type: String
-    - contextPath: simulator_details.account_id
+    - contextPath: SafeBreach.Simulator.AccountId
       description: Account Id of account Hosting given simulator.
       type: String
-    - contextPath: simulator_details.is_critical
+    - contextPath: SafeBreach.Simulator.IsCritical
       description: Whether the simulator is critical.
       type: String
-    - contextPath: simulator_details.is_exfiltration
+    - contextPath: SafeBreach.Simulator.IsExfiltration
       description: If Simulator is exfiltration target.
       type: String
-    - contextPath: simulator_details.is_infiltration
+    - contextPath: SafeBreach.Simulator.IsInfiltration
       description: If simulator is infiltration target.
       type: String
-    - contextPath: simulator_details.is_mail_target
+    - contextPath: SafeBreach.Simulator.IsMailTarget
       description: If simulator is mail target.
       type: String
-    - contextPath: simulator_details.is_mail_attacker
+    - contextPath: SafeBreach.Simulator.IsMailAttacker
       description: If simulator is mail attacker.
       type: String
-    - contextPath: simulator_details.is_pre_executor
+    - contextPath: SafeBreach.Simulator.IsPreExecutor
       description: Whether the simulator is pre executor.
       type: String
-    - contextPath: simulator_details.is_aws_attacker
+    - contextPath: SafeBreach.Simulator.IsAwsAttacker
       description: if the given simulator is aws attacker.
       type: String
-    - contextPath: simulator_details.is_azure_attacker
+    - contextPath: SafeBreach.Simulator.IsAzureAttacker
       description: If the given simulator is azure attacker.
       type: String
-    - contextPath: simulator_details.external_ip
+    - contextPath: SafeBreach.Simulator.ExternalIp
       description: external ip of given simulator.
       type: String
-    - contextPath: simulator_details.internal_ip
+    - contextPath: SafeBreach.Simulator.InternalIp
       description: internal ip of given simulator.
       type: String
-    - contextPath: simulator_details.is_web_application_attacker
+    - contextPath: SafeBreach.Simulator.IsWebApplicationAttacker
       description: Whether the simulator is Web application attacker.
       type: String
-    - contextPath: simulator_details.preferred_interface
+    - contextPath: SafeBreach.Simulator.PreferredInterface
       description: Preferred simulator interface.
       type: String
-    - contextPath: simulator_details.preferred_ip
+    - contextPath: SafeBreach.Simulator.PreferredIp
       description: Preferred Ip of simulator.
       type: String
-    - contextPath: simulator_details.hostname
+    - contextPath: SafeBreach.Simulator.Hostname
       description: Hostname of given simulator.
       type: String
-    - contextPath: simulator_details.connection_type
+    - contextPath: SafeBreach.Simulator.ConnectionType
       description: connection_type of given simulator.
       type: String
-    - contextPath: simulator_details.simulator_status
+    - contextPath: SafeBreach.Simulator.SimulatorStatus
       description: status of the simulator.
       type: String
-    - contextPath: simulator_details.connection_status
+    - contextPath: SafeBreach.Simulator.ConnectionStatus
       description: connection status of simulator.
       type: String
-    - contextPath: simulator_details.simulator_framework_version
+    - contextPath: SafeBreach.Simulator.SimulatorFrameworkVersion
       description: Framework version of simulator.
       type: String
-    - contextPath: simulator_details.operating_system_type
+    - contextPath: SafeBreach.Simulator.OperatingSystemType
       description: operating system type of given simulator.
       type: String
-    - contextPath: simulator_details.operating_system
+    - contextPath: SafeBreach.Simulator.OperatingSystem
       description: Operating system of given simulator.
       type: String
-    - contextPath: simulator_details.execution_hostname
+    - contextPath: SafeBreach.Simulator.ExecutionHostname
       description: Execution Hostname of the given simulator.
       type: String
-    - contextPath: simulator_details.deployments
+    - contextPath: SafeBreach.Simulator.Deployments
       description: deployments simulator is part of.
       type: String
-    - contextPath: simulator_details.created_at
+    - contextPath: SafeBreach.Simulator.CreatedAt
       description: Creation datetime of simulator.
       type: String
-    - contextPath: simulator_details.updated_at
+    - contextPath: SafeBreach.Simulator.UpdatedAt
       description: Update datetime of given simulator.
       type: String
-    - contextPath: simulator_details.deleted_at
+    - contextPath: SafeBreach.Simulator.DeletedAt
       description: deletion datetime of given simulator.
       type: String
-    - contextPath: simulator_details.assets
+    - contextPath: SafeBreach.Simulator.Assets
       description: Assets of given simulator.
       type: String
-    - contextPath: simulator_details.simulation_users
+    - contextPath: SafeBreach.Simulator.SimulationUsers
       description: simulator users list.
       type: String
-    - contextPath: simulator_details.proxies
+    - contextPath: SafeBreach.Simulator.Proxies
       description: Proxies of simulator.
       type: String
-    - contextPath: simulator_details.advanced_actions
+    - contextPath: SafeBreach.Simulator.AdvancedActions
       description: Advanced simulator details.
       type: String
   - deprecated: false
@@ -954,55 +955,55 @@ script:
     name: safebreach-get-tests
     arguments: []
     outputs:
-    - contextPath: test_results.scenario_id
+    - contextPath: SafeBreach.Test.ScenarioId
       description: scenario ID of the test.
       type: String
-    - contextPath: test_results.simulation_name
+    - contextPath: SafeBreach.Test.SimulationName
       description: Name of the simulation.
       type: String
-    - contextPath: test_results.security_action_per_control
+    - contextPath: SafeBreach.Test.SecurityActionPerControl
       description: Security Actions of the simulation.
       type: String
-    - contextPath: test_results.test_id
+    - contextPath: SafeBreach.Test.TestId
       description: Test id of the test.
       type: String
-    - contextPath: test_results.status
+    - contextPath: SafeBreach.Test.Status
       description: status of the test.
       type: String
-    - contextPath: test_results.planned_simulations_amount
+    - contextPath: SafeBreach.Test.PlannedSimulationsAmount
       description: Planned simulations count of the test.
       type: String
-    - contextPath: test_results.simulator_executions
+    - contextPath: SafeBreach.Test.SimulatorExecutions
       description: simulator executions of the test.
       type: String
-    - contextPath: test_results.attack_executions
+    - contextPath: SafeBreach.Test.AttackExecutions
       description: list of attacks that are part of the simulation.
       type: String
-    - contextPath: test_results.ran_by
+    - contextPath: SafeBreach.Test.RanBy
       description: user who started the simulation.
       type: String
-    - contextPath: test_results.simulator_count
+    - contextPath: SafeBreach.Test.SimulatorCount
       description: simulators count per account.
       type: String
-    - contextPath: test_results.end_time
+    - contextPath: SafeBreach.Test.EndTime
       description: End Time of the test.
       type: String
-    - contextPath: test_results.start_time
+    - contextPath: SafeBreach.Test.StartTime
       description: start time of the test.
       type: String
-    - contextPath: test_results.finalStatus.stopped
+    - contextPath: SafeBreach.Test.finalStatus.stopped
       description: stopped count of attacks.
       type: String
-    - contextPath: test_results.finalStatus.missed
+    - contextPath: SafeBreach.Test.finalStatus.missed
       description: missed count of attacks.
       type: String
-    - contextPath: test_results.finalStatus.logged
+    - contextPath: SafeBreach.Test.finalStatus.logged
       description: logged count of attacks.
       type: String
-    - contextPath: test_results.finalStatus.detected
+    - contextPath: SafeBreach.Test.finalStatus.detected
       description: detected count of attacks.
       type: String
-    - contextPath: test_results.finalStatus.prevented
+    - contextPath: SafeBreach.Test.finalStatus.prevented
       description: prevented count of attacks.
       type: String
   - deprecated: false
@@ -1016,55 +1017,55 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: test_results.scenario_id
+    - contextPath: SafeBreach.Test.ScenarioId
       description: scenario ID of the test.
       type: String
-    - contextPath: test_results.simulation_name
+    - contextPath: SafeBreach.Test.SimulationName
       description: Name of the simulation.
       type: String
-    - contextPath: test_results.security_action_per_control
+    - contextPath: SafeBreach.Test.SecurityActionPerControl
       description: Security Actions of the simulation.
       type: String
-    - contextPath: test_results.test_id
+    - contextPath: SafeBreach.Test.TestId
       description: Test id of the test.
       type: String
-    - contextPath: test_results.status
+    - contextPath: SafeBreach.Test.Status
       description: status of the test.
       type: String
-    - contextPath: test_results.planned_simulations_amount
+    - contextPath: SafeBreach.Test.PlannedSimulationsAmount
       description: Planned simulations count of the test.
       type: String
-    - contextPath: test_results.simulator_executions
+    - contextPath: SafeBreach.Test.SimulatorExecutions
       description: simulator executions of the test.
       type: String
-    - contextPath: test_results.attack_executions
+    - contextPath: SafeBreach.Test.AttackExecutions
       description: list of attacks that are part of the simulation.
       type: String
-    - contextPath: test_results.ran_by
+    - contextPath: SafeBreach.Test.RanBy
       description: user who started the simulation.
       type: String
-    - contextPath: test_results.simulator_count
+    - contextPath: SafeBreach.Test.SimulatorCount
       description: simulators count per account.
       type: String
-    - contextPath: test_results.end_time
+    - contextPath: SafeBreach.Test.EndTime
       description: End Time of the test.
       type: String
-    - contextPath: test_results.start_time
+    - contextPath: SafeBreach.Test.StartTime
       description: start time of the test.
       type: String
-    - contextPath: test_results.finalStatus.stopped
+    - contextPath: SafeBreach.Test.finalStatus.stopped
       description: stopped count of attacks.
       type: String
-    - contextPath: test_results.finalStatus.missed
+    - contextPath: SafeBreach.Test.finalStatus.missed
       description: missed count of attacks.
       type: String
-    - contextPath: test_results.finalStatus.logged
+    - contextPath: SafeBreach.Test.finalStatus.logged
       description: logged count of attacks.
       type: String
-    - contextPath: test_results.finalStatus.detected
+    - contextPath: SafeBreach.Test.finalStatus.detected
       description: detected count of attacks.
       type: String
-    - contextPath: test_results.finalStatus.prevented
+    - contextPath: SafeBreach.Test.finalStatus.prevented
       description: prevented count of attacks.
       type: String
   - deprecated: false
@@ -1072,13 +1073,13 @@ script:
     name: safebreach-get-all-users
     arguments: []
     outputs:
-    - contextPath: user_data.id
+    - contextPath: SafeBreach.UserData.Id
       description: The ID of User retrieved. this can be used to further link this user with                      user_id field of safebreach-update-user or safebreach-delete-user commands.
       type: Number
-    - contextPath: user_data.name
+    - contextPath: SafeBreach.UserData.Name
       description: The name of User retrieved.
       type: String
-    - contextPath: user_data.email
+    - contextPath: SafeBreach.UserData.Email
       description: 'The email of User retrieved. this can be used for updating user or                      deleting user for input email of commands safebreach-update-user or safebreach-delete-user.'
       type: String
   - deprecated: false
@@ -1097,34 +1098,34 @@ script:
       - 'true'
       auto: PREDEFINED
     outputs:
-    - contextPath: custom_scenarios.id
+    - contextPath: SafeBreach.CustomScenario.Id
       description: the Id of scenario.
       type: String
-    - contextPath: custom_scenarios.name
+    - contextPath: SafeBreach.CustomScenario.Name
       description: the name of the scenario.
       type: String
-    - contextPath: custom_scenarios.description
+    - contextPath: SafeBreach.CustomScenario.Description
       description: the description of the scenario.
       type: String
-    - contextPath: custom_scenarios.success_criteria
+    - contextPath: SafeBreach.CustomScenario.SuccessCriteria
       description: success criteria the scenario.
       type: String
-    - contextPath: custom_scenarios.original_scenario_id
+    - contextPath: SafeBreach.CustomScenario.OriginalScenarioId
       description: original scenario id of scenario.
       type: String
-    - contextPath: custom_scenarios.actions_list
+    - contextPath: SafeBreach.CustomScenario.ActionsList
       description: actions list of the scenario.
       type: String
-    - contextPath: custom_scenarios.edges_count
+    - contextPath: SafeBreach.CustomScenario.EdgesCount
       description: edges_count for the scenario.
       type: String
-    - contextPath: custom_scenarios.steps_order
+    - contextPath: SafeBreach.CustomScenario.StepsOrder
       description: the order of steps of the scenario.
       type: String
-    - contextPath: custom_scenarios.created_at
+    - contextPath: SafeBreach.CustomScenario.CreatedAt
       description: the creation datetime of the scenario.
       type: String
-    - contextPath: custom_scenarios.updated_at
+    - contextPath: SafeBreach.CustomScenario.UpdatedAt
       description: the last updated time the scenario.
       type: String
   - deprecated: false
@@ -1132,25 +1133,25 @@ script:
     name: safebreach-list-deployments
     arguments: []
     outputs:
-    - contextPath: deployment_data.id
+    - contextPath: SafeBreach.Deployment.Id
       description: The ID of deployment.
       type: Number
-    - contextPath: deployment_data.account_id
+    - contextPath: SafeBreach.Deployment.AccountId
       description: The accountId of user who created the deployment.
       type: String
-    - contextPath: deployment_data.name
+    - contextPath: SafeBreach.Deployment.Name
       description: The name of deployment.                        this will be the name shown in deployment name field of table in deployments page in safebreach UI.
       type: String
-    - contextPath: deployment_data.created_at
+    - contextPath: SafeBreach.Deployment.CreatedAt
       description: The creation date and time of deployment.
       type: String
-    - contextPath: deployment_data.updated_at
+    - contextPath: SafeBreach.Deployment.UpdatedAt
       description: The last updated date and time of deployment.
       type: String
-    - contextPath: deployment_data.description
+    - contextPath: SafeBreach.Deployment.Description
       description: This is description field of deployments table of safebreach UI.
       type: String
-    - contextPath: deployment_data.simulators
+    - contextPath: SafeBreach.Deployment.Simulators
       description: The simulators that are part of deployment.
       type: String
   - deprecated: false
@@ -1194,43 +1195,43 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: indicator_details.value
+    - contextPath: SafeBreach.Indicator.Value
       description: The value of the indicator.
       type: String
-    - contextPath: indicator_details.type
+    - contextPath: SafeBreach.Indicator.Type
       description: The type of the indicator.
       type: String
-    - contextPath: indicator_details.rawJSON.dataType
+    - contextPath: SafeBreach.Indicator.rawJSON.dataType
       description: The data type of the indicator.
       type: String
-    - contextPath: indicator_details.rawJSON.insightTime
+    - contextPath: SafeBreach.Indicator.rawJSON.insightTime
       description: The time of the insight.
       type: String
-    - contextPath: indicator_details.rawJSON.value
+    - contextPath: SafeBreach.Indicator.rawJSON.value
       description: The data type value of the indicator.
       type: String
-    - contextPath: indicator_details.fields.description
+    - contextPath: SafeBreach.Indicator.fields.description
       description: The description of the indicator.
       type: String
-    - contextPath: indicator_details.fields.safebreachseverity
+    - contextPath: SafeBreach.Indicator.fields.safebreachseverity
       description: The severity of the indicator.
       type: String
-    - contextPath: indicator_details.fields.safebreachseverityscore
+    - contextPath: SafeBreach.Indicator.fields.safebreachseverityscore
       description: The severity score of the indicator.
       type: String
-    - contextPath: indicator_details.fields.safebreachisbehavioral
+    - contextPath: SafeBreach.Indicator.fields.safebreachisbehavioral
       description: The behavioral of the indicator.
       type: Boolean
-    - contextPath: indicator_details.fields.safebreachattackids
+    - contextPath: SafeBreach.Indicator.fields.safebreachattackids
       description: The attack ids of the indicator.
       type: Unknown
-    - contextPath: indicator_details.fields.port
+    - contextPath: SafeBreach.Indicator.fields.port
       description: The port of the indicator.
       type: String
-    - contextPath: indicator_details.fields.tags
+    - contextPath: SafeBreach.Indicator.fields.tags
       description: The tags of the indicator.
       type: String
-    - contextPath: indicator_details.score
+    - contextPath: SafeBreach.Indicator.Score
       description: The score of the indicator.
       type: Number
   - deprecated: false
@@ -1238,28 +1239,28 @@ script:
     name: safebreach-get-simulator-download-links
     arguments: []
     outputs:
-    - contextPath: installation_links.md5
+    - contextPath: SafeBreach.InstallationLinks.md5
       description: The MD5 generated from the contents of the file.
       type: String
-    - contextPath: installation_links.os
+    - contextPath: SafeBreach.InstallationLinks.Os
       description: The operating system for which the update is intended.
       type: String
-    - contextPath: installation_links.sha1
+    - contextPath: SafeBreach.InstallationLinks.sha1
       description: The sha1 generated from the contents of the file.
       type: String
-    - contextPath: installation_links.sha256
+    - contextPath: SafeBreach.InstallationLinks.sha256
       description: The sha256 generated from the contents of the file.
       type: String
-    - contextPath: installation_links.sha512
+    - contextPath: SafeBreach.InstallationLinks.sha512
       description: The sha512 generated from the contents of the file.
       type: String
-    - contextPath: installation_links.sha512
+    - contextPath: SafeBreach.InstallationLinks.sha512
       description: The sha512 generated from the contents of the file.
       type: String
-    - contextPath: installation_links.url
+    - contextPath: SafeBreach.InstallationLinks.Url
       description: The URL from which update can be downloaded.
       type: String
-    - contextPath: installation_links.version
+    - contextPath: SafeBreach.InstallationLinks.Version
       description: This indicates the simulator version.
       type: String
   - deprecated: false
@@ -1267,40 +1268,40 @@ script:
     name: safebreach-get-prebuilt-scenarios
     arguments: []
     outputs:
-    - contextPath: prebuilt_scenarios.id
+    - contextPath: SafeBreach.PrebuiltScenario.Id
       description: the Id of scenario.
       type: String
-    - contextPath: prebuilt_scenarios.name
+    - contextPath: SafeBreach.PrebuiltScenario.Name
       description: the name of the scenario.
       type: String
-    - contextPath: prebuilt_scenarios.description
+    - contextPath: SafeBreach.PrebuiltScenario.Description
       description: the description of the scenario.
       type: String
-    - contextPath: prebuilt_scenarios.created_by
+    - contextPath: SafeBreach.PrebuiltScenario.CreatedBy
       description: user id of user, who created the scenario.
       type: String
-    - contextPath: prebuilt_scenarios.created_at
+    - contextPath: SafeBreach.PrebuiltScenario.CreatedAt
       description: creation datetime of scenario.
       type: String
-    - contextPath: prebuilt_scenarios.updated_at
+    - contextPath: SafeBreach.PrebuiltScenario.UpdatedAt
       description: the update datetime of the scenario.
       type: String
-    - contextPath: prebuilt_scenarios.recommended
+    - contextPath: SafeBreach.PrebuiltScenario.Recommended
       description: the recommendation status of the scenario.
       type: String
-    - contextPath: prebuilt_scenarios.tags_list
+    - contextPath: SafeBreach.PrebuiltScenario.TagsList
       description: the tags related to the scenario.
       type: String
-    - contextPath: prebuilt_scenarios.categories
+    - contextPath: SafeBreach.PrebuiltScenario.Categories
       description: the category ids of the scenario.
       type: String
-    - contextPath: prebuilt_scenarios.steps_order
+    - contextPath: SafeBreach.PrebuiltScenario.StepsOrder
       description: the order of steps involved in the scenario.
       type: String
-    - contextPath: prebuilt_scenarios.order
+    - contextPath: SafeBreach.PrebuiltScenario.Order
       description: the order of execution related to the scenario.
       type: String
-    - contextPath: prebuilt_scenarios.min_api_ver
+    - contextPath: SafeBreach.PrebuiltScenario.MinApiVer
       description: the minimum version of API required for scenario to be executed.
       type: String
   - deprecated: false
@@ -1308,34 +1309,34 @@ script:
     name: safebreach-get-scheduled-scenarios
     arguments: []
     outputs:
-    - contextPath: schedules.id
+    - contextPath: SafeBreach.Schedules.Id
       description: the Id of the schedule.
       type: String
-    - contextPath: schedules.is_enabled
+    - contextPath: SafeBreach.Schedules.IsEnabled
       description: if simulation is enabled.
       type: Boolean
-    - contextPath: schedules.user_schedule
+    - contextPath: SafeBreach.Schedules.UserSchedule
       description: the user readable form of the schedule.
       type: String
-    - contextPath: schedules.run_date
+    - contextPath: SafeBreach.Schedules.RunDate
       description: the run date of the schedule.
       type: String
-    - contextPath: schedules.cron_timezone
+    - contextPath: SafeBreach.Schedules.CronTimezone
       description: the time zone of the schedule.
       type: String
-    - contextPath: schedules.description
+    - contextPath: SafeBreach.Schedules.Description
       description: the description of the schedule.
       type: String
-    - contextPath: schedules.scenario_id
+    - contextPath: SafeBreach.Schedules.ScenarioId
       description: the matrix ID of the schedule.
       type: String
-    - contextPath: schedules.created_at
+    - contextPath: SafeBreach.Schedules.CreatedAt
       description: the creation datetime of the schedule.
       type: String
-    - contextPath: schedules.updated_at
+    - contextPath: SafeBreach.Schedules.UpdatedAt
       description: the updated datetime of the schedule.
       type: String
-    - contextPath: schedules.deleted_at
+    - contextPath: SafeBreach.Schedules.DeletedAt
       description: the deletion time of the schedule.
       type: String
   - deprecated: false
@@ -1343,16 +1344,16 @@ script:
     name: safebreach-get-services-status
     arguments: []
     outputs:
-    - contextPath: services_status.name
+    - contextPath: SafeBreach.ServiceStatus.Name
       description: the name of the service.
       type: String
-    - contextPath: services_status.version
+    - contextPath: SafeBreach.ServiceStatus.Version
       description: version of the service.
       type: String
-    - contextPath: services_status.connection status
+    - contextPath: SafeBreach.ServiceStatus.connection status
       description: connection status of service.
       type: String
-    - contextPath: services_status.error
+    - contextPath: SafeBreach.ServiceStatus.Error
       description: error status of service.
       type: String
   - deprecated: false
@@ -1366,31 +1367,31 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: simulation_details.simulation_id
+    - contextPath: SafeBreach.Simulation.SimulationId
       description: the id of the simulation.
       type: String
-    - contextPath: simulation_details.attacker_node_name
+    - contextPath: SafeBreach.Simulation.AttackerNodeName
       description: Name of attacker node of simulation.
       type: String
-    - contextPath: simulation_details.target_node_name
+    - contextPath: SafeBreach.Simulation.TargetNodeName
       description: name of target of simulation.
       type: String
-    - contextPath: simulation_details.dest_node_name
+    - contextPath: SafeBreach.Simulation.DestNodeName
       description: name of destination of simulation.
       type: String
-    - contextPath: simulation_details.attack_name
+    - contextPath: SafeBreach.Simulation.AttackName
       description: name of attack.
       type: String
-    - contextPath: simulation_details.attacks_involved
+    - contextPath: SafeBreach.Simulation.AttacksInvolved
       description: attack types involved in of simulation.
       type: String
-    - contextPath: simulation_details.result_details
+    - contextPath: SafeBreach.Simulation.ResultDetails
       description: result of simulation.
       type: String
-    - contextPath: simulation_details.security_action
+    - contextPath: SafeBreach.Simulation.SecurityAction
       description: security status as per the simulation.
       type: String
-    - contextPath: simulation_details.attack_description
+    - contextPath: SafeBreach.Simulation.AttackDescription
       description: attack details.
       type: String
   - deprecated: false
@@ -1398,31 +1399,31 @@ script:
     name: safebreach-get-available-simulator-count
     arguments: []
     outputs:
-    - contextPath: account_details.id
+    - contextPath: SafeBreach.AccountDetails.Id
       description: The account ID which is being used by integration.
       type: Number
-    - contextPath: account_details.name
+    - contextPath: SafeBreach.AccountDetails.Name
       description: The Account Name of account being queried.
       type: String
-    - contextPath: account_details.contact_name
+    - contextPath: SafeBreach.AccountDetails.ContactName
       description: Contact name for given account.
       type: String
-    - contextPath: account_details.contact_email
+    - contextPath: SafeBreach.AccountDetails.ContactEmail
       description: Email of the contact person.
       type: String
-    - contextPath: account_details.user_quota
+    - contextPath: SafeBreach.AccountDetails.UserQuota
       description: User Quota for the given account, maximum users which are allowed for the account.
       type: String
-    - contextPath: account_details.simulators_quota
+    - contextPath: SafeBreach.AccountDetails.SimulatorsQuota
       description: The simulator quota for the given account. The maximum number of simulators which are available for the account.
       type: Number
-    - contextPath: account_details.registration_date
+    - contextPath: SafeBreach.AccountDetails.RegistrationDate
       description: The registration date of given account.
       type: Number
-    - contextPath: account_details.activation_date
+    - contextPath: SafeBreach.AccountDetails.ActivationDate
       description: The Activation date of given account.
       type: String
-    - contextPath: account_details.expiration_date
+    - contextPath: SafeBreach.AccountDetails.ExpirationDate
       description: Account expiration date.
       type: String
   - deprecated: false
@@ -1436,103 +1437,103 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: simulator_details_with_id.is_enabled
+    - contextPath: SafeBreach.Simulator.IsEnabled
       description: Whether the simulator is enabled or not.
       type: String
-    - contextPath: simulator_details_with_id.simulator_id
+    - contextPath: SafeBreach.Simulator.SimulatorId
       description: The Id of given simulator.
       type: String
-    - contextPath: simulator_details_with_id.name
+    - contextPath: SafeBreach.Simulator.Name
       description: name for given simulator.
       type: String
-    - contextPath: simulator_details_with_id.account_id
+    - contextPath: SafeBreach.Simulator.AccountId
       description: Account Id of account Hosting given simulator.
       type: String
-    - contextPath: simulator_details_with_id.is_critical
+    - contextPath: SafeBreach.Simulator.IsCritical
       description: Whether the simulator is critical.
       type: String
-    - contextPath: simulator_details_with_id.is_exfiltration
+    - contextPath: SafeBreach.Simulator.IsExfiltration
       description: If Simulator is exfiltration target.
       type: String
-    - contextPath: simulator_details_with_id.is_infiltration
+    - contextPath: SafeBreach.Simulator.IsInfiltration
       description: If simulator is infiltration target.
       type: String
-    - contextPath: simulator_details_with_id.is_mail_target
+    - contextPath: SafeBreach.Simulator.IsMailTarget
       description: If simulator is mail target.
       type: String
-    - contextPath: simulator_details_with_id.is_mail_attacker
+    - contextPath: SafeBreach.Simulator.IsMailAttacker
       description: If simulator is mail attacker.
       type: String
-    - contextPath: simulator_details_with_id.is_pre_executor
+    - contextPath: SafeBreach.Simulator.IsPreExecutor
       description: Whether the simulator is pre executor.
       type: String
-    - contextPath: simulator_details_with_id.is_aws_attacker
+    - contextPath: SafeBreach.Simulator.IsAwsAttacker
       description: if the given simulator is aws attacker.
       type: String
-    - contextPath: simulator_details_with_id.is_azure_attacker
+    - contextPath: SafeBreach.Simulator.IsAzureAttacker
       description: If the given simulator is azure attacker.
       type: String
-    - contextPath: simulator_details_with_id.external_ip
+    - contextPath: SafeBreach.Simulator.ExternalIp
       description: external ip of given simulator.
       type: String
-    - contextPath: simulator_details_with_id.internal_ip
+    - contextPath: SafeBreach.Simulator.InternalIp
       description: internal ip of given simulator.
       type: String
-    - contextPath: simulator_details_with_id.is_web_application_attacker
+    - contextPath: SafeBreach.Simulator.IsWebApplicationAttacker
       description: Whether the simulator is Web application attacker.
       type: String
-    - contextPath: simulator_details_with_id.preferred_interface
+    - contextPath: SafeBreach.Simulator.PreferredInterface
       description: Preferred simulator interface.
       type: String
-    - contextPath: simulator_details_with_id.preferred_ip
+    - contextPath: SafeBreach.Simulator.PreferredIp
       description: Preferred Ip of simulator.
       type: String
-    - contextPath: simulator_details_with_id.hostname
+    - contextPath: SafeBreach.Simulator.Hostname
       description: Hostname of given simulator.
       type: String
-    - contextPath: simulator_details_with_id.connection_type
+    - contextPath: SafeBreach.Simulator.ConnectionType
       description: connection_type of given simulator.
       type: String
-    - contextPath: simulator_details_with_id.simulator_status
+    - contextPath: SafeBreach.Simulator.SimulatorStatus
       description: status of the simulator.
       type: String
-    - contextPath: simulator_details_with_id.connection_status
+    - contextPath: SafeBreach.Simulator.ConnectionStatus
       description: connection status of simulator.
       type: String
-    - contextPath: simulator_details_with_id.simulator_framework_version
+    - contextPath: SafeBreach.Simulator.SimulatorFrameworkVersion
       description: Framework version of simulator.
       type: String
-    - contextPath: simulator_details_with_id.operating_system_type
+    - contextPath: SafeBreach.Simulator.OperatingSystemType
       description: operating system type of given simulator.
       type: String
-    - contextPath: simulator_details_with_id.operating_system
+    - contextPath: SafeBreach.Simulator.OperatingSystem
       description: Operating system of given simulator.
       type: String
-    - contextPath: simulator_details_with_id.execution_hostname
+    - contextPath: SafeBreach.Simulator.ExecutionHostname
       description: Execution Hostname of the given simulator.
       type: String
-    - contextPath: simulator_details_with_id.deployments
+    - contextPath: SafeBreach.Simulator.Deployments
       description: deployments simulator is part of.
       type: String
-    - contextPath: simulator_details_with_id.created_at
+    - contextPath: SafeBreach.Simulator.CreatedAt
       description: Creation datetime of simulator.
       type: String
-    - contextPath: simulator_details_with_id.updated_at
+    - contextPath: SafeBreach.Simulator.UpdatedAt
       description: Update datetime of given simulator.
       type: String
-    - contextPath: simulator_details_with_id.deleted_at
+    - contextPath: SafeBreach.Simulator.DeletedAt
       description: deletion datetime of given simulator.
       type: String
-    - contextPath: simulator_details_with_id.assets
+    - contextPath: SafeBreach.Simulator.Assets
       description: Assets of given simulator.
       type: String
-    - contextPath: simulator_details_with_id.simulation_users
+    - contextPath: SafeBreach.Simulator.SimulationUsers
       description: simulator users list.
       type: String
-    - contextPath: simulator_details_with_id.proxies
+    - contextPath: SafeBreach.Simulator.Proxies
       description: Proxies of simulator.
       type: String
-    - contextPath: simulator_details_with_id.advanced_actions
+    - contextPath: SafeBreach.Simulator.AdvancedActions
       description: Advanced simulator details.
       type: String
   - deprecated: false
@@ -1540,19 +1541,19 @@ script:
     name: safebreach-get-simulators-versions-list
     arguments: []
     outputs:
-    - contextPath: simulator_details.id
+    - contextPath: SafeBreach.Simulator.Id
       description: Simulator Id.
       type: String
-    - contextPath: simulator_details.lastUpdateDate
+    - contextPath: SafeBreach.Simulator.Lastupdatedate
       description: Simulator last updated data.
       type: String
-    - contextPath: simulator_details.lastUpdateStatus
+    - contextPath: SafeBreach.Simulator.Lastupdatestatus
       description: Simulator last updated status.
       type: String
-    - contextPath: simulator_details.currentStatus
+    - contextPath: SafeBreach.Simulator.Currentstatus
       description: Simulator current status.
       type: String
-    - contextPath: simulator_details.availableVersions
+    - contextPath: SafeBreach.Simulator.Availableversions
       description: Simulator available versions.
       type: Unknown
   - deprecated: false
@@ -1572,13 +1573,13 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: filtered_users.id
+    - contextPath: SafeBreach.UserData.Id
       description: The ID of User retrieved. this can be used to further link this user with user_id field of                       safebreach-update-user or safebreach-delete-user commands.
       type: Number
-    - contextPath: filtered_users.name
+    - contextPath: SafeBreach.UserData.Name
       description: The name of User retrieved.
       type: String
-    - contextPath: filtered_users.email
+    - contextPath: SafeBreach.UserData.Email
       description: The email of User retrieved. this can be used for updating user or deleting user                       for input email of commands safebreach-update-user or safebreach-delete-user.
       type: String
   - deprecated: false
@@ -1586,7 +1587,7 @@ script:
     name: safebreach-get-verification-token
     arguments: []
     outputs:
-    - contextPath: verification_token.token
+    - contextPath: SafeBreach.VerificationToken.Token
       description: the value of new verification token.
       type: String
   - deprecated: false
@@ -1604,7 +1605,7 @@ script:
       - pause
       auto: PREDEFINED
     outputs:
-    - contextPath: simulations_tests_status.status
+    - contextPath: SafeBreach.TestStatus.Status
       description: the status of the simulations/tests.
       type: String
   - deprecated: false
@@ -1624,35 +1625,35 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: changed_data.id
+    - contextPath: SafeBreach.Simulation.Id
       description: the Id of simulation.
       type: String
-    - contextPath: changed_data.name
+    - contextPath: SafeBreach.Simulation.Name
       description: the name of the simulation.
       type: String
-    - contextPath: changed_data.description
+    - contextPath: SafeBreach.Simulation.Description
       description: the description of the simulation.
       type: String
-    - contextPath: changed_data.success_criteria
+    - contextPath: SafeBreach.Simulation.SuccessCriteria
       description: success criteria the simulation.
       type: String
-    - contextPath: changed_data.original_scenario_id
+    - contextPath: SafeBreach.Simulation.OriginalScenarioId
       description: original simulation id of simulation.
       type: String
-    - contextPath: changed_data.actions_list
+    - contextPath: SafeBreach.Simulation.ActionsList
       description: actions list of the simulation.
       type: String
-    - contextPath: changed_data.steps_order
+    - contextPath: SafeBreach.Simulation.StepsOrder
       description: the order of steps of the simulation.
       type: String
-    - contextPath: changed_data.createdAt
+    - contextPath: SafeBreach.Simulation.Createdat
       description: the creation datetime of the simulation.
       type: String
-    - contextPath: changed_data.updatedAt
+    - contextPath: SafeBreach.Simulation.Updatedat
       description: the last updated time the simulation.
       type: String
   - deprecated: false
-    description: this commands puts given test data in queue for execution.
+    description: This command puts given test data in queue for execution.
     name: safebreach-rerun-test
     arguments:
     - name: test_id
@@ -1668,55 +1669,55 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: changed_data.id
+    - contextPath: SafeBreach.Test.Id
       description: the Id of test.
       type: String
-    - contextPath: changed_data.name
+    - contextPath: SafeBreach.Test.Name
       description: the name of the test.
       type: String
-    - contextPath: changed_data.description
+    - contextPath: SafeBreach.Test.Description
       description: the description of the test.
       type: String
-    - contextPath: changed_data.success_criteria
+    - contextPath: SafeBreach.Test.SuccessCriteria
       description: success criteria the test.
       type: String
-    - contextPath: changed_data.original_scenario_id
+    - contextPath: SafeBreach.Test.OriginalScenarioId
       description: original scenario id of test.
       type: String
-    - contextPath: changed_data.actions_list
+    - contextPath: SafeBreach.Test.ActionsList
       description: actions list of the test.
       type: String
-    - contextPath: changed_data.edges_count
+    - contextPath: SafeBreach.Test.EdgesCount
       description: edges_count for the test.
       type: String
-    - contextPath: changed_data.steps_order
+    - contextPath: SafeBreach.Test.StepsOrder
       description: the order of steps of the test.
       type: String
-    - contextPath: changed_data.created_at
+    - contextPath: SafeBreach.Test.CreatedAt
       description: the creation datetime of the test.
       type: String
-    - contextPath: changed_data.updated_at
+    - contextPath: SafeBreach.Test.UpdatedAt
       description: the last updated time the test.
       type: String
-    - contextPath: changed_data.scenario_id
+    - contextPath: SafeBreach.Test.ScenarioId
       description: the test id of the test.
       type: String
-    - contextPath: changed_data.ran_by
+    - contextPath: SafeBreach.Test.RanBy
       description: the user id of the user who ran the test.
       type: String
-    - contextPath: changed_data.ran_from
+    - contextPath: SafeBreach.Test.RanFrom
       description: where the user ran the test from.
       type: String
-    - contextPath: changed_data.enable_feedback_loop
+    - contextPath: SafeBreach.Test.EnableFeedbackLoop
       description: feedback loop status of the test.
       type: String
-    - contextPath: changed_data.test_id
+    - contextPath: SafeBreach.Test.TestId
       description: test_id of the test.
       type: String
-    - contextPath: changed_data.priority
+    - contextPath: SafeBreach.Test.Priority
       description: priority of the test.
       type: String
-    - contextPath: changed_data.retry_simulations
+    - contextPath: SafeBreach.Test.RetrySimulations
       description: retry status of the test.
       type: String
   - deprecated: false
@@ -1724,8 +1725,8 @@ script:
     name: safebreach-rotate-verification-token
     arguments: []
     outputs:
-    - contextPath: token.new_token
-      description: new Token which has been generated due to the api call.
+    - contextPath: SafeBreach.Token.NewToken
+      description: New token which has been generated due to the API call.
       type: String
   - deprecated: false
     description: "This command updates a deployment with given data. The deployment_id field of this command can be retrieved from 'safebreach-list-deployments' command. If the user wants to search with deployment ID then they can search it."
@@ -1756,25 +1757,25 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: updated_deployment_data.id
+    - contextPath: SafeBreach.UpdatedDeployment.Id
       description: The ID of deployment whose values have been updated.                          ID cant be changed so this wont be updated.
       type: Number
-    - contextPath: updated_deployment_data.account_id
+    - contextPath: SafeBreach.UpdatedDeployment.AccountId
       description: The accountId of user who created the deployment.
       type: String
-    - contextPath: updated_deployment_data.name
+    - contextPath: SafeBreach.UpdatedDeployment.Name
       description: The name of deployment which has been updated to the name given in updated_deployment_name.                        this will be the name shown in deployment name field of table in deployments page in safebreach UI.
       type: String
-    - contextPath: updated_deployment_data.created_at
+    - contextPath: SafeBreach.UpdatedDeployment.CreatedAt
       description: The creation date and time of deployment whose data has been updated.
       type: String
-    - contextPath: updated_deployment_data.updated_at
+    - contextPath: SafeBreach.UpdatedDeployment.UpdatedAt
       description: The last updated date and time of deployment whose data has been updated.                      This will generally be closer to the update deployment command run time for reference.
       type: String
-    - contextPath: updated_deployment_data.description
+    - contextPath: SafeBreach.UpdatedDeployment.Description
       description: The updated description of deployment which is provided in updated_deployment_description                      field of input . This will now be the description which is shown in description field of deployments                      table of safebreach UI.
       type: String
-    - contextPath: updated_deployment_data.simulators
+    - contextPath: SafeBreach.UpdatedDeployment.Simulators
       description: The simulators that are part of deployment. unless any simulators are given as input this                           field won't be updated this field doesn't reflect changes if simulators given as input are deleted.
       type: String
   - deprecated: false
@@ -1824,103 +1825,103 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: updated_simulator_details.is_enabled
+    - contextPath: SafeBreach.UpdatedSimulator.IsEnabled
       description: Whether the simulator is enabled or not.
       type: String
-    - contextPath: updated_simulator_details.simulator_id
+    - contextPath: SafeBreach.UpdatedSimulator.SimulatorId
       description: The Id of given simulator.
       type: String
-    - contextPath: updated_simulator_details.name
+    - contextPath: SafeBreach.UpdatedSimulator.Name
       description: name for given simulator.
       type: String
-    - contextPath: updated_simulator_details.account_id
+    - contextPath: SafeBreach.UpdatedSimulator.AccountId
       description: Account Id of account Hosting given simulator.
       type: String
-    - contextPath: updated_simulator_details.is_critical
+    - contextPath: SafeBreach.UpdatedSimulator.IsCritical
       description: Whether the simulator is critical.
       type: String
-    - contextPath: updated_simulator_details.is_exfiltration
+    - contextPath: SafeBreach.UpdatedSimulator.IsExfiltration
       description: If Simulator is exfiltration target.
       type: String
-    - contextPath: updated_simulator_details.is_infiltration
+    - contextPath: SafeBreach.UpdatedSimulator.IsInfiltration
       description: If simulator is infiltration target.
       type: String
-    - contextPath: updated_simulator_details.is_mail_target
+    - contextPath: SafeBreach.UpdatedSimulator.IsMailTarget
       description: If simulator is mail target.
       type: String
-    - contextPath: updated_simulator_details.is_mail_attacker
+    - contextPath: SafeBreach.UpdatedSimulator.IsMailAttacker
       description: If simulator is mail attacker.
       type: String
-    - contextPath: updated_simulator_details.is_pre_executor
+    - contextPath: SafeBreach.UpdatedSimulator.IsPreExecutor
       description: Whether the simulator is pre executor.
       type: String
-    - contextPath: updated_simulator_details.is_aws_attacker
+    - contextPath: SafeBreach.UpdatedSimulator.IsAwsAttacker
       description: if the given simulator is aws attacker.
       type: String
-    - contextPath: updated_simulator_details.is_azure_attacker
+    - contextPath: SafeBreach.UpdatedSimulator.IsAzureAttacker
       description: If the given simulator is azure attacker.
       type: String
-    - contextPath: updated_simulator_details.external_ip
+    - contextPath: SafeBreach.UpdatedSimulator.ExternalIp
       description: external ip of given simulator.
       type: String
-    - contextPath: updated_simulator_details.internal_ip
+    - contextPath: SafeBreach.UpdatedSimulator.InternalIp
       description: internal ip of given simulator.
       type: String
-    - contextPath: updated_simulator_details.is_web_application_attacker
+    - contextPath: SafeBreach.UpdatedSimulator.IsWebApplicationAttacker
       description: Whether the simulator is Web application attacker.
       type: String
-    - contextPath: updated_simulator_details.preferred_interface
+    - contextPath: SafeBreach.UpdatedSimulator.PreferredInterface
       description: Preferred simulator interface.
       type: String
-    - contextPath: updated_simulator_details.preferred_ip
+    - contextPath: SafeBreach.UpdatedSimulator.PreferredIp
       description: Preferred Ip of simulator.
       type: String
-    - contextPath: updated_simulator_details.hostname
+    - contextPath: SafeBreach.UpdatedSimulator.Hostname
       description: Hostname of given simulator.
       type: String
-    - contextPath: updated_simulator_details.connection_type
+    - contextPath: SafeBreach.UpdatedSimulator.ConnectionType
       description: connection_type of given simulator.
       type: String
-    - contextPath: updated_simulator_details.simulator_status
+    - contextPath: SafeBreach.UpdatedSimulator.SimulatorStatus
       description: status of the simulator.
       type: String
-    - contextPath: updated_simulator_details.connection_status
+    - contextPath: SafeBreach.UpdatedSimulator.ConnectionStatus
       description: connection status of simulator.
       type: String
-    - contextPath: updated_simulator_details.simulator_framework_version
+    - contextPath: SafeBreach.UpdatedSimulator.SimulatorFrameworkVersion
       description: Framework version of simulator.
       type: String
-    - contextPath: updated_simulator_details.operating_system_type
+    - contextPath: SafeBreach.UpdatedSimulator.OperatingSystemType
       description: operating system type of given simulator.
       type: String
-    - contextPath: updated_simulator_details.operating_system
+    - contextPath: SafeBreach.UpdatedSimulator.OperatingSystem
       description: Operating system of given simulator.
       type: String
-    - contextPath: updated_simulator_details.execution_hostname
+    - contextPath: SafeBreach.UpdatedSimulator.ExecutionHostname
       description: Execution Hostname of the given simulator.
       type: String
-    - contextPath: updated_simulator_details.deployments
+    - contextPath: SafeBreach.UpdatedSimulator.Deployments
       description: deployments simulator is part of.
       type: String
-    - contextPath: updated_simulator_details.created_at
+    - contextPath: SafeBreach.UpdatedSimulator.CreatedAt
       description: Creation datetime of simulator.
       type: String
-    - contextPath: updated_simulator_details.updated_at
+    - contextPath: SafeBreach.UpdatedSimulator.UpdatedAt
       description: Update datetime of given simulator.
       type: String
-    - contextPath: updated_simulator_details.deleted_at
+    - contextPath: SafeBreach.UpdatedSimulator.DeletedAt
       description: deletion datetime of given simulator.
       type: String
-    - contextPath: updated_simulator_details.assets
+    - contextPath: SafeBreach.UpdatedSimulator.Assets
       description: Assets of given simulator.
       type: String
-    - contextPath: updated_simulator_details.simulation_users
+    - contextPath: SafeBreach.UpdatedSimulator.SimulationUsers
       description: simulator users list.
       type: String
-    - contextPath: updated_simulator_details.proxies
+    - contextPath: SafeBreach.UpdatedSimulator.Proxies
       description: Proxies of simulator.
       type: String
-    - contextPath: updated_simulator_details.advanced_actions
+    - contextPath: SafeBreach.UpdatedSimulator.AdvancedActions
       description: Advanced simulator details.
       type: String
   - deprecated: false
@@ -1940,10 +1941,10 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: updated_simulator_details.nodeId
+    - contextPath: SafeBreach.UpdatedSimulator.Nodeid
       description: Simulator ID.
       type: String
-    - contextPath: updated_simulator_details.status
+    - contextPath: SafeBreach.UpdatedSimulator.Status
       description: Simulator status.
       type: String
   - deprecated: false
@@ -2004,40 +2005,40 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: updated_user_data.id
+    - contextPath: SafeBreach.UpdatedUserData.Id
       description: The ID of User whose data has been updated.
       type: Number
-    - contextPath: updated_user_data.name
+    - contextPath: SafeBreach.UpdatedUserData.Name
       description: The name of User after running the update command according to safebreach records.
       type: String
-    - contextPath: updated_user_data.email
+    - contextPath: SafeBreach.UpdatedUserData.Email
       description: the email of the user whose data has been updated by the command.
       type: String
-    - contextPath: updated_user_data.createdAt
+    - contextPath: SafeBreach.UpdatedUserData.Createdat
       description: the time at which the user who has been selected has been created.
       type: String
-    - contextPath: updated_user_data.updatedAt
+    - contextPath: SafeBreach.UpdatedUserData.Updatedat
       description: The last updated time of User selected for update.                       this will be the execution time for the command or close to it.
       type: String
-    - contextPath: updated_user_data.deletedAt
+    - contextPath: SafeBreach.UpdatedUserData.Deletedat
       description: The Deletion time of User selected to update. Generally this is empty unless                      user chosen to update is a deleted user.
       type: String
-    - contextPath: updated_user_data.roles
+    - contextPath: SafeBreach.UpdatedUserData.Roles
       description: The roles of User updated. these will change if role has been updated during                      updating user details else they will be same as pre update.
       type: String
-    - contextPath: updated_user_data.description
+    - contextPath: SafeBreach.UpdatedUserData.Description
       description: The description of User after updating user, if description field has been given any                      new value during update then its updated else this will be left unchanged from previous value.
       type: String
-    - contextPath: updated_user_data.role
+    - contextPath: SafeBreach.UpdatedUserData.Role
       description: The roles and permissions related to user who has been selected for update.unless this field                      has been given a value , this will not be updated and will stay the same as previous value.
       type: String
-    - contextPath: updated_user_data.deployments
+    - contextPath: SafeBreach.UpdatedUserData.Deployments
       description: The deployments related to user, this will be comma separated values of deployment IDs.
       type: String
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.88772
+  dockerimage: demisto/python3:3.10.13.89009
   feed: false
   isfetch: false
   runonce: false

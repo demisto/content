@@ -149,7 +149,7 @@
                         "DETAILS": "The task action finished running successfully",
                         "ERROR": "52.56.253.231 - - [24/Feb/2020 05:36:36] \"GET /DcxfHpLkq HTTP/1.1\" 200 -\n",
                         "METADATA": {
-                            "executable": "/dummy/path/simvenv/bin/python",
+                            "executable": "/home/safebreach/simulator/app/simvenv/bin/python",
                             "hostname": "ip-10-240-1-228",
                             "pid": 9307,
                             "ret_code": 0
