@@ -856,4 +856,3 @@ def test_modify_user_ou(mocker, dn, expected):
     connection_mocker = mocker.patch.object(Active_Directory_Query.connection, 'modify_dn', return_value=True)
     Active_Directory_Query.modify_user_ou(dn, new_ou)
     assert connection_mocker.call_args[0][1] == expected
-
