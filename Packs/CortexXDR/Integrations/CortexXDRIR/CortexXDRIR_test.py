@@ -1127,7 +1127,7 @@ def test_parsed_alert(mocker):
         - Calling check_if_incident_was_modified_in_xdr().
 
     Then:
-        - Return True indicating the incident was modified.
+        - Verify the returned result is as we expected
     """
     from CortexXDRIR import create_parsed_alert
     parsed_alert = create_parsed_alert(product='product',
@@ -1143,3 +1143,40 @@ def test_parsed_alert(mocker):
 
     assert parsed_alert.get('alert_description') == 'Malicious File'
     assert parsed_alert.get('severity') == 'high'
+
+
+def test_sync_incoming_incident_owners(mocker):
+    """
+    Given:
+        - incident_data dict with assigned_user_mail
+
+    When:
+        - Calling sync_incoming_incident_owners().
+
+    Then:
+        - Verify the incident_data result is as we expected.
+    """
+    from CortexXDRIR import sync_incoming_incident_owners
+    incident_data = {'assigned_user_mail': 'www.example@test.com'}
+    mocker.patch.object(demisto, 'params', return_value={"sync_owners": True})
+    mocker.patch.object(demisto, 'findUser', return_value={"username": "tester"})
+    sync_incoming_incident_owners(incident_data)
+    assert incident_data.get('owner') == 'tester'
+
+
+def test_handle_incoming_user_unassignment(mocker):
+    """
+    Given:
+        - incident_data dict with incident_id, owner.
+
+    When:
+        - Calling handle_incoming_user_unassignment().
+
+    Then:
+        - Verify the returned result is as we expected.
+    """
+    from CortexXDRIR import handle_incoming_user_unassignment
+    incident_data = {'incident_id': '1', 'owner': 'tester'}
+    mocker.patch.object(demisto, 'params', return_value={"sync_owners": True})
+    handle_incoming_user_unassignment(incident_data)
+    assert not incident_data.get('owner')
