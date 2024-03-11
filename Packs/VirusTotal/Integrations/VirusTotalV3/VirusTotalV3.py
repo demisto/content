@@ -2322,7 +2322,7 @@ def file_sandbox_report_command(client: Client, args: dict) -> CommandResults:
     elif raw_response.get('error', {}).get('code') == 'NotFoundError':
         return CommandResults(readable_output=f'{file_hash} not found.')
     else:
-        return CommandResults(readable_output='Error API Quota Exceeded.')
+        raise DemistoException("Error API Quota Exceeded.")
 
 
 def passive_dns_data(client: Client, args: dict) -> CommandResults:
