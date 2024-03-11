@@ -808,46 +808,38 @@ class BranchTestCollector(TestCollector):
             if self.private_pack_path \
             else self._get_git_diff()
 
+        changed_packs, packs_with_removed_files = self.__collect_packs_diff_master_bucket()
+
         return CollectionResult.union([
             self.__collect_from_changed_files(collect_from.changed_files),
             self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
-            self.__collect_packs_diff_master_bucket()
+            changed_packs,
+            packs_with_removed_files
         ])
 
-    def __collect_packs_diff_master_bucket(self) -> CollectionResult | None:
-        repo = PATHS.content_repo
+    def __collect_packs_diff_master_bucket(self) -> tuple[CollectionResult | None, CollectionResult | None]:
+
         collected_packs: list[CollectionResult | None] = []
 
-        logger.info('bucket upload: getting last commit from index')
-        previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
-        current_commit = 'origin/master'
-
         # diff between master and the last upload
-        diff = repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
-        logger.debug(f'raw changed files string:\n{diff}')
+        collect_from = self._get_git_diff(upload_delta_from_last_upload=True)
 
-        # extract file path from lines
-        for line in diff.splitlines():
-
-            match len(parts := line.split('\t')):
-                case 2:
-                    git_status, file_path = parts
-                case 3:
-                    git_status, old_file_path, file_path = parts  # R <old location> <new location>
-
-                case _:
-                    raise ValueError(f'unexpected line format '
-                                     f'(expected `<modifier>\t<file>` or `<modifier>\t<old_location>\t<new_location>`'
-                                     f', got {line}')
+        for file_path in collect_from.changed_files:
 
             path = PATHS.content_path / file_path
+
+            if not path.exists():
+                raise FileNotFoundError(path)
+
             collected_packs.append(self._collect_pack(
                 pack_id=find_pack_folder(path).name,
                 reason=CollectionReason.PACK_CHOSEN_TO_UPLOAD,
                 reason_description=file_path,
             ))
 
-        return CollectionResult.union(collected_packs)
+        # union with collected_packs since changed_files and since files were removed
+        return CollectionResult.union(collected_packs), \
+            self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from)
 
     def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult | None:
         """NOTE: this should only be used from _collect"""
@@ -1146,7 +1138,7 @@ class BranchTestCollector(TestCollector):
             for test in tests)
         )
 
-    def _get_git_diff(self) -> FilesToCollect:
+    def _get_git_diff(self, upload_delta_from_last_upload: bool = False) -> FilesToCollect:
         repo = PATHS.content_repo
         changed_files: list[str] = []
         packs_files_were_removed_from: set[str] = set()
@@ -1156,7 +1148,12 @@ class BranchTestCollector(TestCollector):
 
         logger.debug(f'Getting changed files for {self.branch_name=}')
 
-        if os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
+        if upload_delta_from_last_upload:
+            logger.info('bucket upload: getting last commit from index')
+            previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
+            current_commit = 'origin/master'
+
+        elif os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
             logger.info('bucket upload: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
             if self.branch_name == 'master':
