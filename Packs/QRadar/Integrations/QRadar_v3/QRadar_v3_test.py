@@ -1651,7 +1651,6 @@ def test_qradar_reference_set_value_upsert_command_continue_polling_with_connect
     assert result.outputs
 
 @pytest.mark.parametrize('command_func, endpoint, id', [
-    (qradar_log_sources_list_command,  '/config/event_sources/log_source_management/log_sources/', 0),
     (qradar_event_collectors_list_command,  '/config/event_sources/event_collectors', 0),
     (qradar_wincollect_destinations_list_command,  '/config/event_sources/wincollect/wincollect_destinations', 0),
     (qradar_disconnected_log_collectors_list_command,  '/config/event_sources/disconnected_log_collectors', 0),
@@ -1663,15 +1662,14 @@ def test_qradar_reference_set_value_upsert_command_continue_polling_with_connect
     ])
 def test_id_commands(mocker, command_func: Callable[[Client, dict], CommandResults], endpoint:str , id: int):
     args = {"id": id}
-    get_by_id_mock = mocker.patch.object(client, 'get_resource', return_value={})
+    get_by_id_mock = mocker.patch.object(client, 'get_resource_by_id', return_value={})
     try:
         command_func(client, args)
     except KeyError:
         demisto.log(f'command {command_func.__name__} raised key error')
-    get_by_id_mock.assert_called_with(id, endpoint, None)
+    get_by_id_mock.assert_called_with(id, endpoint, None, None)
 
 @pytest.mark.parametrize('command_func, endpoint', [
-    (qradar_log_sources_list_command,  '/config/event_sources/log_source_management/log_sources'),
     (qradar_event_collectors_list_command,  '/config/event_sources/event_collectors'),
     (qradar_wincollect_destinations_list_command,  '/config/event_sources/wincollect/wincollect_destinations'),
     (qradar_disconnected_log_collectors_list_command,  '/config/event_sources/disconnected_log_collectors'),
@@ -1688,7 +1686,20 @@ def test_list_commands(mocker, command_func: Callable[[Client, dict], CommandRes
         command_func(client, args)
     except KeyError:
         demisto.log(f'command {command_func.__name__} raised key error')
-    get_list_mock.assert_called_with(f"items={args['range']}", endpoint, None, None)
+    get_list_mock.assert_called_with(f"items={args['range']}", endpoint, None, None, None)
+
+@pytest.mark.parametrize('id', [(0), (None)])
+def test_get_resource(mocker, id: int | None):
+    endpoint = 'example.com'
+    range = 'items=0-49'
+    get_resource_by_id_mock = mocker.patch.object(client, 'get_resource_by_id')
+    get_resource_list_mock = mocker.patch.object(client, 'get_resource_list')
+    
+    client.get_resource(id, range, endpoint)
+    if id is not None:
+        get_resource_by_id_mock.assert_called()
+    else:
+        get_resource_list_mock.assert_called()
 
 
 def test_get_log_sources_list(mocker):
@@ -1713,7 +1724,7 @@ def test_get_log_source_by_id(mocker):
         'qrd_encryption_password': 'password'
     }
     args = {'id': mock_id, **qrd_encryption_details}
-    get_by_id_mock = mocker.patch.object(client, 'get_resource', return_value={})
+    get_by_id_mock = mocker.patch.object(client, 'get_resource_by_id', return_value={})
     endpoint = '/config/event_sources/log_source_management/log_sources'
     expected_additional_headers = {'x-qrd-encryption-algorithm': 'algorithm', 'x-qrd-encryption-password': 'password'}
     try:
@@ -1737,11 +1748,19 @@ def test_create_log_source(mocker):
 def test_update_log_source(mocker):
     args =  command_test_data['update_log_source']['args']
     expected_body =  command_test_data['update_log_source']['expected_body']
-    create_log_source_mock = mocker.patch.object(client, 'update_log_source', return_value={})
+    update_log_source_mock = mocker.patch.object(client, 'update_log_source', return_value={})
     
     try:
-        qradar_log_source_create_command(client, args)
+        qradar_log_source_update_command(client, args)
     except KeyError:
-        demisto.log('command create_log_source_command raised key error')
+        demisto.log('command update_log_source_command raised key error')
     
-    create_log_source_mock.assert_called_with(expected_body)
+    update_log_source_mock.assert_called_with(expected_body)
+
+def test_delete_log_source(mocker):
+    id = 0
+    args = {"id": id}
+    update_log_source_mock = mocker.patch.object(client, 'delete_log_source', return_value={})
+    
+    qradar_log_source_delete_command(client, args)
+    update_log_source_mock.assert_called_with(id)

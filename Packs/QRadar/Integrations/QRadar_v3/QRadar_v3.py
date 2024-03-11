@@ -126,21 +126,21 @@ OFFENSE_OLD_NEW_NAMES_MAP = {
     'assets': 'Assets'
 }
 
-CLOSING_REASONS_OLD_NEW_MAP = {
+CLOSING_REASONS_RAW_FORMATTED = {
     'id': 'ID',
     'text': 'Name',
     'is_reserved': 'IsReserved',
     'is_deleted': 'IsDeleted'
 }
 
-NOTES_OLD_NEW_MAP = {
+NOTES_RAW_FORMATTED = {
     'id': 'ID',
     'note_text': 'Text',
     'create_time': 'CreateTime',
     'username': 'CreatedBy'
 }
 
-RULES_OLD_NEW_MAP = {
+RULES_RAW_FORMATTED = {
     'owner': 'Owner',
     'base_host_id': 'BaseHostID',
     'capacity_timestamp': 'CapacityTimestamp',
@@ -155,7 +155,7 @@ RULES_OLD_NEW_MAP = {
     'base_capacity': 'BaseCapacity'
 }
 
-RULES_GROUP_OLD_NEW_MAP = {
+RULES_GROUP_RAW_FORMATTED = {
     'owner': 'Owner',
     'modified_time': 'ModifiedTime',
     'level': 'Level',
@@ -168,7 +168,7 @@ RULES_GROUP_OLD_NEW_MAP = {
     'parent_id': 'ParentID'
 }
 
-ASSET_OLD_NEW_MAP = {
+ASSET_RAW_FORMATTED = {
     'vulnerability_count': 'VulnerabilityCount',
     'interfaces': 'Interfaces',
     'risk_score_sum': 'RiskScoreSum',
@@ -180,9 +180,9 @@ ASSET_OLD_NEW_MAP = {
     'products': 'Products'
 }
 
-SEARCH_OLD_NEW_MAP = {'search_id': 'ID', 'status': 'Status'}
+SEARCH_RAW_FORMATTED = {'search_id': 'ID', 'status': 'Status'}
 
-REFERENCE_SETS_OLD_NEW_MAP = {
+REFERENCE_SETS_RAW_FORMATTED = {
     'number_of_elements': 'NumberOfElements',
     'name': 'Name',
     'creation_time': 'CreationTime',
@@ -191,14 +191,14 @@ REFERENCE_SETS_OLD_NEW_MAP = {
     'timeout_type': 'TimeoutType',
     'data': 'Data',
 }
-REFERENCE_SET_DATA_OLD_NEW_MAP = {
+REFERENCE_SET_DATA_RAW_FORMATTED = {
     'last_seen': 'LastSeen',
     'source': 'Source',
     'value': 'Value',
     'first_seen': 'FirstSeen'
 }
 
-DOMAIN_OLD_NEW_MAP = {
+DOMAIN_RAW_FORMATTED = {
     'asset_scanner_ids': 'AssetScannerIDs',
     'custom_properties': 'CustomProperties',
     'deleted': 'Deleted',
@@ -214,7 +214,7 @@ DOMAIN_OLD_NEW_MAP = {
     'tenant_id': 'TenantID'
 }
 
-SAVED_SEARCH_OLD_NEW_MAP = {
+SAVED_SEARCH_RAW_FORMATTED = {
     'owner': 'Owner',
     'description': 'Description',
     'creation_date': 'CreationDate',
@@ -228,7 +228,7 @@ SAVED_SEARCH_OLD_NEW_MAP = {
     'is_shared': 'IsShared'
 }
 
-IP_GEOLOCATION_OLD_NEW_MAP = {
+IP_GEOLOCATION_RAW_FORMATTED = {
     'continent': 'Continent',
     'traits': 'Traits',
     'geo_json': 'Geolocation',
@@ -243,7 +243,7 @@ IP_GEOLOCATION_OLD_NEW_MAP = {
     'subdivisions': 'SubDivisions'
 }
 
-LOG_SOURCES_OLD_NEW_MAP = {
+LOG_SOURCES_RAW_FORMATTED = {
     'sending_ip': 'SendingIP',
     'internal': 'Internal',
     'protocol_parameters': 'ProtocolParameters',
@@ -288,7 +288,7 @@ USECS_ENTRIES = {'last_persisted_time',
                  'first_event_flow_seen',
                  'last_event_flow_seen'}
 
-LOCAL_DESTINATION_IPS_OLD_NEW_MAP = {
+LOCAL_DESTINATION_IPS_RAW_FORMATTED = {
     'domain_id': 'DomainID',
     'event_flow_count': 'EventFlowCount',
     'first_event_flow_seen': 'FirstEventFlowSeen',
@@ -300,7 +300,7 @@ LOCAL_DESTINATION_IPS_OLD_NEW_MAP = {
     'offense_ids': 'OffenseIDs',
     'source_address_ids': 'SourceAddressIDs'
 }
-SOURCE_IPS_OLD_NEW_MAP = {
+SOURCE_IPS_RAW_FORMATTED = {
     'domain_id': 'DomainID',
     'event_flow_count': 'EventFlowCount',
     'first_event_flow_seen': 'FirstEventFlowSeen',
@@ -313,14 +313,14 @@ SOURCE_IPS_OLD_NEW_MAP = {
     'source_ip': 'SourceIP'
 }
 
-EVENT_COLLECTOR_OLD_NEW_MAP = {
+EVENT_COLLECTOR_RAW_FORMATTED = {
     'component_name': 'ComponentName',
     'host_id': 'HostID',
     'id': 'ID',
     'name': 'Name'
 }
 
-WINCOLLECT_DESTINATION_OLD_NEW_MAP = {
+WINCOLLECT_DESTINATION_RAW_FORMATTED = {
     'id': 'ID',
     'name': 'Name',
     'host': 'Host',
@@ -331,7 +331,7 @@ WINCOLLECT_DESTINATION_OLD_NEW_MAP = {
     'event_rate_throttle':'EventRateThrottle'
 }
 
-DISCONNECTED_LOG_COLLECTOR_OLD_NEW_MAP = {
+DISCONNECTED_LOG_COLLECTOR_RAW_FORMATTED = {
     'id': 'ID',
     'name': 'Name',
     'description': 'Description',
@@ -340,7 +340,7 @@ DISCONNECTED_LOG_COLLECTOR_OLD_NEW_MAP = {
     'version': 'Version'
 }
 
-LOG_SOURCE_TYPES_OLD_NEW_MAP = {
+LOG_SOURCE_TYPES_RAW_FORMATTED = {
     'id':'ID',
     'name':'Name',
     'custom':'Custom',
@@ -354,7 +354,7 @@ LOG_SOURCE_TYPES_OLD_NEW_MAP = {
     'log_source_extension_id':'LogSourceExtensionID',
 }
 
-LOG_SOURCE_PROTOCOL_TYPE_OLD_NEW_MAP = {
+LOG_SOURCE_PROTOCOL_TYPE_RAW_FORMATTED = {
     'id':'ID',
     'name':'Name',
     'version':'Version',
@@ -366,19 +366,19 @@ LOG_SOURCE_PROTOCOL_TYPE_OLD_NEW_MAP = {
     'testing_capabilities': 'TestingCapabilities'
 }
 
-LOG_SOURCE_EXTENSION_OLD_NEW_MAP = {
+LOG_SOURCE_EXTENSION_RAW_FORMATTED = {
     'id': 'ID',
     'name': 'Name',
     'description': 'Description',
     'uuid': 'UUID',
 }
 
-LOG_SOURCE_LANGUAGE_OLD_NEW_MAP = {
+LOG_SOURCE_LANGUAGE_RAW_FORMATTED = {
     'id': 'ID',
     'name': 'Name'
 }
 
-LOG_SOURCE_GROUP_OLD_NEW_MAP = {
+LOG_SOURCE_GROUP_RAW_FORMATTED = {
     'id': 'ID',
     'name': 'GroupName',
     'description': 'Description',
@@ -862,6 +862,19 @@ class Client(BaseClient):
             filter_: Optional[str] = None,
             fields: Optional[str] = None,
             additional_headers_: Optional[dict] = None):
+        """
+        Retrieve a list of resources from a specified endpoint.
+
+        Args:
+            range_ (str): The range of resources to retrieve. eg. items=0-49
+            endpoint (str): The API endpoint to retrieve resources from.
+            filter_ (Optional[str], optional): Optional filter query for the request. Defaults to None.
+            fields (Optional[str], optional): The fields that the API should return. Defaults to None.
+            additional_headers_ (Optional[dict], optional): Optional additional headers for the request. Defaults to None.
+
+        Returns:
+            Response: The response object from the HTTP request.
+        """
         return self.http_request(
             method='GET',
             url_suffix=endpoint,
@@ -875,13 +888,24 @@ class Client(BaseClient):
             }
         )
     
-    def get_resource(self, id: str, endpoint: str, fields: Optional[str] = None, additional_headers: Optional[dict] = None):
+    def get_resource_by_id(self, id: str, endpoint: str, fields: Optional[str] = None, additional_headers: Optional[dict] = None):
         return self.http_request(
             method='GET',
             url_suffix=endpoint + f'/{id}',
             params=assign_params(fields=fields),
             additional_headers=additional_headers
         )
+    
+    def get_resource(
+            self,
+            id,
+            range_: str,
+            endpoint: str,
+            filter_: Optional[str] = None,
+            fields: Optional[str] = None,
+            additional_headers_: Optional[dict] = None):
+        return self.get_resource_list(range_, endpoint, filter_, fields, additional_headers_) if id is None \
+            else [self.get_resource_by_id(id, endpoint, fields, additional_headers_)]
     
     def delete_log_source(self, id: str):
         return self.http_request(
@@ -1012,7 +1036,7 @@ def insert_values_to_reference_set_polling(client: Client,
         if not use_old_api:
             # get the reference set data
             response = client.reference_sets_list(ref_name=ref_name)
-        outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
+        outputs = sanitize_outputs(response, REFERENCE_SETS_RAW_FORMATTED)
 
         command_results = CommandResults(
             readable_output=tableToMarkdown('Reference Update Create', outputs, removeNull=True),
@@ -1741,13 +1765,6 @@ def convert_start_fetch_to_milliseconds(fetch_start_time: str):
         raise ValueError(f'Invalid first_fetch format: {fetch_start_time}')
     return int(date.timestamp() * 1000)
 
-def convert_dict_values_string_to_number(obj: dict) -> dict:
-    clone = { **obj }
-    for key, value in obj.items():
-        if isinstance(value, str) and value.isnumeric():
-            clone[key] = int(value)
-    return clone
-
 def convert_to_actual_values_recursive(input_dict: dict) -> dict[str, Any]:
     output_dict = {}
     for key, value in input_dict.items():
@@ -1764,6 +1781,48 @@ def convert_to_actual_values_recursive(input_dict: dict) -> dict[str, Any]:
         else:
             output_dict[key] = value
     return output_dict
+
+def parse_log_source(create_args: dict[str, Any]):
+    pp_pairs = create_args.get('protocol_parameters', '').split(',')
+    protocol_parameters = []
+    group_ids = create_args.get('group_ids').split(',') if create_args.get('group_ids') else []
+    wincollect_external_destination_ids = (
+        create_args.get('wincollect_external_destination_ids').split(',') if create_args.get('group_ids')
+        else []
+    )
+    for pair in pp_pairs:
+        # Split the pair into name and value using '=' as delimiter
+        name, value = pair.split('=')
+        # Add the pair to the dictionary
+        protocol_parameters.append({'name': name.strip(), 'value': value.strip()})
+    return convert_to_actual_values_recursive({
+        **create_args,
+        'protocol_parameters': protocol_parameters,
+        'group_ids': group_ids,
+        'wincollect_external_destination_ids': wincollect_external_destination_ids
+        })
+
+def parse_partial_log_source(update_args: dict[str, Any]):
+    protocol_parameters = update_args.get('protocol_parameters').split(',') if update_args.get('protocol_parameters') else []
+    group_ids = update_args.get('group_ids').split(',') if update_args.get('group_ids') else None
+    wincollect_external_destination_ids = (
+        update_args.get('wincollect_external_destination_ids').split(',') if update_args.get('group_ids')
+        else None
+    )
+    if protocol_parameters:
+        for pair in protocol_parameters:
+            # Split the pair into name and value using '=' as delimiter
+            name, value = pair.split('=')
+            # Add the pair to the dictionary
+            protocol_parameters.append({'name': name.strip(), 'value': value.strip()})
+    log_source_str = {**update_args}
+    if protocol_parameters:
+        log_source_str['protocol_parameters'] = protocol_parameters
+    if group_ids:
+        log_source_str['group_ids'] = group_ids
+    if wincollect_external_destination_ids:
+        log_source_str['wincollect_external_destination_ids'] = wincollect_external_destination_ids
+    return convert_to_actual_values_recursive(log_source_str)
 
 def get_offense_enrichment(enrichment: str) -> tuple[bool, bool]:
     """
@@ -2544,8 +2603,8 @@ def qradar_closing_reasons_list_command(client: Client, args: dict) -> CommandRe
     # if this call fails, raise an error and stop command execution
     response = client.closing_reasons_list(closing_reason_id, include_reserved, include_deleted, range_, filter_,
                                            fields)
-    outputs = sanitize_outputs(response, CLOSING_REASONS_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Name'], set(CLOSING_REASONS_OLD_NEW_MAP.values()))
+    outputs = sanitize_outputs(response, CLOSING_REASONS_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name'], set(CLOSING_REASONS_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Closing Reasons', outputs, headers=headers, removeNull=True),
@@ -2584,8 +2643,8 @@ def qradar_offense_notes_list_command(client: Client, args: dict) -> CommandResu
 
     # if this call fails, raise an error and stop command execution
     response = client.offense_notes_list(offense_id, range_, note_id, filter_, fields)
-    outputs = sanitize_outputs(response, NOTES_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Text', 'CreatedBy', 'CreateTime'], set(NOTES_OLD_NEW_MAP.values()))
+    outputs = sanitize_outputs(response, NOTES_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Text', 'CreatedBy', 'CreateTime'], set(NOTES_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Offense Notes List For Offense ID {offense_id}', outputs, headers,
@@ -2620,8 +2679,8 @@ def qradar_offense_notes_create_command(client: Client, args: dict) -> CommandRe
 
     # if this call fails, raise an error and stop command execution
     response = client.offense_notes_create(offense_id, note_text, fields)
-    outputs = sanitize_outputs(response, NOTES_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Text', 'CreatedBy', 'CreateTime'], set(NOTES_OLD_NEW_MAP.values()))
+    outputs = sanitize_outputs(response, NOTES_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Text', 'CreatedBy', 'CreateTime'], set(NOTES_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Create Note', outputs, headers, removeNull=True),
@@ -2663,8 +2722,8 @@ def qradar_rules_list_command(client: Client, args: dict) -> CommandResults:
 
     # if this call fails, raise an error and stop command execution
     response = client.rules_list(rule_id, range_, filter_, fields)
-    outputs = sanitize_outputs(response, RULES_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Name', 'Type'], set(RULES_OLD_NEW_MAP.values()))
+    outputs = sanitize_outputs(response, RULES_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name', 'Type'], set(RULES_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Rules List', outputs, headers=headers, removeNull=True),
@@ -2701,8 +2760,8 @@ def qradar_rule_groups_list_command(client: Client, args: dict) -> CommandResult
 
     # if this call fails, raise an error and stop command execution
     response = client.rule_groups_list(range_, rule_group_id, filter_, fields)
-    outputs = sanitize_outputs(response, RULES_GROUP_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Name', 'Description', 'Owner'], set(RULES_GROUP_OLD_NEW_MAP.values()))
+    outputs = sanitize_outputs(response, RULES_GROUP_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name', 'Description', 'Owner'], set(RULES_GROUP_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Rules Group List', outputs, headers, removeNull=True),
@@ -2753,7 +2812,7 @@ def qradar_assets_list_command(client: Client, args: dict) -> CommandResults:
         output['Asset']['hostnames'] = add_iso_entries_to_dict(output.get('Asset', {}).get('hostnames', []))
         output['Asset']['users'] = add_iso_entries_to_dict(output.get('Asset', {}).get('users', []))
         output['Asset']['products'] = add_iso_entries_to_dict(output.get('Asset', {}).get('products', []))
-        output['Asset'] = sanitize_outputs(output.get('Asset'), ASSET_OLD_NEW_MAP)[0]
+        output['Asset'] = sanitize_outputs(output.get('Asset'), ASSET_RAW_FORMATTED)[0]
         assets_hr.append(output['Asset'])
         assets_results[f'''QRadar.Asset(val.ID === "{output['Asset']['ID']}")'''] = output['Asset']
         sanitized_endpoint = remove_empty_elements(output.get('Endpoint', {}))
@@ -2800,8 +2859,8 @@ def qradar_saved_searches_list_command(client: Client, args: dict) -> CommandRes
 
     # if this call fails, raise an error and stop command execution
     response = client.saved_searches_list(range_, timeout, saved_search_id, filter_, fields)
-    outputs = sanitize_outputs(response, SAVED_SEARCH_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Name', 'Description'], set(SAVED_SEARCH_OLD_NEW_MAP.values()))
+    outputs = sanitize_outputs(response, SAVED_SEARCH_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name', 'Description'], set(SAVED_SEARCH_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Saved Searches List', outputs, headers, removeNull=True),
@@ -2890,7 +2949,7 @@ def qradar_search_create_command(client: Client, params: dict, args: dict) -> Co
         if response == QueryStatus.ERROR.value:
             raise DemistoException(f'Could not create events search for offense_id: {offense_id}.')
 
-    outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
+    outputs = sanitize_outputs(response, SEARCH_RAW_FORMATTED)
     return CommandResults(
         readable_output=tableToMarkdown('Create Search', outputs),
         outputs_prefix='QRadar.Search',
@@ -2916,7 +2975,7 @@ def qradar_search_status_get_command(client: Client, args: dict) -> CommandResul
 
     # if this call fails, raise an error and stop command execution
     response = client.search_status_get(search_id)
-    outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
+    outputs = sanitize_outputs(response, SEARCH_RAW_FORMATTED)
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Search Status For Search ID {search_id}', outputs),
@@ -2995,13 +3054,13 @@ def qradar_reference_sets_list_command(client: Client, args: dict) -> CommandRes
         if convert_date_value and outputs.get('element_type') == 'DATE':
             for data_entry in outputs.get('data', []):
                 data_entry['value'] = get_time_parameter(data_entry.get('value'), iso_format=True)
-        outputs['data'] = sanitize_outputs(outputs.get('data', []), REFERENCE_SET_DATA_OLD_NEW_MAP)
+        outputs['data'] = sanitize_outputs(outputs.get('data', []), REFERENCE_SET_DATA_RAW_FORMATTED)
     else:
         outputs = response
 
-    final_outputs = sanitize_outputs(outputs, REFERENCE_SETS_OLD_NEW_MAP)
+    final_outputs = sanitize_outputs(outputs, REFERENCE_SETS_RAW_FORMATTED)
     headers = build_headers(['Name', 'ElementType', 'Data', 'TimeToLive', 'TimeoutType'],
-                            set(REFERENCE_SETS_OLD_NEW_MAP.values()))
+                            set(REFERENCE_SETS_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Reference Sets List', final_outputs, headers, removeNull=True),
@@ -3041,9 +3100,9 @@ def qradar_reference_set_create_command(client: Client, args: dict) -> CommandRe
 
     # if this call fails, raise an error and stop command execution
     response = client.reference_set_create(ref_name, element_type, timeout_type, time_to_live, fields)
-    outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
+    outputs = sanitize_outputs(response, REFERENCE_SETS_RAW_FORMATTED)
     headers = build_headers(['Name', 'ElementType', 'Data', 'TimeToLive', 'TimeoutType'],
-                            set(REFERENCE_SETS_OLD_NEW_MAP.values()))
+                            set(REFERENCE_SETS_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Reference Set Create', outputs, headers, removeNull=True),
@@ -3179,7 +3238,7 @@ def qradar_domains_list_command(client: Client, args: dict) -> CommandResults:
 
     # if this call fails, raise an error and stop command execution
     response = client.domains_list(domain_id, range_, filter_, fields)
-    outputs = sanitize_outputs(response, DOMAIN_OLD_NEW_MAP)
+    outputs = sanitize_outputs(response, DOMAIN_RAW_FORMATTED)
 
     return CommandResults(
         readable_output=tableToMarkdown('Domains List', outputs, removeNull=True),
@@ -3324,10 +3383,9 @@ def qradar_log_sources_list_command(client: Client, args: dict) -> CommandResult
     id = args.get('id')
     
     # if this call fails, raise an error and stop command execution
-    response = client.get_resource_list(range_, endpoint, filter_, fields, additional_headers) if id is None \
-        else [client.get_resource(id, endpoint, fields, additional_headers)]
-    outputs = sanitize_outputs(response, LOG_SOURCES_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Name', 'Description'], set(LOG_SOURCES_OLD_NEW_MAP.values()))
+    response = client.get_resource(id, range_, endpoint, filter_, fields, additional_headers)
+    outputs = sanitize_outputs(response, LOG_SOURCES_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name', 'Description'], set(LOG_SOURCES_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Log Sources List', outputs, headers, removeNull=True),
@@ -3426,7 +3484,7 @@ def qradar_ips_source_get_command(client: Client, args: dict[str, Any]) -> Comma
         (CommandResults).
     """
     response = perform_ips_command_request(client, args, is_destination_addresses=False)
-    outputs = sanitize_outputs(response, SOURCE_IPS_OLD_NEW_MAP)
+    outputs = sanitize_outputs(response, SOURCE_IPS_RAW_FORMATTED)
 
     return CommandResults(
         readable_output=tableToMarkdown('Source IPs', outputs),
@@ -3448,7 +3506,7 @@ def qradar_ips_local_destination_get_command(client: Client, args: dict[str, Any
         (CommandResults).
     """
     response = perform_ips_command_request(client, args, is_destination_addresses=True)
-    outputs = sanitize_outputs(response, LOCAL_DESTINATION_IPS_OLD_NEW_MAP)
+    outputs = sanitize_outputs(response, LOCAL_DESTINATION_IPS_RAW_FORMATTED)
 
     return CommandResults(
         readable_output=tableToMarkdown('Local Destination IPs', outputs),
@@ -4277,17 +4335,15 @@ def qradar_event_collectors_list_command(client: Client, args: dict) -> CommandR
     Returns:
         CommandResults.
     """
-    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
     filter_ = args.get('filter')
     fields = args.get('fields')
     id = args.get('id')
     
     # if this call fails, raise an error and stop command execution
-    response = (
-        client.get_resource_list(range_, '/config/event_sources/event_collectors', filter_, fields) if id is None
-        else client.get_resource(id, '/config/event_sources/event_collectors', fields))
-    outputs = sanitize_outputs(response, EVENT_COLLECTOR_OLD_NEW_MAP)
-    headers = build_headers(['ID'], set(EVENT_COLLECTOR_OLD_NEW_MAP.values()))
+    response = client.get_resource(id, range_, '/config/event_sources/event_collectors', filter_, fields)
+    outputs = sanitize_outputs(response, EVENT_COLLECTOR_RAW_FORMATTED)
+    headers = build_headers(['ID'], set(EVENT_COLLECTOR_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Event Collectors List', outputs, headers, removeNull=True),
@@ -4316,18 +4372,16 @@ def qradar_wincollect_destinations_list_command(client: Client, args: dict) -> C
     Returns:
         CommandResults.
     """
-    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
     filter_ = args.get('filter')
     fields = args.get('fields')
     endpoint = '/config/event_sources/wincollect/wincollect_destinations'
     id = args.get('id')
     
     # if this call fails, raise an error and stop command execution
-    response =(
-        client.get_resource_list(range_, endpoint, filter_, fields) if id is None
-        else [client.get_resource(id, endpoint, fields)])
-    outputs = sanitize_outputs(response, WINCOLLECT_DESTINATION_OLD_NEW_MAP)
-    headers = build_headers(['ID'], set(WINCOLLECT_DESTINATION_OLD_NEW_MAP.values()))
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, WINCOLLECT_DESTINATION_RAW_FORMATTED)
+    headers = build_headers(['ID'], set(WINCOLLECT_DESTINATION_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('WinCollect Destinations List', outputs, headers, removeNull=True),
@@ -4356,18 +4410,16 @@ def qradar_disconnected_log_collectors_list_command(client: Client, args: dict) 
     Returns:
         CommandResults.
     """
-    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
     filter_ = args.get('filter')
     fields = args.get('fields')
     endpoint = '/config/event_sources/disconnected_log_collectors'
     id = args.get('id')
     
     # if this call fails, raise an error and stop command execution
-    response =(
-        client.get_resource_list(range_, endpoint, filter_, fields) if id is None
-        else [client.get_resource(id, endpoint, fields)])
-    outputs = sanitize_outputs(response, DISCONNECTED_LOG_COLLECTOR_OLD_NEW_MAP)
-    headers = build_headers(['ID'], set(DISCONNECTED_LOG_COLLECTOR_OLD_NEW_MAP.values()))
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, DISCONNECTED_LOG_COLLECTOR_RAW_FORMATTED)
+    headers = build_headers(['ID'], set(DISCONNECTED_LOG_COLLECTOR_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Disconnected Log Collectors List', outputs, headers, removeNull=True),
@@ -4396,17 +4448,15 @@ def qradar_log_source_types_list_command(client: Client, args: dict) -> CommandR
     Returns:
         CommandResults.
     """
-    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
     filter_ = args.get('filter')
     fields = args.get('fields')
     endpoint = '/config/event_sources/log_source_management/log_source_types'
     id = args.get('id')
     
     # if this call fails, raise an error and stop command execution
-    response =(
-        client.get_resource_list(range_, endpoint, filter_, fields) if id is None
-        else [client.get_resource(id, endpoint, fields)])
-    outputs = sanitize_outputs(response, LOG_SOURCE_TYPES_OLD_NEW_MAP)
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, LOG_SOURCE_TYPES_RAW_FORMATTED)
     headers = build_headers(['ID', 'Name', 'Custom', 'Version', 'UUID', 'SupportedLanguageIDs'], set())
 
     return CommandResults(
@@ -4436,16 +4486,14 @@ def qradar_log_source_protocol_types_list_command(client: Client, args: dict) ->
     Returns:
         CommandResults.
     """
-    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
     filter_ = args.get('filter')
     fields = args.get('fields')
     endpoint = '/config/event_sources/log_source_management/protocol_types'
     id = args.get('id')
     # if this call fails, raise an error and stop command execution
-    response =(
-        client.get_resource_list(range_, endpoint, filter_, fields) if id is None
-        else [client.get_resource(id, endpoint, fields)])
-    outputs = sanitize_outputs(response, LOG_SOURCE_PROTOCOL_TYPE_OLD_NEW_MAP)
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, LOG_SOURCE_PROTOCOL_TYPE_RAW_FORMATTED)
     headers = ['ID', 'Name', 'CanCollectEvents', 'Testable', 'CanAcceptSampleEvents']
     readable_outputs = ([{
         **protocol_type,
@@ -4481,17 +4529,15 @@ def qradar_log_source_extensions_list_command(client: Client, args: dict) -> Com
     Returns:
         CommandResults.
     """
-    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
     filter_ = args.get('filter')
     fields = args.get('fields')
     endpoint = '/config/event_sources/log_source_management/log_source_extensions'
     id = args.get('id')
     
     # if this call fails, raise an error and stop command execution
-    response =(
-        client.get_resource_list(range_, endpoint, filter_, fields) if id is None
-        else [client.get_resource(id, endpoint, fields)])
-    outputs = sanitize_outputs(response, LOG_SOURCE_EXTENSION_OLD_NEW_MAP)
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, LOG_SOURCE_EXTENSION_RAW_FORMATTED)
     headers = build_headers(['ID', 'Name', 'Description', 'UUID'], set())
 
     return CommandResults(
@@ -4521,17 +4567,15 @@ def qradar_log_source_languages_list_command(client: Client, args: dict) -> Comm
     Returns:
         CommandResults.
     """
-    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
     filter_ = args.get('filter')
     fields = args.get('fields')
     endpoint = '/config/event_sources/log_source_management/log_source_languages'
     id = args.get('id')
     
     # if this call fails, raise an error and stop command execution
-    response =(
-        client.get_resource_list(range_, endpoint, filter_, fields) if id is None
-        else [client.get_resource(id, endpoint, fields)])
-    outputs = sanitize_outputs(response, LOG_SOURCE_LANGUAGE_OLD_NEW_MAP)
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, LOG_SOURCE_LANGUAGE_RAW_FORMATTED)
     headers = build_headers(['ID', 'Name'], set())
 
     return CommandResults(
@@ -4561,18 +4605,16 @@ def qradar_log_source_groups_list_command(client: Client, args: dict) -> Command
     Returns:
         CommandResults.
     """
-    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
     filter_ = args.get('filter')
     fields = args.get('fields')
     endpoint = '/config/event_sources/log_source_management/log_source_groups'
     id = args.get('id')
     
     # if this call fails, raise an error and stop command execution
-    response =(
-        client.get_resource_list(range_, endpoint, filter_, fields) if id is None
-        else [client.get_resource(id, endpoint, fields)])
-    outputs = sanitize_outputs(response, LOG_SOURCE_GROUP_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Name'], set(LOG_SOURCE_GROUP_OLD_NEW_MAP.values()))
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, LOG_SOURCE_GROUP_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name'], set(LOG_SOURCE_GROUP_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Log Source Groups List', outputs, headers, removeNull=True),
@@ -4657,27 +4699,10 @@ def qradar_log_source_create_command(client: Client, args: dict) -> CommandResul
       The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to
       feed other log sources. It acts as a "gateway" for events from multiple systems to enter the event pipeline.
     """
-    pp_pairs = args.get('protocol_parameters', '').split(',')
-    protocol_parameters = []
-    group_ids = args.get('group_ids').split(',') if args.get('group_ids') else []
-    wincollect_external_destination_ids = (
-        args.get('wincollect_external_destination_ids').split(',') if args.get('group_ids')
-        else []
-    )
-    for pair in pp_pairs:
-        # Split the pair into name and value using '=' as delimiter
-        name, value = pair.split('=')
-        # Add the pair to the dictionary
-        protocol_parameters.append({'name': name.strip(), 'value': value.strip()})
-    log_source = convert_to_actual_values_recursive({
-        **args,
-        'protocol_parameters': protocol_parameters,
-        'group_ids': group_ids,
-        'wincollect_external_destination_ids': wincollect_external_destination_ids
-        })
+    log_source = parse_log_source(args)
     response = client.create_log_source(log_source)
-    outputs = sanitize_outputs(response, LOG_SOURCES_OLD_NEW_MAP)[0]
-    headers = build_headers(['ID', 'Name', 'Description'], set(LOG_SOURCES_OLD_NEW_MAP.values()))
+    outputs = sanitize_outputs(response, LOG_SOURCES_RAW_FORMATTED)[0]
+    headers = build_headers(['ID', 'Name', 'Description'], set(LOG_SOURCES_RAW_FORMATTED.values()))
     readable_outputs = {
         'ID': outputs['ID'],
         'Name': outputs['Name'],
@@ -4740,29 +4765,9 @@ def qradar_log_source_update_command(client: Client, args: dict) -> CommandResul
       feed other log sources. It acts as a "gateway" for events from multiple systems to enter the event pipeline.
     """
     id = args.get('id')
-    pp_pairs = args.get('protocol_parameters').split(',') if args.get('protocol_parameters') else None
-    protocol_parameters = []
-    group_ids = args.get('group_ids').split(',') if args.get('group_ids') else None
-    wincollect_external_destination_ids = (
-        args.get('wincollect_external_destination_ids').split(',') if args.get('group_ids')
-        else None
-    )
-    if pp_pairs:
-        for pair in pp_pairs:
-            # Split the pair into name and value using '=' as delimiter
-            name, value = pair.split('=')
-            # Add the pair to the dictionary
-            protocol_parameters.append({'name': name.strip(), 'value': value.strip()})
-    log_source_str = {**args}
-    if pp_pairs:
-        log_source_str['protocol_parameters'] = protocol_parameters
-    if group_ids:
-        log_source_str['group_ids'] = group_ids
-    if wincollect_external_destination_ids:
-        log_source_str['wincollect_external_destination_ids'] = wincollect_external_destination_ids
-    log_source = convert_to_actual_values_recursive(log_source_str)
+    log_source = parse_partial_log_source(args)
     client.update_log_source(log_source)
-    return CommandResults(readable_output=f'Log source  {id} was updated successfully')
+    return CommandResults(readable_output=f'Log source {id} was updated successfully')
 
 def migrate_integration_ctx(ctx: dict) -> dict:
     """Migrates the old context to the current context
