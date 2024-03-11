@@ -726,12 +726,12 @@ def main():
                     )
 
             link = build_link_to_message(response)
-            logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
+            logging.info(f'Successfully sent Slack message to channel {channel} link: {link}')
         except Exception:
             if strtobool(options.allow_failure):
-                logging.warning(f'Failed to send Slack message to channel {computed_slack_channel} not failing build')
+                logging.warning(f'Failed to send Slack message to channel {channel} not failing build')
             else:
-                logging.exception(f'Failed to send Slack message to channel {computed_slack_channel}')
+                logging.exception(f'Failed to send Slack message to channel {channel}')
                 sys.exit(1)
 
 
