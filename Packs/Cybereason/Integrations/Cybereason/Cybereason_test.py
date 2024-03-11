@@ -299,6 +299,31 @@ def test_query_malop_management_command(mocker):
     assert command_output.outputs[0]['GUID'] == 'AAAA0w7GERjl3oae'
 
 
+def test_cybereason_process_attack_tree_command(mocker):
+    from Cybereason import cybereason_process_attack_tree_command, Client
+    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
+    client = Client(
+        base_url="https://test.server.com:8888",
+        verify=False,
+        headers=HEADERS,
+        proxy=True)
+    args = {
+        "processGuid": "HobXaEWU0CZ6S6LC"
+    }
+    url = "https://test.server.com:8888/#/processTree?guid=HobXaEWU0CZ6S6LC&viewedGuids=HobXaEWU0CZ6S6LC&rootType=Process"
+    test_reponse = [
+        {
+            'ProcessID': "HobXaEWU0CZ6S6LC",
+            'URL': url,
+        }
+    ]
+
+    mocker.patch('Cybereason.Client.cybereason_api_call', return_value=test_reponse)
+    mocker.patch('Cybereason.SERVER', new='https://test.server.com:8888')
+    command_output = cybereason_process_attack_tree_command(client, args)
+    assert command_output.outputs[0] == test_reponse[0]
+
+
 def test_update_malop_status_command(mocker):
     from Cybereason import update_malop_status_command
     from Cybereason import Client
