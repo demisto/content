@@ -149,7 +149,7 @@ def machines_saas_and_xsiam(failed_jobs):
                 failed_jobs,
                 ["xsoar_ng_server_ga"],
                 ["xsoar-test_playbooks_results"],
-                f"XSOAR SAAS: {xsoar_machine[0]}",
+                f"XSOAR SAAS:ֿ\n{xsoar_machine[0]}",
             )
         )
 
@@ -161,7 +161,7 @@ def machines_saas_and_xsiam(failed_jobs):
                 failed_jobs,
                 ["xsiam_server_ga"],
                 ["xsiam-test_playbooks_results", "xsiam-test_modeling_rule_results"],
-                f"XSIAM: {xsiam_machine[0]}",
+                f"XSIAM:\n{xsiam_machine[0]}",
             )
         )
 
@@ -592,6 +592,13 @@ def build_link_to_message(response: SlackResponse) -> str:
     return ""
 
 
+def channels_to_send_msg(computed_slack_channel):
+    if computed_slack_channel in ("dmst-build", CONTENT_CHANNEL):
+        return (computed_slack_channel,)
+    else:
+        return (CONTENT_CHANNEL, computed_slack_channel)
+
+
 def main():
     install_logging('Slack_Notifier.log')
     options = options_handler()
@@ -696,36 +703,36 @@ def main():
         with open(output_file, 'w') as f:
             f.write(json.dumps(slack_msg_data, indent=4, sort_keys=True, default=str))
         logging.info(f'Successfully wrote Slack message to {output_file}')
-
-    try:
-        response = slack_client.chat_postMessage(
-            channel=CONTENT_CHANNEL, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
-        )
-        if threaded_messages_for_machines:
-            data: dict = response.data  # type: ignore[assignment]
-            thread_ts: str = data['ts']
-            slack_client.chat_postMessage(
-                    channel=CONTENT_CHANNEL, attachments=threaded_messages_for_machines, username=SLACK_USERNAME,
-                    thread_ts=thread_ts
-                )
-
-        if threaded_messages:
-            data = response.data  # type: ignore[assignment]
-            thread_ts = data['ts']
-            for slack_msg in threaded_messages:
+    for channel in channels_to_send_msg(computed_slack_channel):
+        try:
+            response = slack_client.chat_postMessage(
+                channel=channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
+            )
+            if threaded_messages_for_machines:
+                data: dict = response.data  # type: ignore[assignment]
+                thread_ts: str = data['ts']
                 slack_client.chat_postMessage(
-                    channel=CONTENT_CHANNEL, attachments=[slack_msg], username=SLACK_USERNAME,
-                    thread_ts=thread_ts
-                )
+                        channel=channel, attachments=threaded_messages_for_machines, username=SLACK_USERNAME,
+                        thread_ts=thread_ts
+                    )
 
-        link = build_link_to_message(response)
-        logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
-    except Exception:
-        if strtobool(options.allow_failure):
-            logging.warning(f'Failed to send Slack message to channel {computed_slack_channel} not failing build')
-        else:
-            logging.exception(f'Failed to send Slack message to channel {computed_slack_channel}')
-            sys.exit(1)
+            if threaded_messages:  # upload process
+                data = response.data  # type: ignore[assignment]
+                thread_ts = data['ts']
+                for slack_msg in threaded_messages:
+                    slack_client.chat_postMessage(
+                        channel=channel, attachments=[slack_msg], username=SLACK_USERNAME,
+                        thread_ts=thread_ts
+                    )
+
+            link = build_link_to_message(response)
+            logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
+        except Exception:
+            if strtobool(options.allow_failure):
+                logging.warning(f'Failed to send Slack message to channel {computed_slack_channel} not failing build')
+            else:
+                logging.exception(f'Failed to send Slack message to channel {computed_slack_channel}')
+                sys.exit(1)
 
 
 if __name__ == '__main__':
