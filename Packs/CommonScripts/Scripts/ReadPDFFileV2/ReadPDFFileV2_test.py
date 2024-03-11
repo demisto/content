@@ -54,10 +54,10 @@ def test_hash_contexts_in_return_results():
 
 
 UNESCAPE_CASES = [
-    (False, set(['http://example.com/abc&#34;&#160;xmlns:xsi=&#34;http://example.com/abc&#34;&#160;',
+    (False, {'http://example.com/abc&#34;&#160;xmlns:xsi=&#34;http://example.com/abc&#34;&#160;',
              'http://www.w3.org/1999/xhtml',
-             'http://example.com/abc&#160;http://example.com/abc/v1.2/1_2.xsd&#34;&gt;&#160;'])),
-    (True, set(['http://www.w3.org/1999/xhtml', 'http://example.com/abc/v1.2/1_2.xsd', 'http://example.com/abc']))
+             'http://example.com/abc&#160;http://example.com/abc/v1.2/1_2.xsd&#34;&gt;&#160;'}),
+    (True, {'http://www.w3.org/1999/xhtml', 'http://example.com/abc/v1.2/1_2.xsd', 'http://example.com/abc'})
 ]
 
 
