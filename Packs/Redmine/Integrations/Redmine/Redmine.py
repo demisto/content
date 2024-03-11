@@ -127,7 +127,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def check_include_validity(include_arg, include_options):
+def check_include_validity(included_args, include_options):
     """Checks if all include string is valid- all arguments are from predefined options
 
     Args:
@@ -137,8 +137,8 @@ def check_include_validity(include_arg, include_options):
     Raises:
         Raises a demisto error if one or more from the include are not given in the predefined options.
     """
-    included_values = argToList(include_arg)
-    invalid_values = [value for value in included_values if value not in include_options]
+    included_args = argToList(included_args)
+    invalid_values = set(included_args) - set(include_options) if included_args else set()
     if invalid_values:
         raise DemistoException(f"The 'include' argument should only contain values from {include_options}, separated by commas. "
                                f"These values are not in options {invalid_values}.")
@@ -589,10 +589,7 @@ def get_users_command(client: Client, args: dict[str, Any]):
             args['status'] = USER_STATUS_DICT[status_string]
         except Exception:
             raise DemistoException("Invalid status value- please use the predefined options only.")
-    try:
         response = client.get_users_request(args)
-    except Exception as e:
-        raise DemistoException(f"Error in request to API. Error: {e}.")
     try:
         users_response = response['users']
     except Exception:
