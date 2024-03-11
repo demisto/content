@@ -10,7 +10,7 @@ from ProofpointProtectionServerV2 import (Client, delete_message,
                                           download_message, forward_message,
                                           list_quarantined_messages,
                                           move_message, release_message,
-                                          resubmit_message, smart_search, test_module)
+                                          resubmit_message, smart_search)
 
 SERVER_URL = "https://server:10000"
 
@@ -248,6 +248,8 @@ def test_test_module_without_health_check(requests_mock, client):
     Then:
         - Ensure there is only one http call being made
     """
+    from ProofpointProtectionServerV2 import test_module
+
     args = {
         'subject': 'Test'
     }
