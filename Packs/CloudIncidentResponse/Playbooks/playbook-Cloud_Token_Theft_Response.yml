@@ -1761,7 +1761,7 @@ inputs:
             value:
               simple: ','
   required: false
-  description: A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas.
+  description: A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in a CIDR notation.
   playbookInputQuery:
 - key: ResolveIP
   value:
