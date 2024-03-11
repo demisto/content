@@ -1648,30 +1648,28 @@ tasks:
     task:
       id: 3ba84f9e-aaf6-4bd3-8d22-cfc00499e075
       version: -1
-      name: Should continue with the playbook's investigation and response?
+      name: Whether to continue with the investigation and response?
       description: Checks if the playbook should continue or exit.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "20"
-      "yes":
       - "87"
+      "yes":
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: inList
+      - - operator: isExists
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
-                accessor: name
+                root: AlertHandleFlag
             iscontext: true
           right:
-            value:
-              simple: Unusual allocation of multiple cloud compute resources
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1981,9 +1979,7 @@ view: |-
       "44_46_yes": 0.41,
       "52_11_#default#": 0.43,
       "52_53_yes": 0.63,
-      "53_11_#default#": 0.31,
-      "79_20_#default#": 0.35,
-      "79_87_yes": 0.89
+      "53_11_#default#": 0.31
     },
     "paper": {
       "dimensions": {
