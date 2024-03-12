@@ -50,8 +50,8 @@ class GithubClient():
                 f"Trigger Contribution build script failed with request status code: {response.status_code}")
             sys.exit(1)
 
-    def delete_trigger_build_label(self, pr: dict):
-        issue_number = pr.get("number")
+    def delete_trigger_build_label_from_pr(self, pr: dict):
+        issue_number = str(pr.get("number"))
         response = requests.delete(
             GITHUB_DELETE_LABEL_ENDPOINT.format(
                 owner=OWNER,
@@ -100,9 +100,10 @@ def main():
     response = github_client.collect_contribution_prs_for_build()
 
     if items := response.get('items'):
-        for pr in items:
-            gitlab_client.trigger_build_for_contribution(pr)
-            github_client.delete_trigger_build_label(pr)
+        # for pr in items:
+            # gitlab_client.trigger_build_for_contribution(pr)
+            # github_client.delete_trigger_build_label_from_pr(pr)
+        github_client.delete_trigger_build_label_from_pr(pr={"number": 33308, 'title': 'Test PR'})
     else:
         return
 

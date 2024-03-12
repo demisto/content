@@ -17,6 +17,4 @@ trigger-contribution-build:
     BASE_BRANCH: $BASE_BRANCH
     CONTRIB_BRANCH: $CONTRIB_BRANCH
   script:
-    - section_start "Trigger contribution build" --collapsed
     - python3 ./Utils/trigger_private_build.py --github-token "${GITHUB_TOKEN}" --gitlab-api-token "${GITLAB_API_TOKEN}"
-    - section_end "Trigger contribution build"
