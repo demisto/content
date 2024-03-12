@@ -84,7 +84,8 @@ class Client(BaseClient):
                                       empty_valid_codes=[204], return_empty_response=True)
         return response
 
-    def get_issues_list_request(self, project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, exclude_subproject, args: dict[str, Any]):
+    def get_issues_list_request(self, project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, exclude_subproject,
+                                args: dict[str, Any]):
         if exclude_subproject and args.get('subproject_id', None):
             raise DemistoException("Specify only one of the following, subproject_id or exclude.")
         elif exclude_subproject:
@@ -107,7 +108,8 @@ class Client(BaseClient):
     def add_issue_watcher_request(self, issue_id, watcher_id):
         args_to_add = {'user_id': watcher_id}
         response = self._http_request('POST', f'/issues/{issue_id}/watchers.json', params=args_to_add,
-                                      headers=self._post_put_header, empty_valid_codes=[200, 204, 201], return_empty_response=True)
+                                      headers=self._post_put_header, empty_valid_codes=[200, 204, 201],
+                                      return_empty_response=True)
         return response
 
     def remove_issue_watcher_request(self, issue_id, watcher_id):
@@ -259,7 +261,7 @@ def handle_file_attachment(client: Client, args: Dict[str, Any]):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> None:
+def test_module(client: Client):
     message: str = ''
     try:
         if (get_users_command(client, {})):
@@ -374,7 +376,8 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
     project_id = args.pop('project_id', client._project_id)
     exclude_sub_project = args.pop('exclude', None)
     try:
-        response = client.get_issues_list_request(project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, exclude_sub_project, args)
+        response = client.get_issues_list_request(project_id, tracker_id, status_id,
+                                                  offset_to_dict, limit_to_dict, exclude_sub_project, args)
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
             raise DemistoException(INVALID_ID_DEMISTO_ERROR)
@@ -407,10 +410,14 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
                                                       headerTransform=map_header,
                                                       is_auto_json_transform=True,
                                                       json_transform_mapping={
-                                                          "tracker": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                          "status": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                          "priority": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                          "author": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                                          "tracker": JsonTransformer(keys=['name'],
+                                                                                     func=lambda hdr: hdr.get('name', '')),
+                                                          "status": JsonTransformer(keys=['name'],
+                                                                                    func=lambda hdr: hdr.get('name', '')),
+                                                          "priority": JsonTransformer(keys=['name'],
+                                                                                      func=lambda hdr: hdr.get('name', '')),
+                                                          "author": JsonTransformer(keys=['name'],
+                                                                                    func=lambda hdr: hdr.get('name', '')),
                                                           "custom_fields": JsonTransformer(keys=["name", "value"]),
                                                       }
                                                       )
@@ -455,14 +462,23 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                                                                          headerTransform=underscoreToCamelCase,
                                                                          is_auto_json_transform=True,
                                                                          json_transform_mapping={
-                                                                             "tracker": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                                             "project": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                                             "status": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                                             "priority": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                                             "author": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                                                             "custom_fields": JsonTransformer(keys=["name", "value"]),
+                                                                             "tracker": JsonTransformer(keys=['name'],
+                                                                                                        func=lambda hdr: hdr.get('name', '')),
+                                                                             "project": JsonTransformer(keys=['name'],
+                                                                                                        func=lambda hdr: hdr.get('name', '')),
+                                                                             "status": JsonTransformer(keys=['name'],
+                                                                                                       func=lambda hdr: hdr.get('name', '')),
+                                                                             "priority": JsonTransformer(keys=['name'],
+                                                                                                         func=lambda hdr: hdr.get('name', '')),
+                                                                             "author": JsonTransformer(keys=['name'],
+                                                                                                       func=lambda hdr: hdr.get('name', '')),
+                                                                             "custom_fields":
+                                                                                 JsonTransformer(keys=["name", "value"]),
                                                                              "watchers": JsonTransformer(keys=["name"]),
-                                                                             "attachments": JsonTransformer(keys=["filename", "content_url", "content_type", "description"]),
+                                                                             "attachments":
+                                                                                 JsonTransformer(keys=["filename", "content_url",
+                                                                                                       "content_type", "description"]
+                                                                                                 ),
                                                                          }))
         return command_results
     except Exception as e:

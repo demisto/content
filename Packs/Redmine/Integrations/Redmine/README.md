@@ -1,5 +1,5 @@
 A project management and issue tracking system that provides a web-based platform for managing projects, tracking tasks, and handling various types of project-related activities. 
-This integration was integrated and tested with version xx of Redmine.
+This integration was integrated and tested with version 5.1.2 of Redmine.
 
 ## Configure Redmine on Cortex XSOAR
 
@@ -700,8 +700,8 @@ There are no input arguments for this command.
                 "id": "6",
                 "last_login_on": "2024-02-29T10:55:25Z",
                 "lastname": "Test",
-                "login": "demistoadmin",
-                "mail": "demistoadmin@redmine-test.local",
+                "login": "demiadmin",
+                "mail": "demiadmin@redmine-test.local",
                 "passwd_changed_on": "2024-02-29T10:27:31Z",
                 "twofa_scheme": null,
                 "updated_on": "2024-02-29T10:27:31Z"
@@ -730,6 +730,6 @@ There are no input arguments for this command.
 >|ID|Login|Admin|First Name|Last Name|Email|Created On|Last Login On|
 >|---|---|---|---|---|---|---|---|
 >| 5 | admin | True | admin | tests | admin@redmine-test.local | 2024-02-28T19:47:56Z | 2024-02-29T10:25:08Z |
->| 6 | demistoadmin | True | Integration | Test | demistoadmin@redmine-test.local | 2024-02-29T10:27:31Z | 2024-02-29T10:55:25Z |
+>| 6 | demiadmin | True | Integration | Test | demiadmin@redmine-test.local | 2024-02-29T10:27:31Z | 2024-02-29T10:55:25Z |
 >| 1 | user | True | UserName | LastName | user@example.com | 2024-02-28T18:34:10Z | 2024-02-29T09:50:10Z |
 
