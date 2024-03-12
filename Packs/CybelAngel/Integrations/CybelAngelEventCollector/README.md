@@ -7,14 +7,14 @@ CybelAngel Event Collector collects reports from the CybelAngel platform, which 
  Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter**                                                        | **Required** |
-    |----------------------------------------------------------------------|-------------|
-    | Server URL                                                           | True        |
-    | Client ID                                                            | True        |
-    | Client Secret                                                        | True        |
-    | First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) | False       |
-    | The maximum number of events per fetch                               | True        |
-    | Trust any certificate (not secure)                                   | False       |
-    | Use system proxy settings                                            | False       |
+    |----------------------------------------------------------------------|--------------|
+    | Server URL                                                           | True         |
+    | Client ID                                                            | True         |
+    | Client Secret                                                        | True         |
+    | First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) | False        |
+    | The maximum number of events per fetch                               | True         |
+    | Trust any certificate (not secure)                                   | False        |
+    | Use system proxy settings                                            | False        |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

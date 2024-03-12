@@ -170,7 +170,7 @@ def fetch_events(client: Client, first_fetch: str, last_run: dict, max_fetch: in
         if not last_run_time:
             raise ValueError('First fetch is not valid')
     else:
-        last_run_time = dateparser.parse(last_run_time).strftime(DATE_FORMAT)
+        last_run_time = dateparser.parse(last_run_time).strftime(DATE_FORMAT)  # type: ignore[union-attr]
     now = datetime.now()
     reports = client.get_reports(start_date=last_run_time, end_date=now.strftime(DATE_FORMAT), limit=max_fetch)
     reports = dedup_fetched_events(reports, last_run_fetched_event_ids=last_run.get(LastRun.LATEST_FETCHED_REPORTS_IDS) or set())
