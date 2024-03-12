@@ -16,10 +16,9 @@ DATE_FORMAT_EVENT = "%Y-%m-%dT%H:%M:%S"
 AUDIT_TRAIL_ENDPOINT = "/WebSdk/report/AuditTrail"
 GET_EVENTS_HEADERS = [
     "Id", "Guid", "ModificationTimeStamp", "ModifiedBy", "SourceApplicationGuid", "Name", "ModifiedByAsString",
-	"SourceApplicationAsString", "Machine", "SourceApplicationType", "OldValue", "NewValue", "CustomFieldId", "CustomFieldName",
-	"CustomFieldValueType", "AuditTrailModificationType", "Type", "Description", "AuditTrailModificationSubTypes", "Value"
-	]
-
+    "SourceApplicationAsString", "Machine", "SourceApplicationType", "OldValue", "NewValue", "CustomFieldId", "CustomFieldName",
+    "CustomFieldValueType", "AuditTrailModificationType", "Type", "Description", "AuditTrailModificationSubTypes", "Value"
+]
 
 
 """ CLIENT CLASS """
@@ -164,7 +163,8 @@ def main() -> None:  # pragma: no cover
             events = fetch_events_command(
                 client, params, last_run=last_run
             )
-            last_run_time = datetime.strptime(events[-1]["ModificationTimeStamp"], "%Y-%m-%dT%H:%M:%S.%fZ").strftime(DATE_FORMAT_EVENT)
+            last_run_time = datetime.strptime(events[-1]["ModificationTimeStamp"],
+                                              "%Y-%m-%dT%H:%M:%S.%fZ").strftime(DATE_FORMAT_EVENT)
             last_run = {"start_time": last_run_time}
             demisto.setLastRun(last_run)
             demisto.debug(f"set {last_run=}")
