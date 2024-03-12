@@ -260,7 +260,8 @@ LOG_SOURCES_RAW_FORMATTED = {
     'type_id': 'TypeID',
     'last_event_time': 'LastEventTime',
     'gateway': 'Gateway',
-    'status': 'Status'
+    'status': 'Status',
+    'target_event_collector_id': 'TargetEventCollectorID'
 }
 
 USECS_ENTRIES = {'last_persisted_time',
@@ -4712,6 +4713,10 @@ def qradar_log_source_delete_command(client: Client, args: dict) -> CommandResul
             'items=0-0',
             'config/event_sources/log_source_management/log_sources',
             f'name="{name}"'
+        )
+        if not log_source_list:
+            return CommandResults(
+            readable_output=f'Log source with name {name} does not exist'
         )
         relevant_log_source = log_source_list[0]
         client.delete_log_source(relevant_log_source.get('id'))
