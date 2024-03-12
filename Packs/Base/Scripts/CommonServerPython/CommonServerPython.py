@@ -8395,7 +8395,7 @@ def censor_request_logs(request_log):
     In most cases, the sensitive value is the first word after the keyword, but in some cases, it is the second one.
     :param request_log: The request log to censor
     :type request_log: ``str``
-    
+
     :return: The censored request log
     :rtype: ``str``
     """
