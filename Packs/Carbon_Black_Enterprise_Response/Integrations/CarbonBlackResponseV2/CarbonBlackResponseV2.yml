@@ -85,17 +85,17 @@ name: VMware Carbon Black EDR v2
 script:
   commands:
   - arguments:
-    - description: The name of the process.
+    - description: The name of the process
       name: process_name
-    - description: The CB Host group this sensor is assigned to.
+    - description: The CB Host group this sensor is assigned to
       name: group
-    - description: The hostname of the computer for this process.
+    - description: The hostname of the computer for this process
       name: hostname
-    - description: The parent process name.
+    - description: The parent process name
       name: parent_name
-    - description: The process path.
+    - description: The process path
       name: process_path
-    - description: The md5 of the binary image backing the process.
+    - description: The md5 of the binary image backing the process
       name: md5
     - description: Advanced query string. Accepts the same data as the search box on the Process Search page. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf. If not provided, at least one other search field must be provided.
       name: query
@@ -567,7 +567,7 @@ script:
       required: true
     - description: |-
         The process segment id. This is the segment_id field in search results.
-        If this is set to 0, the API will merge all segments in results.
+        If this is set to 0, the API will merge all segments in results
       name: segment_id
       required: true
     - description: |-
@@ -778,17 +778,17 @@ script:
     description: Isolate the endpoint from the network
     name: cb-edr-quarantine-device
   - arguments:
-    - description: The sensor ID.
+    - description: The sensor ID
       name: id
-    - description: Returns the sensor registration(s) with specified IP address.
+    - description: Returns the sensor registration(s) with specified IP address
       name: ip
       predefined:
       - ''
-    - description: Retruns the sensor registration(s) in the specified sensor group id.
+    - description: Retruns the sensor registration(s) in the specified sensor group id
       name: group_id
-    - description: ' only returns sensors that have been inactive for less than the specified number of days'.
+    - description: ' only returns sensors that have been inactive for less than the specified number of days'
       name: inactive_filter_days
-    - description: Returns the sensor registration(s) with matching hostname.
+    - description: Returns the sensor registration(s) with matching hostname
       name: hostname
     - description: The maximum amount of sensors to be returned.
       name: limit
@@ -961,7 +961,7 @@ script:
       description: The watchlist ID
       name: id
       required: true
-    - description: The raw Carbon Black query that this watchlist matches.
+    - description: The raw Carbon Black query that this watchlist matches
       name: search_query
     - description: A description of the update.
       name: description
@@ -994,10 +994,10 @@ script:
       Updates a Watchlist action that is specified using ID.
     name: cb-edr-watchlist-update-action
   - arguments:
-    - description: Name of the watchlist.
+    - description: Name of the watchlist
       name: name
       required: true
-    - description: The raw Carbon Black query that this watchlist matches.
+    - description: The raw Carbon Black query that this watchlist matches
       name: search_query
       required: true
     - description: A description of the update.
@@ -1064,19 +1064,19 @@ script:
       description: The name of this watchlist.
       type: String
   - arguments:
-    - description: The banned hash.
+    - description: The banned hash
       name: md5
       required: true
-    - description: Text description of block list.
+    - description: Text description of block list
       name: text
       required: true
-    - description: The last time the hash was blocked or prevented from being executed.
+    - description: The last time the hash was blocked or prevented from being executed
       name: last_ban_time
-    - description: Total number of blocks on the banned list.
+    - description: Total number of blocks on the banned list
       name: ban_count
-    - description: Last hostname to block this hash.
+    - description: Last hostname to block this hash
       name: last_ban_host
-    description: Prevent execution of a specified md5 hash.
+    description: Prevent execution of a specified md5 hash
     name: cb-edr-binary-ban
   - arguments:
     - description: The maximum hashs of result to retrieve.
@@ -1132,7 +1132,7 @@ script:
       description: The last hostname to block this hash.
       type: String
   - arguments:
-    - description: Alert unique identifier.
+    - description: Alert unique identifier
       isArray: true
       name: alert_ids
       required: true
@@ -1157,7 +1157,7 @@ script:
       Updating Alerts requires an API key with Global Administrator privileges.
     name: cb-edr-alert-update
   - arguments:
-    - description: Alert status to filter by.
+    - description: Alert status to filter by
       name: status
       auto: PREDEFINED
       predefined:
@@ -1165,13 +1165,13 @@ script:
       - In Progress
       - Resolved
       - False Positive
-    - description: Alert username to filter by.
+    - description: Alert username to filter by
       name: username
-    - description: Alert feedname to filter by.
+    - description: Alert feedname to filter by
       name: feedname
-    - description: Alert hostname to filter by.
+    - description: Alert hostname to filter by
       name: hostname
-    - description: Alert report name (watchlist_id) to filter by.
+    - description: Alert report name (watchlist_id) to filter by
       name: report
     - description: Advanced query string. Accepts the same data as the search box. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf. If not provided, at least one other search field must be provided.
       name: query
@@ -1467,9 +1467,9 @@ script:
   - arguments:
     - description: Gets the name of the product this file is distributed with.
       name: product_name
-    - description: The md5 hash of this binary.
+    - description: The md5 hash of this binary
       name: md5
-    - description: Digital signature status.
+    - description: Digital signature status
       name: digital_signature
       auto: PREDEFINED
       predefined:
@@ -1488,11 +1488,11 @@ script:
     - description: |-
         Sensor group this sensor was
         assigned to at the time of process
-        execution.
+        execution
       name: group
     - description: |-
         Hostname of the computer on
-        which the process was executed.
+        which the process was executed
       name: hostname
     - description: Sort rows by this field and order. server_added_timestamp desc by default.
       name: sort
@@ -1654,13 +1654,13 @@ script:
       description: If present, Private build from FileVersionInformation. For more information check https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&view=net-5.0
       type: String
   - arguments:
-    - description: The sensor ID.
+    - description: The sensor ID
       name: id
     - default: true
       description: Query sensors with specified IP address
       isArray: true
       name: ip
-    - description: Query sensors with matching hostname.
+    - description: Query sensors with matching hostname
       name: hostname
     description: Display information about the given sensor
     name: endpoint
