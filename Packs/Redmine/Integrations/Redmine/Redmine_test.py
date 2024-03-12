@@ -87,8 +87,10 @@ def test_create_issue_command_with_file(mocker, redmine_client):
     create_issue_command(redmine_client, args=args)
     create_file_token_request_mock.assert_called_with({}, 'a.png')
     http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue': {'issue_id': '1', 'subject': 'testSub',
-                                                                                            'uploads': [
-                                                                                                {'token': 'token123'}], 'tracker_id': '1', 'watcher_user_ids': [1], 'project_id': '1'}},
+                                                                                            'uploads': [{'token': 'token123'}],
+                                                                                            'tracker_id': '1',
+                                                                                            'watcher_user_ids': [1],
+                                                                                            'project_id': '1'}},
                                     headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
 
