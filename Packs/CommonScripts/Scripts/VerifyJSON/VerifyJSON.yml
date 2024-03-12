@@ -1,5 +1,5 @@
 args:
-- description: 'JSON string to verify.'
+- description: 'JSON string to verify. '
   name: json
   required: true
 - description: 'Optional schema against which to validate the JSON input.'
