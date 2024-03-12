@@ -1501,7 +1501,7 @@ def get_ticket_notes_command(client: Client, args: dict, params: dict,) -> list[
 
     use_display_value = argToBoolean(args.get('use_display_value', client.use_display_value))
 
-    return_results = []
+    return_results: list = []
 
     if use_display_value:  # make query using sysparm_display_value=all (requires less permissions)
         assert client.display_date_format, 'A display date format must be selected in the instance configuration when' \

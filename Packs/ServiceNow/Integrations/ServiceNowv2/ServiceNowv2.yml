@@ -1319,7 +1319,7 @@ script:
       - sn_si_incident
     - auto: PREDEFINED
       defaultValue: false
-      description: Whether to add the ticket notes and work_notes as an entry note in the War Room.
+      description: Whether to add the ticket notes and work notes as an entry note in the War Room.
       name: add_as_entry
       predefined:
       - 'true'
@@ -1337,7 +1337,7 @@ script:
       description: Date/time the ticket note was created.
       type: date
     - contextPath: ServiceNow.Ticket.Note.CreatedBy
-      description: User that created the ticket note.
+      description: User who created the ticket note.
       type: string
     - contextPath: ServiceNow.Ticket.Note.Type
       description: Ticket note type.
