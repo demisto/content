@@ -32,7 +32,7 @@ class AWSClient:
 
     def __init__(self, aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                  aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout, retries,
-                 aws_session_token=None, sts_endpoint_url=None, endpoint_url=None, sts_regional_endpoint=None):
+                 aws_session_token=None, sts_endpoint_url=None, endpoint_url=None):
 
         self.sts_endpoint_url = sts_endpoint_url
         self.endpoint_url = endpoint_url
@@ -46,7 +46,9 @@ class AWSClient:
         self.aws_secret_access_key, self.aws_session_token = extract_session_from_secret(aws_secret_access_key, aws_session_token)
         self.verify_certificate = verify_certificate
 
+        sts_regional_endpoint = demisto.params().get("sts_regional_endpoint") or None
         if sts_regional_endpoint:
+            demisto.debug(f"Sets the environment variable AWS_STS_REGIONAL_ENDPOINTS={sts_regional_endpoint}")
             os.environ["AWS_STS_REGIONAL_ENDPOINTS"] = sts_regional_endpoint.lower()
 
         proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
