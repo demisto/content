@@ -7,6 +7,8 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
     note = args.get('note')
     tag = args.get('tag')
     table_name = args.get('table_name')
+    if not table_name:
+        table_name = demisto.params('ticket_type')
     using = args.get('instance_name')
 
     command_args = {}
@@ -15,6 +17,7 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
         ticket_id = demisto.incident()['CustomFields'].get('servicenowticketid')
 
     command_args['id'] = ticket_id
+    demisto.debug(f'Using ticket_type: {table_name}')
     command_args['ticket_type'] = table_name
     if tag == 'comment':
         command_args['comments'] = note
@@ -24,13 +27,10 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
 
     try:
         command_res = demisto.executeCommand("servicenow-update-ticket", command_args)
-        demisto.debug(f'Response from servicenow-update-ticket: {command_res}')
         resp = command_res[0]
         if isError(resp):
-            demisto.debug(f'Response from servicenow-update-ticket is error: {resp}')
             raise Exception(resp['Contents'])
         else:
-            demisto.debug(f"Response from servicenow-update-ticket Contents: {resp['Contents']}")
             result = resp['Contents']['result']
             output_results = {}
 

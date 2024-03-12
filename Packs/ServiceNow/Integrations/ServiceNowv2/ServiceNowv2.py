@@ -1203,11 +1203,8 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     fields.update(additional_fields)
     input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
-    demisto.debug(f'Updating {ticket_type=}, {ticket_id=}, {fields=}, {custom_fields=}, {input_display_value=}')
     result = client.update(ticket_type, ticket_id, fields, custom_fields, input_display_value)
-    demisto.debug(f'Update result: {result}')
     if not result or 'result' not in result:
-        demisto.debug(f'Cannot parse result: {result}')
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
 
