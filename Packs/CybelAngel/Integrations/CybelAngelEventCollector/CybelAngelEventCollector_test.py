@@ -427,7 +427,10 @@ def test_fetch_events_with_last_run_dedup_event(mocker):
     mocker.patch.object(
         demisto,
         'getLastRun',
-        return_value={CybelAngelEventCollector.LastRun.LATEST_REPORT_TIME: "2021-02-01T00:00:00", CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: 1}
+        return_value={
+            CybelAngelEventCollector.LastRun.LATEST_REPORT_TIME: "2021-02-01T00:00:00",
+            CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: 1
+        }
     )
 
     mocker.patch.object(
@@ -458,7 +461,10 @@ def test_fetch_events_with_last_run_dedup_event(mocker):
 
     assert set_last_run_mocker.called
     actual_last_run = set_last_run_mocker.call_args[0][0]
-    assert actual_last_run == {CybelAngelEventCollector.LastRun.LATEST_REPORT_TIME: "2021-02-01T00:00:00", CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: 1}
+    assert actual_last_run == {
+        CybelAngelEventCollector.LastRun.LATEST_REPORT_TIME: "2021-02-01T00:00:00",
+        CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: 1
+    }
 
 
 def test_get_events_command_command(mocker):
