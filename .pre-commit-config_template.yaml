@@ -58,6 +58,14 @@ repos:
     - community
 - repo: local
   hooks:
+  - id: xsoar-lint
+    name: xsoar-lint
+    description: Run xsoar-linter on the code in content packs
+    entry: demisto-sdk xsoar-lint
+    files: ^Packs\/.*\.py$
+    exclude: _test\.py|\.vulture_whitelist\.py|test_data|tests_data|TestData
+    require_serial: true
+    language: system
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
@@ -289,7 +297,7 @@ repos:
     - decorator==5.1.1 ; python_version >= "3.8" and python_version < "3.11"
     - defusedxml==0.7.1 ; python_version >= "3.8" and python_version < "3.11"
     - demisto-py==3.2.13 ; python_version >= "3.8" and python_version < "3.11"
-    - demisto-sdk==1.27.0 ; python_version >= "3.8" and python_version < "3.11"
+    - demisto-sdk==1.27.2 ; python_version >= "3.8" and python_version < "3.11"
     - dictdiffer==0.9.0 ; python_version >= "3.8" and python_version < "3.11"
     - dictor==0.1.12 ; python_version >= "3.8" and python_version < "3.11"
     - distlib==0.3.7 ; python_version >= "3.8" and python_version < "3.11"
