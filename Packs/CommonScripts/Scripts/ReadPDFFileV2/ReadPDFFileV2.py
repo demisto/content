@@ -662,9 +662,7 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
 
 def main():  # pragma: no cover
     args = demisto.args()
-    # This is to handle cases where the script was configured as part of a PB,
-    # before adding the "unescape" argument, since in that case, the argument will be None,
-    # and we want the default behavior for PBs that customers created to not change
+    # Handling cases where content of file contained escaping characters, with regarding to BC.
     unescape: bool = argToBoolean(args.get("unescape") or False)
     working_dir = 'ReadPDFTemp'
     try:
