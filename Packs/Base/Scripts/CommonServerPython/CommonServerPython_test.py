@@ -9604,7 +9604,7 @@ def test_logger_write__censor_request_logs_has_been_called(mocker, request_log):
     Given:
         A request log that starts with 'send' or 'header' that may contains sensitive data.
     When:
-        Running logger.write function.
+        Running logger.write function when using debug-mode.
     Then:
         Assert the censor_request_logs function has been called.
     """
