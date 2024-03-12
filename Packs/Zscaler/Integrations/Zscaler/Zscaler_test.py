@@ -147,7 +147,17 @@ def test_undo_blacklist_url_command(mocker):
     run_command_test(command_func=Zscaler.unblacklist_url,
                      args={'url': 'www.demisto22.com, www.demisto33.com'},
                      response_path='test_data/responses/blacklist_urls.json',
-                     expected_result_path='test_data/results/blacklist_urls.json',
+                     expected_result_path='test_data/results/undo_blacklist_urls.txt',
+                     mocker=mocker)
+
+
+def test_blacklist_url_command(mocker):
+    """zscaler-blacklist-url"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.blacklist_url,
+                     args={'url': 'www.demisto22.com, www.demisto33.com'},
+                     response_path='test_data/responses/blacklist_urls.json',
+                     expected_result_path='test_data/results/blacklist_urls.txt',
                      mocker=mocker)
 
 

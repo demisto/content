@@ -702,25 +702,7 @@ def category_remove(category_id, data, retaining_parent_category_data, data_type
         return return_error("Category could not be found.")
 
 
-def category_ioc_update(category_data, retaining_parent_category_ip=None):
-    cmd_url = "/urlCategories/" + category_data["id"]
-    data = {
-        "customCategory": category_data["customCategory"],
-        "urls": category_data["urls"],
-        "id": category_data["id"],
-    }
-    if retaining_parent_category_ip:
-        data['dbCategorizedUrls'] = retaining_parent_category_ip
-    if "description" in category_data:
-        data["description"] = category_data["description"]
-    if "configuredName" in category_data:
-        data["configuredName"] = category_data["configuredName"]
-    json_data = json.dumps(data)
-    response = http_request("PUT", cmd_url, json_data).json()
-    return response
-
-
-def add_or_remove_urls_from_category(action, urls, category_data, retaining_parent_category_url=None):
+def add_or_remove_urls_from_category(action, urls, category_data, retaining_parent_category_data=None):
     """
     Add or remove urls from a category.
     Args:
@@ -740,8 +722,8 @@ def add_or_remove_urls_from_category(action, urls, category_data, retaining_pare
         "urls": urls,
         "id": category_data.get("id"),
     }
-    if retaining_parent_category_url:
-        data['dbCategorizedUrls'] = retaining_parent_category_url
+    if retaining_parent_category_data:
+        data['dbCategorizedUrls'] = retaining_parent_category_data
     if "description" in category_data:
         data["description"] = category_data["description"]
     if "configuredName" in category_data:
@@ -1372,8 +1354,8 @@ def main():  # pragma: no cover
                     category_add(args.get("category-id"), args.get("url"), args.get('retaining-parent-category-url'), "url")
                 )
             elif command == "zscaler-category-add-ip":
-                return_results(category_add(args.get("category-id"), args.get("ip"), args.get('retaining-parent-category-ip')),
-                               "ip")
+                return_results(category_add(args.get("category-id"), args.get("ip"), args.get('retaining-parent-category-ip'),
+                               "ip"))
             elif command == "zscaler-category-remove-url":
                 return_results(
                     category_remove(args.get("category-id"), args.get("url"), args.get('retaining-parent-category-url'),
@@ -1429,5 +1411,5 @@ def main():  # pragma: no cover
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins", "__main__"):
+if __name__ in ("__builtin__", "builtins", "__main__"):  # pragma: no cover
     main()
