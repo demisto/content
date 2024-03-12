@@ -21,7 +21,7 @@ ALERTS_LIMIT_PER_INCIDENTS = -1
 FIELDS_TO_EXCLUDE = [
     'network_artifacts',
     'file_artifacts'
-]  # can also remove 'alerts'
+]
 
 
 XDR_INCIDENT_FIELDS = {
@@ -394,6 +394,8 @@ class Client(CoreClient):
                 'operator': 'eq',
                 'value': status
             })
+        if fields_to_exclude:
+            request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE  # type: ignore
 
         if starred and starred_incidents_fetch_window:
             filters.append({
@@ -413,8 +415,7 @@ class Client(CoreClient):
                 return incidents
         if len(filters) > 0:
             request_data['filters'] = filters
-        if fields_to_exclude:
-            request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE  # type: ignore
+
         reply = self._http_request(
             method='POST',
             url_suffix='/incidents/get_multiple_incidents_extra_data/',
@@ -555,19 +556,11 @@ def get_incident_extra_data_command(client, args):
                                                             if key != 'host_ip'], removeNull=True))
     else:
         readable_output.append(tableToMarkdown('Alerts', raw_alerts, removeNull=True))
-    if raw_alerts and len(raw_alerts) > 0:
-        readable_output.append(tableToMarkdown('Alerts', raw_alerts, removeNull=True))
-    if network_artifacts and len(network_artifacts) > 0:
-        readable_output.append(tableToMarkdown('Network Artifacts', network_artifacts, removeNull=True))
-    else:
-        readable_output.append(tableToMarkdown('Network Artifacts', [], removeNull=True))
-    if file_artifacts and len(file_artifacts) > 0:
-        readable_output.append(tableToMarkdown('File Artifacts', file_artifacts, removeNull=True))
-    else:
-        readable_output.append(tableToMarkdown('File Artifacts', [], removeNull=True))
+    readable_output.append(tableToMarkdown('Network Artifacts', network_artifacts, removeNull=True))
+    readable_output.append(tableToMarkdown('File Artifacts', file_artifacts, removeNull=True))
 
     incident.update({
-        'alerts': raw_alerts,
+        'alerts': context_alerts,
         'file_artifacts': file_artifacts,
         'network_artifacts': network_artifacts
     })
@@ -1008,7 +1001,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         count_incidents = 0
 
         for raw_incident in raw_incidents:
-            incident_data: dict[str, Any] = raw_incident.get('incident') or raw_incident
+            incident_data: dict[str, Any] = raw_incident.get('incident')
             incident_id = incident_data.get('incident_id')
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
@@ -1178,7 +1171,7 @@ def main():  # pragma: no cover
     statuses = params.get('status')
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
-    fields_to_exclude = params.get('fields_to_exclude', True)
+    fields_to_exclude = params.get('exclude_fields', True)
 
     try:
         timeout = int(params.get('timeout', 120))

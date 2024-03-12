@@ -203,7 +203,7 @@ class TestFetchStarredIncident:
         """
         from CortexXDRIR import fetch_incidents, Client
 
-        res = load_test_data('./test_data/get_starred_incidents_list.json')['reply']['incidents']
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')['reply']['incidents']
         last_run_obj = {}
         mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
@@ -211,7 +211,7 @@ class TestFetchStarredIncident:
         mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
         mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
         mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
-        mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=res)
+        mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=get_incidents_list_response)
         client = Client(
             base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
         next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance', last_run_obj.get('next_run'),
