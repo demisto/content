@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 OWNER = 'demisto'
 REPO = 'content'
 GITHUB_TRIGGER_BUILD_LABEL = "ready-for-instance-test"
-GITLAB_SERVER_URL = get_env_var('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
+GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
 GITHUB_SEARCH_REQUEST_ENDPOINT = 'https://api.github.com/search/issues'
 GITHUB_DELETE_LABEL_ENDPOINT = "https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}/labels/{label_name}"
 GITHUB_QUERY_LABELS = {
@@ -101,8 +101,8 @@ def main():
 
     if items := response.get('items'):
         # for pr in items:
-            # gitlab_client.trigger_build_for_contribution(pr)
-            # github_client.delete_trigger_build_label_from_pr(pr)
+        #     gitlab_client.trigger_build_for_contribution(pr)
+        #     github_client.delete_trigger_build_label_from_pr(pr)
         github_client.delete_trigger_build_label_from_pr(pr={"number": 33308, 'title': 'Test PR'})
     else:
         return
