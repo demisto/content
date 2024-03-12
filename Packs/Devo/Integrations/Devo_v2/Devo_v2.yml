@@ -194,12 +194,14 @@ script:
     description: Queries multiple tables for a given token and returns relevant results.
   - name: devo-write-to-table
     arguments:
+    - name: tag
+      description: The tag to assign to the records.
     - name: tableName
       required: true
       description: The name of the table to write to.
     - name: records
-      required: true
       description: Records to write to the specified table.
+      required: true
       isArray: true
     - name: linqLinkBase
       description: Overrides the global Devo base domain for linq linking.
@@ -221,7 +223,6 @@ script:
     - name: headers
       required: true
       description: Headers for lookup table control.
-      isArray: true
     - name: records
       required: true
       description: Records to write to the specified table.
@@ -232,7 +233,7 @@ script:
       type: unknown
     description: Writes lookup table entry records to a specified Devo table.
     execution: true
-  dockerimage: demisto/devo:1.0.0.86778
+  dockerimage: demisto/devo:1.0.0.89201
   isfetch: true
   subtype: python3
 tests:
