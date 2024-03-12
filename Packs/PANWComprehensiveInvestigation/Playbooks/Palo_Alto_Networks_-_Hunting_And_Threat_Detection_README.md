@@ -1,6 +1,6 @@
 This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. 
-With the received indicators, the playbook leverages data received by PANW products including Strata Logging Service, Autofocus, Prisma Cloud, Cortex XDR, and PAN-OS to search for IP addresses, host names, and users related to the provided indicators.
-The output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users.
+The playbook leverages data received by PANW products including, Strata Logging Service, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.
+The output provided by the playbook enables you to find possibly affected IP addresses, users, and endpoints.
 
 ## Dependencies
 
@@ -9,7 +9,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * PAN-OS Query Logs For Indicators
-* Convert file hash to corresponding hashes
+* Convert File Hash to Corresponding Hashes
 * Autofocus Query Samples, Sessions and Tags
 
 ### Integrations
@@ -44,7 +44,7 @@ This playbook does not use any integrations.
 | URLDomain | List of domains or urls. |  | Optional |
 | InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
 | InternalDomainName | The organization's internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example demisto.com. If there is more than one domain, use the \| character to separate values such as \(demisto.com\|test.com\) |  | Optional |
-| InternalHostRegex | This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. If the hosts match the organization's naming convention. For example the host testpc1 will have the following regex \\w\{6\}\\d\{1\} |  | Optional |
+| InternalHostRegex | This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. Checks if the hosts match the organization's naming convention. For example the host testpc1 will have the following regex \\w\{6\}\\d\{1\} |  | Optional |
 
 ## Playbook Outputs
 
