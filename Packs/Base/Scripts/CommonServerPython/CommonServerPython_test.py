@@ -28,7 +28,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
     remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
     response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
-    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam, censor_request_logs, censor_request_logs, MASK
+    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam, censor_request_logs, censor_request_logs
 
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
@@ -9559,19 +9559,19 @@ def test_create_clickable_test_wrong_text_value():
 @pytest.mark.parametrize("request_log, expected_output", [
     (
         "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nmy_authorization: Bearer token123\\r\\n'",
-        f"send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nmy_authorization: Bearer {MASK}\\r\\n'"
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nmy_authorization: Bearer <XX_REPLACED>\\r\\n'"
     ),
     (
         "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nSet_Cookie: session_id=123\\r\\n'",
-        f"send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nSet_Cookie: {MASK}\\r\\n'"
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nSet_Cookie: <XX_REPLACED>\\r\\n'"
     ),
     (
         "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: token123\\r\\n'",
-        f"send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: {MASK}\\r\\n'"
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: <XX_REPLACED>\\r\\n'"
     ),
     (
         "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: Bearer token123\\r\\n",
-        f"GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: Bearer {MASK}\\r\\n"
+        "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: Bearer <XX_REPLACED>\\r\\n"
     ),
     (
         "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\n'",
