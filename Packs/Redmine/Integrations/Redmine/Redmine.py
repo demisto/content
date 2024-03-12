@@ -462,23 +462,23 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                                                                          headerTransform=underscoreToCamelCase,
                                                                          is_auto_json_transform=True,
                                                                          json_transform_mapping={
-                                                                            "tracker": JsonTransformer(keys=['name'],
-                                                                                            func=lambda hdr: hdr.get('name', '')),
-                                                                            "project": JsonTransformer(keys=['name'],
-                                                                                            func=lambda hdr: hdr.get('name', '')),
+                                                                             "tracker": JsonTransformer(keys=['name'],
+                                                                                                        func=lambda hdr: hdr.get('name', '')),
+                                                                             "project": JsonTransformer(keys=['name'],
+                                                                                                        func=lambda hdr: hdr.get('name', '')),
                                                                              "status": JsonTransformer(keys=['name'],
-                                                                                            func=lambda hdr: hdr.get('name', '')),
+                                                                                                       func=lambda hdr: hdr.get('name', '')),
                                                                              "priority": JsonTransformer(keys=['name'],
-                                                                                            func=lambda hdr: hdr.get('name', '')),
+                                                                                                         func=lambda hdr: hdr.get('name', '')),
                                                                              "author": JsonTransformer(keys=['name'],
-                                                                                            func=lambda hdr: hdr.get('name', '')),
+                                                                                                       func=lambda hdr: hdr.get('name', '')),
                                                                              "custom_fields":
                                                                                  JsonTransformer(keys=["name", "value"]),
                                                                              "watchers": JsonTransformer(keys=["name"]),
                                                                              "attachments":
                                                                                  JsonTransformer(keys=["filename", "content_url",
-                                                                                                    "content_type", "description"]
-                                                                                                ),
+                                                                                                       "content_type", "description"]
+                                                                                                 ),
                                                                          }))
         return command_results
     except Exception as e:
