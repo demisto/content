@@ -1091,6 +1091,7 @@ def create_security_rule_command(client: Client, args: Dict[str, Any]) -> Comman
     demisto.debug(f'sending security rule to the API. Rule: {rule}')
     raw_response = client.create_security_rule(rule=rule, query_params=query_params, tsg_id=tsg_id)  # type: ignore
     outputs = raw_response
+    outputs["position"] = query_params["position"]
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}SecurityRule',
@@ -2016,11 +2017,11 @@ def run_push_jobs_polling_command(client: Client, args: dict):
     polling_interval = args.get('interval_in_seconds') or DEFAULT_POLLING_INTERVAL
     polling_timeout = arg_to_number(args.get('polling_timeout_in_seconds')) or DEFAULT_POLLING_TIMEOUT
     tsg_id = args.get('tsg_id')
-    if folders := argToList(args.get('folders')):
+    if (folders := argToList(args.get('folders'))) and folders[0] != "done":
         # first call, folder in args. We make the first push
         res = client.push_candidate_config(folders=folders, tsg_id=tsg_id)
         # remove folders, not needed for the rest
-        args['folders'] = []
+        args['folders'] = ["done"]
         # The result from the push returns a job id
         job_id = res.get('job_id', '')
         args['job_id'] = job_id
@@ -2072,7 +2073,7 @@ def run_push_jobs_polling_command(client: Client, args: dict):
             job_result = job.get('result_str')
             if job_result != 'OK':
                 outputs['result'] = job_result
-                outputs['details'] = res.get('details', '')
+                outputs['details'] = job.get("summary")
                 return CommandResults(entry_type=EntryType.ERROR,
                                       outputs=outputs,
                                       outputs_prefix=f'{PA_OUTPUT_PREFIX}CandidateConfig',
