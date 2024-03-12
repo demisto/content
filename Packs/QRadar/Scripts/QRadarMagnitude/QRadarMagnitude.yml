@@ -1,4 +1,4 @@
-comment: "This enables to color the field according to the magnitude. The scale is \n1-3 green\n4-7 yellow\n8-10 red"
+comment: "This enables to color the field according to the magnitude. The scale is \n1-3 green\n4-7 yellow\n8-10 red."
 commonfields:
   id: QRadarMagnitude
   version: -1
