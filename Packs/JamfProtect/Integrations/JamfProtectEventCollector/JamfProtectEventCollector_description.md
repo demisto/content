@@ -21,6 +21,6 @@ Copy the API client and password into the integration configuration.
     - Read access Audit Logs.
 For more information please refer to Creating a Custom Role [Documentation](https://learn.jamf.com/en-US/bundle/jamf-protect-documentation/page/User_Roles_and_Groups.html#task-9912).
 
-![Permissions](images/description_role.png)
+![Permissions](doc_files/description_role.png)
     
 For more information please refer to Jamf Protect [Documentation](https://learn.jamf.com/en-US/bundle/jamf-protect-documentation/page/Jamf_Protect_API.html).
