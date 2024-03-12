@@ -9593,3 +9593,29 @@ def test_censor_request_logs(request_log, expected_output):
         Assert the function returns the exactly same log with the sensitive data masked. 
     """
     assert censor_request_logs(request_log) == expected_output
+
+
+@pytest.mark.parametrize("request_log", [
+    ('send: hello\n'),
+    ('header: Authorization\n')
+])
+def test_logger_write__censor_request_logs_has_been_called(mocker, request_log):
+    """
+    Given:
+        A request log that starts with 'send' or 'header' that may contains sensitive data.
+    When:
+        Running logger.write function.
+    Then:
+        Assert the censor_request_logs function has been called.
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'credentials': {'password': 'my_password'},
+    })
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('CommonServerPython.is_debug_mode', return_value=True)
+    mock_censor = mocker.patch('CommonServerPython.censor_request_logs')
+    mocker.patch('CommonServerPython.IntegrationLogger.build_curl')
+    ilog = IntegrationLogger()
+    ilog.set_buffering(False)
+    ilog.write(request_log)
+    assert mock_censor.call_count == 1
