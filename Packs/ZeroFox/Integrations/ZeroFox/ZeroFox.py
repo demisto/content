@@ -22,7 +22,6 @@ MAX_ALERT_IDS_STORED = 200
 FetchIncidentsStorage = TypedDict("FetchIncidentsStorage", {
     "last_fetched": str,
     "last_offset": str,
-    "first_run_at": str,
     "last_modified_fetched": str,
     "last_modified_offset": str,
     "zf-ids": list[int],
@@ -1162,9 +1161,9 @@ def get_incidents_data(
         parsed_last_alert_timestamp + timedelta(milliseconds=1)
     ).strftime(DATE_FORMAT)
 
-    def get_alert_ids(alert: dict[str, Any]) -> int:
-        return alert.get("id") or 0
-    processed_alerts_ids: list[int] = list(map(get_alert_ids, processed_alerts))
+    def get_alert_ids(alert: dict[str, Any]) -> str:
+        return str(alert.get("id")) or ""
+    processed_alerts_ids: list[str] = list(map(get_alert_ids, processed_alerts))
 
     return incidents, next_offset, max_update_time, processed_alerts_ids
 
@@ -1199,19 +1198,6 @@ def fetch_incidents(
     last_run: FetchIncidentsStorage,
     first_fetch_time: str
 ) -> tuple[FetchIncidentsStorage, list[dict[str, Any]]]:
-    # Last fetched date
-    last_fetched_str = last_run.get("last_fetched", "")
-    last_fetched = parse_last_fetched_date(last_fetched_str, first_fetch_time)
-    last_fetched_str = last_fetched.strftime(DATE_FORMAT)
-
-    # Saved offset of last run
-    last_offset_str: str = last_run.get("last_offset", "0")
-    last_offset = int(last_offset_str)
-
-    # Date of first run
-    first_run_at_str = last_run.get("first_run_at", "")
-    first_run_at = parse_last_fetched_date(first_run_at_str, first_fetch_time)
-
     # Last modified fetch date
     last_modified_fetched_str = last_run.get("last_modified_fetched", "")
     last_modified_fetched = parse_last_fetched_date(last_modified_fetched_str, first_fetch_time)
@@ -1222,36 +1208,9 @@ def fetch_incidents(
     last_modified_offset = int(last_modified_offset_str)
 
     # ZeroFox Alert IDs previously created
-    zf_ids: list[int] = last_run.get("zf-ids", [])
-
-    next_run: FetchIncidentsStorage = {
-        "last_fetched": last_fetched_str,
-        "last_offset": last_offset_str,
-        "first_run_at": first_run_at.strftime(DATE_FORMAT),
-        "last_modified_fetched": last_modified_fetched_str,
-        "last_modified_offset": last_modified_offset_str,
-        "zf-ids": zf_ids,
-    }
+    zf_ids: set[str] = set(last_run.get("zf-ids", []))
 
     # Fetch new alerts
-    params = {
-        "min_timestamp": last_fetched.strftime(DATE_FORMAT),
-        "sort_direction": "asc",
-        "offset": last_offset,
-    }
-    incidents, next_offset, oldest_timestamp, alert_ids = get_incidents_data(
-        client=client,
-        params=params,
-    )
-    if len(incidents) > 0:
-        ingested_alert_ids = alert_ids + zf_ids
-        next_run["zf-ids"] = ingested_alert_ids[:MAX_ALERT_IDS_STORED]
-        next_run["last_offset"] = next_offset
-        if next_offset == "0" and oldest_timestamp:
-            next_run["last_fetched"] = oldest_timestamp
-        return next_run, incidents
-
-    # If no new alerts, fetch modified alerts
     params = {
         "last_modified_min_date": last_modified_fetched.strftime(DATE_FORMAT),
         "sort_direction": "asc",
@@ -1259,16 +1218,21 @@ def fetch_incidents(
     }
 
     def is_not_a_new_alert(alert):
-        return alert.get("id") not in zf_ids
+        return str(alert.get("id")) not in zf_ids
     incidents, next_offset, oldest_timestamp, alert_ids = get_incidents_data(
         client=client,
         params=params,
         is_valid_alert=is_not_a_new_alert,
         timestamp_field="last_modified",
     )
+    next_run: FetchIncidentsStorage = {
+        "last_modified_fetched": last_modified_fetched_str,
+        "last_modified_offset": last_modified_offset_str,
+        "zf-ids": list(zf_ids),
+    }
     if len(incidents) > 0:
-        ingested_alert_ids = alert_ids + zf_ids
-        next_run["zf-ids"] = ingested_alert_ids[:MAX_ALERT_IDS_STORED]
+        zf_ids.update(alert_ids)
+        next_run["zf-ids"] = list(zf_ids)[:MAX_ALERT_IDS_STORED]
         next_run["last_modified_offset"] = next_offset
         if next_offset == "0" and oldest_timestamp:
             next_run["last_modified_fetched"] = oldest_timestamp
