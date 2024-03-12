@@ -3,7 +3,7 @@ Use the SplunkPy integration to:
 - Push events from Cortex XSOAR to SplunkPy
 - Fetch SplunkPy ES notable events as Cortex XSOAR incidents.
 
-This integration was integrated and tested with Splunk v9.0.4.
+This integration was integrated and tested with Splunk Enterprise v9.0.4 and Enterprise Security v7.1.1.
 
 ## Use Cases
 ---
@@ -530,6 +530,7 @@ Sends events to an HTTP event collector using the Splunk platform JSON event pro
 | source_type | The user-defined event source type. | Optional |
 | source | The user-defined event source. | Optional | 
 | time | The epoch-formatted time. | Optional | 
+| request_channel | A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). **If the indexer acknowledgment is turned on, a channel is required.** | Optional | 
 
 ##### Context Output
 
