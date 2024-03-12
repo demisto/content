@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Zscaler
+  id: Zscaler FIX
   version: -1
 configuration:
 - display: Cloud Name (i.e., <https://zsapi.zscalertwo.net>)
@@ -80,8 +80,8 @@ configuration:
   advanced: true
   required: false
 description: Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, create, manage, and update IP destination groups and manually log in, log out, and activate changes in a Zscaler session.
-display: Zscaler Internet Access
-name: Zscaler
+display: Zscaler Internet Access FIX
+name: Zscaler FIX
 script:
   commands:
   - arguments:

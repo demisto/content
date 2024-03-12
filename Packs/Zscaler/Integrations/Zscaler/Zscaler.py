@@ -604,7 +604,7 @@ def lookup_request(ioc, multiple=True):
 
 def category_add(category_id, data, retaining_parent_category_data, data_type):
     if not any((data, retaining_parent_category_data)):
-        return_error(f'Either {data_type} argument or retaining_parent_category_{data_type} argument must be provided.')
+        return_error(f'Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.')
 
     category_data = get_category_by_id(category_id)
     demisto.debug(f'{category_data=}')
@@ -614,8 +614,8 @@ def category_add(category_id, data, retaining_parent_category_data, data_type):
         all_data.extend([x.strip() for x in category_data["urls"]])
         category_data["urls"] = all_data
         retaining_parent_category_data_list = argToList(retaining_parent_category_data)
-        if not any((data, retaining_parent_category_data_list)):
-            return_error(f'Either {data_type} argument or retaining_parent_category_{data_type} argument must be provided.')
+        if not any((data_list, retaining_parent_category_data_list)):
+            return_error(f'Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.')
 
         add_or_remove_urls_from_category(
             ADD, data_list, category_data, retaining_parent_category_data_list
@@ -649,7 +649,7 @@ def category_add(category_id, data, retaining_parent_category_data, data_type):
 
 def category_remove(category_id, data, retaining_parent_category_data, data_type):
     if not any((data, retaining_parent_category_data)):
-        return_error(f'Either {data_type} argument or retaining_parent_category_{data_type} argument must be provided.')
+        return_error(f'Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.')
 
     category_data = get_category_by_id(category_id)  # check if the category exists
     demisto.debug(f'{category_data=}')
