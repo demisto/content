@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 from requests.auth import HTTPBasicAuth
 import json
+from xmltodict import parse
 
 disable_warnings()
 
@@ -13,6 +14,12 @@ VENDOR = "Genetec"
 PRODUCT = "Security center"
 DATE_FORMAT_EVENT = "%Y-%m-%dT%H:%M:%S"
 AUDIT_TRAIL_ENDPOINT = "/WebSdk/report/AuditTrail"
+GET_EVENTS_HEADERS = [
+    "Id", "Guid", "ModificationTimeStamp", "ModifiedBy", "SourceApplicationGuid", "Name", "ModifiedByAsString",
+	"SourceApplicationAsString", "Machine", "SourceApplicationType", "OldValue", "NewValue", "CustomFieldId", "CustomFieldName",
+	"CustomFieldValueType", "AuditTrailModificationType", "Type", "Description", "AuditTrailModificationSubTypes", "Value"
+	]
+
 
 
 """ CLIENT CLASS """
@@ -68,7 +75,7 @@ def fetch_events_command(
     client: Client,
     args: dict[str, str],
     last_run: dict,
-) -> tuple[list[dict], dict]:
+) -> list[dict]:
     """
     Args:
         client (Client): The client for api calls.
@@ -79,31 +86,41 @@ def fetch_events_command(
         tuple[list[dict], dict]: List of all event logs of all types,
                                  The updated `last_run` obj.
     """
-    time_now: datetime = datetime.now()
+    time_now: datetime = datetime.utcnow()
     start_time: datetime
     if not last_run:
         start_time = time_now - timedelta(minutes=1)
     else:
         start_time = last_run.get("start_time", time_now - timedelta(minutes=1))
-    time_range = f"TimeRange.SetTimeRange({start_time.strftime(DATE_FORMAT_EVENT)},{time_now.strftime(DATE_FORMAT_EVENT)})"
-    limit: str = args.get("max_fetch", "1000") or client.limit
-    demisto.info(f"fetching events with the following time_range: {time_range}")
-    url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q={time_range},MaximumResultCount={limit}"
-    events: list[dict] = client._http_request('GET', url_suffix=url_suffix)
-    demisto.info(f"got the following events: {events}")
-    new_last_run = {"start_time": events[-1].get("ModificationTimeStamp")}
-    demisto.debug(f"Done fetching, got {len(events)} events.")
-    demisto.debug(f"New last run is {new_last_run}")
+    time_now_str = time_now.strftime(DATE_FORMAT_EVENT)
+    start_time_str = start_time.strftime(DATE_FORMAT_EVENT)
+    time_range = f"TimeRange.SetTimeRange({start_time_str},{time_now_str})"
+    limit: int = int(args.get("limit") or client.limit)
+    query: str = f"{time_range},MaximumResultCount={limit},SortOrder=Ascending"
+    url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q={query}"
+    demisto.info(f"executing fetch events with the following query: {query}")
+    response_audit = client._http_request('GET', url_suffix=url_suffix, resp_type='response')
+    content = json.loads(response_audit.content)
+    data_audit_ls = content["Rsp"]["Result"]
+    for data_audit in data_audit_ls:
+        data_audit["Value"] = parse(data_audit.get("Value"))
 
-    return events, new_last_run
+    return data_audit_ls
 
 
-def test_func(client: Client):
-    url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q=TimeRange.SetTimeRange(2016-12-15T21:17:00,2023-12-15T21:18:00),MaximumResultCount=10"
-    events: list[dict] = client._http_request('GET', url_suffix=url_suffix)
-    new_last_run = {"start_time": events[-1].get("ModificationTimeStamp")}
-
-    return events, new_last_run
+def genetec_security_center_get_events_command(args: Dict[str, Any], client: Client):
+    time_now = datetime.utcnow()
+    start_time = time_now - timedelta(minutes=1)
+    limit: int = int(args.get("limit") or client.limit)
+    time_now_str = time_now.strftime(DATE_FORMAT_EVENT)
+    start_time_str = start_time.strftime(DATE_FORMAT_EVENT)
+    url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q=TimeRange.SetTimeRange(2024-02-20T00:00:00,{time_now_str}),MaximumResultCount={limit},SortOrder=Ascending"
+    response_audit = client._http_request('GET', url_suffix=url_suffix, resp_type='response')
+    content = json.loads(response_audit.content)
+    data_audit_ls = content["Rsp"]["Result"]
+    for data_audit in data_audit_ls:
+        data_audit["Value"] = parse(data_audit.get("Value"))
+    return data_audit_ls, {}
 
 
 def main() -> None:  # pragma: no cover
@@ -136,18 +153,21 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
 
         elif command == "genetec-security-center-get-events":
-            events, _ = test_func(client)
+            events = fetch_events_command(client, args, {})
             return_results(
-                CommandResults(readable_output=tableToMarkdown("Events:", events))
+                CommandResults(readable_output=tableToMarkdown("Events:", events, headers=GET_EVENTS_HEADERS))
             )
 
         elif command == "fetch-events":
             should_push_events = True
-            should_update_last_run = True
             last_run = demisto.getLastRun()
-            events, last_run = fetch_events_command(
+            events = fetch_events_command(
                 client, params, last_run=last_run
             )
+            last_run_time = datetime.strptime(events[-1]["ModificationTimeStamp"], "%Y-%m-%dT%H:%M:%S.%fZ").strftime(DATE_FORMAT_EVENT)
+            last_run = {"start_time": last_run_time}
+            demisto.setLastRun(last_run)
+            demisto.debug(f"set {last_run=}")
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
@@ -155,10 +175,6 @@ def main() -> None:  # pragma: no cover
         if should_push_events:
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f"{len(events)} events were pushed to XSIAM")
-
-            if should_update_last_run:
-                demisto.setLastRun(last_run)
-                demisto.debug(f"set {last_run=}")
 
     except Exception as e:
         return_error(
