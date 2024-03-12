@@ -1,20 +1,26 @@
 # This rule is to not run the build for docker update branches (for non-nightly packs)
-.filter-non-nightly-docker-updates-rule:
-  rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^demisto\// && $CI_COMMIT_BRANCH !~ /^demisto\/.*-nightly$/'
-      when: never
 
-.push-rule:
+# .push-rule:
+#   rules:
+#     - !reference [.filter-non-nightly-docker-updates-rule, rules]
+#     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
+.trigger-contribution-build-role:
   rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $TRIGGER_CONTRIBUTION_BUILD == "true"'
+
+stages:
+  - trigger-contribution-build
 
 trigger-contribution-build:
-  stage: unittests-and-validations
+  stage: trigger-contribution-build
   variables:
+    WORKFLOW: 'Trigger contribution build test'
     GITHUB_TOKEN: $GITHUB_TOKEN
     PR_NUMBER: $PR_NUMBER
     BASE_BRANCH: $BASE_BRANCH
     CONTRIB_BRANCH: $CONTRIB_BRANCH
+  extends:
+    - trigger-contribution-build-role
   script:
     - python3 ./Utils/trigger_contribution_build.py --github-token "${GITHUB_TOKEN}" --gitlab-api-token "${GITLAB_API_TOKEN}"
