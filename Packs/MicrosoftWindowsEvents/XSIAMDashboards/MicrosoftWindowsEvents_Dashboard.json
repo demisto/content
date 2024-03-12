@@ -325,7 +325,7 @@
             "creation_time": 1677409686512,
             "description": "This widget displays the top Event ID's in a descending order",
             "data": {
-                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type=\"Microsoft-Windows-*\"\n|comp count(xdm.event.operation_sub_type) as ActionCount by xdm.event.operation_sub_type\n| view graph type = pie subtype = full xaxis = xdm.event.operation_sub_type yaxis = ActionCount ",
+                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type=\"Microsoft-Windows-*\"\n|comp count(xdm.event.operation_sub_type) as `Action Count` by xdm.event.operation_sub_type",
                 "time_frame": {
                     "relativeTime": 604800000
                 },
