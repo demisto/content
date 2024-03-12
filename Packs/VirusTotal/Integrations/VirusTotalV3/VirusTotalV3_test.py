@@ -652,4 +652,5 @@ def test_not_found_file_sandbox_report_command(mocker, requests_mock):
 
     results = file_sandbox_report_command(client=client, args=demisto.args())
 
-    assert results.readable_output == f'{sha256} not found.'
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal'
