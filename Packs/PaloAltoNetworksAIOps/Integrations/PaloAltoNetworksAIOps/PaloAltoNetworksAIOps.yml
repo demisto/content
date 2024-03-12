@@ -3,40 +3,62 @@ commonfields:
   id: PaloAltoNetworksAIOps
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
+- section: Connect
+  display: Pan-OS/Panorama Server URL
   name: url
-  required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
-  name: credentials
   required: true
-  hiddenusername: true
-  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: PaloAltoNetworksAIOps
+- section: Connect
+  display: ""
+  displaypassword: Pan-OS/Panorama API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- section: Connect
+  display: TSG ID
+  name: tsg_id
+  type: 0
+  required: true
+- section: Connect
+  display: Client ID
+  name: client_id
+  type: 0
+  required: true
+- section: Connect
+  display: ""
+  displaypassword: Client Secret
+  name: client_secret
+  type: 9
+  required: true
+  hiddenusername: true
+description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
+display: Palo Alto Networks AIOps
 name: PaloAltoNetworksAIOps
 script:
   commands:
-  - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      name: dummy
-      required: true
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    - name: pan-aiops-bpa-report-generate
+      arguments:
+      - name: entry_id
+        description: Entry_id from xsoar war-room after uploading a file
+      - name: requester_email
+        required: true
+        description: Enter the requester email
+      - name: requester_name
+        required: true
+        description: Enter the requester name
+      - name: interval_in_seconds
+        description: Enter the interval for polling mechanism
+        defaultValue: "30"
+      - name: timeout
+        default: true
+        description: Enter the timeout for downloading the file
+        defaultValue: "600"
+      description: Generates a bpa
   runonce: false
   script: '-'
   type: python
