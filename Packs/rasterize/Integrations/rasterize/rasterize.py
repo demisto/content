@@ -660,12 +660,13 @@ def perform_rasterize(path: str,
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
             demisto.debug(f'path type is: {type(path)}')
+            print(f'path type is: {type(path)}')
             if type(path) == list:
                 demisto.debug('path type is list')
                 paths = argToList(path)
             else:
                 demisto.debug('path type is str')
-                paths = path
+                paths = [path]
             demisto.debug(f"rasterize, {paths=}, {rasterize_type=}")
             print(f"perform_rasterize, {paths=}, {rasterize_type=}")
             rasterization_threads = []
