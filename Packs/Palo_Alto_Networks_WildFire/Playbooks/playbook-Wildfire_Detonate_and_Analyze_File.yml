@@ -130,15 +130,6 @@ tasks:
                 - - operator: match
                     left:
                       value:
-                        simple: inputs.File.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PE64|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
-                    ignorecase: true
-                  - operator: match
-                    left:
-                      value:
                         simple: inputs.File.Info
                       iscontext: true
                     right:
