@@ -113,7 +113,7 @@ def genetec_security_center_get_events_command(args: Dict[str, Any], client: Cli
     limit: int = int(args.get("limit") or client.limit)
     time_now_str = time_now.strftime(DATE_FORMAT_EVENT)
     start_time_str = start_time.strftime(DATE_FORMAT_EVENT)
-    url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q=TimeRange.SetTimeRange(2024-02-20T00:00:00,{time_now_str}),MaximumResultCount={limit},SortOrder=Ascending"
+    url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q=TimeRange.SetTimeRange({start_time_str},{time_now_str}),MaximumResultCount={limit},SortOrder=Ascending"
     response_audit = client._http_request('GET', url_suffix=url_suffix, resp_type='response')
     content = json.loads(response_audit.content)
     data_audit_ls = content["Rsp"]["Result"]
