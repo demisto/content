@@ -43,11 +43,15 @@ class Client(BaseClient):
             'Content-Type': 'application/json',
         }
 
+        demisto.debug(f'Running http-request with URL {url_suffix} and {params=}')
+
         response = self._http_request(
             method, url_suffix=url_suffix, headers=headers, params=params, resp_type="response", ok_codes=(401, 200)
         )
         if response.status_code == 200:
             return response.json()
+        else:
+            demisto.debug('Access token has expired, retrieving new access token')
 
         token = self.get_access_token(create_new_token=True)
         headers["Authorization"] = f'Bearer {token}'
@@ -161,20 +165,21 @@ def test_module(client: Client) -> str:
 
 def fetch_events(client: Client, first_fetch: str, last_run: dict, max_fetch: int) -> tuple[List[dict[str, Any]], dict[str, Any]]:
     last_run_time = last_run.get(LastRun.LATEST_REPORT_TIME)
-    now = datetime.now()
     if not last_run_time:
         last_run_time = dateparser.parse(first_fetch).strftime(DATE_FORMAT)  # type: ignore[union-attr]
         if not last_run_time:
             raise ValueError('First fetch is not valid')
+    else:
+        last_run_time = dateparser.parse(last_run_time).strftime(DATE_FORMAT)
+    now = datetime.now()
     reports = client.get_reports(start_date=last_run_time, end_date=now.strftime(DATE_FORMAT), limit=max_fetch)
+    reports = dedup_fetched_events(reports, last_run_fetched_event_ids=last_run.get(LastRun.LATEST_FETCHED_REPORTS_IDS) or set())
     if not reports:
         demisto.debug(f'No reports found when last run is {last_run}')
         return [], {
             LastRun.LATEST_REPORT_TIME: last_run_time,
             LastRun.LATEST_FETCHED_REPORTS_IDS: last_run.get(LastRun.LATEST_FETCHED_REPORTS_IDS)
         }
-
-    reports = dedup_fetched_events(reports, last_run_fetched_event_ids=last_run.get(LastRun.LATEST_FETCHED_REPORTS_IDS) or set())
 
     latest_report_time, latest_fetched_report_ids = get_latest_event_time_and_ids(reports)
     demisto.debug(f'latest-report-time: {latest_report_time}')
