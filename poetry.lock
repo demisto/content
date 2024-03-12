@@ -1375,7 +1375,7 @@ urllib3 = "<2.1.0"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.27.1"
+version = "1.27.2"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
@@ -7259,4 +7259,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "bfef70a332e6412b8ae23a0db516640dd0276d4bdea76f42ec9646f0e4f98238"
+content-hash = "820324736737d1b1746eb69f382fbcc351303e95bc5e4d0ac6a142c326d19453"
