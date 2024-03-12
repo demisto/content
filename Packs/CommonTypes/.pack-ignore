@@ -303,6 +303,9 @@ ignore=IF115
 [file:incidentfield-Last_Mirrored_Time_Stamp.json]
 ignore=IF115
 
+[file:incidentfield-Alert_tags.json]
+ignore=IF100
+
 [known_words]
 SysAid
 longText
@@ -330,3 +333,6 @@ Misconfiguration
 CloudTrail
 ThreatCommand
 Cyberint
+DN
+PEM
+SPKI

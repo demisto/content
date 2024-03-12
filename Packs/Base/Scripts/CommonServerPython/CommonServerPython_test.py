@@ -3134,6 +3134,242 @@ class TestBaseClient:
 
         assert mock_request.last_request.query == 'key=value+with+spaces'
 
+    def test_http_request_execution_metrics_success(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A successful response.
+        Then: Verify the successful execution metrics is incremented.
+        """
+        requests_mock.get('http://example.com/api/v2/event', text="success")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.success == 1
+
+    def test_http_request_execution_metrics_success_but_polling_in_progress(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A successful response.
+        - Response is determined as polling in progress.
+        Then: Verify the successful execution metrics is not incremented.
+        """
+        requests_mock.get('http://example.com/api/v2/event', text="success")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        client.is_polling_in_progress = lambda _: True
+        client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.success == 0
+
+    def test_http_request_execution_metrics_timeout(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A timeout error is returned.
+        Then: Verify the timeout error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectTimeout)
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.timeout_error == 1
+
+    def test_http_request_execution_metrics_ssl_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - An SSL error is returned.
+        Then: Verify the ssl error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError)
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201))
+        with raises(DemistoException):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.ssl_error == 1
+
+    def test_http_request_execution_metrics_proxy_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A proxy error is returned.
+        Then: Verify the proxy error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ProxyError)
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.proxy_error == 1
+
+    def test_http_request_execution_metrics_connection_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A connection error is returned.
+        Then: Verify the connection error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError)
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.connection_error == 1
+
+    def test_http_request_execution_metrics_retry_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A retry error is returned.
+        Then: Verify the retry error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.RetryError)
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException):
+            client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert client.execution_metrics.retry_error == 1
+
+    def test_http_request_execution_metrics_auth_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - An auth error (401 status code) is returned.
+        Then: Verify the auth error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=401, text="err")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event', with_metrics=True)
+        assert client.execution_metrics.auth_error == 1
+
+    def test_http_request_execution_metrics_quota_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A quota error (429 status code) is returned.
+        Then: Verify the quota error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=429, text="err")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event', with_metrics=True)
+        assert client.execution_metrics.quota_error == 1
+
+    def test_http_request_execution_metrics_service_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A service error (500 status code) is returned.
+        Then: Verify the service error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=500, text="err")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event', with_metrics=True)
+        assert client.execution_metrics.service_error == 1
+
+    def test_http_request_execution_metrics_general_error(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A general error (400 status code) is returned.
+        Then: Verify the general error execution metrics is incremented.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event', with_metrics=True)
+        assert client.execution_metrics.general_error == 1
+
+    def test_http_request_execution_metrics_not_found_error_but_ok(cls, requests_mock):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - A not found error (404 status code) is returned.
+        - 404 is considered ok
+        Then: Verify the success execution metrics is incremented, and not the general error metrics.
+        """
+        requests_mock.get('http://example.com/api/v2/event', status_code=404, text="err")
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201, 404), verify=False)
+        res = client._http_request('get', 'event', resp_type='response', with_metrics=True)
+        assert res.status_code == 404
+        assert client.execution_metrics.success == 1
+        assert client.execution_metrics.general_error == 0
+
+    def test_http_request_execution_metrics_results(cls, requests_mock, mocker):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function with metrics
+        - An general error is returned
+        - The client object is then deleted
+        Then: Verify an execution metrics entry is sent to demisto.results() accordingly.
+        """
+        from CommonServerPython import DemistoException, EntryType, ErrorTypes
+        requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
+        demisto_results_mock = mocker.patch.object(demisto, 'results')
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event', with_metrics=True)
+        del client
+        demisto_results_mock.assert_called_once
+        entry = demisto_results_mock.call_args[0][0]
+        assert entry["Type"] == EntryType.EXECUTION_METRICS
+        assert entry["APIExecutionMetrics"] == [{
+            "Type": ErrorTypes.GENERAL_ERROR,
+            "APICallsCount": 1,
+        }]
+
+    def test_http_request_no_execution_metrics_results(cls, requests_mock, mocker):
+        """
+        Given: A BaseClient object
+        When:
+        - Calling _http_request function without metrics
+        - An general error is returned
+        - The client object is then deleted
+        Then: Verify demisto.results() is not called.
+        """
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
+        demisto_results_mock = mocker.patch.object(demisto, 'results')
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(DemistoException, match="Error in API call"):
+            client._http_request('get', 'event')
+        del client
+        demisto_results_mock.assert_not_called
+
+    def test_base_client_subclass_without_execution_metrics_initialized(self):
+        """
+        Given: A BaseClient object and a subclass of it that does not initialize execution_metrics
+        When: deleting the client object
+        Then: Ensure the deletion does not raise any exception
+        """
+        from CommonServerPython import BaseClient
+
+        class Client(BaseClient):
+            def __init__(self):
+                pass
+
+        client = Client()
+        del client
+
     @pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
     def test_http_request_params_parser_quote(self, requests_mock):
         """

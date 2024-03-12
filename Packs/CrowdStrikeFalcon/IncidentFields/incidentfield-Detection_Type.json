@@ -19,7 +19,8 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "CrowdStrike Falcon IDP Detection"
+        "CrowdStrike Falcon IDP Detection",
+        "CrowdStrike Falcon Mobile Detection"
     ],
     "associatedToAll": false,
     "unmapped": false,

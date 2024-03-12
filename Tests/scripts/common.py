@@ -170,7 +170,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
         skipped_count = 0
         errors_count = 0
         for server_version in server_versions_list:
-            test_suite: TestSuite = result_test_suites.get(server_version)
+            test_suite: TestSuite | None = result_test_suites.get(server_version)
             if test_suite:
                 xml.add_testsuite(test_suite)
                 row.append(

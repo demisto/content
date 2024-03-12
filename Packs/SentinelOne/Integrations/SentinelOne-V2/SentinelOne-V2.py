@@ -3483,10 +3483,7 @@ def fetch_handler(client: Client, args):
 
 def to_incident(type, data):
     incident = {
-        'details': json.dumps(data),
         'rawJSON': json.dumps(data),
-        'labels': [{'type': _type, 'value': value if isinstance(value, str) else json.dumps(value)}
-                   for _type, value in data.items()]
     }
 
     if type == 'Threat':

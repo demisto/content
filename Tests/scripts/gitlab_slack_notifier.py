@@ -238,7 +238,7 @@ def get_playbook_tests_data(artifact_folder: Path) -> tuple[set[str], set[str], 
     failed_tests = set()
     skipped_tests = set()
     skipped_integrations = set(split_results_file(get_artifact_data(artifact_folder, 'skipped_integrations.txt')))
-    xml = JUnitXml.fromfile(artifact_folder / TEST_PLAYBOOKS_REPORT_FILE_NAME)
+    xml = JUnitXml.fromfile(str(artifact_folder / TEST_PLAYBOOKS_REPORT_FILE_NAME))
     for test_suite in xml.iterchildren(TestSuite):
         properties = get_properties_for_test_suite(test_suite)
         if playbook_id := properties.get("playbook_id"):
@@ -562,8 +562,8 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
-    computed_slack_channel = "dmst-build-test"
     if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
+        computed_slack_channel = "dmst-build-test"
         # Check if the current commit's pipeline differs from the previous one. If the previous pipeline is still running,
         # compare the next build. For commits without pipelines, compare the current one to the nearest commit with a
         # pipeline and all those in between, marking them as suspicious.
