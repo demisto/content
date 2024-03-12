@@ -84,7 +84,11 @@ class Client(BaseClient):
                                       empty_valid_codes=[204], return_empty_response=True)
         return response
 
-    def get_issues_list_request(self, project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, args: dict[str, Any]):
+    def get_issues_list_request(self, project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, exclude_subproject, args: dict[str, Any]):
+        if exclude_subproject and args.get('subproject_id', None):
+            raise DemistoException("Specify only one of the following, subproject_id or exclude.")
+        elif exclude_subproject:
+            args['subproject_id'] = f'!{exclude_subproject}'
         params = assign_params(tracker_id=tracker_id, project_id=project_id, status_id=status_id,
                                offset=offset_to_dict, limit=limit_to_dict, **args)
         response = self._http_request('GET', '/issues.json', params=params, headers=self._get_header)
@@ -368,9 +372,9 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
     custom_field = args.pop('custom_field', None)
     status_id, tracker_id = check_args_validity_and_convert_to_id(status_id, tracker_id, custom_field)
     project_id = args.pop('project_id', client._project_id)
-
+    exclude_sub_project = args.pop('exclude', None)
     try:
-        response = client.get_issues_list_request(project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, args)
+        response = client.get_issues_list_request(project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, exclude_sub_project, args)
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
             raise DemistoException(INVALID_ID_DEMISTO_ERROR)

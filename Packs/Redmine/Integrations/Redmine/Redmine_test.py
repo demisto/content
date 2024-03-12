@@ -179,7 +179,7 @@ def test_get_issues_list_command_invalid_custom_field(mocker, redmine_client):
     When:
         - redmine-issue-list command is executed
     Then:
-        - The http request is called with the right arguments
+        - Raises an exception
     """
     from Redmine import get_issues_list_command
     from CommonServerPython import DemistoException
@@ -187,6 +187,20 @@ def test_get_issues_list_command_invalid_custom_field(mocker, redmine_client):
         get_issues_list_command(redmine_client, {'custom_field': 'frf2rg2'})
     assert e.value.message == "Invalid custom field format, please follow the command description. Error: list index out of range."
 
+def test_get_issues_list_command_use_both_exclude_subproject(mocker, redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed with asset id
+    When:
+        - redmine-issue-list command is executed
+    Then:
+        - Raises an exception
+    """
+    from Redmine import get_issues_list_command
+    from CommonServerPython import DemistoException
+    with pytest.raises(DemistoException) as e:
+        get_issues_list_command(redmine_client, {'subproject_id': '1', 'exclude':'2'})
+    assert e.value.message == "Specify only one of the following, subproject_id or exclude."
 
 def test_get_issues_list_command_invalid_status(mocker, redmine_client):
     """

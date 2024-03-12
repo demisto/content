@@ -154,7 +154,9 @@ script:
     - name: project_id
       description: Specify a project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed.
     - name: subproject_id
-      description: Specify a subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!name_of_subproject" to exclude subprojects)
+      description: Specify a subproject ID to display issues of this subproject (you can't use both subproject_id and exclude).
+    - name: exclude
+      description: Specify a subproject ID to exclude from the list (you can't use both subproject_id and exclude), you need to add a project_id for this field to be included.
     - name: tracker_id
       auto: PREDEFINED
       description: Specify a tracker ID to display issues of this tracker ID
