@@ -162,7 +162,7 @@ class Client(CoreClient):
         """ Check validity of provided custom close-reason mappings. """
 
         xdr_statuses_to_xsoar = [status.replace("resolved_", "").replace("_", " ").title()
-                                 for status in XDR_RESOLVED_STATUS_TO_XSOAR.keys()]
+                                 for status in XDR_RESOLVED_STATUS_TO_XSOAR]
         xsoar_statuses_to_xdr = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys())
 
         exception_message = ('Improper custom mapping ({direction}) provided: "{key_or_value}" is not a valid Cortex '
