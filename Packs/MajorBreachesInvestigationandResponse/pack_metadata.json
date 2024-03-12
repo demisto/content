@@ -43,7 +43,7 @@
             "display_name": "Common Playbooks"
         },
         "PANWComprehensiveInvestigation": {
-            "mandatory": false,
+            "mandatory": true,
             "display_name": "PANW Comprehensive Investigation"
         },
         "CommonScripts": {
