@@ -406,6 +406,61 @@ def test_fetch_events_without_last_run_no_events(mocker):
     assert actual_last_run[CybelAngelEventCollector.LastRun.LATEST_REPORT_TIME]
 
 
+def test_fetch_events_with_last_run_dedup_event(mocker):
+    """
+    Given:
+     - last run with event that was already fetched
+     - no new events have been received from the api
+
+    When:
+     - running the fetch-events
+
+    Then:
+     - make sure no events are sent into xsiam
+     - make sure last run does not get updated
+    """
+    import CybelAngelEventCollector
+
+    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, 'send_events_to_xsiam')
+    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun')
+
+    mocker.patch.object(
+        demisto,
+        'getLastRun',
+        return_value={CybelAngelEventCollector.LastRun.LATEST_REPORT_TIME: "2021-02-01T00:00:00", CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: 1}
+    )
+
+    mocker.patch.object(
+        demisto, 'params',
+        return_value={
+            "url": TEST_URL,
+            "credentials": {
+                "identifier": "1234",
+                "password": "1234",
+            },
+            "max_fetch": 100
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+
+    http_mocker = HttpRequestsMocker(0)
+
+    mocker.patch.object(
+        CybelAngelEventCollector.Client,
+        "_http_request",
+        side_effect=http_mocker.valid_http_request_side_effect
+    )
+
+    CybelAngelEventCollector.main()
+    assert send_events_mocker.called
+    fetched_events = send_events_mocker.call_args[0][0]
+    assert len(fetched_events) == 0
+
+    assert set_last_run_mocker.called
+    actual_last_run = set_last_run_mocker.call_args[0][0]
+    assert actual_last_run == {CybelAngelEventCollector.LastRun.LATEST_REPORT_TIME: "2021-02-01T00:00:00", CybelAngelEventCollector.LastRun.LATEST_FETCHED_REPORTS_IDS: 1}
+
+
 def test_get_events_command_command(mocker):
     """
     Given:
