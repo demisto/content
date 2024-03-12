@@ -179,7 +179,7 @@ def create_xsoar_certificate_indicator(certificate: dict):
             "subject": build_xsoar_grid(certificate_data["subject"]),
             "issuer": build_xsoar_grid(certificate_data["issuer"]),
             "x.509v3extensions": build_xsoar_grid(certificate_data["issuer"]),
-            "tags": ["Fake Domain", "CertStream"]
+            "tags": ["CertStream"]
         },
         "rawJSON": certificate,
         "relationships": create_relationship_list(certificate_data["fingerprint"], certificate_data["all_domains"])
