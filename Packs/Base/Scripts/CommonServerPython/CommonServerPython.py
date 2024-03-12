@@ -8393,6 +8393,11 @@ def censor_request_logs(request_log):
     """
     Censors the request logs generated from the urllib library directly by replacing sensitive information such as tokens and cookies with a mask. 
     In most cases, the sensitive value is the first word after the keyword, but in some cases, it is the second one.
+    :param request_log: The request log to censor
+    :type request_log: ``str``
+    
+    :return: The censored request log
+    :rtype: ``str``
     """
     keywords_to_censor = ['Authorization:', 'Cookie', "Token"]
     lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
