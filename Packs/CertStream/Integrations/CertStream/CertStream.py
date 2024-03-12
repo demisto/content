@@ -137,7 +137,7 @@ def create_xsoar_incident(certificate: dict, domain: str, current_time: datetime
     incident = {
         "name": f"Suspicious Domain Discovered - {domain}",
         "occured": current_time.strftime('%Y-%m-%d %H:%M:%S'),
-        "type": "New Suspicious Domain",
+        "type": get_integration_context()["incident_type"],
         "severity": set_incident_severity(result["similarity"]),
         "CustomFields": {
             "fingerprint": certificate["leaf_cert"]["fingerprint"],
@@ -329,6 +329,7 @@ def main():  # pragma: no cover
     word_list_name: str = params["list_name"]
     list_update_interval: int = params.get("update_interval", 30)
     levenshtein_distance_threshold: float = float(params.get("levenshtein_distance_threshold", 0.85))
+    incident_type = params["incidentType"]
     logging.getLogger('websockets.client').setLevel(logging.ERROR)
 
     demisto.setIntegrationContext({"context": json.dumps({
@@ -336,7 +337,8 @@ def main():  # pragma: no cover
         "list_update_interval": list_update_interval,
         "levenshtein_distance_threshold": levenshtein_distance_threshold,
         "homographs": get_homographs_list(word_list_name),
-        "fetch_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        "fetch_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        "incident_type": incident_type
     }, default=str)})
 
     try:
