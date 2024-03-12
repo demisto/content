@@ -8,7 +8,7 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
     tag = args.get('tag')
     table_name = args.get('table_name')
     if not table_name:
-        table_name = demisto.params('ticket_type')
+        table_name = demisto.params().get('ticket_type')
     using = args.get('instance_name')
 
     command_args = {}
