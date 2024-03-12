@@ -2,12 +2,9 @@
     "id": "incident_stellarcybercaseurl",
     "version": -1,
     "name": "Stellar Cyber Case URL",
-    "prevName": "Stellar Cyber Case URL",
     "ownerOnly": false,
-    "description": "",
     "cliName": "stellarcybercaseurl",
     "type": "url",
-    "orgType": "url",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -18,19 +15,16 @@
     "system": false,
     "content": true,
     "group": 0,
-    "mergeStrategy": "",
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
         "Stellar Cyber Case"
     ],
-    "systemAssociatedTypes": null,
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
-    "columns": null,
-    "defaultRows": null,
     "sla": 0,
-    "threshold": 72
+    "threshold": 72,
+    "fromVersion": "6.0.0"
 }

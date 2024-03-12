@@ -62,13 +62,13 @@ configuration:
   type: 0
   additionalinfo: "Supply a Tenant ID to restrict Fetch and Mirror operations to a specific Tenant. If not supplied, all Tenants will be included."
   section: Collect
-# - name: max_fetch
-#   display: Maximum number of incidents per fetch
-#   required: false
-#   defaultvalue: "200"
-#   type: 0
-#   section: Collect
-#   additionalinfo: "The maximum number of incidents to fetch per fetch."
+- name: max_fetch
+  display: Maximum number of incidents per fetch
+  required: false
+  defaultvalue: "200"
+  type: 0
+  section: Collect
+  additionalinfo: "The maximum number of incidents to fetch per fetch."
 description: Fetches and mirrors Cases from Stellar Cyber to XSOAR. Also provides commands to get an Alert, update a Case, or close a Case.
 display: Stellar Cyber
 name: StellarCyber
@@ -97,91 +97,91 @@ script:
     description: Retrieve an alert from Stellar Cyber.
     outputs:
     - contextPath: StellarCyber.Alert.alert_id
-      description: 'ID of the Stellar Cyber Alert'
+      description: 'ID of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_index
-      description: 'Index of the STellar Cyber Alert'
+      description: 'Index of the STellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.description
-      description: 'Description of the Stellar Cyber Alert'
+      description: 'Description of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.display_name
-      description: 'Display Name of the Stellar Cyber Alert'
+      description: 'Display Name of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.framework_version
-      description: 'Framework Version of the Stellar Cyber Alert'
+      description: 'Framework Version of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.name
-      description: 'Name of the Stellar Cyber Alert'
+      description: 'Name of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.scope
-      description: 'Scope of the Stellar Cyber Alert'
+      description: 'Scope of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.tactic.id
-      description: 'Tactic ID of the Stellar Cyber Alert'
+      description: 'Tactic ID of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.tactic.name
-      description: 'Tactic Name of the Stellar Cyber Alert'
+      description: 'Tactic Name of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.tags
-      description: 'Tags of the Stellar Cyber Alert'
+      description: 'Tags of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.technique.id
-      description: 'Technique ID of the Stellar Cyber Alert'
+      description: 'Technique ID of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.technique.name
-      description: 'Technique Name of the Stellar Cyber Alert'
+      description: 'Technique Name of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.ttps.tactic.id
-      description: 'Tactic ID of the Stellar Cyber Alert'
+      description: 'Tactic ID of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.ttps.tactic.name
-      description: 'Tactic Name of the Stellar Cyber Alert'
+      description: 'Tactic Name of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.ttps.technique.id
-      description: 'Technique ID of the Stellar Cyber Alert'
+      description: 'Technique ID of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.ttps.technique.name
-      description: 'Technique Name of the Stellar Cyber Alert'
+      description: 'Technique Name of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.xdr_killchain_stage
-      description: 'XDR Killchain Stage'
+      description: 'XDR Killchain Stage.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.xdr_killchain_version
-      description: 'XDR Killchain Version'
+      description: 'XDR Killchain Version.'
       type: String
     - contextPath: StellarCyber.Alert.alert_url
-      description: 'URL to the Stellar Cyber Alert'
+      description: 'URL to the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.description
-      description: 'Description of the Stellar Cyber Alert'
+      description: 'Description of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.detected_field
-      description: 'Detected Field(s) of the Stellar Cyber Alert'
+      description: 'Detected Field(s) of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.detected_value
-      description: 'Detected Value(s) of the Stellar Cyber Alert'
+      description: 'Detected Value(s) of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.display_name
-      description: 'Display Name of the Stellar Cyber Alert'
+      description: 'Display Name of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.tenant_id
-      description: 'Tenant ID of the Stellar Cyber Alert'
+      description: 'Tenant ID of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.tenant_name
-      description: 'Tenant Name of the Stellar Cyber Alert'
+      description: 'Tenant Name of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.xdr_tactic_id
-      description: 'XDR Tactic ID of the Stellar Cyber Alert'
+      description: 'XDR Tactic ID of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.xdr_tactic_name
-      description: 'XDR Tactic Name of the Stellar Cyber Alert'
+      description: 'XDR Tactic Name of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.xdr_technique_id
-      description: 'XDR Technique ID of the Stellar Cyber Alert'
+      description: 'XDR Technique ID of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.xdr_technique_name
-      description: 'XDR Technique Name of the Stellar Cyber Alert'
+      description: 'XDR Technique Name of the Stellar Cyber Alert.'
       type: String
   - name: stellar-close-case
     arguments:
@@ -234,7 +234,7 @@ script:
   ismappable: false
   isremotesyncin: true
   isremotesyncout: false
-fromversion: 6.6.0
+fromversion: 6.0.0
 defaultclassifier: Stellar Cyber Classifier
 defaultmapperin: Stellar Cyber - Incoming Mapper
 tests:

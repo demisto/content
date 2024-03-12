@@ -143,7 +143,7 @@ class Client(BaseClient):
             return response_incidents[0]
         else:
             return {}
-    
+
     def get_incident_summary(self, incident_id: str):
         incident_summary_url = f"https://{self.dp_host}/connect/api/v1/cases/{incident_id}/summary?formatted=true"
         headers = {"Accept": "application/json", "Content-type": "application/json"}
@@ -164,7 +164,7 @@ class Client(BaseClient):
             hit = hits[0].get("_source", None)
             alert_index = hits[0].get("_index", "")
             hit = demisto_normalization(hit, alert_id, alert_index, self.dp_host)
-        
+
         return hit
 
     def update_case(
@@ -195,7 +195,7 @@ class Client(BaseClient):
         headers["Authorization"] = self._get_auth_header()
         response = self._http_request(method="POST", full_url=incident_url, headers=headers, json_data=update_data)
         return response
-    
+
     def close_case(self, case_id, close_reason):
         incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?id={case_id}"
         headers = {"Accept": "application/json", "Content-type": "application/json"}
@@ -208,7 +208,9 @@ class Client(BaseClient):
         response = self._http_request(method="POST", full_url=incident_url, headers=headers, json_data=update_data)
         return response
 
+
 """ HELPER FUNCTIONS """
+
 
 def get_xsoar_severity(severity):
     sev_map = {"Low": 1, "Medium": 2, "High": 3, "Critical": 4}
@@ -325,7 +327,7 @@ def fetch_incidents(client: Client, params: dict):
                 "rawJSON": json.dumps(incident)
             }
             demisto_incidents.append(demisto_incident)
-    
+
     if len(incident_ids) == 0:
         incident_ids = last_incident_ids
 
@@ -456,12 +458,12 @@ def get_remote_data_command(client: Client, args):
 def get_modified_remote_data_command(client: Client, args):
     demisto.debug(f"get_modified_remote_data_command: {args}")
     try:
-        last_update = get_last_mirror_run().get("last_update") # type: ignore
+        last_update = get_last_mirror_run().get("last_update")  # type: ignore
         if not last_update:
             remote_args = GetModifiedRemoteDataArgs(args)
             last_update = remote_args.last_update
         demisto.debug(f"last_update: {last_update}")
-        last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'}) # type: ignore
+        last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # type: ignore
         demisto.debug(f"last_update_utc: {last_update_utc}")
         assert last_update_utc is not None
         last_run_ts = int((last_update_utc - timedelta(minutes=5)).timestamp() * 1000)
@@ -474,7 +476,9 @@ def get_modified_remote_data_command(client: Client, args):
     except Exception as e:
         return_error("skip update")
 
+
 """ MAIN FUNCTION """
+
 
 def main() -> None:  # pragma: no cover
     """
@@ -529,6 +533,7 @@ def main() -> None:  # pragma: no cover
     except Exception as e:
         demisto.info(str(e))
         return_error(str(e))
+
 
 """ ENTRY POINT """
 

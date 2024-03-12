@@ -2,12 +2,10 @@
     "id": "incident_stellarcybercasealerts",
     "version": -1,
     "name": "Stellar Cyber Case Alerts",
-    "prevName": "Stellar Cyber Case Alerts",
     "ownerOnly": false,
     "description": "Table of names, descriptions, and URLs of Alerts associated to the Stellar Cyber Case",
     "cliName": "stellarcybercasealerts",
     "type": "grid",
-    "orgType": "grid",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -22,7 +20,6 @@
     "associatedTypes": [
         "Stellar Cyber Case"
     ],
-    "systemAssociatedTypes": null,
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
@@ -59,8 +56,8 @@
             "isReadOnly": false
         }
     ],
-    "defaultRows": [
-    ],
+    "defaultRows": [],
     "sla": 0,
-    "threshold": 72
+    "threshold": 72,
+    "fromVersion": "6.0.0"
 }

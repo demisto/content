@@ -45,6 +45,7 @@ Gets the list of incidents and detections that were modified since the last upda
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
 
 ***
@@ -64,6 +65,7 @@ Gets data from a remote incident. This method does not update the current incide
 #### Context Output
 
 There is no context output for this command.
+
 ### stellar-get-alert
 
 ***
@@ -132,6 +134,7 @@ Close an incident in Stellar Cyber.
 #### Context Output
 
 There is no context output for this command.
+
 ### stellar-update-case
 
 ***
@@ -155,10 +158,12 @@ Update the severity, status, assignee, or tags of a Case in Stellar Cyber.
 #### Context Output
 
 There is no context output for this command.
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Stellar Cyber corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.

@@ -2,12 +2,9 @@
     "id": "incident_stellarcybercaseid",
     "version": -1,
     "name": "Stellar Cyber Case ID",
-    "prevName": "Stellar Cyber Case ID",
     "ownerOnly": false,
-    "description": "",
     "cliName": "stellarcybercaseid",
     "type": "shortText",
-    "orgType": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -18,19 +15,16 @@
     "system": false,
     "content": true,
     "group": 0,
-    "mergeStrategy": "",
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
         "Stellar Cyber Case"
     ],
-    "systemAssociatedTypes": null,
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
-    "columns": null,
-    "defaultRows": null,
     "sla": 0,
-    "threshold": 72
+    "threshold": 72,
+    "fromVersion": "6.0.0"
 }

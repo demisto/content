@@ -1,14 +1,10 @@
 {
     "id": "incident_stellarcybercasescore",
     "version": -1,
-    "shouldCommit": false,
     "name": "Stellar Cyber Case Score",
-    "prevName": "Stellar Cyber Case Score",
     "ownerOnly": false,
-    "description": "",
     "cliName": "stellarcybercasescore",
     "type": "number",
-    "orgType": "number",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -21,11 +17,11 @@
     "associatedTypes": [
         "Stellar Cyber Case"
     ],
-    "systemAssociatedTypes": null,
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
-    "threshold": 72
+    "threshold": 72,
+    "fromVersion": "6.0.0"
 }
