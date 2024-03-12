@@ -16,13 +16,13 @@ enabled: true
 args:
 - name: key
   default: true
-  description: The key to delete from the context
+  description: List of comma-separated keys to delete from context.
 - name: all
   auto: PREDEFINED
   predefined:
   - "yes"
   - "no"
-  description: If you choose yes - all context will be deleted
+  description: If you choose yes - all context will be deleted.
 - name: subplaybook
   auto: PREDEFINED
   predefined:
@@ -33,7 +33,7 @@ args:
 - name: keysToKeep
   description: Context keys to keep when deleting all context. Supports comma separated values and nested objects, e.g. URL.Data,IP.Address
 - name: index
-  description: index to delete in case 'key' argument was specified
+  description: index to delete in case 'key' argument was specified.
 scripttarget: 0
 runas: DBotRole
 sensitive: true
