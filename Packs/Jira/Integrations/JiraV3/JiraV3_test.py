@@ -870,7 +870,7 @@ class TestJiraDeleteAttachmentFileCommand:
     def test_delete_attachment_file_command(self, mocker: MockerFixture):
         """
         Given:
-            - A Jira client
+            - A Jira client.
         When
             - Calling the delete attachment file command.
         Then

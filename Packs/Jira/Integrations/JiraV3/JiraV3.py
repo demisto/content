@@ -2095,8 +2095,8 @@ def delete_attachment_file_command(client: JiraBaseClient, args: Dict[str, str])
     """This command is in charge of deleting an attachment file.
 
     Args:
-        client (JiraBaseClient): The jira client
-        args (Dict[str, str]): The argument supplied by the user
+        client (JiraBaseClient): The jira client.
+        args (Dict[str, str]): The argument supplied by the user.
 
     Returns:
         CommandResults: CommandResults to return to XSOAR.
