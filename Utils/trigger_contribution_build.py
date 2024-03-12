@@ -6,8 +6,6 @@ import sys
 import requests
 import urllib3
 
-from Utils.github_workflow_scripts.utils import get_env_var
-
 urllib3.disable_warnings()
 
 
