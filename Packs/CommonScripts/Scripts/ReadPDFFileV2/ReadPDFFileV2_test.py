@@ -68,7 +68,7 @@ def test_urls_are_unescaped(unescape, urls_set):
         - A pdf file that has xml content in it.
         - Whether to unescape the html content or no.
     When
-        - Trying extract the urls from an html with escaping characters.. 
+        - Trying extract the urls from an html with escaping characters.
     Then
         - The set of urls are extracted correctly, with respect to whether to unescape them or not.
     """
