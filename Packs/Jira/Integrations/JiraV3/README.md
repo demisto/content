@@ -714,11 +714,11 @@ There is no context output for this command.
 
 #### Command example
 
-```!jira-issue-delete-file attachment_id=16777```
+```!jira-issue-delete-file attachment_id=ATTACHMENT_ID```
 
 #### Human Readable Output
 
->Attachment id 16777 was deleted successfully.
+>Attachment id ATTACHMENT_ID was deleted successfully.
 
 
 ### jira-list-transitions
