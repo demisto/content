@@ -369,18 +369,18 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
         incident_result['rawJSON'] = json.dumps(incident)
 
         file_attachments = []
-        if incident.get('attachment') and len(incident.get('attachment', [])) > 0 and incident.get('investigationId'):
-            entries = client.get_incident_entries(
-                incident_id=incident['investigationId'],  # type: ignore
-                from_date=0,
-                max_results=10,
-                categories=['attachments'],
-                tags=None,
-                tags_and_operator=False
-            )
+        # When demisto.command() == 'test-module' we can't write files since we are not running in a playground.
+        if demisto.command() != 'test-module':
+            if incident.get('attachment') and len(incident.get('attachment', [])) > 0 and incident.get('investigationId'):
+                entries = client.get_incident_entries(
+                    incident_id=incident['investigationId'],  # type: ignore
+                    from_date=0,
+                    max_results=10,
+                    categories=['attachments'],
+                    tags=None,
+                    tags_and_operator=False
+                )
 
-            # When demisto.command() == 'test-module' we can't write files since we are not running in a playground.
-            if demisto.command() != 'test-module':
                 for entry in entries:
                     if 'file' in entry and entry.get('file'):
                         file_entry_content = client.get_file_entry(entry.get('id'))  # type: ignore
