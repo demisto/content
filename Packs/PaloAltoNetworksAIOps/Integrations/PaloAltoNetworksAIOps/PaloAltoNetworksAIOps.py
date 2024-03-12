@@ -23,6 +23,58 @@ class Client(BaseClient):
         self._client_id = client_id
         self._client_secret = client_secret
 
+    def generate_access_token(self):
+        integration_context = get_integration_context()
+        tsg_access_token = f'{self._tsg_id}.access_token'
+        tsg_expiry_time = f'{self._tsg_id}.expiry_time'
+        previous_token = integration_context.get(tsg_access_token)
+        previous_token_expiry_time = integration_context.get(tsg_expiry_time)
+
+        if previous_token and previous_token_expiry_time > date_to_timestamp(datetime.now()):
+            return previous_token
+        else:
+            data = {
+                'grant_type': 'client_credentials',
+                'scope': f'tsg_id:{self._tsg_id}'
+            }
+            try:
+                headers = {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Accept': 'application/json',
+                }
+
+                res = self._http_request(method='POST',
+                                         full_url='https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token',
+                                         auth=(self._client_id, self._client_secret),
+                                         resp_type='response',
+                                         headers=headers,
+                                         data=data)
+                try:
+                    res = res.json()
+                except ValueError as exception:
+                    raise DemistoException(f'Failed to parse json object from response: {res.text}.\n'
+                                           f'Error: {exception}')
+
+                if access_token := res.get('access_token'):
+                    expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
+                    expiry_time += res.get('expires_in', 0) - 10
+                    new_token = {
+                        tsg_access_token: access_token,
+                        tsg_expiry_time: expiry_time
+                    }
+                    # store received token and expiration time in the integration context
+                    set_integration_context(new_token)
+                    print(get_integration_context())
+                    return access_token
+
+                else:
+                    raise DemistoException('Error occurred while creating an access token. Access token field has not'
+                                           ' found in the response data. Please check the instance configuration.\n')
+
+            except Exception as e:
+                raise DemistoException(f'Error occurred while creating an access token. Please check the instance'
+                                       f' configuration.\n\n{e}')
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -61,7 +113,7 @@ def test_module(client: Client) -> str:
 
 # TODO: REMOVE the following dummy command function
 def generate_report_command(client: Client, args: dict[str, Any]):
-    pass
+    client.generate_access_token()
 
 
 ''' MAIN FUNCTION '''
@@ -71,7 +123,7 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
     params = demisto.params()
-
+    print(params)
     verify_certificate = not params.get('insecure', False)
     base_url = params.get('url')
     api_key = params.get('credentials', {}).get('password')
@@ -79,15 +131,10 @@ def main() -> None:
     client_id = params.get('client_id')
     client_secret = params.get('client_secret', {}).get('password')
 
-    integration_context = get_integration_context()
-    print(integration_context)
-    print(verify_certificate, base_url, api_key, tsg_id, client_id, client_secret)
-
     proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        commands = {'pan-aiops-bpa-report-generate': generate_report_command}
         headers: dict = {}
 
         client = Client(
@@ -100,12 +147,14 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        generate_report_command(client, args)
+
+        if command == 'test-module':
             result = test_module(client)
             return_results(result)
 
-        elif command in commands:
-            return_results(commands[command](client, args))
+        elif command == 'pan-aiops-bpa-report-generate':
+            return_results(generate_report_command(client, args))
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
