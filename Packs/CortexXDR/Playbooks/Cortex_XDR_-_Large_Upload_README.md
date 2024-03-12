@@ -1,7 +1,7 @@
 The playbook investigates Cortex XDR incidents involving large upload alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling v2’. 
 
 The playbook consists of the following procedures:
-- Searching for similar previous incidents that were closed as false positives.
+- Searches for similar previous incidents that were closed as false positives.
 - Enrichment and investigation of the initiator and destination hostname and IP address.
 - Enrichment and investigation of the initiator user, process, file, or command if it exists.
 - Detection of related indicators and analysis of the relationship between the detected indicators.
@@ -21,22 +21,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Account Enrichment - Generic v2.1
 * Block Indicators - Generic v3
-* File Enrichment - Generic v2
-* IP Enrichment - Generic v2
-* Command-Line Analysis
-* Cortex XDR - Isolate Endpoint
-* TIM - Indicator Relationships Analysis
 * Cortex XDR - Search and Compare Process Executions - XDR Alerts
-* Domain Enrichment - Generic v2
+* TIM - Indicator Relationships Analysis
+* User Investigation - Generic
 * Threat Hunting - Generic
 * Cortex XDR - Endpoint Investigation
-* User Investigation - Generic
+* Cortex XDR - Isolate Endpoint
+* Entity Enrichment - Generic v3
+* Command-Line Analysis
 
 ### Integrations
 
-* Cortex XDR - IR
+CortexXDRIR
 
 ### Scripts
 
@@ -45,8 +42,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* setIncident
 * xdr-get-cloud-original-alerts
+* setIncident
 
 ## Playbook Inputs
 
@@ -54,9 +51,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| InternalIPRanges | A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
+| InternalIPRanges | A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | lists.PrivateIPs | Optional |
 | FurtherInvestigation | Determines whether an incident should be further investigated if similar previous false positive incidents were found.<br/>Possible values:True/False. Default: False. | False | Required |
-| AutoBlockIndicators | Determine whether the given indicators be automatically blocked, or should the user be given the option to choose.<br/>Possible values:True/False. Default: False.<br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Required |
+| AutoBlockIndicators | Determine whether the given indicators be automatically blocked, or if the user should be given the option to choose.<br/>Possible values:True/False. Default: True.<br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Required |
 | BlockIndicators_UserVerification | Determine whether the blocking of any indicator requires the verification of the user.<br/>Possible values:True/False. Default: False. | False | Optional |
 | EarlyContainment | Whether early containment should be allowed when the IP address is known to be malicious.<br/>Possible values:True/False. Default: True. | True | Required |
 | AutoIsolateEndpoint | Whether to isolate the initiating endpoint automatically if the investigation verdict is malicious.<br/>Possible values:True/False. Default: False. | False | Required |

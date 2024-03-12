@@ -1,17 +1,7 @@
 id: Cortex XDR - Large Upload
 version: -1
 name: Cortex XDR - Large Upload
-description: "The playbook investigates Cortex XDR incidents involving large upload
-  alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts
-  Handling v2’. \n\nThe playbook consists of the following procedures:\n- Searching
-  for similar previous incidents that were closed as false positives.\n- Enrichment
-  and investigation of the initiator and destination hostname and IP address.\n- Enrichment
-  and investigation of the initiator user, process, file, or command if it exists.\n-
-  Detection of related indicators and analysis of the relationship between the detected
-  indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks
-  detected malicious indicators.\n- Endpoint isolation.\n\nThis playbook supports
-  the following Cortex XDR alert names:\n- Large Upload (Generic)\n- Large Upload
-  (SMTP)\n- Large Upload (FTP)\n- Large Upload (HTTPS)"
+description: "The playbook investigates Cortex XDR incidents involving large upload alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling v2’. \n\nThe playbook consists of the following procedures:\n- Searches for similar previous incidents that were closed as false positives.\n- Enrichment and investigation of the initiator and destination hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\n\nThis playbook supports the following Cortex XDR alert names:\n- Large Upload (Generic)\n- Large Upload (SMTP)\n- Large Upload (FTP)\n- Large Upload (HTTPS)"
 starttaskid: "0"
 tasks:
   "0":
@@ -136,10 +126,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: b1087a38-bd78-4643-8987-7d69672c538e
+    taskid: d44093f6-2027-42d7-8815-ffe1ca89dbce
     type: regular
     task:
-      id: b1087a38-bd78-4643-8987-7d69672c538e
+      id: d44093f6-2027-42d7-8815-ffe1ca89dbce
       version: -1
       name: Get Similar False-Positives Closed Incidents
       description: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
@@ -155,6 +145,8 @@ tasks:
         simple: incident.type
       fieldsToDisplay:
         simple: closeReason,closeNotes
+      fromDate:
+        simple: 2 months ago
       minimunIncidentSimilarity:
         simple: "0.8"
       query:
@@ -227,16 +219,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 6d2be028-50b5-452f-8e79-535b6c3af716
+    taskid: fa5be6a6-a64a-4e1e-8a29-02ffbf4a3920
     type: condition
     task:
-      id: 6d2be028-50b5-452f-8e79-535b6c3af716
+      id: fa5be6a6-a64a-4e1e-8a29-02ffbf4a3920
       version: -1
       name: Alert Investigation Should Continue?
       description: |-
         The playbook detected similar incidents that were closed as false positives previously.
 
-        Please review the incident details and similar closed false positive incidents to determine whether this Cortex XDR alert should be further investigated.
+        Review the incident details and similar closed false positive incidents to determine whether this Cortex XDR alert should be further investigated.
       type: condition
       iscommand: false
       brand: ""
@@ -286,295 +278,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1620,
-          "y": 1535
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: 487cec7e-4b99-4d9a-81eb-731090f44ca6
-    type: playbook
-    task:
-      id: 487cec7e-4b99-4d9a-81eb-731090f44ca6
-      version: -1
-      name: IP Enrichment - Generic v2
-      description: |-
-        Enrich IP addresses using one or more integrations.
-
-        - Resolve IP addresses to hostnames (DNS)
-        - Provide threat information
-        - IP address reputation using !ip command
-        - Separate internal and external IP addresses
-        - For internal IP addresses, get host information.
-
-        When executing this playbook through IP Enrichment - Generic v2, IP classification and resolution will be handled by the main playbook, improving performance.
-      playbookName: IP Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      ExecutedFromParent:
-        simple: "True"
-      IP:
-        complex:
-          root: PaloAltoNetworksXDR.OriginalAlert._all_events
-          accessor: action_local_ip
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.target_ip
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.action_remote_ip
-          - operator: uniq
-      InternalRange:
-        complex:
-          root: inputs.InternalIPRanges
-      ResolveIP:
-        simple: "True"
-      UseReputationCommand:
-        simple: "True"
-      extended_data:
-        simple: "False"
-      threat_model_association:
-        simple: "False"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 2200,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 7abe18b8-01cf-43dd-8cbb-7c6601958aaf
-    type: playbook
-    task:
-      id: 7abe18b8-01cf-43dd-8cbb-7c6601958aaf
-      version: -1
-      name: Account Enrichment - Generic v2.1
-      description: |-
-        Enrich accounts using one or more integrations.
-        Supported integrations:
-        - Active Directory
-        - Microsoft Graph User
-        - SailPoint IdentityNow
-        - SailPoint IdentityIQ
-        - PingOne
-        - Okta
-        - AWS IAM
-        - Cortex XDR (account enrichment and reputation)
-
-        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
-      playbookName: Account Enrichment - Generic v2.1
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      Domain:
-        complex:
-          root: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_primary_normalized_user
-          accessor: domain
-          transformers:
-          - operator: uniq
-      Username:
-        complex:
-          root: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_primary_normalized_user
-          accessor: username
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1810,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: d2d2a957-1fa7-477a-8281-8eae4eb16525
-    type: playbook
-    task:
-      id: d2d2a957-1fa7-477a-8281-8eae4eb16525
-      version: -1
-      name: File Enrichment - Generic v2
-      description: |-
-        Enrich a file using one or more integrations.
-
-        - Provide threat information
-        - File Reputation using !file command
-      playbookName: File Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      MD5:
-        complex:
-          root: File
-          accessor: MD5
-          transformers:
-          - operator: uniq
-      SHA1:
-        complex:
-          root: File
-          accessor: SHA1
-          transformers:
-          - operator: uniq
-      SHA256:
-        complex:
-          root: PaloAltoNetworksXDR.OriginalAlert._all_events
-          accessor: os_actor_process_image_sha256
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.actor_process_image_sha256
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_process_image_sha256
-                iscontext: true
-          - operator: uniq
-      UseReputationCommand:
-        simple: "True"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1020,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: efdb4a98-3bb1-45bc-84f8-2cfcd5236641
-    type: playbook
-    task:
-      id: efdb4a98-3bb1-45bc-84f8-2cfcd5236641
-      version: -1
-      name: Domain Enrichment - Generic v2
-      description: |-
-        Enrich domains using one or more integrations.
-        Domain enrichment includes:
-        * Threat information
-        * Domain reputation using !domain command
-      playbookName: Domain Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      Domain:
-        complex:
-          root: PaloAltoNetworksXDR.OriginalAlert._all_events
-          accessor: dst_action_external_hostname
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.ssl_req_chello_sni_sample
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.target_address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.domain
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.action_external_hostname
-                iscontext: true
-          - operator: uniq
-      UseReputationCommand:
-        simple: "True"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1410,
-          "y": 1360
+          "x": 1610,
+          "y": 1515
         }
       }
     note: false
@@ -586,10 +291,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: b70a683d-82f6-43e0-8686-e70cbb1a8f24
+    taskid: db25c15f-7de2-4500-8a6f-0e6059d52255
     type: title
     task:
-      id: b70a683d-82f6-43e0-8686-e70cbb1a8f24
+      id: db25c15f-7de2-4500-8a6f-0e6059d52255
       version: -1
       name: Containment
       type: title
@@ -604,12 +309,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1620,
-          "y": 2030
+          "x": 1610,
+          "y": 2010
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: containmentsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -650,8 +357,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 2330
+          "x": 1360,
+          "y": 2310
         }
       }
     note: false
@@ -735,8 +442,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1620,
-          "y": 2160
+          "x": 1610,
+          "y": 2140
         }
       }
     note: false
@@ -803,117 +510,8 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
-      EmailToBlock:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: email
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      FilesToBlock:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      IP:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: ip
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
       InputEnrichment:
         simple: "False"
-      MD5:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-          accessor: Indicator
-          transformers:
-          - operator: uniq
       RuleDirection:
         simple: outbound
       RuleName:
@@ -957,57 +555,9 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
-      URL:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: url
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
       UserVerification:
         complex:
           root: inputs.BlockIndicators_UserVerification
-      Username:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: username
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1018,8 +568,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 2500
+          "x": 1360,
+          "y": 2480
         }
       }
     note: false
@@ -1031,10 +581,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: a63d9639-196a-4d38-8ea7-d7ea22c22781
+    taskid: 47ae1efd-7b1b-4044-885e-172be32b8fab
     type: title
     task:
-      id: a63d9639-196a-4d38-8ea7-d7ea22c22781
+      id: 47ae1efd-7b1b-4044-885e-172be32b8fab
       version: -1
       name: Investigation
       type: title
@@ -1052,12 +602,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1620,
-          "y": 2675
+          "x": 1610,
+          "y": 2655
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: containmentsla
+      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1194,8 +746,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1830,
-          "y": 2820
+          "x": 1820,
+          "y": 2800
         }
       }
     note: false
@@ -1246,8 +798,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1400,
-          "y": 2820
+          "x": 1390,
+          "y": 2800
         }
       }
     note: false
@@ -1319,8 +871,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 990,
-          "y": 2995
+          "x": 980,
+          "y": 2975
         }
       }
     note: false
@@ -1332,10 +884,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: a881fd81-2743-4c2a-8a46-5a1406936485
+    taskid: 020df797-a905-4c06-8b81-7cd6479666cf
     type: playbook
     task:
-      id: a881fd81-2743-4c2a-8a46-5a1406936485
+      id: 020df797-a905-4c06-8b81-7cd6479666cf
       version: -1
       name: Command-Line Analysis
       description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: In case you are wishing to run this playbook with a list of command lines, set this playbook to be running in a loop. To do so, navigate to the 'Loop'  and check \"For Each Input\"."
@@ -1368,11 +920,12 @@ tasks:
       exitCondition: ""
       wait: 1
       max: 100
+      forEach: true
     view: |-
       {
         "position": {
-          "x": 2650,
-          "y": 2995
+          "x": 2640,
+          "y": 2975
         }
       }
     note: false
@@ -1419,8 +972,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 990,
-          "y": 2820
+          "x": 980,
+          "y": 2800
         }
       }
     note: false
@@ -1473,8 +1026,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
-          "y": 2820
+          "x": 2230,
+          "y": 2800
         }
       }
     note: false
@@ -1486,10 +1039,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: faea65e4-1d36-4873-8929-089a94d65d84
+    taskid: 9e426f5e-e46a-4d43-8ce9-ae2db84c200f
     type: condition
     task:
-      id: faea65e4-1d36-4873-8929-089a94d65d84
+      id: 9e426f5e-e46a-4d43-8ce9-ae2db84c200f
       version: -1
       name: Has Command-Line Investigation Results?
       description: Checks whether the command-line investigation produced any results.
@@ -1509,16 +1062,82 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.Initiator_CMD
+                root: Findings
             iscontext: true
           right:
             value: {}
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CommandlineVerdict
+                accessor: suspiciousParameters
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CommandlineVerdict
+                accessor: AMSI
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CommandlineVerdict
+                accessor: foundIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CommandlineVerdict
+                accessor: maliciousTools
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CommandlineVerdict
+                accessor: networkActivity
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CommandlineVerdict
+                accessor: SuspiciousLolbinExecution
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2450,
-          "y": 3170
+          "x": 2440,
+          "y": 3150
         }
       }
     note: false
@@ -1548,8 +1167,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 4120
+          "x": 1190,
+          "y": 4100
         }
       }
     note: false
@@ -1561,10 +1180,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 1f4ae371-2eb6-4c5e-88c9-e05d513de3d3
+    taskid: 3e1f3e1c-57e4-4fe7-8927-2aefac4c0d2a
     type: regular
     task:
-      id: 1f4ae371-2eb6-4c5e-88c9-e05d513de3d3
+      id: 3e1f3e1c-57e4-4fe7-8927-2aefac4c0d2a
       version: -1
       name: Set Malicious Command-Line
       description: Set a value in context under the key you entered.
@@ -1585,13 +1204,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2450,
-          "y": 3350
+          "x": 2440,
+          "y": 3330
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Command Line
+      output:
+        simple: ${commandline.original}
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -1647,8 +1270,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 4250
+          "x": 1190,
+          "y": 4230
         }
       }
     note: false
@@ -1883,8 +1506,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 990,
-          "y": 4420
+          "x": 980,
+          "y": 4400
         }
       }
     note: false
@@ -1943,8 +1566,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 990,
-          "y": 4580
+          "x": 980,
+          "y": 4560
         }
       }
     note: false
@@ -1980,8 +1603,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 990,
-          "y": 4740
+          "x": 980,
+          "y": 4720
         }
       }
     note: false
@@ -2011,8 +1634,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1620,
-          "y": 3520
+          "x": 1610,
+          "y": 3500
         }
       }
     note: false
@@ -2046,8 +1669,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 3960
+          "x": 1190,
+          "y": 3940
         }
       }
     note: false
@@ -2059,10 +1682,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: bc443145-1d15-4f9a-8896-a7ab6d6c7538
+    taskid: d03b3054-01fb-4e5f-852c-a9629b377f21
     type: title
     task:
-      id: bc443145-1d15-4f9a-8896-a7ab6d6c7538
+      id: d03b3054-01fb-4e5f-852c-a9629b377f21
       version: -1
       name: Remediation
       type: title
@@ -2078,12 +1701,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 4910
+          "x": 1190,
+          "y": 4890
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -2131,8 +1756,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1400,
-          "y": 5055
+          "x": 1390,
+          "y": 5035
         }
       }
     note: false
@@ -2194,8 +1819,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1400,
-          "y": 5230
+          "x": 1390,
+          "y": 5210
         }
       }
     note: false
@@ -2207,10 +1832,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: c7c6a630-384a-41bc-8587-4c420560e426
+    taskid: 79d0e021-14ff-46d0-8b86-7cbec40eedcb
     type: playbook
     task:
-      id: c7c6a630-384a-41bc-8587-4c420560e426
+      id: 79d0e021-14ff-46d0-8b86-7cbec40eedcb
       version: -1
       name: Block Indicators - Generic v3
       description: |-
@@ -2231,7 +1856,8 @@ tasks:
       - "58"
     scriptarguments:
       AutoBlockIndicators:
-        simple: "True"
+        complex:
+          root: inputs.AutoBlockIndicators
       AutoCommit:
         simple: "No"
       CustomBlockRule:
@@ -2275,29 +1901,6 @@ tasks:
                   simple: RelatedDomains
                 iscontext: true
           - operator: uniq
-      EmailToBlock:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: email
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
       FilesToBlock:
         complex:
           root: DBotScore.Indicator
@@ -2335,86 +1938,8 @@ tasks:
                   simple: RelatedFiles
                 iscontext: true
           - operator: uniq
-      IP:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.DstIPAddress
-                iscontext: true
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: RelatedIPs
-                iscontext: true
-          - operator: uniq
       InputEnrichment:
         simple: "False"
-      MD5:
-        complex:
-          root: DBotScore.Indicator
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-          - - operator: notIn
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: IndicatorsToBlock
-                iscontext: true
-          transformers:
-          - operator: uniq
       RuleDirection:
         simple: outbound
       RuleName:
@@ -2497,31 +2022,8 @@ tasks:
                 iscontext: true
           - operator: uniq
       UserVerification:
-        simple: "True"
-      Username:
         complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: username
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
+          root: inputs.BlockIndicators_UserVerification
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -2532,8 +2034,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
-          "y": 5055
+          "x": 990,
+          "y": 5035
         }
       }
     note: false
@@ -2545,10 +2047,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: b2525c40-20db-4c31-8208-1636c3d9bbe3
+    taskid: 4b5714fa-0f03-4f05-8365-26ce106482cd
     type: title
     task:
-      id: b2525c40-20db-4c31-8208-1636c3d9bbe3
+      id: 4b5714fa-0f03-4f05-8365-26ce106482cd
       version: -1
       name: Done
       type: title
@@ -2561,11 +2063,13 @@ tasks:
       {
         "position": {
           "x": 3040,
-          "y": 5410
+          "y": 5390
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: remediationsla
+      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -2591,8 +2095,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1620,
-          "y": 3830
+          "x": 1610,
+          "y": 3810
         }
       }
     note: false
@@ -2622,8 +2126,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 3830
+          "x": 1190,
+          "y": 3810
         }
       }
     note: false
@@ -2635,23 +2139,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: ba0f1e93-61eb-4d86-8b71-f0f64a7ec37e
+    taskid: d0ce00b0-ef5e-4e11-810e-616da8500cd8
     type: regular
     task:
-      id: ba0f1e93-61eb-4d86-8b71-f0f64a7ec37e
+      id: d0ce00b0-ef5e-4e11-810e-616da8500cd8
       version: -1
       name: Get Alert Extra Data
       description: Returns information about each alert ID.
-      script: Cortex XDR - IR|||xdr-get-cloud-original-alerts
+      script: '|||xdr-get-cloud-original-alerts'
       type: regular
       iscommand: true
-      brand: Cortex XDR - IR
+      brand: ""
     nexttasks:
       '#none#':
-      - "10"
-      - "12"
-      - "11"
-      - "9"
+      - "114"
     scriptarguments:
       alert_ids:
         complex:
@@ -2718,8 +2219,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
-          "y": 2995
+          "x": 2230,
+          "y": 2975
         }
       }
     note: false
@@ -2731,16 +2232,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: f5e70037-6218-4d9a-83c0-6958070e8787
+    taskid: a2191c70-701f-43c0-8602-be874b7cb749
     type: condition
     task:
-      id: f5e70037-6218-4d9a-83c0-6958070e8787
+      id: a2191c70-701f-43c0-8602-be874b7cb749
       version: -1
       name: Manual Investigation
-      description: |-
-        Upon review, the playbook did not identify any obvious malicious indicators associated with the alert. However, there are some noteworthy observations that require manual investigation.
-
-        Review the alert details and determine whether remediation is necessary.
+      description: "Upon review, the playbook did not identify any obvious malicious indicators associated with the alert. However, there are some noteworthy observations that require manual investigation. \n\nReview the following alert details and determine whether remediation is necessary:\n1- Verify if previous false positive incidents with similar characteristics have been detected.\n2- Review the additional alerts within the incident, if any exist.\n3- Examine the additional alerts retrieved by the sub-playbooks associated with the initiator account, similar command line, or initiator host.\n4- Check the FW application ID to ensure it is a known and authorized application within the organization (if the activity and application are valid, add the ID to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n5- Check the initiator process to ensure it is a known and authorized process within the organization (if the activity and process are valid, add the process name to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n6- Analyze the command line analysis results and any additional alerts with similar initiator command lines retrieved from the 'Cortex XDR - Search and Compare Process Executions - XDR Alerts' sub-playbook.\n7- Determine whether the user is aware of the upload activity and what caused the massive upload that triggered the alert.\n8- Verify whether the uploaded files contain sensitive information."
       type: condition
       iscommand: false
       brand: ""
@@ -2754,8 +2252,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1620,
-          "y": 3960
+          "x": 1610,
+          "y": 3940
         }
       }
     note: false
@@ -2767,16 +2265,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 29324b9e-45d1-4262-8746-61a66ef2c4e6
+    taskid: e7b3534b-2107-421c-8d2f-717d659e54c4
     type: condition
     task:
-      id: 29324b9e-45d1-4262-8746-61a66ef2c4e6
+      id: e7b3534b-2107-421c-8d2f-717d659e54c4
       version: -1
       name: Check Uploaded Data Volume
       description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
       type: condition
       iscommand: false
-      brand: Cortex XDR - IR
+      brand: ""
     nexttasks:
       '#default#':
       - "58"
@@ -2831,12 +2329,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: bf515f5d-8a6c-4d24-8c98-5d053705a884
+    taskid: 83c666d9-d091-43ae-8251-ed0495bb134c
     type: regular
     task:
-      id: bf515f5d-8a6c-4d24-8c98-5d053705a884
+      id: 83c666d9-d091-43ae-8251-ed0495bb134c
       version: -1
-      name: Check If The Incident Contains Additional Alerts
+      name: Set Additional Alerts to Context
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -2877,8 +2375,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": 1680
+          "x": 810,
+          "y": 1660
         }
       }
     note: false
@@ -2939,8 +2437,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2020,
-          "y": 1680
+          "x": 2010,
+          "y": 1660
         }
       }
     note: false
@@ -3013,8 +2511,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2420,
-          "y": 1680
+          "x": 2410,
+          "y": 1660
         }
       }
     note: false
@@ -3050,8 +2548,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2020,
-          "y": 1855
+          "x": 2010,
+          "y": 1835
         }
       }
     note: false
@@ -3087,8 +2585,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2420,
-          "y": 1855
+          "x": 2410,
+          "y": 1835
         }
       }
     note: false
@@ -3148,8 +2646,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2820,
-          "y": 1680
+          "x": 2810,
+          "y": 1660
         }
       }
     note: false
@@ -3185,8 +2683,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2820,
-          "y": 1855
+          "x": 2810,
+          "y": 1835
         }
       }
     note: false
@@ -3216,8 +2714,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2050,
-          "y": 3830
+          "x": 2040,
+          "y": 3810
         }
       }
     note: false
@@ -3268,8 +2766,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 1680
+          "x": 1210,
+          "y": 1660
         }
       }
     note: false
@@ -3320,8 +2818,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1620,
-          "y": 1680
+          "x": 1610,
+          "y": 1660
         }
       }
     note: false
@@ -4008,8 +3506,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1620,
-          "y": 3650
+          "x": 1610,
+          "y": 3630
         }
       }
     note: false
@@ -4050,6 +3548,143 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 1a69ce4f-fcbe-40e7-8164-c4d8dc304ac4
+    type: playbook
+    task:
+      id: 1a69ce4f-fcbe-40e7-8164-c4d8dc304ac4
+      version: -1
+      name: Entity Enrichment - Generic v3
+      description: Enrich entities using one or more integrations.
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AccountDomain:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_primary_normalized_user
+          accessor: domain
+          transformers:
+          - operator: uniq
+      Domain:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert._all_events
+          accessor: dst_action_external_hostname
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.ssl_req_chello_sni_sample
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.target_address
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.domain
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.action_external_hostname
+                iscontext: true
+          - operator: uniq
+      Hostname:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: host_name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.agent_hostname
+                iscontext: true
+          - operator: uniq
+      IP:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert._all_events
+          accessor: action_local_ip
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.target_ip
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.action_remote_ip
+                iscontext: true
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalIPRanges
+      ResolveIP:
+        simple: "True"
+      SHA256:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert._all_events
+          accessor: os_actor_process_image_sha256
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.actor_process_image_sha256
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_process_image_sha256
+                iscontext: true
+          - operator: uniq
+      URLSSLVerification:
+        simple: "False"
+      UseReputationCommand:
+        simple: "True"
+      Username:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_primary_normalized_user
+          accessor: username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1610,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -4065,7 +3700,7 @@ view: |-
       "55_58_#default#": 0.14,
       "76_54_Remediation": 0.11,
       "76_58_#default#": 0.1,
-      "78_58_#default#": 0.17,
+      "78_58_#default#": 0.1,
       "7_113_Yes": 0.1,
       "7_58_#default#": 0.1,
       "84_13_#default#": 0.41,
@@ -4075,16 +3710,30 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5505,
-        "width": 2600,
-        "x": 820,
+        "height": 5485,
+        "width": 2610,
+        "x": 810,
         "y": -30
       }
     }
   }
 inputs:
 - key: InternalIPRanges
-  value: {}
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexReplace
+        args:
+          action_dt: {}
+          ignore_case: {}
+          multi_line: {}
+          output_format: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: IANA_Private_Address
   required: false
   description: 'A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
   playbookInputQuery:
@@ -4101,8 +3750,8 @@ inputs:
     simple: "True"
   required: true
   description: |-
-    Determine whether the given indicators be automatically blocked, or should the user be given the option to choose.
-    Possible values:True/False. Default: False.
+    Determine whether the given indicators be automatically blocked, or if the user should be given the option to choose.
+    Possible values:True/False. Default: True.
     If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
     If set to True - the user will be prompted to select which indicators to block.
   playbookInputQuery:
@@ -4167,9 +3816,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Test XDR Playbook general commands
-- Test Playbook - Cortex XDR - Endpoint Investigation
-- Test XDR Playbook
-fromversion: 6.8.0
-marketplaces:
-- xsoar
+- No tests (auto formatted)
+fromversion: 6.10.0
