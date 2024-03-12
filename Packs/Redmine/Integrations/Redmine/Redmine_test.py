@@ -107,9 +107,10 @@ def test_update_issue_command(mocker, redmine_client):
     http_request = mocker.patch.object(redmine_client, '_http_request')
     args = {'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': 'Bug', 'watcher_user_ids': '[1]'}
     update_issue_command(redmine_client, args=args)
-    http_request.assert_called_with('PUT', '/issues/1.json', json_data={'issue': {'subject': 'changeFromCode', 'tracker_id': '1',
-                                                                                  'watcher_user_ids': [1]}}, headers={'Content-Type': 'application/json',
-                                                                                                                      'X-Redmine-API-Key': True}, empty_valid_codes=[204], return_empty_response=True)
+    http_request.assert_called_with('PUT', '/issues/1.json', json_data={'issue': {'subject': 'changeFromCode',
+                                                                                  'tracker_id': '1','watcher_user_ids': [1]}},
+                                    headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True}, 
+                                    empty_valid_codes=[204],return_empty_response=True)
 
 
 def test_update_issue_command_invalid_custom_fields(redmine_client):

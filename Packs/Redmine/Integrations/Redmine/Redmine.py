@@ -481,8 +481,10 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                                                                                  JsonTransformer(keys=["name", "value"]),
                                                                              "watchers": JsonTransformer(keys=["name"]),
                                                                              "attachments":
-                                                                                 JsonTransformer(keys=["filename", "content_url",
-                                                                                                       "content_type", "description"]
+                                                                                 JsonTransformer(keys=["filename",
+                                                                                                       "content_url",
+                                                                                                       "content_type",
+                                                                                                       "description"]
                                                                                                  ),
                                                                          }))
         return command_results
