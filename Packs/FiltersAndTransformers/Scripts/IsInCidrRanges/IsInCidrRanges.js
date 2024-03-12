@@ -1,4 +1,5 @@
-// pack version: 1.2.37
+// NOTE: A copy of the code below is in IsNotInCidrRanges script, they should be kept identical
+
 function isIPv6(ip) {
   return ip.indexOf(':') !== -1;
 }
@@ -128,4 +129,5 @@ return results;
 ipAddresses = argToList(args.left)
 cidrRanges = argToList(args.right)
 
+// NOTE: A copy of the code above is in IsNotInCidrRanges script, they should be kept identical
 return isIPInAnyCIDR(ipAddresses, cidrRanges);
