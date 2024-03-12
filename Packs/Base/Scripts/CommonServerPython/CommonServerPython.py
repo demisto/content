@@ -8389,7 +8389,7 @@ class DemistoHandler(logging.Handler):
             pass
 
 
-def censor_request_logs(request_log: str) -> str:
+def censor_request_logs(request_log):
     """
     Censors the request logs generated from the urllib library directly by replacing sensitive information such as tokens and cookies with a mask. 
     In most cases, the sensitive value is the first word after the keyword, but in some cases, it is the second one.
