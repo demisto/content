@@ -1,4 +1,3 @@
-import json
 import numpy as np
 import pandas as pd
 import pytest
@@ -14,6 +13,8 @@ IND_D = {"id": "d", "investigationIDs": ["1", "6"], "value": "value_d", "indicat
 IND_E = {"id": "e", "investigationIDs": ["2", "3", "4"], "value": "value_e", "indicator_type": "File", "score": 1}
 IND_F = {"id": "f", "investigationIDs": ["2", "3", "4", "5"], "value": "value_f", "indicator_type": "File", "score": 1}
 INDICATORS_LIST = [IND_A, IND_B, IND_C, IND_D, IND_E, IND_F]
+for i in INDICATORS_LIST:
+    i["name"] = i["value"]
 
 INC_1 = {"id": "1", "created": "2022-01-01", "status": 0, "name": "inc_a"}  # A D
 INC_2 = {"id": "2", "created": "2022-01-01", "status": 1, "name": "inc_b"}  # A B E F
@@ -24,41 +25,44 @@ INC_6 = {"id": "6", "created": "2024-01-01", "status": 1, "name": "inc_f"}  # C 
 INCIDENTS_LIST = [INC_1, INC_2, INC_3, INC_4, INC_5, INC_6]
 
 
+def ids_of(items) -> set:
+    return {item["id"] for item in items}
+
+
 def get_related_indicators(incident_id: str):
     return [i for i in INDICATORS_LIST if incident_id in i["investigationIDs"]]
 
 
 def mock_execute_command(command: str, args: dict):
-    query: str = args.get("query") or ""
-    from_date: str = args.get("fromDate") or ""
     match command:
-        case "findIndicators":
-            if match := re.search("investigationIDs:(.*)", query):
-                incident_id = match.group(1)
-            res = [
-                i for i in get_related_indicators(incident_id)
-                if not from_date or parse(i["created"]) >= parse(from_date)
-            ]
-        case "GetIndicatorsByQuery":
-            match = re.search(r"investigationIDs:\(([^\)]*)\)", query)
+        case "getIncidents":
+            query: str = args.get("query") or ""
+            from_date: str = args.get("fromdate") or ""
+            match = re.search(r"incident\.id:\(([^\)]*)\)", query)
             incident_ids = set(match.group(1).split(" ") if match and match.group(1) else [])
-            res = [i for i in INDICATORS_LIST if set(i["investigationIDs"]) & incident_ids]
-            res = [{k: v for k, v in i.items() if k in args["populateFields"] or k == "id"} for i in res]
-        case "GetIncidentsByQuery":
-            match = re.search(r"incident\.id:\((.*)\)", query)
-            incident_ids = set(match.group(1).split(" ") if match and match.group(1) else [])
-            res = json.dumps([
+            res = {"data": [
                 {k: v for k, v in i.items() if k in args["populateFields"] or k == "id"} for i in INCIDENTS_LIST
-                if i["id"] in incident_ids and (not from_date or parse(i["created"]) >= parse(from_date))
-            ])
+                if i["id"] in incident_ids
+                and (not from_date or parse(i["created"]) >= parse(from_date).replace(tzinfo=None))
+            ]}
         case _:
             raise Exception(f"Unmocked command: {command}")
     return [{"Contents": res, "Type": "json"}]
 
 
+def mock_search_indicators(**kwargs):
+    match = re.search(r"investigationIDs:\(([^\)]*)\)", kwargs.get("query"))
+    incident_ids = set(match.group(1).split(" ") if match and match.group(1) else [])
+    res = [i for i in INDICATORS_LIST if set(i["investigationIDs"]) & incident_ids]
+    if populate_fields := argToList(kwargs.get("populateFields")):
+        res = [{k: v for k, v in i.items() if k in populate_fields or k == "id"} for i in res]
+    return {"iocs": res, "total": len(res)}
+
+
 @pytest.fixture(autouse=True)
 def setup(mocker):
     mocker.patch.object(demisto, "executeCommand", side_effect=mock_execute_command)
+    mocker.patch.object(demisto, "searchIndicators", side_effect=mock_search_indicators)
 
 
 @pytest.mark.parametrize("indicator_types, expected_indicators", [
@@ -171,7 +175,9 @@ def test_get_mutual_indicators(incidents: list[dict], indicators: list[dict], ex
     incident_ids = [inc["id"] for inc in incidents]
     indicators_of_actual_incidents = {ind["id"]: ind for ind in indicators}
     related_incidents = get_indicators_of_related_incidents(incident_ids, max_incidents_per_indicator=10)
-    assert get_mutual_indicators(related_incidents, indicators_of_actual_incidents) == expected_indicators
+    assert ids_of(
+        get_mutual_indicators(related_incidents, indicators_of_actual_incidents)
+    ) == ids_of(expected_indicators)
 
 
 def test_find_similar_incidents_by_indicators_end_to_end() -> None:

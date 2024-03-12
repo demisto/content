@@ -1717,6 +1717,88 @@ def test_command_download_file(mocker, path, save_as, content_filename):
     assert res['File'] == filename
 
 
+@pytest.mark.parametrize(argnames='path, '
+                                  'encoding, '
+                                  'content, '
+                                  'results_filename',
+                         argvalues=[
+                             ('/test.dat',
+                              None,
+                              'Hello!',
+                              'test_data/download_as_text_01.json'
+                              ),
+                             ('/test.dat',
+                              'utf-8',
+                              'Hello!',
+                              'test_data/download_as_text_01.json'
+                              ),
+                             ('/test.dat',
+                              'base64',
+                              'Hello!',
+                              'test_data/download_as_text_02.json'
+                              ),
+                             ('test.dat',
+                              None,
+                              'Hello!',
+                              'test_data/download_as_text_01.json'
+                              ),
+                             ('test.dat',
+                              'utf-8',
+                              'Hello!',
+                              'test_data/download_as_text_01.json'
+                              ),
+                             ('test.dat',
+                              'base64',
+                              'Hello!',
+                              'test_data/download_as_text_02.json'
+                              ),
+                         ])
+def test_command_download_as_text(mocker, path, encoding, content, results_filename):
+    """
+        Given:
+            Some patterns of parameters for command_download_as_text
+
+        When:
+            Running script to send a request.
+
+        Then:
+            Validate the right response returns.
+    """
+    params = {
+        'longRunningPort': '8000',
+        'rwCredentials': {},
+        'authenticationMethod': None,
+        'publicReadAccess': True,
+        'mimeTypes': None,
+        'mergeMimeTypes': True,
+        'attachmentExtensions': None,
+        'storageProtection': 'read/write',
+        'maxStorageSize': None,
+        'maxSandboxSize': None,
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+    client = MockBaseClient(mocker, headers={}, content=content.encode('utf-8'))
+    mocker.patch.object(WebFileRepository, 'new_client', return_value=client)
+
+    importlib.reload(WebFileRepository)
+
+    args = assign_params(
+        path=path,
+        encoding=encoding
+    )
+    settings = WebFileRepository.Settings(params)
+    res = WebFileRepository.command_download_as_text(args, settings).to_context()
+
+    keys = ('Type', 'ContentFormat', 'Contents', 'EntryContext')
+    res = {k: v for k, v in res.items() if k in keys}
+
+    with open(results_filename) as f:
+        expected = {k: v for k, v in json.load(f).items() if k in keys}
+
+    assert equals_object(res, expected)
+
+
 @pytest.mark.parametrize(argnames='save_as, '
                                   'content_filename',
                          argvalues=[

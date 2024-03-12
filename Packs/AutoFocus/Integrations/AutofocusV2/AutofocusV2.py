@@ -2,16 +2,9 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 
-import re
-import json
-import requests
 import socket
 import traceback
-import urllib3
-from typing import Callable, Tuple
-
-# Disable insecure warnings
-urllib3.disable_warnings()
+from collections.abc import Callable
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
@@ -254,24 +247,86 @@ VERDICTS_TO_DBOTSCORE = {
 }
 
 ERROR_DICT = {
-    '404': 'Invalid URL.',
-    '408': 'Invalid URL.',
-    '409': 'Invalid message or missing parameters.',
-    '500': 'Internal error.',
-    '503': 'Rate limit exceeded.'
+    404: 'Invalid URL.',
+    408: 'Invalid URL.',
+    409: 'Invalid message or missing parameters.',
+    500: 'Internal error.',
+    503: 'Rate limit exceeded.'
 }
 
 if PARAMS.get('mark_as_malicious'):
     verdicts = argToList(PARAMS.get('mark_as_malicious'))
-    for verdict in verdicts:
-        VERDICTS_TO_DBOTSCORE[verdict] = 3
+    VERDICTS_TO_DBOTSCORE.update(dict.fromkeys(verdicts, 3))
+
+DEFAULT_BUCKET_INFO = dict.fromkeys((
+    'minute_points',
+    'daily_points',
+    'minute_points_remaining',
+    'daily_points_remaining',
+    'minute_bucket_start',
+    'daily_bucket_start',
+), 'Unavailable')
+
+EXECUTION_METRICS = ExecutionMetrics()
+API_POINTS_TABLE = CommandResults(
+    outputs_prefix='AutoFocus.Quota',
+    replace_existing=True
+)
+
 
 ''' HELPER FUNCTIONS '''
 
 
+class RateLimitExceededError(BaseException):
+
+    def __init__(self, api_res: dict) -> None:
+        super().__init__()
+        self.api_res = api_res
+
+
+def return_metrics():
+    if EXECUTION_METRICS.metrics is not None and ExecutionMetrics.is_supported():
+        return_results(EXECUTION_METRICS.metrics)
+    if API_POINTS_TABLE.readable_output:
+        return_results(API_POINTS_TABLE)
+
+
+def rerun_command_if_required(api_res: dict, retry_on_rate_limit: bool):
+    daily_points_remaining = dict_safe_get(api_res, ('bucket_info', 'daily_points_remaining'), 0)
+    next_run = int(dict_safe_get(api_res, ('bucket_info', 'wait_in_seconds'), 70, (int, float)))  # type: ignore
+    if retry_on_rate_limit and daily_points_remaining and next_run < 300:
+        results = CommandResults(
+            readable_output='API Rate limit exceeded, rerunning command.',
+            scheduled_command=ScheduledCommand(
+                command=demisto.command(),
+                args=(demisto.args() | {'retry_on_rate_limit': 'false'}),
+                next_run_in_seconds=(next_run + 20),
+            )
+        )
+    else:
+        results = CommandResults(
+            readable_output=f'Error in API call to AutoFocus.\nMessage: {api_res.get("message")}',
+            entry_type=EntryType.ERROR
+        )
+    return_results(results)
+
+
+def save_api_metrics(res_obj: dict):
+    if bucket_info := res_obj.get('bucket_info'):
+        API_POINTS_TABLE.readable_output = tableToMarkdown(
+            'Autofocus API Points',
+            {
+                'Daily points used': '{daily_points_remaining}/{daily_points}',
+                'Daily allotment started': '{daily_bucket_start}',
+                'Minute points used': '{minute_points_remaining}/{minute_points}',
+                'Minute allotment started': '{minute_bucket_start}',
+            }
+        ).format(**(DEFAULT_BUCKET_INFO | bucket_info))
+        API_POINTS_TABLE.outputs = bucket_info
+
+
 def run_polling_command(args: dict, cmd: str, search_function: Callable, results_function: Callable):
-    ScheduledCommand.raise_error_if_not_supported()
-    interval_in_secs = int(args.get('interval_in_seconds', 60))
+    interval_in_secs = arg_to_number(args.get('interval_in_seconds', 60))
     if 'af_cookie' not in args:
         # create new search
         command_results = search_function(args)
@@ -284,12 +339,12 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, results
                 'polling': True,
                 **args
             }
-            scheduled_command = ScheduledCommand(
+            command_results.scheduled_command = ScheduledCommand(
                 command=cmd,
-                next_run_in_seconds=interval_in_secs,
+                next_run_in_seconds=interval_in_secs,  # type: ignore
                 args=polling_args,
-                timeout_in_seconds=600)
-            command_results.scheduled_command = scheduled_command
+                timeout_in_seconds=600
+            )
             return command_results
         else:
             # continue to look for search results
@@ -306,7 +361,7 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, results
         }
         scheduled_command = ScheduledCommand(
             command=cmd,
-            next_run_in_seconds=interval_in_secs,
+            next_run_in_seconds=interval_in_secs,  # type: ignore
             args=polling_args,
             timeout_in_seconds=600)
 
@@ -315,38 +370,35 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, results
     return command_results
 
 
-def parse_response(resp, err_operation):
+def parse_response(resp: requests.Response, err_operation: str | None) -> dict:
     try:
+        res_json = resp.json()
+        save_api_metrics(res_json)  # type: ignore
+        if resp.status_code == 503:
+            EXECUTION_METRICS.quota_error += 1
+            raise RateLimitExceededError(res_json)
+
         # Handle error responses gracefully
         if demisto.params().get('handle_error', True) and resp.status_code == 409:
+            EXECUTION_METRICS.service_error += 1
             raise Exception("Response status code: 409 \nRequested sample not found")
-        res_json = resp.json()
+
         resp.raise_for_status()
 
         if 'x-trace-id' in resp.headers:
             # this debug log was request by autofocus team for debugging on their end purposes
             demisto.debug(f'x-trace-id: {resp.headers["x-trace-id"]}')
 
+        EXECUTION_METRICS.success += 1
         return res_json
     # Errors returned from AutoFocus
     except requests.exceptions.HTTPError:
-        err_msg = f'{err_operation}: {res_json.get("message")}'
-        if res_json.get("message").find('Requested sample not found') != -1:
-            demisto.results(err_msg)
-            sys.exit(0)
-        elif res_json.get("message").find("AF Cookie Not Found") != -1:
-            demisto.results(err_msg)
-            sys.exit(0)
-        elif err_operation == 'Tag details operation failed' and \
-                res_json.get("message").find("Tag") != -1 and res_json.get("message").find("not found") != -1:
-            demisto.results(err_msg)
-            sys.exit(0)
-        else:
-            return return_error(err_msg)
+        EXECUTION_METRICS.general_error += 1
+        raise DemistoException(f'{err_operation}: {res_json.get("message")}')
     # Unexpected errors (where no json object was received)
     except Exception as err:
-        demisto.results(f'{err_operation}: {err}')
-        sys.exit(0)
+        EXECUTION_METRICS.general_error += 1
+        raise DemistoException(f'{err_operation}: {err}')
 
 
 def http_request(url_suffix, method='POST', data={}, err_operation=None):
@@ -362,8 +414,9 @@ def http_request(url_suffix, method='POST', data={}, err_operation=None):
         )
     # Handle with connection error
     except requests.exceptions.ConnectionError as err:
-        err_message = f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}'
-        return_error(err_message)
+        EXECUTION_METRICS.connection_error += 1
+        raise DemistoException(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
+
     return parse_response(res, err_operation)
 
 
@@ -387,9 +440,7 @@ def validate_sort_and_order_and_artifact(sort: Optional[str] = None, order: Opti
         raise Exception('Please specify the order of sorting (Ascending or Descending).')
     elif order and not sort:
         raise Exception('Please specify a field to sort by.')
-    elif sort and order:
-        return True
-    return False
+    return bool(sort and order)
 
 
 def do_search(search_object: str, query: dict, scope: Optional[str], size: Optional[str] = None,
@@ -517,24 +568,24 @@ def validate_if_line_needed(category, info_line):
         risk_index = category_indexes.get('risk')  # type: ignore
         risk = line_values[risk_index].strip()
         # only lines with risk higher the informational are considered
-        return not risk == 'informational'
+        return risk != 'informational'
     elif category == 'registry':
         action_index = category_indexes.get('action')  # type: ignore
         action = line_values[action_index].strip()
         # Only lines with actions SetValueKey, CreateKey or RegSetValueEx are considered
-        return action == 'SetValueKey' or action == 'CreateKey' or action == 'RegSetValueEx'
+        return action in ('SetValueKey', 'CreateKey', 'RegSetValueEx')
     elif category == 'file':
         action_index = category_indexes.get('action')  # type: ignore
         action = line_values[action_index].strip()
         benign_count = info_line.get('b') if info_line.get('b') else 0
         malicious_count = info_line.get('m') if info_line.get('m') else 0
         # Only lines with actions Create or CreateFileW where malicious count is grater than benign count are considered
-        return (action == 'Create' or action == 'CreateFileW') and malicious_count > benign_count
+        return action in ('Create', 'CreateFileW') and malicious_count > benign_count
     elif category == 'process':
         action_index = category_indexes.get('action')  # type: ignore
         action = line_values[action_index].strip()
         # Only lines with actions created, CreateKey or CreateProcessInternalW are considered
-        return action == 'created' or action == 'CreateProcessInternalW'
+        return action in ('created', 'CreateProcessInternalW')
     else:
         return True
 
@@ -653,8 +704,8 @@ def autofocus_tag_details(tag_name):
 
 
 def validate_tag_scopes(private, public, commodity, unit42):
-    if not private and not public and not commodity and not unit42:
-        return_error('Add at least one Tag scope by setting `commodity`, `private`, `public` or `unit42` to True')
+    if not any((private, public, commodity, unit42)):
+        raise DemistoException('Add at least one Tag scope by setting `commodity`, `private`, `public` or `unit42` to True')
 
 
 def autofocus_top_tags_search(scope, tag_class_display, private, public, commodity, unit42):
@@ -670,7 +721,7 @@ def autofocus_top_tags_search(scope, tag_class_display, private, public, commodi
             }
         ]
     }
-    tag_scopes = list()
+    tag_scopes = []
     if private:
         tag_scopes.append('private')
     if public:
@@ -802,7 +853,7 @@ def filter_object_entries_by_dict_values(result_object, response_dict_name):
     af_params_dict = API_PARAM_DICT.get(response_dict_name)
     result_object_filtered = {}
     if af_params_dict and isinstance(result_object, dict) and isinstance(af_params_dict, dict):
-        for key in result_object.keys():
+        for key in result_object:
             if key in af_params_dict.values():  # type: ignore
                 result_object_filtered[key] = result_object.get(key)
     return result_object_filtered
@@ -883,13 +934,8 @@ def build_session_search_query(used_indicator, indicators_batch, from_time, to_t
 
 
 def build_logic_query(logic_operator, condition_list):
-    operator = None
-    if logic_operator == 'AND':
-        operator = 'all'
-    elif logic_operator == 'OR':
-        operator = 'any'
     return {
-        'operator': operator,
+        'operator': {'AND': 'all', 'OR': 'any'}.get(logic_operator),
         'children': condition_list
     }
 
@@ -923,29 +969,29 @@ def children_list_generator(field_name, operator, val_list):
 
 
 def validate_no_query_and_indicators(query, arg_list):
-    if query:
-        for arg in arg_list:
-            if arg:
-                return_error('The search command can either run a search using a custom query '
-                             'or use the builtin arguments, but not both')
+    if query and any(arg_list):
+        raise DemistoException(
+            'The search command can either run a search using a custom query '
+            'or use the builtin arguments, but not both'
+        )
 
 
 def validate_no_multiple_indicators_for_search(arg_dict):
     used_arg = None
     for arg, val in arg_dict.items():
         if val and used_arg:
-            return_error(f'The search command can receive one indicator type at a time, two were given: {used_arg}, '
-                         f'{arg}. For multiple indicator types use the custom query')
+            raise DemistoException(
+                f'The search command can receive one indicator type at a time, two were given: {used_arg}, {arg}.'
+                ' For multiple indicator types use the custom query')
         elif val:
             used_arg = arg
     if not used_arg:
-        return_error('In order to perform a samples/sessions search, a query or an indicator must be given.')
+        raise DemistoException('In order to perform a samples/sessions search, a query or an indicator must be given.')
     return used_arg
 
 
 def search_indicator(indicator_type, indicator_value):
-    headers = HEADERS
-    headers['apiKey'] = API_KEY
+    headers = HEADERS | {'apiKey': API_KEY}
 
     params = {
         'indicatorType': indicator_type,
@@ -962,17 +1008,24 @@ def search_indicator(indicator_type, indicator_value):
             params=params
         )
 
+        result_json = result.json()
+
+        save_api_metrics(result_json)
+        if result.status_code == 503:
+            EXECUTION_METRICS.quota_error += 1
+            raise RateLimitExceededError(result_json)
+
         # Handle error responses gracefully
         result.raise_for_status()
-        result_json = result.json()
 
     # Handle with connection error
     except requests.exceptions.ConnectionError as err:
-        err_message = f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}'
-        return_error(err_message)
+        EXECUTION_METRICS.connection_error += 1
+        raise DemistoException(f'Error connecting to server. Check your URL/Proxy/Certificate settings: {err}')
 
     # Unexpected errors (where no json object was received)
     except Exception as err:
+        EXECUTION_METRICS.general_error += 1
         try:
             if demisto.params().get('handle_error', True) and result.status_code == 404:
                 return {
@@ -987,15 +1040,16 @@ def search_indicator(indicator_type, indicator_value):
             text_error = {}
         error_message = text_error.get('message')
         if error_message:
-            return_error(f'Request Failed with status: {result.status_code}.\n'
-                         f'Reason is: {str(error_message)}.')
-        elif str(result.status_code) in ERROR_DICT:
-            return_error(f'Request Failed with status: {result.status_code}.\n'
-                         f'Reason is: {ERROR_DICT[str(result.status_code)]}.')
+            raise DemistoException(
+                f'Request Failed with status: {result.status_code}.\nReason is: {error_message}.')
+        elif result.status_code in ERROR_DICT:
+            raise DemistoException(
+                f'Request Failed with status: {result.status_code}.\nReason is: {ERROR_DICT[result.status_code]}.')
         else:
             err_msg = f'Request Failed with message: {err}.'
-        return_error(err_msg)
+        raise DemistoException(err_msg)
 
+    EXECUTION_METRICS.success += 1
     return result_json
 
 
@@ -1173,9 +1227,7 @@ def test_module():
             }
         ]
     }
-
     do_search('samples', query=query, scope='Public', err_operation='Test module failed')
-    return
 
 
 def search_samples_command(args):
@@ -1224,8 +1276,8 @@ def search_sessions_command(args):
 
     if time_range:
         if from_time or to_time:
-            return_error("The 'time_range' argument cannot be specified with neither 'time_after' nor 'time_before' "
-                         "arguments.")
+            raise DemistoException(
+                "The 'time_range' argument cannot be specified with neither 'time_after' nor 'time_before' arguments.")
         else:
             from_time, to_time = time_range.split(',')
 
@@ -1284,12 +1336,13 @@ def samples_search_result_hr(result: dict, status: str) -> str:
         # Filter on returned indicator types, as we do not support Mutex and User Agent.
         if 'Mutex' not in indicator.get('indicator_type') and 'User Agent' not in indicator.get('indicator_type'):
             updated_artifact.append(indicator)
-    rest = result
-    hr = tableToMarkdown(f'Search Samples Result is {status}', rest)
-    hr += '\n\n'
-    hr += tableToMarkdown(
-        'Artifacts for Sample: ', updated_artifact,
-        headers=["b", "g", "m", "indicator_type", "confidence", "indicator"])
+    hr = '\n\n'.join((
+        tableToMarkdown(f'Search Samples Result is {status}', result),
+        tableToMarkdown(
+            'Artifacts for Sample: ', updated_artifact,
+            headers=["b", "g", "m", "indicator_type", "confidence", "indicator"]
+        )
+    ))
     return hr
 
 
@@ -1332,7 +1385,7 @@ def sample_analysis_command():
     args = demisto.args()
     sample_id = args.get('sample_id')
     os = args.get('os')
-    filter_data = False if args.get('filter_data') == 'False' else True
+    filter_data = args.get('filter_data') != 'False'
     analysis = sample_analysis(sample_id, os, filter_data)
     context = createContext(analysis, keyTransform=string_to_context_key)
     demisto.results({
@@ -1378,7 +1431,7 @@ def top_tags_search_command(args):
     )
 
 
-def top_tags_results_command(args) -> Tuple[CommandResults, str]:
+def top_tags_results_command(args) -> tuple[CommandResults, str]:
     af_cookie = args.get('af_cookie')
     results, status = get_top_tags_results(af_cookie)
     md = tableToMarkdown(f'Search Top Tags Results is {status}:', results, headerTransform=string_to_table_header)
@@ -1693,7 +1746,6 @@ def search_file_command(file, reliability, create_relationships):
             outputs_prefix='AutoFocus.File',
             outputs_key_field='IndicatorValue',
             outputs=autofocus_file_output,
-
             readable_output=md,
             raw_response=raw_res,
             indicator=file,
@@ -1717,7 +1769,7 @@ def get_tags_for_generic_context(tags: Optional[list]):
 
 
 def get_tags_for_tags_and_malware_family_fields(tags: Optional[list], is_malware_family=False):
-    """get specific tags for the tgas and malware_family fields
+    """get specific tags for the tags and malware_family fields
     Args
         tags (Optional[list]): tags from the response
         is_malware_family (bool): indicating whether it is for the malware_family field
@@ -1790,8 +1842,7 @@ def get_export_list_command(args):
     context_file = []
     for indicator_value in results.get('export_list'):
         indicator_type = find_indicator_type(indicator_value)
-        if indicator_type in [FeedIndicatorType.IP,
-                              FeedIndicatorType.IPv6, FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]:
+        if indicator_type in [FeedIndicatorType.IP, FeedIndicatorType.IPv6, FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]:
             if '-' in indicator_value:
                 context_ip.append({
                     'Address': indicator_value.split('-')[0]
@@ -1810,17 +1861,17 @@ def get_export_list_command(args):
                     'Address': indicator_value
                 })
 
-        elif indicator_type in [FeedIndicatorType.Domain]:
+        elif indicator_type == FeedIndicatorType.Domain:
             context_domain.append({
                 'Name': indicator_value
             })
 
-        elif indicator_type in [FeedIndicatorType.File]:
+        elif indicator_type == FeedIndicatorType.File:
             context_file.append({
                 'SHA256': indicator_value
             })
 
-        elif indicator_type in [FeedIndicatorType.URL]:
+        elif indicator_type == FeedIndicatorType.URL:
             if ":" in indicator_value:
                 resolved_address = resolve_ip_address(indicator_value.split(":", 1)[0])
                 semicolon_suffix = indicator_value.split(":", 1)[1]
@@ -1849,76 +1900,87 @@ def get_export_list_command(args):
 
     hr = tableToMarkdown(f"Export list {args.get('label')}", indicators, headers=['Type', 'Value'])
 
-    return_outputs(hr, {'AutoFocus.Indicator(val.Value == obj.Value && val.Type == obj.Type)': indicators,
-                        'IP(obj.Address == val.Address)': context_ip,
-                        'URL(obj.Data == val.Data)': context_url,
-                        'File(obj.SHA256 == val.SHA256)': context_file,
-                        'Domain(obj.Name == val.Name)': context_domain},
-                   results)
+    return_outputs(hr, {
+        'AutoFocus.Indicator(val.Value == obj.Value && val.Type == obj.Type)': indicators,
+        'IP(obj.Address == val.Address)': context_ip,
+        'URL(obj.Data == val.Data)': context_url,
+        'File(obj.SHA256 == val.SHA256)': context_file,
+        'Domain(obj.Name == val.Name)': context_domain
+    }, results)
 
 
 def main():
-    demisto.debug('Command being called is %s' % (demisto.command()))
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     reliability = PARAMS.get('integrationReliability', 'B - Usually reliable')
     create_relationships = PARAMS.get('create_relationships', True)
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
-        Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
+        raise Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
+
+    # Remove proxy if not set to true in params
+    handle_proxy()
+    args = demisto.args() | {
+        'reliability': reliability,
+        'create_relationships': create_relationships,
+    }
 
     try:
-        # Remove proxy if not set to true in params
-        handle_proxy()
-        active_command = demisto.command()
-        args = {k: v for (k, v) in demisto.args().items() if v}
-        args['reliability'] = reliability
-        args['create_relationships'] = create_relationships
-        if active_command == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
             demisto.results('ok')
-        elif active_command == 'autofocus-search-samples':
+        elif command == 'autofocus-search-samples':
             if args.get('polling') == 'true':
                 cmd_res = search_samples_with_polling_command(args)
                 if cmd_res is not None:
                     return_results(cmd_res)
             else:
                 return_results(search_samples_command(args))
-        elif active_command == 'autofocus-search-sessions':
+        elif command == 'autofocus-search-sessions':
             if args.get('polling') == 'true':
                 return_results(search_sessions_with_polling_command(args))
             else:
                 return_results(search_sessions_command(args))
-        elif active_command == 'autofocus-samples-search-results':
+        elif command == 'autofocus-samples-search-results':
             samples_search_results_command(args)
-        elif active_command == 'autofocus-sessions-search-results':
+        elif command == 'autofocus-sessions-search-results':
             return_results(sessions_search_results_command(args)[0])  # first result is CommandResults
-        elif active_command == 'autofocus-get-session-details':
+        elif command == 'autofocus-get-session-details':
             get_session_details_command()
-        elif active_command == 'autofocus-sample-analysis':
+        elif command == 'autofocus-sample-analysis':
             sample_analysis_command()
-        elif active_command == 'autofocus-tag-details':
+        elif command == 'autofocus-tag-details':
             tag_details_command()
-        elif active_command == 'autofocus-top-tags-search':
+        elif command == 'autofocus-top-tags-search':
             if args.get('polling') == 'true':
                 return_results(top_tags_with_polling_command(args))
             else:
                 return_results(top_tags_search_command(args))
-        elif active_command == 'autofocus-top-tags-results':
+        elif command == 'autofocus-top-tags-results':
             return_results(top_tags_results_command(args)[0])
-        elif active_command == 'autofocus-get-export-list-indicators':
+        elif command == 'autofocus-get-export-list-indicators':
             get_export_list_command(args)
-        elif active_command == 'ip':
+        elif command == 'ip':
             return_results(search_ip_command(**args))
-        elif active_command == 'domain':
+        elif command == 'domain':
             return_results(search_domain_command(**args))
-        elif active_command == 'url':
+        elif command == 'url':
             return_results(search_url_command(**args))
-        elif active_command == 'file':
+        elif command == 'file':
             return_results(search_file_command(**args))
+        else:
+            raise NotImplementedError(f'Command {command!r} is not implemented.')
+
+    except RateLimitExceededError as e:
+        rerun_command_if_required(e.api_res, argToBoolean(args.get('retry_on_rate_limit', False)))
 
     except Exception as e:
         return_error(f'Unexpected error: {e}.\ntraceback: {traceback.format_exc()}')
+
+    finally:
+        return_metrics()
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

@@ -1,4 +1,4 @@
-This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:
+This playbook handles all the endpoint investigation actions by performing the following tasks  on every alert associated with the incident:
 * Pre-defined MITRE Tactics
 * Host fields (Host ID)
 * Attacker fields (Attacker IP, External host)
@@ -8,21 +8,27 @@ This playbook handles all the endpoint investigation actions available with Cort
 Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * SearchIncidentsV2
 
 ### Commands
+
 This playbook does not use any commands.
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -47,12 +53,14 @@ This playbook does not use any commands.
 | attackerExternalHost | The external host used by the attacker. The 'HuntAttacker' inputs should also be set to True. |  | Optional |
 | mitreTechniqueID | A MITRE technique identifier. The 'HuntByTechnique' inputs should also be set to True. |  | Optional |
 | FileSHA256 | The file SHA256. The 'HuntByFile' inputs should also be set to True. |  | Optional |
-| timeRange | A time range to execute the hunting in.<br/>The input should be in the following format:<br/>\* 1 day ago<br/>\* 2 minutes ago<br/>\* 4 hours ago<br/>\* 8 days ago<br/>etc. | 2 hours ago | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Endpoint Investigation Plan](../doc_files/Endpoint_Investigation_Plan.png)

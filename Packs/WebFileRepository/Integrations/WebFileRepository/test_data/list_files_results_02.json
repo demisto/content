@@ -40,7 +40,7 @@
         }
     ],
     "EntryContext": {
-        "WebFileRepository.Files": [{
+        "WebFileRepository.Files(val.Path === obj.Path)": [{
                 "Name": "a.dat",
                 "Path": "/a.dat",
                 "Size": 3,

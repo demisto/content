@@ -1,7 +1,7 @@
 import os
 import pytest
 from typing import Final
-from Utils.github_workflow_scripts.handle_external_pr import is_requires_security_reviewer
+from Utils.github_workflow_scripts.handle_external_pr import is_requires_security_reviewer, get_location_of_reviewer
 
 
 INTEGRATION_PATH: Final[str] = 'Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py'
@@ -155,3 +155,69 @@ def test_is_requires_security_reviewer_return_false(pr_files: str):
         - make sure the function correctly identifies that a security review is not required
     """
     assert is_requires_security_reviewer([pr_files]) is False
+
+
+OPTION1 = {
+    'reviewer1': 1,
+    'reviewer2': 2,
+    'reviewer3': 3,
+}
+OPTION2 = {
+    'reviewer1': 3,
+    'reviewer2': 2,
+    'reviewer3': 1,
+}
+OPTION3 = {
+    'reviewer1': 1,
+    'reviewer2': 1,
+    'reviewer3': 3,
+}
+OPTION4 = {
+    'reviewer1': 1,
+    'reviewer2': 2,
+    'reviewer3': 1,
+}
+OPTION5 = {
+    'reviewer1': 2,
+    'reviewer2': 1,
+    'reviewer3': 1,
+}
+OPTION6 = {
+    'reviewer1': 1,
+    'reviewer2': 1,
+    'reviewer3': 1,
+}
+
+
+@pytest.mark.parametrize('assigned_prs_per_potential_reviewer, possible_locations',
+                         [
+                             (OPTION1, [0]),
+                             (OPTION2, [0]),
+                             (OPTION3, [0, 1]),
+                             (OPTION4, [0, 1]),
+                             (OPTION5, [0, 1]),
+                             (OPTION6, [0, 1, 2])
+                         ])
+def test_get_location_of_reviewer(assigned_prs_per_potential_reviewer, possible_locations):
+    """
+    Given:
+        - case 1: reviewer1 has the lowest number of assigned PRs
+        - case 2: reviewer3 has the lowest number of assigned PRs
+        - case 3: reviewer1 & reviewer2 has the lowest number of assigned PRs
+        - case 4: reviewer1 & reviewer3 has the lowest number of assigned PRs
+        - case 4: reviewer1 & reviewer3 has the lowest number of assigned PRs
+        - case 5: reviewer2 & reviewer3 has the lowest number of assigned PRs
+        - case 6: all the reviewers has the same number of assigned PRs
+    When:
+        - running get_location_of_reviewer function
+    Then:
+        - case 1: the result is 0, since only reviewer1 has the lowest number of assigned PRs
+        - case 2: the result is 0, since only reviewer3 has the lowest number of assigned PRs,
+            and after the sort in the function determine_reviewer, he will be the first in the list.
+        - case 3: the result can be is 0 or 1, since both reviewer1 & reviewer2 has the lowest number of assigned PRs
+        - case 4: the result can be is 0 or 1, since both reviewer1 & reviewer3 has the lowest number of assigned PRs
+        - case 5: the result can be is 0 or 1, since both reviewer2 & reviewer3 has the lowest number of assigned PRs
+        - case 5: the result can be is 0 or 1 or 2, since all the reviewers has the same number of assigned PRs
+    """
+    result = get_location_of_reviewer(assigned_prs_per_potential_reviewer)
+    assert result in possible_locations

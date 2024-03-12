@@ -210,23 +210,33 @@ def get_demisto_indicators(search, tags, tlp_color):
 
 
 def update_last_fetch(client, ioc_lst):
-    last_calculated_time = None
+    demisto.debug(f"ElasticSearchFeed: Length of the indicators to fetch is: {len(ioc_lst)}")
+    last_calculated_timestamp = None
     last_ids = []
     for ioc in reversed(ioc_lst):
         calculate_time = dateparser.parse(ioc.get(client.time_field))
-        if calculate_time and (not last_calculated_time or calculate_time >= last_calculated_time):
-            last_calculated_time = calculate_time
+        if not calculate_time:
+            demisto.info(f"ioc {ioc.get('name')} if missing {client.time_field}")
+            break
+        calculate_timestamp = int(calculate_time.timestamp() * 1000)
+        if not last_calculated_timestamp or calculate_timestamp >= last_calculated_timestamp:
+            last_calculated_timestamp = calculate_timestamp
             last_ids.append(ioc.get('id'))
         else:
+            demisto.debug(f"FeedElasticSearch: {last_calculated_timestamp=}")
+            demisto.debug(f"FeedElasticSearch: {calculate_timestamp=}")
             break
-    if last_calculated_time is None:
-        last_calculated_time = datetime.now()
-    return last_calculated_time, last_ids
+    if last_calculated_timestamp is None:
+        last_calculated_timestamp = int(datetime.now().timestamp() * 1000)
+    demisto.info(f"FeedElasticSearch: The length of the indicators of the last time: {len(last_ids)}")
+    demisto.debug(f"FeedElasticSearch: The last ids which were fetched with the same last time: {last_ids}")
+    return last_calculated_timestamp, last_ids
 
 
 def fetch_indicators_command(client, feed_type, src_val, src_type, default_type, last_fetch, fetch_limit):
     """Implements fetch-indicators command"""
     last_fetch_timestamp = get_last_fetch_timestamp(last_fetch, client.time_method, client.fetch_time)
+    demisto.debug(f"FeedElasticSearch: last_fetch_timestamp is: {last_fetch_timestamp}")
     prev_iocs_ids = demisto.getLastRun().get("ids", [])
     now = datetime.now()
     ioc_lst: list = []
@@ -248,14 +258,16 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
     if ioc_lst:
         for b in batch(ioc_lst, batch_size=2000):
             demisto.createIndicators(b)
-    last_calculated_time, last_ids = update_last_fetch(client, ioc_lst)
+    last_calculated_timestamp, last_ids = update_last_fetch(client, ioc_lst)
+    if str(last_calculated_timestamp) == last_fetch:
+        last_ids.extend(prev_iocs_ids)
     if ioc_enrch_lst:
         ioc_enrch_batches = create_enrichment_batches(ioc_enrch_lst)
         for enrch_batch in ioc_enrch_batches:
             # ensure batch sizes don't exceed 2000
             for b in batch(enrch_batch, batch_size=2000):
                 demisto.createIndicators(b)
-    demisto.setLastRun({'time': int(last_calculated_time.timestamp() * 1000), 'ids': last_ids})
+    demisto.setLastRun({'time': str(last_calculated_timestamp), 'ids': last_ids})
 
 
 def get_last_fetch_timestamp(last_fetch, time_method, fetch_time):
@@ -263,7 +275,9 @@ def get_last_fetch_timestamp(last_fetch, time_method, fetch_time):
     if last_fetch:
         last_fetch_timestamp = last_fetch
     else:
-        last_fetch, _ = parse_date_range(date_range=fetch_time, utc=False)
+        last_fetch = dateparser.parse(fetch_time)
+        if not last_fetch:
+            raise ValueError("Failed to parse the fetch time")
         # if timestamp: get the last fetch to the correct format of timestamp
         last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
     if 'Timestamp - Seconds' in time_method:
@@ -284,7 +298,8 @@ def get_scan_generic_format(client, now, last_fetch_timestamp=None, fetch_limit=
         range_field = {
             time_field: {'gte': last_fetch_timestamp, 'lte': now}} if last_fetch_timestamp else {
             time_field: {'lte': now}}
-        search = Search(using=es, index=fetch_index).filter({'range': range_field}).extra(size=fetch_limit).sort().query(query)
+        search = Search(using=es, index=fetch_index).filter({'range': range_field}).extra(
+            size=fetch_limit).sort({time_field: {'order': 'asc'}}).query(query)
     else:
         search = Search(using=es, index=fetch_index).query(QueryString(query=client.query))
     return search

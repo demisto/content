@@ -37,7 +37,7 @@ script:
       - 'MERGE'
       - 'REPLACE'
     - name: rule_group_ids
-      description: 'A comma-separated list of rule groups to which rules should belong. Example are group-id1,group-id2. This is required when importing rules and can be acquired from: ciscofp-list-intrusion-rule-group'
+      description: 'A comma-separated list of rule groups to which rules should belong. Example are group-id1,group-id2. This is required when importing rules and can be acquired from: ciscofp-list-intrusion-rule-group.'
       isArray: true
     - name: validate_only
       description: 'Define whether to validate or to validate and import rules. True is the default value and sets that rules should be validated and not imported.'
@@ -192,13 +192,13 @@ script:
       description: 'The override state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.policy.name
-      description: 'The intrusion policy name'
+      description: 'The intrusion policy name.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.policy.id
-      description: 'The intrusion Policy ID'
+      description: 'The intrusion Policy ID.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.policy.type
-      description: 'The type must be intrusionpolicy'
+      description: 'The type must be intrusionpolicy.'
     - type: Boolean
       contextPath: CiscoFP.IntrusionRule.ruleAction.policy.isSystemDefined
       description: 'Whether the rule is system-defined or user-defined. If the value is false, then rule is user-defined.'
@@ -278,10 +278,10 @@ script:
       description: 'The intrusion policy name.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.policy.id
-      description: 'The intrusion Policy ID'
+      description: 'The intrusion Policy ID.'
     - type: String
       contextPath: CiscoFP.IntrusionRule.ruleAction.policy.type
-      description: 'The type must be intrusionpolicy'
+      description: 'The type must be intrusionpolicy.'
     - type: Boolean
       contextPath: CiscoFP.IntrusionRule.ruleAction.policy.isSystemDefined
       description: 'Whether the rule is system-defined or user-defined. If the value is false, then the rule is user-defined.'
@@ -312,7 +312,7 @@ script:
     - name: rule_data
       description: 'The Snort rule structure data. Guide to Snort rule structure: https://docs.snort.org/rules/'
     - name: rule_group_ids
-      description: 'Rule group IDs in a comma-separated list. Can be acquired from: ciscofp-list-intrusion-rule-group'
+      description: 'Rule group IDs in a comma-separated list. Can be acquired from: ciscofp-list-intrusion-rule-group.'
       isArray: true
     - name: update_strategy
       description: 'The update method to use in the command. Can be "MERGE" or "OVERRIDE". If "MERGE" is used, new rule groups will be appended. If "OVERRIDE" is used, old rule groups will be overwritten.'
@@ -1579,7 +1579,7 @@ script:
       description: The network name.
       type: String
     - contextPath: CiscoFP.Network.Value
-      description: CIDR
+      description: CIDR.
       type: String
     - contextPath: CiscoFP.Network.Overrideable
       description: Whether the object can be overridden.
@@ -1591,7 +1591,7 @@ script:
     - description: The name of the new object.
       name: name
       required: true
-    - description: CIDR
+    - description: CIDR.
       name: value
       required: true
     - description: The object description.
@@ -1628,7 +1628,7 @@ script:
     - description: The object name.
       name: name
       required: true
-    - description: CIDR
+    - description: CIDR.
       name: value
       required: true
     - description: The object description.
@@ -1828,7 +1828,7 @@ script:
       description: The network group address type.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Name
-      description: The network group object name
+      description: The network group object name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.ID
       description: The network group object ID.
@@ -2196,7 +2196,7 @@ script:
       name: limit
     - description: |-
         Index of the first item to return.
-        The default is 0
+        The default is 0.
       name: offset
     description: Retrieves a list of all application objects.
     name: ciscofp-list-applications
@@ -3296,9 +3296,11 @@ script:
     - contextPath: CiscoFP.URLGroups.Overridable
       description: Whether objects can be overridden.
       type: string
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.86272
   runonce: false
   script: ''
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

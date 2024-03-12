@@ -244,17 +244,48 @@ def test_get_indicators_command_by_risk_rules(mocker, indicator_type, risk_rules
 
 
 CALCULATE_DBOT_SCORE_INPUTS = [
-    ('97', '65', 3),
-    ('90', '91', 3),
-    ('50', '65', 2),
-    ('0', '65', 0),
-    ('0', '0', 3),
+    ('90', '65', '25', 3),
+    ('45', '65', '25', 2),
+    ('15', '65', '25', 0),
+    ('0', '65', '25', 1),
+    ('90', '95', '25', 2),
+    ('45', '30', '25', 3),
+    ('15', '26', '25', 0),
+    ('0', '0', '-1', 3),
+    ('90', '98', '91', 0),
+    ('45', '65', '40', 2),
+    ('15', '10', '5', 3),
+    ('0', '65', '0', 2),
+    ('65', '65', '25', 3),
+    ('25', '65', '25', 2),
+    ('50', '51', '50', 2),
 ]
 
 
-@pytest.mark.parametrize('risk_from_feed, threshold, expected_score', CALCULATE_DBOT_SCORE_INPUTS)
-def test_calculate_dbot_score(risk_from_feed, threshold, expected_score):
-    client = Client(indicator_type='ip', api_token='123', services=['fusion'], threshold=threshold)
+@pytest.mark.parametrize('risk_from_feed, malicious_threshold, suspicious_threshold, expected_score', CALCULATE_DBOT_SCORE_INPUTS)
+def test_calculate_dbot_score(risk_from_feed, malicious_threshold, suspicious_threshold, expected_score):
+    """
+    Given:
+     - Values for calculating an indicator's verdict including:
+        1. The Recorded Future Risk Score of the indicator (0 - 100)
+        2. The minimum score to be malicious (0 - 100)
+        3. The minimum score to be suspicious (-1 - 100, must be less than the malicious_threshold)
+        4. What the expected D-Bot Score (verdict) is (0 - 3)
+     - Individually adjust values 1, 2 & 3 to capture the cases
+        - Score is greater than the malicious threshold
+        - Score is between the malicious threshold and suspicious threshold
+        - Score is less than the suspicious threshold
+        - Score is 0
+        - Score equals a threshold
+
+    When:
+     - Running the 'calculate_indicator_score'
+
+    Then:
+     - Verify the indicator's dbot score is set correctly given the suspicious and malicious risk score range.
+    """
+    client = Client(indicator_type='ip', api_token='123', services=[
+                    'fusion'], malicious_threshold=malicious_threshold, suspicious_threshold=suspicious_threshold)
     score = client.calculate_indicator_score(risk_from_feed)
     assert score == expected_score
 

@@ -1,0 +1,1431 @@
+id: Cortex ASM - Cortex Endpoint Enrichment
+inputs:
+- description: IP address of service
+  key: RemoteIP
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Cortex ASM - Cortex Endpoint Enrichment
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0238da21-5885-4f70-804b-f6eeac7dbcd7
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 0238da21-5885-4f70-804b-f6eeac7dbcd7
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -40
+        }
+      }
+  "6":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      public_ip_list:
+        complex:
+          root: inputs.RemoteIP
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoints from the start of the result set (start by counting from 0).
+      id: fa22e7e1-68bc-4759-8ac4-b1a432d13b3f
+      iscommand: true
+      name: Core IR Search device
+      script: Cortex Core - IR|||core-get-endpoints
+      type: regular
+      version: -1
+    taskid: fa22e7e1-68bc-4759-8ac4-b1a432d13b3f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 300
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 79053a42-f0cb-4751-826c-e08a359d3990
+      iscommand: false
+      name: Closing Stage
+      type: title
+      version: -1
+      description: ''
+    taskid: 79053a42-f0cb-4751-826c-e08a359d3990
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2080
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Cortex Core - IR
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.RemoteIP
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of the Core - IR integration enabled and input values are defined to pull enrichment data.
+      id: 17e91dd6-4328-46db-85de-8fd0b7e50f84
+      iscommand: false
+      name: Is Core IR enabled and input value defined?
+      type: condition
+      version: -1
+    taskid: 17e91dd6-4328-46db-85de-8fd0b7e50f84
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 100
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: endpoint_id
+                root: Core.Endpoint
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the last command returned endpoint information or not.
+      id: 1616c292-8f7d-4c62-892f-352b62c56290
+      iscommand: false
+      name: Was there a response?
+      type: condition
+      version: -1
+    taskid: 1616c292-8f7d-4c62-892f-352b62c56290
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 660
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-TYPE
+      val2:
+        simple: Cortex Endpoint
+      val3:
+        simple: n/a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      id: ba68749e-b4c5-4603-82f6-a18d67da78a1
+      iscommand: false
+      name: Set system IDs grid field (type)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: ba68749e-b4c5-4603-82f6-a18d67da78a1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2400,
+          "y": 1200
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 20271aae-a5a2-45d2-8a41-9f260804db89
+      iscommand: false
+      name: System IDs
+      type: title
+      version: -1
+      description: ''
+    taskid: 20271aae-a5a2-45d2-8a41-9f260804db89
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2400,
+          "y": 1070
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_fields_set_for_cortex_endpoint
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 8f5e8e13-6670-4273-8c6a-3e7877a502e7
+      iscommand: false
+      name: Set true flag for completed enrichment
+      script: Set
+      type: regular
+      version: -1
+    taskid: 8f5e8e13-6670-4273-8c6a-3e7877a502e7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 2005
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: CORTEX-ENDPOINT
+      val2:
+        simple: "true"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      id: 43d30f3b-f283-40ea-83f5-3a61e5dcf552
+      iscommand: false
+      name: Set ASM enrichment status to true
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 43d30f3b-f283-40ea-83f5-3a61e5dcf552
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 2430
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: asm_fields_set_for_cortex_endpoint
+          operator: isTrue
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
+      id: a086cad1-cfe6-4dff-84f8-724c46336b3c
+      iscommand: false
+      name: Was enrichment performed?
+      type: condition
+      version: -1
+    taskid: a086cad1-cfe6-4dff-84f8-724c46336b3c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2240
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: CORTEX-ENDPOINT
+      val2:
+        simple: "false"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      id: 77bcd196-a02e-4a58-8a2f-5c9bcca304f2
+      iscommand: false
+      name: Set ASM enrichment status to false
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 77bcd196-a02e-4a58-8a2f-5c9bcca304f2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 2430
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: CORTEX-ENDPOINT-ASSET-ID
+      val2:
+        complex:
+          accessor: endpoint_id
+          root: Core.Endpoint
+      val3:
+        simple: n/a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      id: feeb2ba4-4e38-4f9d-8df5-da5547fd9a25
+      iscommand: false
+      name: Set system IDs grid field (endpoint ID)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: feeb2ba4-4e38-4f9d-8df5-da5547fd9a25
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2400,
+          "y": 1370
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmprivateip
+      keys:
+        simple: ip,source
+      val1:
+        complex:
+          accessor: ip
+          root: Core.Endpoint
+      val2:
+        simple: Cortex Endpoint
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: e7fc4ec3-ddff-4218-8345-e15db0428b26
+      iscommand: false
+      name: Set private IP grid field
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: e7fc4ec3-ddff-4218-8345-e15db0428b26
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 1445
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a906956a-9dd9-4829-8338-04aa50b151a8
+      iscommand: false
+      name: Private IP
+      type: title
+      version: -1
+      description: ''
+    taskid: a906956a-9dd9-4829-8338-04aa50b151a8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 1295
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "35"
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7823bb62-660b-4032-8821-b42673988e82
+      iscommand: false
+      name: Tags
+      type: title
+      version: -1
+      description: ''
+    taskid: 7823bb62-660b-4032-8821-b42673988e82
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 1295
+        }
+      }
+  "25":
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmtags
+      keys:
+        simple: key,value,source
+      val1:
+        complex:
+          accessor: endpoint_tags
+          root: Core.Endpoint.tags
+      val2:
+        simple: n/a
+      val3:
+        simple: Cortex Endpoint
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: ab07529f-6400-40d3-8b92-a1951fc14cce
+      iscommand: false
+      name: Set tags grid field
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: ab07529f-6400-40d3-8b92-a1951fc14cce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1690
+        }
+      }
+  "26":
+    continueonerrortype: ""
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+      - "32"
+      - "33"
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b5dd0794-e238-4341-892c-3af9c2ee0157
+      iscommand: false
+      name: Set grid fields
+      type: title
+      version: -1
+      description: ''
+    taskid: b5dd0794-e238-4341-892c-3af9c2ee0157
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 880
+        }
+      }
+  "27":
+    continueonerrortype: ""
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      text:
+        complex:
+          accessor: users
+          root: Core.Endpoint
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: de72ce19-b695-470f-88b0-32da6b4a9e70
+      iscommand: true
+      name: Extract indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: de72ce19-b695-470f-88b0-32da6b4a9e70
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 1445
+        }
+      }
+  "28":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email
+                root: ExtractedIndicators
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the last command extracted an email address or not.
+      id: 2b145bfe-7056-410c-8fc6-a8aba70fc1cb
+      iscommand: false
+      name: Was an email found?
+      type: condition
+      version: -1
+    taskid: 2b145bfe-7056-410c-8fc6-a8aba70fc1cb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1620
+        }
+      }
+  "29":
+    continueonerrortype: ""
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmserviceownerunrankedraw
+      keys:
+        simple: name,email,source,timestamp
+      val1:
+        simple: n/a
+      val2:
+        complex:
+          accessor: Email
+          root: ExtractedIndicators
+      val3:
+        simple: Cortex Endpoint
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 2757aeaa-88f5-4ece-8dbf-c99616df5ab9
+      iscommand: false
+      name: Set service owner grid field
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 2757aeaa-88f5-4ece-8dbf-c99616df5ab9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 1820
+        }
+      }
+  "31":
+    continueonerrortype: ""
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6c43dfdc-58c5-4ebf-8113-3b11457ba3de
+      iscommand: false
+      name: Service Owner
+      type: title
+      version: -1
+      description: ''
+    taskid: 6c43dfdc-58c5-4ebf-8113-3b11457ba3de
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 1290
+        }
+      }
+  "32":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: ip
+                root: Core.Endpoint
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the last command returned endpoint information with private IPs.
+      id: 9378b3c7-59dd-406c-87ee-17a23bb4924e
+      iscommand: false
+      name: Are there private IPs?
+      type: condition
+      version: -1
+    taskid: 9378b3c7-59dd-406c-87ee-17a23bb4924e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 1070
+        }
+      }
+  "33":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: endpoint_tags
+                root: Core.Endpoint.tags
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: server_tags
+                root: Core.Endpoint.tags
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "33"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the last command returned endpoint information with tags.
+      id: 4d05328c-ffd4-4b38-8305-70f3dd3cfe1a
+      iscommand: false
+      name: Are there tags?
+      type: condition
+      version: -1
+    taskid: 4d05328c-ffd4-4b38-8305-70f3dd3cfe1a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1070
+        }
+      }
+  "35":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: endpoint_tags
+                root: Core.Endpoint.tags
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the last command returned endpoint information with tags.
+      id: 31416513-da7a-47b6-8742-9aaebc89377f
+      iscommand: false
+      name: Are there endpoint tags?
+      type: condition
+      version: -1
+    taskid: 31416513-da7a-47b6-8742-9aaebc89377f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1450
+        }
+      }
+  "36":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: users
+                root: Core.Endpoint
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the last command returned endpoint user information.
+      id: d593576f-d572-4d1f-86f5-e0ad293686fd
+      iscommand: false
+      name: Are there potential service owners?
+      type: condition
+      version: -1
+    taskid: d593576f-d572-4d1f-86f5-e0ad293686fd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1750,
+          "y": 1070
+        }
+      }
+  "37":
+    continueonerrortype: ""
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: CORTEX-ENDPOINT-ASSET-NAME
+      val2:
+        complex:
+          accessor: endpoint_name
+          root: Core.Endpoint
+      val3:
+        simple: n/a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      id: 4ae4d755-7bc7-414e-8288-0bad8cf55311
+      iscommand: false
+      name: Set system IDs grid field (endpoint name)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 4ae4d755-7bc7-414e-8288-0bad8cf55311
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2400,
+          "y": 1540
+        }
+      }
+  "38":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: server_tags
+                root: Core.Endpoint.tags
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the last command returned endpoint information with tags.
+      id: 7fdb265a-353f-40b8-89ba-dbfb29fac684
+      iscommand: false
+      name: Are there server tags?
+      type: condition
+      version: -1
+    taskid: 7fdb265a-353f-40b8-89ba-dbfb29fac684
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 1450
+        }
+      }
+  "39":
+    continueonerrortype: ""
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmtags
+      keys:
+        simple: key,value,source
+      val1:
+        complex:
+          accessor: server_tags
+          root: Core.Endpoint.tags
+      val2:
+        simple: n/a
+      val3:
+        simple: Cortex Endpoint
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: c8e64030-e51c-4030-87f8-8768c79c6a0a
+      iscommand: false
+      name: Set tags grid field
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: c8e64030-e51c-4030-87f8-8768c79c6a0a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 1690
+        }
+      }
+  "40":
+    continueonerrortype: ""
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmserviceownerunrankedraw
+      keys:
+        simple: name,email,source,timestamp
+      val1:
+        complex:
+          accessor: users
+          root: Core.Endpoint
+      val2:
+        simple: n/a
+      val3:
+        simple: Cortex Endpoint
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 3a35e422-b63c-4d7e-80f9-8dea114d3f19
+      iscommand: false
+      name: Set service owner grid field
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 3a35e422-b63c-4d7e-80f9-8dea114d3f19
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 1820
+        }
+      }
+  "42":
+    continueonerrortype: ""
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0fb551b3-7b30-4fc1-8962-4c81b31f788c
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 0fb551b3-7b30-4fc1-8962-4c81b31f788c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2650
+        }
+      }
+  "43":
+    continueonerrortype: ""
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      public_ip_list:
+        complex:
+          root: inputs.RemoteIP
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoints from the start of the result set (start by counting from 0).
+      id: 4d75150d-52dc-4fb0-85e4-3bde0caf5830
+      iscommand: true
+      name: Cortex XDR Search device
+      script: Cortex XDR - IR|||xdr-get-endpoints
+      type: regular
+      version: -1
+    taskid: 4d75150d-52dc-4fb0-85e4-3bde0caf5830
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 300
+        }
+      }
+  "44":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.RemoteIP
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of the Cortex XDR integration enabled and input values are defined to pull enrichment data.
+      id: 1d11fce0-171c-4e32-8a80-98e125d2e2cb
+      iscommand: false
+      name: Is Cortex XDR enabled and input value defined?
+      type: condition
+      version: -1
+    taskid: 1d11fce0-171c-4e32-8a80-98e125d2e2cb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 100
+        }
+      }
+  "45":
+    continueonerrortype: ""
+    id: "45"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Core.Endpoint
+      value:
+        simple: ${PaloAltoNetworksXDR.Endpoint}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: ecb38b40-d8bc-40cd-8c1b-5792cf7bf7d8
+      iscommand: false
+      name: Set temporary context
+      script: Set
+      type: regular
+      version: -1
+    taskid: ecb38b40-d8bc-40cd-8c1b-5792cf7bf7d8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 440
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_8_#default#": 0.21,
+      "32_8_#default#": 0.11,
+      "33_8_#default#": 0.16,
+      "35_8_#default#": 0.13,
+      "36_8_#default#": 0.12,
+      "38_8_#default#": 0.12,
+      "44_8_#default#": 0.12,
+      "9_8_#default#": 0.17
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2755,
+        "width": 2920,
+        "x": -140,
+        "y": -40
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
+description: 'This playbook is used to pull information from Cortex Endpoint (XSIAM/XDR) systems for enrichment purposes.'

@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
-import shutil
 from collections.abc import Callable, Iterable
 
 
@@ -10,6 +9,8 @@ import mimetypes
 # disable insecure warnings
 import urllib3
 urllib3.disable_warnings()
+
+DEFAULT_FETCH_TIME = '10 minutes'
 
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
@@ -24,7 +25,8 @@ DATE_FORMAT_OPTIONS = {
     'dd/MM/yyyy': '%d/%m/%Y %H:%M:%S',
     'dd-MM-yyyy': '%d-%m-%Y %H:%M:%S',
     'dd.MM.yyyy': '%d.%m.%Y %H:%M:%S',
-    'yyyy-MM-dd': '%Y-%m-%d %H:%M:%S'
+    'yyyy-MM-dd': '%Y-%m-%d %H:%M:%S',
+    'mmm-dd-yyyy': '%b-%d-%Y %H:%M:%S'
 }
 
 TICKET_STATES = {
@@ -709,8 +711,8 @@ class Client(BaseClient):
                 try:
                     file_entry = file['id']
                     file_name = file['name']
-                    shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
-                    with open(file_name, 'rb') as f:
+                    file_path = demisto.getFilePath(file_entry)['path']
+                    with open(file_path, 'rb') as f:
                         file_info = (file_name, f, self.get_content_type(file_name))
                         if self.use_oauth:
                             access_token = self.snow_client.get_access_token()
@@ -723,7 +725,6 @@ class Client(BaseClient):
                             res = requests.request(method, url, headers=headers, data=body, params=params,
                                                    files={'file': file_info}, auth=self._auth,
                                                    verify=self._verify, proxies=self._proxies)
-                    shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
                 except Exception as err:
                     raise Exception('Failed to upload file - ' + str(err))
             else:
@@ -2137,6 +2138,33 @@ def get_mirroring():
     }
 
 
+def format_incidents_response_with_display_values(incidents_res: dict) -> list[dict]:
+    """Format the incidents response to use display values by key.
+
+    Args:
+        incidents_res (dict): The original incidents response
+
+    Returns:
+        list[dict]: The formatted incidents.
+    """
+    format_incidents = []
+
+    for incident in incidents_res:
+        format_incident = {}
+
+        for item in incident:
+            if item in ("opened_by", "sys_domain", "assignment_group"):
+                format_incident[item] = incident[item]
+            elif item == "opened_at":
+                format_incident[item] = incident[item]["value"]
+            else:
+                format_incident[item] = incident[item]["display_value"]
+
+        format_incidents.append(format_incident)
+
+    return format_incidents
+
+
 def fetch_incidents(client: Client) -> list:
     query_params = {}
     incidents = []
@@ -2161,7 +2189,7 @@ def fetch_incidents(client: Client) -> list:
         query_params['sysparm_query'] = query
     query_params['sysparm_limit'] = fetch_limit  # type: ignore[assignment]
     if client.use_display_value:
-        query_params['sysparm_display_value'] = True  # type: ignore[assignment]
+        query_params['sysparm_display_value'] = "all"
 
     demisto.debug(f"ServiceNowV2 - Last run: {json.dumps(last_run)}")
     demisto.debug(f"ServiceNowV2 - Query sent to the server: {str(query_params)}")
@@ -2170,6 +2198,9 @@ def fetch_incidents(client: Client) -> list:
     skipped_incidents = 0
 
     severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
+
+    if client.use_display_value:
+        tickets_response = format_incidents_response_with_display_values(incidents_res=tickets_response)
 
     # remove duplicate incidents which were already fetched
     tickets_response = filter_incidents_by_duplicates_and_limit(
@@ -2402,7 +2433,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     result = client.get(ticket_type, ticket_id)
 
     if not result or 'result' not in result:
-        return 'Ticket was not found.'
+        return f'Ticket {ticket_id=} was not found.'
 
     if isinstance(result['result'], list):
         if len(result['result']) == 0:
@@ -2419,13 +2450,15 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         required=False
     )
 
-    demisto.debug(f'ticket_last_update is {ticket_last_update}')
-
-    if last_update > ticket_last_update:
-        demisto.debug('Nothing new in the ticket')
+    demisto.debug(f'ticket_last_update of {ticket_id=} is {ticket_last_update}')
+    is_fetch = demisto.params().get('isFetch')
+    if is_fetch and last_update > ticket_last_update:
+        demisto.debug(f'Nothing new in the ticket {ticket_id=}')
         ticket = {}
 
     else:
+        # in case we use SNOW just to mirror by setting the incident with mirror fields
+        # is_fetch will be false, so we will update even the XSOAR incident will be updated then SNOW ticket.
         demisto.debug(f'ticket is updated: {ticket}')
 
     parse_dict_ticket_fields(client, ticket)
@@ -2975,6 +3008,7 @@ def main():
     LOG(f'Executing command {command}')
 
     params = demisto.params()
+    args = demisto.args()
     verify = not params.get('insecure', False)
     use_oauth = params.get('use_oauth', False)
     oauth_params = {}
@@ -3005,11 +3039,20 @@ def main():
         password = params.get('credentials', {}).get('password')
 
     version = params.get('api_version')
-    if version:
+
+    force_default_url = argToBoolean(args.get('force_default_url', 'false'))
+    if version and not force_default_url:
         api = f'/api/now/{version}/'
         sc_api = f'/api/sn_sc/{version}/'
         cr_api = f'/api/sn_chg_rest/{version}/'
     else:
+        if force_default_url:
+            """
+            force_default_url is given as part of the arguments of the command servicenow-create-co-from-template,
+            if True, then the request will not use the configured api version
+            """
+            demisto.debug(f'{force_default_url=}, ignoring api {version=} configured in parameters')
+        # Either no API version configured, OR force_default_url=True
         api = '/api/now/'
         sc_api = '/api/sn_sc/'
         cr_api = '/api/sn_chg_rest/'
@@ -3018,7 +3061,7 @@ def main():
     cr_server_url = f'{get_server_url(server_url)}{cr_api}'
     server_url = f'{get_server_url(server_url)}{api}'
 
-    fetch_time = params.get('fetch_time', '10 minutes').strip()
+    fetch_time = (params.get('fetch_time') or DEFAULT_FETCH_TIME).strip()
     sysparm_query = params.get('sysparm_query')
     sysparm_limit = int(params.get('fetch_limit', 10))
     timestamp_field = params.get('timestamp_field', 'opened_at')
@@ -3098,7 +3141,6 @@ def main():
             'servicenow-create-item-order': create_order_item_command,
             'servicenow-document-route-to-queue': document_route_to_table,
         }
-        args = demisto.args()
         if command == 'fetch-incidents':
             raise_exception = True
             incidents = fetch_incidents(client)

@@ -8,6 +8,7 @@ import slack_sdk
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
+from SlackV3 import get_war_room_url
 
 from CommonServerPython import *
 
@@ -2835,6 +2836,44 @@ def test_send_request_with_entitlement(mocker):
     assert demisto.getIntegrationContext()['questions'] == js.dumps(questions)
 
 
+def test_slack_send_with_mirrored_file(mocker):
+    """
+    Given:
+      - mirror entry which is basically a file
+
+    When:
+      - running send-notification triggered from mirroring
+
+    Then:
+      - Validate that the file is sent successfully
+    """
+    import SlackV3
+
+    mocker.patch.object(demisto, 'params', return_value={'enable_outbound_file_mirroring': True})
+
+    SlackV3.init_globals()
+
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            "message": "test",
+            "channel_id": "1234",
+            "channel": "channel",
+            "entry": "1234",
+            "messageType": SlackV3.MIRROR_TYPE,
+            "entryObject": {}
+        }
+    )
+    slack_send_request = mocker.patch.object(SlackV3, 'slack_send_request', return_value='file-sent')
+    demisto_results = mocker.patch.object(demisto, 'results')
+
+    SlackV3.slack_send()
+    assert slack_send_request.call_args_list[0].kwargs["file_dict"]
+    assert slack_send_request.call_args_list[0].kwargs["channel_id"] == "1234"
+    assert demisto_results.call_args_list[0][0][0] == 'File sent to Slack successfully.'
+
+
 def test_send_request_with_entitlement_blocks(mocker):
     import SlackV3
 
@@ -5140,3 +5179,28 @@ async def test_listen(client_session):
         assert result_incident_id == '3'
         assert result_entitlement == '326a8a51-3dbd-4b07-8662-d36bfa9509fb'
         assert test_result_content == expected_content
+
+
+class TestGetWarRoomURL:
+
+    def test_get_war_room_url_with_xsiam_from_incident_war_room(self, mocker):
+        url = "https://example.com/WarRoom/INCIDENT-2930"
+        expected_war_room_url = "https://example.com/incidents/war_room?caseId=2930"
+        mocker.patch('SlackV3.is_xsiam', return_value=True)
+        mocker.patch.dict(demisto.callingContext, {'context': {'Inv': {'id': 'INCIDENT-2930'}}})
+
+        assert get_war_room_url(url) == expected_war_room_url
+
+    def test_get_war_room_url_without_xsiam_from_incident_war_room(self, mocker):
+        url = "https://example.com/WarRoom/INCIDENT-2930"
+        mocker.patch('SlackV3.is_xsiam', return_value=False)
+        expected_war_room_url = "https://example.com/WarRoom/INCIDENT-2930"
+        assert get_war_room_url(url) == expected_war_room_url
+
+    def test_get_war_room_url_with_xsiam_from_alert_war_room(self, mocker):
+        url = "https://example.com/WarRoom/ALERT-1234"
+        mocker.patch('SlackV3.is_xsiam', return_value=True)
+        mocker.patch.dict(demisto.callingContext, {'context': {'Inv': {'id': '1234'}}})
+        expected_war_room_url = \
+            "https://example.com/incidents/alerts_and_insights?caseId=1234&action:openAlertDetails=1234-warRoom"
+        assert get_war_room_url(url) == expected_war_room_url

@@ -27,7 +27,8 @@
         "BMC Problem Investigation incident",
         "BMC Problem – Known Error",
         "BMC Service Request",
-        "BMC Task"
+        "BMC Task",
+        "BMC Work Order"
     ],
     "associatedToAll": false,
     "unmapped": false,

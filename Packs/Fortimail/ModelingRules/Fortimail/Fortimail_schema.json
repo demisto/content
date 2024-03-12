@@ -1,0 +1,84 @@
+{
+    "fortinet_fortimail_raw": {        
+        "Classifier": {
+            "type": "string",
+            "is_array": false
+        },
+        "Disposition": {
+            "type": "string",
+            "is_array": false
+        },
+        "From": {
+            "type": "string",
+            "is_array": false
+        },
+        "Header_From": {
+            "type": "string",
+            "is_array": false
+        },
+        "To": {
+            "type": "string",
+            "is_array": false
+        },
+        "Subject": {
+            "type": "string",
+            "is_array": false
+        },
+        "Message_ID": {
+            "type": "string",
+            "is_array": false
+        },
+        "Session_ID": {
+            "type": "string",
+            "is_array": false
+        },
+        "Client_IP": {
+            "type": "string",
+            "is_array": false
+        },
+        "Location": {
+            "type": "string",
+            "is_array": false
+        },
+        "Client_Name": {
+            "type": "string",
+            "is_array": false
+        },
+        "Direction": {
+            "type": "string",
+            "is_array": false
+        },
+        "Policy_ID": {
+            "type": "string",
+            "is_array": false
+        },
+        "Domain": {
+            "type": "string",
+            "is_array": false
+        },
+        "Destination_IP": {
+            "type": "string",
+            "is_array": false
+        },
+        "Log_ID": {
+            "type": "string",
+            "is_array": false
+        },
+        "Message": {
+            "type": "string",
+            "is_array": false
+        },
+        "Level": {
+            "type": "string",
+            "is_array": false
+        },
+        "Endpoint": {
+            "type": "string",
+            "is_array": false
+        },
+        "Subtype": {
+            "type": "string",
+            "is_array": false
+        }                                                
+    }
+}

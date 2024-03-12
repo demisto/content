@@ -847,7 +847,7 @@ script:
     - contextPath: ASM.ExternalWebsite
       description: A list of the websites results assets.
     description: Get external websites assets.
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.13.87159
   isFetchSamples: true
   isfetch: true
   script: ''

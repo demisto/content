@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import os
-from typing import Iterable, List
+from collections.abc import Iterable
 from urllib.parse import urljoin
 
 import requests
@@ -12,13 +12,15 @@ def main():
     parser.add_argument('-p', '--pr_number', help='Contrib PR number')
     parser.add_argument('-b', '--branch', help='The contrib branch')
     parser.add_argument('-c', '--contrib_repo', help='The contrib repo')
+    parser.add_argument('-u', '--username', help='The contrib user name')
     args = parser.parse_args()
 
     pr_number = args.pr_number
+    username = args.username
     repo = args.contrib_repo
     branch = args.branch
 
-    packs_dir_names = get_files_from_github(repo, branch, pr_number)
+    packs_dir_names = get_files_from_github(username, branch, pr_number, repo)
     if packs_dir_names:
         print('Successfully updated the base branch '
               'with the following contrib packs: Packs/'
@@ -49,30 +51,30 @@ def get_pr_files(pr_number: str) -> Iterable[str]:
         page += 1
 
 
-def get_files_from_github(username: str, branch: str, pr_number: str) -> List[str]:
+def get_files_from_github(username: str, branch: str, pr_number: str, repo: str) -> list[str]:
     """
     Write the changed files content repo
     Args:
         username: The username of the contributor (e.g. demisto / xsoar-bot)
         branch: The contributor branch
         pr_number: The contrib PR
+        repo: The contrib repository
     Returns:
         A list of packs names, if found.
     """
     content_path = os.getcwd()
     files_list = set()
     chunk_size = 1024 * 500     # 500 Kb
-    base_url = f'https://raw.githubusercontent.com/{username}/content/{branch}/'
+    base_url = f'https://raw.githubusercontent.com/{username}/{repo}/{branch}/'
     for file_path in get_pr_files(pr_number):
         abs_file_path = os.path.join(content_path, file_path)
         abs_dir = os.path.dirname(abs_file_path)
         if not os.path.isdir(abs_dir):
             os.makedirs(abs_dir)
-        with open(abs_file_path, 'wb') as changed_file:
-            with requests.get(urljoin(base_url, file_path), stream=True) as file_content:
-                file_content.raise_for_status()
-                for data in file_content.iter_content(chunk_size=chunk_size):
-                    changed_file.write(data)
+        with open(abs_file_path, 'wb') as changed_file, requests.get(urljoin(base_url, file_path), stream=True) as file_content:
+            file_content.raise_for_status()
+            for data in file_content.iter_content(chunk_size=chunk_size):
+                changed_file.write(data)
 
         files_list.add(file_path.split(os.path.sep)[1])
     return list(files_list)
