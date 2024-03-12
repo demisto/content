@@ -1,0 +1,29 @@
+{
+    "id": "incident_stellarcybertenantid",
+    "version": -1,
+    "name": "Stellar Cyber Tenant ID",
+    "prevName": "Stellar Cyber Tenant ID",
+    "ownerOnly": false,
+    "placeholder": "",
+    "template": "",
+    "description": "Tenant ID of Stellar Cyber Case",
+    "cliName": "stellarcybertenantid",
+    "type": "shortText",
+    "orgType": "shortText",
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "locked": false,
+    "system": false,
+    "content": false,
+    "hidden": false,
+    "openEnded": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "threshold": 72,
+    "systemAssociatedTypes": null,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Stellar Cyber Case"
+    ]
+}

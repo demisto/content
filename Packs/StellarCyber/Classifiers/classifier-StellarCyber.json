@@ -1,0 +1,11 @@
+{
+	"defaultIncidentType": "Stellar Cyber Case",
+	"description": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"name": "Stellar Cyber Classifier",
+	"id": "Stellar Cyber Classifier",
+	"transformer": {},
+	"type": "classification",
+	"version": -1
+}

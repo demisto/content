@@ -1,0 +1,241 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: StellarCyber
+  version: -1
+configuration:
+- name: isFetch
+  display: Fetch incidents
+  required: false
+  type: 8
+  additionalinfo: "Enable fetching cases from Stellar Cyber as XSOAR incidents."
+- name: incidentType
+  display: Incident type
+  required: false
+  type: 13
+  additionalinfo: "If not using a mapper, incident type to be assigned."
+- name: stellar_dp
+  display: Stellar Cyber Host (e.g. example.stellarcyber.cloud)
+  required: true
+  defaultvalue: example.stellarcyber.cloud
+  type: 0
+  section: Connect
+  additionalinfo: "Your Stellar Cyber Host FQDN."
+- name: credentials
+  display: API User (Email Address)
+  required: true
+  type: 9
+  displaypassword: API Key
+  hiddenusername: false
+  section: Connect
+- name: first_fetch
+  display: First fetch time
+  required: false
+  defaultvalue: 1 day
+  type: 0
+  section: Collect
+  additionalinfo: "The time to look back for initial pull of cases. Example values: 1 day, 5 hours, 30 minutes, etc."
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  section: Connect
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+  section: Connect
+  additionalinfo: "If set to true, will use the system proxy settings."
+- name: incidentFetchInterval
+  display: Incidents Fetch Interval
+  required: false
+  defaultvalue: "5"
+  type: 19
+  section: Collect
+  additionalinfo: "The interval in minutes for fetching incidents from Stellar Cyber."
+- name: tenantid
+  display: Optional - Tenant ID
+  required: false
+  defaultvalue: ""
+  type: 0
+  additionalinfo: "Supply a Tenant ID to restrict Fetch and Mirror operations to a specific Tenant. If not supplied, all Tenants will be included."
+  section: Collect
+# - name: max_fetch
+#   display: Maximum number of incidents per fetch
+#   required: false
+#   defaultvalue: "200"
+#   type: 0
+#   section: Collect
+#   additionalinfo: "The maximum number of incidents to fetch per fetch."
+description: Fetches and mirrors Cases from Stellar Cyber to XSOAR. Also provides commands to get an Alert, update a Case, or close a Case.
+display: Stellar Cyber
+name: StellarCyber
+script:
+  commands:
+  - arguments:
+    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
+      required: true
+    description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes.
+    name: get-modified-remote-data
+  - arguments:
+    - description: The remote incident ID.
+      name: id
+      required: true
+    - defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    name: get-remote-data
+  - name: stellar-get-alert
+    arguments:
+    - name: alert_id
+      required: true
+      description: The ID of the alert to retrieve.
+    description: Retrieve an alert from Stellar Cyber.
+    outputs:
+    - contextPath: StellarCyber.Alert.alert_id
+      description: 'ID of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_index
+      description: 'Index of the STellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.description
+      description: 'Description of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.display_name
+      description: 'Display Name of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.framework_version
+      description: 'Framework Version of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.name
+      description: 'Name of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.scope
+      description: 'Scope of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.tactic.id
+      description: 'Tactic ID of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.tactic.name
+      description: 'Tactic Name of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.tags
+      description: 'Tags of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.technique.id
+      description: 'Technique ID of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.technique.name
+      description: 'Technique Name of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.ttps.tactic.id
+      description: 'Tactic ID of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.ttps.tactic.name
+      description: 'Tactic Name of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.ttps.technique.id
+      description: 'Technique ID of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.ttps.technique.name
+      description: 'Technique Name of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.xdr_killchain_stage
+      description: 'XDR Killchain Stage'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_metadata.xdr_killchain_version
+      description: 'XDR Killchain Version'
+      type: String
+    - contextPath: StellarCyber.Alert.alert_url
+      description: 'URL to the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.description
+      description: 'Description of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.detected_field
+      description: 'Detected Field(s) of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.detected_value
+      description: 'Detected Value(s) of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.display_name
+      description: 'Display Name of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.tenant_id
+      description: 'Tenant ID of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.tenant_name
+      description: 'Tenant Name of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.xdr_tactic_id
+      description: 'XDR Tactic ID of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.xdr_tactic_name
+      description: 'XDR Tactic Name of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.xdr_technique_id
+      description: 'XDR Technique ID of the Stellar Cyber Alert'
+      type: String
+    - contextPath: StellarCyber.Alert.xdr_technique_name
+      description: 'XDR Technique Name of the Stellar Cyber Alert'
+      type: String
+  - name: stellar-close-case
+    arguments:
+    - name: stellar_case_id
+      required: true
+      description: The ID of the Stellar Cyber Case to close.
+    - name: stellar_close_reason
+      required: true
+      description: The reason for closing the incident.
+    description: Close an incident in Stellar Cyber.
+    outputs: []
+  - name: stellar-update-case
+    arguments:
+    - name: stellar_case_id
+      required: true
+      description: The ID of the Case to update.
+    - name: stellar_case_severity
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+      description: The severity to set the Case to in Stellar Cyber.
+    - name: stellar_case_status
+      auto: PREDEFINED
+      predefined:
+      - New
+      - In Progress
+      - Resolved
+      - Cancelled
+      description: The status to set the Case to.
+    - name: stellar_case_assignee
+      description: The email or username in to assign to Case in Stellar Cyber.
+    - name: stellar_case_tags_add
+      description: List of tags to add to Case in Stellar Cyber.
+      isArray: true
+    - name: stellar_case_tags_remove
+      description: List of tags to add remove from Case in Stellar Cyber.
+      isArray: true
+    description: Update the severity, status, assignee, or tags of a Case in Stellar Cyber.
+    outputs: []
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.89009
+  feed: false
+  isfetch: true
+  ismappable: false
+  isremotesyncin: true
+  isremotesyncout: false
+fromversion: 6.6.0
+defaultclassifier: Stellar Cyber Classifier
+defaultmapperin: Stellar Cyber - Incoming Mapper
+tests:
+- No tests (auto formatted)
