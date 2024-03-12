@@ -274,7 +274,7 @@ switch (command) {
     case 'grr_set_hunts'://deprecated
         return getHunts('POST', server + '/api/hunts', 'set hunts', JSON.stringify(args),null,null,"Set Hunt");
     case 'grr-get-clients':
-        return getClients('GET',server + 'api/clients' + encodeToURLQuery(args), 'get client',null,"items","Clients");
+        return getClients('GET',server + '/api/clients' + encodeToURLQuery(args), 'get client',null,"items","Clients");
     case 'grr-get-flows':
     case 'grr_get_flows'://deprecated
         var urlArgs = {};
