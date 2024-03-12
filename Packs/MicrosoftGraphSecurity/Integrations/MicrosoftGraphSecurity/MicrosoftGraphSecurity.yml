@@ -124,7 +124,7 @@ configuration:
   section: Connect
   required: false
   additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-  advanced: true
+  advanced: false
 - display: Fetch incidents
   name: isFetch
   type: 8
