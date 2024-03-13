@@ -84,6 +84,15 @@ configuration:
   required: true
   section: Collect
   type: 4
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
+  required: false
 description: Amazon Web Services IAM Identity Center.
 display: AWS - IAM Identity Center
 name: AWS - IAM Identity Center
