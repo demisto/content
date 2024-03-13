@@ -53,10 +53,10 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
 11. New playbook - qualys-report-launch-compliance-policy-and-fetch.yml
 
 
-## Configure Qualys v2 on Cortex XSOAR
+## Configure Qualys VMDR on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Qualys v2.
+2. Search for Qualys VMDR.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter**                      | **Required** |
@@ -70,6 +70,9 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
     | Fetch event Limit                  | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Notes:
+- ***Fetch assets and vulnerabilities*** command fetches assets and vulnerabilities from the last 90 days only.
 
 ## Asset Tag Commands
 There are several API endpoints on the Qualys API that can be used in the QualysV2 integration configuration as the `SERVER URL` parameter.

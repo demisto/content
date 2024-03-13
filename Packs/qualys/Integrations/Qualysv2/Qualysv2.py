@@ -3032,48 +3032,37 @@ def get_activity_logs_events_command(client, args, first_fetch_time):
     return limited_activity_logs_events, results
 
 
-# def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
-#     """
-#     Tests API connectivity and authentication'
-#     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-#     successful.
-#     Raises exceptions if something goes wrong.
-#     Args:
-#         client (Client): HelloWorld client to use.
-#         params (Dict): Integration parameters.
-#         first_fetch_time (int): The first fetch time as configured in the integration params.
-#     Returns:
-#         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
-#     """
-#     fetch_events(
-#         client=client,
-#         last_run={},
-#         first_fetch_time=first_fetch_time,
-#         max_fetch=1,
-#         fetch_function=get_activity_logs_events,
-#         newest_event_field=ACTIVITY_LOGS_NEWEST_EVENT_DATETIME,
-#         next_page_field=ACTIVITY_LOGS_NEXT_PAGE,
-#         previous_run_time_field=ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN,
-#     )
-#
-#     fetch_assets(client=client)
-#
-#     return 'ok'
-
-@logger
-def test_module(client: Client) -> str:
+def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
     """
-    Makes a http request to qualys API in order to test the connection
+    Tests API connectivity and authentication'
+    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
+    successful.
+    Raises exceptions if something goes wrong.
     Args:
-        client: Client object for making a http request
+        client (Client): HelloWorld client to use.
+        params (Dict): Integration parameters.
+        first_fetch_time (int): The first fetch time as configured in the integration params.
     Returns:
-        'ok' message if the connection test was successful
-    Raises:
-        DemistoException: will be raised when connection was not successful by command_http_request
+        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     build_args_dict(None, COMMANDS_ARGS_DATA["test-module"], False)
     client.command_http_request(COMMANDS_API_DATA["test-module"])
-    return "ok"
+
+    if params.get('isFetchEvents'):
+        fetch_events(
+            client=client,
+            last_run={},
+            first_fetch_time=first_fetch_time,
+            max_fetch=1,
+            fetch_function=get_activity_logs_events,
+            newest_event_field=ACTIVITY_LOGS_NEWEST_EVENT_DATETIME,
+            next_page_field=ACTIVITY_LOGS_NEXT_PAGE,
+            previous_run_time_field=ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN,
+        )
+    if params.get('isFetchAssets'):
+        fetch_assets(client=client)
+
+    return 'ok'
 
 
 @logger
@@ -3407,7 +3396,7 @@ def main():  # pragma: no cover
         first_fetch_str = first_fetch_datetime.strftime(DATE_FORMAT)
 
         if command == "test-module":
-            text_res = test_module(client)
+            text_res = test_module(client, params, first_fetch_str)
             return_results(text_res)
 
         elif command == "qualys-get-events":
@@ -3416,6 +3405,14 @@ def main():  # pragma: no cover
             return_results(results)
             if should_push_events:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+        elif command == "qualys-get-assets":
+            should_push_events = argToBoolean(args.get('should_push_events', False))
+            assets, vulnerabilities = fetch_assets(client=client)
+            return_results(f'Pulled {len(assets)} assets, and {len(vulnerabilities)} vulnerabilities from API')
+            if should_push_events:
+                send_data_to_xsiam(data=assets, vendor=VENDOR, product='host_detections', data_type='assets')
+                send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
@@ -3443,7 +3440,7 @@ def main():  # pragma: no cover
             execution_start_time = time.time()
             assets, vulnerabilities = fetch_assets(client=client)
             send_data_to_xsiam(data=assets, vendor=VENDOR, product='host_detections', data_type='assets')
-            send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities')
+            send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
             demisto.setAssetsLastRun({'assets_last_fetch': execution_start_time})
 
         else:
