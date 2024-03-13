@@ -1,7 +1,7 @@
 import json
 import pytest
 from stix2 import TAXIICollectionSource, parse
-
+import demistomock as demisto  # noqa: F401
 from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
     RELATION, STIX_TOOL, STIX_MALWARE, STIX_ATTACK_PATTERN, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
     INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME, RELATIONSHIP_ENTITY, \
@@ -296,3 +296,28 @@ def test_remove_citations(description, expected_result):
     actual_result = remove_citations(description)
     assert "Citation" not in actual_result
     assert actual_result == expected_result
+
+
+def test_show_feeds_command(mocker):
+    """
+    Given:
+        A Client.
+    When:
+        Calling show_feeds_command method.
+    Then:
+        Validate the output extracted successfully.
+    """
+    from FeedMitreAttackv2 import show_feeds_command, Client
+    client = Client(url="https://test.org", proxies=False, verify=False, tags=[], tlp_color=None)
+    default_id = NON_ENTERPRISE_COLLECTION_ID
+    nondefault_id = 2
+    client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
+    mocker.patch.object(demisto, 'results')
+    show_feeds_command(client)
+    assert demisto.results.call_count == 1
+    assert demisto.results.call_args[0][0] == {'Type': 1,
+                                               'Contents': [{'Name': 'default', 'ID': '101010101010101010101010101010101'},
+                                                            {'Name': 'not_default', 'ID': 2}],
+                                               'ContentsFormat': 'json',
+                                               'HumanReadable': '### MITRE ATT&CK Feeds:\n|Name|ID|\n|---|---|\n| default |\
+ 101010101010101010101010101010101 |\n| not_default | 2 |\n', 'ReadableContentsFormat': 'markdown'}
