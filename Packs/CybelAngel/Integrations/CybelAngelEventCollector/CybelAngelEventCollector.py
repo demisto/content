@@ -59,6 +59,12 @@ class Client(BaseClient):
         return self._http_request(method, url_suffix=url_suffix, headers=headers, params=params)
 
     def get_reports(self, start_date: str, end_date: str, limit: int = DEFAULT_MAX_FETCH) -> List[dict[str, Any]]:
+        """
+        Get manual reports from Cybel Angel Collector.
+
+        Note:
+            The order of the events returned is random, hence need to sort them out to return the oldest events first.
+        """
         params = {
             "start-date": start_date,
             "end-date": end_date
@@ -164,11 +170,31 @@ def test_module(client: Client) -> str:
 
 
 def fetch_events(client: Client, first_fetch: str, last_run: dict, max_fetch: int) -> tuple[List[dict[str, Any]], dict[str, Any]]:
+    """
+    Fetches reports from Cybel Angel
+
+    Args:
+        client: Cybel Angel client
+        first_fetch: since when to start to takes reports
+        last_run: the last run object
+        max_fetch: maximum number of reports
+
+    Fetch logic:
+    1. Get the latest report time from last fetch or start from fetch in case its a the first time fetching
+    2. get all the reports since the last fetch or first fetch
+    3. remove any reports which where already fetched
+    4. if there are no reports after dedup, keep the last run the same and return
+    5. if there are reports after dedup, update the last run to the latest report time, save all the report IDs which
+       occurred in the last event time
+    6. return all the fetched events
+
+    """
     last_run_time = last_run.get(LastRun.LATEST_REPORT_TIME)
     if not last_run_time:
         last_run_time = dateparser.parse(first_fetch).strftime(DATE_FORMAT)  # type: ignore[union-attr]
         if not last_run_time:
-            raise ValueError('First fetch is not valid')
+            demisto.error(f'First fetch {first_fetch} is not valid')
+            raise ValueError(f'First fetch {first_fetch} not valid')
     else:
         last_run_time = dateparser.parse(last_run_time).strftime(DATE_FORMAT)  # type: ignore[union-attr]
     now = datetime.now()
@@ -195,7 +221,9 @@ def fetch_events(client: Client, first_fetch: str, last_run: dict, max_fetch: in
 
 
 def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
-
+    """
+    Get events from Cybel Angel, used mainly for debugging purposes
+    """
     if end := args.get("end-date"):
         end_date = dateparser.parse(end).strftime(DATE_FORMAT)  # type: ignore[union-attr]
     else:
