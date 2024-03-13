@@ -810,7 +810,7 @@ script:
     - description: The attachment ID.
       name: attachment_id
       required: true
-    description: Deletes an attachment from an issue.
+    description: Delete an attachment from an issue.
     name: jira-issue-delete-file
   - arguments:
     - description: The issue ID (Issue ID or key is required).
