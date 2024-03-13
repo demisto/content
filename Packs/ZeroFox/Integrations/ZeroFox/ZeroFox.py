@@ -5,7 +5,7 @@ from CommonServerPython import *
 """ IMPORTS  """
 from dateparser import parse as parse_date
 from datetime import datetime
-from typing import Any, TypedDict
+from typing import Any, TypedDict, BinaryIO
 from collections.abc import Callable
 from requests import Response
 from copy import deepcopy
@@ -52,6 +52,7 @@ class ZFClient(BaseClient):
         headers_builder_type: str | None = 'api',
         params: dict[str, str] | None = None,
         data: dict[str, Any] | None = None,
+        files: dict[str, Any] | None = None,
         prefix: str | None = "1.0",
         empty_response: bool = False,
         error_handler: Callable[[Any], Any] | None = None,
@@ -64,6 +65,7 @@ class ZFClient(BaseClient):
         for each case
         :param params: The request's query parameters
         :param data: The request's body parameters
+        :param files: The request's files
         :param version: api prefix to consider, default is to use version '1.0'
         :param res_type: Selects the decoder of the response. It can be
         `json` (default), `xml`, `text`, `content`, `response`
@@ -90,6 +92,9 @@ class ZFClient(BaseClient):
                 )
             headers = header_builder()
 
+            if files:
+                headers.pop("Content-Type", None)
+
         return self._http_request(
             method=method,
             url_suffix=urljoin(pref_string, url_suffix),
@@ -99,6 +104,7 @@ class ZFClient(BaseClient):
             empty_valid_codes=(200, 201),
             return_empty_response=empty_response,
             error_handler=error_handler,
+            files=files,
         )
 
     def handle_auth_error(self, raw_response: Response):
@@ -401,6 +407,46 @@ class ZFClient(BaseClient):
         )
         return response_content
 
+    def send_alert_attachment(
+        self,
+        alert_id: int,
+        file_name: str,
+        file_content: BinaryIO,
+        attachment_type: str
+    ) -> dict[str, Any]:
+        """
+        :param alert_id: The ID of the alert.
+        :param file_name: The name of the file.
+        :param file_content: The content of the file.
+        :param attachment_type: The type of the attachment.
+        :return: HTTP request content.
+        """
+        url_suffix = f"/alerts/{alert_id}/attachments/"
+        files = {
+            "file": (file_name, file_content),
+            "attachment_type": (None, attachment_type),
+        }
+        # request_body = {"attachment_type": attachment_type}
+
+        response_content = self.api_request(
+            'POST',
+            url_suffix,
+            files=files,
+        )
+        return response_content
+
+    def get_alert_attachments(self, alert_id: int) -> dict[str, Any]:
+        """
+        :param alert_id: The ID of the alert.
+        :return: HTTP request content.
+        """
+        url_suffix = f"/alerts/{alert_id}/attachments/"
+        response_content = self.api_request(
+            "GET",
+            url_suffix,
+        )
+        return response_content
+
     def get_cti_c2_domains(self, domain: str) -> dict[str, Any]:
         """
         :param domain: The domain to lookup in c2-domains CTI Feed
@@ -628,9 +674,19 @@ def get_alert_contents(alert: dict[str, Any]) -> dict[str, Any]:
         "AlertType": alert.get("alert_type"),
         "OffendingContentURL": alert.get("offending_content_url"),
         "Assignee": alert.get("assignee"),
+        "Entity": {
+            "ID": get_nested_key(alert, ["entity", "id"]),
+            "Name": get_nested_key(alert, ["entity", "name"]),
+            "Image": get_nested_key(alert, ["entity", "image"]),
+        },
         "EntityID": get_nested_key(alert, ["entity", "id"]),
         "EntityName": get_nested_key(alert, ["entity", "name"]),
         "EntityImage": get_nested_key(alert, ["entity", "image"]),
+        "EntityTerm": {
+            "ID": get_nested_key(alert, ["entity_term", "id"]),
+            "Name": get_nested_key(alert, ["entity_term", "name"]),
+            "Deleted": get_nested_key(alert, ["entity_term", "deleted"]),
+        },
         "EntityTermID": get_nested_key(alert, ["entity_term", "id"]),
         "EntityTermName": get_nested_key(alert, ["entity_term", "name"]),
         "EntityTermDeleted": get_nested_key(alert, ["entity_term", "deleted"]),
@@ -638,6 +694,14 @@ def get_alert_contents(alert: dict[str, Any]) -> dict[str, Any]:
         "ID": alert.get("id"),
         "ProtectedAccount": alert.get("protected_account"),
         "RiskRating": severity_num_to_string(int(alert.get("severity", ""))),
+        "Perpetrator": {
+            "Name": get_nested_key(alert, ["perpetrator", "name"]),
+            "Url": get_nested_key(alert, ["perpetrator", "url"]),
+            "TimeStamp": get_nested_key(alert, ["perpetrator", "timestamp"]),
+            "Type": get_nested_key(alert, ["perpetrator", "type"]),
+            "ID": get_nested_key(alert, ["perpetrator", "id"]),
+            "Network": get_nested_key(alert, ["perpetrator", "network"]),
+        },
         "PerpetratorName": get_nested_key(alert, ["perpetrator", "name"]),
         "PerpetratorUrl": get_nested_key(alert, ["perpetrator", "url"]),
         "PerpetratorTimeStamp": get_nested_key(
@@ -1645,6 +1709,64 @@ def submit_threat_command(
     )
 
 
+def send_alert_attachment_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    alert_id: int = args.get("alert_id", "")
+    entry_id: str = args.get("entry_id", "")
+    attachment_type: str = args.get("attachment_type", "")
+
+    if not alert_id or not entry_id or not attachment_type:
+        raise ValueError("alert_id, entry_id and attachment_type are required")
+
+    entry = demisto.getFilePath(entry_id)
+
+    with open(entry["path"], "rb") as file:
+        client.send_alert_attachment(
+            alert_id, entry["name"], file, attachment_type,
+        )
+
+    response_content = client.get_alert(alert_id)
+    alert: dict[str, Any] = response_content.get("alert", {})
+    contents = get_alert_contents(alert)
+
+    return CommandResults(
+        readable_output="Attachment sent successfully",
+        outputs=contents,
+        outputs_prefix="ZeroFox.Alert",
+        outputs_key_field="ID",
+    )
+
+
+def get_alert_attachments_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    alert_id: int = args.get("alert_id", "")
+    response_content = client.get_alert_attachments(alert_id)
+    attachments: list[dict[str, Any]] = response_content.get("attachments", [])
+    human_readable = []
+    for attachment in attachments:
+        attachment_id: int = attachment.get("id", "")
+        attachment_name: str = attachment.get("name", "")
+        human_readable.append({
+            "ID": attachment_id,
+            "Name": attachment_name,
+        })
+    headers = ["ID", "Name"]
+    return CommandResults(
+        outputs=attachments,
+        readable_output=tableToMarkdown(
+            "ZeroFox Alert Attachments",
+            human_readable,
+            headers=headers,
+            removeNull=True,
+        ),
+        outputs_prefix="ZeroFox.AlertAttachments",
+    )
+
+
 def compromised_domain_command(
     client: ZFClient,
     args: dict[str, Any]
@@ -1801,6 +1923,8 @@ def main():
     commands: dict[str, Callable[[ZFClient, dict[str, Any]], Any]] = {
         "get-modified-remote-data": get_modified_remote_data_command,
         "get-remote-data": get_remote_data_command,
+
+        # ZeroFox Alerts
         "zerofox-get-alert": get_alert_command,
         "zerofox-alert-user-assignment": alert_user_assignment_command,
         "zerofox-close-alert": close_alert_command,
@@ -1815,6 +1939,10 @@ def main():
         "zerofox-get-policy-types": get_policy_types_command,
         "zerofox-modify-alert-notes": modify_alert_notes_command,
         "zerofox-submit-threat": submit_threat_command,
+        "zerofox-send-alert-attachment": send_alert_attachment_command,
+        "zerofox-get-alert-attachments": get_alert_attachments_command,
+
+        # ZeroFox CTI Feed
         "zerofox-search-compromised-domain": compromised_domain_command,
         "zerofox-search-compromised-email": compromised_email_command,
         "zerofox-search-malicious-ip": malicious_ip_command,

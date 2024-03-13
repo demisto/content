@@ -25,7 +25,7 @@ configuration:
   - us-gov-east-1
   - us-gov-west-1
   type: 15
-  required: false
+  required: true
 - display: Role Arn
   name: roleArn
   type: 0
@@ -977,7 +977,7 @@ script:
       name: qualifier
     description: Deletes a Lambda function. To delete a specific function version, use the Qualifier parameter. Otherwise, all versions and aliases are deleted.
     name: aws-lambda-delete-function
-  dockerimage: demisto/boto3py3:1.0.0.63019
+  dockerimage: demisto/boto3py3:1.0.0.87582
   runonce: false
   subtype: python3
   script: ''

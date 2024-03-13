@@ -21,7 +21,7 @@ configuration:
   advanced: true
 - name: defaultRegion
   display: AWS Default Region
-  required: false
+  required: true
   type: 15
   options:
   - us-east-1
@@ -79,7 +79,7 @@ configuration:
   type: 8
   advanced: true
 description: "Amazon Security Lake is a fully managed security data lake service."
-display: AWS-SecurityLake
+display: Amazon Security Lake
 name: AWS Security Lake
 script:
   commands:
@@ -158,109 +158,109 @@ script:
     description: Execute a new query, wait for the query to complete (using polling), and return query's execution information, and query's results (if successful). Either 'OutputLocation' or 'WorkGroup' must be specified for the query to run.
     polling: true
     outputs:
-    - contextPath: AWS.Athena.Query.QueryExecutionId
+    - contextPath: AWS.SecurityLake.Query.QueryExecutionId
       description: The unique identifier for each query execution.
       type: String
-    - contextPath: AWS.Athena.Query.Query
+    - contextPath: AWS.SecurityLake.Query.Query
       description: The SQL query statements which the query execution ran.
       type: String
-    - contextPath: AWS.Athena.Query.StatementType
+    - contextPath: AWS.SecurityLake.Query.StatementType
       description: The type of query statement that was run.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.OutputLocation
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.OutputLocation
       description: The location in Amazon S3 where your query and calculation results are stored, such as 's3://path/to/query/bucket/'.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption
       description: If query and calculation results are encrypted in Amazon S3, indicates the encryption option used (for example, SSE_KMS or CSE_KMS) and key information.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.KmsKey
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.KmsKey
       description: For SSE_KMS and CSE_KMS, this is the KMS key ARN or ID.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.ExpectedBucketOwner
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.ExpectedBucketOwner
       description: The Amazon Web Services account ID that you expect to be the owner of the Amazon S3 bucket specified by ResultConfiguration.OutputLocation.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.AclConfiguration.S3AclOption
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.AclConfiguration.S3AclOption
       description: The Amazon S3 canned ACL that Athena should specify when storing query results.
       type: String
-    - contextPath: AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled
+    - contextPath: AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled
       description: True if previous query results can be reused when the query is run; otherwise, false. The default is false.
       type: Boolean
-    - contextPath: AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes
+    - contextPath: AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes
       description: Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60.
       type: Number
-    - contextPath: AWS.Athena.Query.QueryExecutionContext.Database
+    - contextPath: AWS.SecurityLake.Query.QueryExecutionContext.Database
       description: The name of the database used in the query execution.
       type: String
-    - contextPath: AWS.Athena.Query.QueryExecutionContext.Catalog
+    - contextPath: AWS.SecurityLake.Query.QueryExecutionContext.Catalog
       description: The name of the data catalog used in the query execution.
       type: String
-    - contextPath: AWS.Athena.Query.Status.State
+    - contextPath: AWS.SecurityLake.Query.Status.State
       description: The state of the query execution.
       type: String
-    - contextPath: AWS.Athena.Query.Status.StateChangeReason
+    - contextPath: AWS.SecurityLake.Query.Status.StateChangeReason
       description: Further detail about the status of the query.
       type: String
-    - contextPath: AWS.Athena.Query.Status.SubmissionDateTime
+    - contextPath: AWS.SecurityLake.Query.Status.SubmissionDateTime
       description: The date and time that the query was submitted.
       type: String
-    - contextPath: AWS.Athena.Query.Status.CompletionDateTime
+    - contextPath: AWS.SecurityLake.Query.Status.CompletionDateTime
       description: The date and time that the query completed.
       type: String
-    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorCategory
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.ErrorCategory
       description: An integer value that specifies the category of a query failure error.
       type: Number
-    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorType
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.ErrorType
       description: An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide.
       type: Number
-    - contextPath: AWS.Athena.Query.Status.AthenaError.Retryable
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.Retryable
       description: True if the query might succeed if resubmitted.
       type: Boolean
-    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorMessage
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.ErrorMessage
       description: Contains a short description of the error that occurred.
       type: String
-    - contextPath: AWS.Athena.Query.Statistics.EngineExecutionTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.EngineExecutionTimeInMillis
       description: The number of milliseconds that the query took to execute.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.DataScannedInBytes
+    - contextPath: AWS.SecurityLake.Query.Statistics.DataScannedInBytes
       description: The number of bytes in the data that was queried.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.DataManifestLocation
+    - contextPath: AWS.SecurityLake.Query.Statistics.DataManifestLocation
       description: The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3.
       type: String
-    - contextPath: AWS.Athena.Query.Statistics.TotalExecutionTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.TotalExecutionTimeInMillis
       description: The number of milliseconds that Athena took to run the query.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.QueryQueueTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.QueryQueueTimeInMillis
       description: The number of milliseconds that the query was in your query queue waiting for resources.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.ServicePreProcessingTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.ServicePreProcessingTimeInMillis
       description: The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.QueryPlanningTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.QueryPlanningTimeInMillis
       description: The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.ServiceProcessingTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.ServiceProcessingTimeInMillis
       description: The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query.
       type: Number
-    - contextPath: AWS.Athena.Query.ResultReuseInformation.ReusedPreviousResult
+    - contextPath: AWS.SecurityLake.Query.ResultReuseInformation.ReusedPreviousResult
       description: True if a previous query result was reused; false if the result was generated from a new run of the query.
       type: Boolean
-    - contextPath: AWS.Athena.Query.WorkGroup
+    - contextPath: AWS.SecurityLake.Query.WorkGroup
       description: The name of the workgroup in which the query ran.
       type: String
-    - contextPath: AWS.Athena.Query.EngineVersion.SelectedEngineVersion
+    - contextPath: AWS.SecurityLake.Query.EngineVersion.SelectedEngineVersion
       description: The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO.
       type: String
-    - contextPath: AWS.Athena.Query.EngineVersion.EffectiveEngineVersion
+    - contextPath: AWS.SecurityLake.Query.EngineVersion.EffectiveEngineVersion
       description: The engine version on which the query runs.
       type: String
-    - contextPath: AWS.Athena.Query.ExecutionParameters
+    - contextPath: AWS.SecurityLake.Query.ExecutionParameters
       description: A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response.
       type: List
-    - contextPath: AWS.Athena.Query.SubstatementType
+    - contextPath: AWS.SecurityLake.Query.SubstatementType
       description: The type of query statement that was run.
       type: String
-    - contextPath: AWS.Athena.QueryResults
+    - contextPath: AWS.SecurityLake.QueryResults
       description: List of query results.
       type: List
   - name: aws-security-lake-data-catalogs-list
@@ -324,7 +324,7 @@ script:
       description: The data catalog type.
       type: String
     - contextPath: AWS.SecurityLake.CatalogNextToken
-      description: A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.
+      description: A token generated by the SecurityLake service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.
       type: String
   - name: aws-security-lake-databases-list
     description: Lists the databases in the specified data catalog.
@@ -380,7 +380,7 @@ script:
       predefined:
       - ""
     - name: next_token
-      description: A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.
+      description: A token generated by the SecurityLake service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.
       required: false
       isArray: false
       defaultValue: ""
@@ -397,7 +397,7 @@ script:
       description: A set of custom key/value pairs.
       type: List
     - contextPath: AWS.SecurityLake.DatabaseNextToken
-      description: A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.
+      description: A token generated by the SecurityLake service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.
       type: String
   - name: aws-security-lake-table-metadata-list
     description: Lists the metadata for the tables in the specified data catalog database.
@@ -453,7 +453,7 @@ script:
       predefined:
       - ""
     - name: next_token
-      description: A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.
+      description: A token generated by the SecurityLake service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.
       required: false
       isArray: false
       defaultValue: ""
@@ -501,7 +501,7 @@ script:
       description: A set of custom key/value pairs for table properties.
       type: List
     - contextPath: AWS.SecurityLake.TableMetadataNextToken
-      description: A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.
+      description: A token generated by the SecurityLake service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.
       type: String
   - name: aws-security-lake-user-mfalogin-query
     description: Runs query that takes a provided username and queries the AWS Security Lake for MFA login attempts (Success/Failed) associated with the user's account, using AWS CloudTrail logs.
@@ -573,109 +573,109 @@ script:
       description: ""
     polling: true
     outputs:
-    - contextPath: AWS.Athena.Query.QueryExecutionId
+    - contextPath: AWS.SecurityLake.Query.QueryExecutionId
       description: The unique identifier for each query execution.
       type: String
-    - contextPath: AWS.Athena.Query.Query
+    - contextPath: AWS.SecurityLake.Query.Query
       description: The SQL query statements which the query execution ran.
       type: String
-    - contextPath: AWS.Athena.Query.StatementType
+    - contextPath: AWS.SecurityLake.Query.StatementType
       description: The type of query statement that was run.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.OutputLocation
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.OutputLocation
       description: The location in Amazon S3 where your query and calculation results are stored, such as 's3://path/to/query/bucket/'.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption
       description: If query and calculation results are encrypted in Amazon S3, indicates the encryption option used (for example, SSE_KMS or CSE_KMS) and key information.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.KmsKey
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.KmsKey
       description: For SSE_KMS and CSE_KMS, this is the KMS key ARN or ID.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.ExpectedBucketOwner
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.ExpectedBucketOwner
       description: The Amazon Web Services account ID that you expect to be the owner of the Amazon S3 bucket specified by ResultConfiguration.OutputLocation.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.AclConfiguration.S3AclOption
-      description: The Amazon S3 canned ACL that Athena should specify when storing query results.
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.AclConfiguration.S3AclOption
+      description: The Amazon S3 canned ACL that SecurityLake should specify when storing query results.
       type: String
-    - contextPath: AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled
+    - contextPath: AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled
       description: True if previous query results can be reused when the query is run; otherwise, false. The default is false.
       type: Boolean
-    - contextPath: AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes
-      description: Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60.
+    - contextPath: AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes
+      description: Specifies, in minutes, the maximum age of a previous query result that SecurityLake should consider for reuse. The default is 60.
       type: Number
-    - contextPath: AWS.Athena.Query.QueryExecutionContext.Database
+    - contextPath: AWS.SecurityLake.Query.QueryExecutionContext.Database
       description: The name of the database used in the query execution.
       type: String
-    - contextPath: AWS.Athena.Query.QueryExecutionContext.Catalog
+    - contextPath: AWS.SecurityLake.Query.QueryExecutionContext.Catalog
       description: The name of the data catalog used in the query execution.
       type: String
-    - contextPath: AWS.Athena.Query.Status.State
+    - contextPath: AWS.SecurityLake.Query.Status.State
       description: The state of the query execution.
       type: String
-    - contextPath: AWS.Athena.Query.Status.StateChangeReason
+    - contextPath: AWS.SecurityLake.Query.Status.StateChangeReason
       description: Further detail about the status of the query.
       type: String
-    - contextPath: AWS.Athena.Query.Status.SubmissionDateTime
+    - contextPath: AWS.SecurityLake.Query.Status.SubmissionDateTime
       description: The date and time that the query was submitted.
       type: String
-    - contextPath: AWS.Athena.Query.Status.CompletionDateTime
+    - contextPath: AWS.SecurityLake.Query.Status.CompletionDateTime
       description: The date and time that the query completed.
       type: String
-    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorCategory
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.ErrorCategory
       description: An integer value that specifies the category of a query failure error.
       type: Number
-    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorType
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.ErrorType
       description: An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide.
       type: Number
-    - contextPath: AWS.Athena.Query.Status.AthenaError.Retryable
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.Retryable
       description: True if the query might succeed if resubmitted.
       type: Boolean
-    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorMessage
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.ErrorMessage
       description: Contains a short description of the error that occurred.
       type: String
-    - contextPath: AWS.Athena.Query.Statistics.EngineExecutionTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.EngineExecutionTimeInMillis
       description: The number of milliseconds that the query took to execute.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.DataScannedInBytes
+    - contextPath: AWS.SecurityLake.Query.Statistics.DataScannedInBytes
       description: The number of bytes in the data that was queried.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.DataManifestLocation
+    - contextPath: AWS.SecurityLake.Query.Statistics.DataManifestLocation
       description: The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3.
       type: String
-    - contextPath: AWS.Athena.Query.Statistics.TotalExecutionTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.TotalExecutionTimeInMillis
       description: The number of milliseconds that Athena took to run the query.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.QueryQueueTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.QueryQueueTimeInMillis
       description: The number of milliseconds that the query was in your query queue waiting for resources.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.ServicePreProcessingTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.ServicePreProcessingTimeInMillis
       description: The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.QueryPlanningTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.QueryPlanningTimeInMillis
       description: The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.ServiceProcessingTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.ServiceProcessingTimeInMillis
       description: The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query.
       type: Number
-    - contextPath: AWS.Athena.Query.ResultReuseInformation.ReusedPreviousResult
+    - contextPath: AWS.SecurityLake.Query.ResultReuseInformation.ReusedPreviousResult
       description: True if a previous query result was reused; false if the result was generated from a new run of the query.
       type: Boolean
-    - contextPath: AWS.Athena.Query.WorkGroup
+    - contextPath: AWS.SecurityLake.Query.WorkGroup
       description: The name of the workgroup in which the query ran.
       type: String
-    - contextPath: AWS.Athena.Query.EngineVersion.SelectedEngineVersion
+    - contextPath: AWS.SecurityLake.Query.EngineVersion.SelectedEngineVersion
       description: The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO.
       type: String
-    - contextPath: AWS.Athena.Query.EngineVersion.EffectiveEngineVersion
+    - contextPath: AWS.SecurityLake.Query.EngineVersion.EffectiveEngineVersion
       description: The engine version on which the query runs.
       type: String
-    - contextPath: AWS.Athena.Query.ExecutionParameters
+    - contextPath: AWS.SecurityLake.Query.ExecutionParameters
       description: A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response.
       type: List
-    - contextPath: AWS.Athena.Query.SubstatementType
+    - contextPath: AWS.SecurityLake.Query.SubstatementType
       description: The type of query statement that was run.
       type: String
-    - contextPath: AWS.Athena.MfaLoginQueryResults
+    - contextPath: AWS.SecurityLake.MfaLoginQueryResults
       description: List of query results.
       type: List
   - name: aws-security-lake-source-ip-query
@@ -748,109 +748,109 @@ script:
       description: ""
     polling: true
     outputs:
-    - contextPath: AWS.Athena.Query.QueryExecutionId
+    - contextPath: AWS.SecurityLake.Query.QueryExecutionId
       description: The unique identifier for each query execution.
       type: String
-    - contextPath: AWS.Athena.Query.Query
+    - contextPath: AWS.SecurityLake.Query.Query
       description: The SQL query statements which the query execution ran.
       type: String
-    - contextPath: AWS.Athena.Query.StatementType
+    - contextPath: AWS.SecurityLake.Query.StatementType
       description: The type of query statement that was run.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.OutputLocation
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.OutputLocation
       description: The location in Amazon S3 where your query and calculation results are stored, such as 's3://path/to/query/bucket/'.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption
       description: If query and calculation results are encrypted in Amazon S3, indicates the encryption option used (for example, SSE_KMS or CSE_KMS) and key information.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.KmsKey
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.KmsKey
       description: For SSE_KMS and CSE_KMS, this is the KMS key ARN or ID.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.ExpectedBucketOwner
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.ExpectedBucketOwner
       description: The Amazon Web Services account ID that you expect to be the owner of the Amazon S3 bucket specified by ResultConfiguration.OutputLocation.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.AclConfiguration.S3AclOption
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.AclConfiguration.S3AclOption
       description: The Amazon S3 canned ACL that Athena should specify when storing query results.
       type: String
-    - contextPath: AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled
+    - contextPath: AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled
       description: True if previous query results can be reused when the query is run; otherwise, false. The default is false.
       type: Boolean
-    - contextPath: AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes
+    - contextPath: AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes
       description: Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60.
       type: Number
-    - contextPath: AWS.Athena.Query.QueryExecutionContext.Database
+    - contextPath: AWS.SecurityLake.Query.QueryExecutionContext.Database
       description: The name of the database used in the query execution.
       type: String
-    - contextPath: AWS.Athena.Query.QueryExecutionContext.Catalog
+    - contextPath: AWS.SecurityLake.Query.QueryExecutionContext.Catalog
       description: The name of the data catalog used in the query execution.
       type: String
-    - contextPath: AWS.Athena.Query.Status.State
+    - contextPath: AWS.SecurityLake.Query.Status.State
       description: The state of the query execution.
       type: String
-    - contextPath: AWS.Athena.Query.Status.StateChangeReason
+    - contextPath: AWS.SecurityLake.Query.Status.StateChangeReason
       description: Further detail about the status of the query.
       type: String
-    - contextPath: AWS.Athena.Query.Status.SubmissionDateTime
+    - contextPath: AWS.SecurityLake.Query.Status.SubmissionDateTime
       description: The date and time that the query was submitted.
       type: String
-    - contextPath: AWS.Athena.Query.Status.CompletionDateTime
+    - contextPath: AWS.SecurityLake.Query.Status.CompletionDateTime
       description: The date and time that the query completed.
       type: String
-    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorCategory
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.ErrorCategory
       description: An integer value that specifies the category of a query failure error.
       type: Number
-    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorType
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.ErrorType
       description: An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide.
       type: Number
-    - contextPath: AWS.Athena.Query.Status.AthenaError.Retryable
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.Retryable
       description: True if the query might succeed if resubmitted.
       type: Boolean
-    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorMessage
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.ErrorMessage
       description: Contains a short description of the error that occurred.
       type: String
-    - contextPath: AWS.Athena.Query.Statistics.EngineExecutionTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.EngineExecutionTimeInMillis
       description: The number of milliseconds that the query took to execute.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.DataScannedInBytes
+    - contextPath: AWS.SecurityLake.Query.Statistics.DataScannedInBytes
       description: The number of bytes in the data that was queried.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.DataManifestLocation
+    - contextPath: AWS.SecurityLake.Query.Statistics.DataManifestLocation
       description: The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3.
       type: String
-    - contextPath: AWS.Athena.Query.Statistics.TotalExecutionTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.TotalExecutionTimeInMillis
       description: The number of milliseconds that Athena took to run the query.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.QueryQueueTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.QueryQueueTimeInMillis
       description: The number of milliseconds that the query was in your query queue waiting for resources.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.ServicePreProcessingTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.ServicePreProcessingTimeInMillis
       description: The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.QueryPlanningTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.QueryPlanningTimeInMillis
       description: The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.ServiceProcessingTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.ServiceProcessingTimeInMillis
       description: The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query.
       type: Number
-    - contextPath: AWS.Athena.Query.ResultReuseInformation.ReusedPreviousResult
+    - contextPath: AWS.SecurityLake.Query.ResultReuseInformation.ReusedPreviousResult
       description: True if a previous query result was reused; false if the result was generated from a new run of the query.
       type: Boolean
-    - contextPath: AWS.Athena.Query.WorkGroup
+    - contextPath: AWS.SecurityLake.Query.WorkGroup
       description: The name of the workgroup in which the query ran.
       type: String
-    - contextPath: AWS.Athena.Query.EngineVersion.SelectedEngineVersion
+    - contextPath: AWS.SecurityLake.Query.EngineVersion.SelectedEngineVersion
       description: The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO.
       type: String
-    - contextPath: AWS.Athena.Query.EngineVersion.EffectiveEngineVersion
+    - contextPath: AWS.SecurityLake.Query.EngineVersion.EffectiveEngineVersion
       description: The engine version on which the query runs.
       type: String
-    - contextPath: AWS.Athena.Query.ExecutionParameters
+    - contextPath: AWS.SecurityLake.Query.ExecutionParameters
       description: A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response.
       type: List
-    - contextPath: AWS.Athena.Query.SubstatementType
+    - contextPath: AWS.SecurityLake.Query.SubstatementType
       description: The type of query statement that was run.
       type: String
-    - contextPath: AWS.Athena.SourceIPQueryResults
+    - contextPath: AWS.SecurityLake.SourceIPQueryResults
       description: List of query results.
       type: List
   - name: aws-security-lake-guardduty-activity-query
@@ -931,109 +931,109 @@ script:
       description: ""
     polling: true
     outputs:
-    - contextPath: AWS.Athena.Query.QueryExecutionId
+    - contextPath: AWS.SecurityLake.Query.QueryExecutionId
       description: The unique identifier for each query execution.
       type: String
-    - contextPath: AWS.Athena.Query.Query
+    - contextPath: AWS.SecurityLake.Query.Query
       description: The SQL query statements which the query execution ran.
       type: String
-    - contextPath: AWS.Athena.Query.StatementType
+    - contextPath: AWS.SecurityLake.Query.StatementType
       description: The type of query statement that was run.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.OutputLocation
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.OutputLocation
       description: The location in Amazon S3 where your query and calculation results are stored, such as 's3://path/to/query/bucket/'.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.EncryptionOption
       description: If query and calculation results are encrypted in Amazon S3, indicates the encryption option used (for example, SSE_KMS or CSE_KMS) and key information.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.EncryptionConfiguration.KmsKey
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.EncryptionConfiguration.KmsKey
       description: For SSE_KMS and CSE_KMS, this is the KMS key ARN or ID.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.ExpectedBucketOwner
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.ExpectedBucketOwner
       description: The Amazon Web Services account ID that you expect to be the owner of the Amazon S3 bucket specified by ResultConfiguration.OutputLocation.
       type: String
-    - contextPath: AWS.Athena.Query.ResultConfiguration.AclConfiguration.S3AclOption
+    - contextPath: AWS.SecurityLake.Query.ResultConfiguration.AclConfiguration.S3AclOption
       description: The Amazon S3 canned ACL that Athena should specify when storing query results.
       type: String
-    - contextPath: AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled
+    - contextPath: AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.Enabled
       description: True if previous query results can be reused when the query is run; otherwise, false. The default is false.
       type: Boolean
-    - contextPath: AWS.Athena.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes
+    - contextPath: AWS.SecurityLake.Query.ResultReuseConfiguration.ResultReuseByAgeConfiguration.MaxAgeInMinutes
       description: Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse. The default is 60.
       type: Number
-    - contextPath: AWS.Athena.Query.QueryExecutionContext.Database
+    - contextPath: AWS.SecurityLake.Query.QueryExecutionContext.Database
       description: The name of the database used in the query execution.
       type: String
-    - contextPath: AWS.Athena.Query.QueryExecutionContext.Catalog
+    - contextPath: AWS.SecurityLake.Query.QueryExecutionContext.Catalog
       description: The name of the data catalog used in the query execution.
       type: String
-    - contextPath: AWS.Athena.Query.Status.State
+    - contextPath: AWS.SecurityLake.Query.Status.State
       description: The state of the query execution.
       type: String
-    - contextPath: AWS.Athena.Query.Status.StateChangeReason
+    - contextPath: AWS.SecurityLake.Query.Status.StateChangeReason
       description: Further detail about the status of the query.
       type: String
-    - contextPath: AWS.Athena.Query.Status.SubmissionDateTime
+    - contextPath: AWS.SecurityLake.Query.Status.SubmissionDateTime
       description: The date and time that the query was submitted.
       type: String
-    - contextPath: AWS.Athena.Query.Status.CompletionDateTime
+    - contextPath: AWS.SecurityLake.Query.Status.CompletionDateTime
       description: The date and time that the query completed.
       type: String
-    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorCategory
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.ErrorCategory
       description: An integer value that specifies the category of a query failure error.
       type: Number
-    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorType
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.ErrorType
       description: An integer value that provides specific information about an Athena query error. For the meaning of specific values, see the Error Type Reference in the Amazon Athena User Guide.
       type: Number
-    - contextPath: AWS.Athena.Query.Status.AthenaError.Retryable
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.Retryable
       description: True if the query might succeed if resubmitted.
       type: Boolean
-    - contextPath: AWS.Athena.Query.Status.AthenaError.ErrorMessage
+    - contextPath: AWS.SecurityLake.Query.Status.AthenaError.ErrorMessage
       description: Contains a short description of the error that occurred.
       type: String
-    - contextPath: AWS.Athena.Query.Statistics.EngineExecutionTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.EngineExecutionTimeInMillis
       description: The number of milliseconds that the query took to execute.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.DataScannedInBytes
+    - contextPath: AWS.SecurityLake.Query.Statistics.DataScannedInBytes
       description: The number of bytes in the data that was queried.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.DataManifestLocation
+    - contextPath: AWS.SecurityLake.Query.Statistics.DataManifestLocation
       description: The location and file name of a data manifest file. The manifest file is saved to the Athena query results location in Amazon S3.
       type: String
-    - contextPath: AWS.Athena.Query.Statistics.TotalExecutionTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.TotalExecutionTimeInMillis
       description: The number of milliseconds that Athena took to run the query.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.QueryQueueTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.QueryQueueTimeInMillis
       description: The number of milliseconds that the query was in your query queue waiting for resources.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.ServicePreProcessingTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.ServicePreProcessingTimeInMillis
       description: The number of milliseconds that Athena took to preprocess the query before submitting the query to the query engine.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.QueryPlanningTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.QueryPlanningTimeInMillis
       description: The number of milliseconds that Athena took to plan the query processing flow. This includes the time spent retrieving table partitions from the data source.
       type: Number
-    - contextPath: AWS.Athena.Query.Statistics.ServiceProcessingTimeInMillis
+    - contextPath: AWS.SecurityLake.Query.Statistics.ServiceProcessingTimeInMillis
       description: The number of milliseconds that Athena took to finalize and publish the query results after the query engine finished running the query.
       type: Number
-    - contextPath: AWS.Athena.Query.ResultReuseInformation.ReusedPreviousResult
+    - contextPath: AWS.SecurityLake.Query.ResultReuseInformation.ReusedPreviousResult
       description: True if a previous query result was reused; false if the result was generated from a new run of the query.
       type: Boolean
-    - contextPath: AWS.Athena.Query.WorkGroup
+    - contextPath: AWS.SecurityLake.Query.WorkGroup
       description: The name of the workgroup in which the query ran.
       type: String
-    - contextPath: AWS.Athena.Query.EngineVersion.SelectedEngineVersion
+    - contextPath: AWS.SecurityLake.Query.EngineVersion.SelectedEngineVersion
       description: The engine version requested by the user. Possible values are determined by the output of ListEngineVersions, including AUTO.
       type: String
-    - contextPath: AWS.Athena.Query.EngineVersion.EffectiveEngineVersion
+    - contextPath: AWS.SecurityLake.Query.EngineVersion.EffectiveEngineVersion
       description: The engine version on which the query runs.
       type: String
-    - contextPath: AWS.Athena.Query.ExecutionParameters
+    - contextPath: AWS.SecurityLake.Query.ExecutionParameters
       description: A list of values for the parameters in a query. The values are applied sequentially to the parameters in the query in the order in which the parameters occur. The list of parameters is not returned in the response.
       type: List
-    - contextPath: AWS.Athena.Query.SubstatementType
+    - contextPath: AWS.SecurityLake.Query.SubstatementType
       description: The type of query statement that was run.
       type: String
-    - contextPath: AWS.Athena.GuardDutyActivityQueryResults
+    - contextPath: AWS.SecurityLake.GuardDutyActivityQueryResults
       description: List of query results.
       type: List
   - name: aws-security-lake-data-sources-list
@@ -1202,7 +1202,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.87537
+  dockerimage: demisto/boto3py3:1.0.0.88855
   feed: false
   isfetch: false
 fromversion: 6.10.0

@@ -348,6 +348,12 @@ script:
       name: selected-fields
       predefined:
       - ''
+    - auto: PREDEFINED
+      description: Whether to surround the message ID with angle brackets (<>) if it does not exist. Default is 'True'.
+      name: surround_id_with_angle_brackets
+      predefined:
+      - 'True'
+      - 'False'
     description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
     name: ews-search-mailbox
     outputs:

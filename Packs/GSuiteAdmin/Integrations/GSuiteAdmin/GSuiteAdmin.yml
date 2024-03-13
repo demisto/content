@@ -2229,12 +2229,12 @@ script:
     - contextPath: GSuite.Group.nonEditableAliases
       description: List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.86179
+  dockerimage: demisto/googleapi-python3:1.0.0.89487
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - GSuiteAdmin-Test
-- GSuiteAdmin-MobileDevices-Test
+- playbook-GSuiteAdmin-MobileDevices-Test
 fromversion: 5.0.0
