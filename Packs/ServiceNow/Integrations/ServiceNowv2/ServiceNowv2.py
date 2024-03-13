@@ -1468,7 +1468,7 @@ def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, di
     Returns:
         Demisto Outputs.
     """
-    attachment_file_id = str(args.get('attachment_sys_id', ''))
+    attachment_file_id = str(args.get('file_sys_id', ''))
 
     result = client.delete_attachment(attachment_file_id)
 
@@ -3168,6 +3168,7 @@ def main():
             'servicenow-get-item-details': get_item_details_command,
             'servicenow-create-item-order': create_order_item_command,
             'servicenow-document-route-to-queue': document_route_to_table,
+            'servicenow-delete-file': delete_attachment_command,
         }
         if command == 'fetch-incidents':
             raise_exception = True
