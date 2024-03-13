@@ -610,9 +610,9 @@ def test_taxii21_objects_with_relationships(mocker, taxii2_server_v21):
 
     get_demisto_version._version = None  # clear cache between runs of the test
     mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.6.0'})
-
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     mocker.patch('TAXII2Server.SERVER.has_extension', False)
+    mocker.patch('TAXII2Server.SERVER.fields_to_present', {'name', 'type'})
     mock_search_relationships_response = util_load_json('test_data/searchRelationships-response.json')
     mocker.patch.object(demisto, 'searchRelationships', return_value=mock_search_relationships_response)
 
