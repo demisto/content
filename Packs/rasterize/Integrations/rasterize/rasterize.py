@@ -570,7 +570,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
         else:
             demisto.info(f"Response Body not available available after {operation_time} seconds.")
 
-    return ret_value, response_body
+    return ret_value, response_body, path
 
 
 def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_url):  # pragma: no cover
@@ -658,13 +658,7 @@ def perform_rasterize(path: str,
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
-            demisto.debug(f'path type is: {type(path)}')
-            if type(path) == list:
-                demisto.debug('path type is list')
-                paths = argToList(path)
-            else:
-                demisto.debug('path type is str')
-                paths = [path]
+            paths = argToList(path)
             demisto.debug(f"rasterize, {paths=}, {rasterize_type=}")
             rasterization_threads = []
             rasterization_results = []
@@ -866,25 +860,25 @@ def rasterize_command():  # pragma: no cover
     rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
     wait_time = int(demisto.args().get('wait_time', 0))
     navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
-    file_name = demisto.args().get('file_name', 'url')
+    file_names = argToList(demisto.args().get('file_name', 'url'))
     include_url = argToBoolean(demisto.args().get('include_url', False))
 
     file_extension = "png"
     if rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
         file_extension = "pdf"
-    file_name = f'{file_name}.{file_extension}'  # type: ignore
 
     rasterize_output = perform_rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
                                          navigation_timeout=navigation_timeout, include_url=include_url,
                                          full_screen=full_screen)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
-    for current_rasterize_output in rasterize_output:
+    for current_rasterize_output, file_name in zip(rasterize_output, file_names):
         # demisto.debug(f"rasterize_command response, {current_rasterize_output=}")
+        file_name = f'{file_name}.{file_extension}'  # type: ignore
 
         if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
             output = {'image_b64': base64.b64encode(current_rasterize_output[0]).decode('utf8'),
-                      'html': current_rasterize_output[1], 'current_url': url}
-            return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {url}"))
+                      'html': current_rasterize_output[1], 'current_url': current_rasterize_output[2]}
+            return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {current_rasterize_output[2]}"))
         else:
             res = []
             current_res = fileResult(filename=file_name, data=current_rasterize_output[0], file_type=entryTypes['entryInfoFile'])

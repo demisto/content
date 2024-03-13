@@ -94,6 +94,7 @@ script:
           deprecated: true
         - defaultValue: url
           description: The name the file will be saved as.
+          isArray: true
           name: file_name
         - auto: PREDEFINED
           defaultValue: "False"
