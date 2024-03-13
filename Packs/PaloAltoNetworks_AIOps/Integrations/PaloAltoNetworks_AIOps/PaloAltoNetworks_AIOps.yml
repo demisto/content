@@ -59,6 +59,12 @@ script:
         description: Enter the timeout for downloading the file
         defaultValue: "600"
       description: Generates a bpa
+    - name: pan-aiops-polling_upload_report
+      arguments:
+      - name: report_id
+        description: Report_id recieved from generate_bpa_report_request
+        required: true
+      hidden: true
   runonce: false
   script: '-'
   type: python
