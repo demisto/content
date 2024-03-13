@@ -105,11 +105,6 @@ URL_HEADER = [
     "modify_type",
 ]
 
-URL_LIST_TYPE = {
-    "Exact": "exact",
-    "Regex": "regex",
-}
-
 
 class Pagination(NamedTuple):
     updated_page: int
@@ -511,14 +506,13 @@ def update_url_list_command(
     url_list_id = args["url_list_id"]
     name = args.get("name")
     urls = argToList(args.get("urls"))
-    list_type = URL_LIST_TYPE[args["list_type"]] if args.get("list_type") else None
+    list_type = args["list_type"]
     is_overwrite = optional_arg_to_boolean(args.get("is_overwrite"))
 
-    if not all([name, urls, list_type]) or not is_overwrite:
+    if not all([name, urls]) or not is_overwrite:
         list_response = client.list_url_list(url_list_id=url_list_id)
 
         name = name or list_response.get("name")
-        list_type = list_type or dict_safe_get(list_response, ["data", "type"])
         exist_urls = dict_safe_get(list_response, ["data", "urls"])
 
         if not is_overwrite:
@@ -568,7 +562,7 @@ def create_url_list_command(
 
     name = args["name"]
     urls = argToList(args["urls"])
-    list_type = URL_LIST_TYPE[args["list_type"]]
+    list_type = args["list_type"]
 
     response = client.create_url_list(
         name,
