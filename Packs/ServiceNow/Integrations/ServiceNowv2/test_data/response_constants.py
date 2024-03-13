@@ -3462,16 +3462,15 @@ MIRROR_COMMENTS_RESPONSE = {'result': [{
     'sys_created_by': 'admin', 'element': 'comments'}]}
 
 RESPONSE_COMMENTS_DISPLAY_VALUE = {
-    'result': {'sys_created_on': {'display_value': '2022-11-21 20:59:49', 'value': '2022-11-21 19:59:49'},
-               'sys_created_by': {'display_value': 'admin', 'value': 'admin'},
-               'sys_id': {'display_value': '123456789', 'value': '123456789'},
-               'urgency': {'display_value': '3 - Low', 'value': '3'},
-               'severity': {'display_value': '3 - Low', 'value': '3'},
-               'comments': {'display_value':
-                            '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment'
-                            '\n\n Mirrored from Cortex XSOAR\n\n'
-                            '2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n',
-                            'value': ''}}}
+    'sys_created_on': {'display_value': '2022-11-21 20:59:49', 'value': '2022-11-21 19:59:49'},
+    'sys_created_by': {'display_value': 'admin', 'value': 'admin'},
+    'sys_id': {'display_value': '123456789', 'value': '123456789'},
+    'urgency': {'display_value': '3 - Low', 'value': '3'},
+    'severity': {'display_value': '3 - Low', 'value': '3'},
+    'comments': '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment'
+                '\n\n Mirrored from Cortex XSOAR\n\n'
+                '2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
+}
 
 RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS = {
     'result': {'sys_created_on': {'display_value': '2022-11-21 09:59:49', 'value': '2022-11-21 08:59:49'},

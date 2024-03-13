@@ -223,7 +223,8 @@ def test_convert_to_notes_result():
                                    'element': 'comments'
                                    }]}
     assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE,
-                                   time_info={'display_date_format': DATE_FORMAT}) == expected_result
+                                   time_info={'display_date_format': DATE_FORMAT,
+                                              'timezone_offset': timedelta(minutes=-60)}) == expected_result
 
     # Filter comments by creation time (filter is given in UTC):
     expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
@@ -233,10 +234,10 @@ def test_convert_to_notes_result():
                                    }]}
     assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE,
                                    time_info={'display_date_format': DATE_FORMAT,
-                                              'filter': datetime.strptime('2022-11-21 21:44:37',
-                                                                          DATE_FORMAT)}) == expected_result
+                                              'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
+                                              'timezone_offset': timedelta(minutes=-60)}) == expected_result
 
-    ticket_response = {'result': []}
+    ticket_response = {}
     assert convert_to_notes_result(ticket_response, time_info={'display_date_format': DATE_FORMAT}) == []
 
     assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS,
@@ -309,28 +310,23 @@ def test_get_timezone_offset():
     Then:
         - Assert the offset between the UTC and the instance times are correct.
     """
-    full_response = {
-        'result': {'sys_created_on': {'display_value': '2022-12-07 05:38:52', 'value': '2022-12-07 13:38:52'}}}
+    full_response = {'sys_created_on': {'display_value': '2022-12-07 05:38:52', 'value': '2022-12-07 13:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT)
     assert offset == timedelta(minutes=480)
 
-    full_response = {
-        'result': {'sys_created_on': {'display_value': '12-07-2022 15:47:34', 'value': '2022-12-07 13:47:34'}}}
+    full_response = {'sys_created_on': {'display_value': '12-07-2022 15:47:34', 'value': '2022-12-07 13:47:34'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('MM-dd-yyyy'))
     assert offset == timedelta(minutes=-120)
 
-    full_response = {
-        'result': {'sys_created_on': {'display_value': '06/12/2022 23:38:52', 'value': '2022-12-07 09:38:52'}}}
+    full_response = {'sys_created_on': {'display_value': '06/12/2022 23:38:52', 'value': '2022-12-07 09:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd/MM/yyyy'))
     assert offset == timedelta(minutes=600)
 
-    full_response = {
-        'result': {'sys_created_on': {'display_value': '07.12.2022 0:38:52', 'value': '2022-12-06 19:38:52'}}}
+    full_response = {'sys_created_on': {'display_value': '07.12.2022 0:38:52', 'value': '2022-12-06 19:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd.MM.yyyy'))
     assert offset == timedelta(minutes=-300)
 
-    full_response = {
-        'result': {'sys_created_on': {'display_value': 'Dec-07-2022 00:38:52', 'value': '2022-12-06 19:38:52'}}}
+    full_response = {'sys_created_on': {'display_value': 'Dec-07-2022 00:38:52', 'value': '2022-12-06 19:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('mmm-dd-yyyy'))
     assert offset == timedelta(minutes=-300)
 
@@ -2128,7 +2124,7 @@ def test_format_incidents_response_with_display_values_with_no_incidents():
     Then:
         Returns empty list
     """
-    incidents_res = {}
+    incidents_res = []
     result = format_incidents_response_with_display_values(incidents_res)
 
     assert result == []
@@ -2147,14 +2143,14 @@ def test_format_incidents_response_with_display_values_with_incidents():
     result = format_incidents_response_with_display_values(incidents_res)
 
     assert len(result) == 2
-    assert result[0]["sys_updated_on"] == "29.02.2024 15:09:46"
+    assert result[0]["sys_updated_on"] == "2024-02-29 13:09:46"
     assert result[0]["opened_at"] == "2024-02-29 13:08:46"
     assert result[0]["opened_by"] == incidents_res[0]["opened_by"]
     assert result[0]["sys_domain"] == incidents_res[0]["sys_domain"]
     assert result[0]["assignment_group"] == incidents_res[0]["assignment_group"]
 
-    assert result[1]["sys_updated_on"] == "29.02.2024 13:08:44"
+    assert result[1]["sys_updated_on"] == "2024-02-29 11:08:44"
     assert result[1]["opened_at"] == "2024-02-29 11:07:48"
     assert result[1]["opened_by"] == incidents_res[1]["opened_by"]
     assert result[1]["sys_domain"] == incidents_res[1]["sys_domain"]
-    assert result[1]["assignment_group"] == incidents_res[1]["assignment_group"]
+    assert result[1]["assignment_group"] == ""
