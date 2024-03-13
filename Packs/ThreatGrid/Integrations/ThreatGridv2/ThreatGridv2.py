@@ -605,6 +605,8 @@ def analysis_sample_command(
     arg_value = args.get(arg_name) if arg_name else None
     sample_id = args["sample_id"]
     response = client.analysis_sample(sample_id, url_param, arg_value)
+    if not response or not response.get("data"):
+        return CommandResults(readable_output=f'### No results were found for sample_id {sample_id}')
 
     items = (response["data"]["items"]
              if response["data"].get("items") else response["data"])
@@ -1017,7 +1019,7 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
     )
 
 
-def get_dbotscore(
+def get_dbotscore( # TODO
     api_score: int,
     generic_command_name: str,
     indicator_value: str,
@@ -1035,9 +1037,9 @@ def get_dbotscore(
     Returns:
         Common.DBotScore: DBot Score according to the disposition.
     """
-    score = Common.DBotScore.NONE
-
-    if api_score >= 85:
+    if api_score == 0:
+        score = Common.DBotScore.NONE
+    elif api_score >= 85:
         score = Common.DBotScore.BAD
     elif api_score >= 50:
         score = Common.DBotScore.SUSPICIOUS
