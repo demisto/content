@@ -2585,7 +2585,7 @@ script:
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor.
       type: String
-  dockerimage: demisto/btfl-soup:1.0.1.46582
+  dockerimage: demisto/btfl-soup:1.0.1.86352
   runonce: false
   script: '-'
   subtype: python3

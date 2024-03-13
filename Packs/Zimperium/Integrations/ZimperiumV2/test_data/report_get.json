@@ -1,0 +1,61 @@
+{
+    "glob": 1,
+    "platform": "android",
+    "report": {
+        "jsonVersion": "2020-12",
+        "contentInformation": {
+            "copyright": "Copyright 2024 Zimperium"
+        },
+        "appProperties": {
+            "name": "Rumble",
+            "version": "2.12.0",
+            "versionCode": "8",
+            "packageName": "name",
+            "platform": "android",
+            "md5": "md5",
+            "sha1": "sha1",
+            "sha256": "sha256",
+            "packageSize": 101,
+            "sdkVersion": 22
+        },
+        "riskProfile": {
+            "privacyRisk": 30,
+            "securityRisk": 79,
+            "overallRisk": "High",
+            "malwareDetection": "",
+            "malwareFamily": "",
+            "malwareName": ""
+        },
+        "scanVersion": {
+            "scanEngine": "2.6.7",
+            "scanTargetOS": "android",
+            "ruleVersion": "f7",
+            "scanSucces": "Done",
+            "scanDateTime": "2023-12-19T18:49:01+0000",
+            "scoreDateTime": "2023-12-19T18:49:00+0000",
+            "dynamicScan": false
+        },
+        "scanDetails": [
+            {
+                "riskType": "security",
+                "kind": "Code Analysis",
+                "description": "The app is using unity",
+                "location": [],
+                "importance": "Low",
+                "compliance": []
+            },
+            {
+                "riskType": "privacy",
+                "kind": "Capabilities",
+                "description": "This app implements the X SDK. This SDK has functionality that could create screenshots or screen recordings and potentially send them off device too an external resource.",
+                "location": [
+                    "loc"
+                ],
+                "importance": "Low",
+                "compliance": []
+            }
+        ]
+    },
+    "result": 1,
+    "ContentInformation": "Copyright 2024 Zimperium"
+}

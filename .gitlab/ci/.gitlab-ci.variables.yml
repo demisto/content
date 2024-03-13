@@ -38,7 +38,6 @@ variables:
   OVERRIDE_ALL_PACKS: "false"
   TEST_UPLOAD: "true"
   NATIVE_CANDIDATE_IMAGE: "latest"
-  DEMISTO_SDK_GRAPH_FORCE_CREATE: "true"  # change this when the demisto-sdk update-graph command is stable
   DEMISTO_SDK_LOG_FILE_PATH: "${ARTIFACTS_FOLDER}/logs"
   CONTENT_GITLAB_CI: "true"
   POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY: "true"
@@ -46,3 +45,5 @@ variables:
   POETRY_VERSION: "1.6.1"
   INSTALL_POETRY: "true"
   DOCKER_IO: "docker.io" # defined in the project level CI/CD variables
+  KUBERNETES_CPU_REQUEST: 2
+  KUBERNETES_MEMORY_REQUEST: 2Gi
