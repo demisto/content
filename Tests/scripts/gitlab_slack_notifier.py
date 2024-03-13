@@ -571,6 +571,7 @@ def main():
         list_of_pipelines, list_of_commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
                                                                        project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
         current_commit = get_commit_by_sha(commit_sha, list_of_commits)
+        logging.info(f"current commit is {current_commit}")
         if current_commit:
             current_commit_index = list_of_commits.index(current_commit)
 
@@ -579,12 +580,14 @@ def main():
             # or if we already sent a shame message for newer commits, we don't want to send another one for older commits.
             if (current_commit_index != len(list_of_commits) - 1
                     and not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)):
+                logging.info(f"current commit index is {current_commit_index}")
                 current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
 
                 # looking backwards until we find a commit with a pipeline to compare with
                 previous_pipeline, suspicious_commits = get_nearest_older_commit_with_pipeline(
                     list_of_pipelines, list_of_commits, current_commit_index)
                 if previous_pipeline and suspicious_commits and current_pipeline:
+                    logging.info(f"previous pipeline is {previous_pipeline}")
                     pipeline_changed_status = is_pivot(current_pipeline=current_pipeline,
                                                        pipeline_to_compare=previous_pipeline)
 
