@@ -1907,7 +1907,7 @@ Gets table names by a label to use in commands.
 ### servicenow-get-ticket-notes
 
 ***
-Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting "Read permissions" for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
+Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting Read permissions for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
 
 #### Base Command
 
@@ -1918,11 +1918,11 @@ Gets notes from the specified ServiceNow ticket. Notes can be retrieved either b
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required | 
-| limit | Maximum number of ticket notes. Default is 10. Default is 10. | Optional | 
+| limit | Maximum number of ticket notes. Default is 10. | Optional | 
 | offset | Offset of the ticket notes. Default is 0. | Optional | 
 | use_display_value | Whether to use `sysparm_display_value` to retrieve comments and work notes. Overrides the value set in the instance configuration. Possible values are: true, false. | Optional | 
-| ticket_type | The type of the ticket for which notes should be retrieved when using the `use_display_value` option. Possible values are: incident, problem, change_request, sc_request, sc_task, sc_req_item, sn_si_incident. Default is incident. | Optional | 
-| add_as_entry | Whether to add the ticket notes and work notes as an entry note in the War Room. Possible values are: true, false. | Optional | 
+| ticket_type | The ticket type that notes should be retrieved for when using the `use_display_value` option. Possible values are: incident, problem, change_request, sc_request, sc_task, sc_req_item, sn_si_incident. Default is incident. | Optional | 
+| add_as_entry | Whether to add ticket notes and work notes as notes in the War Room. Possible values are true, false. | Optional | 
 
 #### Context Output
 

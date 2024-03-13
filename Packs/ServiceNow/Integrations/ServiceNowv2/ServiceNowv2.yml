@@ -1319,7 +1319,7 @@ script:
       - sn_si_incident
     - auto: PREDEFINED
       defaultValue: false
-      description: Whether to add the ticket notes and work notes as an entry note in the War Room.
+      description: Whether to add ticket notes and work notes as notes in the War Room.
       name: add_as_entry
       predefined:
       - 'true'
