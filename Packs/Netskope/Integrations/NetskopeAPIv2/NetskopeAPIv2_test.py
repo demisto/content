@@ -263,7 +263,7 @@ def test_update_url_list(client, requests_mock):
             "url_list_id": "1",
             "name": "new_url_list",
             "urls": ["www.google.com"],
-            "list_type": "Regex",
+            "list_type": "regex",
             "is_overwrite": True,
             "deploy": False,
         },
@@ -298,7 +298,7 @@ def test_create_url_list(client, requests_mock):
         {
             "name": "new_url_list",
             "urls": ["www.google.com"],
-            "list_type": "Regex",
+            "list_type": "regex",
             "deploy": False,
         },
     )
