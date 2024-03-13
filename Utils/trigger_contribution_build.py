@@ -119,6 +119,7 @@ def main():
         for pr in items:
             trigger_build_for_contribution_pr(args.gitlab_api_token, pr)
             delete_trigger_build_label_from_pr(args.github_token, pr)
+            add_comment_to_contribution_pr(args.github_token, pr)
             pr_numbers.append(str(pr.get("number")))
         print(f"Build triggered for the following contribution PRs: {pr_numbers}")
     else:
