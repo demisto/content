@@ -379,7 +379,7 @@
         export pipeline_id=$(./Utils/gitlab_triggers/trigger_cleanup_build_machines.sh -ct "${GITLAB_SVC_USER_TOKEN}" -m "${CLOUD_CHOSEN_MACHINE_IDS}" -mc "${CLOUD_MACHINES_COUNT}" -mt "${CLOUD_MACHINES_TYPE}" -p "${GCS_LOCKS_PATH}" -b "${BRANCH}"" | jq -r '.id')
         if [ "${pipeline_id}" != "null" ]; then
           echo "Triggered Clean Machine pipeline id- ${pipeline_id}"
-          echo "rename lock file of ${CLOUD_CHOSEN_MACHINE_IDS}, jobid: ${CI_JOB_ID} ,current pipelineid: ${CI_PIPELINE_ID} to new pipeline_id ${pipeline_id}"
+          echo "rename lock file of ${CLOUD_CHOSEN_MACHINE_IDS} jobid ${CI_JOB_ID} ,current pipelineid ${CI_PIPELINE_ID} to new pipeline_id ${pipeline_id}"
           gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
           gsutil mv "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/${CLOUD_CHOSEN_MACHINE_IDS}-lock-${CI_PIPELINE_ID}_${CI_JOB_ID}" "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/${CLOUD_CHOSEN_MACHINE_IDS}-lock-${pipeline_id}"
           echo "Successful triggered cleanup machine pipeline - ${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/content/-/pipelines/$pipeline_id"  
