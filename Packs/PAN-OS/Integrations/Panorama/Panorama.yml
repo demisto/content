@@ -9373,6 +9373,97 @@ script:
     description: Exports a tech support file (TSF).
     polling: true
   - arguments:
+    - description: A given group name to return the data for.
+      name: group_name
+    - description: The device group that the security profile groups are part of.
+      name: device-group
+    description: Returns a list of security profile groups from Panorama.
+    name: pan-os-list-security-profile-group
+    outputs:
+    - contextPath: Panorama.ProfileGroup.name
+      description: The name of the group.
+      type: String
+    - contextPath: Panorama.ProfileGroup.location
+      description: The security profile group's device group location.
+      type: String
+    - contextPath: Panorama.ProfileGroup.virus
+      description: The antivirus profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.spyware
+      description: The anti-spyware profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.vulnerability
+      description: The vulnerability protection profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.url-filtering
+      description: The URL filtering profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.file-blocking
+      description: The file blocking profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.data-filtering
+      description: The data filtering profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.wildfire-analysis
+      description: The WildFire analysis profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.disable-override
+      description: Whether overriding the security profile group is disabled.
+      type: String
+  - arguments:
+    - description: The name of the security profile group.
+      name: group_name
+      required: true
+    - description: The device group that the security profile group will be part of.
+      name: device-group
+    - description: The antivirus profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: antivirus_profile
+    - description: The anti-spyware profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: anti_spyware_profile
+    - description: The vulnerability protection profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: vulnerability_protection_profile
+    - description: The URL filtering profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: URL_filtering_profile
+    - description: The file blocking profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: file_blocking_profile
+    - description: The data filtering profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: data_filtering_profile
+    - description: The WildFire analysis profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: wildfire_analysis_profile
+    description: Creates a new security profile group in Panorama.
+    name: pan-os-create-security-profile-group
+  - arguments:
+    - description: The name of the security profile group to edit.
+      name: group_name
+      required: true
+    - description: The profile to edit in the group.
+      name: profile_to_change
+      auto: PREDEFINED
+      predefined:
+      - 'Antivirus Profile'
+      - 'Anti-Spyware Profile'
+      - 'Vulnerability Protection Profile'
+      - 'URL Filtering Profile'
+      - 'File Blocking Profile'
+      - 'Data Filtering  Profile'
+      - 'WildFire Analysis Profile'
+      required: true
+    - description: The value to set in the profile. If you want the profile value to be empty, set the value to "None". You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: profile_value
+      required: true
+    - description: The device group that the security profile group is part of.
+      name: device-group
+    description: Edits the security profile group in Panorama.
+    name: pan-os-edit-security-profile-group
+  - arguments:
+    - description: The name of the security profile group to delete.
+      name: group_name
+      required: true
+    - description: The device group that the security profile group is part of.
+      name: device-group
+    description: Deletes a security profile group from Panorama.
+    name: pan-os-delete-security-profile-group
+  - arguments:
     - description: The rule name to apply.
       name: rule_name
       required: true
@@ -9404,7 +9495,7 @@ script:
     - contextPath: Panorama.AuditComment.rule_type
       description: The rule type.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.88899
+  dockerimage: demisto/pan-os-python:1.0.0.89330
   isfetch: true
   runonce: false
   script: ''

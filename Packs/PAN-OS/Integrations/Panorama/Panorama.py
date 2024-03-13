@@ -13704,6 +13704,246 @@ def pan_os_delete_tag_command(args: dict) -> CommandResults:
     )
 
 
+def prettify_security_profile_groups(sp_groups_list: list) -> list:
+    """Prettify the keys in the security profile groups for the HR table.
+
+    Args:
+        sp_groups_list (list): The security profile groups list
+
+    Returns:
+        list: List of prettified security profile groups.
+    """
+    profile_to_change_map = {
+        "virus": "Antivirus Profile",
+        "spyware": "Anti-Spyware Profile",
+        "vulnerability": "Vulnerability Protection Profile",
+        "url-filtering": "URL Filtering Profile",
+        "file-blocking": "File Blocking Profile",
+        "data-filtering": "Data Filtering Profile",
+        "wildfire-analysis": "WildFire Analysis Profile",
+    }
+
+    prettified_sp_groups_list = []
+    for sp_group in sp_groups_list:
+
+        prettified_sp_group = {"Name": sp_group["name"], "Location": sp_group["location"]}
+        for key in sp_group:
+
+            if key not in ("name", "location"):
+                sp_group[key] = extract_objects_info_by_key(sp_group, key)
+                prettified_sp_group[profile_to_change_map.get(key, key)] = sp_group[key]
+
+        prettified_sp_groups_list.append(prettified_sp_group)
+
+    return prettified_sp_groups_list
+
+
+def pan_os_list_security_profile_groups(args: dict) -> tuple:
+    """Sends the request to get the security profile groups and formats the results.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        tuple: The raw respons and a list of the formatted security profile groups.
+    """
+    xpath = f"{XPATH_RULEBASE}profile-group/entry"
+    if group_name := args.get("group_name"):
+        xpath += f"[@name='{group_name}']"
+
+    params = {
+        "type": "config",
+        "action": "get",
+        "key": API_KEY,
+        "xpath": xpath
+    }
+
+    raw_response = http_request(URL, 'GET', params=params)
+    sp_groups_response_list = raw_response.get("response", {}).get("result", {}).get("entry") or []
+    if not isinstance(sp_groups_response_list, list):
+        sp_groups_response_list = [sp_groups_response_list]
+
+    for sp_group in sp_groups_response_list:
+        parse_pan_os_un_committed_data(sp_group, ['@admin', '@dirtyId', '@time'])
+        sp_group["name"] = sp_group.pop("@name", "")
+        sp_group["location"] = sp_group.pop("@loc", "")
+
+    return raw_response, sp_groups_response_list
+
+
+def pan_os_list_security_profile_groups_command(args: dict) -> CommandResults:
+    """
+    Returns a list of security profile groups.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The command results with raw response, outputs and readable outputs.
+    """
+    raw_response, sp_groups_list = pan_os_list_security_profile_groups(args=args)
+    prettified_sp_groups_list = prettify_security_profile_groups(sp_groups_list)
+
+    return CommandResults(
+        raw_response=raw_response,
+        outputs=sp_groups_list,
+        readable_output=tableToMarkdown(
+            f'Security Profile Groups:',
+            prettified_sp_groups_list,
+            ["Name", "Location", "Antivirus Profile", "Anti-Spyware Profile", "Vulnerability Protection Profile",
+             "URL Filtering Profile", "File Blocking Profile", "Data Filtering Profile", "WildFire Analysis Profile"],
+        ),
+        outputs_prefix='Panorama.ProfileGroup',
+        outputs_key_field='name'
+    )
+
+
+def pan_os_create_security_profile_group_command(args: dict) -> CommandResults:
+    """
+    Creates a security profile groups in the given Panorama instance.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The command results with raw response and readable outputs.
+    """
+    group_name = args.get('group_name')
+    params = {
+        "type": "config",
+        "action": "set",
+        "key": API_KEY,
+        "xpath": f"{XPATH_RULEBASE}profile-group/entry[@name='{group_name}']",
+        "element": (add_argument(args.get("antivirus_profile"), "virus", True)
+                    + add_argument(args.get("anti_spyware_profile"), "spyware", True)
+                    + add_argument(args.get("vulnerability_protection_profile"), "vulnerability", True)
+                    + add_argument(args.get("URL_filtering_profile"), "url-filtering", True)
+                    + add_argument(args.get("file_blocking_profile"), "file-blocking", True)
+                    + add_argument(args.get("data_filtering_profile"), "data-filtering", True)
+                    + add_argument(args.get("wildfire_analysis_profile"), "wildfire-analysis", True))
+    }
+
+    raw_response = http_request(URL, "GET", params=params)
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Successfully created Security Profile Group: "{group_name}"',
+    )
+
+
+def build_edit_sp_group_xpath_and_element(group_name: str, profile_to_change: str, profile_value: str, sp_group=None) -> tuple:
+    """
+    Builds the `xpath` and `element` params for the edit sp groups request.
+    In case of emptying the profile, we take the other profiles from the current sp group.
+
+    Args:
+        group_name (str): The group name to edit.
+        profile_to_change (str): The profile to change.
+        profile_value (str): The new profile value.
+        sp_group: The current sp group.
+
+    Returns:
+        tuple: The xpath and element request params.
+    """
+    profile_to_change_map = {
+        "Antivirus Profile": "virus",
+        "Anti-Spyware Profile": "spyware",
+        "Vulnerability Protection Profile": "vulnerability",
+        "URL Filtering Profile": "url-filtering",
+        "File Blocking Profile": "file-blocking",
+        "Data Filtering Profile": "data-filtering",
+        "WildFire Analysis Profile": "wildfire-analysis",
+    }
+
+    element = ""
+    xpath = f"{XPATH_RULEBASE}profile-group/entry[@name='{group_name}']"
+
+    if sp_group:
+        element += f'<entry name="{group_name}">'
+        for profile_not_to_change in profile_to_change_map:
+            if profile_not_to_change != profile_to_change:
+                element += add_argument(extract_objects_info_by_key(sp_group, profile_to_change_map.get(profile_not_to_change)),  # type: ignore
+                                        profile_to_change_map.get(profile_not_to_change), True)  # type: ignore
+        element += "</entry>"
+
+    else:
+        element += add_argument(profile_value, profile_to_change_map.get(profile_to_change), True)  # type: ignore
+        xpath += f"/{profile_to_change_map.get(profile_to_change)}"
+
+    return xpath, element
+
+
+def pan_os_edit_security_profile_group_command(args: dict) -> CommandResults:
+    """
+    Edits a given security profile groups in the given Panorama instance.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The command results with raw response and readable outputs.
+    """
+    group_name = args.get("group_name", "")
+    profile_to_change = args.get("profile_to_change", "")
+    profile_value = args.get("profile_value", "")
+
+    params = {
+        "type": "config",
+        "action": "edit",
+        "key": API_KEY,
+    }
+
+    if profile_value.lower() == "none":
+        _, sp_group = pan_os_list_security_profile_groups(args=args)
+
+        if not sp_group:
+            raise Exception(f'Could not find security profile group "{group_name}"')
+        sp_group = sp_group[0]
+
+        xpath, element = build_edit_sp_group_xpath_and_element(group_name, profile_to_change, profile_value, sp_group)
+        params.update({
+            "xpath": xpath,
+            "element": element
+        })
+    else:
+        xpath, element = build_edit_sp_group_xpath_and_element(group_name, profile_to_change, profile_value)
+        params.update({
+            "xpath": xpath,
+            "element": element
+        })
+
+    raw_response = http_request(URL, "GET", params=params)
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Successfully edited Security Profile Group: "{group_name}"',
+    )
+
+
+def pan_os_delete_security_profile_group_command(args: dict) -> CommandResults:
+    """
+    Deletes a given security profile groups in the given Panorama instance.
+
+    Args:
+        args (dict): The command arguments.
+
+    Returns:
+        CommandResults: The command results with raw response and readable outputs.
+    """
+    group_name = args.get("group_name")
+
+    params = {
+        "type": "config",
+        "action": "delete",
+        "key": API_KEY,
+        "xpath": f"{XPATH_RULEBASE}profile-group/entry[@name='{group_name}']",
+    }
+
+    raw_response = http_request(URL, "GET", params=params)
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f'Successfully deleted Security Profile Group: "{group_name}"',
+    )
+
+
 def pan_os_get_audit_comment_command(args: dict) -> CommandResults:
     """
     executes the command pan-os-get-audit-comment to get the audit comment for a given policy rule.
@@ -14892,6 +15132,14 @@ def main():  # pragma: no cover
             return_results(list_device_groups_names())
         elif command == 'pan-os-export-tech-support-file':
             return_results(export_tsf_command(args))
+        elif command == 'pan-os-list-security-profile-group':
+            return_results(pan_os_list_security_profile_groups_command(args))
+        elif command == 'pan-os-create-security-profile-group':
+            return_results(pan_os_create_security_profile_group_command(args))
+        elif command == 'pan-os-edit-security-profile-group':
+            return_results(pan_os_edit_security_profile_group_command(args))
+        elif command == 'pan-os-delete-security-profile-group':
+            return_results(pan_os_delete_security_profile_group_command(args))
         elif command == 'pan-os-get-audit-comment':
             return_results(pan_os_get_audit_comment_command(args))
         else:
