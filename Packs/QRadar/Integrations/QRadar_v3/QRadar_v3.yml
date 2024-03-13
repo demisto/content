@@ -1652,6 +1652,7 @@ script:
       description: "The ID of the group's parent group. The root node group has a null parent_ID."
       type: Number
   - name: qradar-log-source-protocol-types-list
+    description: Retrieves the list of protocol types.
     arguments:
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'

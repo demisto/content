@@ -12,8 +12,8 @@ from requests.exceptions import ReadTimeout
 import QRadar_v3  # import module separately for mocker
 import pytest
 import pytz
-from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_RAW_FORMATTED, \
-    Client, ASSET_PROPERTIES_NAME_MAP, \
+from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, \
+    Client, ASSET_PROPERTIES_NAME_MAP, REFERENCE_SETS_RAW_FORMATTED, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, \
     MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus, LAST_MIRROR_CLOSED_KEY
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
@@ -39,9 +39,9 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_disconnected_log_collectors_list_command, qradar_log_source_types_list_command, \
     qradar_log_source_protocol_types_list_command, qradar_log_source_extensions_list_command, \
     qradar_log_source_languages_list_command, qradar_log_source_groups_list_command, qradar_log_source_create_command, \
-    qradar_log_source_delete_command, qradar_log_source_update_command, convert_to_actual_values_recursive, \
-    enrich_offense_with_events, perform_long_running_loop, validate_integration_context, FetchMode, \
-    MIRRORED_OFFENSES_FETCHED_CTX_KEY, IndicatorsSearcher
+    qradar_log_source_delete_command, qradar_log_source_update_command, convert_dict_to_actual_values, \
+    enrich_offense_with_events, perform_long_running_loop, validate_integration_context, convert_list_to_actual_values, \
+    MIRRORED_OFFENSES_FETCHED_CTX_KEY, FetchMode, IndicatorsSearcher
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
@@ -1652,17 +1652,18 @@ def test_qradar_reference_set_value_upsert_command_continue_polling_with_connect
     # make sure when status is COMPLETED that outputs are returned
     assert result.outputs
 
+
 @pytest.mark.parametrize('command_func, endpoint, id', [
-    (qradar_event_collectors_list_command,  '/config/event_sources/event_collectors', 0),
-    (qradar_wincollect_destinations_list_command,  '/config/event_sources/wincollect/wincollect_destinations', 0),
-    (qradar_disconnected_log_collectors_list_command,  '/config/event_sources/disconnected_log_collectors', 0),
-    (qradar_log_source_types_list_command,  '/config/event_sources/log_source_management/log_source_types', 0),
+    (qradar_event_collectors_list_command, '/config/event_sources/event_collectors', 0),
+    (qradar_wincollect_destinations_list_command, '/config/event_sources/wincollect/wincollect_destinations', 0),
+    (qradar_disconnected_log_collectors_list_command, '/config/event_sources/disconnected_log_collectors', 0),
+    (qradar_log_source_types_list_command, '/config/event_sources/log_source_management/log_source_types', 0),
     (qradar_log_source_protocol_types_list_command, '/config/event_sources/log_source_management/protocol_types', 0),
-    (qradar_log_source_extensions_list_command,  '/config/event_sources/log_source_management/log_source_extensions', 0),
-    (qradar_log_source_languages_list_command,  '/config/event_sources/log_source_management/log_source_languages', 0),
-    (qradar_log_source_groups_list_command, '/config/event_sources/log_source_management/log_source_groups',  0)
-    ])
-def test_id_commands(mocker, command_func: Callable[[Client, dict], CommandResults], endpoint:str , id: int):
+    (qradar_log_source_extensions_list_command, '/config/event_sources/log_source_management/log_source_extensions', 0),
+    (qradar_log_source_languages_list_command, '/config/event_sources/log_source_management/log_source_languages', 0),
+    (qradar_log_source_groups_list_command, '/config/event_sources/log_source_management/log_source_groups', 0)
+])
+def test_id_commands(mocker, command_func: Callable[[Client, dict], CommandResults], endpoint: str, id: int):
     args = {"id": id}
     get_by_id_mock = mocker.patch.object(client, 'get_resource_by_id', return_value={})
     try:
@@ -1671,17 +1672,18 @@ def test_id_commands(mocker, command_func: Callable[[Client, dict], CommandResul
         demisto.log(f'command {command_func.__name__} raised key error')
     get_by_id_mock.assert_called_with(id, endpoint, None, None)
 
+
 @pytest.mark.parametrize('command_func, endpoint', [
-    (qradar_event_collectors_list_command,  '/config/event_sources/event_collectors'),
-    (qradar_wincollect_destinations_list_command,  '/config/event_sources/wincollect/wincollect_destinations'),
-    (qradar_disconnected_log_collectors_list_command,  '/config/event_sources/disconnected_log_collectors'),
-    (qradar_log_source_types_list_command,  '/config/event_sources/log_source_management/log_source_types'),
+    (qradar_event_collectors_list_command, '/config/event_sources/event_collectors'),
+    (qradar_wincollect_destinations_list_command, '/config/event_sources/wincollect/wincollect_destinations'),
+    (qradar_disconnected_log_collectors_list_command, '/config/event_sources/disconnected_log_collectors'),
+    (qradar_log_source_types_list_command, '/config/event_sources/log_source_management/log_source_types'),
     (qradar_log_source_protocol_types_list_command, '/config/event_sources/log_source_management/protocol_types'),
-    (qradar_log_source_extensions_list_command,  '/config/event_sources/log_source_management/log_source_extensions'),
-    (qradar_log_source_languages_list_command,  '/config/event_sources/log_source_management/log_source_languages'),
+    (qradar_log_source_extensions_list_command, '/config/event_sources/log_source_management/log_source_extensions'),
+    (qradar_log_source_languages_list_command, '/config/event_sources/log_source_management/log_source_languages'),
     (qradar_log_source_groups_list_command, '/config/event_sources/log_source_management/log_source_groups',)
-    ])
-def test_list_commands(mocker, command_func: Callable[[Client, dict], CommandResults], endpoint:str):
+])
+def test_list_commands(mocker, command_func: Callable[[Client, dict], CommandResults], endpoint: str):
     args = {'range': '0-49'}
     get_list_mock = mocker.patch.object(client, 'get_resource_list', return_value=[{}])
     try:
@@ -1690,13 +1692,14 @@ def test_list_commands(mocker, command_func: Callable[[Client, dict], CommandRes
         demisto.log(f'command {command_func.__name__} raised key error')
     get_list_mock.assert_called_with(f"items={args['range']}", endpoint, None, None, None)
 
+
 @pytest.mark.parametrize('id', [(0), (None)])
 def test_get_resource(mocker, id: int | None):
     endpoint = 'example.com'
     range = 'items=0-49'
     get_resource_by_id_mock = mocker.patch.object(client, 'get_resource_by_id')
     get_resource_list_mock = mocker.patch.object(client, 'get_resource_list')
-    
+
     client.get_resource(id, range, endpoint)
     if id is not None:
         get_resource_by_id_mock.assert_called()
@@ -1719,6 +1722,7 @@ def test_get_log_sources_list(mocker):
         demisto.log('command log_sources_list_command raised key error')
     get_list_mock.assert_called_with(f"items={args['range']}", endpoint, None, None, expected_additional_headers)
 
+
 def test_get_log_source_by_id(mocker):
     mock_id = 1880
     qrd_encryption_details = {
@@ -1733,52 +1737,71 @@ def test_get_log_source_by_id(mocker):
         qradar_log_sources_list_command(client, args)
     except KeyError:
         demisto.log('command log_sources_list_command raised key error')
-    get_by_id_mock.assert_called_with(mock_id, endpoint, None, expected_additional_headers)    
+    get_by_id_mock.assert_called_with(mock_id, endpoint, None, expected_additional_headers)
+
 
 def test_create_log_source(mocker):
-    args =  command_test_data['create_log_source']['args']
-    expected_body =  command_test_data['create_log_source']['expected_body']
+    args = command_test_data['create_log_source']['args']
+    expected_body = command_test_data['create_log_source']['expected_body']
     create_log_source_mock = mocker.patch.object(client, 'create_log_source', return_value={})
-    
+
     try:
         qradar_log_source_create_command(client, args)
     except KeyError:
         demisto.log('command create_log_source_command raised key error')
-    
+
     create_log_source_mock.assert_called_with(expected_body)
 
+
 def test_update_log_source(mocker):
-    args =  command_test_data['update_log_source']['args']
-    expected_body =  command_test_data['update_log_source']['expected_body']
+    args = command_test_data['update_log_source']['args']
+    expected_body = command_test_data['update_log_source']['expected_body']
     update_log_source_mock = mocker.patch.object(client, 'update_log_source', return_value={})
-    
+
     try:
         qradar_log_source_update_command(client, args)
     except KeyError:
         demisto.log('command update_log_source_command raised key error')
-    
+
     update_log_source_mock.assert_called_with(expected_body)
+
 
 def test_delete_log_source(mocker):
     id = 0
     args = {"id": id}
     update_log_source_mock = mocker.patch.object(client, 'delete_log_source')
-    
+
     qradar_log_source_delete_command(client, args)
     update_log_source_mock.assert_called_with(id)
+
 
 def test_dict_converter():
     input_dict = {'enabled': 'true', 'year': '2024', 'name': 'Moshe'}
     expected_output = {'enabled': True, 'year': 2024, 'name': 'Moshe'}
-    assert convert_to_actual_values_recursive(input_dict) == expected_output
+    assert convert_dict_to_actual_values(input_dict) == expected_output
 
     input_nested_dict = {'enabled': 'true', 'year': '2024', 'name': 'Moshe', 'details': {'age': '30', 'score': '95.5'}}
     expected_nested_output = {'enabled': True, 'year': 2024, 'name': 'Moshe', 'details': {'age': 30, 'score': 95.5}}
-    assert convert_to_actual_values_recursive(input_nested_dict) == expected_nested_output
+    assert convert_dict_to_actual_values(input_nested_dict) == expected_nested_output
 
     input_dict_with_list = {'enabled': 'true', 'year': '2024', 'name': 'Moshe', 'lst': ['true', '22', 'str']}
-    expectedoutput_with_list = {'enabled': True, 'year': 2024, 'name': 'Moshe', 'lst': [True, 22, 'str']}
-    assert convert_to_actual_values_recursive(input_nested_dict) == expected_nested_output
+    expected_output_with_list = {'enabled': True, 'year': 2024, 'name': 'Moshe', 'lst': [True, 22, 'str']}
+    assert convert_dict_to_actual_values(input_dict_with_list) == expected_output_with_list
+
+
+def test_list_converter():
+    simple_input_list = ['true', '2024', 'moshe']
+    expected_output = [True, 2024, 'moshe']
+    assert convert_list_to_actual_values(simple_input_list) == expected_output
+
+    expected_nested_output = [True, 2024, 'Moshe', [30, 95.5, False, 'string']]
+    input_nested_list = ['true', '2024', 'Moshe', ['30', '95.5', 'false', 'string']]
+    assert convert_list_to_actual_values(input_nested_list) == expected_nested_output
+
+    input_list_with_dict = ['true', '2024', 'Moshe', {'enabled': 'true', 'year': '2024', 'name': 'Moshe'}]
+    expected_output_with_dict = [True, 2024, 'Moshe', {'enabled': True, 'year': 2024, 'name': 'Moshe'}]
+    assert convert_list_to_actual_values(input_list_with_dict) == expected_output_with_dict
+
 
 def test_recovery_lastrun(mocker):
     """

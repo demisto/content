@@ -330,7 +330,7 @@ WINCOLLECT_DESTINATION_RAW_FORMATTED = {
     'port': 'Port',
     'transport_protocol': 'TransportProtocol',
     'inernal': 'IsInternal',
-    'event_rate_throttle':'EventRateThrottle'
+    'event_rate_throttle': 'EventRateThrottle'
 }
 
 DISCONNECTED_LOG_COLLECTOR_RAW_FORMATTED = {
@@ -343,28 +343,28 @@ DISCONNECTED_LOG_COLLECTOR_RAW_FORMATTED = {
 }
 
 LOG_SOURCE_TYPES_RAW_FORMATTED = {
-    'id':'ID',
-    'name':'Name',
-    'custom':'Custom',
-    'version':'Version',
-    'uuid':'UUID',
-    'supported_language_ids':'SupportedLanguageIDs',
-    'protocol_types':'ProtocolTypes',
-    'default_protocol_id':'DefaultProtocolID',
-    'internal':'Internal',
-    'latest_version':'LatestVersion',
-    'log_source_extension_id':'LogSourceExtensionID',
+    'id': 'ID',
+    'name': 'Name',
+    'custom': 'Custom',
+    'version': 'Version',
+    'uuid': 'UUID',
+    'supported_language_ids': 'SupportedLanguageIDs',
+    'protocol_types': 'ProtocolTypes',
+    'default_protocol_id': 'DefaultProtocolID',
+    'internal': 'Internal',
+    'latest_version': 'LatestVersion',
+    'log_source_extension_id': 'LogSourceExtensionID',
 }
 
 LOG_SOURCE_PROTOCOL_TYPE_RAW_FORMATTED = {
-    'id':'ID',
-    'name':'Name',
-    'version':'Version',
-    'latest_version':'LatestVersion',
-    'gateway_supported':'GatewaySupported',
-    'inbound':'Inbound',
-    'parameters':'Parameters',
-    'parameter_groups':'ParameterGroups',
+    'id': 'ID',
+    'name': 'Name',
+    'version': 'Version',
+    'latest_version': 'LatestVersion',
+    'gateway_supported': 'GatewaySupported',
+    'inbound': 'Inbound',
+    'parameters': 'Parameters',
+    'parameter_groups': 'ParameterGroups',
     'testing_capabilities': 'TestingCapabilities'
 }
 
@@ -456,7 +456,8 @@ class Client(BaseClient):
         self.server = server
 
     def http_request(self, method: str, url_suffix: str, params: Optional[dict] = None,
-                     json_data: Optional[dict | list[dict]] = None, data: Optional[dict] = None, additional_headers: Optional[dict] = None,
+                     json_data: Optional[dict | list[dict]] = None, data: Optional[dict] = None,
+                     additional_headers: Optional[dict] = None,
                      timeout: Optional[int] = None, resp_type: str = 'json') -> Any:
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
         for _time in range(1, CONNECTION_ERRORS_RETRIES + 1):
@@ -784,7 +785,7 @@ class Client(BaseClient):
                 'Range': range_
             }
         )
-    
+
     def get_log_source(self, qrd_encryption_algorithm: str, qrd_encryption_password: str, id: str,
                        fields: Optional[str] = None):
         return self.http_request(
@@ -856,7 +857,7 @@ class Client(BaseClient):
             url_suffix='/staged_config/deploy_status',
             json_data=body
         )
-    
+
     def get_resource_list(
             self,
             range_: str,
@@ -883,13 +884,13 @@ class Client(BaseClient):
             params=assign_params(filter=filter_, fields=fields),
             additional_headers={
                 'Range': range_
-            } if additional_headers_ is None \
+            } if additional_headers_ is None
             else {
                 'Range': range_,
                 **additional_headers_
             }
         )
-    
+
     def get_resource_by_id(self, id: str, endpoint: str, fields: Optional[str] = None, additional_headers: Optional[dict] = None):
         return self.http_request(
             method='GET',
@@ -897,7 +898,7 @@ class Client(BaseClient):
             params=assign_params(fields=fields),
             additional_headers=additional_headers
         )
-    
+
     def get_resource(
             self,
             id,
@@ -908,21 +909,21 @@ class Client(BaseClient):
             additional_headers_: Optional[dict] = None):
         return self.get_resource_list(range_, endpoint, filter_, fields, additional_headers_) if id is None \
             else [self.get_resource_by_id(id, endpoint, fields, additional_headers_)]
-    
+
     def delete_log_source(self, id: str) -> requests.Response:
         return self.http_request(
             method='DELETE',
             url_suffix=f'/config/event_sources/log_source_management/log_sources/{id}',
             resp_type='response'
         )
-    
+
     def create_log_source(self, log_source: dict):
         return self.http_request(
             method='POST',
             url_suffix='/config/event_sources/log_source_management/log_sources',
             json_data=log_source
         )
-    
+
     def update_log_source(self, log_source: dict[str, Any]):
         return self.http_request(
             method='PATCH',
@@ -1756,6 +1757,7 @@ def get_min_id_from_first_fetch(first_fetch: str, client: Client):
     raw_offenses = client.offenses_list(filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER, range_="items=0-0", fields="id")
     return int(raw_offenses[0].get('id')) - 1 if raw_offenses else 0
 
+
 def arg_to_real_number(arg, arg_name=None, required=False):
     # type: (Any, Optional[str], bool) -> Optional[int | float]
     """Converts an XSOAR argument to a Python int or float
@@ -1824,7 +1826,8 @@ def convert_start_fetch_to_milliseconds(fetch_start_time: str):
         raise ValueError(f'Invalid first_fetch format: {fetch_start_time}')
     return int(date.timestamp() * 1000)
 
-def convert_to_actual_values_recursive(input_dict: dict) -> dict[str, Any]:
+
+def convert_dict_to_actual_values(input_dict: dict) -> dict[str, Any]:
     """
     Recursively converts string representations of values in a dictionary to their actual data types.
 
@@ -1837,9 +1840,9 @@ def convert_to_actual_values_recursive(input_dict: dict) -> dict[str, Any]:
     output_dict = {}
     for key, value in input_dict.items():
         if isinstance(value, dict):
-            output_dict[key] = convert_to_actual_values_recursive(value)
+            output_dict[key] = convert_dict_to_actual_values(value)
         elif isinstance(value, list):
-            output_dict[key] = [convert_to_actual_values_recursive(list_item) for list_item in value]
+            output_dict[key] = convert_list_to_actual_values(value)
         elif isinstance(value, str):
             try:
                 output_dict[key] = argToBoolean(value)
@@ -1851,6 +1854,36 @@ def convert_to_actual_values_recursive(input_dict: dict) -> dict[str, Any]:
         else:
             output_dict[key] = value
     return output_dict
+
+
+def convert_list_to_actual_values(input_list: list) -> list[Any]:
+    """
+    Recursively converts string representations of values in a list to their actual data types.
+
+    Args:
+        input_list (list): A list with string representations of values.
+
+    Returns:
+        dict: A list with actual values (numbers, booleans, etc.).
+    """
+    output_list = []
+    for value in input_list:
+        if isinstance(value, dict):
+            output_list.append(convert_dict_to_actual_values(value))
+        elif isinstance(value, list):
+            output_list.append(convert_list_to_actual_values(value))
+        elif isinstance(value, str):
+            try:
+                output_list.append(argToBoolean(value))
+            except ValueError:
+                try:
+                    output_list.append(arg_to_real_number(value))
+                except ValueError:
+                    output_list.append(value)
+        else:
+            output_list.append(value)
+    return output_list
+
 
 def parse_log_source(create_args: dict[str, Any]):
     pp_pairs = create_args.get('protocol_parameters', '').split(',')
@@ -1865,12 +1898,13 @@ def parse_log_source(create_args: dict[str, Any]):
         name, value = pair.split('=')
         # Add the pair to the dictionary
         protocol_parameters.append({'name': name.strip(), 'value': value.strip()})
-    return convert_to_actual_values_recursive({
+    return convert_dict_to_actual_values({
         **create_args,
         'protocol_parameters': protocol_parameters,
         'group_ids': group_ids,
         'wincollect_external_destination_ids': wincollect_external_destination_ids
-        })
+    })
+
 
 def parse_partial_log_source(update_args: dict[str, Any]):
     protocol_parameters = update_args.get('protocol_parameters').split(',') if update_args.get('protocol_parameters') else []
@@ -1892,7 +1926,8 @@ def parse_partial_log_source(update_args: dict[str, Any]):
         log_source_str['group_ids'] = group_ids
     if wincollect_external_destination_ids:
         log_source_str['wincollect_external_destination_ids'] = wincollect_external_destination_ids
-    return convert_to_actual_values_recursive(log_source_str)
+    return convert_dict_to_actual_values(log_source_str)
+
 
 def get_offense_enrichment(enrichment: str) -> tuple[bool, bool]:
     """
@@ -2386,7 +2421,10 @@ def prepare_context_for_events(offenses_with_metadata):
     safely_update_context_data(ctx, version, offense_ids=changed_offense_ids)
 
 
-def create_incidents_from_offenses(offenses: List[dict], incident_type: Optional[str]) -> List[dict]:
+def create_incidents_from_offenses(
+        offenses: List[dict],
+        incident_type: Optional[str],
+        add_lables: Optional[bool] = False) -> List[dict]:
     """
     Transforms list of offenses given into incidents for Demisto.
     Args:
@@ -2396,13 +2434,29 @@ def create_incidents_from_offenses(offenses: List[dict], incident_type: Optional
     Returns:
         (List[Dict]): Incidents list.
     """
+    incidents = []
     print_debug_msg(f'Creating {len(offenses)} incidents')
-    return [{
-        'name': f'''{offense.get('id')} {offense.get('description', '')}''',
-        'rawJSON': json.dumps(offense),
-        'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
-        'type': incident_type
-    } for offense in offenses]
+    for offense in offenses:
+        if add_lables:
+            keys = list(offense.keys())
+            labels = []
+            for i in range(len(keys)):
+                labels.append({"type": keys[i], "value": str(offense[keys[i]])})
+            incidents.append({
+                'name': f'''{offense.get('id')} {offense.get('description', '')}''',
+                'labels': labels,
+                'rawJSON': json.dumps(offense),
+                'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
+                'type': incident_type
+            })
+        else:
+            incidents.append({
+                'name': f'''{offense.get('id')} {offense.get('description', '')}''',
+                'rawJSON': json.dumps(offense),
+                'occurred': get_time_parameter(offense.get('start_time'), iso_format=True),
+                'type': incident_type
+            })
+    return incidents
 
 
 def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
@@ -3484,11 +3538,11 @@ def qradar_log_sources_list_command(client: Client, args: dict) -> CommandResult
     filter_ = args.get('filter')
     fields = args.get('fields')
     additional_headers = {
-                'x-qrd-encryption-algorithm': qrd_encryption_algorithm,
-                'x-qrd-encryption-password': qrd_encryption_password
+        'x-qrd-encryption-algorithm': qrd_encryption_algorithm,
+        'x-qrd-encryption-password': qrd_encryption_password
     }
     id = args.get('id')
-    
+
     # if this call fails, raise an error and stop command execution
     response = client.get_resource(id, range_, endpoint, filter_, fields, additional_headers)
     outputs = sanitize_outputs(response, LOG_SOURCES_RAW_FORMATTED)
@@ -4423,6 +4477,7 @@ def qradar_remote_network_deploy_execution_command(client: Client, args):
         raw_response=response
     )
 
+
 def qradar_event_collectors_list_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves a list of event collectors from QRadar service.
@@ -4446,7 +4501,7 @@ def qradar_event_collectors_list_command(client: Client, args: dict) -> CommandR
     filter_ = args.get('filter')
     fields = args.get('fields')
     id = args.get('id')
-    
+
     # if this call fails, raise an error and stop command execution
     response = client.get_resource(id, range_, '/config/event_sources/event_collectors', filter_, fields)
     outputs = sanitize_outputs(response, EVENT_COLLECTOR_RAW_FORMATTED)
@@ -4459,6 +4514,7 @@ def qradar_event_collectors_list_command(client: Client, args: dict) -> CommandR
         outputs=outputs,
         raw_response=response
     )
+
 
 def qradar_wincollect_destinations_list_command(client: Client, args: dict) -> CommandResults:
     """
@@ -4484,7 +4540,7 @@ def qradar_wincollect_destinations_list_command(client: Client, args: dict) -> C
     fields = args.get('fields')
     endpoint = '/config/event_sources/wincollect/wincollect_destinations'
     id = args.get('id')
-    
+
     # if this call fails, raise an error and stop command execution
     response = client.get_resource(id, range_, endpoint, filter_, fields)
     outputs = sanitize_outputs(response, WINCOLLECT_DESTINATION_RAW_FORMATTED)
@@ -4497,6 +4553,7 @@ def qradar_wincollect_destinations_list_command(client: Client, args: dict) -> C
         outputs=outputs,
         raw_response=response
     )
+
 
 def qradar_disconnected_log_collectors_list_command(client: Client, args: dict) -> CommandResults:
     """
@@ -4522,7 +4579,7 @@ def qradar_disconnected_log_collectors_list_command(client: Client, args: dict) 
     fields = args.get('fields')
     endpoint = '/config/event_sources/disconnected_log_collectors'
     id = args.get('id')
-    
+
     # if this call fails, raise an error and stop command execution
     response = client.get_resource(id, range_, endpoint, filter_, fields)
     outputs = sanitize_outputs(response, DISCONNECTED_LOG_COLLECTOR_RAW_FORMATTED)
@@ -4535,6 +4592,7 @@ def qradar_disconnected_log_collectors_list_command(client: Client, args: dict) 
         outputs=outputs,
         raw_response=response
     )
+
 
 def qradar_log_source_types_list_command(client: Client, args: dict) -> CommandResults:
     """
@@ -4560,7 +4618,7 @@ def qradar_log_source_types_list_command(client: Client, args: dict) -> CommandR
     fields = args.get('fields')
     endpoint = '/config/event_sources/log_source_management/log_source_types'
     id = args.get('id')
-    
+
     # if this call fails, raise an error and stop command execution
     response = client.get_resource(id, range_, endpoint, filter_, fields)
     outputs = sanitize_outputs(response, LOG_SOURCE_TYPES_RAW_FORMATTED)
@@ -4573,6 +4631,7 @@ def qradar_log_source_types_list_command(client: Client, args: dict) -> CommandR
         outputs=outputs,
         raw_response=response
     )
+
 
 def qradar_log_source_protocol_types_list_command(client: Client, args: dict) -> CommandResults:
     """
@@ -4607,7 +4666,7 @@ def qradar_log_source_protocol_types_list_command(client: Client, args: dict) ->
         'CanCollectEvents': protocol_type['TestingCapabilities']['can_collect_events'],
         'Testable': protocol_type['TestingCapabilities']['testable'],
         'CanAcceptSampleEvents': protocol_type['TestingCapabilities']['can_accept_sample_events'],
-        } for protocol_type in outputs])
+    } for protocol_type in outputs])
 
     return CommandResults(
         readable_output=tableToMarkdown('Log Source Protocol Types', readable_outputs, headers, removeNull=True),
@@ -4616,6 +4675,7 @@ def qradar_log_source_protocol_types_list_command(client: Client, args: dict) ->
         outputs=outputs,
         raw_response=response
     )
+
 
 def qradar_log_source_extensions_list_command(client: Client, args: dict) -> CommandResults:
     """
@@ -4641,7 +4701,7 @@ def qradar_log_source_extensions_list_command(client: Client, args: dict) -> Com
     fields = args.get('fields')
     endpoint = '/config/event_sources/log_source_management/log_source_extensions'
     id = args.get('id')
-    
+
     # if this call fails, raise an error and stop command execution
     response = client.get_resource(id, range_, endpoint, filter_, fields)
     outputs = sanitize_outputs(response, LOG_SOURCE_EXTENSION_RAW_FORMATTED)
@@ -4654,6 +4714,7 @@ def qradar_log_source_extensions_list_command(client: Client, args: dict) -> Com
         outputs=outputs,
         raw_response=response
     )
+
 
 def qradar_log_source_languages_list_command(client: Client, args: dict) -> CommandResults:
     """
@@ -4679,7 +4740,7 @@ def qradar_log_source_languages_list_command(client: Client, args: dict) -> Comm
     fields = args.get('fields')
     endpoint = '/config/event_sources/log_source_management/log_source_languages'
     id = args.get('id')
-    
+
     # if this call fails, raise an error and stop command execution
     response = client.get_resource(id, range_, endpoint, filter_, fields)
     outputs = sanitize_outputs(response, LOG_SOURCE_LANGUAGE_RAW_FORMATTED)
@@ -4692,6 +4753,7 @@ def qradar_log_source_languages_list_command(client: Client, args: dict) -> Comm
         outputs=outputs,
         raw_response=response
     )
+
 
 def qradar_log_source_groups_list_command(client: Client, args: dict) -> CommandResults:
     """
@@ -4717,7 +4779,7 @@ def qradar_log_source_groups_list_command(client: Client, args: dict) -> Command
     fields = args.get('fields')
     endpoint = '/config/event_sources/log_source_management/log_source_groups'
     id = args.get('id')
-    
+
     # if this call fails, raise an error and stop command execution
     response = client.get_resource(id, range_, endpoint, filter_, fields)
     outputs = sanitize_outputs(response, LOG_SOURCE_GROUP_RAW_FORMATTED)
@@ -4730,6 +4792,7 @@ def qradar_log_source_groups_list_command(client: Client, args: dict) -> Command
         outputs=outputs,
         raw_response=response
     )
+
 
 def qradar_log_source_delete_command(client: Client, args: dict) -> CommandResults:
     """
@@ -4759,14 +4822,15 @@ def qradar_log_source_delete_command(client: Client, args: dict) -> CommandResul
         )
         if not log_source_list:
             return CommandResults(
-            readable_output=f'Log source with name {name} does not exist'
-        )
+                readable_output=f'Log source with name {name} does not exist'
+            )
         relevant_log_source = log_source_list[0]
         client.delete_log_source(relevant_log_source.get('id'))
         return CommandResults(
             readable_output=f'Log source {name} was deleted successfully'
         )
     raise Exception('At least one of the arguments: name, id must be provided.')
+
 
 def qradar_log_source_create_command(client: Client, args: dict) -> CommandResults:
     """
@@ -4832,6 +4896,7 @@ def qradar_log_source_create_command(client: Client, args: dict) -> CommandResul
         raw_response=response
     )
 
+
 def qradar_log_source_update_command(client: Client, args: dict) -> CommandResults:
     """
     Creates a log source.
@@ -4879,6 +4944,7 @@ def qradar_log_source_update_command(client: Client, args: dict) -> CommandResul
     log_source = parse_partial_log_source(args)
     client.update_log_source(log_source)
     return CommandResults(readable_output=f'Log source {id} was updated successfully')
+
 
 def migrate_integration_ctx(ctx: dict) -> dict:
     """Migrates the old context to the current context
@@ -5156,19 +5222,19 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'qradar-remote-network-deploy-execution':
             return_results(qradar_remote_network_deploy_execution_command(client, args))
-        
+
         elif command == 'qradar-event-collectors-list':
             return_results(qradar_event_collectors_list_command(client, args))
 
         elif command == 'qradar-wincollect-destinations-list':
             return_results(qradar_wincollect_destinations_list_command(client, args))
-        
+
         elif command == 'qradar-disconnected-log-collectors-list':
             return_results(qradar_disconnected_log_collectors_list_command(client, args))
 
         elif command == 'qradar-log-source-types-list':
             return_results(qradar_log_source_types_list_command(client, args))
-        
+
         elif command == 'qradar-log-source-protocol-types-list':
             return_results(qradar_log_source_protocol_types_list_command(client, args))
 
@@ -5180,10 +5246,10 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'qradar-log-source-groups-list':
             return_results(qradar_log_source_groups_list_command(client, args))
-        
+
         elif command == 'qradar-log-source-delete':
             return_results(qradar_log_source_delete_command(client, args))
-        
+
         elif command == 'qradar-log-source-create':
             return_results(qradar_log_source_create_command(client, args))
 
