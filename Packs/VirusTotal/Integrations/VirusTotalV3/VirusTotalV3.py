@@ -11,10 +11,13 @@ from collections.abc import Callable
 
 from dateparser import parse
 import ipaddress
+import re
 
 INTEGRATION_NAME = "VirusTotal"
 COMMAND_PREFIX = "vt"
 INTEGRATION_ENTRY_CONTEXT = "VirusTotal"
+#SHA512 isn't currently supported by VT. Included in the below for future compatability. 
+HASH_TYPES = ["MD5","SHA1","SHA256","SHA512"]
 
 INDICATOR_TYPE = {
     'ip': FeedIndicatorType.IP,
@@ -1277,6 +1280,9 @@ def build_quota_exceeded_file_output(client: Client, file: str) -> CommandResult
 def build_error_file_output(client: Client, file: str) -> CommandResults:
     return build_error_output(client, file, 'file')
 
+def build_skipped_enrichment_file_output(client: Client, file: str) -> CommandResults:
+    return _get_error_result(client, file, 'file',
+                             f'was not enriched. Reputation lookups have been disabled for this file type.')
 
 def build_unknown_domain_output(client: Client, domain: str) -> CommandResults:
     return build_unknown_output(client, domain, 'domain')
@@ -1793,7 +1799,7 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict,
     return results
 
 
-def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
+def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str, excluded_extensions: list) -> List[CommandResults]:
     """
     1 API Call
     """
@@ -1802,9 +1808,25 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
 
+    context_file_extensions = {}
+    context = demisto.context()
+    context_files = argToList(context.get('File', []))
+    if excluded_extensions and context_files:
+        for i in context_files:
+            for hash_type in HASH_TYPES:
+                if hash:=i.get(hash_type,"").casefold():
+                    if match:=re.search(f"\.(?P<file_extension>[^\.]*$)",i.get("Name",""),re.IGNORECASE):
+                        extensions = context_file_extensions.get(hash,set())
+                        extensions.add(match.groupdict()["file_extension"].casefold())
+                        context_file_extensions[hash] = extensions
+
     for file in files:
         raise_if_hash_not_valid(file)
         try:
+            if (file_extension:=context_file_extensions.get(file.casefold())) and any(i in file_extension for i in excluded_extensions):
+                results.append(build_skipped_enrichment_file_output(client, file))
+                execution_metrics.success += 1
+                continue
             raw_response = client.file(file, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
@@ -1828,7 +1850,7 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     return results
 
 
-def private_file_command(client: Client, args: dict) -> List[CommandResults]:
+def private_file_command(client: Client, args: dict, excluded_extensions:list) -> List[CommandResults]:
     """
     1 API Call
     """
@@ -2542,12 +2564,13 @@ def main(params: dict, args: dict, command: str):
     file_relationships = (','.join(argToList(params.get('file_relationships')))).replace('* ', '').replace(" ", "_")
 
     disable_private_ip_lookup = argToBoolean(params.get('disable_private_ip_lookup', False))
+    excluded_extensions = params.get("excluded_extensions", "").casefold().split("|")
 
     demisto.debug(f'Command called {command}')
     if command == 'test-module':
         results = check_module(client)
     elif command == 'file':
-        results = file_command(client, score_calculator, args, file_relationships)
+        results = file_command(client, score_calculator, args, file_relationships, excluded_extensions)
     elif command == 'ip':
         results = ip_command(client, score_calculator, args, ip_relationships, disable_private_ip_lookup)
     elif command == 'url':
