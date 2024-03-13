@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import os
 import urllib3
 import requests
 from bs4 import BeautifulSoup
@@ -23,8 +22,8 @@ BAD_IPS_GROUP = 'Local Bad Sender IPs'
 
 
 def http_request(method, url_suffix, cookies=COOKIES, data=None, headers=None):
-    LOG('running request with url=%s\tdata=%s\theaders=%s' % (BASE_URL + url_suffix,
-                                                              data, headers))
+    LOG('running request with url={}\tdata={}\theaders={}'.format(BASE_URL + url_suffix,
+                                                                  data, headers))
     try:
         res = requests.request(
             method,
@@ -84,6 +83,7 @@ def login():
         if name == 'symantec.brightmail.key.TOKEN':
             token = tag.attrs['value']
             return token
+    return None
 
 
 def get_selected_sender_groups(group):
@@ -107,6 +107,7 @@ def get_selected_sender_groups(group):
                 if input_tag:
                     group_number = input_tag['value']
                     return group_number
+    return None
 
 
 def block_request(ioc, selected_sender_groups):
@@ -126,6 +127,7 @@ def block_request(ioc, selected_sender_groups):
     if error:  # Error occured
         error_message = ' '.join(error.text.split())  # Removes whitespaces from string
         return error_message
+    return None
 
 
 def unblock_request(selected_group_member, selected_sender_groups):
@@ -176,7 +178,7 @@ def get_blocked_domains():
     soup = BeautifulSoup(blocked_domains.text, 'lxml')
     # Handles pagination of Local Bad Sender Domains
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
-    for i in range(len(pages)):  # Loop through all pages of blocked IP address
+    for _i in range(len(pages)):  # Loop through all pages of blocked IP address
         tds_array = soup.find_all('td', 'paddingL3')  # Parse <td>
         for td in tds_array:
             a = td.find('a')  # Parse <a>
@@ -204,7 +206,7 @@ def get_blocked_ips():
     soup = BeautifulSoup(blocked_emails.text, 'lxml')
     # Handles pagination of Local Bad Sender IPs
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
-    for i in range(len(pages)):  # Loop through all pages of blocked IP address
+    for _i in range(len(pages)):  # Loop through all pages of blocked IP address
         tds_array = soup.find_all('td', 'paddingL3')  # Parse <td>
         for td in tds_array:
             a = td.find('a')  # Parse <a>
@@ -256,7 +258,7 @@ def unblock_email(email):
     soup = BeautifulSoup(blocked_emails.text, 'lxml')
     # Handles pagination of Local Bad Sender Domains
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
-    for i in range(len(pages)):  # Loop through all pages of blocked email addresses
+    for _i in range(len(pages)):  # Loop through all pages of blocked email addresses
         tds_array = soup.find_all('td', 'paddingL3')  # Parse <td>
         for td in tds_array:
             a = td.find('a')  # Parse <a>
@@ -326,7 +328,7 @@ def unblock_domain(domain):
     soup = BeautifulSoup(blocked_domains.text, 'lxml')
     # Handles pagination of Local Bad Sender Domains
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
-    for i in range(len(pages)):  # Loop through all pages of blocked domains
+    for _i in range(len(pages)):  # Loop through all pages of blocked domains
         tds_array = soup.find_all('td', 'paddingL3')  # Parse <td>
         for td in tds_array:
             a = td.find('a')  # Parse <a>
@@ -396,7 +398,7 @@ def unblock_ip(ip):
     soup = BeautifulSoup(blocked_ips.text, 'lxml')
     # Handles pagination of Local Bad Sender IPs
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
-    for i in range(len(pages)):  # Loop through all pages of blocked IP address
+    for _i in range(len(pages)):  # Loop through all pages of blocked IP address
         tds_array = soup.find_all('td', 'paddingL3')  # Parse <td>
         for td in tds_array:
             a = td.find('a')  # Parse <a>
@@ -435,6 +437,7 @@ def unblock_ip(ip):
 
 
 def main():
+    global TOKEN
     handle_proxy()
     TOKEN = login()
 
@@ -462,6 +465,7 @@ def main():
 
     except Exception as e:
         return_error(str(e))
+
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
     main()
