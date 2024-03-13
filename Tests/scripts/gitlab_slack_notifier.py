@@ -562,7 +562,7 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
-    if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
+    if True:
         computed_slack_channel = "dmst-build-test"
         # Check if the current commit's pipeline differs from the previous one. If the previous pipeline is still running,
         # compare the next build. For commits without pipelines, compare the current one to the nearest commit with a

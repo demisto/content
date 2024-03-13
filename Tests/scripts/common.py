@@ -310,6 +310,8 @@ def is_pivot(current_pipeline: ProjectPipeline, pipeline_to_compare: ProjectPipe
 
     in_order = are_pipelines_in_order(pipeline_a=current_pipeline, pipeline_b=pipeline_to_compare)
     if in_order:
+        logging.info(f"current pipeline status: {current_pipeline.status}, and other pipeline status: "
+                     f"{pipeline_to_compare.status}")
         if pipeline_to_compare.status == 'success' and current_pipeline.status == 'failed':
             return True
         if pipeline_to_compare.status == 'failed' and current_pipeline.status == 'success':
