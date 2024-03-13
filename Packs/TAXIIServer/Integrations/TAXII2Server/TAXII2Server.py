@@ -554,7 +554,7 @@ def create_query(query: str, types: list[str], added_after: str) -> str:
 
         demisto.debug(f'modified query, after adding types: {new_query}')
         query = new_query
-    return f'{query} and modified:>="{added_after}"'
+    return f'{query} and modified:>="{added_after}"' if added_after else f'{query}'
 
 
 def find_indicators(query: str, types: list, added_after, limit: int, offset: int, is_manifest: bool = False) -> tuple:

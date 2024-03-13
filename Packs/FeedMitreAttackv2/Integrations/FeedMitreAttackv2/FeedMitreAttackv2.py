@@ -46,7 +46,7 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {  # pragma: no cover
     'act-on-objectives': ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
     'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL
 }
-FILTER_OBJS = {
+FILTER_OBJS = {  # pragma: no cover
     "Technique": {"name": "attack-pattern", "filter": Filter("type", "=", "attack-pattern")},
     "Mitigation": {"name": "course-of-action", "filter": Filter("type", "=", "course-of-action")},
     "Group": {"name": "intrusion-set", "filter": Filter("type", "=", "intrusion-set")},
@@ -55,11 +55,11 @@ FILTER_OBJS = {
     "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
     "Campaign": {"name": "campaign", "filter": Filter("type", "=", "campaign")},
 }
-RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
-ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
-EXTRACT_TIMESTAMP_REGEX = r"\(([^()]+)\)"
-SERVER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
-DEFAULT_YEAR = datetime(1970, 1, 1)
+RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()   # pragma: no cover
+ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'                  # pragma: no cover
+EXTRACT_TIMESTAMP_REGEX = r"\(([^()]+)\)"   # pragma: no cover
+SERVER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"    # pragma: no cover
+DEFAULT_YEAR = datetime(1970, 1, 1)         # pragma: no cover
 
 # disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
 logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)

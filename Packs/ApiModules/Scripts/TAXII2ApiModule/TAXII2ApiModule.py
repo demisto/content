@@ -70,7 +70,7 @@ HASHES_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
 TAXII_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 TAXII_TIME_FORMAT_NO_MS = "%Y-%m-%dT%H:%M:%SZ"
 
-STIX_2_TYPES_TO_CORTEX_TYPES = {
+STIX_2_TYPES_TO_CORTEX_TYPES = {       # pragma: no cover
     "mutex": FeedIndicatorType.MUTEX,
     "windows-registry-key": FeedIndicatorType.Registry,
     "user-account": FeedIndicatorType.Account,
@@ -101,7 +101,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "vulnerability": FeedIndicatorType.CVE,
 }
 
-MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
+MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {       # pragma: no cover
     'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
     'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
     'adversary-opsec': ThreatIntel.KillChainPhases.ADVERSARY_OPSEC,
@@ -122,12 +122,12 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL,
 }
 
-STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {
+STIX_2_TYPES_TO_CORTEX_CIDR_TYPES = {          # pragma: no cover
     "ipv4-addr": FeedIndicatorType.CIDR,
     "ipv6-addr": FeedIndicatorType.IPv6CIDR,
 }
 
-THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
+THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {         # pragma: no cover
     'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
     'attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     'report': ThreatIntel.ObjectsNames.REPORT,
@@ -140,13 +140,14 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
 }
 
 # marking definitions of TLPs are constant (marking definitions of statements can vary)
-MARKING_DEFINITION_TO_TLP = {'marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9': 'WHITE',
+MARKING_DEFINITION_TO_TLP = {'marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9': 'WHITE',        # pragma: no cover
                              'marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da': 'GREEN',
                              'marking-definition--f88d31f6-486f-44da-b317-01333bde0b82': 'AMBER',
                              'marking-definition--5e57c739-391a-4eb3-b6be-7d15ca92d5ed': 'RED'}
 
 # country codes are in ISO-2 format
-COUNTRY_CODES_TO_NAMES = {'AD': 'Andorra', 'AE': 'United Arab Emirates', 'AF': 'Afghanistan', 'AG': 'Antigua and Barbuda',
+COUNTRY_CODES_TO_NAMES = {'AD': 'Andorra', 'AE': 'United Arab Emirates',        # pragma: no cover
+                          'AF': 'Afghanistan', 'AG': 'Antigua and Barbuda',
                           'AI': 'Anguilla', 'AL': 'Albania', 'AM': 'Armenia', 'AO': 'Angola', 'AQ': 'Antarctica',
                           'AR': 'Argentina', 'AS': 'American Samoa', 'AT': 'Austria', 'AU': 'Australia', 'AW': 'Aruba',
                           'AX': 'Aland Islands', 'AZ': 'Azerbaijan', 'BA': 'Bosnia and Herzegovina', 'BB': 'Barbados',
@@ -201,7 +202,7 @@ COUNTRY_CODES_TO_NAMES = {'AD': 'Andorra', 'AE': 'United Arab Emirates', 'AF': '
                           'ZA': 'South Africa', 'ZM': 'Zambia', 'ZW': 'Zimbabwe'}
 
 
-STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
+STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {        # pragma: no cover
     'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
     'attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     'report': ThreatIntel.ObjectsNames.REPORT,
@@ -229,7 +230,7 @@ STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
 
 
 PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
-XSOAR_TYPES_TO_STIX_SDO = {
+XSOAR_TYPES_TO_STIX_SDO = {        # pragma: no cover
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'attack-pattern',
     ThreatIntel.ObjectsNames.CAMPAIGN: 'campaign',
     ThreatIntel.ObjectsNames.COURSE_OF_ACTION: 'course-of-action',
@@ -242,7 +243,7 @@ XSOAR_TYPES_TO_STIX_SDO = {
     FeedIndicatorType.CVE: 'vulnerability',
 }
 
-XSOAR_TYPES_TO_STIX_SCO = {
+XSOAR_TYPES_TO_STIX_SCO = {         # pragma: no cover
     FeedIndicatorType.CIDR: 'ipv4-addr',
     FeedIndicatorType.DomainGlob: 'domain-name',
     FeedIndicatorType.IPv6: 'ipv6-addr',
@@ -258,7 +259,7 @@ XSOAR_TYPES_TO_STIX_SCO = {
     FeedIndicatorType.AS: 'autonomous-system',
 }
 
-HASH_TYPE_TO_STIX_HASH_TYPE = {
+HASH_TYPE_TO_STIX_HASH_TYPE = {         # pragma: no cover
     'md5': 'MD5',
     'sha1': 'SHA-1',
     'sha256': 'SHA-256',
