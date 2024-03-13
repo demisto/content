@@ -1019,7 +1019,7 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
     )
 
 
-def get_dbotscore( # TODO
+def get_dbotscore(
     api_score: int,
     generic_command_name: str,
     indicator_value: str,

@@ -12,7 +12,7 @@ API_TOKEN = "api_token"
 BASE_URL = 'https://panacea.threatgrid.com'
 API_VERSION2_URL = 'api/v2'
 API_VERSION3_URL = 'api/v3'
-URL_SHA256 = hashlib.sha256('http://test.com:80/'.encode('utf-8')).hexdigest()
+URL_SHA256 = hashlib.sha256(b'http://test.com:80/').hexdigest()
 
 DBOT_SCORE = Common.DBotScore(indicator='url_value',
                               indicator_type='url',
@@ -30,7 +30,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
 
-    with open(os.path.join('test_data', file_name), mode='r',
+    with open(os.path.join('test_data', file_name),
               encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
