@@ -367,16 +367,14 @@
       echo "machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
       section_start "Create Testing Branch"
       export BRANCH="${CI_COMMIT_BRANCH}-cleanup-branch-${CI_PIPELINE_ID}"
-      git checkout ${CI_COMMIT_BRANCH}
-      git branch $BRANCH
+      git checkout "${CI_COMMIT_BRANCH}"
+      git branch "${BRANCH}"
       echo "Created test branch:${BRANCH}"
-      if git branch --list "$BRANCH" &>/dev/null; then
-        echo "Branch $BRANCH was successfully created."
-      else
-        echo "Failed to create branch $BRANCH."
+      if git branch --list "${BRANCH}" &>/dev/null; then
+        echo "Branch ${BRANCH} was successfully created."
       fi
       section_end "Create Testing Branch"
-      # retry mechanism for trigger upload pipeline in case it failed because of gitlab connectivity issues.
+# retry mechanism for trigger upload pipeline in case it failed because of gitlab connectivity issues.
       for _ in {1..3}; do
         export pipeline_id=$(./Utils/gitlab_triggers/trigger_cleanup_build_machines.sh -ct "${GITLAB_SVC_USER_TOKEN}" -m "${CLOUD_CHOSEN_MACHINE_IDS}" -mc "${CLOUD_MACHINES_COUNT}" -mt "${CLOUD_MACHINES_TYPE}" -p "${GCS_LOCKS_PATH}" -b "${BRANCH}"" | jq -r '.id')
         if [ "${pipeline_id}" != "null" ]; then
