@@ -2515,7 +2515,7 @@
                                 "fieldId": "hostname",
                                 "height": 22,
                                 "id": "f9cac5d0-dfe3-11ee-a718-2d25454b6746",
-                                "index": 4,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -2563,31 +2563,6 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "1vduzkpmlh-fc683030-dfe7-11ee-a718-2d25454b6746",
-                        "items": [
-                            {
-                                "endCol": 6,
-                                "fieldId": "xdrfileartifacts",
-                                "height": 106,
-                                "id": "f40d5d20-dfe7-11ee-a718-2d25454b6746",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "File Artifacts",
-                        "static": false,
-                        "w": 3,
-                        "x": 0,
                         "y": 2
                     },
                     {
@@ -2624,21 +2599,12 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "huntresultscount",
-                                "height": 22,
-                                "id": "b2d8e830-e071-11ee-9f1d-c7e880f68802",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "commandline",
                                 "height": 22,
                                 "id": "7ae9b4c0-dfe7-11ee-a718-2d25454b6746",
-                                "index": 4,
+                                "index": 3,
                                 "listId": "1vduzkpmlh-fc683030-dfe7-11ee-a718-2d25454b6746",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -2648,7 +2614,25 @@
                                 "fieldId": "commandlineverdict",
                                 "height": 22,
                                 "id": "c51aa040-dfe7-11ee-a718-2d25454b6746",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threathuntingdetectedhostnames",
+                                "height": 22,
+                                "id": "f14e00a0-e148-11ee-9a3d-4f29cba1e42e",
                                 "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threathuntingdetectedip",
+                                "height": 22,
+                                "id": "f4749500-e148-11ee-9a3d-4f29cba1e42e",
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

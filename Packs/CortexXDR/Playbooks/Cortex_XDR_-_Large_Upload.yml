@@ -512,6 +512,45 @@ tasks:
           - operator: uniq
       InputEnrichment:
         simple: "False"
+      MD5:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
       RuleDirection:
         simple: outbound
       RuleName:
@@ -778,7 +817,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "32"
+      - "115"
     scriptarguments:
       Indicator:
         complex:
@@ -798,7 +837,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1390,
+          "x": 980,
           "y": 2800
         }
       }
@@ -811,10 +850,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: d4cded99-69d2-46fe-882f-e1c7926a596c
+    taskid: 09d0928b-9634-43c9-8b72-377241818a67
     type: playbook
     task:
-      id: d4cded99-69d2-46fe-882f-e1c7926a596c
+      id: 09d0928b-9634-43c9-8b72-377241818a67
       version: -1
       name: User Investigation - Generic
       description: |-
@@ -871,7 +910,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
+          "x": 1390,
           "y": 2975
         }
       }
@@ -972,7 +1011,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
+          "x": 1390,
           "y": 2800
         }
       }
@@ -1180,10 +1219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 3e1f3e1c-57e4-4fe7-8927-2aefac4c0d2a
+    taskid: 8b072891-87d4-4174-850f-885bc502da8e
     type: regular
     task:
-      id: 3e1f3e1c-57e4-4fe7-8927-2aefac4c0d2a
+      id: 8b072891-87d4-4174-850f-885bc502da8e
       version: -1
       name: Set Malicious Command-Line
       description: Set a value in context under the key you entered.
@@ -1196,7 +1235,7 @@ tasks:
       - "32"
     scriptarguments:
       key:
-        simple: CMDReputation
+        simple: Investigation.CMDReputation
       value:
         simple: Malicious
     separatecontext: false
@@ -1215,6 +1254,9 @@ tasks:
     - incidentfield: Command Line
       output:
         simple: ${commandline.original}
+    - incidentfield: Command Line Verdict
+      output:
+        simple: Malicious
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -1579,10 +1621,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 1cc84a47-3e49-4772-84ab-793da3d4ec5c
+    taskid: 2e63f433-ae84-44b4-8841-d88df9f0cc34
     type: regular
     task:
-      id: 1cc84a47-3e49-4772-84ab-793da3d4ec5c
+      id: 2e63f433-ae84-44b4-8841-d88df9f0cc34
       version: -1
       name: Set Hunt Results True
       description: Set a value in context under the key you entered.
@@ -1595,7 +1637,7 @@ tasks:
       - "54"
     scriptarguments:
       key:
-        simple: HasHuntResults
+        simple: Investigation.HasHuntResults
       value:
         simple: "True"
     separatecontext: false
@@ -1610,6 +1652,45 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: Threat Hunting Detected IP
+      output:
+        complex:
+          root: PANWHunting
+          accessor: DetectedExternalIPs
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: QRadar.DetectedExternalIPs
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Splunk.DetectedExternalIPs
+                iscontext: true
+          - operator: uniq
+    - incidentfield: Threat Hunting Detected Hostnames
+      output:
+        complex:
+          root: Splunk
+          accessor: DetectedExternalHosts
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PANWHunting.DetectedExternalHosts
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: QRadar.DetectedExternalHosts
+                iscontext: true
+          - operator: uniq
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -1940,6 +2021,53 @@ tasks:
           - operator: uniq
       InputEnrichment:
         simple: "False"
+      MD5:
+        complex:
+          root: DBotScore.Indicator
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          - - operator: notIn
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: IndicatorsToBlock
+                iscontext: true
+          transformers:
+          - operator: uniq
       RuleDirection:
         simple: outbound
       RuleName:
@@ -2179,10 +2307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 9b660e45-8cce-4613-80ee-ddd5f6bf8981
+    taskid: f5330d0d-0165-4d04-814c-241a7cc190fd
     type: playbook
     task:
-      id: 9b660e45-8cce-4613-80ee-ddd5f6bf8981
+      id: f5330d0d-0165-4d04-814c-241a7cc190fd
       version: -1
       name: Cortex XDR - Search and Compare Process Executions - XDR Alerts
       description: |-
@@ -2203,8 +2331,8 @@ tasks:
         simple: 7 Days
       Processes:
         simple: |-
-          - value: ${PaloAltoNetworksXDR.OriginalAlert._all_events.os_actor_process_command_line},${PaloAltoNetworksXDR.OriginalAlert._all_events.actor_process_command_line}
-          - commands: ${PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_process_image_name},${PaloAltoNetworksXDR.OriginalAlert._all_events.os_actor_process_image_name},${PaloAltoNetworksXDR.OriginalAlert._all_events.actor_process_image_name}
+          - value: ${PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_process_image_name},${PaloAltoNetworksXDR.OriginalAlert._all_events.os_actor_process_image_name},${PaloAltoNetworksXDR.OriginalAlert._all_events.actor_process_image_name}
+          - commands: ${PaloAltoNetworksXDR.OriginalAlert._all_events.os_actor_process_command_line},${PaloAltoNetworksXDR.OriginalAlert._all_events.actor_process_command_line}
       SearchXDRAlerts:
         simple: "True"
       StringSimilarityThreshold:
@@ -2329,10 +2457,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 83c666d9-d091-43ae-8251-ed0495bb134c
+    taskid: 3e44628e-0e46-4b23-8d7a-a71a8d1f10ae
     type: regular
     task:
-      id: 83c666d9-d091-43ae-8251-ed0495bb134c
+      id: 3e44628e-0e46-4b23-8d7a-a71a8d1f10ae
       version: -1
       name: Set Additional Alerts to Context
       description: Set a value in context under the key you entered.
@@ -2345,7 +2473,7 @@ tasks:
       - "13"
     scriptarguments:
       key:
-        simple: AdditionalAlerts
+        simple: Analysis.AdditionalAlerts
       value:
         complex:
           root: PaloAltoNetworksXDR.OriginalAlert.alert_name
@@ -2524,10 +2652,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: 2be404dd-eec4-4a5f-899e-9e9748a53ff2
+    taskid: 33eb43af-a049-47ff-8e56-1889a4989955
     type: regular
     task:
-      id: 2be404dd-eec4-4a5f-899e-9e9748a53ff2
+      id: 33eb43af-a049-47ff-8e56-1889a4989955
       version: -1
       name: Set Unusual FW App ID
       description: Set a value in context under the key you entered.
@@ -2540,7 +2668,7 @@ tasks:
       - "13"
     scriptarguments:
       key:
-        simple: Unusual_FW_App_ID
+        simple: Analysis.Unusual_FW_App_ID
       value:
         simple: "True"
     separatecontext: false
@@ -2561,10 +2689,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: 40d1ef4c-fe57-4d04-8abb-4786ec98e18a
+    taskid: d77a3b93-6f7d-4846-8bf0-f6573602a4e1
     type: regular
     task:
-      id: 40d1ef4c-fe57-4d04-8abb-4786ec98e18a
+      id: d77a3b93-6f7d-4846-8bf0-f6573602a4e1
       version: -1
       name: Set Unusual Process
       description: Set a value in context under the key you entered.
@@ -2577,7 +2705,7 @@ tasks:
       - "13"
     scriptarguments:
       key:
-        simple: Unusual_Process
+        simple: Analysis.Unusual_Process
       value:
         simple: "True"
     separatecontext: false
@@ -2659,10 +2787,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: e47ff63b-5922-44f4-85e3-e5b913f674fd
+    taskid: 0a482c04-e216-4e2f-8ed5-311b81f56264
     type: regular
     task:
-      id: e47ff63b-5922-44f4-85e3-e5b913f674fd
+      id: 0a482c04-e216-4e2f-8ed5-311b81f56264
       version: -1
       name: Set Unsigned Process
       description: Set a value in context under the key you entered.
@@ -2675,7 +2803,7 @@ tasks:
       - "13"
     scriptarguments:
       key:
-        simple: Unsigned_Process
+        simple: Analysis.Unsigned_Process
       value:
         simple: "True"
     separatecontext: false
@@ -2727,10 +2855,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "107":
     id: "107"
-    taskid: 20238e3c-8d69-4727-8061-b63e4bf163f7
+    taskid: 2bc52b3e-5e56-44c6-8f9e-b32015f195ab
     type: regular
     task:
-      id: 20238e3c-8d69-4727-8061-b63e4bf163f7
+      id: 2bc52b3e-5e56-44c6-8f9e-b32015f195ab
       version: -1
       name: Check Whether The Source Host Is an FTP Server
       description: Set a value in context under the key you entered.
@@ -2743,7 +2871,7 @@ tasks:
       - "13"
     scriptarguments:
       key:
-        simple: FTP_Server
+        simple: Analysis.FTP_Server
       stringify:
         simple: "true"
       value:
@@ -2779,10 +2907,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "109":
     id: "109"
-    taskid: a9ef2265-0666-4514-865e-23f6b9f94b9a
+    taskid: 96de7dc0-b937-4303-8c9d-9ce3ef043a53
     type: regular
     task:
-      id: a9ef2265-0666-4514-865e-23f6b9f94b9a
+      id: 96de7dc0-b937-4303-8c9d-9ce3ef043a53
       version: -1
       name: Check Whether The Source Host Is an SMTP Server
       description: Set a value in context under the key you entered.
@@ -2795,7 +2923,7 @@ tasks:
       - "13"
     scriptarguments:
       key:
-        simple: SMTP_Server
+        simple: Analysis.SMTP_Server
       stringify:
         simple: "true"
       value:
@@ -2831,10 +2959,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: 300999f2-2c58-4c9e-8531-e78f8edf4bae
+    taskid: 74e1001a-bf42-48d9-896a-0e0ae7c5dd6d
     type: condition
     task:
-      id: 300999f2-2c58-4c9e-8531-e78f8edf4bae
+      id: 74e1001a-bf42-48d9-896a-0e0ae7c5dd6d
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the 'large upload HTTPS' Cortex XDR alerts.
@@ -2856,7 +2984,8 @@ tasks:
           left:
             value:
               complex:
-                root: CMDReputation
+                root: Investigation
+                accessor: CMDReputation
             iscontext: true
           right:
             value:
@@ -3232,7 +3361,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: FTP_Server
+                        simple: Analysis.FTP_Server
                       iscontext: true
                 - - operator: isEqualString
                     left:
@@ -3279,7 +3408,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: SMTP_Server
+                        simple: Analysis.SMTP_Server
                       iscontext: true
                     ignorecase: true
                 - - operator: isEqualString
@@ -3472,7 +3601,8 @@ tasks:
           left:
             value:
               complex:
-                root: CMDReputation
+                root: Investigation
+                accessor: CMDReputation
             iscontext: true
           right:
             value:
@@ -3482,25 +3612,29 @@ tasks:
           left:
             value:
               complex:
-                root: AdditionalAlerts
+                root: Analysis
+                accessor: AdditionalAlerts
             iscontext: true
       - - operator: isNotExists
           left:
             value:
               complex:
-                root: Unusual_FW_App_ID
+                root: Analysis
+                accessor: Unusual_FW_App_ID
             iscontext: true
       - - operator: isNotExists
           left:
             value:
               complex:
-                root: Unusual_Process
+                root: Analysis
+                accessor: Unusual_Process
             iscontext: true
       - - operator: isNotExists
           left:
             value:
               complex:
-                root: Unsigned_Process
+                root: Analysis
+                accessor: Unsigned_Process
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -3681,6 +3815,56 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: 4c79791f-f37d-4426-8ad4-92be82ab9ae0
+    type: regular
+    task:
+      id: 4c79791f-f37d-4426-8ad4-92be82ab9ae0
+      version: -1
+      name: Set Indicator Relationships Analysis Results
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      partofcampaign:
+        complex:
+          root: RelatedCampaign
+          transformers:
+          - operator: uniq
+      relatedreport:
+        complex:
+          root: RelatedReport
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 2975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Command Line
+      output:
+        simple: ${commandline.original}
+    - incidentfield: Command Line Verdict
+      output:
+        simple: Malicious
     skipunavailable: false
     quietmode: 0
     isoversize: false

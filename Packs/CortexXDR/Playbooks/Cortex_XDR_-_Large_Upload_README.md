@@ -21,19 +21,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Block Indicators - Generic v3
-* Cortex XDR - Search and Compare Process Executions - XDR Alerts
-* TIM - Indicator Relationships Analysis
-* User Investigation - Generic
-* Threat Hunting - Generic
-* Cortex XDR - Endpoint Investigation
 * Cortex XDR - Isolate Endpoint
 * Entity Enrichment - Generic v3
+* Cortex XDR - Endpoint Investigation
+* Block Indicators - Generic v3
+* Threat Hunting - Generic
 * Command-Line Analysis
+* User Investigation - Generic
+* TIM - Indicator Relationships Analysis
+* Cortex XDR - Search and Compare Process Executions - XDR Alerts
 
 ### Integrations
 
-CortexXDRIR
+* CortexXDRIR
 
 ### Scripts
 
