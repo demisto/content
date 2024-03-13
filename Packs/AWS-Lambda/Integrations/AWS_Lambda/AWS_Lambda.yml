@@ -160,7 +160,7 @@ script:
     - contextPath: AWS.Lambda.Functions.Configuration.MemorySize
       description: The memory allocated to the function.
       type: number
-    - contextPath: 'AWS.Lambda.Functions.Configuration.LastModified'
+    - contextPath: AWS.Lambda.Functions.Configuration.LastModified
       description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
       type: date
     - contextPath: AWS.Lambda.Functions.Configuration.CodeSha256
@@ -1100,6 +1100,13 @@ script:
       defaultValue: ""
       predefined:
       - ""
+    - name: role
+      description: The Amazon Resource Name (ARN) of the function’s execution role..
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+        - ""
     - name: layers
       description: A list of function layers to add to the function's execution environment.
       required: false
@@ -1200,103 +1207,36 @@ script:
         defaultValue: ""
         predefined:
           - ""
-      - name: content
-        description: The layer's software package, specified as an Amazon S3 object.
-        required: true
+      - name: s3-bucket
+        description: The Amazon S3 bucket of the layer archive.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: s3-key
+        description: The Amazon S3 key of the layer archive.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: s3-object-version
+        description: For versioned objects, the version of the layer archive object to use.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: zip-file
+        description: Entry ID of the base64-encoded contents of the layer archive.
+        required: false
         isArray: false
         defaultValue: ""
         predefined:
           - ""
       - name: compatible-runtimes
         description: " The name of the method within your code that Lambda calls to execute your function."
-        required: false
-        isArray: true
-        defaultValue: ""
-        predefined:
-          - ""
-      - name: code
-        description: The base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you.
-        required: false
-        isArray: false
-        defaultValue: ""
-        predefined:
-          - ""
-      - name: S3-bucket
-        description: An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account.
-        required: false
-        isArray: false
-        defaultValue: ""
-        predefined:
-          - ""
-      - name: description
-        description: A description of the function.
-        required: false
-        isArray: false
-        defaultValue: ""
-        predefined:
-          - ""
-      - name: timeout
-        description: The amount of time that Lambda allows a function to run before stopping it.
-        required: false
-        isArray: false
-        defaultValue: ""
-        predefined:
-          - ""
-      - name: memorySize
-        description: The amount of memory available to the function at runtime.
-        required: false
-        isArray: false
-        defaultValue: ""
-        predefined:
-          - ""
-      - name: publish
-        description: Set to true to publish the first version of the function during creation.
-        required: false
-        isArray: false
-        defaultValue: ""
-        auto: PREDEFINED
-        predefined:
-          - "True"
-          - "False"
-      - name: vpcConfig
-        description: For network connectivity to Amazon Web Services resources in a VPC, specify a list of security groups and subnets in the VPC. A list of VPC subnet IDs.
-        required: false
-        isArray: false
-        defaultValue: ""
-        predefined:
-          - ""
-      - name: packageType
-        description: The type of deployment package.
-        required: false
-        isArray: false
-        auto: PREDEFINED
-        defaultValue: ""
-        predefined:
-          - "Image"
-          - "Zip"
-      - name: environment
-        description: The environment variables for the function. Should be given as key-value pairs.
-        required: false
-        isArray: false
-        defaultValue: ""
-        predefined:
-          - ""
-      - name: tracingConfig
-        description: The tracing configuration for the function.
-        required: false
-        isArray: false
-        defaultValue: ""
-        predefined:
-          - ""
-      - name: tags
-        description: The list of tags to apply to the function.
-        required: false
-        isArray: false
-        defaultValue: ""
-        predefined:
-          - ""
-      - name: layers
-        description: A list of function layers to add to the function's execution environment.
         required: false
         isArray: true
         defaultValue: ""

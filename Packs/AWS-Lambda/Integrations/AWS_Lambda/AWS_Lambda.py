@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *
 
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import DemistoException
-
 """IMPORTS"""
 from datetime import date
 import urllib3.util
@@ -134,6 +132,23 @@ def create_entry(title: str, data: dict, ec: dict):
     }
 
 
+def read_zip_to_bytes(filename):
+    """
+  Reads the entire zip file into a bytes object in chunks.
+
+  Args:
+      filename: Path to the zip file.
+
+  Returns:
+      A bytes object containing the complete zip file content.
+  """
+    with open(filename, "rb") as zip_file:
+        data = b''
+        for chunk in iter(lambda: zip_file.read(1024), b''):
+            data += chunk
+    return data
+
+
 def prepare_create_function_kwargs(args: dict[str, str]):
     """
     Prepare arguments to be sent to the API
@@ -142,10 +157,9 @@ def prepare_create_function_kwargs(args: dict[str, str]):
     kwargs = {}
 
     if code_path := args.get('code'):
-        # file_path = demisto.getFilePath(code_path).get('path')
-        file_path = '/Users/epintzov/Desktop/lambda_function.py'
-        with open(file_path, 'r') as f:
-            method_code = f.read().encode()
+        file_path = demisto.getFilePath(code_path).get('path')
+        # file_path = '/Users/epintzov/Desktop/lambda_function.py.zip'
+        method_code = read_zip_to_bytes(file_path)
         kwargs.update({'Code': {'ZipFile': method_code}})
     elif s3_bucket := args.get('S3-bucket'):
         kwargs.update({'Code': {'S3Bucket': s3_bucket}})
@@ -167,8 +181,6 @@ def prepare_create_function_kwargs(args: dict[str, str]):
         kwargs['Tags'] = argToBoolean(tags)
     if layers := args.get('layers'):
         kwargs['Layers'] = argToList(layers)
-    if memory := args.get('memorySize'):
-        kwargs['MemorySize'] = argToList(memory)
     if vpc := args.get('vpcConfig'):
         kwargs['VpcConfig'] = json.loads(vpc)
 
@@ -572,14 +584,23 @@ def create_function_command(args: dict[str, str], aws_client) -> CommandResults:
         CommandResults: An object containing the result of the creation operation.
     """
     output_headers = ['FunctionName', 'FunctionArn', 'Runtime', 'Role', 'Handler', 'CodeSize', 'Description', 'Timeout',
-                      'MemorySize', 'Version', 'VpcConfig', 'PackageType', 'LastModified']
+                      'MemorySize', 'Version', 'PackageType', 'LastModified', 'VpcConfig',]
 
     kwargs = prepare_create_function_kwargs(args)
 
     res = aws_client.create_function(**kwargs)
-
-    readable_output = tableToMarkdown(name='Create Function', t=res, headers=output_headers, headerTransform=pascalToSpace)
     outputs = {key: res.get(key) for key in output_headers}
+
+    readable_outputs = outputs.copy()
+    vpc_config = readable_outputs.pop('VpcConfig')
+    readable_outputs.update({"SubnetIds": vpc_config.get('SubnetIds'),
+                             "SecurityGroupIds": vpc_config.get('SecurityGroupIds'),
+                             "VpcId": vpc_config.get('VpcId'),
+                             "Ipv6AllowedForDualStack": vpc_config.get('Ipv6AllowedForDualStack')})
+
+    readable_output = tableToMarkdown(name='Create Function',
+                                      t=readable_outputs,
+                                      headerTransform=pascalToSpace)
 
     return CommandResults(
         outputs=outputs,
@@ -603,10 +624,25 @@ def publish_layer_version_command(args: dict[str, str], aws_client) -> CommandRe
     """
     output_headers = ['LayerVersionArn', 'LayerArn', 'Description', 'CreatedDate', 'Version', 'CompatibleRuntimes']
 
+    content = {}
+    s3_bucket = args.get('s3-bucket')
+    s3_key = args.get('s3-key')
+    s3_object_version = args.get('s3-object-version')
+
+    if zip_file := args.get('zip-file'):
+        file_path = demisto.getFilePath(zip_file).get('path')
+        content["ZipFile"] = read_zip_to_bytes(file_path)
+    elif s3_bucket and s3_key and s3_object_version:
+        content['S3Bucket'] = s3_bucket
+        content['S3Key'] = s3_key
+        content['S3ObjectVersion'] = s3_object_version
+    else:
+        raise DemistoException("Either zip-file or a combination of s3-bucket, s3-key and s3-object-version must be provided.")
+
     kwargs = {
         'LayerName': args.get('layer-name'),
-        'Description': args.get('description'),
-        'Content': json.loads(args.get('content')),
+        'Description': args.get('description', ""),
+        'Content': content,
         'CompatibleRuntimes': argToList(args.get('compatible-runtimes'))
     }
 
