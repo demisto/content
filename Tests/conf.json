@@ -1247,7 +1247,7 @@
             "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
-            "timeout": 3000
+            "timeout": 2400
         },
         {
             "integrations": "Panorama",
