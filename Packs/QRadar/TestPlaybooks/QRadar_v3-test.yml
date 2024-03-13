@@ -120,7 +120,6 @@ tasks:
     nexttasks:
       "yes":
       - "65"
-      - "65"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -232,7 +231,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 1420
-          "y": 1420
         }
       }
     note: false
@@ -287,7 +285,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 1595
-          "y": 1595
         }
       }
     note: false
@@ -324,7 +321,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1770
           "y": 1770
         }
       }
@@ -375,7 +371,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 1945
-          "y": 1945
         }
       }
     note: false
@@ -414,7 +409,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2120
           "y": 2120
         }
       }
@@ -457,7 +451,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 2295
-          "y": 2295
         }
       }
     note: false
@@ -492,7 +485,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2470
           "y": 2470
         }
       }
@@ -567,7 +559,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 2645
-          "y": 2645
         }
       }
     note: false
@@ -604,7 +595,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2820
           "y": 2820
         }
       }
@@ -703,7 +693,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 2995
-          "y": 2995
         }
       }
     note: false
@@ -740,7 +729,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3170
           "y": 3170
         }
       }
@@ -807,7 +795,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 3345
-          "y": 3345
         }
       }
     note: false
@@ -842,7 +829,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3520
           "y": 3520
         }
       }
@@ -893,7 +879,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 3695
-          "y": 3695
         }
       }
     note: false
@@ -934,7 +919,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3870
           "y": 3870
         }
       }
@@ -1009,7 +993,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 4045
-          "y": 4045
         }
       }
     note: false
@@ -1044,7 +1027,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5620
           "y": 5620
         }
       }
@@ -1082,7 +1064,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4220
           "y": 4220
         }
       }
@@ -1122,7 +1103,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5095
           "y": 5095
         }
       }
@@ -1189,7 +1169,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 5795
-          "y": 5795
         }
       }
     note: false
@@ -1226,7 +1205,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5445
           "y": 5445
         }
       }
@@ -1267,7 +1245,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 5970
-          "y": 5970
         }
       }
     note: false
@@ -1305,7 +1282,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 6145
-          "y": 6145
         }
       }
     note: false
@@ -1340,7 +1316,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6320
           "y": 6320
         }
       }
@@ -1383,7 +1358,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 6495
-          "y": 6495
         }
       }
     note: false
@@ -1418,7 +1392,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6670
           "y": 6670
         }
       }
@@ -1458,7 +1431,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6845
           "y": 6845
         }
       }
@@ -1501,7 +1473,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 7020
-          "y": 7020
         }
       }
     note: false
@@ -1538,7 +1509,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7195
           "y": 7195
         }
       }
@@ -1636,7 +1606,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7370
           "y": 7370
         }
       }
@@ -2153,7 +2122,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 4920
-          "y": 4920
         }
       }
     note: false
@@ -2195,7 +2163,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 4395
-          "y": 4395
         }
       }
     note: false
@@ -2233,7 +2200,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 4570
-          "y": 4570
         }
       }
     note: false
@@ -2269,7 +2235,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 4745
-          "y": 4745
         }
       }
     note: false
@@ -2287,7 +2252,6 @@ tasks:
       id: c1581875-8236-4561-83cd-74fa874c7305
       version: -1
       name: Get events with polling custom query
-      name: Get events with polling custom query
       description: Polling command to search for events of a specific offense.
       script: '|||qradar-search-retrieve-events'
       type: regular
@@ -2297,8 +2261,6 @@ tasks:
       '#none#':
       - "64"
     scriptarguments:
-      query_expression:
-        simple: SELECT * FROM events WHERE severity >= 5 limit 1
       query_expression:
         simple: SELECT * FROM events WHERE severity >= 5 limit 1
     separatecontext: false
@@ -2330,7 +2292,6 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "68"
       - "68"
     separatecontext: false
     conditions:
@@ -2371,7 +2332,6 @@ tasks:
       id: 28df754d-d017-4a79-8325-8cd4b6390191
       version: -1
       name: Get offense with polling
-      name: Get offense with polling
       description: Polling command to search for events of a specific offense.
       script: '|||qradar-search-retrieve-events'
       type: regular
@@ -2380,10 +2340,7 @@ tasks:
     nexttasks:
       '#none#':
       - "76"
-      - "76"
     scriptarguments:
-      offense_id:
-        simple: ${QRadar.Offense.[0].ID}
       offense_id:
         simple: ${QRadar.Offense.[0].ID}
     separatecontext: false
@@ -2392,7 +2349,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1070
           "y": 1070
         }
       }
@@ -2770,7 +2726,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1245
           "y": 1245
         }
       }
@@ -3263,7 +3218,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5270
           "y": 5270
         }
       }
@@ -4114,7 +4068,5 @@ view: |-
     }
   }
 inputs: []
-inputs: []
 outputs: []
-dirtyInputs: true
 fromversion: 5.0.0
