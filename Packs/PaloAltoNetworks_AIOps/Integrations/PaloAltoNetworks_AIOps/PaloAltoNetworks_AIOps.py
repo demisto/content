@@ -67,6 +67,7 @@ class Client(BaseClient):
                     # store received token and expiration time in the integration context
                     set_integration_context(new_token)
                     self._access_token = new_token.get(tsg_access_token)
+                    print(self._access_token )
                 else:
                     raise DemistoException('Error occurred while creating an access token. Access token field has not'
                                            ' found in the response data. Please check the instance configuration.\n')
@@ -129,14 +130,18 @@ class Client(BaseClient):
         return res
     
     def check_upload_status_request(self, report_id):
+        print('check_upload_status_request')
         headers = {
-            'Accept': 'application/json',
+            'Accept': '*/*',
             'Authorization': f'Bearer {self._access_token}'
         }
+        print('report_id', report_id)
+        print(headers)
         res = self._http_request(method='GET',
                     full_url=f'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/jobs/:{report_id}',
                     headers=headers
                     )
+        print(res)
         return res.get('status')
     
     def download_bpa_request(self, report_id):
@@ -242,6 +247,7 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     tags = ['family', 'model', 'serial', 'sw-version']
     xml_tags_values = get_values_from_xml(system_info_xml, tags)
     upload_url, report_id = client.generate_bpa_report_request(requester_email, requester_name, dict(zip(tags, xml_tags_values)))
+    print(upload_url)
     if config_file_from_user:
         config_in_binary = convert_config_to_bytes(config_file_from_user, 'User')
     elif config_file:
@@ -249,17 +255,22 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     else:
         raise DemistoException("Can not uplaod a config file since it was not provided.")
     client.config_file_to_report_request(upload_url, config_in_binary)
+    print('i am here')
     polling_until_upload_report_command({'report_id':report_id}, client)
     
 @polling_function(
-name="vd-template-change-commit",
+name="pan-aiops-polling_upload_report",
 interval=INTERVAL_FOR_POLLING,
 timeout=TIMEOUR_FOR_POLLING,
 requires_polling_arg=False,
 )
 def polling_until_upload_report_command(args: dict[str, Any], client: Client):
+    print('hii')
     report_id = args.get('report_id')
+    print(report_id)
     upload_status = client.check_upload_status_request(report_id)
+    print(upload_status)
+    print(report_id, upload_status)
     if upload_status == 'COMPLETED_WITH_SUCCESS':
         downloaded_BPA_url = client.download_bpa_request(report_id)
         downloaded_BPA_json = client.data_of_download_bpa_request(downloaded_BPA_url)
@@ -312,8 +323,6 @@ def main() -> None:
             client_secret=client_secret,
             verify=verify_certificate,
             proxy=proxy)
-
-        generate_report_command(client, args)
 
         if command == 'test-module':
             result = test_module(client)
