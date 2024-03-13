@@ -1269,24 +1269,159 @@ script:
       - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
         name: roleSessionDuration
     outputs:
-      - contextPath: AWS.Lambda.Functions.LayerVersionArn
+      - contextPath: AWS.Lambda.Layers.LayerVersionArn
         description: The ARN of the layer version.
         type: string
-      - contextPath: AWS.Lambda.Functions.LayerArn
+      - contextPath: AWS.Lambda.Layers.LayerArn
         description: The ARN of the layer.
         type: string
-      - contextPath: AWS.Lambda.Functions.Description
+      - contextPath: AWS.Lambda.Layers.Description
         description: The description of the version.
         type: string
-      - contextPath: AWS.Lambda.Functions.CreatedDate
+      - contextPath: AWS.Lambda.Layers.CreatedDate
         description: The date that the layer version was created, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
         type: string
-      - contextPath: AWS.Lambda.Functions.Version
+      - contextPath: AWS.Lambda.Layers.Version
         description: The version number.
         type: number
-      - contextPath: AWS.Lambda.Functions.CompatibleRuntimes
+      - contextPath: AWS.Lambda.Layers.CompatibleRuntimes
         description: The layer’s compatible runtimes.
         type: list
+  - name: aws-lambda-list-layer-version
+    description: Lists the versions of an Lambda layer.
+    deprecated: false
+    arguments:
+      - name: compatible-runtime
+        description: A runtime identifier. For example, java21.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: layer-name
+        description: The name or Amazon Resource Name (ARN) of the layer.
+        required: true
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: marker
+        description: A pagination token returned by a previous call.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: max-items
+        description: The maximum number of versions to return.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: compatible-architecture
+        description: The compatible instruction set architecture.
+        required: false
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - auto: PREDEFINED
+        description: The AWS Region. If not specified, the default region will be used.
+        name: region
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - ca-central-1
+          - eu-west-1
+          - eu-central-1
+          - eu-west-2
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-south-1
+          - sa-east-1
+          - eu-north-1
+          - eu-west-3
+      - description: The Amazon Resource Name (ARN) of the role to assume.
+        name: roleArn
+      - description: An identifier for the assumed role session.
+        name: roleSessionName
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+        name: roleSessionDuration
+    outputs:
+      - contextPath: AWS.Lambda.Layers.NextMarker
+        description: A pagination token returned when the response doesn’t contain all versions.
+        type: string
+      - contextPath: AWS.Lambda.Layers.LayerVersions.LayerVersionArn
+        description: The ARN of the layer version.
+        type: string
+      - contextPath: AWS.Lambda.Layers.LayerVersions.Version
+        description: The version number.
+        type: number
+      - contextPath: AWS.Lambda.Layers.LayerVersions.Description
+        description: The description of the version.
+        type: string
+      - contextPath: AWS.Lambda.Layers.LayerVersions.CreatedDate
+        description: The date that the version was created, in ISO 8601 format. For example, 2018-11-27T15:10:45.123+0000.
+        type: string
+      - contextPath: AWS.Lambda.Layers.LayerVersions.CompatibleRuntimes
+        description: The layer’s compatible runtimes.
+        type: list
+      - contextPath: AWS.Lambda.Layers.LayerVersions.LicenseInfo
+        description: The layer’s open-source license.
+        type: string
+      - contextPath: AWS.Lambda.Layers.LayerVersions.CompatibleArchitectures
+        description: A list of compatible instruction set architectures.
+        type: list
+  - name: aws-lambda-delete-layer-version
+    description: Deletes a version of an Lambda layer.
+    deprecated: false
+    arguments:
+      - name: version-number
+        description: The version number.
+        required: true
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - name: layer-name
+        description: The name or Amazon Resource Name (ARN) of the layer.
+        required: true
+        isArray: false
+        defaultValue: ""
+        predefined:
+          - ""
+      - auto: PREDEFINED
+        description: The AWS Region. If not specified, the default region will be used.
+        name: region
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - ca-central-1
+          - eu-west-1
+          - eu-central-1
+          - eu-west-2
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-south-1
+          - sa-east-1
+          - eu-north-1
+          - eu-west-3
+      - description: The Amazon Resource Name (ARN) of the role to assume.
+        name: roleArn
+      - description: An identifier for the assumed role session.
+        name: roleSessionName
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+        name: roleSessionDuration
+    outputs: []
   dockerimage: demisto/boto3py3:1.0.0.87582
   runonce: false
   subtype: python3

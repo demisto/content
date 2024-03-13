@@ -12,7 +12,9 @@ from AWS_Lambda import (
     delete_function_command,
     delete_function_url_config_command,
     create_function_command,
-    publish_layer_version_command
+    publish_layer_version_command,
+    list_layer_version_command,
+    delete_layer_version_command
 )
 
 
@@ -45,6 +47,12 @@ class MockClient:
         return
 
     def publish_layer_version(self) -> None:
+        return
+
+    def delete_layer_version(self) -> None:
+        return
+
+    def list_layer_versions(self) -> None:
         return
 
 
@@ -517,7 +525,7 @@ def test_create_function_command(mocker):
 
 def test_publish_layer_version_command(mocker):
     """
-        Given: Params for create lambda function command
+        Given: Params for publish layer version command
         When: Running the command
         Then: Assert that the correct command result is returned.
     """
@@ -536,5 +544,41 @@ def test_publish_layer_version_command(mocker):
     results = publish_layer_version_command(args, client)
 
     assert results.outputs_key_field == 'LayerArn'
-    assert results.outputs_prefix == 'AWS.Lambda.Functions'
+    assert results.outputs_prefix == 'AWS.Lambda.Layers'
     assert len(results.outputs.keys()) == 6
+
+
+def test_delete_layer_version_command(mocker):
+    """
+        Given: Params for delete layer version command
+        When: Running the command
+        Then: Assert that the correct command result is returned.
+    """
+    client = MockClient()
+    mocker.patch.object(client, 'delete_layer_version')
+
+    args = {"layer-name": "testLayer",
+            "version-number": "2"
+            }
+
+    results = delete_layer_version_command(args, client)
+
+    assert results.readable_output == 'Deleted version number 2 of testLayer Successfully'
+
+
+def test_list_layer_version_command(mocker):
+    """
+        Given: Params for list layer versions.
+        When: Running the command
+        Then: Assert that the correct command result is returned.
+    """
+    client = MockClient()
+    mocker.patch.object(client, 'list_layer_versions', return_value=util_load_json('test_data/list_layer_version.json'))
+
+    args = {"layer-name": "testLayer"}
+
+    results = list_layer_version_command(args, client)
+
+    assert results.outputs_key_field == 'LayerVersionArn'
+    assert results.outputs_prefix == 'AWS.Lambda.Layers'
+    assert len(results.outputs.keys()) == 2

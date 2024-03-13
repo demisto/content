@@ -577,14 +577,13 @@ def create_function_command(args: dict[str, str], aws_client) -> CommandResults:
 
     Args:
         args (dict): A dictionary containing the command arguments.
-
         aws_client (boto3 client): The AWS client used to delete the function.
 
     Returns:
         CommandResults: An object containing the result of the creation operation.
     """
     output_headers = ['FunctionName', 'FunctionArn', 'Runtime', 'Role', 'Handler', 'CodeSize', 'Description', 'Timeout',
-                      'MemorySize', 'Version', 'PackageType', 'LastModified', 'VpcConfig',]
+                      'MemorySize', 'Version', 'PackageType', 'LastModified', 'VpcConfig', ]
 
     kwargs = prepare_create_function_kwargs(args)
 
@@ -652,8 +651,63 @@ def publish_layer_version_command(args: dict[str, str], aws_client) -> CommandRe
 
     return CommandResults(
         outputs=outputs,
-        outputs_prefix='AWS.Lambda.Functions',
+        outputs_prefix='AWS.Lambda.Layers',
         outputs_key_field='LayerArn',
+        readable_output=readable_output
+    )
+
+
+def delete_layer_version_command(args: dict[str, str], aws_client) -> CommandResults:
+    """
+    Deletes a version of an Lambda layer.
+
+    Args:
+        args (dict): A dictionary containing the command arguments.
+        aws_client (boto3 client): The AWS client used to delete the function.
+
+    Returns:
+        CommandResults: An object containing the result of the deletion operation as a readable output in Markdown format.
+    """
+    layer_name = args.get('layer-name')
+    version_number = arg_to_number(args.get('version-number'))
+    kwargs = {'LayerName': layer_name,
+              'VersionNumber': version_number}
+
+    aws_client.delete_layer_version(**kwargs)  # raises on error
+
+    return CommandResults(
+        readable_output=f"Deleted version number {version_number} of {layer_name} Successfully"
+    )
+
+
+def list_layer_version_command(args, aws_client):
+    """
+    Lists the version of an Lambda layer.
+
+    Args:
+        args (dict): A dictionary containing the command arguments.
+        aws_client (boto3 client): The AWS client used to delete the function.
+
+    Returns:
+        CommandResults: An object containing the result of the list operation.
+    """
+
+    kwargs = {
+        'LayerName': args.get('layer-name'),
+        'CompatibleRuntime': args.get('compatible-runtime'),
+        'Marker': args.get('marker'),
+        'MaxItems': arg_to_number(args.get('max-items')),
+        'CompatibleArchitecture': args.get('compatible-architecture')
+    }
+
+    res = aws_client.list_layer_versions(**remove_empty_elements(kwargs))
+
+    readable_output = tableToMarkdown(name='Layer Version List', t=res.get('LayerVersions'), headerTransform=pascalToSpace)
+
+    return CommandResults(
+        outputs=res,
+        outputs_prefix='AWS.Lambda.Layers',
+        outputs_key_field='LayerVersionArn',
         readable_output=readable_output
     )
 
@@ -721,6 +775,10 @@ def main():
                 return_results(create_function_command(args, aws_client))
             case 'aws-lambda-publish-layer-version':
                 return_results(publish_layer_version_command(args, aws_client))
+            case 'aws-lambda-delete-layer-version':
+                return_results(delete_layer_version_command(args, aws_client))
+            case 'aws-lambda-list-layer-version':
+                return_results(list_layer_version_command(args, aws_client))
             case _:
                 raise NotImplementedError(f"Command {command} is not implemented")
 
