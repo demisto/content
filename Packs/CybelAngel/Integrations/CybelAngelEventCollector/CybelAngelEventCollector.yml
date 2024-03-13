@@ -55,7 +55,7 @@ script:
     - description: 'The maximum number of events to return.'
       name: limit
       required: true
-    description: 'Collect reports from CybelAngel. Used mainly for debugging.'
+    description: 'Send events from CybelAngel to XSIAM. Used mainly for debugging.'
     name: cybelangel-get-events
     outputs: []
   runonce: false
