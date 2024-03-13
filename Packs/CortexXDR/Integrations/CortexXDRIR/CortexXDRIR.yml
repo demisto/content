@@ -24,7 +24,7 @@ configuration:
   type: 8
   section: Collect
   required: false
-  additionalinfo: Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.).
+  additionalinfo: Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.)
 - display: Incident Mirroring Direction
   name: mirror_direction
   required: false

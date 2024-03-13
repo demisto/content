@@ -27,7 +27,7 @@ configuration:
   required: false
   displaypassword: App Token
   hiddenusername: true
-- display: Dedicated Slack channel to receive notifications.
+- display: Dedicated Slack channel to receive notifications
   name: incidentNotificationChannel
   type: 0
   section: Connect

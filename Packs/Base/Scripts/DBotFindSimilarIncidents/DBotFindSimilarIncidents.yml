@@ -1,5 +1,5 @@
 args:
-- description: Incident ID to get the prediction of. If empty, predicts the the current incident ID..
+- description: Incident ID to get the prediction of. If empty, predicts the the current incident ID.
   name: incidentId
 - auto: PREDEFINED
   description: 'Comma-separated list of incident text fields to take into account when computing similarity. For example: commandline, URL. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters.'
