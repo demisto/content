@@ -5,15 +5,18 @@ import sys
 
 import requests
 import urllib3
+from collections import namedtuple
 
 urllib3.disable_warnings()
 
 
-OWNER = 'demisto'
-REPO = 'content'
+OWNER = "demisto"
+REPO = "content"
 GITHUB_TRIGGER_BUILD_LABEL = "ready-for-instance-test"
-GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
-GITHUB_SEARCH_REQUEST_ENDPOINT = 'https://api.github.com/search/issues'
+GITLAB_SERVER_URL = os.getenv(
+    "CI_SERVER_URL", "https://gitlab.xdr.pan.local"
+)  # disable-secrets-detection
+GITHUB_SEARCH_REQUEST_ENDPOINT = "https://api.github.com/search/issues"
 GITHUB_DELETE_LABEL_ENDPOINT = "https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}/labels/{label_name}"
 GITHUB_QUERY_LABELS = {
     "label": ["Contribution", GITHUB_TRIGGER_BUILD_LABEL],
@@ -21,62 +24,77 @@ GITHUB_QUERY_LABELS = {
 }
 
 
-class GithubClient():
+def get_contribution_prs(github_token: str):
+    """Get all contribution PRs with the relevant labels using a query.
 
-    def __init__(self, github_token:str):
-        self.github_token = github_token
-        self.headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.github_token}",
-        }
+    Args:
+        github_token (str): The Github token.
 
-    def collect_contribution_prs_for_build(self):
-        query_labels = ' '.join([f'{label}:"{item}"' for label, lst in GITHUB_QUERY_LABELS.items() for item in lst])
+    Returns:
+        list[dicr]: A list of prs matching the query.
+    """
+    query_labels = " ".join(
+        [
+            f'{label}:"{item}"'
+            for label, lst in GITHUB_QUERY_LABELS.items()
+            for item in lst
+        ]
+    ).strip()
 
-        params = {
-            "q": 'is:pr state:open ' + f'{query_labels}'
-        }
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {github_token}",
+    }
 
-        response = requests.get(
-            GITHUB_SEARCH_REQUEST_ENDPOINT, headers=self.headers, params=params
+    params = {"q": "is:pr state:open " + f"{query_labels}"}
+
+    response = requests.get(
+        GITHUB_SEARCH_REQUEST_ENDPOINT, headers=headers, params=params
+    )
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(
+            f"Trigger contribution build script failed with request status code: {response.status_code}"
+        )
+        sys.exit(1)
+
+
+def delete_trigger_build_label_from_pr(github_token: str, pr: dict):
+    issue_number = str(pr.get("number"))
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {github_token}",
+    }
+
+    response = requests.delete(
+        GITHUB_DELETE_LABEL_ENDPOINT.format(
+            owner=OWNER,
+            repo=REPO,
+            issue_number=issue_number,
+            label_name=GITHUB_TRIGGER_BUILD_LABEL,
+        ),
+        headers=headers,
+    )
+    title = pr.get("title")
+    if response.status_code == 200:
+        print(
+            f"{GITHUB_TRIGGER_BUILD_LABEL} label removed for PR number: {title}, issue number: {issue_number}"
+        )
+    else:
+        print(
+            f"Could not remove {GITHUB_TRIGGER_BUILD_LABEL} label for PR number: {title}, issue number: {issue_number}"
         )
 
-        if response.status_code == 200:
-            return response.json()
-        else:
-            print(
-                f"Trigger Contribution build script failed with request status code: {response.status_code}")
-            sys.exit(1)
 
-    def delete_trigger_build_label_from_pr(self, pr: dict):
-        issue_number = str(pr.get("number"))
-        response = requests.delete(
-            GITHUB_DELETE_LABEL_ENDPOINT.format(
-                owner=OWNER,
-                repo=REPO,
-                issue_number=issue_number,
-                label_name=GITHUB_TRIGGER_BUILD_LABEL,
-            ),
-            headers=self.headers,
-        )
-        title = pr.get("title")
-        if response.status_code == 200:
-            print(
-                f"{GITHUB_TRIGGER_BUILD_LABEL} label removed for PR number: {title}, issue number: {issue_number}"
-            )
-        else:
-            print(
-                f"Could not remove {GITHUB_TRIGGER_BUILD_LABEL} label for PR number: {title}, issue number: {issue_number}"
-            )
+def add_comment_to_contribution_pr(github_token: str, pr: dict):
+    pass
 
 
-class GitlabClient:
-
-    def __init__(self, gitlab_api_token:str):
-        self.gitlab_api_token = gitlab_api_token
-
-    def trigger_build_for_contribution(self, pr):
-        ...
+def trigger_build_for_contribution_pr(gitlab_api_token: str, pr: dict):
+    pass
 
 
 def arguments_handler():
@@ -94,15 +112,17 @@ def arguments_handler():
 
 def main():
     args = arguments_handler()
-    github_client, gitlab_client = GithubClient(args.github_token), GitlabClient(args.gitlab_api_token)
-    response = github_client.collect_contribution_prs_for_build()
+    response = get_contribution_prs(args.github_token)
 
-    if items := response.get('items'):
-        # for pr in items:
-        #     gitlab_client.trigger_build_for_contribution(pr)
-        #     github_client.delete_trigger_build_label_from_pr(pr)
-        github_client.delete_trigger_build_label_from_pr(pr={"number": 33308, 'title': 'Test PR'})
+    if items := response.get("items"):
+        pr_numbers: list[str] = []
+        for pr in items:
+            trigger_build_for_contribution_pr(args.gitlab_api_token, pr)
+            delete_trigger_build_label_from_pr(args.github_token, pr)
+            pr_numbers.append(str(pr.get("number")))
+        print(f"Build triggered for the following contribution PRs: {pr_numbers}")
     else:
+        print("No Contribution PRs builds were trigger.")
         return
 
 
