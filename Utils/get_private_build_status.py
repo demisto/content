@@ -3,8 +3,7 @@ import sys
 import json
 import time
 import argparse
-from typing import Tuple
-
+from pathlib import Path
 import requests
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -16,7 +15,7 @@ import urllib3
 urllib3.disable_warnings()
 
 
-def get_workflow_status(github_token: str, workflow_id: str) -> Tuple[str, str, str]:
+def get_workflow_status(github_token: str, workflow_id: str) -> tuple[str, str, str]:
     """ Returns a set with the workflow job status, job conclusion and current step that running now in the job
         for the given workflow id.
 
@@ -76,19 +75,27 @@ def get_workflow_status(github_token: str, workflow_id: str) -> Tuple[str, str, 
 def main():
     install_logging("GetPrivateBuildStatus.log", logger=logging)
 
-    if not os.path.isfile(PRIVATE_REPO_WORKFLOW_ID_FILE):
+    # get github_token parameter
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('--github-token', help='Github token')
+    arg_parser.add_argument('--artifacts-folder', help='Whether to override the PRIVATE_REPO_WORKFLOW_ID.txt creation location',
+                            required=False)
+    args = arg_parser.parse_args()
+    github_token = args.github_token
+    artifacts_folder = args.artifacts_folder
+
+    workflow_id_file = PRIVATE_REPO_WORKFLOW_ID_FILE
+    if artifacts_folder:
+        workflow_id_file = str(Path(artifacts_folder, PRIVATE_REPO_WORKFLOW_ID_FILE))
+
+    # get the workflow id from file
+    if not os.path.isfile(workflow_id_file):
         logging.info('Build private repo skipped')
         sys.exit(0)
 
     # gets workflow id from the file
-    with open(PRIVATE_REPO_WORKFLOW_ID_FILE, 'r') as f:
+    with open(workflow_id_file, 'r') as f:
         workflow_id = f.read()
-
-    # get github_token parameter
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('--github-token', help='Github token')
-    args = arg_parser.parse_args()
-    github_token = args.github_token
 
     # gets the workflow status
     status, conclusion, step = get_workflow_status(github_token, workflow_id)

@@ -500,6 +500,18 @@
         "Cortex XDR Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "Alert tags": {
+                    "complex": {
+                        "accessor": "tags",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
                 "Hostnames": {
                     "complex": {
                         "accessor": "host_name",

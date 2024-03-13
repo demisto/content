@@ -29,5 +29,5 @@ suppression_enabled: false
 suppression_fields:
 user_defined_category:
 user_defined_severity:
-xql_query: "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n|filter xdm.event.type=\"Cloud.Core.LoginFail\"\r\n|comp count(xdm.event.type) as `Failed Logins` by xdm.target.user.username, xdm.source.ipv4 \r\n|filter  `Failed Logins` >=4 "
+xql_query: "datamodel dataset = cyberark_identity_raw \r\n|filter xdm.event.type=\"Cloud.Core.LoginFail\"\r\n|comp count(xdm.event.type) as `Failed Logins` by xdm.target.user.username, xdm.source.ipv4 \r\n|filter  `Failed Logins` >=4 "
 fromversion: 6.10.0

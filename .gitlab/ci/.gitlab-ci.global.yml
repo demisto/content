@@ -71,7 +71,7 @@
 .check_build_files_are_up_to_date: &check_build_files_are_up_to_date
   - section_start "Check Build Files Are Up To Date"
   - |
-    if [[ -n "${DEMISTO_SDK_NIGHTLY}" ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]] || [[ -n "${SLACK_JOB}" ]] || [[ "${BUILD_MACHINES_CLEANUP}" == "true" ]] || [[ "${DELETE_MISMATCHED_BRANCHES}" == "true" ]] || [[ "${SECURITY_SCANS}" == "true" ]] || [[ "${DEMISTO_TEST_NATIVE_CANDIDATE}" == "true" ]] || [[ "${CI_COMMIT_BRANCH}" == "master" ]]; then
+    if [[ -n "${DEMISTO_SDK_NIGHTLY}" ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]] || [[ -n "${SLACK_JOB}" ]] || [[ "${BUILD_MACHINES_CLEANUP}" == "true" ]] || [[ "${DELETE_MISMATCHED_BRANCHES}" == "true" ]] || [[ "${SECURITY_SCANS}" == "true" ]] || [[ "${DEMISTO_TEST_NATIVE_CANDIDATE}" == "true" ]] || [[ "${CI_COMMIT_BRANCH}" == "master" ]] || [[ "${SDK_RELEASE}" == "true" ]]; then
       echo "Running a build which doesn't require build files check validation"
     else
       ./Tests/scripts/is_file_up_to_date.sh .gitlab $CI_COMMIT_BRANCH
@@ -127,6 +127,14 @@
       source "$BASH_ENV"
     fi
   - source .circleci/content_release_vars.sh
+  # DEMISTO_SDK_GRAPH_FORCE_CREATE set to true to create graph from scratch.
+  - |
+    if [[ $NIGHTLY ]]; then
+      echo "set DEMISTO_SDK_GRAPH_FORCE_CREATE to true to create graph from scratch"
+      export DEMISTO_SDK_GRAPH_FORCE_CREATE=true
+      echo "DEMISTO_SDK_GRAPH_FORCE_CREATE was set to true to create graph from scratch"
+      echo $DEMISTO_SDK_GRAPH_FORCE_CREATE
+    fi
   - section_end "Source BASH Environment"
   - section_start "Granting execute permissions on files" --collapsed
   - chmod +x ./Tests/scripts/*
@@ -193,7 +201,7 @@
 .get_last_upload_commit: &get_last_upload_commit
   - section_start "Getting last bucket upload commit" --collapsed
   - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-  - gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
+  - gsutil cp "gs://$GCS_PRODUCTION_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
   - export LAST_UPLOAD_COMMIT=$(cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json" | jq -r ".\"commit\"")
   - section_end "Getting last bucket upload commit"
 
@@ -493,8 +501,6 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
-  variables:
-    KUBERNETES_CPU_REQUEST: 1000m
   artifacts:
     expire_in: 30 days
     paths:
@@ -534,6 +540,25 @@
     - section_start "Revoking GCP Auth"
     - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - section_end "Revoking GCP Auth"
+    - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
+    - job-done
+
+.run-validations-new-validate-flow:
+  stage: unittests-and-validations
+  extends:
+    - .default-job-settings
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+    when: always
+  script:
+    - section_start "Validate Files and Yaml"
+    - |
+      ./Tests/scripts/linters_runner.sh
+      ./Tests/scripts/new_validate.sh
+    - section_end "Validate Files and Yaml"
     - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
     - job-done
 

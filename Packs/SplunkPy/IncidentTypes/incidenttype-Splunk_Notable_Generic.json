@@ -24,5 +24,6 @@
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
+    "marketplaces": ["xsoar", "marketplacev2"],
     "fromVersion": "6.0.0"
 }
