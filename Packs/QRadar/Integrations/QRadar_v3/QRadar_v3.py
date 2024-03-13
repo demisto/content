@@ -1837,7 +1837,7 @@ def convert_dict_to_actual_values(input_dict: dict) -> dict[str, Any]:
     Returns:
         dict: A dictionary with actual values (numbers, booleans, etc.).
     """
-    output_dict = {}
+    output_dict: dict[str, Any] = {}
     for key, value in input_dict.items():
         if isinstance(value, dict):
             output_dict[key] = convert_dict_to_actual_values(value)
@@ -1866,7 +1866,7 @@ def convert_list_to_actual_values(input_list: list) -> list[Any]:
     Returns:
         dict: A list with actual values (numbers, booleans, etc.).
     """
-    output_list = []
+    output_list: list[Any] = []
     for value in input_list:
         if isinstance(value, dict):
             output_list.append(convert_dict_to_actual_values(value))
@@ -1888,9 +1888,9 @@ def convert_list_to_actual_values(input_list: list) -> list[Any]:
 def parse_log_source(create_args: dict[str, Any]):
     pp_pairs = create_args.get('protocol_parameters', '').split(',')
     protocol_parameters = []
-    group_ids = create_args.get('group_ids').split(',') if create_args.get('group_ids') else []
+    group_ids = create_args.get('group_ids', '').split(',') if create_args.get('group_ids') else []
     wincollect_external_destination_ids = (
-        create_args.get('wincollect_external_destination_ids').split(',') if create_args.get('group_ids')
+        create_args.get('wincollect_external_destination_ids', '').split(',') if create_args.get('group_ids')
         else []
     )
     for pair in pp_pairs:
@@ -1907,10 +1907,10 @@ def parse_log_source(create_args: dict[str, Any]):
 
 
 def parse_partial_log_source(update_args: dict[str, Any]):
-    protocol_parameters = update_args.get('protocol_parameters').split(',') if update_args.get('protocol_parameters') else []
-    group_ids = update_args.get('group_ids').split(',') if update_args.get('group_ids') else None
+    protocol_parameters = update_args.get('protocol_parameters', '').split(',') if update_args.get('protocol_parameters') else []
+    group_ids = update_args.get('group_ids', '').split(',') if update_args.get('group_ids') else None
     wincollect_external_destination_ids = (
-        update_args.get('wincollect_external_destination_ids').split(',') if update_args.get('group_ids')
+        update_args.get('wincollect_external_destination_ids', '').split(',') if update_args.get('group_ids')
         else None
     )
     if protocol_parameters:
