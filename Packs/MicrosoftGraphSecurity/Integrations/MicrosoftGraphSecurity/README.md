@@ -33,7 +33,7 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 1. SecurityAlert.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
 2. SecurityAlert.ReadWrite.All - Application (required for updating alerts with the commands: `msg-update-alert` and `msg-create-alert-comment`)
 
-**EDiscovery**:
+**eDiscovery**:
 
 1. eDiscovery.Read.All - Delegated (Required for the `list-ediscovery` commands)
 2. eDiscovery.ReadWrite.All - Delegated (Required for the `create/update-ediscovery` commands)
@@ -2154,7 +2154,7 @@ Retrieve all threat assessment requests.
 ### msg-generate-login-url
 
 ***
-Generate the login URL used for authorization code flow.
+Generate the login URL used for the authorization code flow.
 
 #### Base Command
 

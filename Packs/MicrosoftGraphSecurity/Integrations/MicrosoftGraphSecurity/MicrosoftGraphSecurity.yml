@@ -902,7 +902,7 @@ script:
       - 'true'
       - 'false'
       required: false
-    description: Get a list of the edicovery cases.
+    description: Get a list of the eDiscovery cases.
     execution: false
     name: msg-list-ediscovery-cases
     outputs:

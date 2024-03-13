@@ -18,7 +18,7 @@ If you previously had an API V1 configured based on the credentials obtained fro
 
 ### Important
 1. The *eDiscovery* and *Threat Assessment* commands are only supported when using the `Authorization Code flow` with `Delegated (work or school account)` permission type.
-2. When using `Authorization Code flow`, the connection should be tested using the `!msg-auth-test` command.
+2. When using `Authorization Code flow`, the connection should be tested using the ***!msg-auth-test*** command.
 
 ### Authentication Based on Azure Managed Identities
 ##### Note: This option is relevant only if the integration is running on Azure VM.
