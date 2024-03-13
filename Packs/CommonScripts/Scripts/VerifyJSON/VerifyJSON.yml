@@ -2,7 +2,7 @@ args:
 - description: 'JSON string to verify.'
   name: json
   required: true
-- description: 'Optional schema against which to validate the JSON input.'
+- description: 'Optional schema against which to validate the JSON input'
   name: schema
 comment: Verifies if the supplied JSON string is valid and optionally verifies against a provided schema. The script utilizes Powershell's Test-JSON cmdlet.
 commonfields:
