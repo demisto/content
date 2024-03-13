@@ -828,3 +828,31 @@ def test_test_credentials_command(mocker):
             patch("Active_Directory_Query.Connection.unbind", side_effect=MockConnection.unbind):
         command_results = Active_Directory_Query.test_credentials_command(BASE_TEST_PARAMS['server_ip'], ntlm_connection='true')
         assert command_results.readable_output == 'Credential test with username username_test_credentials succeeded.'
+
+
+@pytest.mark.parametrize('dn,expected', [
+    ('CN=name, lastname,OU=Test1,DC=dc1,DC=dc2', 'CN=name, lastname'),
+    ('CN=name\\ lastname,OU=Test1,DC=dc1,DC=dc2', 'CN=name lastname'),
+    ('CN=name,DC=dc1,DC=dc2', 'CN=name')])
+def test_modify_user_ou(mocker, dn, expected):
+    """
+       Given:
+            - user with CN contains //
+            - user with CN contains comma
+            - user without ou
+       When:
+           Run the 'ad-modify-ou' command
+       Then:
+            Validate the cn extracted as expected
+       """
+    import Active_Directory_Query
+
+    class MockConnection:
+        def modify_dn(self, dn, cn, new_superior):
+            pass
+
+    Active_Directory_Query.connection = MockConnection()
+    new_ou = 'OU=Test2'
+    connection_mocker = mocker.patch.object(Active_Directory_Query.connection, 'modify_dn', return_value=True)
+    Active_Directory_Query.modify_user_ou(dn, new_ou)
+    assert connection_mocker.call_args[0][1] == expected
