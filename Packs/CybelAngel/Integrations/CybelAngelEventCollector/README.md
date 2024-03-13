@@ -1,4 +1,4 @@
-CybelAngel Event Collector collects reports from the CybelAngel platform, which specializes in external attack surface protection and management.
+CybelAngel Event Collector receives reports from the CybelAngel platform, which specializes in external attack surface protection and management
 
 ## Configure CybelAngel Event Collector in XSIAM
 
@@ -26,7 +26,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### cybelangel-get-events
 
 ***
-Collect reports from CybelAngel. Used mainly for debugging.
+Send events from CybelAngel to XSIAM. Used mainly for debugging.
 
 #### Base Command
 
