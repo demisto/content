@@ -1954,6 +1954,10 @@ def query_malop_management_command(client: Client, args: dict):
         },
         "pagination": {
             "offset": 0
+        },
+        "range": {
+            "from": 0,
+            "to": 9999999999999
         }
     }
     response = client.cybereason_api_call('POST', '/rest/mmng/v2/malops', json_body=json_body)
