@@ -1010,6 +1010,17 @@ class Client(BaseClient):
         return self.send_request('attachment/upload', 'POST', headers={'Accept': 'application/json'},
                                  body=body, file={'id': file_id, 'name': file_name})
 
+    def delete_attachment(self, attachment_file_id: str) -> dict:
+        """Deletes an attachment file by sending a DELETE request.
+
+        Args:
+        attachment_file_id: ID of the attachment file.
+
+        Returns:
+            Response from API.
+        """
+        return self.send_request(f'attachment/{attachment_file_id}', 'DELETE')
+
     def add_tag(self, ticket_id: str, tag_id: str, title: str, ticket_type: str) -> dict:
         """Adds a tag to a ticket by sending a POST request.
 
@@ -1445,6 +1456,23 @@ def upload_file_command(client: Client, args: dict) -> tuple[str, dict, dict, bo
     }
 
     return human_readable, entry_context, result, True
+
+
+def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+    """Delete an attachment file.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Demisto Outputs.
+    """
+    attachment_file_id = str(args.get('attachment_sys_id', ''))
+
+    result = client.delete_attachment(attachment_file_id)
+
+    return f'Attachment with Sys ID {attachment_file_id} was successfully deleted.', {}, result, True
 
 
 def add_tag_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
