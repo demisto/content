@@ -2,12 +2,29 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Any
 
-
 STATUS_NEW = 'new'
 STATUS_EXISTING = 'existing'
 STATUS_UNAVAILABLE = 'unavailable'
 
 KEY_CREATION_STATUS = 'CreationStatus'
+
+
+def associate_indicator_to_incident(indicator_value: Any) -> None:
+    """
+    Associate an indicator to this incident. Raise an exception if an error occurs.
+    """
+
+    incident_id = demisto.incidents()[0].get('id')
+
+    cmd_args = {
+        'incidentId': incident_id,
+        'value': f"{indicator_value}"  # Force an error
+    }
+
+    res = execute_command('associateIndicatorToIncident', cmd_args)
+
+    if (res != 'done'):
+        raise Exception(f"Failed to associate {indicator_value} with incident {incident_id}")
 
 
 def normalize_indicator_value(indicator_value: Any) -> str:
@@ -47,6 +64,7 @@ def add_new_indicator(indicator_value: Any,
             }
         else:
             raise DemistoException(f'Unknown response from createNewIndicator: str{indicator_value}')
+    associate_indicator_to_incident(indicator_value)
 
     return indicator
 
