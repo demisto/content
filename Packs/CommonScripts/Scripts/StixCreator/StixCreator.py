@@ -5,7 +5,6 @@ import dateparser
 
 ''' IMPORTS '''
 import json
-import uuid
 from stix2 import Bundle, ExternalReference, Indicator, Vulnerability
 from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet, Report, ThreatActor
 from stix2 import Tool, CourseOfAction
@@ -44,24 +43,24 @@ SDOs: dict[str, Callable] = {  # pragma: no cover
     "course of action": CourseOfAction
 }
 
-SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
-PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
+# SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
+# PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
 
-XSOAR_TYPES_TO_STIX_SCO = {   # pragma: no cover
-    FeedIndicatorType.CIDR: 'ipv4-addr',
-    FeedIndicatorType.DomainGlob: 'domain-name',
-    FeedIndicatorType.IPv6: 'ipv6-addr',
-    FeedIndicatorType.IPv6CIDR: 'ipv6-addr',
-    FeedIndicatorType.Account: 'user-account',
-    FeedIndicatorType.Domain: 'domain-name',
-    FeedIndicatorType.Email: 'email-addr',
-    FeedIndicatorType.IP: 'ipv4-addr',
-    FeedIndicatorType.Registry: 'windows-registry-key',
-    FeedIndicatorType.File: 'file',
-    FeedIndicatorType.URL: 'url',
-    FeedIndicatorType.Software: 'software',
-    FeedIndicatorType.AS: 'autonomous-system',
-}
+# XSOAR_TYPES_TO_STIX_SCO = {   # pragma: no cover
+#     FeedIndicatorType.CIDR: 'ipv4-addr',
+#     FeedIndicatorType.DomainGlob: 'domain-name',
+#     FeedIndicatorType.IPv6: 'ipv6-addr',
+#     FeedIndicatorType.IPv6CIDR: 'ipv6-addr',
+#     FeedIndicatorType.Account: 'user-account',
+#     FeedIndicatorType.Domain: 'domain-name',
+#     FeedIndicatorType.Email: 'email-addr',
+#     FeedIndicatorType.IP: 'ipv4-addr',
+#     FeedIndicatorType.Registry: 'windows-registry-key',
+#     FeedIndicatorType.File: 'file',
+#     FeedIndicatorType.URL: 'url',
+#     FeedIndicatorType.Software: 'software',
+#     FeedIndicatorType.AS: 'autonomous-system',
+# }
 
 
 def search_related_indicators(value: str) -> list[dict]:    # pragma: no cover
