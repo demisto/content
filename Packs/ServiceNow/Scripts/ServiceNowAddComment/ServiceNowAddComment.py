@@ -7,8 +7,6 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
     note = args.get('note')
     tag = args.get('tag')
     table_name = args.get('table_name')
-    if not table_name:
-        table_name = demisto.params().get('ticket_type')
     using = args.get('instance_name')
 
     command_args = {}
@@ -18,7 +16,8 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
 
     command_args['id'] = ticket_id
     demisto.debug(f'Using ticket_type: {table_name}')
-    command_args['ticket_type'] = table_name
+    if table_name:
+        command_args['ticket_type'] = table_name
     if tag == 'comment':
         command_args['comments'] = note
     else:
