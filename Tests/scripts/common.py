@@ -252,7 +252,7 @@ def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
         datetime.utcnow() - timedelta(hours=look_back_hours)).isoformat()
 
     commits = project.commits.list(all=True, since=time_threshold, order_by='updated_at', sort='asc')
-    pipelines = project.pipelines.list(all=True, updated_after=time_threshold, ref='master',
+    pipelines = project.pipelines.list(all=True, updated_after=time_threshold,
                                        source='push', order_by='id', sort='asc')
 
     return pipelines, commits
