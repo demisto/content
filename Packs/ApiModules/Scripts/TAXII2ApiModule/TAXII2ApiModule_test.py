@@ -1,7 +1,8 @@
 from taxii2client.exceptions import TAXIIServiceException, InvalidJSONError
 
 from CommonServerPython import *
-from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, HEADER_USERNAME
+from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, \
+    HEADER_USERNAME, XSOAR2STIXParser, uuid, PAWN_UUID
 from taxii2client import v20, v21
 import pytest
 import json
@@ -31,6 +32,11 @@ with open('test_data/objects_envelopes_v21.json') as f:
     envelopes_v21 = json.load(f)
 with open('test_data/objects_envelopes_v20.json') as f:
     envelopes_v20 = json.load(f)
+
+
+def util_load_json(path):
+    with open(path, encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 class MockCollection:
@@ -1480,3 +1486,158 @@ def test_increase_count():
 
     mock_client.increase_count(objects_counter, 'counter_b')
     assert objects_counter == {'counter_a': 2, 'counter_b': 1}
+
+
+def test_reports_objects_with_relationships():
+    """
+        Given
+            Reports object with relationships
+        When
+            Calling handle_report_relationships.
+        Then
+            Validate that each report contained its relationship in the object_refs.
+
+    """
+    uuid_for_cilent = uuid.uuid5(PAWN_UUID, 'test')
+    cilent = XSOAR2STIXParser(server_version='2.0', fields_to_present=set(), types_for_indicator_sdo=[],
+                              namespace_uuid=uuid_for_cilent)
+    objects = [
+        {
+            "created": "2023-07-04T14:08:17.389246Z",
+            "description": "",
+            "id": "report--e536bd26-47e6-4ccb-a680-639fa11468g4",
+            "modified": "2023-07-04T14:08:19.567461Z",
+            "name": "ATOM Campaign Report 3",
+            "spec_version": "2.1",
+            "type": "report"
+        },
+        {
+            "created": "2023-07-06T10:57:15.133309Z",
+            "description": "",
+            "id": "report--bd9fce92-1afa-5f05-8989-392e4264d65a",
+            "modified": "2023-07-06T10:57:15.133770Z",
+            "name": "test_report",
+            "spec_version": "2.1",
+            "type": "report"
+        },
+        {
+            "created": "2022-08-04T18:25:46.215Z",
+            "id": "intrusion-set--97dd61f8-1c42-458a-ad44-818ab9cb1b7b",
+            "modified": "2022-08-10T18:45:13.212Z",
+            "name": "IcedID",
+            "type": "intrusion-set"
+        }
+    ]
+    relationships = [
+        {
+            "created": "2023-07-04T14:08:18.989565Z",
+            "id": "relationship--d5b0fcff-2fff-5749-8b5e-b937a9a1e0aa",
+            "modified": "2023-07-04T14:08:18.989565Z",
+            "relationship_type": "related-to",
+            "source_ref": "report--e536bd26-47e6-4ccb-a680-639fa11468g4",
+            "spec_version": "2.1",
+            "target_ref": "intrusion-set--97dd61f8-1c42-458a-ad44-818ab9cb1b7b",
+            "type": "relationship"
+        }
+    ]
+
+    cilent.handle_report_relationships(relationships, objects)
+
+    object_refs_with_data = objects[0]['object_refs']
+    assert len(object_refs_with_data) == 2
+    assert 'relationship--d5b0fcff-2fff-5749-8b5e-b937a9a1e0aa' in object_refs_with_data
+    assert 'intrusion-set--97dd61f8-1c42-458a-ad44-818ab9cb1b7b' in object_refs_with_data
+
+
+def test_create_entity_b_stix_objects_with_file_object(mocker):
+    """
+        Given
+            Reports object with relationships
+        When
+            Calling handle_report_relationships.
+        Then
+            Validate that there is not a None ioc key in the ioc_value_to_id dict.
+
+    """
+    uuid_for_cilent = uuid.uuid5(PAWN_UUID, 'test')
+    cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present=set(), types_for_indicator_sdo=[],
+                              namespace_uuid=uuid_for_cilent)
+    ioc_value_to_id = {'report': 'report--b1d2c45b-50ea-58b1-b543-aaf94afe07b4'}
+    relationships = util_load_json('test_data/relationship_report_file.json')
+    iocs = util_load_json('test_data/ioc_for_report_relationship.json')
+    mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+    cilent.create_entity_b_stix_objects(relationships, ioc_value_to_id, [])
+
+    assert None not in ioc_value_to_id
+
+
+def test_create_entity_b_stix_objects_with_revoked_relationship(mocker):
+    """
+        Given
+            Reports object with revoked relationships
+        When
+            Calling handle_report_relationships.
+        Then
+            Validate that the report not contained the revoked relationship in the object_refs.
+
+    """
+    uuid_for_cilent = uuid.uuid5(PAWN_UUID, 'test')
+    cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present=set(), types_for_indicator_sdo=[],
+                              namespace_uuid=uuid_for_cilent)
+    ioc_value_to_id = {'report': 'report--b1d2c45b-50ea-58b1-b543-aaf94afe07b4'}
+    relationships = util_load_json('test_data/relationship_report_file.json')
+    iocs = util_load_json('test_data/ioc_for_report_relationship.json')
+    mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+    cilent.create_entity_b_stix_objects(relationships, ioc_value_to_id, [])
+
+    assert '127.0.0.1' not in ioc_value_to_id
+
+
+def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
+    """
+        Given
+            sco indicator to sdo indicator with type file.
+        When
+            Running convert_sco_to_indicator_sdo.
+        Then
+            Validating the result
+    """
+    xsoar_indicator = util_load_json('test_data/sco_indicator_file.json').get('objects', {})[0]
+    ioc = util_load_json('test_data/objects21_file.json').get('objects', {})[0]
+    mocker.patch.object(XSOAR2STIXParser, 'create_sdo_stix_uuid', return_value={})
+    uuid_for_cilent = uuid.uuid5(PAWN_UUID, 'test')
+    cilent = XSOAR2STIXParser(server_version='2.0', fields_to_present=set(),
+                              types_for_indicator_sdo=[], namespace_uuid=uuid_for_cilent)
+    output = cilent.convert_sco_to_indicator_sdo(ioc, xsoar_indicator, uuid_for_cilent)
+    assert 'file:hashes.' in output.get('pattern', '')
+    assert 'SHA-1' in output.get('pattern', '')
+    assert 'pattern_type' in output
+
+
+xsoar_indicators = util_load_json('test_data/xsoar_sco_indicators.json').get('iocs', {})
+sco_indicators = util_load_json('test_data/stix_sco_indicators.json').get('objects', {})
+
+
+@pytest.mark.parametrize('indicator, sco_indicator', [
+    (xsoar_indicators[0], sco_indicators[0]),
+    (xsoar_indicators[1], sco_indicators[1]),
+    (xsoar_indicators[2], sco_indicators[2])
+])
+def test_build_sco_object(indicator, sco_indicator):
+    """
+        Given
+            Case 1: xsoar File indicator with hashes.
+            Case 2: xsoar Registry key indicator with key and value data
+            Case 3: xsoar ASN indicator with "name" as a unique field and the as number as the value
+        When
+            Running build_sco_object
+        Then
+            Case 1: validate that the resulted object has the "hashes" key with all relevant hashes
+            Case 2: validate that the resulted object has all key-values data of the registry key
+            Case 3: validate that the ASN has a "number" key as well as a "name" key.
+    """
+    uuid_for_cilent = uuid.uuid5(PAWN_UUID, 'test')
+    cilent = XSOAR2STIXParser(server_version='2.0', fields_to_present=set(),
+                              types_for_indicator_sdo=[], namespace_uuid=uuid_for_cilent)
+    output = cilent.build_sco_object(indicator["stix_type"], indicator["xsoar_indicator"])
+    assert output == sco_indicator
