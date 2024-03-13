@@ -14,6 +14,7 @@ PASSWORD = demisto.params()['credentials']['password']
 BASE_URL = SERVER + '/brightmail/'
 USE_SSL = not demisto.params().get('insecure', False)
 COOKIES = {}  # type: ignore
+TOKEN: str
 
 BAD_DOMAINS_EMAILS_GROUP = 'Local Bad Sender Domains'
 BAD_IPS_GROUP = 'Local Bad Sender IPs'
