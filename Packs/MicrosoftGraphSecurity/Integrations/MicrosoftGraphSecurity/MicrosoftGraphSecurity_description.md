@@ -17,7 +17,7 @@ After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which
 If you previously had an API V1 configured based on the credentials obtained from this method, refer to the link above to gain new credentials with the relevant permissions.
 
 ### Important
-1. The *eDiscovery* and *Threat Assessment* commands are only supported when using the `Authorization Code flow` with `Delegated (work or school account)` permission type.
+1. The ***eDiscovery*** and ***Threat Assessment*** commands are only supported when using the `Authorization Code flow` with `Delegated (work or school account)` permission type.
 2. When using `Authorization Code flow`, the connection should be tested using the ***!msg-auth-test*** command.
 
 ### Authentication Based on Azure Managed Identities
