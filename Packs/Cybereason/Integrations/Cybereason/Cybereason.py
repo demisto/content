@@ -1975,16 +1975,16 @@ def query_malop_management_command(client: Client, args: dict):
             else:
                 link = SERVER + '/#/detection-malop/' + guid
 
-        outputs = []
-        malop_output = {
-            'GUID': guid,
-            'Link': link,
-            'CreationTime': creation_time,
-            'LastUpdateTime': malop_last_update_time,
-            'Status': management_status,
-            'InvolvedHash': involved_hashes
-        }
-        outputs.append(malop_output)
+            outputs = []
+            malop_output = {
+                'GUID': guid,
+                'Link': link,
+                'CreationTime': creation_time,
+                'LastUpdateTime': malop_last_update_time,
+                'Status': management_status,
+                'InvolvedHash': involved_hashes
+            }
+            outputs.append(malop_output)
         return CommandResults(
             readable_output=tableToMarkdown('Cybereason Malop', outputs, headers=SINGLE_MALOP_HEADERS)
             if outputs else 'No malop found',
