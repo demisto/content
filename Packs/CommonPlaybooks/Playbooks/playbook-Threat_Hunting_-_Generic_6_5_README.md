@@ -108,4 +108,4 @@ This playbook does not use any commands.
 
 ---
 
-![Threat Hunting - Generic](../doc_files/Threat_Hunting_-_Generic.png)
+![Threat Hunting - Generic](../doc_files/Threat_Hunting_-_Generic_6_5.png)
