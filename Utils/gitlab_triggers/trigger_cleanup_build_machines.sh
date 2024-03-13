@@ -74,6 +74,8 @@ fi
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 source "${SCRIPT_DIR}/trigger_build_url.sh"
 
+echo "ref=${_branch}"
+
 curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
     --form "variables[BUILD_MACHINES_CLEANUP]=true" \
     --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
