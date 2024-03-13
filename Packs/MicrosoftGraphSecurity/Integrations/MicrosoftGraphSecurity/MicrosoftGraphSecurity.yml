@@ -1601,7 +1601,8 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-      - permanentlyDelete
+      - permanentlydeleted
+      - recoverable
     - description: The ID of the eDiscovery search.
       isArray: false
       name: purge_areas
@@ -1609,6 +1610,7 @@ script:
       auto: PREDEFINED
       predefined:
       - teamsMessages
+      - mailboxes
     description: |-
       Delete Microsoft Teams messages contained in an eDiscovery search.
       Note: This request purges Teams data only. It does not purge other types of data such as mailbox items.

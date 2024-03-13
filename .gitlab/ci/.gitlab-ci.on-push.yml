@@ -107,6 +107,16 @@ run-validations:
     - if: '$NIGHTLY'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
+# runs in gitlab for the on-push flow (except for contributors)
+run-validations-new-validate-flow:
+  extends:
+    - .run-validations-new-validate-flow
+  rules:
+    - if: '$NIGHTLY'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  allow_failure: true
+
+
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
   tags:
@@ -132,7 +142,6 @@ validate-content-conf:
   cache:
     policy: pull-push
   variables:
-    KUBERNETES_CPU_REQUEST: 2000m
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: prepare-testing-bucket
   script:
@@ -140,6 +149,11 @@ validate-content-conf:
     - !reference [.create-release-notes-and-common-docs]
     - !reference [.secrets-fetch]
     - section_start "Create or update content graph" --collapsed
+    - |
+        echo "set DEMISTO_SDK_GRAPH_FORCE_CREATE to true to create graph from scratch"
+        export DEMISTO_SDK_GRAPH_FORCE_CREATE=true
+        echo "DEMISTO_SDK_GRAPH_FORCE_CREATE was set to true to create graph from scratch"
+        echo $DEMISTO_SDK_GRAPH_FORCE_CREATE
     - echo "Staging the repo to include the private packs in the graph"
     - git add Packs
     - echo "Updating the content graph"
@@ -209,6 +223,10 @@ validate-content-conf:
     - section_start "Prepare Content Packs for Testing"
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
     - section_end "Prepare Content Packs for Testing"
+
+    - section_start "Override and upload core packs versions"
+    - ./Tests/Marketplace/upload_versions_core_files.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION" "$LAST_UPLOAD_COMMIT"
+    - section_end "Override and upload core packs versions"
 
     - section_start "Create Instances for XSOAR"
     - |
@@ -376,9 +394,6 @@ tests_xsoar_server:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
-      when: always
-      variables:
-        KUBERNETES_CPU_REQUEST: 2000m
   parallel:
     matrix:
       - INSTANCE_ROLE:

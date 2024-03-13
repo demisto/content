@@ -2,7 +2,7 @@ id: Azure - Network Security Group Remediation
 version: -1
 name: Azure - Network Security Group Remediation
 description: |-
-  This playbook adds new Azure Network Security Groups (NSG) rules to NSGs attached to a NIC. The new rules will give access only to a private IP address range and block traffic that's exposed to the public internet ([using the private IP of the VM as stated in Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allows traffic from private IP address and blocks the rest of the RDP traffic.
+  This playbook adds new Azure Network Security Groups (NSG) rules to NSGs attached to a NIC. The new rules will give access only to a private IP address range and block traffic that's exposed to the public internet ([using the private IP of the VM as stated in Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allow traffic from private IP addresses and blocks the rest of the RDP traffic.
 
   Conditions and limitations:
   - Limited to one resource group.
@@ -43,10 +43,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e594c0b5-83ff-487e-8a93-e26bff748ea3
+    taskid: 1adc8ea1-823e-440b-82da-b83a8d7451d2
     type: regular
     task:
-      id: e594c0b5-83ff-487e-8a93-e26bff748ea3
+      id: 1adc8ea1-823e-440b-82da-b83a8d7451d2
       version: -1
       name: Retrieve Rules from NSG Associated to Public IP
       description: List all rules of the specified security groups.
@@ -80,6 +80,8 @@ tasks:
               applyIfEmpty: {}
               defaultValue: {}
             operator: SetIfEmpty
+      using:
+        simple: ${inputs.InstanceName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -187,10 +189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 8cc8c11f-23d8-4d25-83ad-c9d0d8142833
+    taskid: 8b08e2be-7090-4530-8d81-840e906cbbff
     type: condition
     task:
-      id: 8cc8c11f-23d8-4d25-83ad-c9d0d8142833
+      id: 8b08e2be-7090-4530-8d81-840e906cbbff
       version: -1
       name: Does offending rule exist?
       description: Checks whether the last command returned rules or not.
@@ -237,6 +239,14 @@ tasks:
                       value:
                         simple: inputs.RemotePort
                       iscontext: true
+                  - left:
+                      iscontext: true
+                      value:
+                        simple: AzureNSG.Rule.destinationPortRange
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: '*'
                 - - operator: isEqualString
                     left:
                       value:
@@ -425,10 +435,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 56f3b649-2961-479a-8afb-ac0e5919c77b
+    taskid: b5146806-4b94-4d33-8277-5ea7d3e51bdf
     type: regular
     task:
-      id: 56f3b649-2961-479a-8afb-ac0e5919c77b
+      id: b5146806-4b94-4d33-8277-5ea7d3e51bdf
       version: -1
       name: Update existing remediation allow rule
       description: |-
@@ -484,6 +494,8 @@ tasks:
               applyIfEmpty: {}
               defaultValue: {}
             operator: SetIfEmpty
+      using:
+        simple: ${inputs.InstanceName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -769,10 +781,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: cc549549-1a9d-4ae3-8d20-6cf8324b7a00
+    taskid: 1a7d4cac-6979-4cf3-8705-ec356925dda6
     type: regular
     task:
-      id: cc549549-1a9d-4ae3-8d20-6cf8324b7a00
+      id: 1a7d4cac-6979-4cf3-8705-ec356925dda6
       version: -1
       name: Update existing remediation deny rule
       description: |-
@@ -828,6 +840,8 @@ tasks:
               applyIfEmpty: {}
               defaultValue: {}
             operator: SetIfEmpty
+      using:
+        simple: ${inputs.InstanceName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1116,10 +1130,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: a3d6d6e8-b01d-418b-8af2-033300d717c7
+    taskid: f871b58d-6155-4b03-880a-1889551b6b00
     type: regular
     task:
-      id: a3d6d6e8-b01d-418b-8af2-033300d717c7
+      id: f871b58d-6155-4b03-880a-1889551b6b00
       version: -1
       name: Add allow rule for port ${inputs.RemotePort} and ${inputs.RemoteProtocol}
       description: |-
@@ -1180,7 +1194,7 @@ tasks:
                   simple: ${inputs.RemoteProtocol}
                 iscontext: true
       source:
-        simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+        simple: ${inputs.RemediationAllowRanges}
       resource_group_name:
         complex:
           root: inputs.ResourceGroup
@@ -1197,6 +1211,8 @@ tasks:
               applyIfEmpty: {}
               defaultValue: {}
             operator: SetIfEmpty
+      using:
+        simple: ${inputs.InstanceName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1215,10 +1231,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: e5f451a1-edd6-4b06-8b32-c9ad5038de45
+    taskid: c98dc204-241c-4c23-8de5-f9e778ac7395
     type: regular
     task:
-      id: e5f451a1-edd6-4b06-8b32-c9ad5038de45
+      id: c98dc204-241c-4c23-8de5-f9e778ac7395
       version: -1
       name: Set variable for offending rule priority
       description: Sets variable for the offending rule priority in the list of rules returned.
@@ -1253,6 +1269,14 @@ tasks:
                 value:
                   simple: inputs.RemotePort
                 iscontext: true
+            - left:
+                iscontext: true
+                value:
+                  simple: AzureNSG.Rule.destinationPortRange
+              operator: isEqualString
+              right:
+                value:
+                  simple: '*'
           - - operator: isEqualString
               left:
                 value:
@@ -1326,10 +1350,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 44a359f8-455d-4de4-8beb-a193599922ca
+    taskid: 76be7dd2-448b-47b5-8ad1-8e5197e74bc8
     type: regular
     task:
-      id: 44a359f8-455d-4de4-8beb-a193599922ca
+      id: 76be7dd2-448b-47b5-8ad1-8e5197e74bc8
       version: -1
       name: Add block rule for port ${inputs.RemotePort}
       description: |-
@@ -1407,6 +1431,8 @@ tasks:
               applyIfEmpty: {}
               defaultValue: {}
             operator: SetIfEmpty
+      using:
+        simple: ${inputs.InstanceName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1663,6 +1689,17 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
+- description: Azure Network Security Groups integration instance to use if you have multiple instances configured (optional).
+  key: InstanceName
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Comma-separated list of IPv4 network ranges to be used as source addresses for the `remediation-allow-port-<port#>-<tcp|udp>` rule to be created.  Typically this will be private IP ranges (to allow access within the vnet and bastion hosts) but other networks can be added as needed.
+  key: RemediationAllowRanges
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
 outputs:
 - contextPath: remediatedFlag
   description: Output key to determine if remediation was successfully done.
@@ -1682,6 +1719,8 @@ inputSections:
   - RemotePort
   - SubscriptionID
   - ResourceGroup
+  - InstanceName
+  - RemediationAllowRanges
   name: General (Inputs group)
 outputSections:
 - description: Generic group for outputs
@@ -1689,3 +1728,5 @@ outputSections:
   outputs:
   - remediatedFlag
   - remediatedReason
+contentitemexportablefields:
+  contentitemfields: {}
