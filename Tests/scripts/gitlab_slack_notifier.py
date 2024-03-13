@@ -620,21 +620,22 @@ def main():
         logging.info(f'Successfully wrote Slack message to {output_file}')
 
     try:
-        response = slack_client.chat_postMessage(
-            channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
-        )
+        # response = slack_client.chat_postMessage(
+        #     channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
+        #)
 
-        if threaded_messages:
-            data: dict = response.data  # type: ignore[assignment]
-            thread_ts: str = data['ts']
-            for slack_msg in threaded_messages:
-                slack_client.chat_postMessage(
-                    channel=computed_slack_channel, attachments=[slack_msg], username=SLACK_USERNAME,
-                    thread_ts=thread_ts
-                )
+        # if threaded_messages:
+        #     data: dict = response.data  # type: ignore[assignment]
+        #     thread_ts: str = data['ts']
+        #     for slack_msg in threaded_messages:
+        #         slack_client.chat_postMessage(
+        #             channel=computed_slack_channel, attachments=[slack_msg], username=SLACK_USERNAME,
+        #             thread_ts=thread_ts
+        #         )
 
-        link = build_link_to_message(response)
-        logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
+        #link = build_link_to_message(response)
+        #logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
+        pass
     except Exception:
         if strtobool(options.allow_failure):
             logging.warning(f'Failed to send Slack message to channel {computed_slack_channel} not failing build')
