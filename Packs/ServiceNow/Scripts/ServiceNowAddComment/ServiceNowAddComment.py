@@ -31,6 +31,11 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
             raise Exception(resp['Contents'])
         else:
             result = resp['Contents']['result']
+            if not result:
+                message = "Empty result. Please check your input. e.g. the ticket_id"
+                demisto.info(message)
+                return CommandResults(readable_output=message)
+
             output_results = {}
 
             output_results['Ticket ID'] = result['sys_id']
