@@ -72,7 +72,7 @@ script:
   - name: aws-eks-update-cluster-config
     description: Updates an Amazon EKS cluster configuration.
     arguments:
-      - name: name
+      - name: cluster_name
         description: The name of the Amazon EKS cluster to update.
         required: true
         isArray: false
@@ -101,7 +101,7 @@ script:
         description: The parameters of the update.
         type: Object
       - contextPath: AWS.EKS.Cluster.Update.createdAt
-        description: The Unix epoch timestamp at object creation.
+        description: The creation date ob the object.
         type: Unknown
       - contextPath: AWS.EKS.Cluster.Update.errors
         description: Any errors associated with a Failed update.
@@ -109,7 +109,7 @@ script:
   - name: aws-eks-describe-cluster
     description: Describes an Amazon EKS cluster.
     arguments:
-      - name: name
+      - name: cluster_name
         description: The name of the cluster to describe.
         required: true
         isArray: false
@@ -181,7 +181,7 @@ script:
         description: The platform version of your Amazon EKS cluster.
         type: String
       - contextPath: AWS.EKS.Cluster.tags
-        description: Metadata that assists with categorization and organization.
+        description: A dictionary containing metadata for categorization and organization.
         type: Object
       - contextPath: AWS.EKS.Cluster.encryptionConfig.resources
         description: Specifies the resources to be encrypted. The only supported value is secrets.
@@ -224,6 +224,121 @@ script:
         type: Boolean
       - contextPath: AWS.EKS.Cluster.accessConfig.authenticationMode
         description: The current authentication mode of the cluster.
+        type: String
+  - name: aws-eks-create-access-entry
+    description: Creates an access entry.
+    arguments:
+      - name: cluster_name
+        description: The name of the cluster for which to create an access entry.
+        required: true
+        isArray: false
+      - name: principal_arn
+        description: ARN of the IAM principal for the AccessEntry.
+        required: true
+        isArray: false
+      - name: kubernetes_groups
+        description: A list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings.
+        required: false
+        isArray: false
+      - name: tags
+        description: A dictionary containing metadata for categorization and organization. Each tag consists of a key and an optional value.
+        required: false
+        isArray: false
+      - name: client_request_token
+        description: Unique identifier for idempotency.
+        required: false
+        isArray: false
+      - name: username
+        description: Username for Kubernetes authentication.
+        required: false
+        isArray: false
+      - name: type
+        description: The type of access entry to create.
+        required: true
+        isArray: false
+        defaultvalue: Standard
+        auto: PREDEFINED
+        predefined:
+          - Standard
+          - FARGATE_LINUX
+          - EC2_LINUX
+          - EC2_WINDOWS
+    outputs:
+      - contextPath: AWS.EKS.Cluster.AccessEntry.clusterName
+        description: The name of the cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.AccessEntry.principalArn
+        description: The ARN of the IAM principal for the access entry.
+        type: String
+      - contextPath: AWS.EKS.Cluster.AccessEntry.kubernetesGroups
+        description: A list of names that you’ve specified in a Kubernetes RoleBinding or ClusterRoleBinding object so that Kubernetes authorizes the principalARN access to cluster objects.
+        type: String
+      - contextPath: AWS.EKS.Cluster.AccessEntry.accessEntryArn
+        description: The ARN of the access entry.
+        type: String
+      - contextPath: AWS.EKS.Cluster.AccessEntry.createdAt
+        description: The creation date ob the object.
+        type: String
+      - contextPath: AWS.EKS.Cluster.AccessEntry.modifiedAt
+        description: The date and time for the last modification to the object.
+        type: String
+      - contextPath: AWS.EKS.Cluster.AccessEntry.tags
+        description: A dictionary containing metadata for categorization and organization.
+        type: Object
+      - contextPath: AWS.EKS.Cluster.AccessEntry.username
+        description: The name of a user that can authenticate to the cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.AccessEntry.type
+        description: The type of the access entry.
+        type: String
+  - name: aws-eks-associate-access-policy
+    description: Describes an Amazon EKS cluster.
+    arguments:
+      - name: cluster_name
+        description: The name of the cluster for which to create an access entry.
+        required: true
+        isArray: false
+      - name: principal_arn
+        description: The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to.
+        required: true
+        isArray: false
+      - name: policy_arn
+        description: The ARN of the AccessPolicy that you’re associating.
+        required: true
+        isArray: false
+      - name: type
+        description: The scope type of an access policy.
+        required: true
+        isArray: false
+        auto: PREDEFINED
+        predefined:
+          - cluster
+          - namespace
+      - name: namespaces
+        description: A comma separated list of Kubernetes namespace that an access policy is scoped to. A value is required if you specified namespace for type.
+        required: false
+        isArray: false
+    outputs:
+      - contextPath: AWS.EKS.Cluster.Association.clusterName
+        description: The name of your cluster.
+        type: String
+      - contextPath: AWS.EKS.Cluster.Association.principalArn
+        description: The ARN of the IAM principal for the AccessEntry.
+        type: String
+      - contextPath: AWS.EKS.Cluster.Association.associatedAccessPolicy.policyArn
+        description: The ARN of the AccessPolicy.
+        type: String
+      - contextPath: AWS.EKS.Cluster.Association.associatedAccessPolicy.accessScope.type
+        description: The scope type of an access policy.
+        type: String
+      - contextPath: AWS.EKS.Cluster.Association.associatedAccessPolicy.accessScope.namespaces
+        description: A Kubernetes namespace that an access policy is scoped to.
+        type: String
+      - contextPath: AWS.EKS.Cluster.Association.associatedAccessPolicy.associatedAt
+        description: The date and time the AccessPolicy was associated with an AccessEntry.
+        type: String
+      - contextPath: AWS.EKS.Cluster.Association.associatedAccessPolicy.modifiedAt
+        description: The date and time for the last modification to the object.
         type: String
   runonce: false
   script: '-'

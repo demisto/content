@@ -65,7 +65,7 @@ def update_cluster_config_command(aws_client: AWSClient, args: dict)-> CommandRe
         A Command Results object
     """
     client = aws_client.aws_session(service='eks')
-    name = args.get('name')
+    cluster_name = args.get('cluster_name')
     resources_vpc_config = args.get('resources_vpc_config', '').replace('\'', '"')
     logging_arg = args.get('logging', '').replace('\'', '"')
     resources_vpc_config = json.loads(resources_vpc_config) if resources_vpc_config else {}
@@ -74,12 +74,12 @@ def update_cluster_config_command(aws_client: AWSClient, args: dict)-> CommandRe
     demisto.debug(f'{logging_arg=}')
 
     response = client.update_cluster_config(
-        name=name,
+        name=cluster_name,
         resourcesVpcConfig=resources_vpc_config,
         logging=logging_arg
     )
     response_data = response.get('update', {})
-    response_data['name'] = name
+    response_data['name'] = cluster_name
     datetime_to_str(response_data, 'createdAt')
 
     md_table = {
@@ -116,9 +116,9 @@ def describe_cluster_command(aws_client: AWSClient, args: dict) -> CommandResult
         A Command Results object
     """
     client = aws_client.aws_session(service='eks')
-    name = args.get('name')
+    cluster_name = args.get('cluster_name')
 
-    response = client.describe_cluster(name=name)
+    response = client.describe_cluster(name=cluster_name)
     response_data = response.get('cluster', {})
     datetime_to_str(response_data, 'createdAt')
     datetime_to_str(response_data.get('connectorConfig', {}), 'activationExpiry')
@@ -143,6 +143,118 @@ def describe_cluster_command(aws_client: AWSClient, args: dict) -> CommandResult
         outputs=response_data,
         raw_response=response_data,
         outputs_key_field='name'
+    )
+
+
+def create_access_entry_command(aws_client: AWSClient, args: dict) -> CommandResults:
+    """
+    Creates an access entry.
+    Args:
+        aws_client: AWS client
+        args: command arguments
+
+    Returns:
+        A Command Results object
+    """
+    client = aws_client.aws_session(service='eks')
+    cluster_name = args.get('cluster_name')
+    principal_arn = args.get('principal_arn')
+    kubernetes_groups = argToList(args.get('kubernetes_groups'))
+    tags = args.get('tags', '').replace('\'', '"')
+    tags = json.loads(tags) if tags else {}
+    client_request_token = args.get('client_request_token', '')
+    username = args.get('username', '')
+    type_arg = args.get('type', '').upper()
+    
+    if not username:
+        response = client.create_access_entry(
+            clusterName=cluster_name,
+            principalArn=principal_arn,
+            kubernetesGroups=kubernetes_groups,
+            tags=tags,
+            clientRequestToken=client_request_token,
+            type=type_arg
+        )
+    else:
+        response = client.create_access_entry(
+            clusterName=cluster_name,
+            principalArn=principal_arn,
+            kubernetesGroups=kubernetes_groups,
+            tags=tags,
+            clientRequestToken=client_request_token,
+            username=username,
+            type=type_arg
+        )
+    response = response.get('accessEntry')
+
+    datetime_to_str(response, 'createdAt')
+    datetime_to_str(response, 'modifiedAt')
+
+    md_table = {
+        'Cluster Name': response.get('clusterName'),
+        'Principal Arn': response.get('principalArn'),
+        'Username': response.get('username'),
+        'Type': response.get('type'),
+        'Created At': response.get('createdAt')
+    }
+
+    headers = ['Cluster Name', 'Principal Arn', 'Username', 'Type', 'Created At']
+    readable_output = tableToMarkdown(
+        name='The newly created access entry',
+        t=md_table,
+        removeNull=True,
+        headers=headers
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AWS.EKS.Cluster.AccessEntry',
+        outputs=response,
+        raw_response=response,
+        outputs_key_field='ClusterName'
+    )
+
+
+def associate_access_entry_command(aws_client: AWSClient, args: dict) -> CommandResults:
+    """
+    Associates an access policy and its scope to an access entry.
+    Args:
+        aws_client: AWS client
+        args: command arguments
+
+    Returns:
+        A Command Results object
+    """
+    client = aws_client.aws_session(service='eks')
+    cluster_name = args.get('cluster_name')
+    principal_arn = args.get('principal_arn')
+    policy_arn = args.get('policy_arn')
+    type_arg = args.get('type')
+    namespaces = argToList(args.get('namespaces'))
+    if type and type == 'namespace' and not namespaces:
+        raise Exception(f'When the {type=}, you must enter a namespace.')
+
+    access_scope = {
+        'type': type_arg,
+        'namespaces': namespaces
+    }
+
+    response = client.associate_access_policy(
+        clusterName=cluster_name,
+        principalArn=principal_arn,
+        policyArn=policy_arn,
+        accessScope=access_scope
+    )
+
+    datetime_to_str(response.get('associatedAccessPolicy', {}), 'associatedAt')
+    datetime_to_str(response.get('associatedAccessPolicy', {}), 'modifiedAt')
+
+    return CommandResults(
+        readable_output='The access policy was associated to the access entry successfully.',
+        outputs_prefix='AWS.EKS.Cluster.Association',
+        outputs=response,
+        raw_response=response,
+        outputs_key_field='clusterName'
     )
 
 
@@ -207,6 +319,12 @@ def main():
 
         elif demisto.command() == 'aws-eks-describe-cluster':
             return_results(describe_cluster_command(aws_client, args))
+
+        elif demisto.command() == 'aws-eks-create-access-entry':
+            return_results(create_access_entry_command(aws_client, args))
+
+        elif demisto.command() == 'aws-eks-associate-access-policy':
+            return_results(associate_access_entry_command(aws_client, args))
 
         else:
             return_error(f"The command {demisto.command()} isn't implemented")
