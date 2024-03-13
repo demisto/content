@@ -535,7 +535,7 @@ def main():
                  f"triggering workflow:'{triggering_workflow}' allowing failure:{options.allow_failure} "
                  f"slack channel:{computed_slack_channel}")
     pull_request = None
-    if options.current_branch != DEFAULT_BRANCH:
+    if True:
         try:
             branch = options.current_branch
             if triggering_workflow == BUCKET_UPLOAD and BUCKET_UPLOAD_BRANCH_SUFFIX in branch:
@@ -563,6 +563,7 @@ def main():
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
     if True:
+        logging.info("starttttinnggggg")
         computed_slack_channel = "dmst-build-test"
         # Check if the current commit's pipeline differs from the previous one. If the previous pipeline is still running,
         # compare the next build. For commits without pipelines, compare the current one to the nearest commit with a
