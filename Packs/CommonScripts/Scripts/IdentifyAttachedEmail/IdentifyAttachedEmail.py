@@ -66,6 +66,9 @@ def identify_attached_mail(args):
     else:
         entries = demisto.executeCommand('getEntries', {"filter": {"categories": ["attachments"]}})
 
+    if not entries:
+        return 'no', None
+
     for e in entries:
         id = is_entry_email(e)
         if id:

@@ -15,7 +15,7 @@ NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
 
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
-XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
+XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident Schema'
 INTEGRATION_NAME = 'Cortex XDR - IR'
 
 XDR_INCIDENT_FIELDS = {
@@ -33,6 +33,8 @@ XDR_INCIDENT_FIELDS = {
     "manual_severity": {"description": "Incident severity assigned by the user. "
                                        "This does not affect the calculated severity low medium high",
                         "xsoar_field_name": "severity"},
+    "close_reason": {"description": "The close reason of the XSOAR incident",
+                     "xsoar_field_name": "closeReason"}
 }
 
 MIRROR_DIRECTION = {
@@ -41,6 +43,9 @@ MIRROR_DIRECTION = {
     'Outgoing': 'Out',
     'Both': 'Both'
 }
+
+XSOAR_TO_XDR = "XSOAR -> XDR"
+XDR_TO_XSOAR = "XDR -> XSOAR"
 
 
 def convert_epoch_to_milli(timestamp):
@@ -120,7 +125,6 @@ def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_alrea
 
 
 class Client(CoreClient):
-
     def __init__(self, base_url, proxy, verify, timeout, params=None):
         if not params:
             params = {}
@@ -145,6 +149,56 @@ class Client(CoreClient):
                                        f'XSOAR and XDR server clocks are in sync')
             else:
                 raise
+
+        # XSOAR -> XDR
+        self.validate_custom_mapping(mapping=self._params.get("custom_xsoar_to_xdr_close_reason_mapping"),
+                                     direction=XSOAR_TO_XDR)
+
+        # XDR -> XSOAR
+        self.validate_custom_mapping(mapping=self._params.get("custom_xdr_to_xsoar_close_reason_mapping"),
+                                     direction=XDR_TO_XSOAR)
+
+    def validate_custom_mapping(self, mapping: str, direction: str):
+        """ Check validity of provided custom close-reason mappings. """
+
+        xdr_statuses_to_xsoar = [status.replace("resolved_", "").replace("_", " ").title()
+                                 for status in XDR_RESOLVED_STATUS_TO_XSOAR]
+        xsoar_statuses_to_xdr = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys())
+
+        exception_message = ('Improper custom mapping ({direction}) provided: "{key_or_value}" is not a valid Cortex '
+                             '{xsoar_or_xdr} close-reason. Valid Cortex {xsoar_or_xdr} close-reasons are: {statuses}')
+
+        def to_xdr_status(status):
+            return "resolved_" + "_".join(status.lower().split(" "))
+
+        custom_mapping = comma_separated_mapping_to_dict(mapping)
+
+        valid_key = valid_value = True  # If no mapping was provided.
+
+        for key, value in custom_mapping.items():
+            if direction == XSOAR_TO_XDR:
+                xdr_close_reason = to_xdr_status(value)
+                valid_key = key in XSOAR_RESOLVED_STATUS_TO_XDR
+                valid_value = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
+            elif direction == XDR_TO_XSOAR:
+                xdr_close_reason = to_xdr_status(key)
+                valid_key = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
+                valid_value = value in XSOAR_RESOLVED_STATUS_TO_XDR
+
+            if not valid_key:
+                raise DemistoException(
+                    exception_message.format(direction=direction,
+                                             key_or_value=key,
+                                             xsoar_or_xdr="XSOAR" if direction == XSOAR_TO_XDR else "XDR",
+                                             statuses=xsoar_statuses_to_xdr
+                                             if direction == XSOAR_TO_XDR else xdr_statuses_to_xsoar))
+            elif not valid_value:
+                raise DemistoException(
+                    exception_message.format(direction=direction,
+                                             key_or_value=value,
+                                             xsoar_or_xdr="XDR" if direction == XSOAR_TO_XDR else "XSOAR",
+                                             statuses=xdr_statuses_to_xsoar
+                                             if direction == XSOAR_TO_XDR else xsoar_statuses_to_xdr))
 
     def handle_fetch_starred_incidents(self, limit: int, page_number: int, request_data: dict) -> List:
         """
@@ -420,6 +474,7 @@ def get_incident_extra_data_command(client, args):
 
     incident = raw_incident.get('incident')
     incident_id = incident.get('incident_id')
+    demisto.debug(f"in get_incident_extra_data_command {incident_id=} {incident=}")
     raw_alerts = raw_incident.get('alerts').get('data')
     context_alerts = clear_trailing_whitespace(raw_alerts)
     for alert in context_alerts:
@@ -623,26 +678,73 @@ def handle_incoming_user_unassignment(incident_data):
         incident_data['owner'] = ''
 
 
-def handle_incoming_closing_incident(incident_data):
-    closing_entry = {}  # type: Dict
-    if incident_data.get('status') in XDR_RESOLVED_STATUS_TO_XSOAR:
-        demisto.debug(f"Closing XDR issue {incident_data.get('incident_id')}")
-        closing_entry = {
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
-                'closeNotes': incident_data.get('resolve_comment', '')
-            },
-            'ContentsFormat': EntryFormat.JSON
-        }
-        incident_data['closeReason'] = closing_entry['Contents']['closeReason']
-        incident_data['closeNotes'] = closing_entry['Contents']['closeNotes']
+def resolve_xsoar_close_reason(xdr_close_reason: str):
+    """
+    Resolving XSOAR close reason from possible custom XDR->XSOAR close-reason mapping or default mapping.
+    :param xdr_close_reason: XDR raw status/close reason e.g. 'resolved_false_positive'.
+    :return: XSOAR close reason.
+    """
 
-        if incident_data.get('status') == 'resolved_known_issue':
+    # Check if incoming XDR close-reason has a non-default mapping to XSOAR close-reason.
+    if demisto.params().get("custom_xdr_to_xsoar_close_reason_mapping"):
+        custom_xdr_to_xsoar_close_reason_mapping = comma_separated_mapping_to_dict(
+            demisto.params().get("custom_xdr_to_xsoar_close_reason_mapping")
+        )
+        # XDR raw status/close-reason is prefixed with 'resolved_' and is given in snake_case format,
+        # e.g. 'resolved_false_positive', whilst custom XDR->XSOAR close-reason mapping
+        # is using title case format e.g. 'False Positive', therefore we need to adapt it accordingly.
+        title_cased_xdr_close_reason = (
+            xdr_close_reason.replace("resolved_", "").replace("_", " ").title()
+        )
+        xsoar_close_reason = custom_xdr_to_xsoar_close_reason_mapping.get(title_cased_xdr_close_reason)
+        if xsoar_close_reason in XSOAR_RESOLVED_STATUS_TO_XDR:
+            demisto.debug(
+                f"XDR->XSOAR custom close-reason exists, using {xdr_close_reason}={xsoar_close_reason}"
+            )
+            return xsoar_close_reason
+
+    # Otherwise, we use default mapping.
+    xsoar_close_reason = XDR_RESOLVED_STATUS_TO_XSOAR.get(xdr_close_reason)
+    demisto.debug(
+        f"XDR->XSOAR custom close-reason does not exists, using default mapping {xdr_close_reason}={xsoar_close_reason}"
+    )
+    return xsoar_close_reason
+
+
+def handle_incoming_closing_incident(incident_data) -> dict:
+    incident_id = incident_data.get("incident_id")
+    demisto.debug(f"handle_incoming_closing_incident {incident_data=} {incident_id=}")
+    closing_entry = {}  # type: Dict
+
+    if incident_data.get("status") in XDR_RESOLVED_STATUS_TO_XSOAR:
+        demisto.debug(
+            f"handle_incoming_closing_incident {incident_data.get('status')=} {incident_id=}"
+        )
+        demisto.debug(f"Closing XDR issue {incident_id=}")
+        xsoar_close_reason = resolve_xsoar_close_reason(incident_data.get("status"))
+        closing_entry = {
+            "Type": EntryType.NOTE,
+            "Contents": {
+                "dbotIncidentClose": True,
+                "closeReason": xsoar_close_reason,
+                "closeNotes": incident_data.get("resolve_comment", ""),
+            },
+            "ContentsFormat": EntryFormat.JSON,
+        }
+        incident_data["closeReason"] = closing_entry["Contents"]["closeReason"]
+        incident_data["closeNotes"] = closing_entry["Contents"]["closeNotes"]
+        demisto.debug(
+            f"handle_incoming_closing_incident {incident_id=} {incident_data['closeReason']=} "
+            f"{incident_data['closeNotes']=}"
+        )
+
+        if incident_data.get("status") == "resolved_known_issue":
             close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
-            closing_entry['Contents']['closeNotes'] = close_notes
-            incident_data['closeNotes'] = close_notes
+            closing_entry["Contents"]["closeNotes"] = close_notes
+            incident_data["closeNotes"] = close_notes
+            demisto.debug(
+                f"handle_incoming_closing_incident {incident_id=} {close_notes=}"
+            )
 
     return closing_entry
 
@@ -765,12 +867,16 @@ def get_remote_data_command(client, args):
 
 def update_remote_system_command(client, args):
     remote_args = UpdateRemoteSystemArgs(args)
+    incident_id = remote_args.remote_incident_id
+    demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
 
     if remote_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
                       f'incident {remote_args.remote_incident_id}')
+        demisto.debug(f'{remote_args.delta=}')
     try:
         if remote_args.incident_changed:
+            demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
             update_args = get_update_args(remote_args)
 
             update_args['incident_id'] = remote_args.remote_incident_id
@@ -917,7 +1023,6 @@ def file_details_results(client: Client, args: Dict, add_to_context: bool) -> No
 
 
 def get_contributing_event_command(client: Client, args: Dict) -> CommandResults:
-
     if alert_ids := argToList(args.get('alert_ids')):
         alerts = []
 

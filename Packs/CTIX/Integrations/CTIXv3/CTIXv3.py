@@ -4,7 +4,8 @@ from CommonServerUserPython import *
 from http import HTTPStatus
 import urllib3
 import requests
-from typing import Any, Callable, Dict, cast
+from typing import Any, cast
+from collections.abc import Callable
 import urllib.parse
 import time
 import json
@@ -140,12 +141,14 @@ class Client(BaseClient):
         params["Signature"] = self.signature(expires)
         return params
 
-    def get_http_request(self, full_url: str, payload: dict = None, **kwargs):
+    def get_http_request(self, full_url: str, payload: dict = None,
+                         fallback_full_url: str = None, **kwargs):
         """
         GET HTTP Request
 
         :param str full_url: URL to be called
         :param dict payload: Request body, defaults to None
+        :param str fallback_full_url: URL to be called if the first 404s, defaults to None
         :raises DemistoException: If Any error is found will be raised on XSOAR
         :return dict: Response object
         """
@@ -168,16 +171,22 @@ class Client(BaseClient):
             return response
         except requests.exceptions.HTTPError:
             if status_code == HTTPStatus.NOT_FOUND:
-                return_error("Your CTIX version does not support this command.")
+                if fallback_full_url:
+                    # try again with the fallback url
+                    return self.get_http_request(fallback_full_url, payload, **kwargs)
+                else:
+                    return_error("Your CTIX version does not support this command.")
             else:
                 return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
-    def post_http_request(self, full_url: str, payload: dict, params: dict):
+    def post_http_request(self, full_url: str, payload: dict, params: dict,
+                          fallback_full_url: str = None):
         """
         POST HTTP Request
 
         :param str full_url: URL to be called
         :param dict payload: Request body, defaults to None
+        :param str fallback_full_url: URL to be called if the first 404s, defaults to None
         :raises DemistoException: If Any error is found will be raised on XSOAR
         :return dict: Response object
         """
@@ -199,7 +208,11 @@ class Client(BaseClient):
             return response
         except requests.exceptions.HTTPError:
             if status_code == HTTPStatus.NOT_FOUND:
-                return_error("Your CTIX version does not support this command.")
+                if fallback_full_url:
+                    # try again with the fallback url
+                    return self.post_http_request(fallback_full_url, payload, params)
+                else:
+                    return_error("Your CTIX version does not support this command.")
             else:
                 return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
@@ -321,10 +334,13 @@ class Client(BaseClient):
         )
 
     def whitelist_iocs(self, ioc_type, values, reason):
-        url_suffix = "conversion/whitelist/"
+        url_suffix = "conversion/allowed_indicators/"  # for CTIX >= 3.6
+        fallback_url_suffix = "conversion/whitelist/"  # for CTIX < 3.6
         client_url = self.base_url + url_suffix
+        fallback_client_url = self.base_url + fallback_url_suffix
         payload = {"type": ioc_type, "values": values, "reason": reason}
-        return self.post_http_request(client_url, payload, {})
+        return self.post_http_request(client_url, payload, {},
+                                      fallback_full_url=fallback_client_url)
 
     def get_whitelist_iocs(self, page: int, page_size: int, q: str):
         """Paginated list of tags from ctix platform using page_number and page_size
@@ -337,12 +353,15 @@ class Client(BaseClient):
         :type q: str
         :param q: search query string for the list api
         """
-        url_suffix = "conversion/whitelist/"
+        url_suffix = "conversion/allowed_indicators/"  # for CTIX >= 3.6
+        fallback_url_suffix = "conversion/whitelist/"  # for CTIX < 3.6
         client_url = self.base_url + url_suffix
+        fallback_client_url = self.base_url + fallback_url_suffix
         params = {"page": page, "page_size": page_size}
         if q:
             params["q"] = q  # type: ignore
-        return self.get_http_request(client_url, {}, **params)
+        return self.get_http_request(client_url, {}, fallback_full_url=fallback_client_url,
+                                     **params)
 
     def remove_whitelisted_ioc(self, whitelist_id: str):
         """Removes whitelisted ioc with given `whitelist_id`
@@ -381,7 +400,7 @@ class Client(BaseClient):
         url_suffix = "ingestion/saved-searches/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, **params)
+        return self.get_http_request(client_url, {}, None, **params)
 
     def get_server_collections(self, page: int, page_size: int):
         """
@@ -394,9 +413,9 @@ class Client(BaseClient):
         url_suffix = "publishing/collection/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, **params)
+        return self.get_http_request(client_url, {}, None, **params)
 
-    def get_actions(self, page: int, page_size: int, params: Dict[str, Any]):
+    def get_actions(self, page: int, page_size: int, params: dict[str, Any]):
         """
         Get Actions
 
@@ -682,7 +701,7 @@ class Client(BaseClient):
         url_suffix = f"ingestion/threat-data/vulnerability/{obj_id}/product-details/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, **params)
+        return self.get_http_request(client_url, {}, None, **params)
 
     def get_vulnerability_cvss_score(self, obj_id: str, page: int, page_size: int):
         """
@@ -696,7 +715,7 @@ class Client(BaseClient):
         url_suffix = f"ingestion/threat-data/vulnerability/{obj_id}/cvss-score/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, **params)
+        return self.get_http_request(client_url, {}, None, **params)
 
     def get_vulnerability_source_description(self, obj_id: str, source_id: str, page: int, page_size: int):
         """
@@ -711,7 +730,7 @@ class Client(BaseClient):
         url_suffix = f"ingestion/threat-data/vulnerability/{obj_id}/source-description/"
         client_url = self.base_url + url_suffix
         params = {"source_id": source_id, "page": page, "page_size": page_size}
-        return self.get_http_request(client_url, {}, **params)
+        return self.get_http_request(client_url, {}, None, **params)
 
 
 """ HELPER FUNCTIONS """
@@ -805,7 +824,7 @@ def iter_dbot_score(
                 elif hash_type == "sha-256":
                     file_standard_context.sha256 = file_key
                 elif hash_type == "sha-512":
-                    file_standard_context.sha512 == file_key
+                    file_standard_context.sha512 = file_key
 
                 final_data.append(
                     CommandResults(
@@ -925,7 +944,7 @@ def test_module(client: Client):
     demisto.results("ok")
 
 
-def create_tag_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def create_tag_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     create_tag command: Creates a new tag in the CTIX platform
     """
@@ -950,7 +969,7 @@ def create_tag_command(client: Client, args: Dict[str, str]) -> CommandResults:
         return results
 
 
-def get_tags_command(client: Client, args=Dict[str, Any]) -> List[CommandResults]:
+def get_tags_command(client: Client, args=dict[str, Any]) -> List[CommandResults]:
     """
     get_tags commands: Returns paginated list of tags
     """
@@ -1005,7 +1024,7 @@ def delete_tag_command(client: Client, args: dict) -> CommandResults:
         return results
 
 
-def whitelist_iocs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def whitelist_iocs_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Whitelist IOCs command
 
@@ -1037,7 +1056,7 @@ def whitelist_iocs_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 
 def get_whitelist_iocs_command(
-    client: Client, args=Dict[str, Any]
+    client: Client, args=dict[str, Any]
 ) -> List[CommandResults]:
     """
     get_tags commands: Returns paginated list of tags
@@ -1069,7 +1088,7 @@ def get_whitelist_iocs_command(
 
 
 def remove_whitelisted_ioc_command(
-    client: Client, args=Dict[str, Any]
+    client: Client, args=dict[str, Any]
 ) -> CommandResults:
     """
     remove_whitelist_ioc: Deletes a whitelisted ioc with given id
@@ -1092,7 +1111,7 @@ def remove_whitelisted_ioc_command(
 
 
 def get_threat_data_command(
-    client: Client, args=Dict[str, Any]
+    client: Client, args=dict[str, Any]
 ) -> List[CommandResults]:
     """
     get_threat_data: List thread data and allow query
@@ -1104,7 +1123,7 @@ def get_threat_data_command(
     query = args.get("query", "type=indicator")
     response = client.get_threat_data(page, page_size, query)
     threat_data_list = response.get("data", {}).get("results", [])
-    results = [data for data in threat_data_list]
+    results = list(threat_data_list)
     results = no_result_found(results)
     reliability = args.get("reliability")
 
@@ -1123,7 +1142,7 @@ def get_threat_data_command(
         return result
 
 
-def get_saved_searches_command(client: Client, args=Dict[str, Any]) -> CommandResults:
+def get_saved_searches_command(client: Client, args=dict[str, Any]) -> CommandResults:
     """
     get_saved_searches: List saved search data
     """
@@ -1133,7 +1152,7 @@ def get_saved_searches_command(client: Client, args=Dict[str, Any]) -> CommandRe
     page_size = check_for_empty_variable(page_size, 10)
     response = client.get_saved_searches(page, page_size)
     data_list = response.get("data", {}).get("results", [])
-    results = [data for data in data_list]
+    results = list(data_list)
     results = no_result_found(results)
     if isinstance(results, CommandResults):
         return results
@@ -1149,7 +1168,7 @@ def get_saved_searches_command(client: Client, args=Dict[str, Any]) -> CommandRe
 
 
 def get_server_collections_command(
-    client: Client, args=Dict[str, Any]
+    client: Client, args=dict[str, Any]
 ) -> CommandResults:
     """
     get_server_collections: List server collections
@@ -1160,7 +1179,7 @@ def get_server_collections_command(
     page_size = check_for_empty_variable(page_size, 10)
     response = client.get_server_collections(page, page_size)
     data_list = response.get("data", {}).get("results", [])
-    results = [data for data in data_list]
+    results = list(data_list)
     results = no_result_found(results)
     if isinstance(results, CommandResults):
         return results
@@ -1177,7 +1196,7 @@ def get_server_collections_command(
         return result
 
 
-def get_actions_command(client: Client, args=Dict[str, Any]) -> CommandResults:
+def get_actions_command(client: Client, args=dict[str, Any]) -> CommandResults:
     """
     get_actions: List Actions
     """
@@ -1194,7 +1213,7 @@ def get_actions_command(client: Client, args=Dict[str, Any]) -> CommandResults:
         params["object_type"] = object_type
     response = client.get_actions(page, page_size, params)
     data_list = response.get("data", {}).get("results", [])
-    results = [data for data in data_list]
+    results = list(data_list)
     results = no_result_found(results)
     if isinstance(results, CommandResults):
         return results
@@ -1210,7 +1229,7 @@ def get_actions_command(client: Client, args=Dict[str, Any]) -> CommandResults:
 
 
 def add_indicator_as_false_positive_command(
-    client: Client, args: Dict[str, str]
+    client: Client, args: dict[str, str]
 ) -> CommandResults:
     """
     Add Indicator as False Positive Command
@@ -1240,7 +1259,7 @@ def add_indicator_as_false_positive_command(
         return results
 
 
-def add_ioc_manual_review_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_ioc_manual_review_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Add IOC for Manual Review Command
 
@@ -1353,7 +1372,7 @@ def add_analyst_score_command(client: Client, args: dict) -> CommandResults:
         return results
 
 
-def saved_result_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def saved_result_set_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get Saved Result Set data Command
 
@@ -1388,7 +1407,7 @@ def saved_result_set_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def tag_indicator_updation_command(
-    client: Client, args: Dict[str, Any], operation: str
+    client: Client, args: dict[str, Any], operation: str
 ) -> CommandResults:
     """
     Tag Indicator Updation Command
@@ -1424,7 +1443,7 @@ def tag_indicator_updation_command(
         return results
 
 
-def search_for_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def search_for_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Search for Tag Command
 
@@ -1453,7 +1472,7 @@ def search_for_tag_command(client: Client, args: Dict[str, Any]) -> CommandResul
         return results
 
 
-def get_indicator_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_indicator_details_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get Indicator Details Command
 
@@ -1484,7 +1503,7 @@ def get_indicator_details_command(client: Client, args: Dict[str, Any]) -> Comma
         return results
 
 
-def get_indicator_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_indicator_tags_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get Indicator Tags  Command
 
@@ -1516,7 +1535,7 @@ def get_indicator_tags_command(client: Client, args: Dict[str, Any]) -> CommandR
         return results
 
 
-def get_indicator_relations_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_indicator_relations_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get Indicator Relations Command
 
@@ -1547,7 +1566,7 @@ def get_indicator_relations_command(client: Client, args: Dict[str, Any]) -> Com
         return results
 
 
-def get_indicator_observations_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_indicator_observations_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get Indicator Observations Command
 
@@ -1584,7 +1603,7 @@ def get_indicator_observations_command(client: Client, args: Dict[str, Any]) -> 
         return results
 
 
-def get_conversion_feed_source_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_conversion_feed_source_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get Conversion Feed Source Command
 
@@ -1625,7 +1644,7 @@ def get_conversion_feed_source_command(client: Client, args: Dict[str, Any]) -> 
 
 
 def get_lookup_threat_data_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> List[CommandResults]:
     """
     Get Lookup Threat Data Command
@@ -1661,7 +1680,7 @@ def get_lookup_threat_data_command(
 
 
 def get_create_threat_data_command(
-    client: Client, args: Dict[str, Any]
+    client: Client, args: dict[str, Any]
 ) -> List[CommandResults]:
     """
     Get or Create Threat Data Command
@@ -1713,25 +1732,25 @@ def get_create_threat_data_command(
         return results + created_after_lookup_results + invalid_values_results
 
 
-def domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def domain(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     args["object_names"] = args["domain"]
     args["ioc_type"] = ["domain-name"]
     return get_lookup_threat_data_command(client, args)
 
 
-def url(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def url(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     args["object_names"] = args["url"]
     args["ioc_type"] = ["url"]
     return get_lookup_threat_data_command(client, args)
 
 
-def ip(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def ip(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     args["object_names"] = args["ip"]
     args["ioc_type"] = ["ipv4-addr", "ipv6-addr"]
     return get_lookup_threat_data_command(client, args)
 
 
-def file(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def file(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     args["object_names"] = args["file"]
     args["ioc_type"] = [
         "MD5",
@@ -1745,7 +1764,7 @@ def file(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return get_lookup_threat_data_command(client, args)
 
 
-def get_all_notes(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_all_notes(client: Client, args: dict[str, Any]) -> CommandResults:
     page = args["page"]
     page = check_for_empty_variable(page, 1)
     page_size = args["page_size"]
@@ -1779,7 +1798,7 @@ def get_all_notes(client: Client, args: Dict[str, Any]) -> CommandResults:
         )
 
 
-def get_note_details(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_note_details(client: Client, args: dict[str, Any]) -> CommandResults:
     id = args["id"]
     client_url = client.base_url + f"ingestion/notes/{id}/"
     response = client.get_http_request(client_url)
@@ -1803,7 +1822,7 @@ def get_note_details(client: Client, args: Dict[str, Any]) -> CommandResults:
         )
 
 
-def create_note(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_note(client: Client, args: dict[str, Any]) -> CommandResults:
     text = args['text']
     client_url = client.base_url + "ingestion/notes/"
     object_id = args.get('object_id', None)
@@ -1848,7 +1867,7 @@ def create_note(client: Client, args: Dict[str, Any]) -> CommandResults:
         )
 
 
-def update_note(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_note(client: Client, args: dict[str, Any]) -> CommandResults:
     id = args['id']
     text = args.get("text", None)
     client_url = client.base_url + f"ingestion/notes/{id}/"
@@ -1899,7 +1918,7 @@ def update_note(client: Client, args: Dict[str, Any]) -> CommandResults:
         )
 
 
-def delete_note(client: Client, args: Dict[str, Any]) -> CommandResults:
+def delete_note(client: Client, args: dict[str, Any]) -> CommandResults:
     id = args['id']
     client_url = client.base_url + f"ingestion/notes/{id}/"
     response = client.delete_http_request(client_url)
@@ -1921,7 +1940,7 @@ def delete_note(client: Client, args: Dict[str, Any]) -> CommandResults:
         )
 
 
-def make_request(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def make_request(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     type = args['type']
     body = json.loads(args.get('body', "{}"))
     params = json.loads(args.get('params', "{}"))
@@ -1968,7 +1987,7 @@ def make_request(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             ]
 
 
-def cve_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def cve_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     page = 1
     page_size = 15
     params = {"page": page, "page_size": page_size}
@@ -1976,7 +1995,7 @@ def cve_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     extra_fields = argToList(args.get("extra_fields", []))
     response = client.get_lookup_threat_data("vulnerability", [], cve, params)
     threat_data_list = response.get("data", {}).get("results", [])
-    results = [data for data in threat_data_list]
+    results = list(threat_data_list)
     results = no_result_found(results)
 
     if isinstance(results, CommandResults):
@@ -1988,7 +2007,7 @@ def cve_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return final_results
 
 
-def _lookup_cve_result(client: Client, cve_detail: Dict[str, Any], page: int, page_size: int, extra_fields: List[str]):
+def _lookup_cve_result(client: Client, cve_detail: dict[str, Any], page: int, page_size: int, extra_fields: List[str]):
     cve_uuid = str(cve_detail.get("id"))
     created = str(datetime.fromtimestamp(cve_detail.get("created", 0)))
     modified = str(datetime.fromtimestamp(cve_detail.get("modified", 0)))
@@ -2000,7 +2019,7 @@ def _lookup_cve_result(client: Client, cve_detail: Dict[str, Any], page: int, pa
 
     response = client.get_vulnerability_product_details(cve_uuid, page, page_size)
     product_details_list = response.get("data", {}).get("results", [])
-    results = [data for data in product_details_list]
+    results = list(product_details_list)
     cpe_list = ",\n".join(product.get("product") for product in results)
 
     response = client.get_vulnerability_cvss_score(cve_uuid, page, page_size)
@@ -2022,7 +2041,7 @@ def _lookup_cve_result(client: Client, cve_detail: Dict[str, Any], page: int, pa
         dbot_reputation_score = 1
     elif 3 <= cvss_map_value < 7:
         dbot_reputation_score = 2
-    elif 7 <= cvss_map_value:
+    elif cvss_map_value >= 7:
         dbot_reputation_score = 3
 
     description = None
