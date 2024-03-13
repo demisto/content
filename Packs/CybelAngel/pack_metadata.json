@@ -1,6 +1,6 @@
 {
     "name": "CybelAngel",
-    "description": "Collect reports from the CybelAngel platform, which specializes in external attack surface protection and management.",
+    "description": "CybelAngel Event Collector receives reports from the CybelAngel platform, which specializes in external attack surface protection and management.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
