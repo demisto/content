@@ -369,8 +369,8 @@ class Client(CoreClient):
         return reply.get('reply', {})
 
     def get_multiple_incidents_extra_data(self, incident_id_list=[], fields_to_exclude=True, gte_creation_time_milliseconds=0,
-                                          status=None, starred=None, starred_incidents_fetch_window=None, page_number=0,
-                                          limit=100):
+                                          status=None, starred=None, starred_incidents_fetch_window=None,
+                                          page_number=0, limit=100):
         """
         Returns incident by id
         :param incident_id_list: The list ids of incidents
@@ -382,12 +382,6 @@ class Client(CoreClient):
         filters = []
         if incident_id_list:
             filters.append({"field": "incident_id_list", "operator": "in", "value": incident_id_list})
-        if gte_creation_time_milliseconds > 0:
-            filters.append({
-                'field': 'creation_time',
-                'operator': 'gte',
-                'value': gte_creation_time_milliseconds
-            })
         if status:
             filters.append({
                 'field': 'status',
@@ -413,6 +407,12 @@ class Client(CoreClient):
                     request_data['filters'] = filters
                 incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
                 return incidents
+        elif gte_creation_time_milliseconds:
+                filters.append({
+                    'field': 'creation_time',
+                    'operator': 'gte',
+                    'value': gte_creation_time_milliseconds
+                })
         if len(filters) > 0:
             request_data['filters'] = filters
 
