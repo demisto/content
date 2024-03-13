@@ -55,7 +55,7 @@ filter source_log_type = "alert"
         xdm.alert.description = human_title_message,
         xdm.source.process.name = first_process -> name,
         xdm.source.process.pid = to_integer(first_process -> pid),
-        xdm.source.process.parent_id = first_process -> ppid,
+        xdm.source.process.parent_id = to_string(first_process -> ppid),
         xdm.source.process.executable.path = first_process -> path,
         xdm.source.process.command_line = arraystring(json_extract_scalar_array(first_process, "$.args"), " "),
         xdm.source.process.executable.is_signed = if(to_string(first_process -> signingInfo.signerType) = "4", to_boolean("false"), first_process -> signingInfo.signerType != null, to_boolean("true"), null),
