@@ -9,7 +9,7 @@ from stix2 import TAXIICollectionSource, Filter
 from taxii2client.v20 import Server, Collection, ApiRoot
 
 ''' CONSTANT VARIABLES '''
-MITRE_TYPE_TO_DEMISTO_TYPE = {
+MITRE_TYPE_TO_DEMISTO_TYPE = {  # pragma: no cover
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
     "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
@@ -18,7 +18,7 @@ MITRE_TYPE_TO_DEMISTO_TYPE = {
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "relationship": "Relationship"
 }
-INDICATOR_TYPE_TO_SCORE = {
+INDICATOR_TYPE_TO_SCORE = {  # pragma: no cover
     "Intrusion Set": ThreatIntel.ObjectsScore.INTRUSION_SET,
     "Attack Pattern": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
     "Course of Action": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
@@ -26,7 +26,7 @@ INDICATOR_TYPE_TO_SCORE = {
     "Tool": ThreatIntel.ObjectsScore.TOOL,
     "Campaign": ThreatIntel.ObjectsScore.CAMPAIGN
 }
-MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
+MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {  # pragma: no cover
     'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
     'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
     'adversary-opsec': ThreatIntel.KillChainPhases.ADVERSARY_OPSEC,
