@@ -1850,7 +1850,7 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     return results
 
 
-def private_file_command(client: Client, args: dict, excluded_extensions:list) -> List[CommandResults]:
+def private_file_command(client: Client, args: dict) -> List[CommandResults]:
     """
     1 API Call
     """
