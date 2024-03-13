@@ -1783,7 +1783,7 @@ def arg_to_real_number(arg, arg_name=None, required=False):
     if arg is None or arg == '':
         if required is True:
             if arg_name:
-                raise ValueError('Missing "{}"'.format(arg_name))
+                raise ValueError(f'Missing "{arg_name}"')
             else:
                 raise ValueError('Missing required argument')
 
@@ -1799,16 +1799,16 @@ def arg_to_real_number(arg, arg_name=None, required=False):
             return float(arg)
         except Exception:
             if arg_name:
-                raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+                raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
             else:
-                raise ValueError('"{}" is not a valid number'.format(arg))
+                raise ValueError(f'"{arg}" is not a valid number')
     if isinstance(arg, int):
         return arg
 
     if arg_name:
-        raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
     else:
-        raise ValueError('"{}" is not a valid number'.format(arg))
+        raise ValueError(f'"{arg}" is not a valid number')
 
 
 def convert_start_fetch_to_milliseconds(fetch_start_time: str):

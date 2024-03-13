@@ -1972,6 +1972,7 @@ Retrieves a list of log sources.
 | range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
 | filter | Query by which to filter log sources, e.g., "auto_discovered=false". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
 | fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--config-event_sources-log_source_management-log_sources-GET.html. | Optional | 
+| id | ID of a specific log source. | Optional | 
 
 #### Context Output
 
@@ -1994,6 +1995,134 @@ Retrieves a list of log sources.
 | QRadar.LogSource.LastEventTime | Date | Date when the last event was received by the log source. | 
 | QRadar.LogSource.Gateway | Boolean | Whether log source is configured as a gateway. | 
 | QRadar.LogSource.Status | Unknown | Status of the log source. | 
+
+#### Command example
+```!qradar-log-sources-list qrd_encryption_algorithm=AES128 range=0-2```
+#### Context Example
+```json
+{
+    "QRadar": {
+        "LogSource": [
+            {
+                "AutoDiscovered": false,
+                "CreationDate": "2022-11-21T18:45:24.619000+00:00",
+                "Credibility": 8,
+                "Description": "Custom Rule Engine",
+                "Enabled": true,
+                "Gateway": false,
+                "GroupIDs": [
+                    0
+                ],
+                "ID": 63,
+                "Internal": true,
+                "LastEventTime": "1970-01-01T00:00:00+00:00",
+                "ModifiedDate": "2022-11-21T18:45:24.619000+00:00",
+                "Name": "Custom Rule Engine-8 :: ip-172-31-17-10",
+                "ProtocolParameters": [
+                    {
+                        "id": 0,
+                        "name": "identifier",
+                        "value": "172.31.17.10"
+                    },
+                    {
+                        "id": 1,
+                        "name": "incomingPayloadEncoding",
+                        "value": "UTF-8"
+                    }
+                ],
+                "ProtocolTypeID": 0,
+                "Status": {
+                    "last_updated": 0,
+                    "status": "NA"
+                },
+                "TargetEventCollectorID": 7,
+                "TypeID": 18
+            },
+            {
+                "AutoDiscovered": false,
+                "CreationDate": "2022-11-21T18:45:24.622000+00:00",
+                "Credibility": 10,
+                "Description": "Anomaly Detection Engine",
+                "Enabled": true,
+                "Gateway": false,
+                "GroupIDs": [
+                    0
+                ],
+                "ID": 66,
+                "Internal": true,
+                "LastEventTime": "1970-01-01T00:00:00+00:00",
+                "ModifiedDate": "2022-11-21T18:45:24.622000+00:00",
+                "Name": "Anomaly Detection Engine-2 :: ip-172-31-17-10",
+                "ProtocolParameters": [
+                    {
+                        "id": 0,
+                        "name": "identifier",
+                        "value": "127.0.0.1"
+                    },
+                    {
+                        "id": 1,
+                        "name": "incomingPayloadEncoding",
+                        "value": "UTF-8"
+                    }
+                ],
+                "ProtocolTypeID": 0,
+                "Status": {
+                    "last_updated": 0,
+                    "status": "NA"
+                },
+                "TargetEventCollectorID": 7,
+                "TypeID": 207
+            },
+            {
+                "AutoDiscovered": false,
+                "CreationDate": "2022-11-21T18:45:24.614000+00:00",
+                "Credibility": 1,
+                "Description": "SIM Generic Log DSM",
+                "Enabled": true,
+                "Gateway": false,
+                "GroupIDs": [
+                    0
+                ],
+                "ID": 62,
+                "Internal": true,
+                "LastEventTime": "2024-03-13T13:01:26.427000+00:00",
+                "ModifiedDate": "2022-11-21T18:45:24.614000+00:00",
+                "Name": "SIM Generic Log DSM-7 :: ip-172-31-17-10",
+                "ProtocolParameters": [
+                    {
+                        "id": 0,
+                        "name": "identifier",
+                        "value": "Q1GenericLogDSM_7"
+                    },
+                    {
+                        "id": 1,
+                        "name": "incomingPayloadEncoding",
+                        "value": "UTF-8"
+                    }
+                ],
+                "ProtocolTypeID": 0,
+                "Status": {
+                    "last_updated": 0,
+                    "status": "SUCCESS"
+                },
+                "TargetEventCollectorID": 7,
+                "TypeID": 67
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Log Sources List
+>|ID|Name|Description|Credibility|ModifiedDate|TypeID|Enabled|ProtocolTypeID|ProtocolParameters|TargetEventCollectorID|LastEventTime|Gateway|AutoDiscovered|GroupIDs|Internal|Status|CreationDate|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 63 | Custom Rule Engine-8 :: ip-172-31-17-10 | Custom Rule Engine | 8 | 2022-11-21T18:45:24.619000+00:00 | 18 | true | 0 | {'name': 'identifier', 'id': 0, 'value': '172.31.17.10'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 7 | 1970-01-01T00:00:00+00:00 | false | false | 0 | true | last_updated: 0<br/>status: NA | 2022-11-21T18:45:24.619000+00:00 |
+>| 66 | Anomaly Detection Engine-2 :: ip-172-31-17-10 | Anomaly Detection Engine | 10 | 2022-11-21T18:45:24.622000+00:00 | 207 | true | 0 | {'name': 'identifier', 'id': 0, 'value': '127.0.0.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 7 | 1970-01-01T00:00:00+00:00 | false | false | 0 | true | last_updated: 0<br/>status: NA | 2022-11-21T18:45:24.622000+00:00 |
+>| 62 | SIM Generic Log DSM-7 :: ip-172-31-17-10 | SIM Generic Log DSM | 1 | 2022-11-21T18:45:24.614000+00:00 | 67 | true | 0 | {'name': 'identifier', 'id': 0, 'value': 'Q1GenericLogDSM_7'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 7 | 2024-03-13T13:01:26.427000+00:00 | false | false | 0 | true | last_updated: 0<br/>status: SUCCESS | 2022-11-21T18:45:24.614000+00:00 |
+
+
 
 #### Command example
 ```!qradar-log-sources-list qrd_encryption_algorithm=AES128 range=0-2```
@@ -3205,3 +3334,5079 @@ Potentially harmful: This API command executes any waiting system deployments in
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QRadar.deploy.status | String | The deployment status \(INITIALIZING, IN_PROGRESS, COMPLETE\). | 
+### qradar-log-source-update
+
+***
+Updates an exising log source.
+
+#### Base Command
+
+`qradar-log-source-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The id of the log source. | Required | 
+| name | The unique name of the log source. | Optional | 
+| protocol_type_id | The type of protocol that is used by the log source. Must correspond to an existing protocol type. | Optional | 
+| type_id | The type of the log source. Must correspond to an existing log source type. | Optional | 
+| protocol_parameters | The list of protocol parameters corresponding with the selected protocol type id. The syntax for this argument should follow: protocol_parameters="name_1=value_1,name_2=value_2,...,name_n=value_n" where each name should correspond to a name of a protocol parameter from the protocol type and each value should fit the type of the protocol parameter. The command qradar-log-source-protocol-types-list can be used to list all available protocol types. | Optional | 
+| target_event_collector_id | The ID of the event collector where the log source sends its data. The ID must correspond to an existing event collector. | Optional | 
+| sending_ip | The ip of the system which the log source is associated to, or fed by. | Optional | 
+| description | The description of the log source. | Optional | 
+| coalesce_events | Determines if events collected by this log source are coalesced based on common properties. If each individual event is stored, then the condition is set to false. Defaults to true. | Optional | 
+| enabled | Determines if the log source is enabled. Defaults to true. | Optional | 
+| parsing_order | The order in which log sources will parse if multiple exists with a common identifier. | Optional | 
+| group_ids | The set of log source group IDs this log source is a member of. Each ID must correspond to an existing log source group. The command qradar-log-sources-groups-list can be used to list all available groups. See the Log Source Group API (https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html). | Optional | 
+| credibility | On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source. | Optional | 
+| store_event_payload | If the payloads of events that are collected by this log source are stored, the condition is set to 'true'. If only the normalized event records are stored, then the condition is set to 'false'. | Optional | 
+| disconnected_log_collector_id | The ID of the disconnected log collector where this log source will run. The ID must correspond to an existing disconnected log collector. | Optional | 
+| language_id | The language of the events that are being processed by this log source. Must correspond to an existing log source language. | Optional | 
+| requires_deploy | Set to 'true' if you need to deploy changes to enable the log source for use; otherwise, set to 'false' if the log source is already active. | Optional | 
+| wincollect_internal_destination_id | The internal WinCollect destination for this log source, if applicable. Log sources without an associated WinCollect agent have a null value. Must correspond to an existing WinCollect destination. | Optional | 
+| wincollect_external_destination_ids | The set of external WinCollect destinations for this log source, if applicable. Log Sources without an associated WinCollect agent have a null value. Each ID must correspond to an existing WinCollect destination. | Optional | 
+| gateway | If the log source is configured as a gateway, the condition is set to 'true'; otherwise, the condition is set to 'false'. A gateway log source is a stand-alone protocol configuration. The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to feed other log sources. It acts as a "gateway" for events from multiple systems to enter the event pipeline. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!qradar-log-source-update id=1900 description="A demo log source"```
+#### Human Readable Output
+
+>Log source 1900 was updated successfully
+
+### qradar-log-source-create
+
+***
+Creates a new log source.
+
+#### Base Command
+
+`qradar-log-source-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The unique name of the log source. | Required | 
+| protocol_type_id | The type of protocol that is used by the log source. Must correspond to an existing protocol type. | Required | 
+| type_id | The type of the log source. Must correspond to an existing log source type. | Required | 
+| protocol_parameters | The list of protocol parameters corresponding with the selected protocol type id. The syntax for this argument should follow: protocol_parameters="name_1=value_1,name_2=value_2,...,name_n=value_n" where each name should correspond to a name of a protocol parameter from the protocol type and each value should fit the type of the protocol parameter. The command qradar-log-source-protocol-types-list can be used to list all available protocol types. | Required | 
+| target_event_collector_id | The ID of the event collector where the log source sends its data. The ID must correspond to an existing event collector. | Required | 
+| sending_ip | The ip of the system which the log source is associated to, or fed by. | Optional | 
+| description | The description of the log source. | Optional | 
+| coalesce_events | Determines if events collected by this log source are coalesced based on common properties. If each individual event is stored, then the condition is set to false. Defaults to true. | Optional | 
+| enabled | Determines if the log source is enabled. Defaults to true. | Optional | 
+| parsing_order | The order in which log sources will parse if multiple exists with a common identifier. | Optional | 
+| group_ids | The set of log source group IDs this log source is a member of. Each ID must correspond to an existing log source group. The command qradar-log-sources-groups-list can be used to list all available groups. See the Log Source Group API (https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html). | Optional | 
+| credibility | On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source. | Optional | 
+| store_event_payload | If the payloads of events that are collected by this log source are stored, the condition is set to 'true'. If only the normalized event records are stored, then the condition is set to 'false'. | Optional | 
+| disconnected_log_collector_id | The ID of the disconnected log collector where this log source will run. The ID must correspond to an existing disconnected log collector. | Optional | 
+| language_id | The language of the events that are being processed by this log source. Must correspond to an existing log source language. | Optional | 
+| requires_deploy | Set to 'true' if you need to deploy changes to enable the log source for use; otherwise, set to 'false' if the log source is already active. | Optional | 
+| wincollect_internal_destination_id | The internal WinCollect destination for this log source, if applicable. Log sources without an associated WinCollect agent have a null value. Must correspond to an existing WinCollect destination. | Optional | 
+| wincollect_external_destination_ids | The set of external WinCollect destinations for this log source, if applicable. Log Sources without an associated WinCollect agent have a null value. Each ID must correspond to an existing WinCollect destination. | Optional | 
+| gateway | If the log source is configured as a gateway, the condition is set to 'true'; otherwise, the condition is set to 'false'. A gateway log source is a stand-alone protocol configuration. The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to feed other log sources. It acts as a "gateway" for events from multiple systems to enter the event pipeline. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.LogSource.SendingIP | String | IP of the system which the log source is associated with, or fed by. | 
+| QRadar.LogSource.Internal | Boolean | Whether log source is internal. | 
+| QRadar.LogSource.ProtocolParameters | Unknown | Protocol parameters. | 
+| QRadar.LogSource.Description | String | Description of the log source. | 
+| QRadar.LogSource.Enabled | Boolean | Whether log source is enabled. | 
+| QRadar.LogSource.GroupIDs | Number | Log source group IDs. | 
+| QRadar.LogSource.Credibility | Number | Credibility of the log source. | 
+| QRadar.LogSource.ID | Number | ID of the log source. | 
+| QRadar.LogSource.ProtocolTypeID | Number | Protocol type used by log source. | 
+| QRadar.LogSource.CreationDate | Date | Date when log source was created. | 
+| QRadar.LogSource.Name | String | Name of the log source. | 
+| QRadar.LogSource.AutoDiscovered | Boolean | Whether log source was auto discovered. | 
+| QRadar.LogSource.ModifiedDate | Date | Date when log source was last modified. | 
+| QRadar.LogSource.TypeID | Number | The log source type. | 
+| QRadar.LogSource.LastEventTime | Date | Date when the last event was received by the log source. | 
+| QRadar.LogSource.Gateway | Boolean | Whether log source is configured as a gateway. | 
+| QRadar.LogSource.Status | unknown | Status of the log source. | 
+| QRadar.LogSource.TargetEventCollectorID | Number | The ID of the event collector where the log source sends its data. | 
+
+### qradar-log-source-delete
+
+***
+Deletes a log source by id or name. One of the arguments must be provided.
+
+#### Base Command
+
+`qradar-log-source-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The id of the log source to be deleted. If this argument is not provided, name must be provided. | Optional | 
+| name | The unique name of the log source to be deleted. If this argument is not provided, id must be provided. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### qradar-log-source-protocol-types-list
+
+***
+Retrieves the list of protocol types.
+
+#### Base Command
+
+`qradar-log-source-protocol-types-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol_parameters". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html. | Optional | 
+| id | ID of a specific disconnected log collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.LogSourceProtocolType.GatewaySupported | Boolean | If this protocol type can be configured for a gateway log source, the condition is set to 'true'; otherwise, the condition is set to 'false'. A gateway log source is a stand-alone protocol configuration. The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to feed other log sources. It acts as a 'gateway' for events from multiple systems to enter the event pipeline. Not all protocol types can be used as a gateway if they don't support collecting event data from multiple sources. | 
+| QRadar.LogSourceProtocolType.ID | Number | The ID of tge protocol type. | 
+| QRadar.LogSourceProtocolType.Inbound | Boolean | Indicates whether this is an inbound protocol. | 
+| QRadar.LogSourceProtocolType.LatestVersion | String | The latest version available of the protocol type component. | 
+| QRadar.LogSourceProtocolType.Name | String | The unique name of the protocol type. | 
+| QRadar.LogSourceProtocolType.ParameterGroups.id | Number | The ID of the protocol parameter group. | 
+| QRadar.LogSourceProtocolType.ParameterGroups.name | String | The name of the protocol parameter group. | 
+| QRadar.LogSourceProtocolType.ParameterGroups.required | Boolean | If at least one parameter in this group must be set, the condition is set to true; otherwise, the condition is set to false. | 
+| QRadar.LogSourceProtocolType.Parameters.allowed_values.name | String |  | 
+| QRadar.LogSourceProtocolType.Parameters.allowed_values.value | String | The name of the parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.default_value | String |  The optional default parameter value. | 
+| QRadar.LogSourceProtocolType.Parameters.description | String | The description of the parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.group_id | Number | he ID of the protocol parameter group that this parameter belongs to. The group_id is optional. | 
+| QRadar.LogSourceProtocolType.Parameters.id | Number | The ID of the parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.label | String | The label of the parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.max_length | Number | The maximum length of the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD, REGEX. The max_length is optional. | 
+| QRadar.LogSourceProtocolType.Parameters.max_value | String | he maximum of the parameter value for the following parameter types: INTEGER, REAL, DATE, TIME, DATETIME, INTERVAL. The max_value is optional. | 
+| QRadar.LogSourceProtocolType.Parameters.min_length | Number | The minimum length of the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD, REGEX. The max_length is optional. | 
+| QRadar.LogSourceProtocolType.Parameters.min_value | String | he minimum of the parameter value for the following parameter types: INTEGER, REAL, DATE, TIME, DATETIME, INTERVAL. The max_value is optional. | 
+| QRadar.LogSourceProtocolType.Parameters.name | String | The name of the parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.pattern | String | An optional Java regex pattern restriction on the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD. | 
+| QRadar.LogSourceProtocolType.Parameters.pattern_description | String | The description of the pattern of the parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.required | Boolean | If the parameter is mandatory, the condition is set to true; otherwise, the condition is set to false. | 
+| QRadar.LogSourceProtocolType.Parameters.rules.affected_property | String | The affected property. For possibile values visit: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html | 
+| QRadar.LogSourceProtocolType.Parameters.rules.affected_property_value | String |  The value to be applied to the affected parameter when the rule is triggered. For further info visit: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html | 
+| QRadar.LogSourceProtocolType.Parameters.rules.parameter_id | Number | The ID of the parameter affected by the rule. | 
+| QRadar.LogSourceProtocolType.Parameters.rules.trigger_parameter_id | Number | The ID of the trigger parameter. | 
+| QRadar.LogSourceProtocolType.Parameters.rules.trigger_pattern | String | The pattern that triggers the rule. For example, if the value of trigger_parameter_id matches the regular expression of this field, the rule triggers. | 
+| QRadar.LogSourceProtocolType.Parameters.type | String | The type of the parameter. Possible values are: STRING, TEXT, INTEGER, REAL, BOOLEAN, DATE, TIME, DATETIME, INTERVAL, HOST, PASSWORD, REGEX. | 
+| QRadar.LogSourceProtocolType.TestingCapabilities.can_accept_sample_events | Boolean | Indicates whether the protocol type can accept sample events \(only applicable to inbound protocol types\). | 
+| QRadar.LogSourceProtocolType.TestingCapabilities.can_collect_events | Boolean | Indicates whether the protocol type can collect test events. | 
+| QRadar.LogSourceProtocolType.TestingCapabilities.testable | Boolean | Indicates whether the protocol type is testable. | 
+| QRadar.LogSourceProtocolType.Version | String | The version of the protocol type component. | 
+
+#### Command example
+```!qradar-log-source-protocol-types-list id=0```
+#### Context Example
+```json
+{
+    "QRadar": {
+        "LogSourceProtocolType": {
+            "GatewaySupported": false,
+            "ID": 0,
+            "Inbound": true,
+            "Name": "Syslog",
+            "Parameters": [
+                {
+                    "id": 0,
+                    "label": "Log Source Identifier",
+                    "name": "identifier",
+                    "required": true,
+                    "type": "STRING"
+                },
+                {
+                    "default_value": "UTF-8",
+                    "id": 1,
+                    "label": "Incoming Payload Encoding",
+                    "name": "incomingPayloadEncoding",
+                    "required": true,
+                    "type": "ENCODING"
+                }
+            ],
+            "TestingCapabilities": {
+                "can_accept_sample_events": false,
+                "can_collect_events": false,
+                "testable": false
+            },
+            "Version": "20191218165"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Log Source Protocol Types
+>|ID|Name|CanCollectEvents|Testable|CanAcceptSampleEvents|
+>|---|---|---|---|---|
+>| 0 | Syslog | false | false | false |
+
+
+### qradar-log-source-types-list
+
+***
+Retrieves a list of log sources types.
+
+#### Base Command
+
+`qradar-log-source-types-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_types-GET.html. | Optional | 
+| id | ID of a specific disconnected log collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.LogSourceTypesList.Custom | Boolean |  | 
+| QRadar.LogSourceTypesList.DefaultProtocolID | Number |  | 
+| QRadar.LogSourceTypesList.ID | Number | The ID of the log source type. | 
+| QRadar.LogSourceTypesList.Internal | Boolean | The condition is set to true if the log source type is an internal log source type \(for example, System Notification, SIM Audit, Asset Profiler, and so on\) for which log sources cannot be created, edited, or deleted. If this is a user configurable log source type, the condition is set to false. | 
+| QRadar.LogSourceTypesList.LatestVersion | String | The latest available version of the log source type component. | 
+| QRadar.LogSourceTypesList.LogSourceExtensionID | Number | The log source extension that is associated with the log source type. The ID must correspond to an existing log source extension or be set to null. See the Log Source Extension API \(/api/config/event_sources/log_source_management/log_source_extensions/\). | 
+| QRadar.LogSourceTypesList.Name | String | The unique name of the log source type. The name is not localized. | 
+| QRadar.LogSourceTypesList.protocol_types.documented | Boolean | Indicates whether the protocol is documented/fully supported for this log source type. | 
+| QRadar.LogSourceTypesList.protocol_types.protocol_id | Number | ID of the protocol type. | 
+| QRadar.LogSourceTypesList.supported_language_ids | List | The IDs of the languages supported by this log source type. Each ID must correspond to an existing log source language. See the Log Source Language API. | 
+| QRadar.LogSourceTypesList.uuid | String | A string uuid the log source type. | 
+| QRadar.LogSourceTypesList.version | String | The log source type plugin version. | 
+
+#### Command example
+```!qradar-log-source-types-list```
+#### Context Example
+```json
+{
+    "QRadar": {
+        "LogSourceTypesList": [
+            {
+                "Custom": false,
+                "ID": 16,
+                "Internal": true,
+                "LogSourceExtensionID": 0,
+                "Name": "Flow Classification Engine",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 4
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "6.0-0"
+            },
+            {
+                "Custom": false,
+                "ID": 18,
+                "Internal": true,
+                "LogSourceExtensionID": 0,
+                "Name": "Custom Rule Engine",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 5
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "6.0-0"
+            },
+            {
+                "Custom": false,
+                "ID": 21,
+                "Internal": true,
+                "LogSourceExtensionID": 0,
+                "Name": "Nortel Contivity VPN Switch (obsolete)",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "6.0-0"
+            },
+            {
+                "Custom": false,
+                "ID": 205,
+                "Internal": true,
+                "LogSourceExtensionID": 0,
+                "Name": "Flow Device Type",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "7.0-0"
+            },
+            {
+                "Custom": false,
+                "ID": 207,
+                "Internal": true,
+                "LogSourceExtensionID": 0,
+                "Name": "Anomaly Detection Engine",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 33
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "7.0-0"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 34,
+                "ID": 210,
+                "Internal": false,
+                "LatestVersion": "20240118072",
+                "LogSourceExtensionID": 0,
+                "Name": "EMC VMWare",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 34
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20240118072"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 3,
+                "Internal": false,
+                "LatestVersion": "20240206111",
+                "LogSourceExtensionID": 0,
+                "Name": "Check Point",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 2
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20240206111"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 12,
+                "Internal": false,
+                "LatestVersion": "20240117092",
+                "LogSourceExtensionID": 0,
+                "Name": "Microsoft Windows Security Event Log",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 30
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 31
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 39
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 57
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 59
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    3,
+                    7,
+                    11,
+                    4,
+                    8,
+                    1,
+                    5,
+                    9,
+                    2,
+                    6,
+                    10
+                ],
+                "Version": "20240117092"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 148,
+                "Internal": false,
+                "LatestVersion": "20240206055",
+                "LogSourceExtensionID": 0,
+                "Name": "IBM i",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20240206055"
+            },
+            {
+                "Custom": false,
+                "ID": 105,
+                "Internal": true,
+                "LatestVersion": "20231229070",
+                "LogSourceExtensionID": 0,
+                "Name": "SIM Audit",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20231229070"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 99,
+                "Internal": false,
+                "LatestVersion": "20240129081",
+                "LogSourceExtensionID": 0,
+                "Name": "Microsoft Exchange Server",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 16
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 81
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20240129081"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 160,
+                "Internal": false,
+                "LatestVersion": "20240221063",
+                "LogSourceExtensionID": 0,
+                "Name": "Symantec Endpoint Protection",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1,
+                    7,
+                    2,
+                    11,
+                    5,
+                    12,
+                    6
+                ],
+                "Version": "20240221063"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 62,
+                "ID": 528,
+                "Internal": false,
+                "LatestVersion": "20240226114",
+                "LogSourceExtensionID": 0,
+                "Name": "CrowdStrike Falcon Data Replicator",
+                "ProtocolTypes": [
+                    {
+                        "documented": false,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 92
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20240226114"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 15,
+                "ID": 179,
+                "Internal": false,
+                "LatestVersion": "20240219091",
+                "LogSourceExtensionID": 0,
+                "Name": "Cisco IronPort",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20240219091"
+            },
+            {
+                "Custom": false,
+                "ID": 147,
+                "Internal": true,
+                "LogSourceExtensionID": 0,
+                "Name": "System Notification",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20191111023"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 31,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Cisco Firewall Services Module (FWSM)",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20231030092"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 140,
+                "Internal": false,
+                "LatestVersion": "20230717064",
+                "LogSourceExtensionID": 0,
+                "Name": "BeyondTrust Privilege Management for Unix, Linux and Networked Devices",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20230717064"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 25,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "McAfee Network Security Platform",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20210618152"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 15,
+                "ID": 195,
+                "Internal": false,
+                "LatestVersion": "20220421060",
+                "LogSourceExtensionID": 0,
+                "Name": "IBM DB2",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20220421060"
+            },
+            {
+                "Custom": false,
+                "ID": 90,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Cisco ACS",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20191111023"
+            },
+            {
+                "Custom": false,
+                "ID": 48,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Oracle RDBMS Audit Record",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 8
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20191111023"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 39,
+                "Internal": false,
+                "LatestVersion": "20230504073",
+                "LogSourceExtensionID": 0,
+                "Name": "Universal DSM",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 1
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 7
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 30
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 16
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 17
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 19
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 31
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 18
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 20
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 2
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 8
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 9
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 10
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 11
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 34
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 37
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 35
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 21
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 55
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 42
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 67
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 54
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 69
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 72
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 71
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 75
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 83
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 70
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 61
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 84
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 73
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 56
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 65
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 79
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 74
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 77
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 25
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 63
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 60
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 43
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 81
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 46
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 66
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 57
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 47
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 39
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 49
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 45
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 48
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 44
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 82
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 68
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 59
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 40
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 85
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 88
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 91
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 92
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 87
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 90
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 95
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 96
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 94
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20230504073"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 64,
+                "Internal": false,
+                "LatestVersion": "20220519092",
+                "LogSourceExtensionID": 0,
+                "Name": "Juniper Junos OS Platform",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 36
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20220519092"
+            },
+            {
+                "Custom": false,
+                "ID": 180,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Hewlett Packard UniX",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20191111023"
+            },
+            {
+                "Custom": false,
+                "ID": 164,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Redback ASE",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20191111023"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 67,
+                "Internal": true,
+                "LatestVersion": "20230223110",
+                "LogSourceExtensionID": 0,
+                "Name": "SIM Generic Log DSM",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 2
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 3
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 6
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 8
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 9
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 1
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 7
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 10
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 11
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 16
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 4
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 17
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 18
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 20
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 30
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 31
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 21
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 34
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 35
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 37
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 42
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 54
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 55
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 67
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 69
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 72
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 25
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 43
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 56
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 60
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 61
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 63
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 65
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 70
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 71
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 73
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 74
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 75
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 77
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 79
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 83
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 84
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 39
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 45
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 46
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 47
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 48
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 49
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 53
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 57
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 66
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 81
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 44
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 68
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 82
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 59
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 40
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 92
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 5
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 19
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 33
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 36
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 85
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 87
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 88
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 90
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 91
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 95
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 96
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 94
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20230223110"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 85,
+                "Internal": false,
+                "LatestVersion": "20220908131",
+                "LogSourceExtensionID": 0,
+                "Name": "IBM AIX Server",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20220908131"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 70,
+                "Internal": false,
+                "LatestVersion": "20230818091",
+                "LogSourceExtensionID": 0,
+                "Name": "Extreme Networks ExtremeWare Operating System (OS)",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20230818091"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 118,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Juniper M Series Multiservice Edge Routing",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20220519092"
+            },
+            {
+                "Custom": false,
+                "ID": 166,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Extreme XSR Security Routers",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20191111023"
+            },
+            {
+                "Custom": false,
+                "ID": 83,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Juniper Steel-Belted Radius",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 48
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20200130150"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 122,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Juniper MX Series Ethernet Services Router",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20220519092"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 123,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Juniper T Series Core Platform",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20220519092"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 139,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Juniper EX-Series Ethernet Switch",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20220519092"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 150,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Juniper SRX Series Services Gateway",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 36
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20220519092"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 24,
+                "Internal": false,
+                "LatestVersion": "20220725193",
+                "LogSourceExtensionID": 0,
+                "Name": "Solaris Operating System Authentication Messages",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20220725193"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 136,
+                "Internal": false,
+                "LatestVersion": "20221019061",
+                "LogSourceExtensionID": 0,
+                "Name": "Nortel Secure Router",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20221019061"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 49,
+                "Internal": false,
+                "LatestVersion": "20231004123",
+                "LogSourceExtensionID": 0,
+                "Name": "F5 Networks BIG-IP LTM",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20231004123"
+            },
+            {
+                "Custom": false,
+                "ID": 138,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "OpenBSD OS",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20191111023"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 194,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Cisco ACE Firewall",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20231030092"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 243,
+                "Internal": false,
+                "LatestVersion": "20230207142",
+                "LogSourceExtensionID": 0,
+                "Name": "Infoblox NIOS",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20230207142"
+            },
+            {
+                "Custom": false,
+                "ID": 230,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Bit9 Security Platform",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20191111023"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 5,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Juniper Networks Firewall and VPN",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20200930144"
+            },
+            {
+                "Custom": false,
+                "ID": 216,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "IBM Informix Audit",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20191111023"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 41,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Cisco Adaptive Security Appliance (ASA)",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 35
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20231030092"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 246,
+                "Internal": true,
+                "LogSourceExtensionID": 0,
+                "Name": "WinCollect",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20210817165"
+            },
+            {
+                "Custom": false,
+                "ID": 221,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "CA ACF2",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20191111023"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 0,
+                "ID": 233,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Citrix NetScaler",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20210108160"
+            },
+            {
+                "Custom": false,
+                "ID": 217,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "CA Top Secret",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20191111023"
+            },
+            {
+                "Custom": false,
+                "DefaultProtocolID": 1,
+                "ID": 165,
+                "Internal": false,
+                "LogSourceExtensionID": 0,
+                "Name": "Trend Micro Office Scan",
+                "ProtocolTypes": [
+                    {
+                        "documented": true,
+                        "protocol_id": 1
+                    },
+                    {
+                        "documented": true,
+                        "protocol_id": 12
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 22
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 23
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 24
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 50
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 0
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 32
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 80
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 51
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 78
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 41
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 15
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 76
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 62
+                    },
+                    {
+                        "documented": false,
+                        "protocol_id": 85
+                    }
+                ],
+                "SupportedLanguageIDs": [
+                    1
+                ],
+                "Version": "20210305162"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Log Source Types List
+>|ID|Name|Custom|Version|SupportedLanguageIDs|
+>|---|---|---|---|---|
+>| 16 | Flow Classification Engine | false | 6.0-0 | 1 |
+>| 18 | Custom Rule Engine | false | 6.0-0 | 1 |
+>| 21 | Nortel Contivity VPN Switch (obsolete) | false | 6.0-0 | 1 |
+>| 205 | Flow Device Type | false | 7.0-0 | 1 |
+>| 207 | Anomaly Detection Engine | false | 7.0-0 | 1 |
+>| 210 | EMC VMWare | false | 20240118072 | 1 |
+>| 3 | Check Point | false | 20240206111 | 1 |
+>| 12 | Microsoft Windows Security Event Log | false | 20240117092 | 3,<br/>7,<br/>11,<br/>4,<br/>8,<br/>1,<br/>5,<br/>9,<br/>2,<br/>6,<br/>10 |
+>| 148 | IBM i | false | 20240206055 | 1 |
+>| 105 | SIM Audit | false | 20231229070 | 1 |
+>| 99 | Microsoft Exchange Server | false | 20240129081 | 1 |
+>| 160 | Symantec Endpoint Protection | false | 20240221063 | 1,<br/>7,<br/>2,<br/>11,<br/>5,<br/>12,<br/>6 |
+>| 528 | CrowdStrike Falcon Data Replicator | false | 20240226114 | 1 |
+>| 179 | Cisco IronPort | false | 20240219091 | 1 |
+>| 147 | System Notification | false | 20191111023 | 1 |
+>| 31 | Cisco Firewall Services Module (FWSM) | false | 20231030092 | 1 |
+>| 140 | BeyondTrust Privilege Management for Unix, Linux and Networked Devices | false | 20230717064 | 1 |
+>| 25 | McAfee Network Security Platform | false | 20210618152 | 1 |
+>| 195 | IBM DB2 | false | 20220421060 | 1 |
+>| 90 | Cisco ACS | false | 20191111023 | 1 |
+>| 48 | Oracle RDBMS Audit Record | false | 20191111023 | 1 |
+>| 39 | Universal DSM | false | 20230504073 | 1 |
+>| 64 | Juniper Junos OS Platform | false | 20220519092 | 1 |
+>| 180 | Hewlett Packard UniX | false | 20191111023 | 1 |
+>| 164 | Redback ASE | false | 20191111023 | 1 |
+>| 67 | SIM Generic Log DSM | false | 20230223110 | 1 |
+>| 85 | IBM AIX Server | false | 20220908131 | 1 |
+>| 70 | Extreme Networks ExtremeWare Operating System (OS) | false | 20230818091 | 1 |
+>| 118 | Juniper M Series Multiservice Edge Routing | false | 20220519092 | 1 |
+>| 166 | Extreme XSR Security Routers | false | 20191111023 | 1 |
+>| 83 | Juniper Steel-Belted Radius | false | 20200130150 | 1 |
+>| 122 | Juniper MX Series Ethernet Services Router | false | 20220519092 | 1 |
+>| 123 | Juniper T Series Core Platform | false | 20220519092 | 1 |
+>| 139 | Juniper EX-Series Ethernet Switch | false | 20220519092 | 1 |
+>| 150 | Juniper SRX Series Services Gateway | false | 20220519092 | 1 |
+>| 24 | Solaris Operating System Authentication Messages | false | 20220725193 | 1 |
+>| 136 | Nortel Secure Router | false | 20221019061 | 1 |
+>| 49 | F5 Networks BIG-IP LTM | false | 20231004123 | 1 |
+>| 138 | OpenBSD OS | false | 20191111023 | 1 |
+>| 194 | Cisco ACE Firewall | false | 20231030092 | 1 |
+>| 243 | Infoblox NIOS | false | 20230207142 | 1 |
+>| 230 | Bit9 Security Platform | false | 20191111023 | 1 |
+>| 5 | Juniper Networks Firewall and VPN | false | 20200930144 | 1 |
+>| 216 | IBM Informix Audit | false | 20191111023 | 1 |
+>| 41 | Cisco Adaptive Security Appliance (ASA) | false | 20231030092 | 1 |
+>| 246 | WinCollect | false | 20210817165 | 1 |
+>| 221 | CA ACF2 | false | 20191111023 | 1 |
+>| 233 | Citrix NetScaler | false | 20210108160 | 1 |
+>| 217 | CA Top Secret | false | 20191111023 | 1 |
+>| 165 | Trend Micro Office Scan | false | 20210305162 | 1 |
+
+
+### qradar-log-source-groups-list
+
+***
+Retrieves a list of log source languages.
+
+#### Base Command
+
+`qradar-log-source-groups-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-GET.html. | Optional | 
+| id | ID of a specific disconnected log collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.LogSourceGroup.Assignable | Boolean | If log sources can be assigned to this group, the condition is set to true; otherwise, the condition is set to false. Log sources cannot be assigned directly to the "Other" group or to the root log source group node. | 
+| QRadar.LogSourceGroup.ChildGroupIDs | List | The list of IDs of any child log source groups that belong to this group. | 
+| QRadar.LogSourceGroup.Description | String | The description of the group. | 
+| QRadar.LogSourceGroup.ID | Number | The ID of the group. | 
+| QRadar.LogSourceGroup.ModificationDate | Number | The date and time \(expressed as milliseconds since epoch\) that the group was last modified. | 
+| QRadar.LogSourceGroup.Name | String | The name of the group. | 
+| QRadar.LogSourceGroup.Owner | String | The name of the user who owns the group. | 
+| QRadar.LogSourceGroup.ParentID | Number | The ID of the group's parent group. The root node group has a null parent_ID. | 
+
+#### Command example
+```!qradar-log-source-groups-list```
+#### Context Example
+```json
+{
+    "QRadar": {
+        "LogSourceGroup": [
+            {
+                "Assignable": false,
+                "Description": "Sensor device grouping root node",
+                "GroupName": "sensor device",
+                "ID": 1,
+                "ParentID": 0
+            },
+            {
+                "Assignable": false,
+                "Description": "Sensor device grouping root node",
+                "GroupName": "Other",
+                "ID": 0,
+                "ParentID": 1
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Log Source Groups List
+>|ID|GroupName|Assignable|Description|ParentID|
+>|---|---|---|---|---|
+>| 1 | sensor device | false | Sensor device grouping root node | 0 |
+>| 0 | Other | false | Sensor device grouping root node | 1 |
+
+
+### qradar-log-source-languages-list
+
+***
+Retrieves a list of log source languages.
+
+#### Base Command
+
+`qradar-log-source-languages-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_languages-GET.html. | Optional | 
+| id | ID of a specific disconnected log collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.LogSourceLanguage.ID | Number | The ID of the language. This ID does not change across deployments. | 
+| QRadar.LogSourceLanguage.Name | String | The display name of the language. | 
+
+#### Command example
+```!qradar-log-source-languages-list```
+#### Context Example
+```json
+{
+    "QRadar": {
+        "LogSourceLanguage": [
+            {
+                "ID": 1,
+                "Name": "English"
+            },
+            {
+                "ID": 2,
+                "Name": "French"
+            },
+            {
+                "ID": 3,
+                "Name": "Chinese (simplified)"
+            },
+            {
+                "ID": 4,
+                "Name": "Chinese (traditional)"
+            },
+            {
+                "ID": 5,
+                "Name": "German"
+            },
+            {
+                "ID": 6,
+                "Name": "Italian"
+            },
+            {
+                "ID": 7,
+                "Name": "Japanese"
+            },
+            {
+                "ID": 8,
+                "Name": "Korean"
+            },
+            {
+                "ID": 9,
+                "Name": "Portuguese"
+            },
+            {
+                "ID": 10,
+                "Name": "Spanish"
+            },
+            {
+                "ID": 11,
+                "Name": "Russian"
+            },
+            {
+                "ID": 12,
+                "Name": "Polish"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Log Source Languages List
+>|ID|Name|
+>|---|---|
+>| 1 | English |
+>| 2 | French |
+>| 3 | Chinese (simplified) |
+>| 4 | Chinese (traditional) |
+>| 5 | German |
+>| 6 | Italian |
+>| 7 | Japanese |
+>| 8 | Korean |
+>| 9 | Portuguese |
+>| 10 | Spanish |
+>| 11 | Russian |
+>| 12 | Polish |
+
+
+### qradar-event-collectors-list
+
+***
+Retrieves a list of event collectors.
+
+#### Base Command
+
+`qradar-event-collectors-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter event collectors, e.g., "auto_discovered=false". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-event_collectors-GET.html. | Optional | 
+| id | ID of a specific event collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.EventCollector.Name | String | The display name of the event collector. Not localized because it is derived from a process/component name and the hostname of the managed host it runs on, neither of which are translatable. | 
+| QRadar.EventCollector.HostID | Number | The ID of the host on which this event collector process runs. | 
+| QRadar.EventCollector.ComponentName | String | The name of the component backing this event collector process. Also contained in the "name" field. | 
+| QRadar.EventCollector.ID | Number | The unique ID of the event collector. | 
+
+#### Command example
+```!qradar-event-collectors-list id=7```
+#### Context Example
+```json
+{
+    "QRadar": {
+        "EventCollector": {
+            "ComponentName": "eventcollector0",
+            "HostID": 53,
+            "ID": 7,
+            "Name": "eventcollector0 :: ip-172-31-17-10"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Event Collectors List
+>|ID|Name|ComponentName|HostID|
+>|---|---|---|---|
+>| 7 | eventcollector0 :: ip-172-31-17-10 | eventcollector0 | 53 |
+
+
+### qradar-disconnected-log-collectors-list
+
+***
+Retrieves a list of disconnected log collectors.
+
+#### Base Command
+
+`qradar-disconnected-log-collectors-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-disconnected_log_collectors-GET.html. | Optional | 
+| id | ID of a specific disconnected log collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.DisconnectedLogCollector.ID | Number | The ID of the disconnected log collector. | 
+| QRadar.DisconnectedLogCollector.Name | String | The name of the Disconnected Log Collector. | 
+| QRadar.DisconnectedLogCollector.Description | String | The description of the Disconnected Log Collector. | 
+| QRadar.DisconnectedLogCollector.Protocol | String | The transport protocol used by the Disconnected Log Collector to send events to QRadar. Possible Values are TLS and UDP. | 
+| QRadar.DisconnectedLogCollector.UUID | String | The UUID of the disconnected log collector. | 
+| QRadar.DisconnectedLogCollector.Version | String |  The version of the Disconnected Log Collector. | 
+
+#### Command example
+```!qradar-disconnected-log-collectors-list```
+#### Context Example
+```json
+{
+    "QRadar": {
+        "DisconnectedLogCollector": [
+            {
+                "Description": "test_dc_log_connector",
+                "ID": 1,
+                "Name": "test_dc_log_connector",
+                "Protocol": "UDP",
+                "UUID": "cef1300a-14b0-4d19-8b96-4dc9a8200917",
+                "Version": "1.0"
+            },
+            {
+                "Description": "testing the feature",
+                "ID": 2,
+                "Name": "test_dc_log_collector_2",
+                "Protocol": "TLS",
+                "UUID": "515dbf96-57a0-45a8-9197-3408ff396549",
+                "Version": "1.0"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Disconnected Log Collectors List
+>|ID|Name|Version|UUID|Protocol|Description|
+>|---|---|---|---|---|---|
+>| 1 | test_dc_log_connector | 1.0 | cef1300a-14b0-4d19-8b96-4dc9a8200917 | UDP | test_dc_log_connector |
+>| 2 | test_dc_log_collector_2 | 1.0 | 515dbf96-57a0-45a8-9197-3408ff396549 | TLS | testing the feature |
+
+
+### qradar-log-source-extensions-list
+
+***
+Retrieves a list of log source extensions.
+
+#### Base Command
+
+`qradar-log-source-extensions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_extensions-GET.html. | Optional | 
+| id | ID of a specific disconnected log collector. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.LogSourceExtension.Name | String | The name of the log source extension. | 
+| QRadar.LogSourceExtension.Description | String | The description of the log source extension. | 
+| QRadar.LogSourceExtension.ID | Number | The ID of the extension. | 
+| QRadar.LogSourceExtension.UUID | String | The UUID string of the log source extension. | 
+
+#### Command example
+```!qradar-log-source-extensions-list```
+#### Context Example
+```json
+{
+    "QRadar": {
+        "LogSourceExtension": [
+            {
+                "Description": "",
+                "ID": 2,
+                "Name": "EC_Sysmon_ext"
+            },
+            {
+                "Description": "",
+                "ID": 3,
+                "Name": "EC_AWS_Windows_ext"
+            },
+            {
+                "Description": "",
+                "ID": 4,
+                "Name": "EC_LinuxServer_ext"
+            },
+            {
+                "Description": "",
+                "ID": 5,
+                "Name": "EC_IronPort_ext"
+            },
+            {
+                "Description": "EC_AWS_Syslog_ext",
+                "ID": 1,
+                "Name": "EC_AWS_Syslog_ext"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Log Source Extensions List
+>|ID|Name|Description|
+>|---|---|---|
+>| 2 | EC_Sysmon_ext |  |
+>| 3 | EC_AWS_Windows_ext |  |
+>| 4 | EC_LinuxServer_ext |  |
+>| 5 | EC_IronPort_ext |  |
+>| 1 | EC_AWS_Syslog_ext | EC_AWS_Syslog_ext |
+
+
+### qradar-wincollect-destinations-list
+
+***
+Retrieves a list of WinCollect destinations. 
+In order to get wincollect_internal_destination_ids - filter internal=true needs to be used
+In order to get wincollect_external_destination_ids - filter internal=false needs to be used.
+
+#### Base Command
+
+`qradar-wincollect-destinations-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Range of results to return (e.g.: 0-20, 3-5, 3-3). Default is 0-49. | Optional | 
+| filter | Query by which to filter wincollect destinations, e.g., "internal=true". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,host". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-wincollect-wincollect_destinations-GET.html. | Optional | 
+| id | ID of a specific WinCollect destination. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.WinCollectDestination.ID | Number | The ID of the WinCollect destination. | 
+| QRadar.WinCollectDestination.Name | String | The name of the WinCollect destination. | 
+| QRadar.WinCollectDestination.Host | String | The IP or hostname of the WinCollect destination. WinCollect agents that use this destination send syslog event data to this host. | 
+| QRadar.WinCollectDestination.TlsCertificate | String | The TLS Certificate of the WinCollect destination. | 
+| QRadar.WinCollectDestination.Port | Number | The listen port of the WinCollect destination. WinCollect agents that use this destination send syslog event data to this port. | 
+| QRadar.WinCollectDestination.TransportProtocol | String | The protocol that is used to send event data to this WinCollect destination. Possible values are TCP or UDP. | 
+| QRadar.WinCollectDestination.IsInternal | Boolean | Set to "true" if the destination corresponds to a QRadar event collector process from this deployment; otherwise, it is set to false if it is any other host. | 
+| QRadar.WinCollectDestination.EventRateThrottle | Number | The events-per-second rate that is used to throttle the event flow to this destination. | 
+
+#### Command example
+```!qradar-wincollect-destinations-list```
+#### Context Example
+```json
+{
+    "QRadar": {
+        "WinCollectDestination": [
+            {
+                "EventRateThrottle": 5000,
+                "Host": "172.31.17.10",
+                "ID": 1,
+                "Name": "eventcollector0 :: ip-172-31-17-10 :: UDP",
+                "Port": 514,
+                "TransportProtocol": "UDP"
+            },
+            {
+                "EventRateThrottle": 5000,
+                "Host": "172.31.17.10",
+                "ID": 2,
+                "Name": "eventcollector0 :: ip-172-31-17-10 :: TCP",
+                "Port": 514,
+                "TransportProtocol": "TCP"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### WinCollect Destinations List
+>|ID|TransportProtocol|EventRateThrottle|Name|Port|Host|
+>|---|---|---|---|---|---|
+>| 1 | UDP | 5000 | eventcollector0 :: ip-172-31-17-10 :: UDP | 514 | 172.31.17.10 |
+>| 2 | TCP | 5000 | eventcollector0 :: ip-172-31-17-10 :: TCP | 514 | 172.31.17.10 |
+
+
