@@ -22,7 +22,7 @@ function deleteKeys(keysToDelete) {
     var errors = []
     var message = "";
     for (var key of keysToDelete) {
-        const originalKey = key.trim();
+        const originalKey = typeof key == "string" ? key.trim() : key;
         if (!dq(invContext, originalKey)) {
             errors.push(`key does not exist: ${originalKey}`);
             continue;
@@ -145,7 +145,8 @@ if (shouldDeleteAll) {
 
 } else {
     // Supporting comma separated list of keys to be deleted.
-    var keysToDelete = args.key.split(',')
+    var keysToDelete = (typeof keysToDelete == "string") ? args.key.split(',') : [args.key]
+
     var message = deleteKeys(keysToDelete, isSubPlaybookKey)
     return {
         Type: entryTypes.note,
