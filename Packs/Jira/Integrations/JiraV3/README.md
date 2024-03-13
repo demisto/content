@@ -693,7 +693,7 @@ There is no context output for this command.
 
 
 ***
-Deletes an attachment from an issue.
+Delete an attachment from an issue.
 
 Scope: `write:jira-work`
 
