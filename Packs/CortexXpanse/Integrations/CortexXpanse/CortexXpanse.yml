@@ -860,7 +860,8 @@ script:
   script: ''
   subtype: python3
   type: python
-  runonce: false
+defaultmapperin: Xpanse - Incoming Mapper
+defaultclassifier: Xpanse - Classifier
 fromversion: 6.5.0
 tests:
 - CortexXpanse_Test
