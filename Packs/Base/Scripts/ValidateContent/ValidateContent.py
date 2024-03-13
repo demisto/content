@@ -24,7 +24,7 @@ from demisto_sdk.commands.init.contribution_converter import (
     ContributionConverter, get_child_directories, get_child_files)
 from demisto_sdk.commands.lint.lint_manager import LintManager
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
-from demisto_sdk.commands.validate.validate_manager import ValidateManager
+from demisto_sdk.commands.validate.old_validate_manager import OldValidateManager as ValidateManager
 from ruamel.yaml import YAML
 
 
