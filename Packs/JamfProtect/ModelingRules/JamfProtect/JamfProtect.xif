@@ -1,6 +1,7 @@
 [MODEL: dataset = jamf_protect_raw]
 // Jamf audit logs mapping
-filter source_log_type = "audit"
+config case_sensitive = true
+| filter source_log_type = "audit"
 // XDM mapping
 | alter
         xdm.event.type = source_log_type,
