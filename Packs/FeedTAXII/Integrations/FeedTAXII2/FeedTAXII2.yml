@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: TAXII 2 Feed - 0215
+  id: TAXII 2 Feed
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -186,8 +186,8 @@ configuration:
   type: 0
   required: false
 description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
-display: TAXII 2 Feed - 0215
-name: TAXII 2 Feed - 0215
+display: TAXII 2 Feed
+name: TAXII 2 Feed
 script:
   commands:
   - arguments:
