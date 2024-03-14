@@ -1,12 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
-# import xml.etree.ElementTree as ET
 import urllib3
 from typing import Any
 
 urllib3.disable_warnings()
-
 
 ''' CONSTANTS '''
 INTERVAL_FOR_POLLING = 30
@@ -67,7 +65,6 @@ class Client(BaseClient):
                     # store received token and expiration time in the integration context
                     set_integration_context(new_token)
                     self._access_token = new_token.get(tsg_access_token)
-                    print('access token', self._access_token )
                 else:
                     raise DemistoException('Error occurred while creating an access token. Access token field has not'
                                            ' found in the response data. Please check the instance configuration.\n')
@@ -134,12 +131,10 @@ class Client(BaseClient):
             'Accept': '*/*',
             'Authorization': f'Bearer {self._access_token}'
         }
-        print(headers)
         res = self._http_request(method='GET',
                     full_url=f'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/jobs/{report_id}',
                     headers=headers
                     )
-        print(res)
         return res.get('status')
     
     def download_bpa_request(self, report_id):
@@ -148,21 +143,21 @@ class Client(BaseClient):
             'Authorization': f'Bearer {self._access_token}'
         }
         res = self._http_request(method='GET',
-            full_url=f'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/reports/:{report_id}',
+            full_url=f'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/reports/{report_id}',
             headers=headers
             )
         return res.get('download-url')
     
     def data_of_download_bpa_request(self, downloaded_BPA_url):
         headers = {
-            'Accept': 'application/json',
             'Authorization': f'Bearer {self._access_token}'
         }
         res = self._http_request(method='GET',
             full_url=downloaded_BPA_url,
             headers=headers
             )
-        return res.get('download-url')
+        return res
+    
 ''' HELPER FUNCTIONS '''
 
 def adjust_xml_format(xml_string, new_root_tag):  # TODO
@@ -184,16 +179,54 @@ def convert_config_to_bytes(config_file, origin_flag):
         get_file_path_res = demisto.getFilePath(config_file)
         file_path = get_file_path_res.pop('path')
         file_bytes: bytes = b''
-        with open(file_path, 'rb') as f:
+        with open("tal.xml", 'rb') as f:
             file_bytes = f.read()
+        print(f'{file_bytes=}')
         return file_bytes
     else:
-        with open("output.bin", "wb") as binary_file:
-            binary_file.write(config_file.encode("utf-8"))
-        with open("output.bin", "rb") as binary_file:
+        xml_header = '<?xml version="1.0"?>'
+        result = f'{xml_header}\n{config_file}'
+        with open("output.xml", 'w') as binary_file:
+            binary_file.write(result)
+        with open("output.xml", 'rb') as binary_file:
             binary_data = binary_file.read()
+        print(f'{binary_data=}')
         return binary_data
     
+def create_readable_output(response_json):
+    dict_to_markdown = []
+    headers = ['check_id', 'check_category', 'check_feature', 'check_message', 'check_name', 'check_passed', 'check_type',
+               'check_severity']
+    check_category_options =['device', 'service_health', 'objects', 'network', 'policies']
+    # Get best_practices elements (warnings and notes)
+    best_practices= response_json.get('best_practices',{})
+    for category in check_category_options:
+        category_objects = best_practices.get(category, None)
+        for key, value in category_objects.items():
+            if value:
+                warnings = value[0].get('warnings')
+                notes = value[0].get('notes')
+                for warning in warnings:
+                    warning['check_feature'] = key
+                for note in notes:
+                    note['check_feature'] = key
+                    #not working!!!!!!!!!
+            dict_to_markdown.append(warning for warning in warnings)
+            dict_to_markdown.append(note for note in notes)
+
+    help = tableToMarkdown('BPA results:', response_json.get('best_practices',{}).get('device'),
+                           headers=['warnings','notes'], removeNull=True, headerTransform=pascalToSpace,
+                           json_transform_mapping={'warnings': JsonTransformer(keys=['check_id', 'check_category','check_feature',
+                                                                                     'check_message', 'check_name','check_passed',
+                                                                                     'check_type', 'check_severity'],
+                                                                               ),
+                                                    'notes': JsonTransformer(keys=['check_id', 'check_category','check_feature',
+                                                                                     'check_message', 'check_name','check_passed',
+                                                                                     'check_type', 'check_severity'],
+                                                                               )
+                                                    }
+                           )
+    return help
 ''' COMMAND FUNCTIONS '''
 
 def test_module(client: Client) -> str:
@@ -225,9 +258,6 @@ def test_module(client: Client) -> str:
 
 
 def generate_report_command(client: Client, args: dict[str, Any]):
-    # Generate an access token for pan-OS/panorama
-    client.generate_access_token_request()
-    
     # Take args out
     config_file_from_user = args.get('entry_id')
     requester_email = args.get('requester_email')
@@ -247,11 +277,10 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     tags = ['family', 'model', 'serial', 'sw-version']
     xml_tags_values = get_values_from_xml(system_info_xml, tags)
     upload_url, report_id = client.generate_bpa_report_request(requester_email, requester_name, dict(zip(tags, xml_tags_values)))
-    print(upload_url, report_id)
     if config_file_from_user:
         config_in_binary = convert_config_to_bytes(config_file_from_user, 'User')
     elif config_file:
-        config_in_binary = convert_config_to_bytes(config_file, 'Download')
+        config_in_binary = convert_config_to_bytes(config_file, 'User')
     else:
         raise DemistoException("Can not uplaod a config file since it was not provided.")
     client.config_file_to_report_request(upload_url, config_in_binary)
@@ -264,31 +293,27 @@ timeout=TIMEOUR_FOR_POLLING,
 requires_polling_arg=False,
 )
 def polling_until_upload_report_command(args: dict[str, Any], client: Client) -> PollResult:
-    print('hii')
-    print(client._access_token)
-    print(args)
     report_id = args.get('report_id')
     upload_status = client.check_upload_status_request(report_id)
-    print(report_id, upload_status)
     if upload_status == 'COMPLETED_WITH_SUCCESS':
         downloaded_BPA_url = client.download_bpa_request(report_id)
+        print(downloaded_BPA_url)
         downloaded_BPA_json = client.data_of_download_bpa_request(downloaded_BPA_url)
         return PollResult(
                 response = CommandResults(
-                readable_output=downloaded_BPA_json
+                    readable_output=create_readable_output(downloaded_BPA_json)
             ),
             continue_to_poll=False,
         )
-    elif upload_status == 'COMPLETED_WITH_ERROR':
+    elif upload_status == 'UPLOAD_INITIATED':
         results = CommandResults(readable_output="Polling job failed.")
-        print('initiated')
         return PollResult(
             response=results,
             continue_to_poll=True,
             args_for_next_run={'report_id':report_id},
-            partial_result=CommandResults(readable_output=f'The report with id {report_id} was sent successfully.')
+            partial_result=CommandResults(readable_output=f'The report with id {report_id} was sent successfully. In progress...')
         )
-    elif upload_status == 'hhh':
+    elif upload_status == 'COMPLETED_WITH_ERROR':
         return PollResult(
             response=CommandResults(
                 readable_output=f'The report with id {report_id} could not be uploaded- finished with an error.'
@@ -320,7 +345,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     
     try:
-        
         client = Client(
             base_url=base_url,
             api_key=api_key,
@@ -329,7 +353,10 @@ def main() -> None:
             client_secret=client_secret,
             verify=verify_certificate,
             proxy=proxy)
-
+        
+        # Generate an access token for pan-OS/panorama
+        client.generate_access_token_request()
+                    
         if command == 'test-module':
             result = test_module(client)
             return_results(result)

@@ -60,15 +60,13 @@ script:
         defaultValue: "600"
       description: Generates a bpa
       polling: true
-      execution: true
     - name: pan-aiops-polling-upload-report
       arguments:
       - name: report_id
         description: Report_id recieved from generate_bpa_report_request
         required: true
       polling: true
-      execution: true
-      hidden: true
+      hidden: false
   runonce: false
   script: '-'
   type: python
