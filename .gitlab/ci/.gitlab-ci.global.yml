@@ -360,6 +360,8 @@
       # git checkout ${CI_COMMIT_BRANCH}
       # git branch ${BRANCH}
       # git push origin "${BRANCH}"
+      #git push origin $CI_COMMIT_BRANCH:$BRANCH 
+
   - section_start "Trigger Clean machine pipeline"
   - |
     if [[ -f "CloudEnvVariables" ]]; then
@@ -370,7 +372,8 @@
       echo "machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
       section_start "Create Testing Branch"
       export BRANCH="${CI_COMMIT_BRANCH}-cleanup-branch-${CI_PIPELINE_ID}"
-      git push origin $CI_COMMIT_BRANCH:$BRANCH 
+      export GITLAB_REPO_URL=https://GITLAB_PUSH_TOKEN:${GITLAB_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git
+      git push "$GITLAB_REPO_URL" "$CI_COMMIT_BRANCH:$BRANCH"
       echo "Created test branch:${BRANCH}"
       git branch --list
       if git branch --list "${BRANCH}" &>/dev/null; then
