@@ -996,20 +996,11 @@ Creates an Lambda layer from a ZIP archive.
 | --- | --- | --- |
 | layer-name | The name or Amazon Resource Name (ARN) of the layer.  | Required | 
 | description | The description of the version.  | Optional | 
-| content | The layer's software package, specified as an Amazon S3 object.  | Required | 
+| s3-bucket | The Amazon S3 bucket of the layer archive.  | Optional | 
+| s3-key | The Amazon S3 key of the layer archive.  | Optional | 
+| s3-object-version | For versioned objects, the version of the layer archive object to use.  | Optional | 
+| zip-file | Entry ID of the base64-encoded contents of the layer archive.  | Optional | 
 | compatible-runtimes |  The name of the method within your code that Lambda calls to execute your function.  | Optional | 
-| code | The base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you.  | Optional | 
-| S3-bucket | An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account.  | Optional | 
-| description | A description of the function.  | Optional | 
-| timeout | The amount of time that Lambda allows a function to run before stopping it.  | Optional | 
-| memorySize | The amount of memory available to the function at runtime.  | Optional | 
-| publish | Set to true to publish the first version of the function during creation. Possible values are: True, False. | Optional | 
-| vpcConfig | For network connectivity to Amazon Web Services resources in a VPC, specify a list of security groups and subnets in the VPC. A list of VPC subnet IDs.  | Optional | 
-| packageType | The type of deployment package. Possible values are: Image, Zip. | Optional | 
-| environment | The environment variables for the function. Should be given as key-value pairs.  | Optional | 
-| tracingConfig | The tracing configuration for the function.  | Optional | 
-| tags | The list of tags to apply to the function.  | Optional | 
-| layers | A list of function layers to add to the function's execution environment.  | Optional | 
 | region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
@@ -1019,9 +1010,69 @@ Creates an Lambda layer from a ZIP archive.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Lambda.Functions.LayerVersionArn | string | The ARN of the layer version. | 
-| AWS.Lambda.Functions.LayerArn | string | The ARN of the layer. | 
-| AWS.Lambda.Functions.Description | string | The description of the version. | 
-| AWS.Lambda.Functions.CreatedDate | string | The date that the layer version was created, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
-| AWS.Lambda.Functions.Version | number | The version number. | 
-| AWS.Lambda.Functions.CompatibleRuntimes | list | The layer’s compatible runtimes. | 
+| AWS.Lambda.Layers.LayerVersionArn | string | The ARN of the layer version. | 
+| AWS.Lambda.Layers.LayerArn | string | The ARN of the layer. | 
+| AWS.Lambda.Layers.Description | string | The description of the version. | 
+| AWS.Lambda.Layers.CreatedDate | string | The date that the layer version was created, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
+| AWS.Lambda.Layers.Version | number | The version number. | 
+| AWS.Lambda.Layers.CompatibleRuntimes | list | The layer’s compatible runtimes. | 
+
+### aws-lambda-list-layer-version
+
+***
+Lists the versions of an Lambda layer.
+
+#### Base Command
+
+`aws-lambda-list-layer-version`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| compatible-runtime | A runtime identifier. For example, java21.  | Optional | 
+| layer-name | The name or Amazon Resource Name (ARN) of the layer.  | Required | 
+| marker | A pagination token returned by a previous call.  | Optional | 
+| max-items | The maximum number of versions to return.  | Optional | 
+| compatible-architecture | The compatible instruction set architecture.  | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Layers.NextMarker | string | A pagination token returned when the response doesn’t contain all versions. | 
+| AWS.Lambda.Layers.LayerVersions.LayerVersionArn | string | The ARN of the layer version. | 
+| AWS.Lambda.Layers.LayerVersions.Version | number | The version number. | 
+| AWS.Lambda.Layers.LayerVersions.Description | string | The description of the version. | 
+| AWS.Lambda.Layers.LayerVersions.CreatedDate | string | The date that the version was created, in ISO 8601 format. For example, 2018-11-27T15:10:45.123\+0000. | 
+| AWS.Lambda.Layers.LayerVersions.CompatibleRuntimes | list | The layer’s compatible runtimes. | 
+| AWS.Lambda.Layers.LayerVersions.LicenseInfo | string | The layer’s open-source license. | 
+| AWS.Lambda.Layers.LayerVersions.CompatibleArchitectures | list | A list of compatible instruction set architectures. | 
+
+### aws-lambda-delete-layer-version
+
+***
+Deletes a version of an Lambda layer.
+
+#### Base Command
+
+`aws-lambda-delete-layer-version`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| version-number | The version number.  | Required | 
+| layer-name | The name or Amazon Resource Name (ARN) of the layer.  | Required | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

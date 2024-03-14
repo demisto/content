@@ -1005,13 +1005,6 @@ script:
       defaultValue: ""
       predefined:
       - ""
-    - name: role
-      description: The Amazon Resource Name (ARN) of the function's.
-      required: true
-      isArray: false
-      defaultValue: ""
-      predefined:
-      - ""
     - name: handler
       description: " The name of the method within your code that Lambda calls to execute your function."
       required: true
