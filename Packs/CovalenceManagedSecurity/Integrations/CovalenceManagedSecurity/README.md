@@ -16,9 +16,11 @@ This integration was integrated and tested with version 1.1.10 of Covalence Mana
     | Incident type |  | False |
     | Fetch incidents |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Fetch Limit | the maximum number of incidents to fetch | False |
+    | Fetch Limit | The maximum number of incidents to fetch | False |
+    | Broker Server URL | Broker Server URL (Optional).  Required to use Broker commands. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Commands
 
@@ -73,11 +75,8 @@ Query FES Portal for ARO.
 | FESPortal.Aro.type | String | Type. | 
 
 #### Command example
-
 ```!cov-mgsec-get-aro query="since=2023-11-30 18:00:00"```
-
 #### Context Example
-
 ```json
 {
     "FESPortal": {
@@ -114,7 +113,6 @@ Query FES Portal for ARO.
 #### Human Readable Output
 
 >### AROs
-
 >|Organization|Resolution|Severity|Status|Title|Type|
 >|---|---|---|---|---|---|
 >| ID: 9d4297ea-089e-42bd-884d-51744e31a471<br/>email: foo@bar.com<br/>name: Acme | Unresolved | Critical | Open | test2 | Action |
@@ -144,11 +142,8 @@ There are no input arguments for this command.
 | FESPortal.Org.name | String | Name. | 
 
 #### Command example
-
 ```!cov-mgsec-list-org```
-
 #### Context Example
-
 ```json
 {
     "FESPortal": {
@@ -173,12 +168,60 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Organizations
-
 >|Id|Email|Email Aro Details|Name|
 >|---|---|---|---|
 >| 9d4297ea-089e-42bd-884d-51744e31a471 | foo@bar.com | false | Acme |
 >| e0e04c8b-d50c-4379-bfd6-5e0f2b1037cd | foo@bar.com | false | Capsule Corp |
 
+
+### cov-mgsec-transition-aro
+
+***
+Transition an ARO.
+
+#### Base Command
+
+`cov-mgsec-transition-aro`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| aro_id | This ARO ID to transition. | Required | 
+| resolution | Resolution to transition the ARO to. Possible values are: Unresolved, Help Requested, Resolved, Dismissed. | Required | 
+| comment | Optional comment to leave on the ARO. | Optional | 
+| is_comment_sensitive | Optionally mark the comment as sensitive. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FESPortal.Aro.ID | String | ID. | 
+| FESPortal.Aro.alert_key | String | Alert_key. | 
+| FESPortal.Aro.analyst_notes | String | Analyst_notes. | 
+| FESPortal.Aro.count | Number | Count. | 
+| FESPortal.Aro.creation_time | Date | Creation_time. | 
+| FESPortal.Aro.details | String | Details. | 
+| FESPortal.Aro.details_markdown | String | Details_markdown. | 
+| FESPortal.Aro.display_url | String | Display_url. | 
+| FESPortal.Aro.external_bug_id | String | External_bug_id. | 
+| FESPortal.Aro.last_updated_time | Date | Last_updated_time. | 
+| FESPortal.Aro.notes | String | Notes. | 
+| FESPortal.Aro.organization.ID | String | ID. | 
+| FESPortal.Aro.organization.email | String | Email. | 
+| FESPortal.Aro.organization.name | String | Name. | 
+| FESPortal.Aro.resolution | String | Resolution. | 
+| FESPortal.Aro.serial_id | String | Serial_id. | 
+| FESPortal.Aro.severity | String | Severity. | 
+| FESPortal.Aro.status | String | Status. | 
+| FESPortal.Aro.steps.ID | String | ID. | 
+| FESPortal.Aro.steps.completed | Boolean | Completed. | 
+| FESPortal.Aro.steps.label | String | Label. | 
+| FESPortal.Aro.steps.last_updated_time | Date | Last_updated_time. | 
+| FESPortal.Aro.template_id | String | Template_id. | 
+| FESPortal.Aro.title | String | Title. | 
+| FESPortal.Aro.triage_id | String | Triage_id. | 
+| FESPortal.Aro.type | String | Type. | 
 
 ### cov-mgsec-transition-aro
 
@@ -230,11 +273,8 @@ Transition an ARO.
 | FESPortal.Aro.type | String | Type. | 
 
 #### Command example
-
 ```!cov-mgsec-transition-aro aro_id="7ea9b17d-7529-4b17-b0e7-92334d6c674b" resolution="Resolved" comment="Risk mitigated."```
-
 #### Context Example
-
 ```json
 {
     "FESPortal": {
@@ -284,8 +324,243 @@ Transition an ARO.
 #### Human Readable Output
 
 >### ARO
-
 >|Id|Alert Key|Count|Creation Time|Details|Display Url|Last Updated Time|Organization|Resolution|Resolution Duration Seconds|Resolution Time|Serial Id|Severity|Status| Steps|Title|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 7ea9b17d-7529-4b17-b0e7-92334d6c674b | test_alert_key | 1 | 2023-08-16 19:48:02 | ARO Details | test_url | 2023-11-30 19:01:59 | ID: test_ID<br/>email: null<br/>name: test_org_id | Resolved | 9155637 | 2023-11-30 19:01:59 | 15 | Low | Open | {'ID': 'test_id', 'completed': True, 'label': 'test_resolution_step', 'last_updated_time': '2023-10-24 20:53:45'} | test_aro_title | Observation |
+### cov-mgsec-broker-cloud-action-by-aro
+
+***
+Broker - Cloud Action By ARO.
+
+#### Base Command
+
+`cov-mgsec-broker-cloud-action-by-aro`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action_type | Action to perform. Possible values are: DISABLE_USER, ENABLE_USER, REVOKE_SESSIONS. | Required | 
+| aro_id | ARO ID (eg. "00000000-1111-2222-3333-444444444444"). | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FESBroker.action_id | String | Action ID | 
+| FESBroker.action_type | String | Action Type | 
+| FESBroker.action_params | Unknown | Action Parameters | 
+| FESBroker.created_time | String | Created Time | 
+| FESBroker.status | String | Status | 
+| FESBroker.result | String | Result | 
+
+#### Command example
+```!cov-mgsec-broker-cloud-action-by-aro action_type=DISABLE_USER aro_id=00000000-1111-2222-3333-444444444444```
+#### Context Example
+```json
+{
+    "FESBroker": {
+        "Action": {
+            "action_id": "00000000-1111-2222-3333-444444444444",
+            "action_params": {
+                "user": "azure credential configuration endpoint service"
+            },
+            "action_type": "disable_user",
+            "created_time": "2024-02-22T01:27:04.344179Z",
+            "result": "SUCCESS",
+            "status": "COMPLETE"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Command Result
+>|action_id|action_params|action_type|created_time|result|status|
+>|---|---|---|---|---|---|
+>| 00000000-1111-2222-3333-444444444444 | user: azure credential configuration endpoint service | disable_user | 2024-02-22T01:27:04.344179Z | SUCCESS | COMPLETE |
+
+
+### cov-mgsec-broker-endpoint-action-by-aro
+
+***
+Broker - Endpoint Action By ARO.
+
+#### Base Command
+
+`cov-mgsec-broker-endpoint-action-by-aro`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action_type | Action to send to Host. Possible values are: ISOLATE, UNISOLATE, SHUTDOWN, RESTART, DEFENDER_QUICK_SCAN, DEFENDER_FULL_SCAN, DEFENDER_SIGNATURE_UPDATE. | Required | 
+| aro_id | ARO ID (eg. "00000000-1111-2222-3333-444444444444"). | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FESBroker.host_identifier | String | Host Identifier | 
+| FESBroker.agent_uuid | String | Agent UUID | 
+| FESBroker.covalence_appliance | String | Covalence Appliance ID | 
+| FESBroker.task_id | Number | Endpoint Action Task ID | 
+
+#### Command example
+```!cov-mgsec-broker-endpoint-action-by-aro action_type=DEFENDER_QUICK_SCAN aro_id=00000000-1111-2222-3333-444444444444```
+#### Context Example
+```json
+{
+    "FESBroker": {
+        "Action": {
+            "agent_uuid": "00000000-1111-2222-3333-444444444444",
+            "covalence_appliance": "2000-001-XX-0",
+            "host_identifier": "00000000-1111-2222-3333-444444444444",
+            "task_id": 26876
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Command Result - Success
+>|agent_uuid|covalence_appliance|host_identifier|task_id|
+>|---|---|---|---|
+>| 00000000-1111-2222-3333-444444444444 | 2000-001-XX-0 | 00000000-1111-2222-3333-444444444444 | 26876 |
+
+
+### cov-mgsec-broker-ping
+
+***
+Broker - Ping.
+
+#### Base Command
+
+`cov-mgsec-broker-ping`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FESBroker.APIStatus | String | API Status | 
+
+#### Command example
+```!cov-mgsec-broker-ping```
+#### Context Example
+```json
+{
+    "FESBroker": {
+        "APIStatus": "pong"
+    }
+}
+```
+
+#### Human Readable Output
+
+>## pong
+
+### cov-mgsec-broker-endpoint-action-by-host
+
+***
+Broker - Endpoint Action By Host.
+
+#### Base Command
+
+`cov-mgsec-broker-endpoint-action-by-host`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action_type | Action to send to Host. Possible values are: ISOLATE, UNISOLATE, SHUTDOWN, RESTART, DEFENDER_QUICK_SCAN, DEFENDER_FULL_SCAN, DEFENDER_SIGNATURE_UPDATE. | Required | 
+| org_id | Organization ID (eg. "00000000-1111-2222-3333-444444444444"). | Required | 
+| host_identifier | Hostname. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FESBroker.host_identifier | String | Host Identifier | 
+| FESBroker.agent_uuid | String | Agent UUID | 
+| FESBroker.covalence_appliance | String | Covalence Appliance ID | 
+| FESBroker.task_id | Number | Endpoint Action Task ID | 
+
+#### Command example
+```!cov-mgsec-broker-endpoint-action-by-host action_type=DEFENDER_QUICK_SCAN host_identifier=test-hostname org_id=00000000-1111-2222-3333-444444444444```
+#### Context Example
+```json
+{
+    "FESBroker": {
+        "Action": {
+            "agent_uuid": "00000000-1111-2222-3333-444444444444",
+            "covalence_appliance": "2000-001-XX-0",
+            "host_identifier": "test-hostname",
+            "task_id": 24773
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Command Result - Success
+>|agent_uuid|covalence_appliance|host_identifier|task_id|
+>|---|---|---|---|
+>| 00000000-1111-2222-3333-444444444444 | 2000-001-XX-0 | test-hostname | 24773 |
+
+
+### cov-mgsec-broker-list-org
+
+***
+Broker - List organizations.
+
+#### Base Command
+
+`cov-mgsec-broker-list-org`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FESBroker.ID | String | Organization ID | 
+| FESBroker.name | String | Organization Name | 
+| FESBroker.client_id | String | Client ID | 
+
+#### Command example
+```!cov-mgsec-broker-list-org```
+#### Context Example
+```json
+{
+    "FESBroker": {
+        "Org": [
+            {
+                "ID": "00000000-1111-2222-3333-444444444444",
+                "client_id": "2000-001-XX-0",
+                "name": "Test Company"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Organizations
+>|ID|client_id|name|
+>|---|---|---|
+>| 00000000-1111-2222-3333-444444444444 | 2024-1384-SAN | 110 Sand Company |
+
+
 

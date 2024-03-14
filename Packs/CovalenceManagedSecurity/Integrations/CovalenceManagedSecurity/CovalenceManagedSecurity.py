@@ -598,7 +598,12 @@ def main():
             demisto.error(msg)
     except HTTPError as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {command} command with HTTP response: {str(e.response.text)}.'
+        http_text = None
+        try:
+            http_text = e.response.text # Try to extract a text response if it exists.
+        except AttributeError:
+            http_text = e.response
+        return_error(f'Failed to execute {command} command with HTTP response: {str(http_text)}.'
                      f'\nStack trace: {traceback.format_exc()}')
     except Exception as e:
         demisto.error(traceback.format_exc())
