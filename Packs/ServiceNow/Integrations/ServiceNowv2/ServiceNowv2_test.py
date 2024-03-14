@@ -33,8 +33,8 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR_CLOSED, RESPONSE_CLOSING_TICKET_MIRROR_RESOLVED, \
     RESPONSE_CLOSING_TICKET_MIRROR_CUSTOM, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
     RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE, \
-    RESPONSE_GENERIC_TICKET, RESPONSE_COMMENTS_DISPLAY_VALUE, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS, \
-    RESPONSE_FETCH_USE_DISPLAY_VALUE
+    RESPONSE_GENERIC_TICKET, RESPONSE_COMMENTS_DISPLAY_VALUE_AFTER_FORMAT, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS, \
+    RESPONSE_COMMENTS_DISPLAY_VALUE, RESPONSE_FETCH_USE_DISPLAY_VALUE
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
@@ -222,7 +222,7 @@ def test_convert_to_notes_result():
                                    'sys_created_by': 'Test User',
                                    'element': 'comments'
                                    }]}
-    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE,
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_AFTER_FORMAT,
                                    time_info={'display_date_format': DATE_FORMAT,
                                               'timezone_offset': timedelta(minutes=-60)}) == expected_result
 
@@ -232,7 +232,7 @@ def test_convert_to_notes_result():
                                    'sys_created_by': 'System Administrator',
                                    'element': 'comments'
                                    }]}
-    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE,
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_AFTER_FORMAT,
                                    time_info={'display_date_format': DATE_FORMAT,
                                               'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
                                               'timezone_offset': timedelta(minutes=-60)}) == expected_result
@@ -284,6 +284,19 @@ def test_split_notes():
     time_info = {'timezone_offset': timedelta(minutes=-60),
                  'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
                  'display_date_format': DATE_FORMAT_OPTIONS.get('dd/MM/yyyy')}
+    notes = split_notes(raw_notes, 'comments', time_info)
+    expected_notes = [{'sys_created_on': '2022-11-21 21:50:34',
+                       'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
+                       'sys_created_by': 'System Administrator',
+                       'element': 'comments'
+                       }]
+    assert notes == expected_notes
+
+    raw_notes = '21.11.2022 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n Mirrored from ' \
+                'Cortex XSOAR\n\n21.11.2022 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
+    time_info = {'timezone_offset': timedelta(minutes=-60),
+                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
+                 'display_date_format': DATE_FORMAT_OPTIONS.get('dd.MM.yyyy')}
     notes = split_notes(raw_notes, 'comments', time_info)
     expected_notes = [{'sys_created_on': '2022-11-21 21:50:34',
                        'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
