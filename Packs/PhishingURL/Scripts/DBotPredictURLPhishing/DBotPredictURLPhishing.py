@@ -8,7 +8,6 @@ import dill
 import copy
 from tldextract import TLDExtract
 from bs4 import BeautifulSoup
-import yaml
 
 dill.settings['recurse'] = True
 
@@ -167,7 +166,8 @@ def load_oob(path=OUT_OF_THE_BOX_MODEL_PATH):
 
 
 def load_model_from_docker(path=OUT_OF_THE_BOX_MODEL_PATH):
-    return dill.load(open(path, 'rb'))  # guardrails-disable-line
+    with open(path, 'rb') as f:
+        return dill.load(f)  # guardrails-disable-line
 
 
 def load_oob_model(path: str):
