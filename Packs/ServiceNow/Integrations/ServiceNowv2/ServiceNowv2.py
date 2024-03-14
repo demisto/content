@@ -1470,10 +1470,10 @@ def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, di
     """
     attachment_file_id = str(args.get('file_sys_id', ''))
 
-    result = client.delete_attachment(attachment_file_id)
-    if result:
-        raise Exception("No Record found.")
-    return f'Attachment with Sys ID {attachment_file_id} was successfully deleted.', {}, result, True
+    error_result = client.delete_attachment(attachment_file_id)
+    if error_result:
+        raise DemistoException("No Record found.")
+    return f'Attachment with Sys ID {attachment_file_id} was successfully deleted.', {}, error_result, True
 
 
 def add_tag_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
