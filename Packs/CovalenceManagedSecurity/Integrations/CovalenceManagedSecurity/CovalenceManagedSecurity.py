@@ -600,7 +600,7 @@ def main():
         demisto.error(traceback.format_exc())
         http_text = None
         try:
-            http_text = e.response.text # Try to extract a text response if it exists.
+            http_text = e.response.text  # Try to extract a text response if it exists.
         except AttributeError:
             http_text = e.response
         return_error(f'Failed to execute {command} command with HTTP response: {str(http_text)}.'
