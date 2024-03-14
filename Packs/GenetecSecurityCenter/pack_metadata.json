@@ -1,6 +1,6 @@
 {
     "name": "Genetec Security Center",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "Genetec Security Center event collector integration.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
