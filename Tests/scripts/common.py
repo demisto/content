@@ -252,7 +252,7 @@ def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
         datetime.utcnow() - timedelta(hours=look_back_hours)).isoformat()
 
     commits = project.commits.list(all=True, since=time_threshold, order_by='updated_at', sort='asc')
-    pipelines = project.pipelines.list(all=True, updated_after=time_threshold, ref='master',
+    pipelines = project.pipelines.list(all=True, updated_after=time_threshold,
                                        source='push', order_by='id', sort='asc')
 
     return pipelines, commits
@@ -310,6 +310,8 @@ def is_pivot(current_pipeline: ProjectPipeline, pipeline_to_compare: ProjectPipe
 
     in_order = are_pipelines_in_order(pipeline_a=current_pipeline, pipeline_b=pipeline_to_compare)
     if in_order:
+        logging.info(f"current pipeline status: {current_pipeline.status}, and other pipeline status: "
+                     f"{pipeline_to_compare.status}")
         if pipeline_to_compare.status == 'success' and current_pipeline.status == 'failed':
             return True
         if pipeline_to_compare.status == 'failed' and current_pipeline.status == 'success':
