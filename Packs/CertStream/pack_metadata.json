@@ -1,7 +1,7 @@
 {
     "name": "CertStream",
     "description": "Gets a stream of newly created certificates from Certificate Transparency (https://certificate.transparency.dev/)",
-    "support": "xsoar",
+    "support": "community",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
@@ -18,6 +18,6 @@
         "Free"
     ],
     "marketplaces": [
-        "marketplacev2"
+        "xsoar"
     ]
 }
