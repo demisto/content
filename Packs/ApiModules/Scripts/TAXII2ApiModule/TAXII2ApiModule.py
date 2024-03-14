@@ -241,6 +241,8 @@ XSOAR_TYPES_TO_STIX_SDO = {        # pragma: no cover
     ThreatIntel.ObjectsNames.TOOL: 'tool',
     ThreatIntel.ObjectsNames.MALWARE: 'malware',
     FeedIndicatorType.CVE: 'vulnerability',
+    FeedIndicatorType.Identity: 'identity',
+    FeedIndicatorType.Location: 'location'
 }
 
 XSOAR_TYPES_TO_STIX_SCO = {         # pragma: no cover
@@ -275,9 +277,12 @@ def reached_limit(limit: int, element_count: int):
 
 
 class XSOAR2STIXParser:
-    def __init__(self, server_version, namespace_uuid, fields_to_present,
-                 types_for_indicator_sdo):
+    def __init__(self, namespace_uuid, fields_to_present,
+                 types_for_indicator_sdo, server_version=TAXII_VER_2_1):
         self.server_version = server_version
+        if server_version not in [TAXII_VER_2_0, TAXII_VER_2_1]:
+            raise Exception(f'Wrong TAXII 2 Server version: {server_version}. '
+                            f'Possible values: {TAXII_VER_2_0}, {TAXII_VER_2_1}.')
         self.namespace_uuid = namespace_uuid
         self.fields_to_present = fields_to_present
         self.has_extension = fields_to_present != {'name', 'type'}
@@ -338,7 +343,7 @@ class XSOAR2STIXParser:
             modified_parsed = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
         except Exception:
             modified_parsed = ''
-
+        # Properties required for STIX objects in all versions: id, type, created, modified.
         stix_object: Dict[str, Any] = {
             'id': stix_id,
             'type': object_type,
@@ -350,6 +355,8 @@ class XSOAR2STIXParser:
             stix_object['object_refs'] = []
         if is_sdo:
             stix_object['name'] = xsoar_indicator.get('value')
+            # stix_object = self.add_sdo_required_field_2_1(stix_object, xsoar_indicator)
+            # stix_object = self.add_sdo_required_field_2_0(stix_object, xsoar_indicator)
         else:
             stix_object = self.build_sco_object(stix_object, xsoar_indicator)
 
@@ -663,6 +670,38 @@ class XSOAR2STIXParser:
         self.handle_report_relationships(relationships_list, stix_iocs)
         return relationships_list
 
+    def add_sdo_required_field_2_1(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Args:
+            stix_object: A stix object from
+            xsoar_type: indicator from xsoar system
+        Returns:
+            Stix object entry for given indicator
+        """
+        if self.server_version == TAXII_VER_2_1 and "CustomFields" in xsoar_indicator:
+            # if stix_object['type'] == "indicator":
+            #     stix_object['pattern_type'] = xsoar_indicator["CustomFields"].get('tags', [])
+            if stix_object['type'] == 'malware':
+                stix_object['is_family'] = xsoar_indicator["CustomFields"].get('ismalwarefamily', False)
+            elif stix_object['type'] == 'report':
+                stix_object['published'] = xsoar_indicator["CustomFields"].get('published')
+        return stix_object
+
+    def add_sdo_required_field_2_0(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Args:
+            stix_object: A stix object from
+            xsoar_type: indicator from xsoar system
+        Returns:
+            Stix object entry for given indicator
+        """
+        if self.server_version == TAXII_VER_2_0 and "CustomFields" in xsoar_indicator:
+            if stix_object['type'] in {"indicator", "malware", "report", "threat-actor", "tool"}:
+                stix_object['labels'] = xsoar_indicator["CustomFields"].get('tags', [])
+            if stix_object['type'] == 'identity':
+                stix_object['identity_class'] = xsoar_indicator["CustomFields"].get('identityclass')
+        return stix_object
+
     def build_sco_object(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
         """
         Builds a correct JSON object for specific SCO types
@@ -677,11 +716,13 @@ class XSOAR2STIXParser:
 
         custom_fields = xsoar_indicator.get('CustomFields') or {}
 
-        if stix_object['type'] == 'asn':
+        if stix_object['type'] == 'autonomous-system':
+            # number is the only required field for autonomous-system
             stix_object['number'] = xsoar_indicator.get('value', '')
             stix_object['name'] = custom_fields.get('name', '')
 
         elif stix_object['type'] == 'file':
+            # hashes is the only required field for file
             value = xsoar_indicator.get('value')
             stix_object['hashes'] = {HASH_TYPE_TO_STIX_HASH_TYPE[get_hash_type(value)]: value}
             for hash_type in ('md5', 'sha1', 'sha256', 'sha512'):
@@ -692,6 +733,7 @@ class XSOAR2STIXParser:
                     pass
 
         elif stix_object['type'] == 'windows-registry-key':
+            # key is the only required field for windows-registry-key
             stix_object['key'] = xsoar_indicator.get('value')
             stix_object['values'] = []
 
@@ -705,7 +747,12 @@ class XSOAR2STIXParser:
 
         elif stix_object['type'] in ('mutex', 'software'):
             stix_object['name'] = xsoar_indicator.get('value')
-
+        # user_id is the only required field for user-account
+        elif stix_object['type'] == 'user-account':
+            user_id = (xsoar_indicator.get('CustomFields') or {}).get('userid')
+            if user_id:
+                stix_object['user_id'] = user_id
+        # ipv4-addr or ipv6-addr or URL
         else:
             stix_object['value'] = xsoar_indicator.get('value')
 
@@ -1088,7 +1135,7 @@ class STIX2XSOARParser(BaseClient):
         fields = self.set_default_fields(malware_obj)
         fields.update({
             "malware_types": malware_obj.get('malware_types', []),
-            "is_family": malware_obj.get('is_family', False),
+            "ismalwarefamily": malware_obj.get('is_family', False),
             "aliases": malware_obj.get('aliases', []),
             "kill_chain_phases": kill_chain_phases,
             "os_execution_envs": malware_obj.get('os_execution_envs', []),
@@ -1855,7 +1902,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
             id_to_object={},
             field_map=field_map if field_map else {},
             skip_complex_mode=skip_complex_mode,
-            update_custom_fields=update_custom_fields,
+            # update_custom_fields=update_custom_fields,
             tags=tags if tags else [],
         )
         self._conn = None

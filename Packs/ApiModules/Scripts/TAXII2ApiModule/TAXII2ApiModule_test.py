@@ -1712,6 +1712,7 @@ sdo_xsoar_indicator_1 = {
     "score": "Unknown",
     "timestamp": "2023-04-19T13:05:01+03:00",
     "value": "T111",
+    "modified": "2023-04-19T13:05:01+03:00"
 }
 sdo_stix_type_1 = 'attack-pattern'
 sdo_value_1 = 'T111'
@@ -1726,6 +1727,7 @@ sdo_xsoar_indicator_2 = {
     "timestamp": "2023-04-20T17:20:10+03:00",
     "value": "bad malware",
     "ismalwarefamily": "True",
+    "modified": "2023-04-19T13:05:01+03:00",
 }
 sdo_stix_type_2 = 'malware'
 sdo_value_2 = 'bad malware'
@@ -1752,3 +1754,61 @@ def test_create_sdo_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_i
                               namespace_uuid=uuid_for_cilent)
     stix_id = cilent.create_sdo_stix_uuid(xsoar_indicator, stix_type, uuid_for_cilent, value)
     assert expected_stix_id == stix_id
+
+
+test_create_manifest_entry_pram = [(sdo_xsoar_indicator_1, "Attack Pattern",
+                                    {'id': 'attack-pattern--116d410f-50f9-5f0d-b677-2a9b95812a3e',
+                                     'date_added': '2023-04-19T13:05:01.000000Z',
+                                     'version': '2023-04-19T13:05:01.000000Z'}),
+                                   (sdo_xsoar_indicator_2, "Malware",
+                                    {'id': 'malware--bddcf01f-9fd0-5107-a013-4b174285babc',
+                                     'date_added': '2023-04-20T17:20:10.000000Z',
+                                     'version': '2023-04-19T13:05:01.000000Z'})]
+
+
+@pytest.mark.parametrize('xsoar_indicator, xsoar_type, expected_manifest_entry', test_create_manifest_entry_pram)
+def test_create_manifest_entry(xsoar_indicator, xsoar_type, expected_manifest_entry):
+    cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present=set(), types_for_indicator_sdo=[],
+                              namespace_uuid=PAWN_UUID)
+    manifest_entry = cilent.create_manifest_entry(xsoar_indicator, xsoar_type)
+    assert manifest_entry == expected_manifest_entry
+
+
+test_create_stix_object_param = [
+    (
+        sdo_xsoar_indicator_1,
+        "Attack Pattern",
+        {
+            "id": "attack-pattern--116d410f-50f9-5f0d-b677-2a9b95812a3e",
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "created": "2023-04-19T13:05:01.000000Z",
+            "modified": "2023-04-19T13:05:01.000000Z",
+            "name": "T111",
+            "description": "",
+        },
+    ),
+    (
+        sdo_xsoar_indicator_2,
+        "Malware",
+        {
+            "id": "malware--bddcf01f-9fd0-5107-a013-4b174285babc",
+            "type": "malware",
+            "spec_version": "2.1",
+            "created": "2023-04-20T17:20:10.000000Z",
+            "modified": "2023-04-19T13:05:01.000000Z",
+            "name": "bad malware",
+            "description": "",
+        },
+    ),
+]
+
+
+@pytest.mark.parametrize('xsoar_indicator, xsoar_type, expected_stix_object', test_create_stix_object_param)
+def test_create_stix_object(xsoar_indicator, xsoar_type, expected_stix_object, extensions_dict={}):
+    cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present={'name', 'type'}, types_for_indicator_sdo=[],
+                              namespace_uuid=PAWN_UUID)
+    stix_object, extension_definition, extensions_dict = cilent.create_stix_object(xsoar_indicator, xsoar_type, extensions_dict)
+    assert stix_object == expected_stix_object
+    assert extension_definition == {}
+    assert extensions_dict == {}

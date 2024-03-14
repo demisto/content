@@ -27,9 +27,7 @@ MEDIA_TYPE_TAXII_V21 = 'application/taxii+json;version=2.1'
 MEDIA_TYPE_STIX_V21 = 'application/stix+json;version=2.1'
 MEDIA_TYPE_TAXII_V20 = 'application/vnd.oasis.taxii+json; version=2.0'
 MEDIA_TYPE_STIX_V20 = 'application/vnd.oasis.stix+json; version=2.0'
-TAXII_VER_2_0 = '2.0'
-TAXII_VER_2_1 = '2.1'
-PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
+# PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
 SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 STIX_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 UTC_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -591,9 +589,9 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
         size=PAGE_SIZE,
         sort=[{"field": "modified", "asc": True}],
     )
-    XSOAR2STIXParser_client = XSOAR2STIXParser(SERVER.version, SERVER.namespace_uuid,
-                                               SERVER.fields_to_present,
-                                               SERVER.types_for_indicator_sdo)
+    XSOAR2STIXParser_client = XSOAR2STIXParser(server_version=SERVER.version, namespace_uuid=SERVER.namespace_uuid,
+                                               fields_to_present=SERVER.fields_to_present,
+                                               types_for_indicator_sdo=SERVER.types_for_indicator_sdo)
     total = 0
     extensions_dict: dict = {}
     for ioc in indicator_searcher:
