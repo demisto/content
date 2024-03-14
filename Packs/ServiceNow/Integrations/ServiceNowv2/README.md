@@ -1905,23 +1905,24 @@ Gets table names by a label to use in commands.
 
 
 ### servicenow-get-ticket-notes
-***
-Gets notes from the specified ServiceNow ticket. Can be used by providing "Read permissions" for the sys_journal_field table, or by setting use_display_value=true.
 
+***
+Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting Read permissions for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
 
 #### Base Command
 
 `servicenow-get-ticket-notes`
+
 #### Input
 
-| **Argument Name** | **Description**        | **Required** |
-|--------|--------| --- |
-| id  | Ticket System ID. | Required | 
-| limit  | Maximum number of ticket notes. Default is 10.     | Optional | 
-| offset | Offset of the ticket notes.    | Optional |
-| use_display_value | Whether to retrieve notes using display values from ServiceNow or by accessing the sys_journal_field table. Defaults to the value set in the Cortex XSOAR instance configuration. | Optional |
-| ticket_type   | The type of the ticket for which notes should be retrieved when using the `use_display_value` option. Defaults to the ticket type set in the Cortex XSOAR instance configuration. | Optional |
-
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Ticket System ID. | Required | 
+| limit | Maximum number of ticket notes. Default is 10. | Optional | 
+| offset | Offset of the ticket notes. Default is 0. | Optional | 
+| use_display_value | Whether to use `sysparm_display_value` to retrieve comments and work notes. Overrides the value set in the instance configuration. Possible values are: true, false. | Optional | 
+| ticket_type | The ticket type that notes should be retrieved for when using the `use_display_value` option. Possible values are: incident, problem, change_request, sc_request, sc_task, sc_req_item, sn_si_incident. Default is incident. | Optional | 
+| add_as_entry | Whether to add ticket notes and work notes as notes in the War Room. Possible values are true, false. | Optional | 
 
 #### Context Output
 
