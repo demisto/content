@@ -1114,7 +1114,6 @@ class Pack:
         lower_versions: list = []
         higher_versions: list = []
         same_block_versions_dict: dict = {}
-        logging.info("Changelog: " + str(changelog))
         for item in changelog:  # divide the versions into lists of lower and higher than given version
             (lower_versions if Version(item) < Version(version) else higher_versions).append(Version(item))
         higher_nearest_version = min(higher_versions)
