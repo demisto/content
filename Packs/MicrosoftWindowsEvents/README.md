@@ -4,9 +4,10 @@ This pack includes Cortex XSIAM content.
 
 Notes: 
  - The logs will be stored in the dataset named *microsoft_windows_raw*.
- - The pack currently supports the following data source: **Security (Provider "Microsoft-Windows-Security-*)**, **Firewall**, **System**, **Application** and **Powershell**.
+ - The pack currently supports the following data source: **Security (Provider "Microsoft-Windows-Security-*)**, **Firewall**, **System**, **Application**, **Sysmon** and **Powershell**.
 
 To view logs only from the Windows Event log, apply any of the following filters to your datamodel query:
+* `| filter xdm.observer.type="Microsoft-Windows-Sysmon"`
 * `| filter xdm.observer.type="Microsoft-Windows-Security-*"`
 * `| filter xdm.observer.type="Microsoft-Windows-TaskScheduler"`
 * `| filter xdm.observer.type="Microsoft-Windows-Windows Firewall With Advanced Security"`
@@ -14,14 +15,16 @@ To view logs only from the Windows Event log, apply any of the following filters
 * `| filter xdm.event.type="Application"`
 
 **Pay Attention**: 
-This pack excludes several events for the DNS, ADFS and AMSI Windows services according to the *provider_name* field:
+This pack excludes several events for the Sysmon, DNS, ADFS and AMSI Windows services according to the *provider_name* field:
 * AD FS Auditing
+* Microsoft-Windows-Sysmon
 * Microsoft-Windows-DNSServer
 * Microsoft-Windows-DNS-Server-Service
 * Microsoft-Antimalware-Scan-Interface
 Should you wish to collect those logs as well, the installation of the following packs is required:
 * Microsoft DNS
 * Microsoft Windows AMSI
+* Microsoft Windows Sysmon
 * Microsoft AD FS Collection
 
 ## Collect Events from Vendor
@@ -75,7 +78,10 @@ winlogbeat.event_logs:
     id: application-logs
   - name: Microsoft-Windows-Windows Defender
     ignore_older: 1h
-    id: defender-logs   
+    id: defender-logs 
+  - name: Microsoft-Windows-Sysmon/Operational
+    ignore_older: 1h
+    id: sysmon-logs       
 ```
 
 **Note:** Control what event types will be collected by adding or removing the "name", "ignore_older", and "id" lines of the specific event type.
