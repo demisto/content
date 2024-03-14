@@ -25,11 +25,11 @@ configuration:
   name: first_fetch
   type: 0
   required: false
-- display: Default TopDesk Incident Caller ID
+- display: Default Incident Caller ID
   name: defaultCallerId
   type: 0
   required: false
-  additionalinfo: Add the default caller ID which is set when creating new TopDesk incidents without providing a caller.
+  additionalinfo: Add the default caller ID which is set when creating new TOPdesk incidents without providing a caller.
 - additionalinfo: Getting incidents with new style FIQL query is available only from TOPdeskRestAPI version 3.4.0. For earlier versions this field will be used as additional inline params as supported. More information is available in the TOPdesk integration documentation.
   display: The query to use when fetching incidents
   name: fetch_query
