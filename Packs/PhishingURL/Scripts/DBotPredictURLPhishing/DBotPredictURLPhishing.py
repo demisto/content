@@ -511,7 +511,6 @@ def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
     whois_results = get_whois_verdict(domains)
 
     results = []
-    demisto.debug(f'{urls=}, {final_urls=}, {whois_results=}, {rasterize_outputs=}')
     for url, final_url, res_whois, output_rasterize in zip(urls, final_urls, whois_results, rasterize_outputs):
         url_redirect = f'{url} -> {final_url}   ({MSG_REDIRECT})' if final_url != url else final_url
 
