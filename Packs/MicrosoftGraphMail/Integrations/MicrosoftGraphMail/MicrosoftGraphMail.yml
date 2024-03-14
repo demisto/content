@@ -128,13 +128,13 @@ configuration:
   type: 13
   section: Connect
   required: false
-- display: ID or Client ID - see Detailed Instructions (?)
+- display: ID or Client ID
   hidden: true
   name: _auth_id
   type: 0
   section: Connect
   required: false
-- display: Token or Tenant ID - see Detailed Instructions (?)
+- display: Token or Tenant ID
   hidden: true
   name: _tenant_id
   type: 0

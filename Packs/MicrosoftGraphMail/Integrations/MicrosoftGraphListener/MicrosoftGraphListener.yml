@@ -8,7 +8,7 @@ commonfields:
 configuration:
 - name: creds_auth_id
   type: 9
-  displaypassword: ID or Client ID
+  displaypassword: Application ID or Client ID
   hiddenusername: true
   section: Connect
   required: false
@@ -17,7 +17,7 @@ configuration:
   displaypassword: Token or Tenant ID
   hiddenusername: true
   section: Connect
-  advanced: true
+  advanced: false
   required: false
 - name: creds_enc_key
   type: 9
@@ -70,7 +70,7 @@ configuration:
   displaypassword: Authorization code (required for self-deployed Azure app)
   hiddenusername: true
   section: Connect
-  advanced: true
+  advanced: false
   required: false
 - display: Authorization code (required for self-deployed Azure app)
   name: auth_code
@@ -83,7 +83,7 @@ configuration:
   name: redirect_uri
   type: 0
   section: Connect
-  advanced: true
+  advanced: false
   required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
