@@ -67,7 +67,7 @@ class Client(BaseClient):
                     # store received token and expiration time in the integration context
                     set_integration_context(new_token)
                     self._access_token = new_token.get(tsg_access_token)
-                    print(self._access_token )
+                    print('access token', self._access_token )
                 else:
                     raise DemistoException('Error occurred while creating an access token. Access token field has not'
                                            ' found in the response data. Please check the instance configuration.\n')
@@ -110,7 +110,7 @@ class Client(BaseClient):
                                  json_data=body)
         upload_url = res.get('upload-url')
         report_id = res.get('id')
-        if upload_url:
+        if upload_url and report_id:
             return upload_url, report_id
         else:
             raise DemistoException('Response not in format, can not find uploaded-url or report id.')
@@ -130,15 +130,13 @@ class Client(BaseClient):
         return res
     
     def check_upload_status_request(self, report_id):
-        print('check_upload_status_request')
         headers = {
             'Accept': '*/*',
             'Authorization': f'Bearer {self._access_token}'
         }
-        print('report_id', report_id)
         print(headers)
         res = self._http_request(method='GET',
-                    full_url=f'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/jobs/:{report_id}',
+                    full_url=f'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/jobs/{report_id}',
                     headers=headers
                     )
         print(res)
@@ -239,15 +237,17 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     global TIMEOUR_FOR_POLLING
     TIMEOUR_FOR_POLLING = args.get('timeout') or TIMEOUR_FOR_POLLING
     
-    # Get info about device
+    # Get info about device - system info
     system_info_xml = client.get_info_about_device_request()
     config_file = None
+    # Get info configurations
     if not config_file_from_user:
         config_file = client.get_config_file_request()
+    
     tags = ['family', 'model', 'serial', 'sw-version']
     xml_tags_values = get_values_from_xml(system_info_xml, tags)
     upload_url, report_id = client.generate_bpa_report_request(requester_email, requester_name, dict(zip(tags, xml_tags_values)))
-    print(upload_url)
+    print(upload_url, report_id)
     if config_file_from_user:
         config_in_binary = convert_config_to_bytes(config_file_from_user, 'User')
     elif config_file:
@@ -255,21 +255,20 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     else:
         raise DemistoException("Can not uplaod a config file since it was not provided.")
     client.config_file_to_report_request(upload_url, config_in_binary)
-    print('i am here')
-    polling_until_upload_report_command({'report_id':report_id}, client)
+    return_results(polling_until_upload_report_command({'report_id':report_id}, client))
     
 @polling_function(
-name="pan-aiops-polling_upload_report",
+name="pan-aiops-polling-upload-report",
 interval=INTERVAL_FOR_POLLING,
 timeout=TIMEOUR_FOR_POLLING,
 requires_polling_arg=False,
 )
-def polling_until_upload_report_command(args: dict[str, Any], client: Client):
+def polling_until_upload_report_command(args: dict[str, Any], client: Client) -> PollResult:
     print('hii')
+    print(client._access_token)
+    print(args)
     report_id = args.get('report_id')
-    print(report_id)
     upload_status = client.check_upload_status_request(report_id)
-    print(upload_status)
     print(report_id, upload_status)
     if upload_status == 'COMPLETED_WITH_SUCCESS':
         downloaded_BPA_url = client.download_bpa_request(report_id)
@@ -280,10 +279,19 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client):
             ),
             continue_to_poll=False,
         )
-    elif upload_status == 'UPLOAD_INITIATED':
+    elif upload_status == 'COMPLETED_WITH_ERROR':
+        results = CommandResults(readable_output="Polling job failed.")
+        print('initiated')
+        return PollResult(
+            response=results,
+            continue_to_poll=True,
+            args_for_next_run={'report_id':report_id},
+            partial_result=CommandResults(readable_output=f'The report with id {report_id} was sent successfully.')
+        )
+    elif upload_status == 'hhh':
         return PollResult(
             response=CommandResults(
-                readable_output=f'The report with id {report_id} was sent successfully.'
+                readable_output=f'The report with id {report_id} could not be uploaded- finished with an error.'
                 ),
             continue_to_poll=False,
         )
@@ -311,8 +319,6 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     
-    commands = {'pan-aiops-bpa-report-generate': generate_report_command,
-                'pan-aiops-polling_upload_report': polling_until_upload_report_command}
     try:
         
         client = Client(
@@ -327,9 +333,10 @@ def main() -> None:
         if command == 'test-module':
             result = test_module(client)
             return_results(result)
-
-        elif command in commands:
-            return_results(commands[command](client, args))
+        elif command == 'pan-aiops-bpa-report-generate':
+            return_results(generate_report_command(client, args))
+        elif command == 'pan-aiops-polling-upload-report':
+            return_results(polling_until_upload_report_command(args, client))
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
