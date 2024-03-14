@@ -78,10 +78,7 @@ winlogbeat.event_logs:
     id: application-logs
   - name: Microsoft-Windows-Windows Defender
     ignore_older: 1h
-    id: defender-logs 
-  - name: Microsoft-Windows-Sysmon/Operational
-    ignore_older: 1h
-    id: sysmon-logs       
+    id: defender-logs      
 ```
 
 **Note:** Control what event types will be collected by adding or removing the "name", "ignore_older", and "id" lines of the specific event type.

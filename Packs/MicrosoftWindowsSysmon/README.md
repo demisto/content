@@ -1,23 +1,6 @@
 # Microsoft Windows Sysmon
- 
-<~XSIAM>
- 
 This pack includes Cortex XSIAM content.
- 
-## Configuration on Server Side
- 
-1. Open the RUN window and enter: dnsmgmt.msc
-2. Right-click the name of the DNS server in the left-hand panel and select **Properties**.
-3. In the Debug logging tab, add a check in **Log packets for debugging**
-4. Ensure the following are checked: **Outgoing**, **Incoming**, **Queries/Transfers**, **Updates**.
-5. For long (detailed) logs, select **Details** and enter the log file path: ```c:\Windows\System32\dns\DNS.log```
-    
-   *Note: Detailed captures will heavily bloat the logs.*
- 
-## Collect Events from Vendor
- 
-In order to use the collector, use the [XDRC (XDR Collector)](#xdrc-xdr-collector) option.
- 
+<~XSIAM>
  
 ### XDRC (XDR Collector)
  
