@@ -94,6 +94,7 @@
 Tests/scripts/test_modeling_rules.sh @AradCarmi
 Tests/scripts/lock_cloud_machines.py @yucohen
 Tests/Marketplace/server_content_items.json @dantavori
+validation_config.toml @YuvHayun @JudahSchwartz @GuyAfik @anara123
 
 # SDK Related
 .gitlab/ci/.gitlab-ci.sdk-nightly.yml @dorschw
