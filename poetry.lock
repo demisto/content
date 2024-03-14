@@ -1374,7 +1374,7 @@ urllib3 = "<2.1.0"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.27.1"
+version = "1.27.3"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
