@@ -862,6 +862,7 @@ def rasterize_command():  # pragma: no cover
     navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
     file_names = argToList(demisto.args().get('file_name', 'url'))
     include_url = argToBoolean(demisto.args().get('include_url', False))
+    demisto.debug(f"file_names length: {len(file_names)}")
 
     file_extension = "png"
     if rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
@@ -871,9 +872,12 @@ def rasterize_command():  # pragma: no cover
                                          navigation_timeout=navigation_timeout, include_url=include_url,
                                          full_screen=full_screen)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
-    for current_rasterize_output, file_name in zip(rasterize_output, file_names):
+    if len(file_names) < len(rasterize_output):
+        file_names += ['url'] * (len(rasterize_output) - len(file_names))
+
+    for current_rasterize_output, current_file_name in zip(rasterize_output, file_names):
         # demisto.debug(f"rasterize_command response, {current_rasterize_output=}")
-        file_name = f'{file_name}.{file_extension}'  # type: ignore
+        file_name = f'{current_file_name}.{file_extension}'  # type: ignore
 
         if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
             output = {'image_b64': base64.b64encode(current_rasterize_output[0]).decode('utf8'),
