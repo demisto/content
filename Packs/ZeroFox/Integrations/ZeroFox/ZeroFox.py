@@ -16,15 +16,13 @@ import json
 FETCH_TIME_DEFAULT = "3 days"
 CLOSED_ALERT_STATUS = ["Closed", "Deleted"]
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
-MAX_ALERT_IDS_STORED = 200
+MAX_ALERT_IDS_STORED = 300
 
 """ Types """
 FetchIncidentsStorage = TypedDict("FetchIncidentsStorage", {
-    "last_fetched": str,
-    "last_offset": str,
     "last_modified_fetched": str,
     "last_modified_offset": str,
-    "zf-ids": list[int],
+    "zf-ids": list[str],
 })
 
 
@@ -1104,7 +1102,7 @@ def get_incidents_data(
     params: dict[str, Any],
     is_valid_alert: Callable[[dict[str, Any]], bool] | None = None,
     timestamp_field: str = "timestamp"
-) -> tuple[list[dict[str, Any]], str, str | None, list[int]]:
+) -> tuple[list[dict[str, Any]], str, str | None, list[str]]:
     incidents: list[dict[str, Any]] = []
     next_offset = "0"
 
@@ -1208,7 +1206,7 @@ def fetch_incidents(
     last_modified_offset = int(last_modified_offset_str)
 
     # ZeroFox Alert IDs previously created
-    zf_ids: set[str] = set(last_run.get("zf-ids", []))
+    zf_ids: list[str] = list(map(str, last_run.get("zf-ids", [])))
 
     # Fetch new alerts
     params = {
@@ -1231,8 +1229,8 @@ def fetch_incidents(
         "zf-ids": list(zf_ids),
     }
     if len(incidents) > 0:
-        zf_ids.update(alert_ids)
-        next_run["zf-ids"] = list(zf_ids)[:MAX_ALERT_IDS_STORED]
+        ingested_alert_ids = alert_ids + zf_ids
+        next_run["zf-ids"] = ingested_alert_ids[:MAX_ALERT_IDS_STORED]
         next_run["last_modified_offset"] = next_offset
         if next_offset == "0" and oldest_timestamp:
             next_run["last_modified_fetched"] = oldest_timestamp
@@ -1628,6 +1626,12 @@ def modify_alert_notes_command(
     params = parse_dict_values_to_integer(args, ["alert_id"])
     alert_id: int = params.get("alert_id", "")
     alert_notes: str = params.get("notes", "")
+    action : str = params.get("action", "replace")
+    if action == "append":
+        response_content = client.get_alert(alert_id)
+        alert: dict[str, Any] = response_content.get("alert", {})
+        old_notes = alert.get("notes", "")
+        alert_notes = f"{old_notes}\n{alert_notes}" if old_notes else alert_notes
     client.modify_alert_notes(alert_id, alert_notes)
     response_content = client.get_alert(alert_id)
     alert: dict[str, Any] = response_content.get("alert", {})
