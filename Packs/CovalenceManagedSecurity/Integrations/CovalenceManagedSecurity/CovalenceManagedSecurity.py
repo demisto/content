@@ -480,7 +480,7 @@ def endpoint_action_by_host_broker_command(broker_instance: BrokerClient, args):
     action_type = EndpointActionType[args["action_type"]]
     result = broker_instance.endpoint_action_by_host(action_type, args["org_id"], args["host_identifier"])
     return CommandResults(
-        readable_output=tableToMarkdown('Command Result', result),
+        readable_output=tableToMarkdown('Command Result - Success', result),
         outputs_prefix='FESBroker.Action',
         outputs_key_field='agent_uuid',
         outputs=result
@@ -491,7 +491,7 @@ def endpoint_action_by_aro_broker_command(broker_instance: BrokerClient, args):
     action_type = EndpointActionType[args["action_type"]]
     result = broker_instance.endpoint_action_by_aro(action_type, args['aro_id'])
     return CommandResults(
-        readable_output=tableToMarkdown('Command Result', result),
+        readable_output=tableToMarkdown('Command Result - Success', result),
         outputs_prefix='FESBroker.Action',
         outputs_key_field='agent_uuid',
         outputs=result
