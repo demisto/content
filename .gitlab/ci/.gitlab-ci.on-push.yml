@@ -107,6 +107,16 @@ run-validations:
     - if: '$NIGHTLY'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
+# runs in gitlab for the on-push flow (except for contributors)
+run-validations-new-validate-flow:
+  extends:
+    - .run-validations-new-validate-flow
+  rules:
+    - if: '$NIGHTLY'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  allow_failure: true
+
+
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
   tags:
@@ -213,6 +223,10 @@ validate-content-conf:
     - section_start "Prepare Content Packs for Testing"
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
     - section_end "Prepare Content Packs for Testing"
+
+    - section_start "Override and upload core packs versions"
+    - ./Tests/Marketplace/upload_versions_core_files.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION" "$LAST_UPLOAD_COMMIT"
+    - section_end "Override and upload core packs versions"
 
     - section_start "Create Instances for XSOAR"
     - |
