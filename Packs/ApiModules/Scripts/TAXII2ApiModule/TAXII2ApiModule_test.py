@@ -2,7 +2,7 @@ from taxii2client.exceptions import TAXIIServiceException, InvalidJSONError
 
 from CommonServerPython import *
 from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, \
-    HEADER_USERNAME, XSOAR2STIXParser, uuid, PAWN_UUID
+    HEADER_USERNAME, XSOAR2STIXParser, STIX2XSOARParser, uuid, PAWN_UUID
 from taxii2client import v20, v21
 import pytest
 import json
@@ -1812,3 +1812,54 @@ def test_create_stix_object(xsoar_indicator, xsoar_type, expected_stix_object, e
     assert stix_object == expected_stix_object
     assert extension_definition == {}
     assert extensions_dict == {}
+
+
+def test_init_client_with_wrong_version():
+    with pytest.raises(Exception) as e:
+        XSOAR2STIXParser(server_version='2.3', fields_to_present={'name', 'type'}, types_for_indicator_sdo=[],
+                         namespace_uuid=PAWN_UUID)
+
+    # Assert
+    assert (
+        str(e.value)
+        == 'Wrong TAXII 2 Server version: 2.3. Possible values: 2.0, 2.1.'
+    )
+
+
+@pytest.mark.parametrize('indicator_json, expected_result', [
+    ({}, ''),
+    ({"object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"]}, 'GREEN'),
+    ({"object_marking_refs": ["marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"]}, 'WHITE'),
+    ({"object_marking_refs": ["marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"]}, 'AMBER'),
+    ({"object_marking_refs": ["marking-definition--5e57c739-391a-4eb3-b6be-7d15ca92d5ed"]}, 'RED'),
+])
+def test_get_tlp(indicator_json, expected_result):
+    cilent = STIX2XSOARParser(id_to_object={})
+    result = cilent.get_tlp(indicator_json)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize('stix_object,xsoar_indicator, expected_stix_object', [
+    ({"type": "malware"}, {"CustomFields": {}}, {'is_family': False, 'type': 'malware'}),
+    ({"type": "report"}, {"CustomFields": {"published": "some_date"}},
+     {'published': "some_date", 'type': 'report'}),
+])
+def test_add_sdo_required_field_2_1(stix_object, xsoar_indicator, expected_stix_object):
+    cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present={'name', 'type'},
+                              types_for_indicator_sdo=[], namespace_uuid=PAWN_UUID)
+    stix_object = cilent.add_sdo_required_field_2_1(stix_object, xsoar_indicator)
+    assert stix_object == expected_stix_object
+
+
+@pytest.mark.parametrize('stix_object,xsoar_indicator, expected_stix_object', [
+    ({"type": "indicator"}, {"CustomFields": {'tags': []}}, {'type': 'indicator', 'labels': []}),
+    ({"type": "malware"}, {"CustomFields": {'tags': []}}, {'type': 'malware', 'labels': []}),
+    ({"type": "report"}, {"CustomFields": {'tags': []}}, {'type': 'report', 'labels': []}),
+    ({"type": "threat-actor"}, {"CustomFields": {'tags': []}}, {'type': 'threat-actor', 'labels': []}),
+    ({"type": "tool"}, {"CustomFields": {'tags': []}}, {'type': 'tool', 'labels': []}),
+])
+def test_add_sdo_required_field_2_0(stix_object, xsoar_indicator, expected_stix_object):
+    cilent = XSOAR2STIXParser(server_version='2.0', fields_to_present={'name', 'type'},
+                              types_for_indicator_sdo=[], namespace_uuid=PAWN_UUID)
+    stix_object = cilent.add_sdo_required_field_2_0(stix_object, xsoar_indicator)
+    assert stix_object == expected_stix_object

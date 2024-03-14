@@ -49,7 +49,7 @@ TAXII_VER_2_1 = "2.1"
 DFLT_LIMIT_PER_REQUEST = 100
 API_USERNAME = "_api_token_key"
 HEADER_USERNAME = "_header:"
-
+ALLOWED_VERSIONS = [TAXII_VER_2_0, TAXII_VER_2_1]
 ERR_NO_COLL = "No collection is available for this user, please make sure you entered the configuration correctly"
 
 # Pattern Regexes - used to extract indicator type and value
@@ -140,7 +140,7 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {         # pragma: no cover
 }
 
 # marking definitions of TLPs are constant (marking definitions of statements can vary)
-MARKING_DEFINITION_TO_TLP = {'marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9': 'WHITE',        # pragma: no cover
+MARKING_DEFINITION_TO_TLP = {'marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9': 'WHITE',
                              'marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da': 'GREEN',
                              'marking-definition--f88d31f6-486f-44da-b317-01333bde0b82': 'AMBER',
                              'marking-definition--5e57c739-391a-4eb3-b6be-7d15ca92d5ed': 'RED'}
@@ -280,9 +280,9 @@ class XSOAR2STIXParser:
     def __init__(self, namespace_uuid, fields_to_present,
                  types_for_indicator_sdo, server_version=TAXII_VER_2_1):
         self.server_version = server_version
-        if server_version not in [TAXII_VER_2_0, TAXII_VER_2_1]:
+        if server_version not in ALLOWED_VERSIONS:
             raise Exception(f'Wrong TAXII 2 Server version: {server_version}. '
-                            f'Possible values: {TAXII_VER_2_0}, {TAXII_VER_2_1}.')
+                            f'Possible values: {", ".join(ALLOWED_VERSIONS)}.')
         self.namespace_uuid = namespace_uuid
         self.fields_to_present = fields_to_present
         self.has_extension = fields_to_present != {'name', 'type'}
@@ -355,8 +355,8 @@ class XSOAR2STIXParser:
             stix_object['object_refs'] = []
         if is_sdo:
             stix_object['name'] = xsoar_indicator.get('value')
-            # stix_object = self.add_sdo_required_field_2_1(stix_object, xsoar_indicator)
-            # stix_object = self.add_sdo_required_field_2_0(stix_object, xsoar_indicator)
+            stix_object = self.add_sdo_required_field_2_1(stix_object, xsoar_indicator)
+            stix_object = self.add_sdo_required_field_2_0(stix_object, xsoar_indicator)
         else:
             stix_object = self.build_sco_object(stix_object, xsoar_indicator)
 
@@ -679,8 +679,6 @@ class XSOAR2STIXParser:
             Stix object entry for given indicator
         """
         if self.server_version == TAXII_VER_2_1 and "CustomFields" in xsoar_indicator:
-            # if stix_object['type'] == "indicator":
-            #     stix_object['pattern_type'] = xsoar_indicator["CustomFields"].get('tags', [])
             if stix_object['type'] == 'malware':
                 stix_object['is_family'] = xsoar_indicator["CustomFields"].get('ismalwarefamily', False)
             elif stix_object['type'] == 'report':
