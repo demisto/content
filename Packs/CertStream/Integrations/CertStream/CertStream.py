@@ -13,6 +13,7 @@ PRODUCT = "CertStream"
 SCO_DET_ID_NAMESPACE = UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 FETCH_SLEEP = 5
 XSOAR_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S+00:00'
+DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
 def test_module(host: str):
@@ -51,7 +52,7 @@ def long_running_execution_command(host: str, fetch_interval: int):
             while True:
                 now = datetime.now()
                 context = json.loads(demisto.getIntegrationContext()["context"])
-                last_fetch_time = datetime.strptime(context["fetch_time"], '%Y-%m-%d %H:%M:%S')
+                last_fetch_time = datetime.strptime(context["fetch_time"], DATETIME_FORMAT)
                 fetch_interval = context["list_update_interval"]
 
                 if now - last_fetch_time >= timedelta(minutes=fetch_interval):
@@ -64,6 +65,7 @@ def long_running_execution_command(host: str, fetch_interval: int):
                     fetch_certificates(message)
 
                 except ConnectionClosed:
+                    demisto.info("Websocket connection closed, reconnecting...")
                     break
 
 
@@ -284,6 +286,7 @@ def get_homographs_list(list_name: str) -> dict:
 
 def levenshtein_distance(original_string: str, reference_string: str) -> float:
     """The Levenshtein distance is a string metric for measuring the difference between two sequences.
+    reference: https://en.wikipedia.org/wiki/Levenshtein_distance
 
     Args:
         original_string (str): The initial string to compare to

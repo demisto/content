@@ -49,7 +49,6 @@ script:
   longRunning: true
   subtype: python3
 marketplaces:
-- marketplacev2
 - xsoar
 fromversion: 6.10.0
 tests:
