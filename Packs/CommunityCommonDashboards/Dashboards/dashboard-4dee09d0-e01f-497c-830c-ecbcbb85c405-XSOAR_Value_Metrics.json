@@ -1,0 +1,1199 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "XSOAR Value Metrics",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "6284a460-6c44-11ee-b586-bd19e2800387",
+            "id": "6284a460-6c44-11ee-b586-bd19e2800387",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Estimated Monthly Incident Effort",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "efflistname": "IncidentEffort",
+                    "listname": "MetricsThisYear",
+                    "metrictype": "Incidents",
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Effort Hours"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetrics",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 4,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "9d374640-6dce-11ee-a0c2-094d81188fdb",
+            "id": "9d374640-6dce-11ee-a0c2-094d81188fdb",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Monthly Active Incidents",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "efflistname": "",
+                    "listname": "MetricsLastYear",
+                    "metrictype": "Incidents",
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Incident Count"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetrics",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 0,
+            "y": 13
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "f4375ca0-6dd3-11ee-a0c2-094d81188fdb",
+            "id": "f4375ca0-6dd3-11ee-a0c2-094d81188fdb",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Average Incident Open Duration",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "listname": "MetricsThisYear",
+                    "metrictype": "Incident Open Duration",
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Minutes"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetrics",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 4,
+            "y": 7
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "463e5240-729f-11ee-a8f0-d334b3584291",
+            "id": "463e5240-729f-11ee-a8f0-d334b3584291",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Average SLA",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "listname": "MetricsThisYear",
+                    "metrictype": "SLA Metrics",
+                    "referenceLine": {},
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Minutes"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetrics",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 4,
+            "y": 10
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "20877240-72a2-11ee-a7ce-c32795fd6555",
+            "id": "20877240-72a2-11ee-a7ce-c32795fd6555",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Monthly Closed Incidents",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "listname": "MetricsLastYear",
+                    "metrictype": "Closed Incidents",
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Incident Count"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetrics",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 0,
+            "y": 16
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "75fa2070-bf8b-11ee-ae4b-d5ae252e03b8",
+            "id": "75fa2070-bf8b-11ee-ae4b-d5ae252e03b8",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2024-01-30T10:20:14.953977836-06:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "53a61021-d8f9-4ba8-85a1-e908815321cb",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-01-30T10:20:14.95479931-06:00",
+                "name": "Last Year",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "listname": "MetricsLastYear"
+                },
+                "prevName": "This Year",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetricsYear",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "c9486bb0-bf8b-11ee-ae4b-d5ae252e03b8",
+            "id": "c9486bb0-bf8b-11ee-ae4b-d5ae252e03b8",
+            "reflectDimensions": true,
+            "w": 8,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2024-01-30T10:20:14.953977836-06:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "53a61021-d8f9-4ba8-85a1-e908815321cb",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-01-30T10:20:14.95479931-06:00",
+                "name": "This Year",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "listname": "MetricsThisYear"
+                },
+                "prevName": "This Year",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetricsYear",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "text"
+            },
+            "x": 4,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "199cfef0-bf8c-11ee-ae4b-d5ae252e03b8",
+            "id": "199cfef0-bf8c-11ee-ae4b-d5ae252e03b8",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Estimated Monthly Incident Effort",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "efflistname": "IncidentEffort",
+                    "listname": "MetricsLastYear",
+                    "metrictype": "Incidents",
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Effort Hours"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetrics",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "1e681b90-bf8c-11ee-ae4b-d5ae252e03b8",
+            "id": "1e681b90-bf8c-11ee-ae4b-d5ae252e03b8",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Average Incident Open Duration",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "listname": "MetricsLastYear",
+                    "metrictype": "Incident Open Duration",
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Minutes"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetrics",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 7
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "22c3ad80-bf8c-11ee-ae4b-d5ae252e03b8",
+            "id": "22c3ad80-bf8c-11ee-ae4b-d5ae252e03b8",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Average SLA",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "listname": "MetricsLastYear",
+                    "metrictype": "SLA Metrics",
+                    "referenceLine": {},
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Minutes"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetrics",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 10
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "25c68d40-bf8c-11ee-ae4b-d5ae252e03b8",
+            "id": "25c68d40-bf8c-11ee-ae4b-d5ae252e03b8",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Estimated Annual Incident Effort",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "efflistname": "IncidentEffort",
+                    "listname": "MetricsThisYear",
+                    "metrictype": "Incidents",
+                    "showGraphValues": true,
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Effort Hours"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetricsTotal",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 8,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "297627c0-bf8c-11ee-ae4b-d5ae252e03b8",
+            "id": "297627c0-bf8c-11ee-ae4b-d5ae252e03b8",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Monthly Closed Incidents",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "listname": "MetricsThisYear",
+                    "metrictype": "Closed Incidents",
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Incident Count"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetrics",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 4,
+            "y": 16
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "06600b40-c048-11ee-b77d-23c3f4ab8409",
+            "id": "06600b40-c048-11ee-b77d-23c3f4ab8409",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Monthly Active Incidents",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "efflistname": "",
+                    "listname": "MetricsThisYear",
+                    "metrictype": "Incidents",
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Incident Count"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetrics",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 4,
+            "y": 13
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "4186f2e0-c04a-11ee-9446-e7f80d72c54f",
+            "id": "4186f2e0-c04a-11ee-9446-e7f80d72c54f",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Annual Closed Incidents",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "efflistname": "",
+                    "listname": "MetricsThisYear",
+                    "metrictype": "Closed Incidents",
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Incident Count"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetricsTotal",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 8,
+            "y": 16
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "efa22d40-c04a-11ee-9446-e7f80d72c54f",
+            "id": "efa22d40-c04a-11ee-9446-e7f80d72c54f",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Annual Average Incident Open Duration",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "efflistname": "",
+                    "listname": "MetricsThisYear",
+                    "metrictype": "Incident Open Duration",
+                    "showGraphValues": true,
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Minutes"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetricsTotal",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 8,
+            "y": 7
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "7a52f000-c04b-11ee-ab1a-77093b18c098",
+            "id": "7a52f000-c04b-11ee-ab1a-77093b18c098",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Annual Active Incidents",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "efflistname": "",
+                    "listname": "MetricsThisYear",
+                    "metrictype": "Incidents",
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Incident Count"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetricsTotal",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 8,
+            "y": 13
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "97ed3710-c04b-11ee-ab1a-77093b18c098",
+            "id": "97ed3710-c04b-11ee-ab1a-77093b18c098",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Annual Average SLA",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "efflistname": "",
+                    "listname": "MetricsThisYear",
+                    "metrictype": "SLA Metrics",
+                    "showGraphValues": true,
+                    "valuesFormat": "abbreviated",
+                    "yAxisLabel": "Minutes"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetricsTotal",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 8,
+            "y": 10
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "9148af60-c123-11ee-9e46-011332720f97",
+            "id": "9148af60-c123-11ee-9e46-011332720f97",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Monthly Incident Effort Reduction by Incident Type",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "efflistname": "IncidentEffort",
+                    "listname": "MetricsThisYear",
+                    "metrictype": "Effort Reduction",
+                    "valuesFormat": "percentage",
+                    "yAxisLabel": "%  Reduced"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetrics",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 4,
+            "y": 4
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "e2d4bef0-c128-11ee-89ff-4b9e8c1a0491",
+            "id": "e2d4bef0-c128-11ee-89ff-4b9e8c1a0491",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Monthly Incident Effort Reduction By Incident Type",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "efflistname": "IncidentEffort",
+                    "listname": "MetricsLastYear",
+                    "metrictype": "Effort Reduction",
+                    "valuesFormat": "percentage",
+                    "yAxisLabel": "%  Reduced"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetrics",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 0,
+            "y": 4
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "3cb10c80-c129-11ee-89ff-4b9e8c1a0491",
+            "id": "3cb10c80-c129-11ee-89ff-4b9e8c1a0491",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-10-16T11:50:03.318254635-05:00",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9c6f4b98-f0d9-4b83-8d59-9b73a7aadb46",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-10-16T11:50:03.319851274-05:00",
+                "name": "Annual Incident Effort Reduction by Incident Type",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "efflistname": "IncidentEffort",
+                    "listname": "MetricsThisYear",
+                    "metrictype": "Effort Reduction",
+                    "showGraphValues": true,
+                    "valuesFormat": "percentage",
+                    "yAxisLabel": "Incident Count"
+                },
+                "prevName": "Closed Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "XMetricsTotal",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 8,
+            "y": 4
+        }
+    ],
+    "name": "XSOAR Value Metrics",
+    "period": {
+        "by": "",
+        "byFrom": "ytd",
+        "byTo": "",
+        "field": "",
+        "fromValue": 0,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "description": "",
+    "isPredefined": true
+}
