@@ -79,7 +79,7 @@ alter
 	clean_source_localip_127 = incidr(check_avilable_ip2,"127.0.0.0/8"),
 	clean_source_localip_169 = incidr(check_avilable_ip,"169.254.0.0/168"),
 	clean_source_localip_172 = incidr(check_avilable_ip2,"172.16.0.0/12"),
-	clean_source_localip_192 = incidr(check_avilable_ip2,"192.168.0.0/16") 	
+	clean_source_localip_192 = incidr(check_avilable_ip2,"192.168.0.0/16") 
 | alter
 	xdm.source.host.os_family = XDM_CONST.OS_FAMILY_WINDOWS,
 	xdm.observer.type = provider_name,
