@@ -1,13 +1,13 @@
 {
     "name": "JizoM",
-    "description": "This integration allows to interact with the JizoM API",
+    "description": "This integration ensures interaction with the JizoM API",
     "support": "partner",
-    "currentVersion": "",
+    "currentVersion": "1.0.0",
     "author": "SesameIT",
     "url": "https://sesame-it.com/",
     "email": "",
     "categories": [
-        
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
     "useCases": [],
@@ -16,6 +16,6 @@
         "xsoar"
     ],
     "githubUser": [
-        
+        "SesameGit"
     ]
 }
