@@ -512,45 +512,6 @@ tasks:
           - operator: uniq
       InputEnrichment:
         simple: "False"
-      MD5:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-          accessor: Indicator
-          transformers:
-          - operator: uniq
       RuleDirection:
         simple: outbound
       RuleName:
@@ -1325,10 +1286,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: fc17b6f5-1109-4a65-8e6d-de295fbcc6c0
+    taskid: db9478b5-07bc-4c3a-81ba-8dbcabdd41a3
     type: playbook
     task:
-      id: fc17b6f5-1109-4a65-8e6d-de295fbcc6c0
+      id: db9478b5-07bc-4c3a-81ba-8dbcabdd41a3
       version: -1
       name: Threat Hunting - Generic
       description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
@@ -1373,6 +1334,7 @@ tasks:
       InternalRange:
         complex:
           root: inputs.InternalIPRanges
+
       MD5:
         complex:
           root: DBotScore
@@ -1413,6 +1375,12 @@ tasks:
                   simple: "3"
           accessor: Indicator
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedFiles
+                iscontext: true
           - operator: uniq
       QRadarTimeFrame:
         simple: LAST 7 DAYS
@@ -1497,6 +1465,12 @@ tasks:
                   simple: "3"
           accessor: Indicator
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedFiles
+                iscontext: true
           - operator: uniq
       SplunkEarliestTime:
         simple: -7d@d
@@ -2360,10 +2334,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: a2191c70-701f-43c0-8602-be874b7cb749
+    taskid: afadc78f-a5bb-4f1c-83e5-fdd043431cca
     type: condition
     task:
-      id: a2191c70-701f-43c0-8602-be874b7cb749
+      id: afadc78f-a5bb-4f1c-83e5-fdd043431cca
       version: -1
       name: Manual Investigation
       description: "Upon review, the playbook did not identify any obvious malicious indicators associated with the alert. However, there are some noteworthy observations that require manual investigation. \n\n**Review the following alert details and determine whether remediation is necessary:**\n1. Verify if previous false positive incidents with similar characteristics have been detected.\n2. Review the additional alerts within the incident, if any exist.\n3. Examine the additional alerts retrieved by the sub-playbooks associated with the initiator account, similar command line, or initiator host.\n4. Check the FW application ID to ensure it is a known and authorized application within the organization (if the activity and application are valid, add the ID to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n5. Check the initiator process to ensure it is a known and authorized process within the organization (if the activity and process are valid, add the process name to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n6. Analyze the command line analysis results and any additional alerts with similar initiator command lines retrieved from the 'Cortex XDR - Search and Compare Process Executions - XDR Alerts' sub-playbook.\n7. Determine whether the user is aware of the upload activity and what caused the massive upload that triggered the alert.\n8. Verify whether the uploaded files contain sensitive information."
@@ -2393,10 +2367,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: e7b3534b-2107-421c-8d2f-717d659e54c4
+    taskid: aeec3291-f750-4743-8442-77286d075ff8
     type: condition
     task:
-      id: e7b3534b-2107-421c-8d2f-717d659e54c4
+      id: aeec3291-f750-4743-8442-77286d075ff8
       version: -1
       name: Check Uploaded Data Volume
       description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
@@ -2412,11 +2386,23 @@ tasks:
     conditions:
     - label: More Than Threshold
       condition:
-      - - operator: containsGeneral
+      - - operator: isEqualString
           left:
             value:
               complex:
-                root: inputs.TransferredData
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: description
+                transformers:
+                - operator: RegexGroups
+                  args:
+                    flags: {}
+                    groups:
+                      value:
+                        simple: "2"
+                    keys: {}
+                    regex:
+                      value:
+                        simple: uploaded\s(.*(MB|GB|TB))
             iscontext: true
           right:
             value:
@@ -2426,8 +2412,19 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.TransferredData
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: description
                 transformers:
+                - operator: RegexGroups
+                  args:
+                    flags: {}
+                    groups:
+                      value:
+                        simple: "1"
+                    keys: {}
+                    regex:
+                      value:
+                        simple: uploaded\s(.*(MB|GB|TB))
                 - operator: StripChars
                   args:
                     chars:
@@ -2440,6 +2437,28 @@ tasks:
               complex:
                 root: inputs.Transferred_Data _Threshold
             iscontext: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: description
+                transformers:
+                - operator: RegexGroups
+                  args:
+                    flags: {}
+                    groups:
+                      value:
+                        simple: "2"
+                    keys: {}
+                    regex:
+                      value:
+                        simple: uploaded\s(.*(MB|GB|TB))
+            iscontext: true
+          right:
+            value:
+              simple: TB
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -2726,26 +2745,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: 8243ca0e-26d1-4fea-85f6-bfd29f471bd7
+    taskid: e7cb2076-4c50-44e7-81d5-51cc712011e6
     type: condition
     task:
-      id: 8243ca0e-26d1-4fea-85f6-bfd29f471bd7
+      id: e7cb2076-4c50-44e7-81d5-51cc712011e6
       version: -1
-      name: Initiator Process Is Signed?
+      name: Unsigned Initiator Process?
       description: Checks whether the initiator process is signed.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "89"
-      "yes":
       - "13"
+      "yes":
+      - "89"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEqualString
           left:
             value:
               complex:
@@ -2959,10 +2978,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: 74e1001a-bf42-48d9-896a-0e0ae7c5dd6d
+    taskid: 2e32afa9-757a-4aa0-83b1-2736da8d3bc0
     type: condition
     task:
-      id: 74e1001a-bf42-48d9-896a-0e0ae7c5dd6d
+      id: 2e32afa9-757a-4aa0-83b1-2736da8d3bc0
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the 'large upload HTTPS' Cortex XDR alerts.
@@ -3174,35 +3193,33 @@ tasks:
             value:
               simple: High
           ignorecase: true
-        - operator: isNotEmpty
+        - operator: greaterThanOrEqual
           left:
             value:
               complex:
                 root: NumOfSiemFailedLogon
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR
+                accessor: Alert
                 transformers:
                 - operator: append
                   args:
                     item:
                       value:
-                        simple: NumOfThreatLogs
+                        simple: Splunk.Result
                       iscontext: true
                 - operator: append
                   args:
                     item:
                       value:
-                        simple: NumOfOktaSuspiciousActivities
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: SuspiciousUserActivities
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: NumOfOktaSuspiciousUserAgent
+                        simple: QRadar.Search.Result
                       iscontext: true
                 - operator: append
                   args:
@@ -3210,31 +3227,25 @@ tasks:
                       value:
                         simple: SuspiciousUserAgent
                       iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: NumOfOktaFailedLogon
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: QRadar.Search
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Splunk
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: PaloAltoNetworksXDR.Alert
-                      iscontext: true
             iscontext: true
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: NumOfThreatLogs
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: NumOfOktaSuspiciousActivities
+            iscontext: true
+          right:
+            value:
+              simple: "3"
     - label: Benign
       condition:
       - - operator: isEqualString
@@ -3888,9 +3899,8 @@ view: |-
       "7_113_Yes": 0.1,
       "7_58_#default#": 0.1,
       "84_13_#default#": 0.41,
-      "85_13_#default#": 0.16,
-      "88_13_yes": 0.1,
-      "88_89_#default#": 0.5
+      "85_13_#default#": 0.11,
+      "88_13_#default#": 0.1
     },
     "paper": {
       "dimensions": {

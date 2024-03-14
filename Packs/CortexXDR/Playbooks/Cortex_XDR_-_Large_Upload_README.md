@@ -21,15 +21,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Block Indicators - Generic v3
+* Entity Enrichment - Generic v3
+* TIM - Indicator Relationships Analysis
+* Cortex XDR - Isolate Endpoint
+* Cortex XDR - Endpoint Investigation
+* Cortex XDR - Search and Compare Process Executions - XDR Alerts
 * User Investigation - Generic
 * Threat Hunting - Generic
 * Command-Line Analysis
-* Entity Enrichment - Generic v3
-* Cortex XDR - Search and Compare Process Executions - XDR Alerts
-* TIM - Indicator Relationships Analysis
-* Cortex XDR - Endpoint Investigation
-* Cortex XDR - Isolate Endpoint
-* Block Indicators - Generic v3
 
 ### Integrations
 
@@ -37,13 +37,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* DBotFindSimilarIncidents
 * Set
+* DBotFindSimilarIncidents
 
 ### Commands
 
-* xdr-get-cloud-original-alerts
 * setIncident
+* xdr-get-cloud-original-alerts
 
 ## Playbook Inputs
 
