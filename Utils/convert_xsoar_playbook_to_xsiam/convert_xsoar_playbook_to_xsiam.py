@@ -92,7 +92,7 @@ def convert_playbook(
     if playbook_display_name := playbook.display_name:
         playbook.display_name = f'{playbook_display_name} Converted'
 
-    # iterates on playbook tasks to replace command names.
+    # iterates on playbook tasks to replace command names (xdr-some-command -> core-some-command).
     for id, data in playbook.tasks.items():
 
         if (task_script_name := data.task.script) and (coammnd_name := task_script_name.replace('|','')) in mapping:
@@ -111,7 +111,7 @@ def convert_playbook(
     with open(output_path, 'r') as file:
         yaml_data = yaml.safe_load(file)
 
-    # Replaces XDR occureences with Core
+    # Replaces outputs/inputs XDR occurrences with Core
     replace_occurrences(yaml_data, "PaloAltoNetworksXDR", 'Core', system_alert_fields)
     with open(output_path, 'w') as file:
         yaml.dump(yaml_data, file)
