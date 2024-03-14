@@ -103,74 +103,56 @@
                         "root": "business_criticality",
                         "transformers": [
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1 - Critical"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^1$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1 - Critical"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - High"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^2$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2 - High"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Non-Critical"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^3$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3 - Non-Critical"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							}
                         ]
                     },
                     "simple": ""
@@ -366,74 +348,56 @@
                         "root": "impact",
                         "transformers": [
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1 - High"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^1$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1 - High"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - Medium"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^2$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2 - Medium"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^3$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3 - Low"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							}
                         ]
                     },
                     "simple": ""
@@ -445,74 +409,56 @@
                         "root": "notify",
                         "transformers": [
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1 - Do Not Notify"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^1$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1 - Do Not Notify"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - Send Email"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^2$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2 - Send Email"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Telephone"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^3$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3 - Telephone"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							}
                         ]
                     },
                     "simple": ""
@@ -561,120 +507,90 @@
                         "root": "priority",
                         "transformers": [
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1 - Critical"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^1$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1 - Critical"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - High"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^2$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2 - High"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Moderate"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^3$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3 - Moderate"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "4 - Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "4"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^4$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "4 - Low"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "5 - Planning"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "5"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^5$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "5 - Planning"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							}
                         ]
                     },
                     "simple": ""
@@ -776,74 +692,56 @@
                         "root": "urgency",
                         "transformers": [
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1 - High"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^1$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1 - High"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - Medium"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^2$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2 - Medium"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^3$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3 - Low"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							}
                         ]
                     },
                     "simple": ""
@@ -1145,74 +1043,56 @@
                         "root": "impact",
                         "transformers": [
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1 - High"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^1$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1 - High"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - Medium"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^2$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2 - Medium"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^3$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3 - Low"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							}
                         ]
                     },
                     "simple": ""
@@ -1224,74 +1104,56 @@
                         "root": "notify",
                         "transformers": [
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1 - Do Not Notify"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^1$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1 - Do Not Notify"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - Send Email"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^2$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2 - Send Email"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Telephone"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^3$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3 - Telephone"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							}
                         ]
                     },
                     "simple": ""
@@ -1303,120 +1165,90 @@
                         "root": "priority",
                         "transformers": [
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1 - Critical"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^1$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1 - Critical"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - High"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^2$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2 - High"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Moderate"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^3$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3 - Moderate"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "4 - Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "4"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^4$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "4 - Low"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "5 - Planning"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "5"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^5$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "5 - Planning"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							}
                         ]
                     },
                     "simple": ""
@@ -1457,74 +1289,56 @@
                         "root": "urgency",
                         "transformers": [
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1 - High"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^1$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1 - High"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2 - Medium"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^2$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2 - Medium"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3 - Low"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^3$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3 - Low"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							}
                         ]
                     },
                     "simple": ""
@@ -1658,51 +1472,56 @@
                         "root": "severity",
                         "transformers": [
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^3( - Low)?$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^2 - Medium$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
+                            {
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^1( - High)?$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							}
                         ]
                     },
                     "simple": ""
@@ -1719,51 +1538,56 @@
                         "root": "severity",
                         "transformers": [
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^3( - Low)?$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "1"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
                             {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^2 - Medium$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "2"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							},
+                            {
+								"args": {
+									"regex": {
+										"isContext": false,
+										"value": {
+											"simple": "^1( - High)?$"
+										}
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "3"
+										}
+									}
+								},
+								"operator": "replaceMatch"
+							}
                         ]
                     },
                     "simple": ""
