@@ -3625,7 +3625,7 @@
             "integrations": "Palo Alto Networks - Prisma SASE",
             "playbookID": "PrismaSASE Test",
             "fromversion": "6.5.0",
-            "timeout": 3000
+            "timeout": 500
         },
         {
             "integrations": "Prisma Access",
@@ -4220,7 +4220,7 @@
             ]
         },
         {
-            "playbookID": "X509Certificate Test Playbook",
+            "playbookID": "X509Certificate_Test_Playbook",
             "fromversion": "6.0.0"
         },
         {
