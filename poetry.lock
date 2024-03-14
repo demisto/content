@@ -1476,7 +1476,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk"
 reference = "devbug/CIAC-8955/replace-ec3-user-in-demisto-sdk"
-resolved_reference = "5230cbf747dab0e31404e02b7b331c72a590dc00"
+resolved_reference = "2608cb1c3b1fe4ecfa44b4be14d35d235e686688"
 
 [[package]]
 name = "deprecated"
