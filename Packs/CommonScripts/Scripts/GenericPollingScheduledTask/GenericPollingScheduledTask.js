@@ -22,6 +22,8 @@
 const MINIMUM_XSOAR_VERSION = '8.2.0';
 const MINIMUM_BUILD_NUMBER_XSOAR = 309463;
 
+const SANITIZED_ARG_NAMES = ['additionalPollingCommandArgValues', 'additionalPollingCommandArgNames', 'pollingCommandArgName', 'pollingCommand']
+
 
 
 function listOfStrings(v) {
