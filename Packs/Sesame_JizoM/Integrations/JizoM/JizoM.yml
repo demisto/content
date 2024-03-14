@@ -1,4 +1,4 @@
-category: Forensics & Malware Analysis
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: JizoM
   version: -1
@@ -9,7 +9,7 @@ configuration:
     type: 0
   - display: API Key
     name: apikey
-    required: true
+    required: false
     type: 4
   - display: Trust any certificate (not secure)
     name: insecure
@@ -26,18 +26,42 @@ name: JizoM
 script:
   commands:
     - arguments:
-        - description: SHA256 Value
-          name: file_hash
+        - description: time filter
+          name: timestamp
           required: false
-      description: Download a sample with file hash
+      description: Get jizo protocols
       name: protocols
     - arguments:
-        - description: SHA256 Value
-          name: file_hash
+        - description:
+          name:
           required: false
-      description: Search for sample with file hash
+      description: Get jizo peers
       name: peers
-  dockerimage: demisto/python3:3.10.12.63474
+    - arguments:
+        - description: time filter
+          name: timestamp
+          required: false
+      description: Get jizo query records
+      name: query_records
+    - arguments:
+        - description:
+          name:
+          required: false
+      description: Get jizo alerts rules.
+      name: alert_rules
+    - arguments:
+        - description:
+          name:
+          required: false
+      description: Get jizo device records.
+      name: device_records
+    - arguments:
+        - description:
+          name:
+          required: false
+      description: Get jizo device alerts
+      name: device_alerts
+  dockerimage: demisto/python3:3.10.13.78960
   runonce: false
   script: ""
   subtype: python3
