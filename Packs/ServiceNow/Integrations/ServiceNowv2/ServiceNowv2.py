@@ -1471,7 +1471,8 @@ def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, di
     attachment_file_id = str(args.get('file_sys_id', ''))
 
     result = client.delete_attachment(attachment_file_id)
-
+    if result:
+        raise Exception("No Record found.")
     return f'Attachment with Sys ID {attachment_file_id} was successfully deleted.', {}, result, True
 
 
