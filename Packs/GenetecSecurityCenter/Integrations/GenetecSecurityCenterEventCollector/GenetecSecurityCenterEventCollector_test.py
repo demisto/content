@@ -39,7 +39,8 @@ def get_client() -> Client:
 
 def test_test_module_success(mocker):
     """
-    Validate that in case of a successful response from the BaseClient's _http_request, the Client's http_request will return the response and test-module will return 'ok'.
+    Validate that in case of a successful response from the BaseClient's _http_request
+    The Client's http_request will return the response and test-module will return 'ok'.
     """
     from GenetecSecurityCenterEventCollector import test_module
     client = get_client()
@@ -50,7 +51,8 @@ def test_test_module_success(mocker):
 
 def test_test_module_failure(mocker):
     """
-    Validate that in case of an unsuccessful response from the BaseClient's _http_request, the Client's http_request will raise an error with the result section as the message and test-module will fail as well..
+    Validate that in case of an unsuccessful response from the BaseClient's _http_request.
+    The Client's http_request will raise an error with the result section as the message and test-module will fail as well..
     """
     from GenetecSecurityCenterEventCollector import test_module
     client = get_client()
@@ -62,17 +64,47 @@ def test_test_module_failure(mocker):
         assert "Failed the http request." in str(err)
 
 
-@pytest.mark.parametrize('first_iteration_response, second_iteration_response, expected_events_len_first_call, expected_events_len_second_call, expected_last_run_first_iteration, expected_last_run_second_iteration, expected_events_first_call, expected_events_second_call',
+@pytest.mark.parametrize('first_iteration_response, second_iteration_response, expected_events_len_first_call,'
+                         'expected_events_len_second_call, expected_last_run_first_iteration, expected_last_run_second_iteration,'
+                         'expected_events_first_call, expected_events_second_call',
                          [
                              ([INCIDENT_NO_ONE, INCIDENT_NO_TWO.copy(), INCIDENT_NO_THREE, INCIDENT_NO_FOUR],
                               [INCIDENT_NO_TWO, INCIDENT_NO_THREE, INCIDENT_NO_FOUR], 2, 2,
                               {'start_time': '2024-02-22T23:21:33'}, {'start_time': '2024-02-23T23:21:33'},
-                              [{'Id': 1, 'ModificationTimeStamp': '2024-02-21T23:21:33.96Z', 'Value': {'AuditData': {'EId': '1'}}},
-                                  {'Id': 2, 'ModificationTimeStamp': '2024-02-22T23:21:33.96Z', 'Value': {'AuditData': {'EId': '2'}}}],
-                              [{'Id': 2, 'ModificationTimeStamp': '2024-02-22T23:21:33.96Z', 'Value': {'AuditData': {'EId': '2'}}}, {'Id': 3, 'ModificationTimeStamp': '2024-02-23T23:21:33.96Z', 'Value': {'AuditData': {'EId': '3'}}}])
+                              [
+                                  {
+                                      'Id': 1,
+                                      'ModificationTimeStamp': '2024-02-21T23:21:33.96Z',
+                                      'Value': {'AuditData': {'EId': '1'}}
+                                  },
+                                  {
+                                      'Id': 2,
+                                      'ModificationTimeStamp': '2024-02-22T23:21:33.96Z',
+                                      'Value': {'AuditData': {'EId': '2'}}
+                                  }
+                              ],
+                              [
+                                  {
+                                      'Id': 2,
+                                      'ModificationTimeStamp': '2024-02-22T23:21:33.96Z',
+                                      'Value': {'AuditData': {'EId': '2'}}
+                                  },
+                                  {
+                                      'Id': 3,
+                                      'ModificationTimeStamp': '2024-02-23T23:21:33.96Z',
+                                      'Value': {'AuditData': {'EId': '3'}}
+                                  }
+                              ])
                          ])
-def test_fetch_events_command(mocker, first_iteration_response, second_iteration_response, expected_events_len_first_call, expected_events_len_second_call,
-                              expected_last_run_first_iteration, expected_last_run_second_iteration, expected_events_first_call, expected_events_second_call):
+def test_fetch_events_command(
+    mocker, first_iteration_response,
+    second_iteration_response,
+    expected_events_len_first_call,
+    expected_events_len_second_call,
+    expected_last_run_first_iteration,
+    expected_last_run_second_iteration,
+    expected_events_first_call,
+    expected_events_second_call):
     """Testing two consecutive calls to the fetch events command.
         The flow:
         - General mocks & preparations.
