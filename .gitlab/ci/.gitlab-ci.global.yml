@@ -357,6 +357,9 @@
       # git push origin $CI_COMMIT_BRANCH:$BRANCH 
       # echo "Created clean machine branch:${BRANCH}"
       # section_end "Create Clean Machine Branch"
+      # git checkout ${CI_COMMIT_BRANCH}
+      # git branch ${BRANCH}
+      # git push origin "${BRANCH}"
   - section_start "Trigger Clean machine pipeline"
   - |
     if [[ -f "CloudEnvVariables" ]]; then
@@ -367,8 +370,7 @@
       echo "machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
       section_start "Create Testing Branch"
       export BRANCH="${CI_COMMIT_BRANCH}-cleanup-branch-${CI_PIPELINE_ID}"
-      git checkout ${CI_COMMIT_BRANCH}
-      git branch ${BRANCH}
+      git push origin $CI_COMMIT_BRANCH:$BRANCH 
       echo "Created test branch:${BRANCH}"
       git branch --list
       if git branch --list "${BRANCH}" &>/dev/null; then
