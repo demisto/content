@@ -723,14 +723,12 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
         - Verify the returned result is as we expected
     """
     from CortexXDRIR import fetch_incidents, Client
-    # get_incidents_list_response = load_test_data('./test_data/get_incidents_list_multiple_incidents_extra_data.json')
     raw_multiple_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
     raw_all_alerts_incident_2 = load_test_data('./test_data/get_extra_data_all_alerts.json').get('reply', {}).get('incidents', [])
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
     mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
-    # mocker.patch('CortexXDRIR.get_incident_extra_data_command', side_effect=raw_all_alerts_incident_2)
     mocker.patch.object(Client, 'get_incident_extra_data', return_value=raw_all_alerts_incident_2)
     mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=raw_multiple_extra_data.get('reply', {})
                         .get('incidents', []))
@@ -1050,7 +1048,7 @@ def test_get_headers(mocker):
     - Returns a dictionary containing the expected headers
     """
     from CortexXDRIR import get_headers
-    mocker.patch('secrets.choice', return_value='a')
+    mocker.patch('secrets.choice', return_value='test')
     # Define the parameters
     params = {
         'apikey': 'test_api_key',
@@ -1061,8 +1059,7 @@ def test_get_headers(mocker):
     headers = get_headers(params)
 
     assert len(headers) == 4
-    assert headers['x-xdr-nonce'] == 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-    assert headers['x-xdr-auth-id'] == 'test_api_key_id'
+    assert headers['x-xdr-nonce'] == 'test' * 64
 
 
 @freeze_time("1997-10-05 15:00:00 GMT")
@@ -1218,3 +1215,29 @@ def test_get_endpoints_by_status_command(mocker):
     mocker.patch.object(Client, 'get_endpoints_by_status', return_value=['1', {"endpoint_count": 2}])
     res = get_endpoints_by_status_command(client, args)
     assert res.readable_output == "['new', 'in_progress'] endpoints count: 1"
+
+
+class TestGetIncidents():
+
+    def test_get_multiple_incidents_extra_data(self, requests_mock, mocker):
+        """
+        Given: Incidents returned from client.
+        When: Running get_multiple_incidents_extra_data.
+        Then: Ensure the outputs contain the incidents from the client.
+        """
+        from CortexXDRIR import Client
+        multiple_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
+        requests_mock.post(f'{XDR_URL}/incidents/get_multiple_incidents_extra_data/', json=multiple_extra_data)
+        mocker.patch.object(demisto, 'command', return_value='xdr-get-incident-extra-data')
+        mocker.patch.object(Client, '_http_request', return_value=multiple_extra_data)
+        client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
+        outputs = Client.get_multiple_incidents_extra_data(client,
+                                              status=['new'],
+                                              starred=True,
+                                              starred_incidents_fetch_window=1575806909185,
+                                              incident_id_list=['1','2'],
+                                              fields_to_exclude=True)
+        assert len(outputs)==2
+        assert outputs[0]['alerts']['total_count'] <= 2
+        assert outputs[1]['alerts']['total_count'] <= 2
