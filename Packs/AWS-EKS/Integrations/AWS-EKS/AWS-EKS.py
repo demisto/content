@@ -37,21 +37,48 @@ def datetime_to_str(data: dict, param_name: str):
 
 
 def list_clusters_command(aws_client: AWSClient, args: dict) -> CommandResults:
-    # TODO add docstring, and yml outputs, add pagination and the rest of the command
+    """
+    Lists the Amazon EKS clusters in the Amazon Web Services account in the specified Amazon Web Services Region.
+    Args:
+        aws_client: AWS client
+        args: command arguments
+
+    Returns:
+        A Command Results object
+    """
     client = aws_client.aws_session(service='eks')
     limit = arg_to_number(args.get('limit')) or 50
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    if (page and not page_size) or (not page and page_size):
-        raise Exception('Please provide both page and page_size arguments.')
-    if page_size:
-        response = client.list_clusters(maxResults=page_size)
-    else:
-        response = client.list_clusters(maxResults=limit)
+    next_token = args.get('next_token', '')
+    list_clusters = []
+    while limit > 0:
+        if limit > 100:
+            response = client.list_clusters(maxResults=100,
+                                            nextToken=next_token)
+            limit -= 100
+            list_clusters.extend(response.get('clusters', []))
+        else:
+            response = client.list_clusters(maxResults=limit,
+                                            nextToken=next_token)
+            limit = 0
+            list_clusters.extend(response.get('clusters', []))
+        next_token = response.get('next_token')
 
-    return CommandResults(readable_output='ok',
-                          raw_response=response,
-                          outputs=response)
+    md_table = {
+        'ClustersNames': list_clusters,
+        'NextToken': next_token
+    }
+
+    readable_output = tableToMarkdown(
+        name='The list of clusters',
+        t=md_table,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AWS.EKS.Cluster',
+        outputs=md_table,
+        raw_response=md_table,
+    )
 
 
 def update_cluster_config_command(aws_client: AWSClient, args: dict)-> CommandResults:

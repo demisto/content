@@ -36,7 +36,7 @@ configuration:
   required: false
 - display: Retries
   name: retries
-  defaultvalue: 5
+  defaultValue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   type: 0
   section: Connect
@@ -59,16 +59,17 @@ script:
     description: Lists the Amazon EKS clusters in your Amazon Web Services account in the specified Amazon Web Services Region.
     arguments:
       - name: limit
-        description: The maximum number of clusters to return. This value can be between 1 and 100.
+        description: The maximum number of clusters to return.
         defaultValue: 50
-      - name: page
-        description: The specific result page to display.
-      - name: page_size
-        description: The number of records in a page. This value can be between 1 and 100.
+      - name: next_token
+        description: The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter.
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    - contextPath: AWS.EKS.Cluster.ClustersNames
+      description: A list of all of the clusters for your account in the specified Amazon Web Services Region.
+      type: List
+    - contextPath: AWS.EKS.Cluster.NextToken
+      description: The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter.
+      type: List
   - name: aws-eks-update-cluster-config
     description: Updates an Amazon EKS cluster configuration.
     arguments:
@@ -256,7 +257,7 @@ script:
         description: The type of access entry to create.
         required: true
         isArray: false
-        defaultvalue: Standard
+        defaultValue: Standard
         auto: PREDEFINED
         predefined:
           - Standard
