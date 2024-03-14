@@ -73,8 +73,11 @@ Query FES Portal for ARO.
 | FESPortal.Aro.type | String | Type. | 
 
 #### Command example
+
 ```!cov-mgsec-get-aro query="since=2023-11-30 18:00:00"```
+
 #### Context Example
+
 ```json
 {
     "FESPortal": {
@@ -111,6 +114,7 @@ Query FES Portal for ARO.
 #### Human Readable Output
 
 >### AROs
+
 >|Organization|Resolution|Severity|Status|Title|Type|
 >|---|---|---|---|---|---|
 >| ID: 9d4297ea-089e-42bd-884d-51744e31a471<br/>email: foo@bar.com<br/>name: Acme | Unresolved | Critical | Open | test2 | Action |
@@ -140,8 +144,11 @@ There are no input arguments for this command.
 | FESPortal.Org.name | String | Name. | 
 
 #### Command example
+
 ```!cov-mgsec-list-org```
+
 #### Context Example
+
 ```json
 {
     "FESPortal": {
@@ -166,6 +173,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Organizations
+
 >|Id|Email|Email Aro Details|Name|
 >|---|---|---|---|
 >| 9d4297ea-089e-42bd-884d-51744e31a471 | foo@bar.com | false | Acme |
@@ -222,8 +230,11 @@ Transition an ARO.
 | FESPortal.Aro.type | String | Type. | 
 
 #### Command example
+
 ```!cov-mgsec-transition-aro aro_id="7ea9b17d-7529-4b17-b0e7-92334d6c674b" resolution="Resolved" comment="Risk mitigated."```
+
 #### Context Example
+
 ```json
 {
     "FESPortal": {
@@ -273,6 +284,7 @@ Transition an ARO.
 #### Human Readable Output
 
 >### ARO
+
 >|Id|Alert Key|Count|Creation Time|Details|Display Url|Last Updated Time|Organization|Resolution|Resolution Duration Seconds|Resolution Time|Serial Id|Severity|Status| Steps|Title|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 7ea9b17d-7529-4b17-b0e7-92334d6c674b | test_alert_key | 1 | 2023-08-16 19:48:02 | ARO Details | test_url | 2023-11-30 19:01:59 | ID: test_ID<br/>email: null<br/>name: test_org_id | Resolved | 9155637 | 2023-11-30 19:01:59 | 15 | Low | Open | {'ID': 'test_id', 'completed': True, 'label': 'test_resolution_step', 'last_updated_time': '2023-10-24 20:53:45'} | test_aro_title | Observation |
