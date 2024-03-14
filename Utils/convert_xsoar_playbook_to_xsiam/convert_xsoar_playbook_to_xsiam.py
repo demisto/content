@@ -13,35 +13,21 @@ from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
 
 import json
 
-from demisto_sdk.commands.content_graph.objects.base_playbook import TaskConfig
-
 playbook_converer_app = typer.Typer(name="Playbook-Converter")
 
 CORE_ALERT_FIELDS_PATH = 'Utils/convert_xsoar_playbook_to_xsiam/system_fields.json'
 
 def util_load_json(path):
+    """
+    Loads JSON data from a file path into a usable data structure.
+    """
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
-def generate_prompt(data: TaskConfig, type: str, options: List[str]=None) -> str:
-    if options is None:
-        options = ['Core', 'Alert']
-    mapping = {}
-    options_str = ""
-    for i, option in enumerate(options):
-        options_str += f"\n[{i}] {option}"
-        mapping[str(i)] = option
-    answer = ""
-    while answer not in mapping:
-        task_name = ""
-        if data.task and data.task.name:
-            task_name = data.task.name
-        answer = typer.prompt(f"'PaloAltoNetworksXDR' was found in task ({data.id}: '{task_name}') in the script {type}.\n"
-                              f"To what value would you like to change it to?\n{options_str}")
-
-    return mapping[answer]
-
 def get_system_alert_fields():
+    """
+    Retrieves system alerts.
+    """
     try:
         with open(CORE_ALERT_FIELDS_PATH, 'r') as file:
             return json.load(file)
@@ -59,25 +45,28 @@ def get_system_alert_fields():
 def main():
     logging_setup(logger.DEBUG)
 
-def replace_occurrences(data, keyword, mapping):
+def replace_occurrences(data, replace_from, replace_to, mapping):
+    """
+    Searches for and replaces specific substrings within the data.
+    """
     if isinstance(data, dict):
         for key, value in data.items():
-            if isinstance(value, str) and keyword in value:
-                if f"{keyword}.Alert" in value:
+            if isinstance(value, str) and replace_from in value:
+                if f"{replace_from}.Alert" in value:
                     field = value.split('.')[-1]
                     field_mapping = mapping.get(field)
-                    data[key] = value.replace(f"{keyword}.Alert.{field}", f"Alert.{field_mapping}") if field_mapping else value.replace(f"{keyword}.Alert", "Alert")
+                    data[key] = value.replace(f"{replace_from}.Alert.{field}", f"Alert.{field_mapping}") if field_mapping else value.replace(f"{keyword}.Alert", "Alert")
                 else:
-                    data[key] = value.replace(keyword, "Core")
+                    data[key] = value.replace(replace_from, replace_to)
 
             elif isinstance(value, (dict, list)):
-                replace_occurrences(value, keyword, mapping)
+                replace_occurrences(value, replace_from, replace_to, mapping)
     elif isinstance(data, list):
         for i, item in enumerate(data):
-            if isinstance(item, str) and keyword in item:
-                data[i] = item.replace(keyword, mapping)
+            if isinstance(item, str) and replace_from in item:
+                data[i] = item.replace(replace_from, mapping)
             elif isinstance(item, (dict, list)):
-                replace_occurrences(item, keyword, mapping)
+                replace_occurrences(item, replace_from, replace_to, mapping)
 
 
 @playbook_converer_app.command()
@@ -85,6 +74,7 @@ def convert_playbook(
     input_path: str = typer.Option(None, "--input", "-i", help="The path to the playbook yaml file."),
     output: str = typer.Option(None, "--output", "-o", help="The path to save the converted playbook yaml file."),
     ):
+    """Converts XDR playbooks from one format to another."""
     # Currently supports only conversion from XSOAR to XSIAM
     commands_not_replaced_str = ""
     mapping = util_load_json('Utils/convert_xsoar_playbook_to_xsiam/xsoar_to_xsiam_command_mapping.json')
@@ -102,6 +92,7 @@ def convert_playbook(
     if playbook_display_name := playbook.display_name:
         playbook.display_name = f'{playbook_display_name} Converted'
 
+    # iterates on playbook tasks to replace command names.
     for id, data in playbook.tasks.items():
 
         if (task_script_name := data.task.script) and (coammnd_name := task_script_name.replace('|','')) in mapping:
@@ -120,14 +111,15 @@ def convert_playbook(
     with open(output_path, 'r') as file:
         yaml_data = yaml.safe_load(file)
 
-    replace_occurrences(yaml_data, "PaloAltoNetworksXDR", system_alert_fields)
+    # Replaces XDR occureences with Core
+    replace_occurrences(yaml_data, "PaloAltoNetworksXDR", 'Core', system_alert_fields)
     with open(output_path, 'w') as file:
         yaml.dump(yaml_data, file)
 
-    commands_replaced_str = f"Converted the following commands from {src} to {dst}:\n"
+    commands_replaced_str = f"Converted the following commands:\n"
     commands_replaced_str += "\n".join(f'{k} --> {v}' for k,v in commands_replaced.items())
     if commands_not_replaced:
-        commands_not_replaced_str = f"\nDid not manage to Convert the following commands from {src} to {dst} (please change them manually):\n"
+        commands_not_replaced_str = f"\nDid not manage to Convert the following commands (please change them manually):\n"
         commands_not_replaced_str += "\n".join(commands_not_replaced)
     logger.warning(commands_replaced_str)
     logger.warning(commands_not_replaced_str)
