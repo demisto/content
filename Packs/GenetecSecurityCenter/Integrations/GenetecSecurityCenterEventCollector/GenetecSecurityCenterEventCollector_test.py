@@ -82,8 +82,8 @@ def test_test_module_failure(mocker):
                                       'ModificationTimeStamp': '2024-02-22T23:21:33.96Z',
                                       'Value': {'AuditData': {'EId': '2'}}
                                   }
-                              ],
-                              [
+                             ],
+                                 [
                                   {
                                       'Id': 2,
                                       'ModificationTimeStamp': '2024-02-22T23:21:33.96Z',
@@ -94,17 +94,17 @@ def test_test_module_failure(mocker):
                                       'ModificationTimeStamp': '2024-02-23T23:21:33.96Z',
                                       'Value': {'AuditData': {'EId': '3'}}
                                   }
-                              ])
+                             ])
                          ])
 def test_fetch_events_command(
-    mocker, first_iteration_response,
-    second_iteration_response,
-    expected_events_len_first_call,
-    expected_events_len_second_call,
-    expected_last_run_first_iteration,
-    expected_last_run_second_iteration,
-    expected_events_first_call,
-    expected_events_second_call):
+        mocker, first_iteration_response,
+        second_iteration_response,
+        expected_events_len_first_call,
+        expected_events_len_second_call,
+        expected_last_run_first_iteration,
+        expected_last_run_second_iteration,
+        expected_events_first_call,
+        expected_events_second_call):
     """Testing two consecutive calls to the fetch events command.
         The flow:
         - General mocks & preparations.
