@@ -19,7 +19,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
     converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS, \
-    format_incidents_response_with_display_values, get_entries_for_notes
+    format_incidents_response_with_display_values, get_entries_for_notes, is_time_field
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -2288,3 +2288,23 @@ def test_format_incidents_response_with_display_values_with_incidents():
     assert result[1]["opened_by"] == incidents_res[1]["opened_by"]
     assert result[1]["sys_domain"] == incidents_res[1]["sys_domain"]
     assert result[1]["assignment_group"] == ""
+
+
+@pytest.mark.parametrize("input_string, expected", [
+    ("2023-02-15 10:30:45", True),
+    ("invalid", False),
+    ("15.02.2023 10:30:45", False),
+    ("a2023-02-15 10:30:45", False),
+    ("2023-02-15 10:30:45a", False),
+    ("2023-02-15 10:30:45 a", False),
+])
+def test_is_time_field(input_string, expected):
+    """
+    Given:
+        Input strings of varying validity
+    When:
+        is_time_field is called on those strings
+    Then:
+        It should return True if string contains valid datetime, False otherwise
+    """
+    assert is_time_field(input_string) is expected

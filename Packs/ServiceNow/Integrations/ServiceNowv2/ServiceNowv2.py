@@ -2193,7 +2193,15 @@ def get_mirroring():
     }
 
 
-def is_time_field(field):
+def is_time_field(field: str) -> bool:
+    """Checks if a given field contains a valid date/time string in the format: %Y-%m-%d %H:%M:%S.
+
+    Args:
+        field (str): The field value to check.
+
+    Returns:
+        bool: True if field can be converted to a datetime, False otherwise.
+    """
     try:
         datetime.strptime(field, DATE_FORMAT)
         return True
