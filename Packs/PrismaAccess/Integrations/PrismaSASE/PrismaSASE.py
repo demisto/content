@@ -753,7 +753,7 @@ class Client(BaseClient):
                 }
 
                 res = self._http_request(method='POST',
-                                         full_url='https://auth.apps.paloaltonetworks.com/oauth2/access_token',
+                                         full_url='https://auth.apps.paloaltonetworks.com/am/oauth2/access_token',
                                          auth=(self.client_id, self.client_secret),
                                          resp_type='response',
                                          headers=headers,
@@ -1977,7 +1977,7 @@ def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandRe
     for profile in profiles:
         # we only want predefined profiles
         if profile.get('folder', '') == 'predefined':
-            for category in categories:
+            for category in categories.keys():
                 categories[category].extend(profile.get(category, []))
                 categories[category].extend(profile.get('credential_enforcement', {}).get(category, []))
                 # remove duplicates
