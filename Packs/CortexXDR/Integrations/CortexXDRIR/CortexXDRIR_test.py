@@ -1231,13 +1231,13 @@ class TestGetIncidents():
         mocker.patch.object(demisto, 'command', return_value='xdr-get-incident-extra-data')
         mocker.patch.object(Client, '_http_request', return_value=multiple_extra_data)
         client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
+            base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
         outputs = Client.get_multiple_incidents_extra_data(client,
-                                              status=['new'],
-                                              starred=True,
-                                              starred_incidents_fetch_window=1575806909185,
-                                              incident_id_list=['1','2'],
-                                              fields_to_exclude=True)
-        assert len(outputs)==2
+                                                           status=['new'],
+                                                           starred=True,
+                                                           starred_incidents_fetch_window=1575806909185,
+                                                           incident_id_list=['1', '2'],
+                                                           fields_to_exclude=True)
+        assert len(outputs) == 2
         assert outputs[0]['alerts']['total_count'] <= 2
         assert outputs[1]['alerts']['total_count'] <= 2

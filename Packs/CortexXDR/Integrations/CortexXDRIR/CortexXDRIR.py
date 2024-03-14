@@ -379,7 +379,7 @@ class Client(CoreClient):
         """
         global ALERTS_LIMIT_PER_INCIDENTS
         request_data = {}
-        filters = []
+        filters: List[Any] = []
         if isinstance(incident_id_list, int):
             incident_id_list = [str(incident_id_list)]
 
@@ -415,11 +415,11 @@ class Client(CoreClient):
                 incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
                 return incidents
         elif gte_creation_time_milliseconds:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'gte',
-                    'value': gte_creation_time_milliseconds
-                })
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': gte_creation_time_milliseconds
+            })
         if len(filters) > 0:
             request_data['filters'] = filters
 
@@ -1008,7 +1008,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         count_incidents = 0
 
         for raw_incident in raw_incidents:
-            incident_data: dict[str, Any] = raw_incident.get('incident')
+            incident_data: dict[str, Any] = raw_incident.get('incident') or raw_incident
             incident_id = incident_data.get('incident_id')
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
