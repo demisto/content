@@ -75,22 +75,13 @@ alter
 	clean_target_localip_169 = incidr(check_avilable_ip,"169.254.0.0/168"),
 	clean_target_localip_172 = incidr(check_avilable_ip,"172.16.0.0/12"),
 	clean_target_localip_192 = incidr(check_avilable_ip,"192.168.0.0/16"),
-	// clean_target_localip_fc = incidr6(check_avilable_ip,"fc00::/7"),
-	// clean_target_localip_fd = incidr6(check_avilable_ip,"fd00::/7"),
-	// clean_target_localip_fe = incidr6(check_avilable_ip,"fe80::/64"),
-	// clean_target_localip_v6_unspecified = incidr6(check_avilable_ip,"::/128"),
-	// clean_target_localip_v6_localhost = incidr6(check_avilable_ip,"::1/128"),
 	clean_source_localip_10 = incidr(check_avilable_ip2,"10.0.0.0/8"),
 	clean_source_localip_127 = incidr(check_avilable_ip2,"127.0.0.0/8"),
 	clean_source_localip_169 = incidr(check_avilable_ip,"169.254.0.0/168"),
 	clean_source_localip_172 = incidr(check_avilable_ip2,"172.16.0.0/12"),
-	clean_source_localip_192 = incidr(check_avilable_ip2,"192.168.0.0/16") 
-	// clean_source_localip_fc = incidr6(check_avilable_ip2,"fc00::/7"),
-	// clean_source_localip_fd = incidr6(check_avilable_ip2,"fd00::/7"),
-	// clean_source_localip_fe = incidr6(check_avilable_ip2,"fe80::/64"),
-	// clean_source_localip_v6_unspecified = incidr6(check_avilable_ip2,"::/128"),
-	// clean_source_localip_v6_localhost = incidr6(check_avilable_ip2,"::1/128")	
+	clean_source_localip_192 = incidr(check_avilable_ip2,"192.168.0.0/16") 	
 | alter
+	xdm.source.host.os_family = XDM_CONST.OS_FAMILY_WINDOWS,
 	xdm.observer.type = provider_name,
 	xdm.observer.unique_identifier = replex(provider_guid, "\{|\}", ""),
 	xdm.network.dns.dns_resource_record.value = if(get_eventdata_QueryResults = "-", null, get_eventdata_QueryResults),
