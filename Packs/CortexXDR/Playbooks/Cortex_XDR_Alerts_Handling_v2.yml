@@ -455,7 +455,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1743,7 +1743,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1807,5 +1807,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- Test XDR Playbook
 fromversion: 6.5.0
+marketplaces:
+- xsoar
