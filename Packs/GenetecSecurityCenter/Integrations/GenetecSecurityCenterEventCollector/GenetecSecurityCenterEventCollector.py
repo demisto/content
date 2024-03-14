@@ -24,17 +24,6 @@ GET_EVENTS_HEADERS = [
 """ CLIENT CLASS """
 
 
-class NoContentException(Exception):
-    """
-    Error definition for API response with status code 204
-    Makes it possible to identify a specific exception
-    that arises from the API and to handle this case correctly
-    see `handle_error_no_content` method
-    """
-
-    ...
-
-
 class Client(BaseClient):
     """Client class to interact with the service API
 
@@ -53,7 +42,7 @@ class Client(BaseClient):
         auth = self._encode_authorization(username, password, app_id)
         self.limit = max_fetch
 
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth, headers={"Accept": "text/json"})
 
     def _encode_authorization(self, username: str, password: str, app_id: str):
         updated_username = f"{username};{app_id}"
@@ -65,9 +54,20 @@ class Client(BaseClient):
 
 def test_module(client: Client):
     """
-    Testing we have a valid connection to trend_micro.
+    Testing we have a valid connection to Genetec security center.
     """
-    return "ok"
+    time_now: datetime = datetime.utcnow()
+    start_time: datetime = time_now - timedelta(minutes=1)
+    time_now_str = time_now.strftime(DATE_FORMAT_EVENT)
+    start_time_str = start_time.strftime(DATE_FORMAT_EVENT)
+    query = f"TimeRange.SetTimeRange({start_time_str},{time_now_str})"
+    url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q={query}"
+    response_audit = client._http_request('GET', url_suffix=url_suffix, resp_type='response')
+    response = json.loads(response_audit.content)["Rsp"]
+    if response["Status"] == "Ok":
+        return "ok"
+    else:
+        raise DemistoException(response["Result"])
 
 
 def fetch_events_command(
@@ -76,50 +76,39 @@ def fetch_events_command(
     last_run: dict,
 ) -> list[dict]:
     """
+    Implements the fetch mechanism for AuditTrail endpoint.
     Args:
         client (Client): The client for api calls.
         args (dict[str, str]): The args.
         last_run (dict): The last run dict.
 
     Returns:
-        tuple[list[dict], dict]: List of all event logs of all types,
-                                 The updated `last_run` obj.
+    list[dict]: List of all AuditTrail events.
     """
     time_now: datetime = datetime.utcnow()
     start_time: datetime
+    start_time_str: str = ""
     if not last_run:
-        start_time = time_now - timedelta(minutes=1)
+        start_time = datetime.strptime("2024-02-21T23:00:00", DATE_FORMAT_EVENT)
+        # start_time = time_now - timedelta(minutes=1)
+        start_time_str = start_time.strftime(DATE_FORMAT_EVENT)
     else:
-        start_time = last_run.get("start_time", time_now - timedelta(minutes=1))
+        start_time_str = last_run.get("start_time", time_now - timedelta(minutes=1))
     time_now_str = time_now.strftime(DATE_FORMAT_EVENT)
-    start_time_str = start_time.strftime(DATE_FORMAT_EVENT)
     time_range = f"TimeRange.SetTimeRange({start_time_str},{time_now_str})"
-    limit: int = int(args.get("limit") or client.limit)
-    query: str = f"{time_range},MaximumResultCount={limit},SortOrder=Ascending"
+    limit: int = int(args.get('limit') or client.limit)
+    query: str = f"{time_range},SortOrder=Ascending"
     url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q={query}"
     demisto.info(f"executing fetch events with the following query: {query}")
     response_audit = client._http_request('GET', url_suffix=url_suffix, resp_type='response')
-    content = json.loads(response_audit.content)
-    data_audit_ls = content["Rsp"]["Result"]
-    for data_audit in data_audit_ls:
-        data_audit["Value"] = parse(data_audit.get("Value"))
-
-    return data_audit_ls
-
-
-def genetec_security_center_get_events_command(args: Dict[str, Any], client: Client):
-    time_now = datetime.utcnow()
-    start_time = time_now - timedelta(minutes=1)
-    limit: int = int(args.get("limit") or client.limit)
-    time_now_str = time_now.strftime(DATE_FORMAT_EVENT)
-    start_time_str = start_time.strftime(DATE_FORMAT_EVENT)
-    url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q=TimeRange.SetTimeRange({start_time_str},{time_now_str}),MaximumResultCount={limit},SortOrder=Ascending"
-    response_audit = client._http_request('GET', url_suffix=url_suffix, resp_type='response')
-    content = json.loads(response_audit.content)
-    data_audit_ls = content["Rsp"]["Result"]
-    for data_audit in data_audit_ls:
-        data_audit["Value"] = parse(data_audit.get("Value"))
-    return data_audit_ls, {}
+    response = json.loads(response_audit.content)["Rsp"]
+    if response["Status"] == "Fail":
+        raise DemistoException(response["Result"])
+    results = response["Result"][:limit]
+    for result in results:
+        result["Value"] = parse(result.get("Value"))
+    demisto.info(f"retrieving the following results: {results}")
+    return results
 
 
 def main() -> None:  # pragma: no cover
@@ -167,18 +156,18 @@ def main() -> None:  # pragma: no cover
                                               "%Y-%m-%dT%H:%M:%S.%fZ").strftime(DATE_FORMAT_EVENT)
             last_run = {"start_time": last_run_time}
             demisto.setLastRun(last_run)
-            demisto.debug(f"set {last_run=}")
+            demisto.info(f"set {last_run=}")
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
         if should_push_events:
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
-            demisto.debug(f"{len(events)} events were pushed to XSIAM")
+            demisto.info(f"{len(events)} events were pushed to XSIAM")
 
     except Exception as e:
         return_error(
-            f"Failed to execute {command} command. Error in Genetec Security Center Event Collector Integration [{e}]."
+            f"Failed to execute {command} command. Error in Genetec Security Center Event Collector Integration: {e}."
         )
 
 
