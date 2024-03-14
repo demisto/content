@@ -48,6 +48,13 @@ class Client(BaseClient):
         updated_username = f"{username};{app_id}"
         return HTTPBasicAuth(updated_username, password)
 
+    def http_request(self, url_suffix):
+        response_audit = self._http_request('GET', url_suffix=url_suffix, resp_type='response')
+        response = json.loads(response_audit.content)["Rsp"]
+        if response["Status"] == "Fail":
+            raise DemistoException(response["Result"])
+        return response["Result"]
+
 
 """ COMMAND FUNCTIONS """
 
@@ -62,12 +69,8 @@ def test_module(client: Client):
     start_time_str = start_time.strftime(DATE_FORMAT_EVENT)
     query = f"TimeRange.SetTimeRange({start_time_str},{time_now_str})"
     url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q={query}"
-    response_audit = client._http_request('GET', url_suffix=url_suffix, resp_type='response')
-    response = json.loads(response_audit.content)["Rsp"]
-    if response["Status"] == "Ok":
-        return "ok"
-    else:
-        raise DemistoException(response["Result"])
+    client.http_request(url_suffix=url_suffix)
+    return "ok"
 
 
 def fetch_events_command(
@@ -76,14 +79,14 @@ def fetch_events_command(
     last_run: dict,
 ) -> list[dict]:
     """
-    Implements the fetch mechanism for AuditTrail endpoint.
     Args:
         client (Client): The client for api calls.
         args (dict[str, str]): The args.
         last_run (dict): The last run dict.
 
     Returns:
-    list[dict]: List of all AuditTrail events.
+        tuple[list[dict], dict]: List of all event logs of all types,
+                                 The updated `last_run` obj.
     """
     time_now: datetime = datetime.utcnow()
     start_time: datetime
@@ -100,14 +103,10 @@ def fetch_events_command(
     query: str = f"{time_range},SortOrder=Ascending"
     url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q={query}"
     demisto.info(f"executing fetch events with the following query: {query}")
-    response_audit = client._http_request('GET', url_suffix=url_suffix, resp_type='response')
-    response = json.loads(response_audit.content)["Rsp"]
-    if response["Status"] == "Fail":
-        raise DemistoException(response["Result"])
-    results = response["Result"][:limit]
+    response = client.http_request(url_suffix=url_suffix)
+    results = response[:limit]
     for result in results:
         result["Value"] = parse(result.get("Value"))
-    demisto.info(f"retrieving the following results: {results}")
     return results
 
 

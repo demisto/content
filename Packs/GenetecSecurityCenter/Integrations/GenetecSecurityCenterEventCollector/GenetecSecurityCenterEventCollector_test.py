@@ -1,41 +1,105 @@
-# """Base Integration for Cortex XSOAR - Unit Tests file
+import pytest
+from GenetecSecurityCenterEventCollector import Client, main
+from unittest import mock
+import demistomock as demisto
 
-# Pytest Unit Tests: all funcion names must start with "test_"
+INCIDENT_NO_ONE = {
+    'Id': 1,
+    'ModificationTimeStamp': '2024-02-21T23:21:33.96Z',
+    'Value': "<AuditData><EId>1</EId></AuditData>"
+}
+INCIDENT_NO_TWO = {
+    'Id': 2,
+    'ModificationTimeStamp': '2024-02-22T23:21:33.96Z',
+    'Value': "<AuditData><EId>2</EId></AuditData>"
+}
+INCIDENT_NO_THREE = {
+    'Id': 3,
+    'ModificationTimeStamp': '2024-02-23T23:21:33.96Z',
+    'Value': "<AuditData><EId>3</EId></AuditData>"
+}
+INCIDENT_NO_FOUR = {
+    'Id': 4,
+    'ModificationTimeStamp': '2024-02-24T23:21:33.96Z',
+    'Value': "<AuditData><EId>4</EId></AuditData>"
+}
 
-# More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 
-# MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-# You must add at least a Unit Test function for every XSOAR command
-# you are implementing with your integration
-# """
-
-# import json
+def mock_http_response(
+    content=None,
+):
+    mock_resp = mock.Mock()
+    mock_resp.content = content
+    return mock_resp
 
 
-# def util_load_json(path):
-#     with open(path, encoding='utf-8') as f:
-#         return json.loads(f.read())
+def get_client() -> Client:
+    return Client("www.test.com", "username", "password", False, False, "2", "app_id")
 
 
-# # TODO: REMOVE the following dummy unit test function
-# def test_baseintegration_dummy():
-#     """Tests helloworld-say-hello command function.
+def test_test_module_success(mocker):
+    """
+    Validate that in case of a successful response from the BaseClient's _http_request, the Client's http_request will return the response and test-module will return 'ok'.
+    """
+    from GenetecSecurityCenterEventCollector import test_module
+    client = get_client()
+    mock_response = mock_http_response(content="""{"Rsp": {"Status": "OK", "Result": "Result"}}""")
+    mocker.patch.object(client, "_http_request", return_value=mock_response)
+    assert test_module(client=client) == "ok"
 
-#     Checks the output of the command function with the expected output.
 
-#     No mock is needed here because the say_hello_command does not call
-#     any external API.
-#     """
-#     from BaseIntegration import Client, baseintegration_dummy_command
+def test_test_module_failure(mocker):
+    """
+    Validate that in case of an unsuccessful response from the BaseClient's _http_request, the Client's http_request will raise an error with the result section as the message and test-module will fail as well..
+    """
+    from GenetecSecurityCenterEventCollector import test_module
+    client = get_client()
+    mock_response = mock_http_response(content="""{"Rsp": {"Status": "Fail", "Result": "Failed the http request."}}""")
+    mocker.patch.object(client, "_http_request", return_value=mock_response)
+    try:
+        test_module(client=client)
+    except Exception as err:
+        assert "Failed the http request." in str(err)
 
-#     client = Client(base_url='some_mock_url', verify=False)
-#     args = {
-#         'dummy': 'this is a dummy response'
-#     }
-#     response = baseintegration_dummy_command(client, args)
 
-#     mock_response = util_load_json('test_data/baseintegration-dummy.json')
-
-#     assert response.outputs == mock_response
-# # TODO: ADD HERE unit tests for every command
+@pytest.mark.parametrize('first_iteration_response, second_iteration_response, expected_events_len_first_call, expected_events_len_second_call, expected_last_run_first_iteration, expected_last_run_second_iteration, expected_events_first_call, expected_events_second_call',
+                         [
+                             ([INCIDENT_NO_ONE, INCIDENT_NO_TWO.copy(), INCIDENT_NO_THREE, INCIDENT_NO_FOUR],
+                              [INCIDENT_NO_TWO, INCIDENT_NO_THREE, INCIDENT_NO_FOUR], 2, 2,
+                              {'start_time': '2024-02-22T23:21:33'}, {'start_time': '2024-02-23T23:21:33'},
+                              [{'Id': 1, 'ModificationTimeStamp': '2024-02-21T23:21:33.96Z', 'Value': {'AuditData': {'EId': '1'}}},
+                                  {'Id': 2, 'ModificationTimeStamp': '2024-02-22T23:21:33.96Z', 'Value': {'AuditData': {'EId': '2'}}}],
+                              [{'Id': 2, 'ModificationTimeStamp': '2024-02-22T23:21:33.96Z', 'Value': {'AuditData': {'EId': '2'}}}, {'Id': 3, 'ModificationTimeStamp': '2024-02-23T23:21:33.96Z', 'Value': {'AuditData': {'EId': '3'}}}])
+                         ])
+def test_fetch_events_command(mocker, first_iteration_response, second_iteration_response, expected_events_len_first_call, expected_events_len_second_call,
+                              expected_last_run_first_iteration, expected_last_run_second_iteration, expected_events_first_call, expected_events_second_call):
+    """Testing two consecutive calls to the fetch events command.
+        The flow:
+        - General mocks & preparations.
+        - First call.
+        - Asserting first call results: The last_run object, the number of retrieved events, and the events content.
+        - Second call.
+        - Asserting second call results: The last_run object, the number of retrieved events, and the events content.
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, "params", return_value={
+        "url": "http://test.com",
+        "credentials": {"identifier": "username", "password": "password"},
+        "app_id": "app_id",
+        "max_fetch": "2"
+    })
+    send_events_mock = mocker.patch('GenetecSecurityCenterEventCollector.send_events_to_xsiam')
+    mocker.patch("GenetecSecurityCenterEventCollector.Client.http_request", return_value=first_iteration_response)
+    main()
+    assert demisto.setLastRun.call_args[0][0] == expected_last_run_first_iteration
+    first_call_events = send_events_mock.call_args.kwargs["events"]
+    assert len(first_call_events) == expected_events_len_first_call
+    assert first_call_events == expected_events_first_call
+    mocker.patch("GenetecSecurityCenterEventCollector.Client.http_request", return_value=second_iteration_response)
+    main()
+    assert demisto.setLastRun.call_args[0][0] == expected_last_run_second_iteration
+    second_call_events = send_events_mock.call_args.kwargs["events"]
+    assert len(second_call_events) == expected_events_len_second_call
+    assert second_call_events == expected_events_second_call
