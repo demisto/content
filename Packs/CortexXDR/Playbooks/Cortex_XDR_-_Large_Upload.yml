@@ -2751,7 +2751,7 @@ tasks:
       id: e7cb2076-4c50-44e7-81d5-51cc712011e6
       version: -1
       name: Unsigned Initiator Process?
-      description: Checks whether the initiator process is signed.
+      description: Checks whether the initiator process is unsigned.
       type: condition
       iscommand: false
       brand: ""
