@@ -494,7 +494,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: List of requested threat model names (pipe-separated).
+      description: List of requested threat model names (pipe-separated and wildcard supported).
       isArray: true
       name: name
       required: false
@@ -510,7 +510,7 @@ script:
       description: Name of the threat model.
       type: String
     name: varonis-get-threat-models
-  dockerimage: demisto/python3:3.10.13.88772
+  dockerimage: demisto/python3:3.10.13.89009
   feed: false
   isfetch: true
   longRunning: false

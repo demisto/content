@@ -1255,7 +1255,7 @@ class ThreatModelObjectMapper(BaseMapper):
 
     def map_item(self, row: dict) -> ThreatModelItem:
         threat_model_item = ThreatModelItem()
-        if hasattr(row, ThreatModelAttributes.Id): 
+        if hasattr(row, ThreatModelAttributes.Id):
             threat_model_item.ID = row[ThreatModelAttributes.Id]
             threat_model_item.Name = row[ThreatModelAttributes.Name]
         else:
@@ -1592,7 +1592,7 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
     """
 
     name = argToList(args.get('name'), separator='|')
-
+    
     threat_models = client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
     mapper = ThreatModelObjectMapper()
     mapped_items = mapper.map(threat_models)
@@ -1608,7 +1608,7 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
                 criteria_match = False
                 if criteria[key] and len(criteria[key]) > 0:
                     for value in criteria[key]:
-                        if isinstance(value, str) and value in str(item[key]) or value == item[key]:
+                        if isinstance(value, str) and fnmatch.filter([str(item[key])], value):
                             criteria_match = True
                             break
                     if not criteria_match:
@@ -1931,7 +1931,8 @@ def varonis_alert_add_note_command(client: Client, args: Dict[str, Any]) -> bool
     """
     note = str(args.get('note'))
 
-    return varonis_update_alert(client, close_reason_id=None, status_id=None, alert_ids=argToList(args.get('alert_id'), separator='|'),
+    return varonis_update_alert(client, close_reason_id=None, status_id=None,
+                                alert_ids=argToList(args.get('alert_id'), separator='|'),
                                 note=note)
 
 
@@ -1963,7 +1964,8 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
 
     note = args.get('note')
 
-    return varonis_update_alert(client, close_reason_id=None, status_id=status_id, alert_ids=argToList(args.get('alert_id'), separator='|'),
+    return varonis_update_alert(client, close_reason_id=None, status_id=status_id,
+                                alert_ids=argToList(args.get('alert_id'), separator='|'),
                                 note=note)
 
 
@@ -1991,7 +1993,8 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
 
     close_reason_id = CLOSE_REASONS[close_reason.lower()]
     note = args.get('note')
-    return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'], argToList(args.get('alert_id'), separator='|'), note)
+    return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'],
+                                argToList(args.get('alert_id'), separator='|'), note)
 
 
 '''' MAIN FUNCTION '''

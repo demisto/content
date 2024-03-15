@@ -29,7 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### varonis-get-threat-models
 
 ***
-Get Varonis threat models
+Get Varonis threat models  
 
 #### Base Command
 
@@ -37,13 +37,9 @@ Get Varonis threat models
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | List of requested threat model ids. | Optional | 
-| name | List of requested threat model names. | Optional | 
-| category | List of requested threat model categories. | Optional | 
-| severity | List of requested threat model severities. | Optional | 
-| source | List of requested threat model sources. | Optional | 
+| **Argument Name** | **Description**                                                                            | **Required** |
+| --- |--------------------------------------------------------------------------------------------|--------------|
+| name | List of requested threat model names. Pipe (`\|`) separated and wildcards (`*`) supported. | Optional |
 
 #### Context Output
 
@@ -51,13 +47,13 @@ Get Varonis threat models
 | --- |----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ID | Number   | ID of the threat model                                                                                                                                                                                                              | 
 | Name | String   | Name of the threat model                                                                                                                                                                                                     | 
-| Category | String   | Category of the threat model                                                                                                                                                                                                              | 
-| Severity | String   | Severity of the threat model                                                                                                                                                                                                              | 
-| Source | String   | Predefined/User-defined                                                                                                                                                                                                     | 
+                                                                                                                                                                                                | 
 
 
 #### Command example
-```!varonis-get-threat-models id="1" name="Abnormal service behavior: access to atypical folders" category="Exfiltration" severity="Error"```
+```!varonis-get-threat-models```  
+```!varonis-get-threat-models name="*access to*|Domain controller*"```
+
 #### Context Example
 ```json
 [
