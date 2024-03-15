@@ -1626,11 +1626,11 @@ def modify_alert_notes_command(
     params = parse_dict_values_to_integer(args, ["alert_id"])
     alert_id: int = params.get("alert_id", "")
     alert_notes: str = params.get("notes", "")
-    action : str = params.get("action", "replace")
+    action: str = params.get("action", "replace")
     if action == "append":
         response_content = client.get_alert(alert_id)
-        alert: dict[str, Any] = response_content.get("alert", {})
-        old_notes = alert.get("notes", "")
+        alert_pre_change: dict[str, Any] = response_content.get("alert", {})
+        old_notes = alert_pre_change.get("notes", "")
         alert_notes = f"{old_notes}\n{alert_notes}" if old_notes else alert_notes
     client.modify_alert_notes(alert_id, alert_notes)
     response_content = client.get_alert(alert_id)
