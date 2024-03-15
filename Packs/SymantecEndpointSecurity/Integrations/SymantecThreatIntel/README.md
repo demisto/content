@@ -1,5 +1,5 @@
 Query Symantec Endpoint Security Threat Intel data.
-This integration was integrated and tested with version xx of Symantec Threat Intel.
+This integration was integrated and tested with Symantec Threat Intel.
 
 ## Configure Symantec Threat Intel on Cortex XSOAR
 

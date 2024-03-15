@@ -58,19 +58,36 @@ threat_level = {
 class Client(BaseClient):
     """Client class to interact with the service API
     """
-    _session_token = None
-    ignored_domains: list[str] = []
-    ignore_private_ips: bool = True
-    reliability = DEFAULT_RELIABILITY
 
-    def authenticate(self, oauth_token: str) -> bool:
+    def __init__(self,
+                 oauth_token: str,
+                 base_url,
+                 ignored_domains: list[str] = [],
+                 ignore_private_ips: bool = True,
+                 reliability: str = DEFAULT_RELIABILITY,
+                 verify=True,
+                 proxy=False,
+                 ok_codes=(),
+                 headers=None,
+                 auth=None,
+                 timeout=BaseClient.REQUESTS_TIMEOUT,
+                 ) -> None:
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, ok_codes=ok_codes,
+                         headers=headers, auth=auth, timeout=timeout)
+        self._oauth_token = oauth_token
+        self._session_token = None
+        self.ignored_domains: list[str] = ignored_domains
+        self.ignore_private_ips: bool = ignore_private_ips
+        self.reliability = reliability
+
+    def authenticate(self) -> bool:
         headers = {
             "accept": "application/json",
-            "authorization": oauth_token,
+            "authorization": self._oauth_token,
             "content-type": "application/x-www-form-urlencoded"
         }
         resp = self._http_request('POST', '/oauth2/tokens', headers=headers)
-        self._session_token = resp.get('access_token', None)
+        self._session_token = resp.get('access_token')
         return self._session_token is not None
 
     def broadcom_file_insight(self, file_hash: str):
@@ -91,13 +108,31 @@ class Client(BaseClient):
         return resp
 
     def broadcom_file_protection(self, file_hash: str):
-        pass
+        headers = {
+            "authorization": f'Bearer {self._session_token}',
+            "accept": "application/json"
+        }
+
+        resp = self._http_request('GET', url_suffix=f'/threat-intel/protection/file/{file_hash}', headers=headers)
+        return resp
 
     def broadcom_network_protection(self, network: str):
-        pass
+        headers = {
+            "authorization": f'Bearer {self._session_token}',
+            "accept": "application/json"
+        }
+
+        resp = self._http_request('GET', url_suffix=f'/threat-intel/protection/network/{network}', headers=headers)
+        return resp
 
     def broadcom_cve_protection(self, cve: str):
-        pass
+        headers = {
+            "authorization": f'Bearer {self._session_token}',
+            "accept": "application/json"
+        }
+
+        resp = self._http_request('GET', url_suffix=f'/threat-intel/protection/cve/{cve}', headers=headers)
+        return resp
 
 
 ''' HELPER FUNCTIONS '''
@@ -262,7 +297,7 @@ def execute_network_command(client: Client, args: list[str], arg_type: str) -> l
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, oauth: str) -> str:
+def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -278,7 +313,7 @@ def test_module(client: Client, oauth: str) -> str:
 
     message: str = ''
     try:
-        if client.authenticate(oauth_token=oauth):
+        if client.authenticate():
             message = 'ok'
         else:
             message = 'Authentication Error: make sure API Key is correctly set'
@@ -286,13 +321,6 @@ def test_module(client: Client, oauth: str) -> str:
         raise e
 
     return message
-
-    # https://xsoar.pan.dev/docs/integrations/context-and-outputs#return-info-file
-    # https://xsoar.pan.dev/docs/integrations/generic-commands-reputation#background-and-motivation
-    # https://xsoar.pan.dev/docs/integrations/dbot
-    # https://xsoar.pan.dev/docs/integrations/code-conventions#commandresults
-
-    # https://xsoar.pan.dev/docs/integrations/code-conventions#credentials
 
 
 def ip_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
@@ -359,7 +387,8 @@ def symantec_protection_file_command(client: Client, args: Dict[str, Any]) -> li
     for result in results:
         command_result = CommandResults(outputs_prefix=f'{PROTECTION_CONTEXT_PREFIX}.File',
                                         outputs_key_field='file',
-                                        outputs=result)
+                                        outputs=result,
+                                        raw_response=result)
         command_results.append(command_result)
 
     return command_results
@@ -405,7 +434,7 @@ def symantec_protection_cve_command(client: Client, args: Dict[str, Any]) -> lis
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
     """
 
@@ -421,44 +450,44 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(
+            oauth_token=oauth,
             base_url=base_url,
+            ignored_domains=ignored_domains,
+            ignore_private_ips=ignore_private_ips,
+            reliability=reliability,
             verify=verify_certificate,
             proxy=proxy)
 
-        client.ignored_domains = ignored_domains
-        client.ignore_private_ips = ignore_private_ips
-        client.reliability = reliability
-
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, oauth)
+            result = test_module(client)
             return_results(result)
 
         elif demisto.command() == 'url':
-            client.authenticate(oauth)
+            client.authenticate()
             return_results(url_reputation_command(client, demisto.args(), reliability))
 
         elif demisto.command() == 'ip':
-            client.authenticate(oauth)
+            client.authenticate()
             return_results(ip_reputation_command(client, demisto.args(), reliability))
 
         elif demisto.command() == 'domain':
-            client.authenticate(oauth)
+            client.authenticate()
             return_results(domain_reputation_command(client, demisto.args(), reliability))
 
         elif demisto.command() == 'file':
-            client.authenticate(oauth)
+            client.authenticate()
             return_results(file_reputation_command(client, demisto.args(), reliability))
         elif demisto.command() == 'symantec-protection-file':
-            client.authenticate(oauth)
+            client.authenticate()
             return_results(symantec_protection_file_command(client, demisto.args()))
             pass
         elif demisto.command() == 'symantec-protection-network':
-            client.authenticate(oauth)
+            client.authenticate()
             return_results(symantec_protection_network_command(client, demisto.args()))
             pass
         elif demisto.command() == 'symantec-protection-cve':
-            client.authenticate(oauth)
+            client.authenticate()
             return_results(symantec_protection_cve_command(client, demisto.args()))
             pass
         else:

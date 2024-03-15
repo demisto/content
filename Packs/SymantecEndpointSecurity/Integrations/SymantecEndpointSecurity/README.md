@@ -1,5 +1,5 @@
 Query the Symantec Endpoint Security Cloud Portal (ICDM).
-This integration was integrated and tested with version xx of SymantecEndpointSecurity.
+This integration was integrated and tested with the SES Incidents API.
 
 ## Configure Symantec Endpoint Security (ICDM) on Cortex XSOAR
 
@@ -10,7 +10,7 @@ This integration was integrated and tested with version xx of SymantecEndpointSe
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Server URL (e.g. https://api.sep.securitycloud.symantec.com) |  | True |
+    | Server URL (e.g. <https://api.sep.securitycloud.symantec.com>) |  | True |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Maximum number of incidents per fetch |  | False |

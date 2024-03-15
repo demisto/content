@@ -30,12 +30,26 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this HelloWorld implementation, no special attributes defined
     """
-    _session_token = None
 
-    def authenticate(self, oauth_token: str) -> bool:
+    def __init__(self,
+                 oauth_token: str,
+                 base_url,
+                 verify=True,
+                 proxy=False,
+                 ok_codes=(),
+                 headers=None,
+                 auth=None,
+                 timeout=BaseClient.REQUESTS_TIMEOUT,
+                 ) -> None:
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, ok_codes=ok_codes,
+                         headers=headers, auth=auth, timeout=timeout)
+        self._session_token = None
+        self._oauth_token = oauth_token
+
+    def authenticate(self) -> bool:
         headers = {
             "accept": "application/json",
-            "authorization": oauth_token,
+            "authorization": self._oauth_token,
             "content-type": "application/x-www-form-urlencoded"
         }
         resp = self._http_request('POST', '/v1/oauth2/tokens', headers=headers)
@@ -95,23 +109,26 @@ def icdm_fetch_incidents(client: Client, last_fetch_date: datetime):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, oauth: str) -> str:
+def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
 
-    :type client: ``Client``
-    :param Client: client to use
+    Args:
+        client (Client): client to use
+        oauth (str): oauth access token to use for authentication
 
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    Raises:
+        e: _description_
+
+    Returns:
+        str: 'ok' if test passed, anything else will fail the test.
     """
-
     message: str = ''
     try:
-        if client.authenticate(oauth_token=oauth):
+        if client.authenticate():
             message = 'ok'
         else:
             message = 'Authentication Error: make sure API Key is correctly set'
@@ -200,7 +217,7 @@ def icdm_fetch_incidents_command(client: Client, max_results: int, last_fetch_da
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
@@ -216,13 +233,14 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
+            oauth_token=oauth,
             base_url=base_url,
             verify=verify_certificate,
             proxy=proxy)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, oauth)
+            result = test_module(client)
             return_results(result)
 
         elif command == 'fetch-incidents':
@@ -236,7 +254,7 @@ def main() -> None:
 
             assert last_fetch is not None  # The line above should ensure, that we have at least a first fetch date
 
-            client.authenticate(oauth_token=oauth)
+            client.authenticate()
 
             next_run, incidents = fetch_incidents_command(client=client, max_results=max_results,
                                                           last_run=ensure_max_age(last_fetch))

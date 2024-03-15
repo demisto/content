@@ -38,7 +38,7 @@ def test_ensure_max_age(value: datetime, output: datetime):
 
 
 def test_icdm_fetch_incidents_command(mocker):
-    client = Client('')
+    client = Client('', '')
     incidents = util_load_json('test_data/icdm_incidents_without_events.json')
     mocker.patch.object(Client, '_http_request', return_value=incidents)
     result = icdm_fetch_incidents_command(client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=timezone.utc))
@@ -57,10 +57,18 @@ def test_icdm_fetch_incidents_command(mocker):
 
 
 def test_fetch_incidents_command(mocker):
-    client = Client('')
+    client = Client('', '')
     mocker.patch.object(Client, '_http_request', return_value=util_load_json('test_data/icdm_incidents_without_events.json'))
 
     last_run, incidents = fetch_incidents_command(client, 100, datetime(2023, 4, 26, 0, 0, 0, tzinfo=timezone.utc))
-    exptected_incidents = util_load_json('test_data/outputs/icdm_incidents_output.json')
+    expected_incidents = util_load_json('test_data/outputs/icdm_incidents_output.json')
     assert last_run == {'last_fetch': 1682545570.4}
-    assert incidents == exptected_incidents
+    assert incidents == expected_incidents
+
+
+@pytest.mark.parametrize('response, result', [({'access_token': 'YXNhbXBsZWFjY2Vzc3Rva2VudGNvZGU='}, True)])
+def test_client_authenticate(response, result, mocker):
+    client = Client('', '')
+    mocker.patch.object(Client, '_http_request', return_value=response)
+    assert client.authenticate() == result
+    assert client._session_token == response.get('access_token')
