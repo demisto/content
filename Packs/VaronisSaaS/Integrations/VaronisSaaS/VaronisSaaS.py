@@ -1592,7 +1592,7 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
     """
 
     name = argToList(args.get('name'), separator='|')
-    
+
     threat_models = client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
     mapper = ThreatModelObjectMapper()
     mapped_items = mapper.map(threat_models)
