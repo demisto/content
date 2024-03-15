@@ -261,13 +261,6 @@ def main() -> None:  # pragma: no cover
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        elif command == 'icdm-fetch-incidents':
-            # client.authenticate(oauth_token=oauth)
-            # TODO: Make this use actual command arguments
-            # return_results(icdm_fetch_incidents_command(client,))
-            # result = CommandResults(raw_response=icdm_fetch_incidents(client, get_last_fetch_date(None, None)))
-            # return_results(result)
-            raise NotImplementedError(f'Command {command} is not implemented')
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
 

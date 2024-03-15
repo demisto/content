@@ -79,14 +79,6 @@ configuration:
   required: false
   type: 8
 script:
-  commands:
-  - name: icdm-fetch-incidents
-    description: Get EDR incidents from ICDM.
-    arguments:
-    - name: first
-      description: The start date from when to fetch incidents (max. 30 days ago).
-    - name: last
-      description: The last date from when to fetch incidents.
   runonce: false
   isfetch: true
   script: '-'
