@@ -1,0 +1,944 @@
+id: Rubrik Retrieve Anomaly Result - Rubrik Security Cloud
+version: -1
+name: Rubrik Retrieve Anomaly Result - Rubrik Security Cloud
+description: This playbook retrieves the list of anomaly files for the provided snapshot ID (or activity series ID) and generates the downloadable links for the file path(s).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 638d51e7-1872-4818-833f-cd73fd3cfdf0
+    type: start
+    task:
+      id: 638d51e7-1872-4818-833f-cd73fd3cfdf0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 10ca3e7f-9eff-402e-8894-ccaf2fe0e53c
+    type: title
+    task:
+      id: 10ca3e7f-9eff-402e-8894-ccaf2fe0e53c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 874a043b-70ff-46d7-8fb3-408426140ed6
+    type: condition
+    task:
+      id: 874a043b-70ff-46d7-8fb3-408426140ed6
+      version: -1
+      name: Is Rubrik Polaris integration enabled?
+      description: Checks whether Rubrik Polaris integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: e4bb03c1-45a4-41b6-865f-e8255037c414
+    type: regular
+    task:
+      id: e4bb03c1-45a4-41b6-865f-e8255037c414
+      version: -1
+      name: Retrieve anomaly results from RSC using the user-submitted form.
+      description: Retrieve the suspicious list of files for a snapshot ID with detected file anomalies.
+      script: '|||rubrik-radar-suspicious-file-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      extend-context:
+        simple: suspicious_file_paths=data.anomalyResultOpt.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.filePath::suspicious_file_paths=data.anomalyResultOpt.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.filePath::anomaly_cluster_info=data.snapshot.cluster::anomaly_object_type=data.snapshot.snappableNew.objectType
+      snapshot_id:
+        complex:
+          root: inputs.snapshot_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: anomaly_snapshot_id
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 6701c503-a90a-43d4-8ac7-314b64d6abd8
+    type: collection
+    task:
+      id: 6701c503-a90a-43d4-8ac7-314b64d6abd8
+      version: -1
+      name: Collect the anomaly file paths to generate the downloadable links.
+      description: Collecting anomaly file paths to generate the downloadable links from RSC.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please select the anomaly file paths to generate the downloadable links.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select the anomaly file paths to generate the downloadable links.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: suspicious_file_paths
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select the anomaly file paths to generate the downloadable links from RSC.
+        readonly: false
+      title: Collect Anomaly File Paths
+      description: Input arguments required to gather the anomaly file paths to generate the downloadable links.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 1c27b28b-15e8-4e86-8522-58fa456bdb8e
+    type: condition
+    task:
+      id: 1c27b28b-15e8-4e86-8522-58fa456bdb8e
+      version: -1
+      name: Check whether input file paths are available or not.
+      description: Check whether file paths are available or not from the playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      Available:
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: Available
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.file_paths
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: b369c2ad-9b39-4007-8bce-8c1ec9daecfe
+    type: collection
+    task:
+      id: b369c2ad-9b39-4007-8bce-8c1ec9daecfe
+      version: -1
+      name: Collect the anomaly information.
+      description: Collecting Object name, type and the cluster ID to retrieve the anomaly events from RSC.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide the object name and cluster ID to filter the anomaly events.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the Object Name.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The object name to filter the anomaly events. Note: Users can get the list of the object names by executing the "rubrik-polaris-object-list" command.'
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify the Cluster ID.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The optional cluster ID to filter the anomaly events. Note: Users can get the cluster ID by executing the "rubrik-gps-cluster-list" command.'
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Specify the Object Type.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The optional object type to filter the anomaly events. Possible values are: "OBJECT_TYPE_VOLUME_GROUP", "LINUX_FILESET", "WINDOWS_FILESET", "VMWARE_VM".'
+        readonly: false
+      title: Collect Anomaly Information
+      description: Input arguments required to filter the anomaly events.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: c4ce2d39-291c-4c2a-803c-321018a5123e
+    type: regular
+    task:
+      id: c4ce2d39-291c-4c2a-803c-321018a5123e
+      version: -1
+      name: Retrieve the Activity Series ID using the meta information of Object retrieved from the user-submitted form.
+      description: Retrieve the Activity Series ID using the meta information of Object retrieved from the user-submitted form.
+      script: '|||rubrik-event-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      activity_status:
+        simple: SUCCESS
+      activity_type:
+        simple: ANOMALY
+      cluster_id:
+        complex:
+          root: Collect Anomaly Information.Answers
+          accessor: "1"
+          transformers:
+          - operator: LastArrayElement
+          - operator: trim
+      extend-context:
+        simple: anomaly_snapshot_id=data.activitySeriesConnection.edges.[0].node.activitySeriesId::anomaly_object_type=data.activitySeriesConnection.edges.[0].node.objectType
+      limit:
+        simple: "1"
+      object_name:
+        complex:
+          root: Collect Anomaly Information.Answers
+          accessor: "0"
+          transformers:
+          - operator: LastArrayElement
+          - operator: trim
+      object_type:
+        complex:
+          root: Collect Anomaly Information.Answers
+          accessor: "2"
+          transformers:
+          - operator: LastArrayElement
+          - operator: trim
+      sort_by:
+        simple: OBJECT_NAME
+      sort_order:
+        simple: ASC
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: b868d006-eb6a-413f-8cb1-ffc71b436cb8
+    type: regular
+    task:
+      id: b868d006-eb6a-413f-8cb1-ffc71b436cb8
+      version: -1
+      name: Delete context for the specified keys.
+      description: |-
+        Delete context for the specified keys.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      key:
+        complex:
+          root: delete_keys_for_rubrik_retrieve_anomaly_result_playbook
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 29d7cc76-5a81-4c74-8a16-f0119083a3e9
+    type: condition
+    task:
+      id: 29d7cc76-5a81-4c74-8a16-f0119083a3e9
+      version: -1
+      name: Check whether the Snapshot ID is available or not.
+      description: Check whether the snapshot ID is available or not from the playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "YES":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.snapshot_id
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: c99395ec-6098-4e59-80c3-dd287af22cd6
+    type: regular
+    task:
+      id: c99395ec-6098-4e59-80c3-dd287af22cd6
+      version: -1
+      name: Generate request ID for the download of the malicious files.
+      description: |-
+        Generate request ID for the download of the malicious files.
+
+        Note: To know about the file information and which file can be downloaded, use the "rubrik-gps-snapshot-files-list" command. To know about the status of the downloadable files, use the "rubrik-gps-async-result" command.
+      script: '|||rubrik-gps-snapshot-files-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      extend-context:
+        simple: request_id_for_anomaly_file_download=data.vsphereVmDownloadSnapshotFiles.id::request_id_for_anomaly_file_download=data.filesetDownloadSnapshotFiles.id::request_id_for_anomaly_file_download=data.downloadVolumeGroupSnapshotFiles.id
+      file_path:
+        complex:
+          root: inputs.file_paths
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Collect Anomaly File Paths.Answers.0
+                iscontext: true
+      object_type:
+        complex:
+          root: anomaly_object_type
+          transformers:
+          - operator: LastArrayElement
+      snapshot_id:
+        complex:
+          root: inputs.snapshot_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: anomaly_snapshot_id
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: d6834637-ef22-4a2b-82c2-537bc6da20e3
+    type: playbook
+    task:
+      id: d6834637-ef22-4a2b-82c2-537bc6da20e3
+      version: -1
+      name: Rubrik Poll Async Result - Rubrik Polaris
+      description: Poll async result for any asynchronous request made to rubrik.
+      playbookName: Rubrik Poll Async Result - Rubrik Polaris
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ClusterId:
+        complex:
+          root: anomaly_cluster_info
+          accessor: id
+          transformers:
+          - operator: LastArrayElement
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.rubrikcdmclusterid
+                iscontext: true
+      PollingInterval:
+        simple: "1"
+      PollingTimeout:
+        simple: "720"
+      RequestId:
+        complex:
+          root: request_id_for_anomaly_file_download
+          transformers:
+          - operator: LastArrayElement
+      cluster_ip_address:
+        complex:
+          root: anomaly_cluster_info
+          accessor: defaultAddress
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 744ad786-4261-4c46-8268-aa07497d199b
+    type: regular
+    task:
+      id: 744ad786-4261-4c46-8268-aa07497d199b
+      version: -1
+      name: Set the delete keys.
+      description: Set the delete keys in context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: delete_keys_for_rubrik_retrieve_anomaly_result_playbook
+      value:
+        simple: anomaly_snapshot_id,Collect Anomaly Information,suspicious_file_paths,Collect Anomaly File Paths,request_id_for_anomaly_file_download,anomaly_cluster_info,anomaly_object_type
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 8147aaab-adf5-4328-84ea-78a43a7438db
+    type: condition
+    task:
+      id: 8147aaab-adf5-4328-84ea-78a43a7438db
+      version: -1
+      name: Check whether the Activity Series ID is available or not.
+      description: Check whether the Activity Series ID  is available or not from the command output.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "Yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: anomaly_snapshot_id
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 9df747cc-4ae4-4793-8c5d-949605bd8a6c
+    type: condition
+    task:
+      id: 9df747cc-4ae4-4793-8c5d-949605bd8a6c
+      version: -1
+      name: Check whether suspicious file paths are available or not.
+      description: Check whether suspicious file paths are available or not from the command output.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      Available:
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: Available
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: suspicious_file_paths
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2505,
+        "width": 717.5,
+        "x": 162.5,
+        "y": 30
+      }
+    }
+  }
+inputs:
+- key: file_paths
+  value: {}
+  required: false
+  description: The absolute path of the file(s) for which a downloadable link needs to be generated.
+  playbookInputQuery:
+- key: snapshot_id
+  value:
+    complex:
+      root: incident
+      accessor: rubrikpolarisactivityseriesid
+      transformers:
+      - operator: trim
+  required: false
+  description: |-
+    The snapshot ID for which to retrieve the anomaly results. Default can be received from incident (activity series ID) if present.
+
+    Note: Users can get the list of the snapshot IDs by executing the "rubrik-polaris-object-snapshot-list" command. For the Activity Series ID, the users can execute the "rubrik-event-list" command with the "activity_type" argument set to "ANOMALY".
+  playbookInputQuery:
+outputs:
+- contextPath: RubrikPolaris.SuspiciousFile.id
+  description: The anomaly result ID.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.snapshotFid
+  description: The snapshot ID.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.cluster.id
+  description: The cluster ID.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.cluster.defaultAddress
+  description: The default address of the cluster.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.cluster.systemStatusAffectedNodes.ipAddress
+  description: The IP address of the affected node.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.cluster.name
+  description: The cluster name.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.cluster.version
+  description: The cluster version.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.cluster.status
+  description: The cluster status.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.cluster.__typename
+  description: The type name of the cluster response.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.cdmId
+  description: The snapshot CDM ID.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.managedId
+  description: The managed object ID.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyProbability
+  description: The probability of the anomaly.
+  type: number
+- contextPath: RubrikPolaris.SuspiciousFile.workloadId
+  description: The workload ID.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.location
+  description: The location of the anomaly.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.isAnomaly
+  description: Indicates if the file is an anomaly.
+  type: boolean
+- contextPath: RubrikPolaris.SuspiciousFile.objectType
+  description: The object type.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.snappableNew.objectType
+  description: The object type of the snapshot.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.severity
+  description: The severity of the anomaly.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.detectionTime
+  description: The detection time of the anomaly.
+  type: date
+- contextPath: RubrikPolaris.SuspiciousFile.snapshotDate
+  description: The snapshot date of the anomaly.
+  type: date
+- contextPath: RubrikPolaris.SuspiciousFile.encryption
+  description: The encryption standard of the anomaly.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.strainId
+  description: The ID of the Ransomware Strain.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalAffectedFiles
+  description: The total number of affected files.
+  type: number
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalRansomwareNotes
+  description: The total number of ransomware notes.
+  type: number
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.filePath
+  description: The path of the affected file.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.lastModified
+  description: The last modified time of the affected file.
+  type: date
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.fileSizeBytes
+  description: The size of the affected file in bytes.
+  type: number
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.__typename
+  description: The type name of the affected file response.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.filePath
+  description: The path of the ransomware note file.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.lastModified
+  description: The last modified time of the ransomware note file.
+  type: date
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.fileSizeBytes
+  description: The size of the ransomware note file in bytes.
+  type: number
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.__typename
+  description: The type name of the ransomware note file response.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.__typename
+  description: The type name of the strain analysis response.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.__typename
+  description: The type name of the anomaly response.
+  type: string
+- contextPath: RubrikPolaris.SuspiciousFile.__typename
+  description: The type name of the suspicious file response.
+  type: string
+tests:
+- RubrikPolaris-Test
+fromversion: 6.5.0

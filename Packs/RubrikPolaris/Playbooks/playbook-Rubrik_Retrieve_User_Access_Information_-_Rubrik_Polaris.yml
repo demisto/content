@@ -1,7 +1,7 @@
 id: Rubrik Retrieve User Access Information - Rubrik Polaris
 version: -1
 name: Rubrik Retrieve User Access Information - Rubrik Polaris
-description: This playbook retrieves user access information for the provided username or email with the pagination related information.
+description: This playbook retrieves User Intelligence information for the provided username or email, which includes the user's risk level and the types of analyzer hits.
 starttaskid: "0"
 tasks:
   "0":
