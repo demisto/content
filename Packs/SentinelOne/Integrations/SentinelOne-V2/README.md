@@ -166,7 +166,7 @@ Gets the file reputation verdict by a SHA1 hash.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.Hash.Vedict | String | The hash reputation verdict. | 
+| SentinelOne.Hash.Verdict | String | The hash reputation verdict. | 
 | SentinelOne.Hash.Hash | String | The content hash. | 
 
 ### sentinelone-get-threats

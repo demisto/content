@@ -1166,7 +1166,7 @@ def get_hash_command(client: Client, args: dict) -> CommandResults:
     hash_verdict = client.get_hash_verdict_request(hash_)
     reputation = hash_verdict.get('data', {})
     contents = {
-        'Vedict': reputation.get('verdict'),
+        'Verdict': reputation.get('verdict'),
         'Hash': hash_,
     }
 
