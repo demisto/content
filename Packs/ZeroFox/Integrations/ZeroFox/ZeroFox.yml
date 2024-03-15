@@ -1108,6 +1108,14 @@ script:
     - name: notes
       description: The notes to add to an alert.
       required: true
+    - auto: PREDEFINED
+      default: true
+      defaultValue: replace
+      description: Whether to replace or append new notes.
+      name: action
+      predefined:
+      - replace
+      - append
     outputs:
     - contextPath: ZeroFox.Alert.AlertType
       description: The type of an alert.
