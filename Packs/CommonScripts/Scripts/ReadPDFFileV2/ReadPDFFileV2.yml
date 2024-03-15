@@ -9,13 +9,19 @@ args:
   description: Maximum number of images to extract from the PDF file.
   name: maxImages
 comment: |-
-  Load a PDF file's content and metadata into context.
+  Load a PDF file's content and metadata into context. Supports extraction of hashes, urls, and emails when available.
 commonfields:
   id: ReadPDFFileV2
   version: -1
 enabled: true
 name: ReadPDFFileV2
 outputs:
+- contextPath: Hashes.type
+  description: The hash type extracted from the PDF file.
+  type: String
+- contextPath: Hashes.value
+  description: The hash value extracted from the PDF file.
+  type: String
 - contextPath: URL.Data
   description: A list of URLs that were extracted from the PDF file.
   type: String
@@ -116,7 +122,7 @@ tags:
 - ingestion
 timeout: "0"
 type: python
-dockerimage: demisto/readpdf:1.0.0.83506
+dockerimage: demisto/readpdf:1.0.0.85832
 runas: DBotRole
 tests:
 - Extract Indicators From File - Generic v2 - Test

@@ -286,7 +286,9 @@ script:
       type: Number
   - name: get-mapping-fields
     description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
-  - description: Search using EQL query
+  - name: es-integration-health-check
+    description: Returns the health status of the integration. This commmand should be used for debugging purposes.
+  - description: Search using EQL query.
     name: es-eql-search
     arguments:
     - description: The index in which to perform a search.
@@ -362,7 +364,7 @@ script:
       description: The name of the index to ingest into.
     - name: document
       required: true
-      description: The document object (JSON format) to be indexed. See Elasticsearch documentation (https://www.elastic.co/guide/en/elasticsearch/client/python-api/current/examples.html#ex-index) for further information about indexing documents. 
+      description: The document object (JSON format) to be indexed. See Elasticsearch documentation (https://www.elastic.co/guide/en/elasticsearch/client/python-api/current/examples.html#ex-index) for further information about indexing documents.
     - name: id
       description: The ID of the indexed document (will be generated if empty).
     outputs:
@@ -379,7 +381,7 @@ script:
       description: The result of the index operation.
       type: string
     description: Indexes a document into an Elasticsearch index.
-  dockerimage: demisto/elasticsearch:1.0.0.77444
+  dockerimage: demisto/elasticsearch:1.0.0.87483
   isfetch: true
   runonce: false
   script: '-'

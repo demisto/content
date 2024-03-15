@@ -16,6 +16,9 @@ description: |
 
   Verdict Handling:
   - Handles malicious incidents by initiating appropriate response actions, including blocking malicious indicators, isolating endpoints, and disabling user accounts.
+  
+  To utilize this playbook as the default for handling XDR incidents, the classifier should be empty, and the selected incident type should be `Cortex XDR - Lite`.
+  The selected Mapper (incoming) should be `XDR - Incoming Mapper`, and the selected Mapper (outgoing) should be Cortex `XDR - Outgoing Mapper`.
 starttaskid: "0"
 tasks:
   "0":
@@ -1504,6 +1507,9 @@ tasks:
     - incidentfield: Parent Process CMD
       output:
         simple: ${PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_command_line}
+    - incidentfield: XDR Alerts
+      output:
+        simple: ${incident.xdralerts(val.detectiontimestamp=convertEpoch(val.detectiontimestamp); function convertEpoch(et){if (et < 10000000000) {et *= 1000 };var d=new Date(Number(et));return String(d.toISOString())})}
     skipunavailable: false
     quietmode: 0
     isoversize: false

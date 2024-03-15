@@ -8,7 +8,7 @@
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Core Server URL |  | True |
+    | Core Server URL | For Cortex XSOAR 8 or Cortex XSIAM, use the Copy API URL button on the **API Keys** page. For Cortex XSOAR 6, use the server URL. | True |
     | API Key ID | The API Key ID that is linked to the API Key (relevant for Cortex XSIAM and Cortex XSOAR 8.0.0 and above). | True |
     | API Key (Password) | The core server API key. | True |
     | Authentication method | Whether authentication should be using "Standard" API key or "Advanced" API key. | True |
@@ -313,7 +313,7 @@ Delete the attachment from the incident and from the Cortex XSOAR server.
 ### core-api-file-check
 
 ***
-Check if the file exists in Cortex XSOAR by entry_id.
+Check if the file exists in Cortex XSOAR (Context) by entry_id.
 
 #### Base Command
 

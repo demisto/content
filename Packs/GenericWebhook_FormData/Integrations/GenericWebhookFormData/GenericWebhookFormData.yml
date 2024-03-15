@@ -1,0 +1,65 @@
+category: Utilities
+commonfields:
+  id: Generic Webhook (Form Data)
+  version: -1
+configuration:
+- advanced: true
+  defaultvalue: "true"
+  display: Long running instance
+  hidden: true
+  name: longRunning
+  required: false
+  section: Connect
+  type: 8
+- additionalinfo: 'Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for Generic Webhook will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.'
+  display: Listen Port
+  name: longRunningPort
+  required: true
+  section: Connect
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  section: Connect
+  type: 9
+- additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
+  advanced: true
+  display: Certificate (Required for HTTPS)
+  name: certificate
+  required: false
+  section: Connect
+  type: 12
+- additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server.
+  advanced: true
+  display: Private Key (Required for HTTPS)
+  name: key
+  required: false
+  section: Connect
+  type: 14
+- display: Incident type
+  name: incidentType
+  required: false
+  section: Connect
+  type: 13
+- additionalinfo: Because this is a push-based integration, it cannot fetch sample events in the mapping wizard. After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead.
+  advanced: true
+  display: Store sample events for mapping
+  name: store_samples
+  required: false
+  section: Connect
+  type: 8
+description: The Generic Webhook (Form Data) integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
+display: Generic Webhook (Form Data)
+name: Generic Webhook (Form Data)
+script:
+  commands: []
+  dockerimage: demisto/fastapi:1.0.0.86962
+  longRunning: true
+  longRunningPort: true
+  script: '-'
+  subtype: python3
+  type: python
+  isFetchSamples: true
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

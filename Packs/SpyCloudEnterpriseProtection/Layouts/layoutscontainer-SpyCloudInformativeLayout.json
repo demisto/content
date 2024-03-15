@@ -1,0 +1,414 @@
+{
+	"detailsV2": {
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 22,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 22,
+								"id": "2b303ba0-6e7e-11ee-818f-bf07908bce08",
+								"index": 1,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceid",
+								"height": 22,
+								"id": "1899eea0-6e7e-11ee-818f-bf07908bce08",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "title",
+								"height": 22,
+								"id": "eb5cf7a0-9fcb-11ee-aa11-6d1c8be9c7ec",
+								"index": 3,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "spyclouddocumentid",
+								"height": 22,
+								"id": "76176c00-f562-11ed-9971-bf08d08cb5b8",
+								"index": 4,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spycloudpublishdate",
+								"height": 22,
+								"id": "99182550-f562-11ed-9971-bf08d08cb5b8",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spycloudrecordmodificationdate",
+								"height": 22,
+								"id": "3628f490-fa1e-11ed-8bab-81535210db50",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SpyCloud Record Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 2,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Indicators",
+						"query": "",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 2,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 22,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 22,
+								"id": "incident-modified-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 22,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 22,
+								"id": "incident-created-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-closed-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 22,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 22,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-23841ed0-9e44-11ee-898a-b73686e437b7",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "domainname",
+								"height": 22,
+								"id": "05224250-6e7e-11ee-818f-bf07908bce08",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "fullname",
+								"height": 22,
+								"id": "0d97a240-6e7e-11ee-818f-bf07908bce08",
+								"index": 1,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "username",
+								"height": 22,
+								"id": "bf027570-9802-11ee-81a8-8bb0c7d3f735",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "email",
+								"height": 22,
+								"id": "b570f720-9802-11ee-81a8-8bb0c7d3f735",
+								"index": 3,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "hostname",
+								"height": 22,
+								"id": "a8d7b370-9fcb-11ee-aa11-6d1c8be9c7ec",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sourceip",
+								"height": 22,
+								"id": "5da7ff80-fa1d-11ed-8bab-81535210db50",
+								"index": 5,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spycloudemailusername",
+								"height": 22,
+								"id": "805a38f0-f562-11ed-9971-bf08d08cb5b8",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "spycloudemaildomain",
+								"height": 22,
+								"id": "7dd53bc0-f562-11ed-9971-bf08d08cb5b8",
+								"index": 7,
+								"listId": "caseinfoid-23841ed0-9e44-11ee-898a-b73686e437b7",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "spycloudpassword",
+								"height": 22,
+								"id": "7cc5d950-fa1d-11ed-8bab-81535210db50",
+								"index": 8,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "spycloudpasswordtype",
+								"height": 22,
+								"id": "800cee00-fa1d-11ed-8bab-81535210db50",
+								"index": 9,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "spyclouduserbrowser",
+								"height": 22,
+								"id": "891b59a0-fa1d-11ed-8bab-81535210db50",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SpyCloud Account/User Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"group": "incident",
+    "marketplaces": [
+        "xsoar"
+    ],
+	"id": "SpyCloud Informative Layout",
+	"name": "SpyCloud Informative Layout",
+	"system": false,
+	"version": -1,
+    "fromVersion": "6.9.0",
+    "description": ""
+}

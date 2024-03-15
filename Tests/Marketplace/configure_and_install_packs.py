@@ -43,14 +43,14 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketpl
         pack_ids: the pack IDs to install.
         servers: XSIAM or XSOAR Servers to install packs on it.
     """
-    use_multithreading = marketplace_tag_name != XSIAM_MP
+    install_packs_in_batches = marketplace_tag_name == XSIAM_MP
 
     for server in servers:
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
         _, success = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
                                                                      client=server.client,
                                                                      hostname=hostname,
-                                                                     multithreading=use_multithreading,
+                                                                     install_packs_in_batches=install_packs_in_batches,
                                                                      production_bucket=False)
         if not success:
             raise Exception('Failed to search and install packs and their dependencies.')

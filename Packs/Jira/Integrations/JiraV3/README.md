@@ -750,7 +750,7 @@ Scope: `read:jira-work`
 ### jira-edit-issue
 
 ***
-Modifies an issue in Jira.
+Modifies an issue in Jira. If the status or transition fields are given, then the other supplied fields should appear on the transition screen.
 
 Scope: `write:jira-work`
 
@@ -768,7 +768,7 @@ Scope: `write:jira-work`
 | issueId | Deprecated. Please use issue_id or issue_key. | Optional |
 | issue_id | The issue ID (Issue ID or key is required). | Optional |
 | issue_key | The issue key (Issue ID or key is required). | Optional |
-| issue_json | The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}. | Optional |
+| issue_json | The issue object (in JSON format). This argument is for advanced users, as when utilizing this argument, one cannot use other arguments (it will raise an error) except the `issue_id` `issue_eky` `action` `transition` and `status` and must input all required arguments into the issue_json. In addition, when issue_json is used, it is not possible to use the project name but only the project key. For example {"fields":{"customfield_10037":"field_value", "summary": "some summary", "project": {"key": "<project_key>"}}}. For more information about this argument, see https://developer.atlassian.com/server/jira/platform/jira-rest-api-example-create-issue-7897248/. | Optional |
 | issueJson | Deprecated. Please use issue_json. | Optional |
 | summary | The issue summary. | Optional |
 | description | The issue description. | Optional |
@@ -972,7 +972,7 @@ Scope: `write:jira-work`
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_json | The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}. | Optional |
+| issue_json | 'The issue object (in JSON format). This argument is for advanced users, as when utilizing this argument, one cannot use other arguments (it will raise an error) and must input all required arguments into the issue_json. In addition, when issue_json is used, it is not possible to use the project name but only the project key. For example {"fields":{"customfield_10037":"field_value", "summary": "some summary", "project": {"key": "<project_key>"}}}. For more information about this argument, see https://developer.atlassian.com/server/jira/platform/jira-rest-api-example-create-issue-7897248/'. | Optional |
 | issueJson | Deprecated. Please use issue_json. | Optional |
 | summary | The summary of the issue (Summary value is required, either from the "summary" argument, or from the "issue_json" argument). | Optional |
 | project_key | The project key with which to associate the issue (Project Key or name is required). | Optional |

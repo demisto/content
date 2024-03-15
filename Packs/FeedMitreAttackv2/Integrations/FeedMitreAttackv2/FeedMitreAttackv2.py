@@ -712,8 +712,30 @@ def main():
                 demisto.createIndicators(iter_)
 
     # Log exceptions
-    except Exception as e:
-        return_error(str(e))
+    except requests.exceptions.ConnectTimeout as exception:
+        err_msg = 'Connection Timeout Error - potential reason might be that the server is not accessible from your host.'
+        return_error(err_msg, exception)
+    except requests.exceptions.SSLError as exception:
+        # in case the "Trust any certificate" is already checked
+        if not verify_certificate:
+            return_error(str(exception), exception)
+        err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+                  ' the integration configuration.'
+        return_error(err_msg, exception)
+    except requests.exceptions.ProxyError as exception:
+        err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                  ' selected, try clearing the checkbox.'
+        return_error(err_msg, exception)
+    except requests.exceptions.ConnectionError as exception:
+        # Get originating Exception in Exception chain
+        error_class = str(exception.__class__)
+        err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+        err_msg = 'Verify that you have access to the server from your host.' \
+                  '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+            .format(err_type, exception.errno, exception.strerror)
+        return_error(err_msg, exception)
+    except Exception as exception:
+        return_error(str(exception), exception)
 
 
 from TAXII2ApiModule import *  # noqa: E402

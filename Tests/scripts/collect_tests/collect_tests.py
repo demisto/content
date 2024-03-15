@@ -1124,7 +1124,7 @@ class BranchTestCollector(TestCollector):
             logger.info('bucket upload: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
             if self.branch_name == 'master':
-                current_commit = 'origin/master'
+                current_commit = os.getenv("CI_COMMIT_SHA", "")
 
         elif self.branch_name == 'master':
             current_commit, previous_commit = tuple(repo.iter_commits(max_count=2))

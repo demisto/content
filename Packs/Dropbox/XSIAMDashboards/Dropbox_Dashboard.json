@@ -14,7 +14,7 @@
                                 "type": "Custom XQL",
                                 "width": 33.333333333333336,
                                 "height": 324,
-                                "phrase": "config timeframe = 30d\n| datamodel \n| filter xdm.event.type = \"file_operations\" and xdm.event.operation_sub_type != \"apply_naming_convention\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| comp count() as Count by xdm.event.operation_sub_type \n| alter Operation_Type =  xdm.event.operation_sub_type \n| fields -xdm.event.operation_sub_type \n| sort desc Count\n| view graph type = pie subtype = full xaxis = Operation_Type yaxis = Count ",
+                                "phrase": "config timeframe = 30d\n| datamodel dataset = dropbox_dropbox_raw\n| filter xdm.event.type = \"file_operations\" and xdm.event.operation_sub_type != \"apply_naming_convention\" \n| comp count() as Count by xdm.event.operation_sub_type \n| alter Operation_Type =  xdm.event.operation_sub_type \n| fields -xdm.event.operation_sub_type \n| sort desc Count\n| view graph type = pie subtype = full xaxis = Operation_Type yaxis = Count ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -147,7 +147,7 @@
                                 "type": "Custom XQL",
                                 "width": 50,
                                 "height": 400,
-                                "phrase": "config timeframe = 7d\n| datamodel \n| filter xdm.event.type = \"team_policies\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| fields xdm.event.operation_sub_type as Policy_Name, xdm.source.user.username as UserName, xdm.target.resource.value as NewValue, xdm.target.resource_before.value as OldValue, xdm.event.type as EventType, xdm.event.description as Description, _time\n| sort desc _time ",
+                                "phrase": "config timeframe = 7d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"team_policies\" \n| fields xdm.event.operation_sub_type as Policy_Name, xdm.source.user.username as UserName, xdm.target.resource.value as NewValue, xdm.target.resource_before.value as OldValue, xdm.event.type as EventType, xdm.event.description as Description, _time\n| sort desc _time ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -169,7 +169,7 @@
                                 "type": "Custom XQL",
                                 "width": 50,
                                 "height": 400,
-                                "phrase": "config timeframe = 7d\n| datamodel \n| filter xdm.event.type = \"logins\" and xdm.event.operation_sub_type = \"login_fail\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| comp count() as Count by xdm.source.user.username \n| sort desc Count\n| limit 10\n| alter User = xdm.source.user.username \n| fields -xdm.source.user.username  ",
+                                "phrase": "config timeframe = 7d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"logins\" and xdm.event.operation_sub_type = \"login_fail\" \n| comp count() as Count by xdm.source.user.username \n| sort desc Count\n| limit 10\n| alter User = xdm.source.user.username \n| fields -xdm.source.user.username  ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -196,7 +196,7 @@
                                 "type": "Custom XQL",
                                 "width": 100,
                                 "height": 271,
-                                "phrase": "config timeframe = 30d\n| datamodel \n| filter xdm.event.type = \"file_operations\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| bin _time span=1h \n| alter _time = date_floor(_time, \"h\")\n| comp count() as Count by _time\n| view graph type = line xaxis = _time yaxis = Count xaxistitle = \"Time\" yaxistitle = \"File_Operations\" ",
+                                "phrase": "config timeframe = 30d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"file_operations\" \n| bin _time span=1h \n| alter _time = date_floor(_time, \"h\")\n| comp count() as Count by _time\n| view graph type = line xaxis = _time yaxis = Count xaxistitle = \"Time\" yaxistitle = \"File_Operations\" ",
                                 "time_frame": {
                                     "relativeTime": 86400000
                                 },
@@ -249,7 +249,7 @@
             "creation_time": 1667996951841,
             "description": "This dashboard display the top 10 count of failed logins made by users during the last 7 days. A high number of fails can be an indication for a misconfiguration or a malicious activity.",
             "data": {
-                "phrase": "config timeframe = 7d\n| datamodel \n| filter xdm.event.type = \"logins\" and xdm.event.operation_sub_type = \"login_fail\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| comp count() as Count by xdm.source.user.username \n| sort desc Count\n| limit 10\n| alter User = xdm.source.user.username \n| fields -xdm.source.user.username  ",
+                "phrase": "config timeframe = 7d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"logins\" and xdm.event.operation_sub_type = \"login_fail\" \n| comp count() as Count by xdm.source.user.username \n| sort desc Count\n| limit 10\n| alter User = xdm.source.user.username \n| fields -xdm.source.user.username  ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -276,7 +276,7 @@
             "creation_time": 1668002137913,
             "description": "This panel display the trend of file operations over the last 30 days. This can help detect anomalies related to file operations in box.",
             "data": {
-                "phrase": "config timeframe = 30d\n| datamodel \n| filter xdm.event.type = \"file_operations\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| bin _time span=1h \n| alter _time = date_floor(_time, \"h\")\n| comp count() as Count by _time\n| view graph type = line xaxis = _time yaxis = Count xaxistitle = \"Time\" yaxistitle = \"File_Operations\" ",
+                "phrase": "config timeframe = 30d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"file_operations\" \n| bin _time span=1h \n| alter _time = date_floor(_time, \"h\")\n| comp count() as Count by _time\n| view graph type = line xaxis = _time yaxis = Count xaxistitle = \"Time\" yaxistitle = \"File_Operations\" ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -326,7 +326,7 @@
             "creation_time": 1668004335717,
             "description": "This panel displays the file operations by the differnt type of operations.",
             "data": {
-                "phrase": "config timeframe = 30d\n| datamodel \n| filter xdm.event.type = \"file_operations\" and xdm.event.operation_sub_type != \"apply_naming_convention\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| comp count() as Count by xdm.event.operation_sub_type \n| alter Operation_Type =  xdm.event.operation_sub_type \n| fields -xdm.event.operation_sub_type \n| sort desc Count\n| view graph type = pie subtype = full xaxis = Operation_Type yaxis = Count ",
+                "phrase": "config timeframe = 30d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"file_operations\" and xdm.event.operation_sub_type != \"apply_naming_convention\" \n| comp count() as Count by xdm.event.operation_sub_type \n| alter Operation_Type =  xdm.event.operation_sub_type \n| fields -xdm.event.operation_sub_type \n| sort desc Count\n| view graph type = pie subtype = full xaxis = Operation_Type yaxis = Count ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },
@@ -369,7 +369,7 @@
             "creation_time": 1668007118551,
             "description": "This panel displayes the policies changed during the last 7 days. Attackers often change policies in order to achieve persistence.",
             "data": {
-                "phrase": "config timeframe = 7d\n| datamodel \n| filter xdm.event.type = \"team_policies\" and xdm.observer.vendor = \"dropbox\" and xdm.observer.product = \"dropbox\"\n| fields xdm.event.operation_sub_type as Policy_Name, xdm.source.user.username as UserName, xdm.target.resource.value as NewValue, xdm.target.resource_before.value as OldValue, xdm.event.type as EventType, xdm.event.description as Description, _time\n| sort desc _time ",
+                "phrase": "config timeframe = 7d\n| datamodel dataset = dropbox_dropbox_raw \n| filter xdm.event.type = \"team_policies\" \n| fields xdm.event.operation_sub_type as Policy_Name, xdm.source.user.username as UserName, xdm.target.resource.value as NewValue, xdm.target.resource_before.value as OldValue, xdm.event.type as EventType, xdm.event.description as Description, _time\n| sort desc _time ",
                 "time_frame": {
                     "relativeTime": 86400000
                 },

@@ -1,8 +1,8 @@
 {
-    "name": "Digital Shadows SearchLight",
+    "name": "ReliaQuest GreyMatter DRP",
     "description": "Digital Shadows monitors and manages an organization's digital risk across the open, deep, and dark web.",
     "support": "partner",
-    "currentVersion": "1.0.9",
+    "currentVersion": "2.0.0",
     "author": "Digital Shadows",
     "url": "https://www.digitalshadows.com/",
     "email": "info@digitalshadows.com",
@@ -27,7 +27,10 @@
         "vulnerable service",
         "MITRE ATT&CK",
         "SANS",
-        "threat actors"
+        "threat actors",
+        "Digital",
+        "Shadows",
+        "SearchLight"
     ],
     "githubUser": [
         "ds-jdcockrill",

@@ -26,12 +26,13 @@ tasks:
       - "11"
       - "13"
       - "24"
+      - "25"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1985,
           "y": 50
         }
       }
@@ -409,7 +410,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1985,
           "y": 545
         }
       }
@@ -824,13 +825,100 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 616decf8-e627-4692-86da-65dd75e6f6a7
+    type: regular
+    task:
+      id: 616decf8-e627-4692-86da-65dd75e6f6a7
+      version: -1
+      name: Set
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: test_chaining_transformers
+      value:
+        simple: '[1,2]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 8385addb-79b2-4530-86e2-a4182080cec9
+    type: condition
+    task:
+      id: 8385addb-79b2-4530-86e2-a4182080cec9
+      version: -1
+      name: Test SetIfEmpty - chaining transformers
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: test_chaining_transformers
+                transformers:
+                - operator: count
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 560,
-        "width": 3820,
+        "width": 4250,
         "x": 50,
         "y": 50
       }
