@@ -570,6 +570,7 @@ def main():
         # pipeline and all those in between, marking them as suspicious.
         list_of_pipelines, list_of_commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
                                                                        project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
+        logging.info(f"current commit is {commit_sha}")
         current_commit = get_commit_by_sha(commit_sha, list_of_commits)
         logging.info(f"current commit is {current_commit}")
         if current_commit:
