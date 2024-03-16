@@ -381,6 +381,7 @@ class Client(CoreClient):
         request_data = {}
         filters: List[Any] = []
         if incident_id_list:
+            incident_id_list = argToList(incident_id_list, transform=lambda x: str(x))
             filters.append({"field": "incident_id_list", "operator": "in", "value": incident_id_list})
         if status:
             filters.append({
