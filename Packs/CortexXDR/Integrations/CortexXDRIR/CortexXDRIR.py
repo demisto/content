@@ -380,13 +380,6 @@ class Client(CoreClient):
         global ALERTS_LIMIT_PER_INCIDENTS
         request_data = {}
         filters: List[Any] = []
-        if isinstance(incident_id_list, int):
-            incident_id_list = [str(incident_id_list)]
-
-        incident_id_list = argToList(incident_id_list)
-        for index, id_ in enumerate(incident_id_list):
-            if isinstance(id_, int | float):
-                incident_id_list[index] = str(id_)
         if incident_id_list:
             filters.append({"field": "incident_id_list", "operator": "in", "value": incident_id_list})
         if status:
@@ -542,7 +535,7 @@ def get_incident_extra_data_command(client, args):
 
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
-    raw_incident = client.get_multiple_incidents_extra_data(incident_id_list=incident_id)
+    raw_incident = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id])
     if isinstance(raw_incident, list):
         raw_incident = raw_incident[0]
     if raw_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS:

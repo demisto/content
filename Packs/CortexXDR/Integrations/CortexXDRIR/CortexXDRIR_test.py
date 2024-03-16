@@ -1227,6 +1227,7 @@ class TestGetIncidents():
         """
         from CortexXDRIR import Client
         multiple_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
+        alert_limit = multiple_extra_data['reply']['alerts_limit_per_incident']
         requests_mock.post(f'{XDR_URL}/incidents/get_multiple_incidents_extra_data/', json=multiple_extra_data)
         mocker.patch.object(demisto, 'command', return_value='xdr-get-incident-extra-data')
         mocker.patch.object(Client, '_http_request', return_value=multiple_extra_data)
@@ -1238,6 +1239,6 @@ class TestGetIncidents():
                                                            starred_incidents_fetch_window=1575806909185,
                                                            incident_id_list=['1', '2'],
                                                            fields_to_exclude=True)
-        assert len(outputs) == 2
-        assert outputs[0]['alerts']['total_count'] <= 2
-        assert outputs[1]['alerts']['total_count'] <= 2
+        assert len(outputs) == len(multiple_extra_data['reply']['incidents'])
+        assert outputs[0]['alerts']['total_count'] <= alert_limit
+        assert outputs[1]['alerts']['total_count'] <= alert_limit
