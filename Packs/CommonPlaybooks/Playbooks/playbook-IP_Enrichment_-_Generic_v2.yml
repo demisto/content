@@ -7,7 +7,7 @@ description: |-
 
   - Resolve IP addresses to hostnames (DNS)
   - Provide threat information
-  - IP address reputation using !ip command
+  - Determine IP address reputation using the !ip command
   - Separate internal and external IP addresses
   - For internal IP addresses, get host information.
   

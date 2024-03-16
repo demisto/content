@@ -14,10 +14,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Okta - User Investigation
-* Cortex XDR - Get entity alerts by MITRE tactics
 * Get entity alerts by MITRE tactics
+* Okta - User Investigation
 * SIEM - Search for Failed logins
+* Cortex XDR - Get entity alerts by MITRE tactics
 
 ### Integrations
 
@@ -27,6 +27,7 @@ This playbook does not use any integrations.
 
 * Set
 * CountArraySize
+* SetAndHandleEmpty
 * MathUtil
 
 ### Commands

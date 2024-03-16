@@ -2479,6 +2479,238 @@
 				],
 				"type": "custom"
 			},
+            {
+				"filters": [
+					[
+						{
+							"ignoreCase": false,
+							"left": {
+								"isContext": true,
+								"value": {
+									"simple": "xdralertname"
+								}
+							},
+							"operator": "containsGeneral",
+							"right": {
+								"isContext": false,
+								"value": {
+									"simple": "Large Upload"
+								}
+							},
+							"type": "multiSelect"
+						}
+					]
+				],
+				"hidden": false,
+				"id": "vycnvdgk6l",
+				"name": "Large Upload",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "1vduzkpmlh-6774ac10-dfdd-11ee-a718-2d25454b6746",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "alertname",
+								"height": 22,
+								"id": "7fc88c00-dfdd-11ee-a718-2d25454b6746",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "xdrdescription",
+								"height": 22,
+								"id": "8640e370-dfdd-11ee-a718-2d25454b6746",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "occurred",
+								"height": 22,
+								"id": "bb2f26a0-dfdd-11ee-a718-2d25454b6746",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "hostname",
+								"height": 22,
+								"id": "f9cac5d0-dfe3-11ee-a718-2d25454b6746",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "xdrusers",
+								"height": 22,
+								"id": "17b59de0-dfe4-11ee-a718-2d25454b6746",
+								"index": 4,
+								"listId": "1vduzkpmlh-6774ac10-dfdd-11ee-a718-2d25454b6746",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Alert Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "1vduzkpmlh-469b1ee0-dfe5-11ee-a718-2d25454b6746",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "xdrnetworkartifacts",
+								"height": 106,
+								"id": "11883550-dfe8-11ee-a718-2d25454b6746",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Network Artifacts",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "1vduzkpmlh-8a36af70-e071-11ee-9f1d-c7e880f68802",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "verdict",
+								"height": 22,
+								"id": "534d3880-e071-11ee-9f1d-c7e880f68802",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "partofcampaign",
+								"height": 22,
+								"id": "a2f3d880-e071-11ee-9f1d-c7e880f68802",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "relatedreport",
+								"height": 22,
+								"id": "ab7c7250-e071-11ee-9f1d-c7e880f68802",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "commandline",
+								"height": 22,
+								"id": "7ae9b4c0-dfe7-11ee-a718-2d25454b6746",
+								"index": 3,
+								"listId": "1vduzkpmlh-fc683030-dfe7-11ee-a718-2d25454b6746",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "commandlineverdict",
+								"height": 22,
+								"id": "c51aa040-dfe7-11ee-a718-2d25454b6746",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "threathuntingdetectedhostnames",
+								"height": 22,
+								"id": "f14e00a0-e148-11ee-9a3d-4f29cba1e42e",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "threathuntingdetectedip",
+								"height": 22,
+								"id": "f4749500-e148-11ee-9a3d-4f29cba1e42e",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Investigation Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "1vduzkpmlh-ea6fb620-e071-11ee-9f1d-c7e880f68802",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "containmentsla",
+								"height": 22,
+								"id": "955e68b0-e072-11ee-9f1d-c7e880f68802",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "remediationsla",
+								"height": 22,
+								"id": "a8baebe0-e072-11ee-9f1d-c7e880f68802",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Containment and Remediation Status",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
 			{
 				"hidden": false,
 				"id": "lthdv5gwt9",
