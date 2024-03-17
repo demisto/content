@@ -27,7 +27,7 @@ tasks:
         "position": {
           "x": 480,
           "y": 70
-        }
+        }ƒ
       }
     note: false
     timertriggers: []
@@ -1767,7 +1767,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: AlertHandleFlag
+        simple: ContinueResponseForAlerts
       value:
         simple: ${inputs.alert_id}
     separatecontext: false
@@ -1806,7 +1806,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: AlertHandleFlag
+        simple: ContinueResponseForAlerts
       value:
         simple: ${inputs.alert_id}
     separatecontext: false

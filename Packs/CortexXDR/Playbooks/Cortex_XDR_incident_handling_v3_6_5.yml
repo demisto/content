@@ -1666,7 +1666,7 @@ tasks:
           left:
             value:
               complex:
-                root: AlertHandleFlag
+                root: ContinueResponseForAlerts
             iscontext: true
           right:
             value: {}
