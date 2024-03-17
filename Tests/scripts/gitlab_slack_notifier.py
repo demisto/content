@@ -112,13 +112,11 @@ def get_test_report_pipeline_url(pipeline_url: str) -> str:
 
 
 def get_msg_machines(
-    failed_jobs: dict, job_cause_fail: list[str], job_cause_warning: list[str], msg: str
+    failed_jobs: dict, job_cause_fail: set[str], job_cause_warning: set[str], msg: str
 ):
-    if [True for server_ga in job_cause_fail if server_ga in failed_jobs]:
+    if job_cause_fail.issubset(set(failed_jobs)):
         color = "danger"
-    elif [
-        True for xsiam_test_job in job_cause_warning if xsiam_test_job in failed_jobs
-    ]:
+    elif job_cause_warning.issubset(set(failed_jobs)):
         color = "warning"
     else:
         color = "good"
@@ -147,9 +145,9 @@ def machines_saas_and_xsiam(failed_jobs):
         machines.extend(
             get_msg_machines(
                 failed_jobs,
-                ["xsoar_ng_server_ga"],
-                ["xsoar-test_playbooks_results"],
-                f"XSOAR SAAS:ֿ\n{xsoar_machine[0]}",
+                {"xsoar_ng_server_ga"},
+                {"xsoar-test_playbooks_results"},
+                f"XSOAR SAAS:ֿ\n{','.join(xsoar_machine)}",
             )
         )
 
@@ -159,9 +157,9 @@ def machines_saas_and_xsiam(failed_jobs):
         machines.extend(
             get_msg_machines(
                 failed_jobs,
-                ["xsiam_server_ga"],
-                ["xsiam-test_playbooks_results", "xsiam-test_modeling_rule_results"],
-                f"XSIAM:\n{xsiam_machine[0]}",
+                {"xsiam_server_ga"},
+                {"xsiam-test_playbooks_results", "xsiam-test_modeling_rule_results"},
+                f"XSIAM:\n{','.join(xsiam_machine)}",
             )
         )
 
@@ -170,12 +168,12 @@ def machines_saas_and_xsiam(failed_jobs):
     return (
         get_msg_machines(
             failed_jobs,
-            ["xsoar_ng_server_ga", "xsiam_server_ga"],
-            [
+            {"xsoar_ng_server_ga", "xsiam_server_ga"},
+            {
                 "xsoar-test_playbooks_results",
                 "xsiam-test_playbooks_results",
                 "xsiam-test_modeling_rule_results",
-            ],
+            },
             f"Used {len(machines)} machine(s)",
         )
         + machines
