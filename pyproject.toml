@@ -6,11 +6,11 @@ authors = ["Cortex XSOAR"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8.1,<3.12"
+python = "^3.8.1,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = { git = "https://github.com/demisto/demisto-sdk.git", rev = "support-python-311" }
+demisto-sdk = "1.27.3"
 requests = "^2.22.0"
 pre-commit = "^3.5.0"
 google-cloud-compute = "^1.8.0"
