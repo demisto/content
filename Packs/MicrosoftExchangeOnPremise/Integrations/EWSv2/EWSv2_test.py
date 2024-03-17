@@ -826,3 +826,15 @@ def test_parse_physical_address():
                                                                       'state': 'NY',
                                                                       'street': 'Broadway Ave.',
                                                                       'zipcode': 10001}
+
+
+def test_get_item_as_eml(mocker):
+    """
+    Given:
+        - A quoted-printable encoded email returns.
+    When:
+        - The "ews-get-items-as-eml" command is called.
+    Then:
+        - The output contains the expected file name and content
+    """
+    from EWSv2 import get_item_as_eml

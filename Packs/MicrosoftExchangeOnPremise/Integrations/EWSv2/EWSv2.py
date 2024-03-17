@@ -2250,7 +2250,9 @@ def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
                     email_content.add_header(header.name, header.value)
 
         eml_name = item.subject if item.subject else 'demisto_untitled_eml'
-        file_result = fileResult(eml_name + ".eml", email_content.as_string())
+        email_content_str = email_content.as_string()
+        email_content_lf_to_crlf = email_content_str.replace('\n', '\r\n')
+        file_result = fileResult(f"{eml_name}.eml", email_content_lf_to_crlf)
         file_result = file_result if file_result else "Failed uploading eml file to war room"
 
         return file_result
