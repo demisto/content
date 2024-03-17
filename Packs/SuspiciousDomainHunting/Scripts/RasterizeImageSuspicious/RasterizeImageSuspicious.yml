@@ -1,0 +1,18 @@
+commonfields:
+  id: 82f70396-4be3-4e57-838b-22f614e83415
+  version: 10
+vcShouldKeepItemLegacyProdMachine: false
+name: RasterizeImageSuspicious
+script: ''
+type: python
+tags:
+- dynamic-section
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ''
+runonce: false
+dockerimage: devdemisto/processing-image-file:1.0.0.80255
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
