@@ -18,4 +18,4 @@ Before you configure the integration, retrieve the API Client and Password from 
     The minimum required permissions are:
     - Read access Alert endpoints.    
     - Read access Audit Logs.
-For more information please refer to Jamf Protect [Documentation](https://learn.jamf.com/en-US/bundle/jamf-protect-documentation/page/Jamf_Protect_API.html).
+For more information refer to Jamf Protect [Documentation](https://learn.jamf.com/en-US/bundle/jamf-protect-documentation/page/Jamf_Protect_API.html).
