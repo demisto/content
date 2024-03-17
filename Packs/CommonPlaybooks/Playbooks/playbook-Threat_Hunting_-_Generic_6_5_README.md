@@ -2,7 +2,7 @@ This playbook enables threat hunting for IOCs in your enterprise. It currently s
 - Splunk
 - Qradar
 - Pan-os 
-- Cortex data lake 
+- Cortex Data Lake 
 - Autofocus
 - Microsoft 365 Defender
 
@@ -14,8 +14,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 * Splunk Indicator Hunting
 * QRadar Indicator Hunting V2
-* Palo Alto Networks - Hunting And Threat Detection
 * Microsoft 365 Defender - Threat Hunting Generic
+* Palo Alto Networks - Hunting And Threat Detection
 
 ### Integrations
 

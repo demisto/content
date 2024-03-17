@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from typing import Any, cast
 
 import urllib3
@@ -7,7 +9,7 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-DEFAULT_SEARCH_LIMIT = 100
+DEFAULT_SEARCH_LIMIT = int(demisto.params().get('search_limit', 100))
 MAX_ALERTS = 100  # max alerts per fetch
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 V1_URL_SUFFIX = "/public_api/v1"
