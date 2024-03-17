@@ -356,7 +356,6 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy)
           
-        return_results(test_module(client))      
         # Generate an access token for pan-OS/panorama
         if command == 'test-module':
             return_results(test_module(client))
