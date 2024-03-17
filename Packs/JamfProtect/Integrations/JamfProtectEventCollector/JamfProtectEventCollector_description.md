@@ -16,6 +16,7 @@ Before you configure the integration, retrieve the API Client and Password from 
 # Notes:
     You can assign a custom role that limits permissions by editing the API client.
     The minimum required permissions are:
+    - Read access Computers.
     - Read access Alert endpoints.    
     - Read access Audit Logs.
 For more information refer to Jamf Protect [Documentation](https://learn.jamf.com/en-US/bundle/jamf-protect-documentation/page/Jamf_Protect_API.html).
