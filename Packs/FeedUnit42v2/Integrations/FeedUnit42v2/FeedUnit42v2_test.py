@@ -5,8 +5,6 @@ from FeedUnit42v2 import Client, fetch_indicators, get_indicators_command, handl
     parse_reports_and_report_relationships, create_attack_pattern_indicator, create_course_of_action_indicators, \
     get_ioc_type, get_ioc_value, create_list_relationships, extract_ioc_value, DemistoException
 
-from TAXII2ApiModule import *
-
 from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA, REPORTS_DATA, \
     REPORTS_INDICATORS, ID_TO_OBJECT, INDICATORS_RESULT, CAMPAIGN_RESPONSE, CAMPAIGN_INDICATOR, COURSE_OF_ACTION_DATA, \
     ATTACK_PATTERN_INDICATOR, COURSE_OF_ACTION_INDICATORS, RELATIONSHIP_OBJECTS, INTRUSION_SET_DATA, \
