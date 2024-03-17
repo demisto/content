@@ -11,6 +11,7 @@ from demisto_sdk.commands.common.tools import get_pack_metadata
 from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
 from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
+from random import randint
 
 
 from Utils.github_workflow_scripts.utils import (
@@ -64,9 +65,38 @@ SECURITY_CONTENT_ITEMS = [
 ]
 
 
+def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
+    """Check if there is more than one reviewer with the lowest number of assigned contribution PRs.
+        If yes, choose one randomly.
+        If no, choose the one with the lowest number of assigned contribution PRs.
+
+        Args:
+            assigned_prs_per_potential_reviewer (dict): A dict of the reviewers and the amount of assigned PRs each has.
+            an example of this dictionary:
+            {
+                'reviewer1': 1,
+                'reviewer2': 2,
+                'reviewer3': 3,
+            }
+
+        Returns:
+            int: The location of the chosen assignee in the sorted array.
+    """
+    values = sorted([assigned_prs_per_potential_reviewer[key] for key in assigned_prs_per_potential_reviewer])
+    if values[0] == values[1] == values[2]:
+        # choose randomly between 0-2
+        return randint(1, 3) - 1
+    elif values[0] == values[1]:
+        # choose randomly between 0-1
+        return randint(1, 2) - 1
+    else:
+        return 0
+
+
 def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
-    """Checks the number of open 'Contribution' PRs that have either been assigned to a user or a review
-    was requested from the user for each potential reviewer and returns the user with the smallest amount
+    """Checks the number of open 'Contribution' PRs that have been assigned to a user
+    for each potential reviewer and returns the user with the smallest amount.
+    If all the reviewers have the same amount, it will select one randomly.
 
     Args:
         potential_reviewers (List): The github usernames from which a reviewer will be selected
@@ -88,8 +118,10 @@ def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
             if reviewer in assignees:
                 assigned_prs_per_potential_reviewer[reviewer] = assigned_prs_per_potential_reviewer.get(reviewer, 0) + 1
     print(f'{assigned_prs_per_potential_reviewer=}')
+    n = get_location_of_reviewer(assigned_prs_per_potential_reviewer)
+    print(f'the chosen location in the sorted array is: {n}')
     selected_reviewer = sorted(assigned_prs_per_potential_reviewer,
-                               key=assigned_prs_per_potential_reviewer.get)[0]  # type: ignore
+                               key=assigned_prs_per_potential_reviewer.get)[n]  # type: ignore
     print(f'{selected_reviewer=}')
     return selected_reviewer
 
@@ -214,6 +246,8 @@ def is_tim_content(pr_files: list[str]) -> bool:
     """
     integrations_checked = []
     for file in pr_files:
+        if 'CONTRIBUTORS.json' in file:
+            continue
         integration = BaseContent.from_path(CONTENT_PATH / file)
         if not isinstance(integration, Integration) or integration.path in integrations_checked:
             continue
