@@ -18,36 +18,42 @@ def get_entry_id():
 
     try:
         for file in files:
-            if file['Name'].startswith('suspicious'):
+            if str(file['Name']).startswith('suspicious'):
                 entry_id = file['EntryID']
                 break
 
-    except TypeError:
-        if files['Name'].startswith('suspicious'):
-            entry_id = files['Name']
+    except TypeError as e:
+        entry_id = file['Name']
+        demisto.results(f"Error: {e}")
 
     return entry_id
 
 
 def main():
 
+    demisto.context()
+
     entry_id = get_entry_id()
 
-    server_url = demisto.executeCommand('GetServerURL', {})[0].get('Contents')
+    server_url_res = demisto.executeCommand("GetServerURL", {})
+    if server_url_res and len(server_url_res) > 0:
+        server_url = server_url_res[0].get("Contents")
 
-    link = f'{server_url}/entry/download/{entry_id}'
+    link = f"{server_url}/entry/download/{entry_id}" if server_url else None
 
-    if entry_id:
-        html = f'<-:->![pic]({link})\n[Download]({link})'
+    if entry_id and link:
+        html = f"<-:->![pic]({link})\n[Download]({link})"
 
     else:
-        html = '<-:->No Image'
+        html = "<-:->No Image"
 
-    demisto.results({
-        'ContentsFormat': formats['markdown'],
-        'Type': entryTypes['note'],
-        'Contents': html,
-    })
+    demisto.results(
+        {
+            "ContentsFormat": formats["markdown"],
+            "Type": entryTypes["note"],
+            "Contents": html,
+        }
+    )
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
