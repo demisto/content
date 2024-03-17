@@ -1,3 +1,4 @@
+import itertools
 import json
 import os
 import sys
@@ -66,6 +67,7 @@ class CollectionReason(str, Enum):
     README_FILE_CHANGED = 'readme file was changed'
     PACK_CHOSEN_TO_UPLOAD = 'pack chosen to upload'
     PACK_TEST_E2E = "pack was chosen to be tested in e2e tests"
+    PACK_MASTER_BUCKET_DISCREPANCY = "pack version on master is ahead of bucket"
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
@@ -810,8 +812,35 @@ class BranchTestCollector(TestCollector):
 
         return CollectionResult.union([
             self.__collect_from_changed_files(collect_from.changed_files),
-            self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from)
+            self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
+            self.__collect_packs_diff_master_bucket()
         ])
+
+    def __collect_packs_diff_master_bucket(self) -> CollectionResult | None:
+
+        collected_packs: list[CollectionResult | None] = []
+
+        # diff between master and the last upload
+        collect_from = self._get_git_diff(upload_delta_from_last_upload=True)
+
+        for file_path in collect_from.changed_files:
+
+            path = PATHS.content_path / file_path
+
+            if not path.exists():
+                raise FileNotFoundError(path)
+
+            collected_packs.append(self._collect_pack(
+                pack_id=find_pack_folder(path).name,
+                reason=CollectionReason.PACK_MASTER_BUCKET_DISCREPANCY,
+                reason_description=file_path,
+                only_to_install=False
+            ))
+
+        # union with collected_packs since changed_files and since files were removed
+        return CollectionResult.union(tuple(itertools.chain(collected_packs,
+                                                            [self.__collect_packs_from_which_files_were_removed
+                                                             (collect_from.pack_ids_files_were_removed_from)])))
 
     def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult | None:
         """NOTE: this should only be used from _collect"""
@@ -1110,7 +1139,7 @@ class BranchTestCollector(TestCollector):
             for test in tests)
         )
 
-    def _get_git_diff(self) -> FilesToCollect:
+    def _get_git_diff(self, upload_delta_from_last_upload: bool = False) -> FilesToCollect:
         repo = PATHS.content_repo
         changed_files: list[str] = []
         packs_files_were_removed_from: set[str] = set()
@@ -1120,7 +1149,12 @@ class BranchTestCollector(TestCollector):
 
         logger.debug(f'Getting changed files for {self.branch_name=}')
 
-        if os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
+        if upload_delta_from_last_upload:
+            logger.info('bucket upload: getting last commit from index')
+            previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
+            current_commit = 'origin/master'
+
+        elif os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
             logger.info('bucket upload: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
             if self.branch_name == 'master':
