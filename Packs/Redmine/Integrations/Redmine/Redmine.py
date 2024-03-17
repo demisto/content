@@ -14,7 +14,7 @@ MAX_LIMIT = 100
 MIN_LIMIT = 0
 
 INVALID_ID_DEMISTO_ERROR = "Invalid ID for one or more fields that request IDs. Please make sure all IDs are correct."
-RESPONSE_NOT_IN_FORMAT_ERROR = "Request Succeeded, Response not in correct format."
+RESPONSE_NOT_IN_FORMAT_ERROR = "Request Succeeded, Parse Error."
 
 HR_SHOW_ONLY_NAME=JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', ''))
 
@@ -267,8 +267,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
             raise DemistoException(INVALID_ID_DEMISTO_ERROR)
-        else:
-            raise DemistoException(e.message)
+        raise
     try:
         issue_response = response['issue']
     except Exception:
@@ -313,8 +312,7 @@ def update_issue_command(client: Client, args: dict[str, Any]):
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
             raise DemistoException(INVALID_ID_DEMISTO_ERROR)
-        else:
-            raise DemistoException(e.message)
+        raise
     command_results = CommandResults(
         readable_output=f'Issue with id {issue_id} was successfully updated.')
     return command_results
@@ -334,7 +332,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
                 raise DemistoException("Invalid tracker ID, please use only predefined values.")
         if custom_field:
             try:
-                cf_in_format = custom_field.split(':')
+                cf_in_format = argToList(custom_field, ':')
                 args[f'cf_{cf_in_format[0]}'] = cf_in_format[1]
             except Exception as e:
                 raise DemistoException(f"Invalid custom field format, please follow the command description. Error: {e}.")
@@ -356,8 +354,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
             raise DemistoException(INVALID_ID_DEMISTO_ERROR)
-        else:
-            raise DemistoException(e.message)
+        raise
 
     try:
         issues_response = response['issues']
@@ -411,8 +408,7 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
             elif 'Error in API call [403]' in e.message:
                 raise DemistoException(f"{e.message} It can be due to Invalid ID for one or more fields that request IDs, "
                                        "Please make sure all IDs are correct")
-            else:
-                raise DemistoException(e.message)
+            raise
         try:
             response_issue = response['issue']
         except Exception:
@@ -465,8 +461,7 @@ def delete_issue_by_id_command(client: Client, args: dict[str, Any]):
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
             raise DemistoException(INVALID_ID_DEMISTO_ERROR)
-        else:
-            raise DemistoException(e.message)
+        raise
     command_results = CommandResults(
         readable_output=f'Issue with id {issue_id} was deleted successfully.')
     return command_results
@@ -483,8 +478,7 @@ def add_issue_watcher_command(client: Client, args: dict[str, Any]):
         elif 'Error in API call [403]' in e.message:
             raise DemistoException(f"{e.message} It can be due to Invalid ID for one or more fields that request IDs, "
                                    "Please make sure all IDs are correct")
-        else:
-            raise DemistoException(e.message)
+        raise
     command_results = CommandResults(
         readable_output=f'Watcher with id {watcher_id} was added successfully to issue with id {issue_id}.')
     return command_results
@@ -501,8 +495,7 @@ def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
         elif 'Error in API call [403]' in e.message:
             raise DemistoException(f"{e.message} It can be due to Invalid ID for one or more fields that request IDs, "
                                    "Please make sure all IDs are correct.")
-        else:
-            raise DemistoException(e.message)
+        raise
     command_results = CommandResults(
         readable_output=f'Watcher with id {watcher_id} was removed successfully from issue with id {issue_id}.')
     return command_results
