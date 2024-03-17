@@ -604,6 +604,7 @@ def create_function_command(args: dict[str, str], aws_client) -> CommandResults:
 
     return CommandResults(
         outputs=outputs,
+        raw_response=res,
         outputs_prefix='AWS.Lambda.Functions',
         outputs_key_field='FunctionArn',
         readable_output=readable_output
@@ -651,9 +652,10 @@ def publish_layer_version_command(args: dict[str, str], aws_client) -> CommandRe
     outputs = {key: res.get(key) for key in output_headers}
 
     return CommandResults(
-        outputs=outputs,
-        outputs_prefix='AWS.Lambda.Layers',
-        outputs_key_field='LayerArn',
+        outputs=remove_empty_elements(outputs),
+        raw_response=res,
+        outputs_prefix='AWS.Lambda.Layers.LayerVersions',
+        outputs_key_field='LayerVersionArn',
         readable_output=readable_output
     )
 
@@ -702,13 +704,17 @@ def list_layer_version_command(args, aws_client):
     }
 
     res = aws_client.list_layer_versions(**remove_empty_elements(kwargs))
+    outputs = {
+        'AWS.Lambda.Layers.LayerVersions(val.LayerVersionArn && val.LayerVersionArn == obj.LayerVersionArn)':
+            res.get('LayerVersions'),
+        'AWS.Lambda.Layers.NextMarker(true)': res.get('NextMarker')
+    }
 
     readable_output = tableToMarkdown(name='Layer Version List', t=res.get('LayerVersions'), headerTransform=pascalToSpace)
 
     return CommandResults(
-        outputs=res,
-        outputs_prefix='AWS.Lambda.Layers',
-        outputs_key_field='LayerVersionArn',
+        outputs=remove_empty_elements(outputs),
+        raw_response=res,
         readable_output=readable_output
     )
 
