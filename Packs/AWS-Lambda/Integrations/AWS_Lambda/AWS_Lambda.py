@@ -158,7 +158,6 @@ def prepare_create_function_kwargs(args: dict[str, str]):
 
     if code_path := args.get('code'):
         file_path = demisto.getFilePath(code_path).get('path')
-        # file_path = '/Users/epintzov/Desktop/lambda_function.py.zip'
         method_code = read_zip_to_bytes(file_path)
         kwargs.update({'Code': {'ZipFile': method_code}})
     elif s3_bucket := args.get('S3-bucket'):

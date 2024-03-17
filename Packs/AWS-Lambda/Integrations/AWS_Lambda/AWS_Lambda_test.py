@@ -531,13 +531,11 @@ def test_publish_layer_version_command(mocker):
     """
     client = MockClient()
     mocker.patch.object(client, 'publish_layer_version', return_value=util_load_json('test_data/publish_layer.json'))
+    mocker.patch('AWS_Lambda.read_zip_to_bytes')
 
     args = {"layer-name": "testLayer",
             "description": "test lambda function",
-            "content": "{\"S3Bucket\": \"test\","
-                       " \"S3Key\": \"test\","
-                       " \"S3ObjectVersion\": \"test\","
-                       "\"ZipFile\": \"test\"}",
+            "zip-file": "test",
             "CompatibleRuntimes": "nodejs",
             }
 

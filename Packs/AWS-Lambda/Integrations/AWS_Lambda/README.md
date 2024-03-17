@@ -1017,6 +1017,26 @@ Creates an Lambda layer from a ZIP archive.
 | AWS.Lambda.Layers.Version | number | The version number. | 
 | AWS.Lambda.Layers.CompatibleRuntimes | list | The layer’s compatible runtimes. | 
 
+#### Context Example
+```json
+{
+    "CompatibleRuntimes": ["nodejs"],
+    "CreatedDate": "2024-03-01T10:12:00.0TZD",
+    "Description": "test",
+    "LayerArn": "test_layer_arn",
+    "LayerVersionArn": "test_version_arn",
+    "Version": 2
+}
+```
+
+#### Human Readable Output
+
+>### Publish Layer Version
+>|Layer Version Arn|Layer Arn|Description|Created Date|Version|Compatible Runtimes|
+>|---|---|---|---|---|---|
+>| test_version_arn | test_layer_arn | test | 2024-03-01T10:12:00.0TZD | 2 | nodejs |
+
+
 ### aws-lambda-list-layer-version
 
 ***
@@ -1053,6 +1073,30 @@ Lists the versions of an Lambda layer.
 | AWS.Lambda.Layers.LayerVersions.LicenseInfo | string | The layer’s open-source license. | 
 | AWS.Lambda.Layers.LayerVersions.CompatibleArchitectures | list | A list of compatible instruction set architectures. | 
 
+#### Context Example
+```json
+{
+    "NextMarker": "test_marker",
+    "LayerVersions": [{
+        "LayerVersionArn": "testLayer",
+        "Version": 1,
+        "Description": "test",
+        "CreatedDate": "2018-11-27T15:10:45.123+0000",
+        "CompatibleRuntimes": ["nodejs"],
+        "LicenseInfo": "test",
+        "CompatibleArchitectures": ["x86_64"]
+    }]
+}
+```
+
+#### Human Readable Output
+
+>### Layer Version List
+>|Compatible Architectures|Compatible Runtimes|Created Date|Description|Layer Version Arn|License Info|Version|
+>|---|---|---|---|---|---|---|
+>| x86_64 | nodejs | 2018-11-27T15:10:45.123+0000 | test | testLayer | test | 1 |
+
+
 ### aws-lambda-delete-layer-version
 
 ***
@@ -1076,3 +1120,7 @@ Deletes a version of an Lambda layer.
 #### Context Output
 
 There is no context output for this command.
+
+#### Human Readable Output
+
+>Deleted version number 2 of testLayer Successfully
