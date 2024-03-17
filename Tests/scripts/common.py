@@ -310,14 +310,12 @@ def is_pivot(current_pipeline: ProjectPipeline, pipeline_to_compare: ProjectPipe
 
     in_order = are_pipelines_in_order(pipeline_a=current_pipeline, pipeline_b=pipeline_to_compare)
     if in_order:
+        logging.info(f"The status of the current pipeline {current_pipeline.id} is {current_pipeline.status} and the "
+                     f"status of the compared pipeline {pipeline_to_compare.id} is {pipeline_to_compare.status}")
         if pipeline_to_compare.status == 'success' and current_pipeline.status == 'failed':
-            logging.info(f"Pipeline {current_pipeline.id} is a positive pivot from {pipeline_to_compare.id}")
             return True
         if pipeline_to_compare.status == 'failed' and current_pipeline.status == 'success':
-            logging.info(f"Pipeline {current_pipeline.id} is a negative pivot from {pipeline_to_compare.id}")
             return False
-        logging.info(f"Since the status of current pipeline {current_pipeline.id} is {current_pipeline.status} and the "
-                     f"status of the previous pipeline {pipeline_to_compare.id} is {pipeline_to_compare.status} - no pivot")
     return None
 
 
