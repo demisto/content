@@ -378,7 +378,7 @@ script:
       description: Display a list of users last name.
     - contextPath: Redmine.Users.mail
       description: Display a list of users mails.
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.13.89873
   isfetch: false
   runonce: false
   script: '-'
