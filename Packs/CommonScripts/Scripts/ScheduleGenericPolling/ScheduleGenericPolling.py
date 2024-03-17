@@ -66,8 +66,7 @@ def is_command_sanitized(command):
         arg_name_lower = current_sanitized_arg_name.lower()
         if command_lower.count(arg_name_lower) > 1:
             malformed_args.append(current_sanitized_arg_name)
-        command = command.replace(current_sanitized_arg_name, '')
-        command_lower = command.lower()
+        command_lower = command_lower.replace(arg_name_lower, '')
     if malformed_args:
         return False, f'The value of {", ".join(malformed_args)} is malformed.'
     return True, None
