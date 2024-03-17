@@ -56,6 +56,7 @@ boto3-stubs = { extras = [
 ], version = "^1.28.31" }
 types-protobuf = "^4.24.0.4"
 types-dateparser = "^1.1.4.20240106"
+types-pytz = "^2024.1.0.20240203"
 
 [tool.poetry.group.native]
 # This is the python dependencies from the py3-native docker image.
