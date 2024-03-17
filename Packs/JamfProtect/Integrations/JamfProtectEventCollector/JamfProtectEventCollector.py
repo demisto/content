@@ -463,10 +463,10 @@ def fetch_events(client: Client, max_fetch_alerts: int, max_fetch_audits: int, s
     audit_next_page = last_run.get("audit", {}).get("next_page", "")
 
     if not (alert_next_page or audit_next_page) or alert_next_page:
-        # If the last run contains a next page token for audit events, it will not fetch alert events.
+        # The only case we don't trigger the alert event type cycle is when have only the audit next page token.
         alert_events, alert_next_run = get_events_alert_type(client, start_date_arg, max_fetch_alerts, last_run)
     if not (alert_next_page or audit_next_page) or audit_next_page:
-        # If the last run does not contain a next page token for alert events, it will fetch audit events.
+        # The only case we don't trigger the audit event type cycle is when have only the alert next page token.
         audit_events, audit_next_run = get_events_audit_type(client, start_date_arg, end_date_arg, max_fetch_audits, last_run)
     next_run: Dict[str, Any] = {"alert": alert_next_run, "audit": audit_next_run}
     if "next_page" in (alert_next_run | audit_next_run):
@@ -525,22 +525,28 @@ def get_events_command(client, args) -> tuple:
      """
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
     results = []
+    alert_events_with_time, audit_events_with_time = [], []
     start_date, end_date = validate_start_and_end_dates(args)
+
     alert_events, audit_events, _ = fetch_events(client=client, max_fetch_alerts=limit, max_fetch_audits=limit,
                                                  start_date_arg=start_date,
                                                  end_date_arg=end_date)
 
     if alert_events:
         alert_events = alert_events[:limit]
+        alert_events_with_time = add_time_field(alert_events)
         results.append(
-            CommandResults(readable_output=tableToMarkdown("Jamf Protect Alert Events", alert_events), raw_response=alert_events))
+            CommandResults(readable_output=tableToMarkdown("Jamf Protect Alert Events", alert_events_with_time),
+                           raw_response=alert_events_with_time))
     if audit_events:
         audit_events = audit_events[:limit]
+        audit_events_with_time = add_time_field(audit_events)
         results.append(
-            CommandResults(readable_output=tableToMarkdown("Jamf Protect Audit Events", audit_events), raw_response=audit_events))
-    events = alert_events + audit_events
+            CommandResults(readable_output=tableToMarkdown("Jamf Protect Audit Events", audit_events_with_time),
+                           raw_response=audit_events_with_time))
+    events = alert_events_with_time + audit_events_with_time
     if events:
-        return add_time_field(events), results
+        return events, results
     return [], CommandResults(readable_output='No events found')
 
 
