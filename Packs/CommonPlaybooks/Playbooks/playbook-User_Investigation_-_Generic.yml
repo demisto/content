@@ -756,7 +756,7 @@ tasks:
       description: |-
         This playbook searches for failed logon on a specific user by querying logs from different sources.
 
-        Supported Integrations:
+        Supported integrations:
         -Splunk
         -Qradar
         -Azure Log Analytics
