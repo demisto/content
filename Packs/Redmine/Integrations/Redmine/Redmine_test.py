@@ -265,7 +265,9 @@ def test_get_issue_by_id_command_invalid_include_argument(mocker, redmine_client
     args = {'sort': 'priority:desc', 'limit': '1', 'include': 'beikbfqi'}
     with pytest.raises(DemistoException) as e:
         get_issue_by_id_command(redmine_client, args)
-    assert e.value.message == "The 'include' argument should only contain values from ['children', 'attachments', 'relations', 'changesets', 'journals', 'watchers', 'allowed_statuses'], separated by commas. These values are not in options {'beikbfqi'}."
+    assert e.value.message == ("The 'include' argument should only contain values from ['children', 'attachments', 'relations', "
+                               "'changesets', 'journals', 'watchers', 'allowed_statuses'], separated by commas. "
+                               "These values are not in options {'beikbfqi'}.")
 
 
 def test_delete_issue_by_id_command(mocker, redmine_client):

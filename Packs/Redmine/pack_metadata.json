@@ -1,6 +1,6 @@
 {
     "name": "Redmine",
-    "description": "A project management and issue tracking system that provides a web-based platform for managing projects, tracking tasks, and handling various types of project-related activities.",
+    "description": "A project management and issue tracking system.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
