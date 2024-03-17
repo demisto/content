@@ -1,9 +1,9 @@
-id: Cortex XDR Alerts Handling v2
+id: Cortex XDR Alerts Handling v2_1
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Cortex XDR Alerts Handling v2
-description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation\n- Identity Analytics"
+name: Cortex XDR Alerts Handling v2_1
+description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation\n- Identity Analytics."
 starttaskid: "0"
 tasks:
   "0":
@@ -1885,7 +1885,4 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Test XDR Playbook
-fromversion: 6.5.0
-marketplaces:
-- xsoar
+- No tests (auto formatted)
