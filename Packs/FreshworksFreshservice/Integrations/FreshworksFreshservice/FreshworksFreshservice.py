@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 from http import HTTPStatus
 from collections import namedtuple
 from typing import Any
@@ -2559,6 +2560,7 @@ def get_request_arguments_per_ticket_type(
             release_type=ticket_properties.release_type,
             planned_start_date=args.get('planned_start_date'),
             planned_end_date=args.get('planned_end_date'),
+            resolution_notes=args.get('resolution_notes'),
         ))
     return args_for_request
 
