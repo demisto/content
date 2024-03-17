@@ -1,4 +1,4 @@
-Use this integration to fetch Audits and Alerts from Jamf Protect as events in XSIAM.
+Use this integration to fetch audits and alerts from Jamf Protect as events in Cortex XSIAM.
 
 ## Configure Jamf Protect Event Collector on Cortex XSOAR
 
