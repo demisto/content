@@ -4,16 +4,17 @@ from CommonServerPython import *  # noqa: F401
 import urllib3
 import requests
 from typing import Any, Dict
+import shutil
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -33,26 +34,20 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
         payload = []
-        if param['scan_type'] == "sandbox":
+        if param["scan_type"] == "sandbox":
             payload = [
-                {"metafieldId": "environment", "value": param['environment']},
-                {"metafieldId": "private", "value": param['private']},
-                {"metafieldId": "timeout", "value": param['timeout']},
-                {"metafieldId": "work_path", "value": param['work_path']},
-                {"metafieldId": "mouse_simulation", "value": param['mouse_simulation']},
-                {"metafieldId": "https_inspection", "value": param['https_inspection']},
-                {"metafieldId": "internet_connection", "value": param['internet_connection']},
-                {"metafieldId": "raw_logs", "value": param['raw_logs']},
-                {"metafieldId": "snapshot", "value": param['snapshot']}
+                {"metafieldId": "environment", "value": param["environment"]},
+                {"metafieldId": "private", "value": param["private"]},
+                {"metafieldId": "timeout", "value": param["timeout"]},
+                {"metafieldId": "work_path", "value": param["work_path"]},
+                {"metafieldId": "mouse_simulation", "value": param["mouse_simulation"]},
+                {"metafieldId": "https_inspection", "value": param["https_inspection"]},
+                {"metafieldId": "internet_connection", "value": param["internet_connection"]},
+                {"metafieldId": "raw_logs", "value": param["raw_logs"]},
+                {"metafieldId": "snapshot", "value": param["snapshot"]},
             ]
-        suffix = '/public-api/scan/' + param['scan_type']
-        return self._http_request(
-            method='POST',
-            url_suffix=suffix,
-            data=payload,
-            files=param['files']
-
-        )
+        suffix = "/public-api/scan/" + param["scan_type"]
+        return self._http_request(method="POST", url_suffix=suffix, data=payload, files=param["files"])
 
     def threatzone_get(self, param: dict) -> Dict[str, Any]:
         """Gets the sample scan result from ThreatZone using the '/public-api/get/submission/' API endpoint
@@ -60,24 +55,24 @@ class Client(BaseClient):
         :return: dict containing the sample scan results as returned from the API
         :rtype: ``Dict[str, Any]``
         """
-        return self._http_request(
-            method='GET',
-            url_suffix='/public-api/get/submission/' + param['uuid']
-        )
+        return self._http_request(method="GET", url_suffix="/public-api/get/submission/" + param["uuid"])
 
-    def threatzone_get_sanitized(self, uuid):
-        # next patch
-        return ""
+    def threatzone_get_sanitized(self, submission_uuid):
+        filename = f"sanitized-{submission_uuid}.zip"
+        r = requests.get(url=glob_BASEURL + "/public-api/download/cdr/" + submission_uuid, headers=glob_HEADERS, stream=True, verify=glob_VERIFY)
+        if r.status_code < 200 or r.status_code > 299:
+            return_error("Bad HTTP response [{code}] - {body}".format(code=r.status_code, body=r.text))
+        with open(filename, "wb") as f:
+            r.raw.decode_content = True
+            shutil.copyfileobj(r.raw, f)
+        return file_result_existing_file(filename)
 
     def threatzone_me(self):
         """
         :return: dict containing limit data returned from the API
         :rtype: ``Dict[str, Any]``
         """
-        return self._http_request(
-            method='GET',
-            url_suffix='/public-api/me'
-        )
+        return self._http_request(method="GET", url_suffix="/public-api/me")
 
     def threatzone_check_limits(self, type):
         """Checks limits using the '/public-api/me' API endpoint
@@ -95,28 +90,28 @@ class Client(BaseClient):
             "E_Mail": f"{acc_email}",
             "Daily_Submission_Limit": f"{limits_count['dailySubmissionCount']}/{submission_limits['dailyLimit']}",
             "Concurrent_Limit": f"{limits_count['concurrentSubmissionCount']}/{submission_limits['concurrentLimit']}",
-            "API_Limit": f"{limits_count['apiRequestCount']}/{submission_limits['apiLimit']}"
+            "API_Limit": f"{limits_count['apiRequestCount']}/{submission_limits['apiLimit']}",
         }
         if avaliable_api < 1:
             return {
                 "avaliable": False,
                 "Limits": limits,
                 "Reason": f"API request limit ({submission_limits['apiLimit']}) exceeded",
-                "Suggestion": "Upgrade your plan or contact us."
+                "Suggestion": "Upgrade your plan or contact us.",
             }
         elif avaliable_submission < 1:
             return {
                 "avaliable": False,
                 "Limits": limits,
                 "Reason": f"Daily submission limit({submission_limits['dailyLimit']})  exceeded",
-                "Suggestion": "Upgrade your plan or contact us."
+                "Suggestion": "Upgrade your plan or contact us.",
             }
         elif avaliable_concurrent < 1 and type == "sandbox":
             return {
                 "avaliable": False,
                 "Limits": limits,
                 "Reason": f"Concurrent analysis limit ({submission_limits['concurrentLimit']}) exceeded.",
-                "Suggestion": "Upgrade your plan or wait for previous sandbox analyzes to finish."
+                "Suggestion": "Upgrade your plan or wait for previous sandbox analyzes to finish.",
             }
         else:
             return {
@@ -134,22 +129,21 @@ def test_module(params) -> str:
     :rtype: ``str``
     """
     try:
-        url = params.get('url')[:-1] if str(params.get('url')).endswith('/') \
-            else params.get('url')
-        credentials = params.get('apikey')
+        url = params.get("url")[:-1] if str(params.get("url")).endswith("/") else params.get("url")
+        credentials = params.get("apikey")
         creds = "Bearer " + credentials
         headers = {"Authorization": creds}
-        url = urljoin(url, '/public-api/get/submission/41704f61-6f3f-4241-9e81-f13f9e532e37')
+        url = urljoin(url, "/public-api/get/submission/41704f61-6f3f-4241-9e81-f13f9e532e37")
         response = requests.request("GET", url, headers=headers)
         status = response.status_code
         if status != 200:
-            if 'UnauthorizedError' in str(response.content):
-                return 'Authorization Error: make sure API Key is correctly set'
+            if "UnauthorizedError" in str(response.content):
+                return "Authorization Error: make sure API Key is correctly set"
             else:
                 return str(status)
     except Exception as e:
         raise e
-    return 'ok'
+    return "ok"
 
 
 def encode_file_name(file_name):
@@ -159,10 +153,12 @@ def encode_file_name(file_name):
         file_name (str): name of the file
     Returns: encoded file name
     """
-    return file_name.encode('ascii', 'ignore')
+    return file_name.encode("ascii", "ignore")
 
 
-def translate_score(score: int,) -> int:
+def translate_score(
+    score: int,
+) -> int:
     """Translate ThreatZone threat level to DBot score enum."""
     if score == 0:
         return Common.DBotScore.NONE
@@ -203,6 +199,7 @@ def generate_dbotscore(indicator, report, type=None):
     :return: A DBotScore object.
     :rtype: dict
     """
+
     def _type_selector(_type):
         types = {
             "ip": DBotScoreType.IP,
@@ -219,9 +216,9 @@ def generate_dbotscore(indicator, report, type=None):
     return Common.DBotScore(
         indicator=indicator,
         indicator_type=_type_selector(type),
-        integration_name='ThreatZone',
-        score=translate_score(report.get('LEVEL')),
-        reliability=get_reputation_reliability(demisto.params().get('integrationReliability'))
+        integration_name="ThreatZone",
+        score=translate_score(report.get("LEVEL")),
+        reliability=get_reputation_reliability(demisto.params().get("integrationReliability")),
     )
 
 
@@ -253,46 +250,36 @@ def generate_indicator(indicator, report, type=None):
 
 def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Retrive the sample scan result from ThreatZone.
-        :param - uuid: For filtering with status
-        :type uuid: ``str``
-        :return: list containing result returned from ThreatZone API and human reable output
-        :rtype: ``list``
+    :param - uuid: For filtering with status
+    :type uuid: ``str``
+    :return: list containing result returned from ThreatZone API and human reable output
+    :rtype: ``list``
     """
-    uuid = args.get('uuid')
-    param = {
-        'uuid': uuid
-    }
+    uuid = args.get("uuid")
+    param = {"uuid": uuid}
 
     result = client.threatzone_get(param=param)
-    stats = {
-        1: "File received",
-        2: "Submission is accepted",
-        3: "Submission is running",
-        4: "Submission VM is ready",
-        5: "Submission is finished"
-    }
+    stats = {1: "File received", 2: "Submission is accepted", 3: "Submission is running", 4: "Submission VM is ready", 5: "Submission is finished"}
 
-    levels = {
-        0: "Not Measured",
-        1: "Informative",
-        2: "Suspicious",
-        3: "Malicious"
-    }
+    levels = {0: "Not Measured", 1: "Informative", 2: "Suspicious", 3: "Malicious"}
 
-    def create_res(readable_dict, output, exception=None):
+    def create_res(readable_dict, output, sanitized=None, exception=None):
         if not exception:
-            readable_output = tableToMarkdown('Submission Result', readable_dict)
+            readable_output = tableToMarkdown("Submission Result", readable_dict)
+            res = [
+                CommandResults(
+                    outputs_prefix="ThreatZone.Analysis",
+                    readable_output=readable_output,
+                    outputs_key_field="UUID",
+                    outputs=output,
+                    indicator=generate_indicator(output["SHA256"], output, "file"),
+                )
+            ]
+            if sanitized:
+                res.append(sanitized)
+            return res
         else:
-            readable_output = tableToMarkdown('Submission Result', {"Exception": str(exception)})
-        return [
-            CommandResults(
-                outputs_prefix='ThreatZone.Analysis',
-                readable_output=readable_output,
-                outputs_key_field="UUID",
-                outputs=output,
-                indicator=generate_indicator(output["SHA256"], output, "file")
-            )
-        ]
+            raise DemistoException(exception)
 
     try:
 
@@ -304,54 +291,49 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
         elif result.get("reports", {}).get("cdr", {}).get("enabled"):
             report_type = "cdr"
 
-        status = result["reports"][report_type]['status']
+        status = result["reports"][report_type]["status"]
         if status == 0:
             raise Exception(
-                "Submission is declined by the scanner." + " "
-                + "The reason behind this could be about your file is broken or the analyzer has crashed."
+                "Submission is declined by the scanner." + " " + "The reason behind this could be about your file is broken or the analyzer has crashed."
             )
-        md5 = result['fileInfo']['hashes']['md5']
-        sha1 = result['fileInfo']['hashes']['sha1']
-        sha256 = result['fileInfo']['hashes']['sha256']
-        submission_info = {'file_name': result['fileInfo']['name'],
-                           'private': result['private']}
-        submission_info = {'file_name': result['fileInfo']['name'],
-                           'private': result['private']}
+        md5 = result["fileInfo"]["hashes"]["md5"]
+        sha1 = result["fileInfo"]["hashes"]["sha1"]
+        sha256 = result["fileInfo"]["hashes"]["sha256"]
+        submission_info = {"file_name": result["fileInfo"]["name"], "private": result["private"]}
+        submission_info = {"file_name": result["fileInfo"]["name"], "private": result["private"]}
 
-        submission_uuid = result['uuid']
+        submission_uuid = result["uuid"]
         if status == 0:
-            raise DemistoException(
-                f"Reason: {stats[status]}\nUUID: {submission_uuid}\nSuggestion: Re-analyze submission or contact us."
-            )
+            raise DemistoException(f"Reason: {stats[status]}\nUUID: {submission_uuid}\nSuggestion: Re-analyze submission or contact us.")
 
         result_url = f"https://app.threat.zone/submission/{submission_uuid}"
-        level = result['level']
+        level = result["level"]
         readable_dict = {
-            'ANALYSIS TYPE': report_type,
-            'STATUS': stats[status],
-            'MD5': md5,
-            'SHA1': sha1,
-            'SHA256': sha256,
-            'THREAT_LEVEL': levels[level],
-            'FILE_NAME': result['fileInfo']['name'],
-            'PRIVATE': result['private'],
-            'SCAN_URL': result_url,
-            'UUID': submission_uuid,
-            'SANITIZED': None
+            "ANALYSIS TYPE": report_type,
+            "STATUS": stats[status],
+            "MD5": md5,
+            "SHA1": sha1,
+            "SHA256": sha256,
+            "THREAT_LEVEL": levels[level],
+            "FILE_NAME": result["fileInfo"]["name"],
+            "PRIVATE": result["private"],
+            "SCAN_URL": result_url,
+            "UUID": submission_uuid,
+            "SANITIZED": None,
         }
 
         output = {
-            'TYPE': report_type,
-            'STATUS': status,
-            'MD5': md5,
-            'SHA1': sha1,
-            'SHA256': sha256,
-            'LEVEL': level,
-            'INFO': submission_info,
-            'URL': result_url,
-            'UUID': submission_uuid,
-            'REPORT': result["reports"][report_type],
-            'SANITIZED': None
+            "TYPE": report_type,
+            "STATUS": status,
+            "MD5": md5,
+            "SHA1": sha1,
+            "SHA256": sha256,
+            "LEVEL": level,
+            "INFO": submission_info,
+            "URL": result_url,
+            "UUID": submission_uuid,
+            "REPORT": result["reports"][report_type],
+            "SANITIZED": None,
         }
 
         res = create_res(readable_dict, output)
@@ -359,10 +341,20 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
             sanitized_file_url = f"https://app.threat.zone/download/v1/download/cdr/{submission_uuid}"
             output["SANITIZED"] = sanitized_file_url
             readable_dict["SANITIZED"] = sanitized_file_url
-            res = create_res(readable_dict, output)
+            file_res = None
+            try:
+                file_res = threatzone_get_sanitized_file(client, args)
+                output["SANITIZED"] = file_res
+                readable_dict["SANITIZED"] = file_res["File"]
+            except:
+                pass
+            if file_res:
+                res = create_res(readable_dict, output, sanitized=file_res)
+            else:
+                res = create_res(readable_dict, output)
 
     except Exception as e:
-        output = {'REPORT': result}
+        output = {"REPORT": result}
         res = create_res(result, output, exception=e)
     return res
 
@@ -370,13 +362,8 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
 def threatzone_check_limits(client: Client) -> CommandResults:
     """Checks and prints remaining limits and current quota"""
     availability = client.threatzone_check_limits(None)
-    readable_output = tableToMarkdown('LIMITS', availability["Limits"])
-    return CommandResults(
-        outputs_prefix='ThreatZone.Limits',
-        outputs_key_field="E_Mail",
-        readable_output=readable_output,
-        outputs=availability["Limits"]
-    )
+    readable_output = tableToMarkdown("LIMITS", availability["Limits"])
+    return CommandResults(outputs_prefix="ThreatZone.Limits", outputs_key_field="E_Mail", readable_output=readable_output, outputs=availability["Limits"])
 
 
 def threatzone_return_results(scan_type, uuid, url, readable_output, availability) -> List[CommandResults]:
@@ -390,69 +377,58 @@ def threatzone_return_results(scan_type, uuid, url, readable_output, availabilit
         scan_prefix = "Sandbox"
     return [
         CommandResults(
-            outputs_prefix=f'ThreatZone.Submission.{scan_prefix}',
-            readable_output=readable_output,
-            outputs_key_field="UUID",
-            outputs={'UUID': uuid, 'URL': url}
+            outputs_prefix=f"ThreatZone.Submission.{scan_prefix}", readable_output=readable_output, outputs_key_field="UUID", outputs={"UUID": uuid, "URL": url}
         ),
-        CommandResults(
-            outputs_prefix='ThreatZone.Limits',
-            outputs_key_field="E_Mail",
-            outputs=availability["Limits"]
-        )
+        CommandResults(outputs_prefix="ThreatZone.Limits", outputs_key_field="E_Mail", outputs=availability["Limits"]),
     ]
 
 
 def threatzone_get_sanitized_file(client: Client, args: Dict[str, Any]) -> None:
     """Downloads and uploads sanitized file to WarRoom & Context Data."""
-    submission_uuid = args.get('uuid')
-    data = client.threatzone_get_sanitized(submission_uuid)
-    return_results(fileResult(f"sanitized-{submission_uuid}.zip", data))
+    submission_uuid = args.get("uuid")
+    return client.threatzone_get_sanitized(submission_uuid)
 
 
 def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """Uploads the sample to the ThreatZone sandbox to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("sandbox")
     if not availability["avaliable"]:
-        raise DemistoException(
-            f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}\nLimits: {availability['Limits']}")
+        raise DemistoException(f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}\nLimits: {availability['Limits']}")
 
-    ispublic = args.get('private')
-    environment = args.get('environment')
-    work_path = args.get('work_path')
-    timeout = args.get('timeout')
-    mouse_simulation = args.get('mouse_simulation')
-    https_inspection = args.get('https_inspection')
-    internet_connection = args.get('internet_connection')
-    raw_logs = args.get('raw_logs')
-    snapshot = args.get('snapshot')
-    file_id = args.get('entry_id')
+    ispublic = args.get("private")
+    environment = args.get("environment")
+    work_path = args.get("work_path")
+    timeout = args.get("timeout")
+    mouse_simulation = args.get("mouse_simulation")
+    https_inspection = args.get("https_inspection")
+    internet_connection = args.get("internet_connection")
+    raw_logs = args.get("raw_logs")
+    snapshot = args.get("snapshot")
+    file_id = args.get("entry_id")
     file_obj = demisto.getFilePath(file_id)
-    file_name = encode_file_name(file_obj['name'])
-    file_path = file_obj['path']
+    file_name = encode_file_name(file_obj["name"])
+    file_path = file_obj["path"]
 
-    files = [
-        ('file', (file_name, open(file_path, 'rb'), 'application/octet-stream'))
-    ]
+    files = [("file", (file_name, open(file_path, "rb"), "application/octet-stream"))]
 
     param = {
-        'scan_type': "sandbox",
-        'environment': environment,
-        'private': ispublic,
-        'timeout': timeout,
-        'work_path': work_path,
-        'mouse_simulation': mouse_simulation,
-        'https_inspection': https_inspection,
-        'internet_connection': internet_connection,
-        'raw_logs': raw_logs,
-        'file_path': file_path,
-        'snapshot': snapshot,
-        'files': files
+        "scan_type": "sandbox",
+        "environment": environment,
+        "private": ispublic,
+        "timeout": timeout,
+        "work_path": work_path,
+        "mouse_simulation": mouse_simulation,
+        "https_inspection": https_inspection,
+        "internet_connection": internet_connection,
+        "raw_logs": raw_logs,
+        "file_path": file_path,
+        "snapshot": snapshot,
+        "files": files,
     }
 
     result = client.threatzone_add(param=param)
-    readable_output = tableToMarkdown('SAMPLE UPLOADED', result)
-    uuid = result['uuid']
+    readable_output = tableToMarkdown("SAMPLE UPLOADED", result)
+    uuid = result["uuid"]
     url = f"https://app.threat.zone/submission/{uuid}"
     availability = client.threatzone_check_limits("sandbox")
     return threatzone_return_results("sandbox", uuid, url, readable_output, availability)
@@ -460,37 +436,28 @@ def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> Li
 
 def threatzone_static_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """Uploads the sample to the ThreatZone to analyse with required or optional selections."""
-    scan_type = args.get('scan_type')
+    scan_type = args.get("scan_type")
     availability = client.threatzone_check_limits(scan_type)
     if not availability["avaliable"]:
         raise DemistoException(f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}")
 
-    file_id = args.get('entry_id')
+    file_id = args.get("entry_id")
     file_obj = demisto.getFilePath(file_id)
-    file_name = encode_file_name(file_obj['name'])
-    file_path = file_obj['path']
-    files = [
-        ('file', (file_name, open(file_path, 'rb'), 'application/octet-stream'))
-    ]
-    param = {
-        'scan_type': scan_type,
-        'files': files
-    }
+    file_name = encode_file_name(file_obj["name"])
+    file_path = file_obj["path"]
+    files = [("file", (file_name, open(file_path, "rb"), "application/octet-stream"))]
+    param = {"scan_type": scan_type, "files": files}
 
     result = client.threatzone_add(param=param)
-    uuid = result['uuid']
+    uuid = result["uuid"]
     url = f"https://app.threat.zone/submission/{uuid}"
-    readable = {
-        "Message": result["message"],
-        "UUID": result["uuid"],
-        "URL": url
-    }
-    readable_output = tableToMarkdown('SAMPLE UPLOADED', readable)
+    readable = {"Message": result["message"], "UUID": result["uuid"], "URL": url}
+    readable_output = tableToMarkdown("SAMPLE UPLOADED", readable)
     availability = client.threatzone_check_limits(scan_type)
     return threatzone_return_results(scan_type, uuid, url, readable_output, availability)
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -500,48 +467,48 @@ def main() -> None:
     :rtype:
     """
     params = demisto.params()
-    base_url = params['url']
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    base_url = params["url"]
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
-    ''' EXECUTION '''
+    """ EXECUTION """
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     args = demisto.args()
     try:
-        credentials = params.get('apikey')
+        credentials = params.get("apikey")
         creds = "Bearer " + credentials
-        headers = {'Authorization': creds}
+        headers = {"Authorization": creds}
+        global glob_HEADERS, glob_BASEURL, glob_VERIFY
+        headers = {"Authorization": creds}
+        glob_HEADERS = headers
+        glob_BASEURL = base_url
+        glob_VERIFY = verify_certificate
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
-
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(params))
-        elif command == 'tz-check-limits':
+        elif command == "tz-check-limits":
             return_results(threatzone_check_limits(client))
-        elif command == 'tz-sandbox-upload-sample':
+        elif command == "tz-sandbox-upload-sample":
             return_results(threatzone_sandbox_upload_sample(client, args))
-        elif command == 'tz-static-upload-sample':
+        elif command == "tz-static-upload-sample":
             args["scan_type"] = "static-scan"
             return_results(threatzone_static_cdr_upload_sample(client, args))
-        elif command == 'tz-cdr-upload-sample':
+        elif command == "tz-cdr-upload-sample":
             args["scan_type"] = "cdr"
             return_results(threatzone_static_cdr_upload_sample(client, args))
-        elif command == 'tz-get-result':
+        elif command == "tz-get-result":
             return_results(threatzone_get_result(client, args))
-        elif command == 'tz-get-sanitized':
-            raise DemistoException("Sanitized file download will be avaliable at next patch, use tz-get-result instead.")
+        elif command == "tz-get-sanitized":
+            return_results(threatzone_get_result(client, args))
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
