@@ -20,6 +20,7 @@ This pack excludes several events for the Sysmon, DNS, ADFS and AMSI Windows ser
 * Microsoft-Windows-DNSServer
 * Microsoft-Windows-DNS-Server-Service
 * Microsoft-Antimalware-Scan-Interface
+
 Should you wish to collect those logs as well, the installation of the following packs is required:
 * Microsoft DNS
 * Microsoft Windows AMSI
