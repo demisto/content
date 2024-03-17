@@ -62,7 +62,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.13.89873
   isfetchevents: true
 fromversion: 8.0.0
 marketplaces:
