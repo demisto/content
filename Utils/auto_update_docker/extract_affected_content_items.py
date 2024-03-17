@@ -33,16 +33,25 @@ def calculate_affected_content_items(
     only_nightly: bool = batch_config.get("only_nightly", False)
     min_cov: int = batch_config["min"]
     max_cov: int = batch_config["max"]
+    # If the key is not found, then support_levels will equal {""}
+    support_levels = set(batch_config.get("support", "").split(","))
     for content_item in content_items_by_docker_image[docker_image]:
         content_item_path = Path(content_item["content_item"])
+        content_item_support = content_item["support_level"]
         # TODO Check if content item is part of nightly if only_nightly is True
         content_item_cov = content_items_coverage.get(str(content_item_path), -1)
         if content_item_cov == -1:
-            logging.warning(f"Could not find coverage of content item {content_item_path}")
-        if content_item_cov >= min_cov and content_item_cov <= max_cov:
+            logging.warning(f"Could not find coverage of content item {content_item_path}, skipping")
+        elif support_levels != {""} and content_item_support not in support_levels:
+            # If support_levels == {""}, that means there is no limitation to the support level,
+            # that means we can go ahead and add the content item
+            logging.warning(f"Is not of {support_levels=}, skipping")
+        elif content_item_cov >= min_cov and content_item_cov <= max_cov:
             # Since the content item that we get will be a python file, and we want to
             # return a YML
             affected_content_items.append(str(content_item_path.with_suffix('.yml')))
+        else:
+            logging.warning("Not within coverage, skipping")
     return {
         "content_items": affected_content_items,
         "pr_tags": batch_config.get("pr_tags", []),
@@ -123,7 +132,7 @@ def calculate_affected_docker_images(
         return []
 
 
-def query_used_dockers(tx: Transaction) -> list[tuple[str, str]]:
+def query_used_dockers(tx: Transaction) -> list[tuple[str, str, bool, str, str]]:
     """
     queries the content graph for relevant docker images
     """
@@ -138,7 +147,7 @@ def query_used_dockers(tx: Transaction) -> list[tuple[str, str]]:
             AND NOT pack.object_id = 'ApiModules'
             AND iss.docker_image IS NOT NULL
             AND NOT pack.hidden
-            Return iss.docker_image, iss.path
+            Return iss.docker_image, iss.path, iss.auto_update_docker_image, pack.path, pack.support
             """
         )
     )
@@ -148,17 +157,21 @@ def get_content_items_by_docker_image() -> dict[str, list[dict[str, Any]]]:
     content_images: dict[str, list[dict[str, Any]]] = defaultdict(list)
     with ContentGraphInterface() as graph, graph.driver.session() as session:
         docker_images_with_content_items = session.execute_read(query_used_dockers)
-        for docker_image, content_item in docker_images_with_content_items:
+        for docker_image, content_item, auto_update_docker_image, pack_path, support_level in docker_images_with_content_items:
             # TODO We can check here if the content item is part of nightly or not, by
             # receiving a file that has all the nightly content items, and checking if
             # the content item is in that file
-            content_item_py = Path(content_item).with_suffix('.py')
-            if content_item_py.is_file():
-                # Since the docker image returned will include the tag, we only need the image
-                docker_image_without_tag = docker_image.split(":")[0]
-                content_images[docker_image_without_tag].append({"content_item": content_item_py})
+            if auto_update_docker_image:
+                content_item_py = Path(content_item).with_suffix('.py')
+                if content_item_py.is_file():
+                    # Since the docker image returned will include the tag, we only need the image
+                    docker_image_without_tag = docker_image.split(":")[0]
+                    content_images[docker_image_without_tag].append({"content_item": content_item_py,
+                                                                        "support_level": support_level})
+                else:
+                    logging.warning(f"{content_item_py} was returned from the graph, but not found in repo")
             else:
-                logging.warning(f"{content_item_py} was returned from the graph, but not found in repo")
+                logging.warning(f"{auto_update_docker_image=} configured for {content_item}, skipping")
     return content_images
 
 @app.command()
@@ -216,8 +229,11 @@ def get_affected_content_items(
     )
     docker_images_target_tag = {docker_image: affected_items["target_tag"] for docker_image, affected_items in
                                 affected_content_items_by_docker_image.items()}
-    with open("/Users/ayousef/dev/demisto/content/Utils/auto_update_docker/images_tag_output.json", "w") as outfile:
-        json.dump(docker_images_target_tag, outfile)
+    with open("/Users/ayousef/dev/demisto/content/Utils/auto_update_docker/images_tag_output.json", "w") as images_tag_output:
+        json.dump(docker_images_target_tag, images_tag_output)
+    
+    with open("/Users/ayousef/dev/demisto/content/Utils/auto_update_docker/affected_content_items.json", "w") as affected_content_items:
+        json.dump(affected_content_items_by_docker_image, affected_content_items)
 
 def main():
     app()
