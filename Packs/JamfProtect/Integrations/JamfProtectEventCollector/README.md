@@ -1,6 +1,6 @@
 Use this integration to fetch audits and alerts from Jamf Protect as events in Cortex XSIAM.
 
-## Configure Jamf Protect Event Collector on Cortex XSOAR
+## Configure Jamf Protect Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Jamf Protect Event Collector.
@@ -19,7 +19,7 @@ Use this integration to fetch audits and alerts from Jamf Protect as events in C
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### jamf-protect-get-events
