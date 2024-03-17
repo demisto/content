@@ -1,3 +1,4 @@
+import io
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
@@ -160,11 +161,20 @@ class Client(BaseClient):
     
 ''' HELPER FUNCTIONS '''
 
-def adjust_xml_format(xml_string, new_root_tag):  # TODO
+def adjust_xml_format(xml_string, new_root_tag):
     root = ET.fromstring(xml_string)
-    config_children = list(root.find('result').find(new_root_tag))  # type: ignore
-    new_xml_string = ''.join([ET.tostring(child, encoding='unicode') for child in config_children])
-    return f'<{new_root_tag}>{new_xml_string}</{new_root_tag}>'
+    # Find the new_root_tag tag element
+    sub_tags = root.find(f'.//{new_root_tag}')
+    if sub_tags is not None:
+        # Extract the attributes of the new_root_tag tag
+        attributes = ' '.join(['{}="{}"'.format(k, v) for k, v in sub_tags.attrib.items()])
+    
+    # Constructing the new XML string
+    new_xml = "<{} {}>".format(new_root_tag, attributes)
+    for child in sub_tags:
+        new_xml += ET.tostring(child, encoding="unicode")
+    new_xml += f"</{new_root_tag}>"
+    return new_xml
 
 
 def get_values_from_xml(xml_string, tags):
@@ -179,19 +189,25 @@ def convert_config_to_bytes(config_file, origin_flag):
         get_file_path_res = demisto.getFilePath(config_file)
         file_path = get_file_path_res.pop('path')
         file_bytes: bytes = b''
-        with open("tal.xml", 'rb') as f:
+        with open(file_path, 'rb') as f:
             file_bytes = f.read()
-        print(f'{file_bytes=}')
+        # print(f'{file_bytes=}')
         return file_bytes
     else:
-        xml_header = '<?xml version="1.0"?>'
-        result = f'{xml_header}\n{config_file}'
-        with open("output.xml", 'w') as binary_file:
-            binary_file.write(result)
-        with open("output.xml", 'rb') as binary_file:
-            binary_data = binary_file.read()
-        print(f'{binary_data=}')
-        return binary_data
+        try:
+            # Add tag to xml
+            xml_header = '<?xml version="1.0"?>'
+            result = f'{xml_header}\n {config_file}'
+            # with open("output.xml", 'w') as binary_file:
+            #     binary_file.write(result)
+            # file_bytes: bytes = b''
+            # with open("output.xml", 'rb') as binary_file:
+            #     file_bytes = binary_file.read()
+            sio_xml = io.StringIO(result)
+            xml_in_bytes = sio_xml.read().encode()
+            return xml_in_bytes
+        except DemistoException as e:
+            raise DemistoException(f"Cannot reformat config file with error : {e}")
     
 def create_readable_output(response_json):
     dict_to_markdown = []
@@ -207,53 +223,38 @@ def create_readable_output(response_json):
                 warnings = value[0].get('warnings')
                 notes = value[0].get('notes')
                 for warning in warnings:
+                    warning['check_type'] = 'warning'
                     warning['check_feature'] = key
+                    warning['check_category'] = category
+                    dict_to_markdown.append(warning)
                 for note in notes:
+                    note['check_type'] = 'note'
                     note['check_feature'] = key
-                    #not working!!!!!!!!!
-            dict_to_markdown.append(warning for warning in warnings)
-            dict_to_markdown.append(note for note in notes)
+                    note['check_category'] = category
+                    dict_to_markdown.append(note)
 
-    help = tableToMarkdown('BPA results:', response_json.get('best_practices',{}).get('device'),
-                           headers=['warnings','notes'], removeNull=True, headerTransform=pascalToSpace,
-                           json_transform_mapping={'warnings': JsonTransformer(keys=['check_id', 'check_category','check_feature',
-                                                                                     'check_message', 'check_name','check_passed',
-                                                                                     'check_type', 'check_severity'],
-                                                                               ),
-                                                    'notes': JsonTransformer(keys=['check_id', 'check_category','check_feature',
-                                                                                     'check_message', 'check_name','check_passed',
-                                                                                     'check_type', 'check_severity'],
-                                                                               )
-                                                    }
+    markdown_table = tableToMarkdown('BPA results:', dict_to_markdown,
+                           headers=headers, removeNull=True, headerTransform=string_to_table_header
                            )
-    return help
+    
+    return markdown_table
+
 ''' COMMAND FUNCTIONS '''
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
     message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
+        client.generate_access_token_request()
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if 'access token' in str(e) or 'Forbidden' in str(e) or 'Authorization' in str(e):
+            return "Authorization Error: make sure your tsg_id, client_id, client_secret are correctly set."
         else:
             raise e
+    try:
+        client.get_info_about_device_request()
+        message = 'ok'
+    except Exception as e:
+            return "Authorization Error: make sure your servel_url and API_key are correctly set."
     return message
 
 
@@ -280,7 +281,7 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     if config_file_from_user:
         config_in_binary = convert_config_to_bytes(config_file_from_user, 'User')
     elif config_file:
-        config_in_binary = convert_config_to_bytes(config_file, 'User')
+        config_in_binary = convert_config_to_bytes(config_file, 'Download')
     else:
         raise DemistoException("Can not uplaod a config file since it was not provided.")
     client.config_file_to_report_request(upload_url, config_in_binary)
@@ -297,7 +298,6 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
     upload_status = client.check_upload_status_request(report_id)
     if upload_status == 'COMPLETED_WITH_SUCCESS':
         downloaded_BPA_url = client.download_bpa_request(report_id)
-        print(downloaded_BPA_url)
         downloaded_BPA_json = client.data_of_download_bpa_request(downloaded_BPA_url)
         return PollResult(
                 response = CommandResults(
@@ -339,7 +339,6 @@ def main() -> None:
     tsg_id = params.get('tsg_id')
     client_id = params.get('client_id')
     client_secret = params.get('client_secret', {}).get('password')
-
     proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {command}')
@@ -354,22 +353,19 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy)
         
+        return_results(test_module(client))
+        
         # Generate an access token for pan-OS/panorama
-        client.generate_access_token_request()
-                    
         if command == 'test-module':
-            result = test_module(client)
-            return_results(result)
+            return_results(test_module(client))
         elif command == 'pan-aiops-bpa-report-generate':
             return_results(generate_report_command(client, args))
         elif command == 'pan-aiops-polling-upload-report':
             return_results(polling_until_upload_report_command(args, client))
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
-
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
-
 
 ''' ENTRY POINT '''
 
