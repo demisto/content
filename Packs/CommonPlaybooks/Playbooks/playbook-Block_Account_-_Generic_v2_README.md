@@ -17,7 +17,7 @@ Supported integrations for this playbook:
 * Prisma Cloud IAM
 * Zoom IAM
 * Atlassian IAM
-* GitHub IAM
+* GitHub IAM.
 
 ## Dependencies
 
@@ -38,14 +38,16 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* gsuite-user-update
-* identityiq-disable-account
+* iam-disable-user
+* ad-disable-account
 * pan-os-register-user-tag
-* pingone-deactivate-user
+* gsuite-user-update
+* ad-get-user
+* identityiq-disable-account
+* msgraph-user-get
 * identityiq-get-accounts
 * msgraph-user-account-disable
-* ad-disable-account
-* iam-disable-user
+* pingone-deactivate-user
 
 ## Playbook Inputs
 
