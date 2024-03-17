@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from freezegun import freeze_time
 import ServiceNowv2
 import requests
-from CommonServerPython import DemistoException, EntryType
+from CommonServerPython import CommandResults, DemistoException, EntryType
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, parse_dict_ticket_fields, split_fields, Client, update_ticket_command, create_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
@@ -19,7 +19,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
     converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS, \
-    format_incidents_response_with_display_values, delete_attachment_command
+    format_incidents_response_with_display_values, get_entries_for_notes, delete_attachment_command
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -237,7 +237,7 @@ def test_convert_to_notes_result():
                                                                           DATE_FORMAT)}) == expected_result
 
     ticket_response = {'result': []}
-    assert convert_to_notes_result(ticket_response, time_info={'display_date_format': DATE_FORMAT}) == []
+    assert convert_to_notes_result(ticket_response, time_info={'display_date_format': DATE_FORMAT}) == {}
 
     assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS,
                                    time_info={'display_date_format': DATE_FORMAT}) == {'result': []}
@@ -335,6 +335,132 @@ def test_get_timezone_offset():
     assert offset == timedelta(minutes=-300)
 
 
+def test_get_ticket_notes_command_success(mocker):
+    """
+    Given
+    - A mock client and args input to the get_ticket_notes_command function
+    - A mock successful API response
+
+    When
+    - The get_ticket_notes_command function is called
+
+    Then
+    - Ensure the expected API call is made
+    - Validate the expected CommandResults are returned
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
+    args = {'id': 'sys_id'}
+
+    mock_send_request = mocker.patch.object(Client, 'send_request')
+    mock_send_request.return_value = RESPONSE_GET_TICKET_NOTES
+    result = get_ticket_notes_command(client, args, {})
+
+    assert isinstance(result[0], CommandResults)
+    assert mock_send_request.called
+    assert len(result[0].raw_response.get("result")) == 5
+    assert result[0].outputs_prefix == 'ServiceNow.Ticket'
+    assert result[0].outputs == EXPECTED_GET_TICKET_NOTES
+
+
+def test_get_ticket_notes_command_use_display_value(mocker):
+    """
+    Given
+    - A mock client and args input to the get_ticket_notes_command function
+    - A mock successful API response
+
+    When
+    - The get_ticket_notes_command function is called with use_display_value
+
+    Then
+    - Ensure the expected API call is made
+    - Validate the expected CommandResults are returned
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name', use_display_value=True,
+                    display_date_format="yyyy-MM-dd")
+    args = {'id': 'sys_id'}
+
+    mock_send_request = mocker.patch.object(Client, 'send_request')
+    mock_send_request.return_value = RESPONSE_COMMENTS_DISPLAY_VALUE
+    result = get_ticket_notes_command(client, args, {})
+
+    assert isinstance(result[0], CommandResults)
+    assert mock_send_request.called
+    assert len(result[0].raw_response.get("result")) == 2
+    assert result[0].outputs_prefix == 'ServiceNow.Ticket'
+    assert result[0].outputs == EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE
+
+
+def test_get_ticket_notes_command_use_display_value_no_comments(mocker):
+    """
+    Given
+    - A mock client and args input to the get_ticket_notes_command function
+    - A mock successful API response
+
+    When
+    - The get_ticket_notes_command function is called with use_display_value but no comments
+
+    Then
+    - Ensure the expected API call is made
+    - Validate the expected CommandResults are returned
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name', use_display_value=True,
+                    display_date_format="yyyy-MM-dd")
+    args = {'id': 'sys_id'}
+
+    mock_send_request = mocker.patch.object(Client, 'send_request')
+    mock_send_request.return_value = RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS
+    result = get_ticket_notes_command(client, args, {})
+
+    assert isinstance(result[0], CommandResults)
+    assert mock_send_request.called
+    assert result[0].raw_response == "No comment found on ticket sys_id."
+
+
+@pytest.mark.parametrize("notes, params, expected", [
+    (
+        [
+            {
+                "value": "First comment",
+                "sys_created_by": "Test User",
+                "sys_created_on": "2022-11-21 20:45:37",
+                "element": "comments"
+            }
+        ],
+        {
+            "comment_tag_from_servicenow": "CommentFromServiceNow"
+        },
+        [
+            {
+                "Type": 1,
+                "Category": None,
+                "Contents": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\nFirst comment",
+                "ContentsFormat": None,
+                "Tags": ["CommentFromServiceNow"],
+                "Note": True,
+                "EntryContext": {"comments_and_work_notes": "First comment"}
+            }
+        ]
+    )
+])
+def test_get_entries_for_notes_with_comment(notes, params, expected):
+    """
+    Given
+        - A list of notes
+        - Params containing comment tag
+    When
+        - Calling get_entries_for_notes
+    Then
+        - Should return a list of entry contexts
+    """
+    assert get_entries_for_notes(notes, params) == expected
+
+
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
     (update_ticket_command, {'id': '1234', 'impact': '2'}, RESPONSE_UPDATE_TICKET, EXPECTED_UPDATE_TICKET, True),
     (update_ticket_command, {'id': '1234', 'ticket_type': 'sc_req_item', 'approval': 'requested'},
@@ -353,11 +479,6 @@ def test_get_timezone_offset():
      RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, True),
     (upload_file_command, {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test_file'}, RESPONSE_UPLOAD_FILE,
      EXPECTED_UPLOAD_FILE, True),
-    (get_ticket_notes_command, {'id': "sys_id"}, RESPONSE_GET_TICKET_NOTES, EXPECTED_GET_TICKET_NOTES, True),
-    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT},
-     RESPONSE_COMMENTS_DISPLAY_VALUE, EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE, True),
-    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT},
-     RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS, {}, True),
     (get_record_command, {'table_name': "alm_asset", 'id': "sys_id", 'fields': "asset_tag,display_name"},
      RESPONSE_GET_RECORD, EXPECTED_GET_RECORD, True),
     (update_record_command, {'name': "alm_asset", 'id': "1234", 'custom_fields': "display_name=test4"},
