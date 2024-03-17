@@ -288,6 +288,47 @@ class XSOAR2STIXParser:
         self.has_extension = fields_to_present != {'name', 'type'}
         self.types_for_indicator_sdo = types_for_indicator_sdo or []
 
+    def create_indicators(self, indicator_searcher: IndicatorsSearcher, is_manifest: bool):
+        """
+        Args:
+            indicator_searcher: indicators list
+            is_manifest: whether this call is for manifest or indicators
+
+        Returns: Created indicators and its extensions.
+        """
+        total = 0
+        extensions_dict: dict = {}
+        iocs = []
+        extensions = []
+        for ioc in indicator_searcher:
+            found_indicators = ioc.get('iocs') or []
+            total = ioc.get('total')
+            for xsoar_indicator in found_indicators:
+                xsoar_type = xsoar_indicator.get('indicator_type')
+                if is_manifest:
+                    manifest_entry = self.create_manifest_entry(xsoar_indicator, xsoar_type)
+                    if manifest_entry:
+                        iocs.append(manifest_entry)
+                else:
+                    stix_ioc, extension_definition, extensions_dict = \
+                        self.create_stix_object(xsoar_indicator, xsoar_type, extensions_dict)
+                    if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in self.types_for_indicator_sdo:
+                        stix_ioc = self.convert_sco_to_indicator_sdo(
+                            stix_ioc, xsoar_indicator)
+                    if self.has_extension and stix_ioc:
+                        iocs.append(stix_ioc)
+                        if extension_definition:
+                            extensions.append(extension_definition)
+                    elif stix_ioc:
+                        iocs.append(stix_ioc)
+        if not is_manifest and iocs \
+                and is_demisto_version_ge('6.6.0') and \
+                (relationships := self.create_relationships_objects(iocs, extensions)):
+            total += len(relationships)
+            iocs.extend(relationships)
+            iocs = sorted(iocs, key=lambda k: k['modified'])
+        return iocs, extensions, total
+
     def create_manifest_entry(self, xsoar_indicator: dict, xsoar_type: str) -> dict:
         """
 
@@ -464,7 +505,7 @@ class XSOAR2STIXParser:
         }
         return stix_object, extension_definition, extensions_dict
 
-    def convert_sco_to_indicator_sdo(self, stix_object: dict, xsoar_indicator: dict, uuid_value: uuid.UUID) -> dict:
+    def convert_sco_to_indicator_sdo(self, stix_object: dict, xsoar_indicator: dict) -> dict:
         """
         Create a STIX domain object of 'indicator' type from a STIX Cyber Observable Objects.
 
@@ -605,7 +646,7 @@ class XSOAR2STIXParser:
                 stix_ioc, extension_definition, extensions_dict = self.create_stix_object(
                     xsoar_indicator, xsoar_type, extensions_dict)
                 if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in self.types_for_indicator_sdo:
-                    stix_ioc = self.convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator, self.namespace_uuid)
+                    stix_ioc = self.convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
                 if self.has_extension and stix_ioc:
                     entity_b_objects.append(stix_ioc)
                     if extension_definition:

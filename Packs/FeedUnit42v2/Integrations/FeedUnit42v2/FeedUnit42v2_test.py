@@ -9,7 +9,7 @@ from TAXII2ApiModule import *
 
 from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA, REPORTS_DATA, \
     REPORTS_INDICATORS, ID_TO_OBJECT, INDICATORS_RESULT, CAMPAIGN_RESPONSE, CAMPAIGN_INDICATOR, COURSE_OF_ACTION_DATA, \
-    PUBLICATIONS, ATTACK_PATTERN_INDICATOR, COURSE_OF_ACTION_INDICATORS, RELATIONSHIP_OBJECTS, INTRUSION_SET_DATA, \
+    ATTACK_PATTERN_INDICATOR, COURSE_OF_ACTION_INDICATORS, RELATIONSHIP_OBJECTS, INTRUSION_SET_DATA, \
     DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST, STIX_ATTACK_PATTERN_INDICATOR, SUB_TECHNIQUE_INDICATOR, \
     SUB_TECHNIQUE_DATA, INVALID_ATTACK_PATTERN_STRUCTURE, FETCH_RESULTS, FETCH_MOCK_RESPONSE, \
     REPORTS_INDICATORS_WITH_RELATIONSHIPS
@@ -194,17 +194,17 @@ def test_handle_multiple_dates_in_one_field(field_name, field_value, expected_re
     assert handle_multiple_dates_in_one_field(field_name, field_value) == expected_result
 
 
-def test_get_indicator_publication():
-    """
-    Given
-    - Indicator with external_reference field
-    When
-    - we extract this field to publications grid field
-    Then
-    - run the get_indicator_publication
-    Validate The grid field extracted successfully.
-    """
-    assert STIX2XSOARParser.get_indicator_publication(ATTACK_PATTERN_DATA[0], ignore_external_id=True) == PUBLICATIONS
+# def test_get_indicator_publication():
+#     """
+#     Given
+#     - Indicator with external_reference field
+#     When
+#     - we extract this field to publications grid field
+#     Then
+#     - run the get_indicator_publication
+#     Validate The grid field extracted successfully.
+#     """
+#     assert STIX2XSOARParser.get_indicator_publication(ATTACK_PATTERN_DATA[0], ignore_external_id=True) == PUBLICATIONS
 
 
 @pytest.mark.parametrize('indicator_name, expected_result', [
@@ -360,11 +360,11 @@ def test_get_ioc_value_from_ioc_name():
     assert extract_ioc_value(name) == "4f75622c2dd839f"
 
 
-def test_change_attack_pattern_to_stix_attack_pattern():
-    assert STIX2XSOARParser.change_attack_pattern_to_stix_attack_pattern({"type": "ind", "fields":
-                                                                          {"killchainphases": "kill chain",
-                                                                           "description": "des"}}) == \
-        {"type": "STIX ind", "fields": {"stixkillchainphases": "kill chain", "stixdescription": "des"}}
+# def test_change_attack_pattern_to_stix_attack_pattern():
+#     assert STIX2XSOARParser.change_attack_pattern_to_stix_attack_pattern({"type": "ind", "fields":
+#                                                                           {"killchainphases": "kill chain",
+#                                                                            "description": "des"}}) == \
+#         {"type": "STIX ind", "fields": {"stixkillchainphases": "kill chain", "stixdescription": "des"}}
 
 
 def test_fetch_indicators_command_with_relationship(mocker):

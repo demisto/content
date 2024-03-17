@@ -1608,7 +1608,7 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
     uuid_for_cilent = uuid.uuid5(PAWN_UUID, 'test')
     cilent = XSOAR2STIXParser(server_version='2.0', fields_to_present=set(),
                               types_for_indicator_sdo=[], namespace_uuid=uuid_for_cilent)
-    output = cilent.convert_sco_to_indicator_sdo(ioc, xsoar_indicator, uuid_for_cilent)
+    output = cilent.convert_sco_to_indicator_sdo(ioc, xsoar_indicator)
     assert 'file:hashes.' in output.get('pattern', '')
     assert 'SHA-1' in output.get('pattern', '')
     assert 'pattern_type' in output
@@ -1677,12 +1677,12 @@ stix_type_3 = "ipv4-addr"
 value_3 = '8.8.8.8'
 expected_stix_id_3 = "ipv4-addr--2f689bf9-0ff2-545f-aa61-e495eb8cecc7"
 
-test_test_create_sco_stix_uuid_params = [(xsoar_indicator_1, stix_type_1, value_1, expected_stix_id_1),
-                                         (xsoar_indicator_2, stix_type_2, value_2, expected_stix_id_2),
-                                         (xsoar_indicator_3, stix_type_3, value_3, expected_stix_id_3)]
+test_create_sco_stix_uuid_params = [(xsoar_indicator_1, stix_type_1, value_1, expected_stix_id_1),
+                                    (xsoar_indicator_2, stix_type_2, value_2, expected_stix_id_2),
+                                    (xsoar_indicator_3, stix_type_3, value_3, expected_stix_id_3)]
 
 
-@pytest.mark.parametrize('xsoar_indicator, stix_type, value, expected_stix_id', test_test_create_sco_stix_uuid_params)
+@pytest.mark.parametrize('xsoar_indicator, stix_type, value, expected_stix_id', test_create_sco_stix_uuid_params)
 def test_create_sco_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_id):
     """
     Given:
@@ -1863,3 +1863,95 @@ def test_add_sdo_required_field_2_0(stix_object, xsoar_indicator, expected_stix_
                               types_for_indicator_sdo=[], namespace_uuid=PAWN_UUID)
     stix_object = cilent.add_sdo_required_field_2_0(stix_object, xsoar_indicator)
     assert stix_object == expected_stix_object
+
+
+@pytest.mark.parametrize(
+    "stix_ioc,expected_value",
+    [
+        ({"type": "indicator"}, None),
+        (
+            {"type": "malware", "value": "malware_value", "name": "malware_name"},
+            "malware_value",
+        ),
+        ({"type": "malware", "name": "malware_name"}, "malware_name"),
+        ({"type": "malware", "value": "malware_value"}, "malware_value"),
+        ({"type": "file", "hashes": {"SHA-256": "SHA-256"}}, "SHA-256"),
+        ({"type": "file", "hashes": {"MD5": "MD5"}}, "MD5"),
+        ({"type": "file", "hashes": {"SHA-1": "SHA-1"}}, "SHA-1"),
+        ({"type": "file", "hashes": {"SHA-512": "SHA-512"}}, "SHA-512"),
+    ],
+)
+def test_get_stix_object_value(stix_ioc, expected_value):
+    cilent = XSOAR2STIXParser(
+        server_version="2.0",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=[],
+        namespace_uuid=PAWN_UUID,
+    )
+    value = cilent.get_stix_object_value(stix_ioc)
+    assert value == expected_value
+
+
+def test_get_labels_for_indicator():
+    """
+    Given
+    - Indicator score
+    When
+    - Calling get_labels_for_indicator.
+    Then
+    - run the get_labels_for_indicator
+    Validate The labels.
+    """
+    cilent = XSOAR2STIXParser(server_version='2.0', fields_to_present={'name', 'type'},
+                              types_for_indicator_sdo=[], namespace_uuid=PAWN_UUID)
+    expected_result = [[''], ['benign'], ['anomalous-activity'], ['malicious-activity']]
+    for score in range(0, 4):
+        value = cilent.get_labels_for_indicator(score)
+        assert value == expected_result[score]
+
+
+def test_get_indicator_publication():
+    """
+    Given
+    - Indicator with external_reference field
+    When
+    - we extract this field to publications grid field
+    Then
+    - run the get_indicator_publication
+    Validate The grid field extracted successfully.
+    """
+    data = util_load_json('test_data/indicator_publication_test.json')
+    assert STIX2XSOARParser.get_indicator_publication(data.get("attack_pattern_data")[0],
+                                                      ignore_external_id=True) == data.get("publications")
+
+
+def test_change_attack_pattern_to_stix_attack_pattern():
+    """
+    Given
+    - Attack pattern Indicator with killchainphases and fields
+    When
+    - call the change_attack_pattern_to_stix_attack_pattern method
+    Then
+    - Validates that the method properly converts an attack pattern indicator
+      with killchainphases and other fields to a STIX attack pattern dict with
+      the corresponding stix fields.
+    """
+    assert STIX2XSOARParser.change_attack_pattern_to_stix_attack_pattern(
+        {
+            "type": "ind",
+            "fields": {"killchainphases": "kill chain", "description": "des"},
+        }
+    ) == {
+        "type": "STIX ind",
+        "fields": {"stixkillchainphases": "kill chain", "stixdescription": "des"}}
+
+
+def test_create_relationships_objects(mocker):
+    mocker.patch.object(demisto, 'getLicenseID', return_value='test')
+    cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present={'name', 'type'},
+                              types_for_indicator_sdo=[], namespace_uuid=uuid.uuid5(PAWN_UUID, demisto.getLicenseID()))
+    data = util_load_json('test_data/create_relationships_test.json')
+    mock_search_relationships_response = util_load_json('test_data/searchRelationships-response.json')
+    mocker.patch.object(demisto, 'searchRelationships', return_value=mock_search_relationships_response)
+    relationships = cilent.create_relationships_objects(data.get("iocs"), [])
+    assert relationships == data.get("relationships")

@@ -37,7 +37,7 @@ TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'desc
                                 'accounttype', 'userid', 'mitreid', 'stixid'}
 PAGE_SIZE = 2000
 
-
+from TAXII2ApiModule import *  # noqa: E402
 # XSOAR_TYPES_TO_STIX_SDO = {
 #     ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'attack-pattern',
 #     ThreatIntel.ObjectsNames.CAMPAIGN: 'campaign',
@@ -555,6 +555,43 @@ def create_query(query: str, types: list[str], added_after: str) -> str:
     return f'{query} and modified:>="{added_after}"' if added_after else f'{query}'
 
 
+def set_field_filters(is_manifest: bool = False) -> Optional[str]:
+    """
+    Args:
+        is_manifest: whether this call is for manifest or indicators
+
+    Returns: A string of filters.
+    """
+    if is_manifest:
+        field_filters: Optional[str] = ','.join(TAXII_REQUIRED_FILTER_FIELDS)
+    elif SERVER.fields_to_present:
+        field_filters = ','.join(
+            set.union(SERVER.fields_to_present, TAXII_REQUIRED_FILTER_FIELDS))  # type: ignore[arg-type]
+    else:
+        field_filters = None
+    demisto.debug(f'filter fields: {field_filters}')
+    return field_filters
+
+
+def search_indicators(field_filters: Optional[str], query: str, limit: int) -> IndicatorsSearcher:
+    """
+    Args:
+        field_filters: filter
+        query: query
+        limit: response items limit
+
+    Returns: IndicatorsSearcher.
+    """
+    indicator_searcher = IndicatorsSearcher(
+        filter_fields=field_filters,
+        query=query,
+        limit=limit,
+        size=PAGE_SIZE,
+        sort=[{"field": "modified", "asc": True}],
+    )
+    return indicator_searcher
+
+
 def find_indicators(query: str, types: list, added_after, limit: int, offset: int, is_manifest: bool = False) -> tuple:
     """
     Args:
@@ -569,58 +606,58 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
     """
     new_query = create_query(query, types, added_after)
     new_limit = offset + limit
-    iocs = []
-    extensions = []
+    field_filters = set_field_filters(is_manifest)
+    # if is_manifest:
+    #     field_filters: Optional[str] = ','.join(TAXII_REQUIRED_FILTER_FIELDS)
+    # elif SERVER.fields_to_present:
+    #     field_filters = ','.join(
+    #         set.union(SERVER.fields_to_present, TAXII_REQUIRED_FILTER_FIELDS))  # type: ignore[arg-type]
+    # else:
+    #     field_filters = None
 
-    if is_manifest:
-        field_filters: Optional[str] = ','.join(TAXII_REQUIRED_FILTER_FIELDS)
-    elif SERVER.fields_to_present:
-        field_filters = ','.join(
-            set.union(SERVER.fields_to_present, TAXII_REQUIRED_FILTER_FIELDS))  # type: ignore[arg-type]
-    else:
-        field_filters = None
-
-    demisto.debug(f'filter fields: {field_filters}')
-
-    indicator_searcher = IndicatorsSearcher(
-        filter_fields=field_filters,
-        query=new_query,
-        limit=new_limit,
-        size=PAGE_SIZE,
-        sort=[{"field": "modified", "asc": True}],
-    )
+    # demisto.debug(f'filter fields: {field_filters}')
+    indicator_searcher = search_indicators(field_filters, new_query, new_limit)
+    # indicator_searcher = IndicatorsSearcher(
+    #     filter_fields=field_filters,
+    #     query=new_query,
+    #     limit=new_limit,
+    #     size=PAGE_SIZE,
+    #     sort=[{"field": "modified", "asc": True}],
+    # )
     XSOAR2STIXParser_client = XSOAR2STIXParser(server_version=SERVER.version, namespace_uuid=SERVER.namespace_uuid,
                                                fields_to_present=SERVER.fields_to_present,
                                                types_for_indicator_sdo=SERVER.types_for_indicator_sdo)
-    total = 0
-    extensions_dict: dict = {}
-    for ioc in indicator_searcher:
-        found_indicators = ioc.get('iocs') or []
-        total = ioc.get('total')
-        for xsoar_indicator in found_indicators:
-            xsoar_type = xsoar_indicator.get('indicator_type')
-            if is_manifest:
-                manifest_entry = XSOAR2STIXParser_client.create_manifest_entry(xsoar_indicator, xsoar_type)
-                if manifest_entry:
-                    iocs.append(manifest_entry)
-            else:
-                stix_ioc, extension_definition, extensions_dict = \
-                    XSOAR2STIXParser_client.create_stix_object(xsoar_indicator, xsoar_type, extensions_dict)
-                if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in SERVER.types_for_indicator_sdo:
-                    stix_ioc = XSOAR2STIXParser_client.convert_sco_to_indicator_sdo(
-                        stix_ioc, xsoar_indicator, SERVER.namespace_uuid)
-                if SERVER.has_extension and stix_ioc:
-                    iocs.append(stix_ioc)
-                    if extension_definition:
-                        extensions.append(extension_definition)
-                elif stix_ioc:
-                    iocs.append(stix_ioc)
-    if not is_manifest and iocs \
-            and is_demisto_version_ge('6.6.0') and \
-            (relationships := XSOAR2STIXParser_client.create_relationships_objects(iocs, extensions)):
-        total += len(relationships)
-        iocs.extend(relationships)
-        iocs = sorted(iocs, key=lambda k: k['modified'])
+    # iocs, extensions, total = XSOAR2STIXParser_client.create_indicators(indicator_searcher,is_manifest)
+    iocs, extensions, total = XSOAR2STIXParser_client.create_indicators(indicator_searcher, is_manifest)
+    # total = 0
+    # extensions_dict: dict = {}
+    # for ioc in indicator_searcher:
+    #     found_indicators = ioc.get('iocs') or []
+    #     total = ioc.get('total')
+    #     for xsoar_indicator in found_indicators:
+    #         xsoar_type = xsoar_indicator.get('indicator_type')
+    #         if is_manifest:
+    #             manifest_entry = XSOAR2STIXParser_client.create_manifest_entry(xsoar_indicator, xsoar_type)
+    #             if manifest_entry:
+    #                 iocs.append(manifest_entry)
+    #         else:
+    #             stix_ioc, extension_definition, extensions_dict = \
+    #                 XSOAR2STIXParser_client.create_stix_object(xsoar_indicator, xsoar_type, extensions_dict)
+    #             if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in SERVER.types_for_indicator_sdo:
+    #                 stix_ioc = XSOAR2STIXParser_client.convert_sco_to_indicator_sdo(
+    #                     stix_ioc, xsoar_indicator)
+    #             if SERVER.has_extension and stix_ioc:
+    #                 iocs.append(stix_ioc)
+    #                 if extension_definition:
+    #                     extensions.append(extension_definition)
+    #             elif stix_ioc:
+    #                 iocs.append(stix_ioc)
+    # if not is_manifest and iocs \
+    #         and is_demisto_version_ge('6.6.0') and \
+    #         (relationships := XSOAR2STIXParser_client.create_relationships_objects(iocs, extensions)):
+    #     total += len(relationships)
+    #     iocs.extend(relationships)
+    #     iocs = sorted(iocs, key=lambda k: k['modified'])
     return iocs, extensions, total
 
 
