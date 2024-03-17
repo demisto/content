@@ -506,7 +506,7 @@ def update_url_list_command(
     url_list_id = args["url_list_id"]
     name = args.get("name")
     urls = argToList(args.get("urls"))
-    list_type = args.get("list_type", '').lower()
+    list_type = args.get("list_type", '').lower() or None
     is_overwrite = optional_arg_to_boolean(args.get("is_overwrite"))
 
     if not all([name, urls, list_type]) or not is_overwrite:
