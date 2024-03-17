@@ -555,7 +555,7 @@ def convert_to_notes_result(ticket: dict, time_info: dict) -> dict:
         time_info (dict): A dictionary with time zone information to convert timestamps.
 
     Returns:
-        dict: A dictionary containing the key "result" which maps to a list 
+        dict: A dictionary containing the key "result" which maps to a list
         of notes extracted from the ticket comments and work notes.
     """
     if not ticket:
@@ -2285,7 +2285,8 @@ def fetch_incidents(client: Client) -> list:
     count = 0
     skipped_incidents = 0
 
-    severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
+    # Map SNOW severity to Demisto severity for incident creation
+    severity_map = {'1': 3, '1 - High': 3, '2': 2, '2 - Medium': 2, '3': 1, '3 - Low': 1}
 
     if client.use_display_value:
         tickets_response = format_incidents_response_with_display_values(incidents_res=tickets_response)
@@ -2539,7 +2540,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     else:
         ticket = result['result']
 
-    if client.use_display_value:
+    if client.use_display_value and client.display_date_format:
         timezone_offset = get_timezone_offset(ticket, client.display_date_format)
         ticket = format_incidents_response_with_display_values(ticket)[0]
 
