@@ -6,11 +6,11 @@ authors = ["Cortex XSOAR"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8,<3.11"
+python = "^3.8.1,<3.12"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.27.3"
+demisto-sdk = { git = "https://github.com/demisto/demisto-sdk.git", rev = "support-python-311" }
 requests = "^2.22.0"
 pre-commit = "^3.5.0"
 google-cloud-compute = "^1.8.0"
@@ -18,7 +18,7 @@ dateparser = "^1.1.8"
 
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
-flake8 = "^4.0.1"
+flake8 = "^6.0.0"
 ruff = "^0.0.264"
 
 [tool.poetry.group.testing.dependencies]
@@ -55,6 +55,7 @@ boto3-stubs = { extras = [
     "wafv2",
 ], version = "^1.28.31" }
 types-protobuf = "^4.24.0.4"
+types-dateparser = "^1.1.4.20240106"
 
 [tool.poetry.group.native]
 # This is the python dependencies from the py3-native docker image.
