@@ -6,7 +6,6 @@ from Redmine import Client
 def redmine_client(url: str = 'url', verify_certificate: bool = True, proxy: bool = False, auth=('username', 'password')):
     return Client(url, verify_certificate, proxy, auth=auth)
 
-
 ''' COMMAND FUNCTIONS TESTS '''
 
 def test_create_issue_command(mocker, redmine_client):
