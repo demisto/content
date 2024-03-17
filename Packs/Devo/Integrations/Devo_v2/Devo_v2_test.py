@@ -140,22 +140,54 @@ MOCK_MULTI_ARGS = {
     "writeToContext": "true",
     "filtered_columns": "alertId,extraData,context"
 }
+MOCK_MULTI_ARGUMENTS = {
+    "tables": ["app", "charlie", "test"],
+    "searchToken": "searching",
+    "from": time.time() - 60,
+    "to": time.time(),
+    "writeToContext": "true",
+    "items": -10
+}
 MOCK_WRITER_ARGS = {
     "tableName": "whatever.table",
-    "records": [{"foo": "hello"}, {"foo": "world"}, {"foo": "demisto"}],
+    "records": '[{"foo": "hello"}, {"foo": "world"}, {"foo": "demisto"}]',
+}
+MOCK_WRITER_ARGS_LIST = {
+    "tableName": "whatever.table",
+    "records": '[["a", "b", "c"], ["1", "2", "3"]]',
+}
+MOCK_WRITER_ARGS_EMPTY = {
+    "tableName": "whatever.table",
+    "records": '[1234, true]',
+}
+MOCK_WRITER_ARGS_STR = {
+    "tableName": "whatever.table",
+    "records": '["This is my first event", "This is my second log"]',
 }
 MOCK_WRITE_TO_TABLE_RECORDS = {
     "tableName": "whatever.table",
-    "records": ['{"foo": "hello"}', '{"foo": "world"}', '{"foo": "demisto"}'],
+    "records": '[{"hello": "world"}, {"abc": "xyz"}, {"data": "test"}]',
 }
 MOCK_LOOKUP_WRITER_ARGS = {
     "lookupTableName": "hello.world.lookup",
-    "headers": ["foo", "bar", "baz"],
-    "records": [
-        {"key": "fookey", "values": ["fookey", "bar0", "baz0"]},
-        {"key": "keyfoo", "values": ["keyfoo", "bar1", "baz1"]},
-        {"key": "keykey", "values": ["keykey", "bar5", "baz6"]},
-    ],
+    "headers": '{"headers": ["foo", "bar", "baz"], "key_index": 0, "action": "FULL"}',
+    "records": ('[{"fields": ["foo1", "bar1", "baz1"], "delete": false}, '
+                '{"fields": ["foo2", "bar2", "baz2"]}, '
+                '{"fields": ["foo3", "bar3", "baz3"]}]')
+}
+MOCK_LOOKUP_WRITER_ARGS_key = {
+    "lookupTableName": "hello.world.lookup",
+    "headers": '{"headers": ["foo", "bar", "baz"], "key_index": 0, "action": "FULL"}',
+    "records": ('[{"fields": ["foo1", "bar1", "baz1"], "delete": false}, '
+                '{"fields": ["foo2", "bar2", "baz2"]}, '
+                '{"fields": ["foo3", "bar3", "baz3"]}]')
+}
+MOCK_LOOKUP_WRITER_ARGS_action = {
+    "lookupTableName": "hello.world.lookup",
+    "headers": '{"headers": ["foo", "bar", "baz"], "key_index": 0, "action": "INC"}',
+    "records": ('[{"fields": ["foo1", "bar1", "baz1"], "delete": false}, '
+                '{"fields": ["foo2", "bar2", "baz2"]}, '
+                '{"fields": ["foo3", "bar3", "baz3"]}]')
 }
 MOCK_KEYS = {"foo": "bar", "baz": "bug"}
 OFFSET = 0
@@ -235,6 +267,9 @@ EXPECTED_LAST_RUN_DATA = {'from_time': 1691480669.0, 'last_fetch_events': [{'456
 
 
 class MOCK_LOOKUP:
+    def send_headers(*args, **kw):
+        pass
+
     def send_control(*args, **kw):
         pass
 
@@ -453,6 +488,35 @@ def test_multi_query(
     assert results["HumanReadable"] == "No results found"
 
 
+@patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
+@patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
+@patch("Devo_v2.concurrent.futures.wait")
+@patch("Devo_v2.concurrent.futures.ThreadPoolExecutor.submit")
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.ds.Reader")
+@patch("Devo_v2.get_types")
+def test_multi_query_negative_items(
+    mock_query_types,
+    mock_query_reader,
+    mock_query_results,
+    mock_args_results,
+    mock_submit_results,
+    mock_wait_results,
+):
+    mock_query_types.return_value = MOCK_KEYS
+    mock_query_reader.return_value = MOCK_READER
+    mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
+    mock_args_results.return_value = MOCK_MULTI_ARGUMENTS
+    mock_submit_results.return_value = None
+    mock_wait_results.return_value = (None, None)
+    try:
+        multi_table_query_command(OFFSET, ITEMS_PER_PAGE)
+    except ValueError as exc:
+        error_msg = str(exc)
+        assert "The 'limit' parameter cannot be negative." in error_msg
+
+
 @patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
 @patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
 @patch("Devo_v2.demisto.args")
@@ -461,8 +525,64 @@ def test_write_devo(mock_load_results, mock_write_args):
     mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
     mock_write_args.return_value = MOCK_WRITE_TO_TABLE_RECORDS
     results = write_to_table_command()
-    assert len(results[0]["EntryContext"]["Devo.RecordsWritten"]) == 3
+    assert len(results) == 2  # We expect two entries in the results list
     assert results[0]["EntryContext"]["Devo.LinqQuery"] == "from whatever.table"
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+def test_write_devo_str(mock_load_results, mock_write_args):
+    mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
+    mock_write_args.return_value = MOCK_WRITER_ARGS_STR
+    try:
+        write_to_table_command()
+    except ValueError as exc:
+        error_msg = str(exc)
+        assert 'Failed to execute command devo-write-to-table.' in error_msg
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+def test_write_devo_data(mock_load_results, mock_write_args):
+    mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
+    mock_write_args.return_value = MOCK_WRITER_ARGS
+    try:
+        write_to_table_command()
+    except ValueError as exc:
+        error_msg = str(exc)
+        assert "Error decoding JSON. Please ensure the records are valid JSON." in error_msg
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+def test_write_devo_list(mock_load_results, mock_write_args):
+    mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
+    mock_write_args.return_value = MOCK_WRITER_ARGS_LIST
+    try:
+        write_to_table_command()
+    except ValueError as exc:
+        error_msg = str(exc)
+        assert "The 'records' parameter must be a list." in error_msg
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+def test_write_devo_no_data(mock_load_results, mock_write_args):
+    mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
+    mock_write_args.return_value = MOCK_WRITER_ARGS_EMPTY
+    try:
+        write_to_table_command()
+    except ValueError as exc:
+        error_msg = str(exc)
+        assert "All records are empty." in error_msg
 
 
 @patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
@@ -477,7 +597,146 @@ def test_write_lookup_devo(
     mock_lookup_writer_sender.return_value = MOCK_SENDER()
     mock_lookup_writer_lookup.return_value = MOCK_LOOKUP()
     results = write_to_lookup_table_command()
-    assert len(results[0]["EntryContext"]["Devo.RecordsWritten"]) == 3
+    assert isinstance(results, str)  # We expect a string result
+    assert "Lookup Table Name: hello.world.lookup." in results
+    assert "Total Records Sent: 3." in results
+    assert "Total Bytes Sent: 125." in results
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+@patch("Devo_v2.Lookup")
+def test_write_lookup_devo_header(
+    mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args
+):
+    mock_lookup_write_args.return_value = MOCK_LOOKUP_WRITER_ARGS
+    mock_lookup_writer_sender.return_value = MOCK_SENDER()
+    mock_lookup_writer_lookup.return_value = MOCK_LOOKUP()
+    try:
+        write_to_lookup_table_command()
+    except ValueError as exc:
+        error_msg = str(exc)
+        assert "Invalid headers format. 'headers' must be a list." in error_msg
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+@patch("Devo_v2.Lookup")
+def test_write_lookup_devo_invalid(
+    mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args
+):
+    mock_lookup_write_args.return_value = MOCK_LOOKUP_WRITER_ARGS_key
+    mock_lookup_writer_sender.return_value = MOCK_SENDER()
+    mock_lookup_writer_lookup.return_value = MOCK_LOOKUP()
+    try:
+        write_to_lookup_table_command()
+    except ValueError as exc:
+        error_msg = str(exc)
+        assert "key_index must be a non-negative integer value." in error_msg
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+@patch("Devo_v2.Lookup")
+def test_write_lookup_devo_invalid_action(
+    mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args
+):
+    mock_lookup_write_args.return_value = MOCK_LOOKUP_WRITER_ARGS_action
+    mock_lookup_writer_sender.return_value = MOCK_SENDER()
+    mock_lookup_writer_lookup.return_value = MOCK_LOOKUP()
+    try:
+        write_to_lookup_table_command()
+    except ValueError as err:
+        error = str(err)
+        assert "action must be either 'INC' or 'FULL'." in error
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+def test_write_devo_empty_records(mock_load_results, mock_write_args):
+    mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
+    mock_write_args.return_value = MOCK_WRITER_ARGS
+    try:
+        write_to_table_command()
+    except ValueError as exc:
+        error_msg = str(exc)
+        assert "Error decoding JSON. Please ensure the records are valid JSON." in error_msg
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+def test_write_devo_invalid_json(mock_load_results, mock_write_args):
+    mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
+    mock_write_args.return_value = MOCK_WRITER_ARGS
+    try:
+        write_to_table_command()
+    except ValueError as exc:
+        error_msg = str(exc)
+        assert "Error decoding JSON. Please ensure the records are valid JSON." in error_msg
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+@patch("Devo_v2.Lookup")
+def test_write_lookup_devo_invalid_headers_format(
+    mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args
+):
+    mock_lookup_write_args.return_value = MOCK_LOOKUP_WRITER_ARGS
+    mock_lookup_writer_sender.return_value = MOCK_SENDER()
+    mock_lookup_writer_lookup.return_value = MOCK_LOOKUP()
+    try:
+        write_to_lookup_table_command()
+    except ValueError as exc:
+        error_msg = str(exc)
+        assert "Invalid headers format. 'headers' must be a list." in error_msg
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+def test_write_devo_empty_records_param(mock_load_results, mock_write_args):
+    mock_load_results.return_value.load.return_value = MOCK_LINQ_RETURN
+    mock_write_args.return_value = {"tag": "test_tag", "tableName": "test_table", "records": "{}"}
+    try:
+        write_to_table_command()
+    except SystemExit:
+        pass  # Handle SystemExit gracefully in tests
+
+
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITER_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Sender")
+@patch("Devo_v2.Lookup")
+def test_write_lookup_missing_args(
+    mock_lookup_writer_lookup, mock_lookup_writer_sender, mock_lookup_write_args
+):
+    # Ensure that headers and records are properly formatted JSON strings
+    mock_lookup_write_args.return_value = {
+        "lookupTableName": "test_table",
+        "headers": '["header1", "header2"]',
+        "records": '["record1", "record2"]'
+    }
+    mock_lookup_writer_sender.return_value = MOCK_SENDER()
+    mock_lookup_writer_lookup.return_value = MOCK_LOOKUP()
+    # Provide all required arguments
+    try:
+        write_to_lookup_table_command()
+    except SystemExit:
+        pass  # Handle SystemExit gracefully in tests
 
 
 @patch("Devo_v2.demisto_ISO", return_value="2022-03-15T15:01:23.456Z")

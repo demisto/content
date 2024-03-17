@@ -543,6 +543,25 @@
     - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
     - job-done
 
+.run-validations-new-validate-flow:
+  stage: unittests-and-validations
+  extends:
+    - .default-job-settings
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+    when: always
+  script:
+    - section_start "Validate Files and Yaml"
+    - |
+      ./Tests/scripts/linters_runner.sh
+      ./Tests/scripts/new_validate.sh
+    - section_end "Validate Files and Yaml"
+    - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
+    - job-done
+
 .jobs-done-check:
   stage: are-jobs-really-done
   extends:
