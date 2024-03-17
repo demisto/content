@@ -555,8 +555,6 @@ def get_incident_extra_data_command(client, args):
             readable_output.append(tableToMarkdown('Alerts', context_alerts,
                                                    headers=[key for key in context_alerts[0]
                                                             if key != 'host_ip'], removeNull=True))
-    else:
-        readable_output.append(tableToMarkdown('Alerts', raw_alerts, removeNull=True))
     readable_output.append(tableToMarkdown('Network Artifacts', network_artifacts, removeNull=True))
     readable_output.append(tableToMarkdown('File Artifacts', file_artifacts, removeNull=True))
 
