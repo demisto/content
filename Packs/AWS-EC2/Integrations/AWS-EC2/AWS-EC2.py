@@ -386,33 +386,34 @@ def describe_addresses_command(args: dict) -> CommandResults:
     if args.get('allocationIds') is not None:
         kwargs.update({'AllocationIds': parse_resource_ids(args.get('allocationIds'))})
 
-    response = client.describe_addresses(**kwargs)
+    paginator = client.get_paginator('describe_addresses')
 
-    if len(response['Addresses']) == 0:
-        return CommandResults(readable_output='No addresses were found.')
+    for response in paginator.paginate(**kwargs):
+        if len(response['Addresses']) == 0:
+            return CommandResults(readable_output='No addresses were found.')
 
-    for i, address in enumerate(response['Addresses']):
-        data.append({
-            'PublicIp': address['PublicIp'],
-            'AllocationId': address['AllocationId'],
-            'Domain': address['Domain'],
-            'Region': obj['_user_provided_options']['region_name'],
-        })
-        if 'InstanceId' in address:
-            data[i].update({'InstanceId': address['InstanceId']})
-        if 'AssociationId' in address:
-            data[i].update({'AssociationId': address['AssociationId']})
-        if 'NetworkInterfaceId' in address:
-            data[i].update({'NetworkInterfaceId': address['NetworkInterfaceId']})
-        if 'PrivateIpAddress' in address:
-            data[i].update({'PrivateIpAddress': address['PrivateIpAddress']})
-        if 'Tags' in address:
-            for tag in address['Tags']:
-                data[i].update({
-                    tag['Key']: tag['Value']
-                })
-    raw = response['Addresses']
-    raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+        for i, address in enumerate(response['Addresses']):
+            data.append({
+                'PublicIp': address['PublicIp'],
+                'AllocationId': address['AllocationId'],
+                'Domain': address['Domain'],
+                'Region': obj['_user_provided_options']['region_name'],
+            })
+            if 'InstanceId' in address:
+                data[i].update({'InstanceId': address['InstanceId']})
+            if 'AssociationId' in address:
+                data[i].update({'AssociationId': address['AssociationId']})
+            if 'NetworkInterfaceId' in address:
+                data[i].update({'NetworkInterfaceId': address['NetworkInterfaceId']})
+            if 'PrivateIpAddress' in address:
+                data[i].update({'PrivateIpAddress': address['PrivateIpAddress']})
+            if 'Tags' in address:
+                for tag in address['Tags']:
+                    data[i].update({
+                        tag['Key']: tag['Value']
+                    })
+        raw = response['Addresses']
+        raw[0].update({'Region': obj['_user_provided_options']['region_name']})
 
     return CommandResults(
         outputs=raw,
