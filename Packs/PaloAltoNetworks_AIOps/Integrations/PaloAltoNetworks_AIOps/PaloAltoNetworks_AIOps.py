@@ -74,11 +74,14 @@ class Client(BaseClient):
                                        f' configuration.\n\n{e}')
 
     def get_info_about_device_request(self):
-        headers = {'Content-Type': 'application/xml'}
-        params = assign_params(type='op', cmd='<show><system><info></info></system></show>', key=self._api_key)
-        response = self._http_request('GET', '/api', params=params, headers=headers, resp_type='xml')
-        formated_xml = adjust_xml_format(response.text, 'system')
-        return formated_xml
+        try:
+            headers = {'Content-Type': 'application/xml'}
+            params = assign_params(type='op', cmd='<show><system><info></info></system></show>', key=self._api_key)
+            response = self._http_request('GET', '/api', params=params, headers=headers, resp_type='xml')
+            formated_xml = adjust_xml_format(response.text, 'system')
+            return formated_xml
+        except DemistoException as e:
+            raise DemistoException("Could not get info about device.")
 
     def get_config_file_request(self):
         headers = {'Content-Type': 'application/xml'}
@@ -247,14 +250,14 @@ def test_module(client: Client) -> str:
         client.generate_access_token_request()
     except DemistoException as e:
         if 'access token' in str(e) or 'Forbidden' in str(e) or 'Authorization' in str(e):
-            return "Authorization Error: make sure your tsg_id, client_id, client_secret are correctly set."
+            raise DemistoException("Authorization Error: make sure your tsg_id, client_id, client_secret are correctly set.")
         else:
             raise e
     try:
         client.get_info_about_device_request()
         message = 'ok'
     except Exception as e:
-            return "Authorization Error: make sure your servel_url and API_key are correctly set."
+        raise DemistoException ("Authorization Error: make sure your servel_url and API_key are correctly set.")
     return message
 
 
@@ -352,9 +355,8 @@ def main() -> None:
             client_secret=client_secret,
             verify=verify_certificate,
             proxy=proxy)
-        
-        return_results(test_module(client))
-        
+          
+        return_results(test_module(client))      
         # Generate an access token for pan-OS/panorama
         if command == 'test-module':
             return_results(test_module(client))
