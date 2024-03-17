@@ -4,7 +4,7 @@ args:
   name: sane_pdf_report_base64
   required: true
 - defaultValue: portrait
-  description: orientation of the report.
+  description: Orientation of the report.
   name: orientation
 - defaultValue: A4
   description: the paper size of the report.
