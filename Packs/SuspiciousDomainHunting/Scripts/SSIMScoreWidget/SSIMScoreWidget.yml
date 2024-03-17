@@ -7,7 +7,7 @@ script: ''
 type: python
 tags:
 - dynamic-section
-comment: This dynamic automation parses the CVSS score of a CVE and presents it in the layout in color according to its score.
+comment: This dynamic automation parses the SSIM results and presents it in the layout in color according to its score.
 enabled: true
 scripttarget: 0
 subtype: python3

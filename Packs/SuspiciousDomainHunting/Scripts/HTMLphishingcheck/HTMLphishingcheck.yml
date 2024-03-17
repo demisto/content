@@ -2,6 +2,7 @@ commonfields:
   id: HtmlPhishingCheck
   version: -1
 name: HtmlPhishingCheck
+comment: Checks if a URL contains HTML elements indicative of phishing.
 script: ''
 type: python
 tags:

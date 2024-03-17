@@ -2,6 +2,7 @@ commonfields:
   id: HtmlDifflabDynamic
   version: -1
 name: HtmlDifflabDynamic
+comment: This dynamic automation parses the difflib results and presents it in the layout in color according to its score.
 script: ''
 type: python
 tags:

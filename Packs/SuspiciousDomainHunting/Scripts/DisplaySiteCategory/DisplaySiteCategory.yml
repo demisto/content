@@ -2,6 +2,7 @@ commonfields:
   id: displaySiteCategory
   version: -1
 name: displaySiteCategory
+comment: "This dynamic automation retrieves the category of a website and displays it in the layout."
 script: ''
 type: python
 tags:

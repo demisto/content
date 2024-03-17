@@ -2,6 +2,7 @@ commonfields:
   id: imagecompare
   version: -1
 name: imagecompare
+comment: "Compares two images and returns a similarity score."
 script: ''
 type: python
 tags: []

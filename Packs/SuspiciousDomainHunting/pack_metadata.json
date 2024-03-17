@@ -92,6 +92,13 @@
             "name": "Rasterize",
             "certification": "certified",
             "author": "Cortex XSOAR"
+        },
+        "CertStream": {
+            "mandatory": true,
+            "minVersion": "1.0.0",
+            "name": "CertStream",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
         }
     }
 }

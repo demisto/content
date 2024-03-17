@@ -1583,8 +1583,8 @@
         ]
     },
     "group": "incident",
-    "id": "New Suspicious Domain",
-    "name": "New Suspicious Domain",
+    "id": "Suspicious Domain Hunting Incident",
+    "name": "Suspicious Domain Hunting Incident",
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",

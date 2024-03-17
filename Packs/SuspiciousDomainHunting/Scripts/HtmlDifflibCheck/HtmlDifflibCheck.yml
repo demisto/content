@@ -2,6 +2,7 @@ commonfields:
   id: HtmlDifflibCheck
   version: -1
 name: HtmlDifflibCheck
+comment: Compares two HTML source as strings and returns a similarity score using difflib.
 script: ''
 type: python
 tags:
@@ -21,7 +22,6 @@ runonce: false
 dockerimage: demisto/ssdeep:1.0.0.89256
 runas: DBotWeakRole
 engineinfo: {}
-comment: ''
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

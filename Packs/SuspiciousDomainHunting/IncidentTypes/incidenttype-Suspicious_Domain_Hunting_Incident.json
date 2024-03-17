@@ -1,10 +1,8 @@
 {
-    "id": "Suspicious Domain Hunting New Suspicious Domain",
-    "version": -1,
+    "id": "Suspicious Domain Hunting Incident",
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Suspicious Domain Hunting New Suspicious Domain",
-    "prevName": "New Suspicious Domain",
+    "name": "Suspicious Domain Hunting Incident",
     "color": "#F8E7A5",
     "playbookId": "Suspicious Domain Hunting Incident Handling",
     "hours": 0,
@@ -20,7 +18,7 @@
     "disabled": false,
     "reputationCalc": 2,
     "onChangeRepAlg": 0,
-    "layout": "New Suspicious Domain",
+    "layout": "Suspicious Domain Hunting Incident",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
