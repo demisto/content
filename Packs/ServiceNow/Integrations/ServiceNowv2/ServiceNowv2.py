@@ -547,9 +547,16 @@ def split_notes(raw_notes, note_type, time_info):
     return notes
 
 
-def convert_to_notes_result(ticket, time_info) -> dict:
+def convert_to_notes_result(ticket: dict, time_info: dict) -> dict:
     """
     Converts the response of a ticket to the response format when making a query for notes only.
+    Args:
+        ticket (dict): The ServiceNow ticket response dictionary.
+        time_info (dict): A dictionary with time zone information to convert timestamps.
+
+    Returns:
+        dict: A dictionary containing the key "result" which maps to a list 
+        of notes extracted from the ticket comments and work notes.
     """
     if not ticket:
         return {}
@@ -2465,10 +2472,17 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
     return ticket
 
 
-def get_timezone_offset(ticket, display_date_format):
+def get_timezone_offset(ticket: dict, display_date_format: str):
     """
     Receives ticket response of a ticket query from SNOW and computes the timezone offset between the timezone of the
     instance and UTC.
+
+    Args:
+        ticket (dict): The ticket response from the SNOW query.
+        display_date_format (str): The date format of the display_value field in the ticket.
+
+    Returns:
+        datetime.timedelta: The timezone offset between the SNOW instance and UTC.
     """
     try:
         local_time = ticket.get('sys_created_on', {}).get('display_value', '')

@@ -103,56 +103,24 @@
                         "root": "business_criticality",
                         "transformers": [
                             {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^1$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - Critical"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^2$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "2 - High"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^3$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "3 - Non-Critical"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							}
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Critical,2 - High,3 - Non-Critical"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
                         ]
                     },
                     "simple": ""
@@ -348,56 +316,24 @@
                         "root": "impact",
                         "transformers": [
                             {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^1$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - High"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^2$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "2 - Medium"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^3$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "3 - Low"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							}
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - High,2 - Medium,3 - Low"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
                         ]
                     },
                     "simple": ""
@@ -409,56 +345,24 @@
                         "root": "notify",
                         "transformers": [
                             {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^1$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - Do Not Notify"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^2$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "2 - Send Email"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^3$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "3 - Telephone"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							}
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Do Not Notify,2 - Send Email,3 - Telephone"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
                         ]
                     },
                     "simple": ""
@@ -507,90 +411,24 @@
                         "root": "priority",
                         "transformers": [
                             {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^1$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - Critical"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^2$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "2 - High"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^3$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "3 - Moderate"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^4$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "4 - Low"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^5$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "5 - Planning"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							}
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Critical,2 - High,3 - Moderate,4 - Low,5 - Planning"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
                         ]
                     },
                     "simple": ""
@@ -692,56 +530,24 @@
                         "root": "urgency",
                         "transformers": [
                             {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^1$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - High"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^2$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "2 - Medium"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^3$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "3 - Low"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							}
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - High,2 - Medium,3 - Low"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
                         ]
                     },
                     "simple": ""
@@ -1043,56 +849,24 @@
                         "root": "impact",
                         "transformers": [
                             {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^1$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - High"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^2$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "2 - Medium"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^3$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "3 - Low"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							}
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - High,2 - Medium,3 - Low"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
                         ]
                     },
                     "simple": ""
@@ -1104,56 +878,24 @@
                         "root": "notify",
                         "transformers": [
                             {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^1$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - Do Not Notify"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^2$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "2 - Send Email"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^3$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "3 - Telephone"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							}
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Do Not Notify,2 - Send Email,3 - Telephone"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
                         ]
                     },
                     "simple": ""
@@ -1165,90 +907,24 @@
                         "root": "priority",
                         "transformers": [
                             {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^1$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - Critical"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^2$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "2 - High"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^3$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "3 - Moderate"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^4$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "4 - Low"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^5$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "5 - Planning"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							}
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Critical,2 - High,3 - Moderate,4 - Low,5 - Planning"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
                         ]
                     },
                     "simple": ""
@@ -1289,56 +965,24 @@
                         "root": "urgency",
                         "transformers": [
                             {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^1$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - High"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^2$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "2 - Medium"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^3$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "3 - Low"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							}
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - High,2 - Medium,3 - Low"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
                         ]
                     },
                     "simple": ""
@@ -1472,56 +1116,24 @@
                         "root": "severity",
                         "transformers": [
                             {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^3( - Low)?$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "1"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^2 - Medium$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "2"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^1( - High)?$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "3"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							}
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,1 - High,2,2 - Medium,3,3 - Low"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "3,3,2,2,1,1"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
                         ]
                     },
                     "simple": ""
@@ -1538,56 +1150,24 @@
                         "root": "severity",
                         "transformers": [
                             {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^3( - Low)?$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "1"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^2 - Medium$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "2"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							},
-                            {
-								"args": {
-									"regex": {
-										"isContext": false,
-										"value": {
-											"simple": "^1( - High)?$"
-										}
-									},
-									"replaceWith": {
-										"isContext": false,
-										"value": {
-											"simple": "3"
-										}
-									}
-								},
-								"operator": "replaceMatch"
-							}
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,1 - High,2,2 - Medium,3,3 - Low"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "3,3,2,2,1,1"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
                         ]
                     },
                     "simple": ""
