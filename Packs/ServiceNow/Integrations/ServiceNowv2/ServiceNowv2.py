@@ -2151,21 +2151,24 @@ def document_route_to_table(client: Client, args: dict) -> tuple[Any, dict[Any, 
     return human_readable, entry_context, result, True
 
 
-def get_ticket_file_attachments(client: Client, ticket: dict) -> list:
+def get_ticket_file_attachments(client: Client, ticket: dict, params: dict, sys_created_on: Optional[str] = None) -> list:
     """
     Extract file attachment from a service now ticket.
     """
     file_names = []
     if client.get_attachments:
-        file_entries = client.get_ticket_attachment_entries(ticket.get('sys_id', ''))
+        file_entries = client.get_ticket_attachment_entries(ticket.get('sys_id', ''), sys_created_on)
         if isinstance(file_entries, list):
             for file_result in file_entries:
                 if file_result['Type'] == entryTypes['error']:
                     raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
-                file_names.append({
-                    'path': file_result.get('FileID', ''),
-                    'name': file_result.get('File', '')
-                })
+                if '_mirrored_from_xsoar' not in file_result.get('File'):
+                    file_result['Tags'] = [params.get('file_tag_from_service_now')]
+                    demisto.info(f'Attachment {file_result.get("File", "")} was added')
+                    file_names.append({
+                        'path': file_result.get('FileID', ''),
+                        'name': file_result.get('File', '')
+                    })
     return file_names
 
 
@@ -2216,7 +2219,7 @@ def format_incidents_response_with_display_values(incidents_res: dict) -> list[d
     return format_incidents
 
 
-def fetch_incidents(client: Client) -> list:
+def fetch_incidents(client: Client, params: dict) -> list:
     query_params = {}
     incidents = []
 
@@ -2286,7 +2289,7 @@ def fetch_incidents(client: Client) -> list:
             ],
             'details': json.dumps(ticket),
             'severity': severity_map.get(ticket.get('severity', ''), 0),
-            'attachment': get_ticket_file_attachments(client=client, ticket=ticket),
+            'attachment': get_ticket_file_attachments(client=client, ticket=ticket, params=params),
             'occurred': ticket.get(client.timestamp_field),
             'sys_id': ticket.get('sys_id'),
             'rawJSON': json.dumps(ticket)
@@ -2516,12 +2519,15 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     # get latest comments and files
     entries = []
-    file_entries = client.get_ticket_attachment_entries(ticket_id, datetime.fromtimestamp(last_update))  # type: ignore
-    if file_entries:
-        for file in file_entries:
-            if '_mirrored_from_xsoar' not in file.get('File'):
-                file['Tags'] = [params.get('file_tag_from_service_now')]
-                entries.append(file)
+    if attachments := get_ticket_file_attachments(client=client, ticket=ticket, params=params,
+                                                  sys_created_on=datetime.fromtimestamp(last_update)):  # type: ignore
+        ticket['attachment'] = attachments
+    # file_entries = client.get_ticket_attachment_entries(ticket_id, datetime.fromtimestamp(last_update))  # type: ignore
+    # if file_entries:
+    #     for file in file_entries:
+    #         if '_mirrored_from_xsoar' not in file.get('File'):
+    #             file['Tags'] = [params.get('file_tag_from_service_now')]
+    #             entries.append(file)
 
     if client.use_display_value:
         ticket_type = client.get_table_name(client.ticket_type)
@@ -3167,7 +3173,7 @@ def main():
         }
         if command == 'fetch-incidents':
             raise_exception = True
-            incidents = fetch_incidents(client)
+            incidents = fetch_incidents(client, demisto.params())
             demisto.incidents(incidents)
         elif command == 'servicenow-get-ticket':
             demisto.results(get_ticket_command(client, args))
