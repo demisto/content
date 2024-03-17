@@ -563,7 +563,7 @@ def create_url_list_command(
 
     name = args["name"]
     urls = argToList(args["urls"])
-    list_type = args.get("list_type", '').lower()
+    list_type = args.get("list_type", '').lower() or None
 
     response = client.create_url_list(
         name,
