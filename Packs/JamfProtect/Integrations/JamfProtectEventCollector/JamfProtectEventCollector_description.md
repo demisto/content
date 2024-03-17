@@ -11,8 +11,7 @@ Before you configure the integration, retrieve the API Client and Password from 
 4. Assign the Full Access role to the API client.
 5. Copy the API client password for later use.
     Your API client configuration and endpoint information displays.
-
-Copy the API client and password into the integration configuration.
+6. Copy the API client and password into the integration configuration.
 
 # Notes:
     You can assign a custom role that limits permissions by editing the API client.
