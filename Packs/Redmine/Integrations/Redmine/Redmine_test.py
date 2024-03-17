@@ -6,7 +6,9 @@ from Redmine import Client
 def redmine_client(url: str = 'url', verify_certificate: bool = True, proxy: bool = False, auth=('username', 'password')):
     return Client(url, verify_certificate, proxy, auth=auth)
 
+
 ''' COMMAND FUNCTIONS TESTS '''
+
 
 def test_create_issue_command(mocker, redmine_client):
     """
@@ -106,9 +108,9 @@ def test_update_issue_command(mocker, redmine_client):
     args = {'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': 'Bug', 'watcher_user_ids': '[1]'}
     update_issue_command(redmine_client, args=args)
     http_request.assert_called_with('PUT', '/issues/1.json', json_data={'issue': {'subject': 'changeFromCode',
-                                                                                  'tracker_id': '1','watcher_user_ids': [1]}},
-                                    headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True}, 
-                                    empty_valid_codes=[204],return_empty_response=True)
+                                                                                  'tracker_id': '1', 'watcher_user_ids': [1]}},
+                                    headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True},
+                                    empty_valid_codes=[204], return_empty_response=True)
 
 
 def test_update_issue_command_invalid_custom_fields(redmine_client):
@@ -431,7 +433,7 @@ def test_get_project_list_command_response(mocker, redmine_client):
     # Execute and assert
     with pytest.raises(DemistoException) as e:
         get_project_list_command(redmine_client, args)
-    assert str(e.value) == "Request Succeeded, Response not in correct format."
+    assert str(e.value) == "Request Succeeded, Parse Error."
 
 
 def test_get_custom_fields_command(mocker, redmine_client):
@@ -480,7 +482,7 @@ def test_get_users_command_invalid_response(mocker, redmine_client):
     # Execute and assert
     with pytest.raises(DemistoException) as e:
         get_users_command(redmine_client, args)
-    assert str(e.value) == "Request Succeeded, Response not in correct format."
+    assert str(e.value) == "Request Succeeded, Parse Error."
 
 
 def test_get_users_command_status_invalid(mocker, redmine_client):
@@ -500,6 +502,7 @@ def test_get_users_command_status_invalid(mocker, redmine_client):
 
 
 ''' HELPER FUNCTIONS TESTS '''
+
 
 @pytest.mark.parametrize('page_size, page_number, expected_output',
                          [(1, 10, '#### Showing 1 results from page 10:\n')])
@@ -530,6 +533,7 @@ def test_adjust_paging_to_request(args, expected_output):
     from Redmine import adjust_paging_to_request
     assert adjust_paging_to_request(args['page_number'], args['page_size'], None) == expected_output
 
+
 def test_convert_args_to_request_format():
     """
     Given:
@@ -540,6 +544,6 @@ def test_convert_args_to_request_format():
         - The key or value is being converted
     """
     from Redmine import convert_args_to_request_format
-    args = {'tracker_id':'Bug'}
+    args = {'tracker_id': 'Bug'}
     convert_args_to_request_format(args)
     assert args['tracker_id'] == '1'

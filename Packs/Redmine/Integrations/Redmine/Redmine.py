@@ -16,7 +16,7 @@ MIN_LIMIT = 0
 INVALID_ID_DEMISTO_ERROR = "Invalid ID for one or more fields that request IDs. Please make sure all IDs are correct."
 RESPONSE_NOT_IN_FORMAT_ERROR = "Request Succeeded, Parse Error."
 
-HR_SHOW_ONLY_NAME=JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', ''))
+HR_SHOW_ONLY_NAME = JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', ''))
 
 USER_STATUS_DICT = {
     'Active': '1',
@@ -170,17 +170,18 @@ def adjust_paging_to_request(page_number, page_size, limit):
         raise DemistoException(f"Maximum limit is 100 and Minimum limit is 0, you provided {limit}")
     return BASE_DEFAULT_OFFSET_NUMBER, limit, BASE_DEFAULT_PAGE_NUMBER_INT
 
-def convert_args_to_request_format(args: Dict[str,Any]):
+
+def convert_args_to_request_format(args: Dict[str, Any]):
     try:
-        if tracker_id:=args.pop('tracker_id', None):
+        if tracker_id := args.pop('tracker_id', None):
             args['tracker_id'] = ISSUE_TRACKER_DICT[tracker_id]
-        if status_id:=args.pop('status_id', None):
+        if status_id := args.pop('status_id', None):
             args['status_id'] = ISSUE_STATUS_DICT[status_id]
-        if priority_id:=args.pop('priority_id', None):
+        if priority_id := args.pop('priority_id', None):
             args['priority_id'] = ISSUE_PRIORITY_DICT[priority_id]
     except DemistoException as e:
         raise DemistoException(f"Predefined value is not in format for {e.message}.")
-    if custom_fields:=args.pop('custom_fields', None):
+    if custom_fields := args.pop('custom_fields', None):
         custom_fields = argToList(custom_fields)
         try:
             args['custom_fields'] = [{'id': field.split(':')[0], 'value': field.split(':')[1]} for field in custom_fields]
@@ -292,7 +293,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
                                             "custom_fields": JsonTransformer(keys=["name", "value"]),
                                         })
     )
-    
+
     return command_results
 
 
@@ -417,7 +418,7 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
         headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date',
                    'due_date', 'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'closed_on',
                    'attachments', 'watchers', 'children', 'relations', 'changesets', 'journals', 'allowed_statuses']
-        
+
         '''Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True'''
         response_issue['id'] = str(response_issue['id'])
         command_results = CommandResults(outputs_prefix='Redmine.Issue',
