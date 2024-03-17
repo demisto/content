@@ -31,11 +31,13 @@ from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
 from exchangelib.version import VERSIONS as EXC_VERSIONS
-
+from email.policy import SMTP, SMTPUTF8
 
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
 # overriding this function to remove minor version test and remove error throw.
 # opened bug for exchanglib here https://github.com/ecederstrand/exchangelib/issues/1210
+
+
 def our_fullname(self):  # pragma: no cover
     for build, api_version, full_name in EXC_VERSIONS:
         # removed 'or self.build.minor_version != build.minor_version'
@@ -1288,11 +1290,13 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
 
                         # save the attachment
                         if hasattr(attachment, 'item') and attachment.item.mime_content:
+                            email_policy = SMTP if attachment.item.mime_content.isascii() else SMTPUTF8
+
                             # Some items arrive with bytes attachemnt
                             if isinstance(attachment.item.mime_content, bytes):
-                                attached_email = email.message_from_bytes(attachment.item.mime_content)
+                                attached_email = email.message_from_bytes(attachment.item.mime_content, policy=email_policy)
                             else:
-                                attached_email = email.message_from_string(attachment.item.mime_content)
+                                attached_email = email.message_from_string(attachment.item.mime_content, policy=email_policy)
                             if attachment.item.headers:
                                 attached_email_headers = []
                                 for h, v in list(attached_email.items()):
@@ -1304,11 +1308,11 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                             continue
 
                                     v = ' '.join(map(str.strip, v.split('\r\n')))
-                                    attached_email_headers.append((h, v))
+                                    attached_email_headers.append((h.lower(), v))
 
                                 for header in attachment.item.headers:
-                                    if (header.name, header.value) not in attached_email_headers \
-                                            and header.name != 'Content-Type':
+                                    if (header.name.lower(), header.value) not in attached_email_headers \
+                                            and header.name.lower() != 'content-type':
                                         attached_email.add_header(header.name, header.value)
 
                             file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
@@ -2229,11 +2233,13 @@ def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
     item = get_item_from_mailbox(account, item_id)
 
     if item.mime_content:
+        mime_content = item.mime_content
+        email_policy = SMTP if mime_content.isascii() else SMTPUTF8
         # came across an item with bytes attachemnt which failed in the source code, added this to keep functionality
-        if isinstance(item.mime_content, bytes):
-            email_content = email.message_from_bytes(item.mime_content)
+        if isinstance(mime_content, bytes):
+            email_content = email.message_from_bytes(mime_content, policy=email_policy)
         else:
-            email_content = email.message_from_string(item.mime_content)
+            email_content = email.message_from_string(mime_content, policy=email_policy)
         if item.headers:
             attached_email_headers = []
             for h, v in list(email_content.items()):
@@ -2244,15 +2250,14 @@ def get_item_as_eml(item_id, target_mailbox=None):  # pragma: no cover
                         demisto.debug(f'cannot parse the header "{h}"')
 
                 v = ' '.join(map(str.strip, v.split('\r\n')))
-                attached_email_headers.append((h, v))
+                attached_email_headers.append((h.lower(), v))
             for header in item.headers:
-                if (header.name, header.value) not in attached_email_headers and header.name != 'Content-Type':
+                if (header.name.lower(), header.value) not in attached_email_headers and header.name.lower() != 'content-type':
                     email_content.add_header(header.name, header.value)
 
         eml_name = item.subject if item.subject else 'demisto_untitled_eml'
-        email_content_str = email_content.as_string()
-        email_content_lf_to_crlf = email_content_str.replace('\n', '\r\n')
-        file_result = fileResult(f"{eml_name}.eml", email_content_lf_to_crlf)
+        file_result = fileResult(eml_name + ".eml", email_content.as_string())
+
         file_result = file_result if file_result else "Failed uploading eml file to war room"
 
         return file_result

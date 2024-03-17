@@ -830,11 +830,45 @@ def test_parse_physical_address():
 
 def test_get_item_as_eml(mocker):
     """
-    Given:
+    Given
         - A quoted-printable encoded email returns.
-    When:
+    When
         - The "ews-get-items-as-eml" command is called.
-    Then:
+    Then
         - The output contains the expected file name and content
     """
     from EWSv2 import get_item_as_eml
+    from exchangelib.properties import MessageHeader
+    from exchangelib.items import Item
+
+    content = b'MIME-Version: 1.0\r\n' \
+              b'Message-ID:\r\n' \
+              b' <message-test-idRANDOMVALUES@testing.com>\r\n' \
+              b'Content-Type: text/plain; charset="iso-8859-2"\r\n' \
+              b'Content-Transfer-Encoding: quoted-printable\r\n' \
+              b'X-FAKE-Header: HVALue\r\n' \
+              b'X-Who-header: whovALUE\r\n' \
+              b'\r\nHello'
+
+    item_headers = [
+        MessageHeader(name="Mime-Version", value="1.0"),
+        MessageHeader(name="Content-Type", value='application/ms-tnef'),
+        MessageHeader(name="X-Fake-Header", value="HVALue"),
+        MessageHeader(name="X-WHO-header", value="whovALUE"),
+        MessageHeader(name="X-EXTRA-Missed-Header", value="EXTRA")
+    ]
+    expected_data = 'MIME-Version: 1.0\r\n' \
+                    'Message-ID: \r\n' \
+                    ' <message-test-idRANDOMVALUES@testing.com>\r\n' \
+                    'Content-Type: text/plain; charset="iso-8859-2"\r\n' \
+                    'Content-Transfer-Encoding: quoted-printable\r\n' \
+                    'X-FAKE-Header: HVALue\r\n' \
+                    'X-Who-header: whovALUE\r\n' \
+                    'X-EXTRA-Missed-Header: EXTRA\r\n' \
+                    '\r\nHello'
+    mock_file_result = mocker.patch('EWSv2.fileResult')
+    mocker.patch.object(EWSv2, 'get_item_from_mailbox', return_value=Item(mime_content=content, headers=item_headers))
+    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+
+    get_item_as_eml("Inbox", "test@gmail.com")
+    mock_file_result.assert_called_once_with("demisto_untitled_eml.eml", expected_data)
