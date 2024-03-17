@@ -58,7 +58,7 @@ Append `expirationStatus:active` to the end of the query.
 | Exported Fields                    | For use with JSON and CSV formats - select specific Cortex XSOAR fields to export. If given the value 'all' - all Cortex XSOAR fields are exported. If empty - only value and type are exported.                                                      | False        |
 | List Size                          | Maximum number of items in the list.                                                                                                                                                                                                                 | True         |
 | Refresh Rate                       | How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute.                                                      | False        |
-| Listen Port                        | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for the EDL will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.                                                            | True         |
+| Listen Port                        | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) If using an engine, you must enter a Listen Port. If not using an engine, do not enter a Listen Port and an unused port for the Generic Export Indicators Service will automatically be generated when the instance is saved.                                                             | True         |
 | Certificate (Required for HTTPS)   | (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.                                                                                                                                                                                  | False        |
 | Private Key (Required for HTTPS)   | For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server.                                                                                                                                                                                  | False        |
 | Username                           | Uses basic authentication for accessing the list. If empty, no authentication is enforced.                                                                                                                                                           | (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory.    |
@@ -154,19 +154,25 @@ Optional system fields are:
 In addition to the system fields, you can also search for custom fields.
 In order to get the list of all available fields to search by, you can configure the `Exported Fields` parameter with the `all` option and check the list returned.
 
-### Access the Export Indicators Service by Instance Name (HTTPS)
+### Access the Export Indicators Service by Instance Name (HTTPS) - For Cortex XSOAR 6.x only
 
-**Note**: By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
+**Note**: 
+- By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
+- For Cortex XSOAR 8 and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
+   - On a tenant, use https://ext-<cortex-xsoar-address\>/xsoar/instance/execute/\<instance-name\>
+   
+     For example: curl -v -u user:pass https://ext-mytenant.paloaltonetworks.com/xsoar/instance/execute/edl_instance_01\?q\=type:ip
+   - On an engine, use http://\<engine-address\>:\<integration listen port\>/
+     
+     For example: curl -v -u user:pass http://\<engine_address\>:\<listen_port\>/?n=50
 
 To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled.
 
-1. For Cortex XSOAR 6.x:
-   1. Navigate to **Settings > About > Troubleshooting**.
-   2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
-2. In a web browser, go to:
+1. Navigate to **Settings > About > Troubleshooting**.
+2.  In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+3. In a web browser, go to:
+    `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
  
-   - (For Cortex XSOAR 6.x) `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
-   - (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
 
 
 ### URL Inline Arguments

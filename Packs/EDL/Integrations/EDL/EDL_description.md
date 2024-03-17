@@ -7,7 +7,7 @@ Note: After a successful configuration of an instance, if the 'test button' is c
 <~XSIAM>
 ### Access the Generic Export Indicators Service by Instance Name (HTTPS)
 
-**Note**: Do not set `username` and `password` in the integration instance if you are running the integration via the hosted instance. The `username` and `password` fields are for usage when running the integration via an on-prem engine.
+**Note**: If you are running the integration via an on-prem engine you must set the username and password fields in the integration instance. Otherwise, for normal usage, if you have set a default password in your tenant, you do not have to set a username and password in the integration instance
 
 **Note**: The External Dynamic List is not accessible via web browsers and you will receive an unauthorized error if accessing the External Dynamic List via a browser.
 
@@ -35,10 +35,10 @@ curl -v -u test:password https://edl-my-xsiam-subdomain.us.paloaltonetworks.com/
 **Note**: When using an instance that is running on an engine, you can access only with the `Listen Port`. Go to **http://<cortex-xsoar-server-address>:<listen_port>**.
 
 1. To access the **Generic Export Indicators Service** by instance name, set up the **username** and **password** values in the **External Dynamic List Integration** page (**Settings & info** > **SETTINGS** > **Long Running Integrations**).
-2. You can access the External Dynamic List at the following url: `https://edl-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`.
+2. You can access the External Dynamic List at the following URL: `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`. Note: You cannot access the External Dynamic List via a web browser.
 3. For example to test via curl with an instance with instance name: `EDL_instance_1`, XSOAR address `my-xsoar-subdomain.us.paloaltonetworks.com` and credentials test/password:
 ```
-curl -v -u test:password https://edl-my-xsoar-subdomain.us.paloaltonetworks.com/xsoar/instance/execute/EDL_instance_1
+curl -v -u test:password https://ext-my-xsoar-subdomain.us.paloaltonetworks.com/xsoar/instance/execute/EDL_instance_1
 ```
 
 </~XSOAR_SAAS>
@@ -54,16 +54,11 @@ In a web browser, go to **http://<cortex-xsoar-server-address>:<listen_port>**.
 
 **Note**: The `Listen Port` parameter is required.
 
-1. For Cortex XSOAR  6.x only:
-   1. Navigate to **Settings > About > Troubleshooting**.
-   2. (For Cortex XSOAR 6.x only) In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
-2.  In a web browser, go to:
-
-   - (For Cortex XSOAR 6.x) `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
-   - (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
-
-
-In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc-<account name>/instance/execute/<instance_name>/`
+1. Navigate to **Settings > About > Troubleshooting**.
+2. In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+3.  In a web browser, go to
+    `https://*<xsoar_address>*/instance/execute/*<instance_name>*`
+     (In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc-<account name>/instance/execute/<instance_name>/`)
 
 </~XSOAR_ON_PREM>
 
