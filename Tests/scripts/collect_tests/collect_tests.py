@@ -811,12 +811,12 @@ class BranchTestCollector(TestCollector):
             else self._get_git_diff()
 
         return CollectionResult.union([
-            self.__collect_from_changed_files(collect_from.changed_files),
-            self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
-            self.__collect_packs_diff_master_bucket()
+            self._collect_from_changed_files(collect_from.changed_files),
+            self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
+            self._collect_packs_diff_master_bucket()
         ])
 
-    def __collect_packs_diff_master_bucket(self) -> CollectionResult | None:
+    def _collect_packs_diff_master_bucket(self) -> CollectionResult | None:
 
         collected_packs: list[CollectionResult | None] = []
 
@@ -827,22 +827,26 @@ class BranchTestCollector(TestCollector):
 
             path = PATHS.content_path / file_path
 
-            if not path.exists():
-                raise FileNotFoundError(path)
-
-            collected_packs.append(self._collect_pack(
-                pack_id=find_pack_folder(path).name,
-                reason=CollectionReason.PACK_MASTER_BUCKET_DISCREPANCY,
-                reason_description=file_path,
-                only_to_install=False
-            ))
+            try:
+                self._validate_path(path=path)
+                collected_packs.append(self._collect_pack(
+                    pack_id=find_pack_folder(path).name,
+                    reason=CollectionReason.PACK_MASTER_BUCKET_DISCREPANCY,
+                    reason_description=file_path,
+                    only_to_install=False
+                ))
+            except NothingToCollectException as e:
+                logger.info(e.message)
+            except Exception as e:
+                logger.exception(f'Error while collecting pack for {path}', exc_info=True, stack_info=True)
+                raise e
 
         # union with collected_packs since changed_files and since files were removed
         return CollectionResult.union(tuple(itertools.chain(collected_packs,
-                                                            [self.__collect_packs_from_which_files_were_removed
+                                                            [self._collect_packs_from_which_files_were_removed
                                                              (collect_from.pack_ids_files_were_removed_from)])))
 
-    def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult | None:
+    def _collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult | None:
         """NOTE: this should only be used from _collect"""
         collected = []
         for raw_path in changed_files:
@@ -864,7 +868,7 @@ class BranchTestCollector(TestCollector):
                 raise e
         return CollectionResult.union(collected)
 
-    def __collect_packs_from_which_files_were_removed(self, pack_ids: tuple[str, ...]) -> CollectionResult | None:
+    def _collect_packs_from_which_files_were_removed(self, pack_ids: tuple[str, ...]) -> CollectionResult | None:
         """NOTE: this should only be used from _collect"""
         collected: list[CollectionResult] = []
         for pack_id in pack_ids:
