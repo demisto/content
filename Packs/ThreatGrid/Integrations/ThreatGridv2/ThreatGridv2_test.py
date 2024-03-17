@@ -259,6 +259,7 @@ def test_analysis_sample_command_no_response(requests_mock, mock_client):
 
     assert result.readable_output == '### No results were found for sample_id sample_id'
 
+
 def test_get_rate_limit_command(requests_mock, mock_client):
     """
     Scenario: Get rate limit for a specific user name.
