@@ -1,5 +1,5 @@
 {
-    "microsoft_windows_raw": {
+    "microsoft_sysmon_raw": {
       "event_id": {
         "type": "int",
         "is_array": false
