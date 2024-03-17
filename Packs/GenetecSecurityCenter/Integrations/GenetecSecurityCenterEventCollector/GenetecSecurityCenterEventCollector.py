@@ -91,12 +91,16 @@ def fetch_events_command(
     time_now: datetime = datetime.utcnow()
     start_time: datetime
     start_time_str: str = ""
-    if not last_run:
+    if args.get("start_time"):
+        start_time_str = args.get("start_time", "")
+    elif not last_run:
+        demisto.info("Starting a new iteration, didn't receive last run.")
         start_time = datetime.strptime("2024-02-21T23:00:00", DATE_FORMAT_EVENT)
         # start_time = time_now - timedelta(minutes=1)
         start_time_str = start_time.strftime(DATE_FORMAT_EVENT)
     else:
-        start_time_str = last_run.get("start_time", time_now - timedelta(minutes=1))
+        start_time_str = last_run.get("start_time", "")
+        demisto.info(f"Starting a new iteration with last_run = {start_time_str}.")
     time_now_str = time_now.strftime(DATE_FORMAT_EVENT)
     time_range = f"TimeRange.SetTimeRange({start_time_str},{time_now_str})"
     limit: int = int(args.get('limit') or client.limit)
@@ -104,6 +108,7 @@ def fetch_events_command(
     url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q={query}"
     demisto.info(f"executing fetch events with the following query: {query}")
     response = client.http_request(url_suffix=url_suffix)
+    demisto.info(f"got {len(response)} events, truncating.")
     results = response[:limit]
     for result in results:
         result["Value"] = parse(result.get("Value"))

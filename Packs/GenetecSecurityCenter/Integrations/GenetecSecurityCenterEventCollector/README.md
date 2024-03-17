@@ -9,7 +9,7 @@ Security Center is the foundation of our unified security portfolio. It lets you
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Your server URL |  | True |
-    | Username | Username &amp;amp; Password. | True |
+    | Username | Username and Password. | True |
     | Password |  | True |
     | Application ID |  | True |
     | Trust any certificate (not secure) |  | False |
@@ -19,7 +19,7 @@ Security Center is the foundation of our unified security portfolio. It lets you
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands Alert War Room in the CLI in XSIAM.
+You can execute these commands in the War Room in the CLI in Cortex XSIAM.
 ### genetec-security-center-get-events
 ***
 Manual command to fetch events and display them.
@@ -34,6 +34,7 @@ Manual command to fetch events and display them.
 | --- | --- | --- |
 | limit | The maximum amount of events to retrieve. | Optional | 
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. | Required | 
+| start_time | The start time to fetch_from, should be in the format of YYYY-MM-DDTHH:MM:SS (e.g. 2024-02-21T23:00:00). | Optional |
 
 
 #### Context Output
