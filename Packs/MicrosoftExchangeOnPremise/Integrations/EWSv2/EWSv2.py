@@ -28,9 +28,12 @@ from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2010_SP2, EXCHANGE_2013,
                                  EXCHANGE_2016, EXCHANGE_2019)
+from exchangelib.protocol import NoVerifyHTTPAdapter  # noqa: E402
+
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
 from exchangelib.version import VERSIONS as EXC_VERSIONS
+import ssl
 
 
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
@@ -415,9 +418,7 @@ def prepare_context(credentials):  # pragma: no cover
 
 def prepare():  # pragma: no cover
     if NON_SECURE:
-        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter
-    else:
-        BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
+        BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
 
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     AUTO_DISCOVERY = not EWS_SERVER
