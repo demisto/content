@@ -627,7 +627,6 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
     XSOAR2STIXParser_client = XSOAR2STIXParser(server_version=SERVER.version, namespace_uuid=SERVER.namespace_uuid,
                                                fields_to_present=SERVER.fields_to_present,
                                                types_for_indicator_sdo=SERVER.types_for_indicator_sdo)
-    # iocs, extensions, total = XSOAR2STIXParser_client.create_indicators(indicator_searcher,is_manifest)
     iocs, extensions, total = XSOAR2STIXParser_client.create_indicators(indicator_searcher, is_manifest)
     # total = 0
     # extensions_dict: dict = {}

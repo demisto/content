@@ -1955,3 +1955,24 @@ def test_create_relationships_objects(mocker):
     mocker.patch.object(demisto, 'searchRelationships', return_value=mock_search_relationships_response)
     relationships = cilent.create_relationships_objects(data.get("iocs"), [])
     assert relationships == data.get("relationships")
+
+
+def test_create_indicators(mocker):
+    mock_iocs = util_load_json('test_data/sort_ip_iocs.json')
+    mock_entity_b_iocs = util_load_json('test_data/entity_b_iocs.json')
+    expected_result = util_load_json('test_data/create_indicators_test_results.json')
+    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.6.0'})
+    mocker.patch.object(demisto, 'searchIndicators', side_effect=[mock_iocs,
+                                                                  mock_entity_b_iocs])
+    cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present={'name', 'type'},
+                              types_for_indicator_sdo=[], namespace_uuid=uuid.uuid5(PAWN_UUID, demisto.getLicenseID()))
+    iocs, extensions, total = cilent.create_indicators(IndicatorsSearcher(
+        filter_fields='accounttype,description,name,createdTime,modified,stixid,mitreid,type,userid',
+        query='type:IP',
+        limit=20,
+        size=2000,
+        sort=[{"field": "modified", "asc": True}],
+    ), False)
+
+    assert extensions == []
+    assert iocs == expected_result
