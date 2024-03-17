@@ -11,7 +11,7 @@ configuration:
   required: true
   defaultvalue:
   type: 0
-  additionalinfo: 'REST API Endpoint of Jamf Protect server.'
+  additionalinfo: REST API Endpoint of Jamf Protect server.
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
