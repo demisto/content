@@ -67,6 +67,16 @@ function finish(playbookId, tag, err, entryGUID) {
 }
 
 
+function checkCommandSanitized(cmd) {
+    for (var i = 0; i < SANITIZED_ARG_NAMES.length; i++) {
+        current_arg_name = SANITIZED_ARG_NAMES[i];
+        if ((temp.match(/SANITIZED_ARG_NAMES[i]/g) || []).length > 1) {
+            throw new Error('Error, The value of ' + SANITIZED_ARG_NAMES[i] + ' is malformed.');
+        }
+    }
+}
+
+
 function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pendingIds, interval, timeout, tag, additionalArgNames, additionalArgValues, extractMode) {
     var idsStr = ids.replace(/"/g, '\\"');
     var playbookIdStr = '';
@@ -79,6 +89,9 @@ function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pend
     if (extractMode !== undefined) {
         cmd += ' extractMode="' + extractMode + '" auto-extract="' + extractMode + '"';
     }
+
+    checkCommandSanitized(cmd)
+
     return executeCommand("ScheduleCommand", {
         'command': cmd,
         'cron': '*/' + interval + ' * * * *',
