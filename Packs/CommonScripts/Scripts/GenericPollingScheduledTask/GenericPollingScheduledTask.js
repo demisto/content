@@ -68,9 +68,11 @@ function finish(playbookId, tag, err, entryGUID) {
 
 
 function checkCommandSanitized(cmd) {
+    var cmd_lower = cmd.toLowerCase()
     for (var i = 0; i < SANITIZED_ARG_NAMES.length; i++) {
-        current_arg_name = SANITIZED_ARG_NAMES[i];
-        if ((temp.match(/SANITIZED_ARG_NAMES[i]/g) || []).length > 1) {
+        var current_arg_name_lower = SANITIZED_ARG_NAMES[i].toLowerCase();
+        var regex = new RegExp(current_arg_name_lower, "g");
+        if ((cmd_lower.match(regex) || []).length > 1) {
             throw new Error('Error, The value of ' + SANITIZED_ARG_NAMES[i] + ' is malformed.');
         }
     }

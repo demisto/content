@@ -61,8 +61,12 @@ def is_value_sanitized(value):
 
 def is_command_sanitized(command):
     malformed_args = []
+    if not command:
+        return true
+    command_lower = command.lower()
     for current_sanitized_arg_name in SANITIZED_ARG_NAMES:
-        if command.count(current_sanitized_arg_name) > 1:
+        lower_arg_name = current_sanitized_arg_name.lower()
+        if command_lower.count(lower_arg_name) > 1:
             malformed_args.append(current_sanitized_arg_name)
         command = command.replace(current_sanitized_arg_name, '')
     if malformed_args:
