@@ -5,7 +5,6 @@ from AWSApiModule import *
 """IMPORTS"""
 from datetime import date
 import urllib3.util
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -190,6 +189,7 @@ def prepare_create_function_kwargs(args: dict[str, str]):
 
 
 def get_function(args: dict, aws_client):
+
     obj = vars(aws_client._client_config)
     kwargs = {'FunctionName': args.get('functionName')}
     if args.get('qualifier') is not None:
@@ -214,6 +214,7 @@ def get_function(args: dict, aws_client):
 
 
 def list_functions(aws_client):
+
     obj = vars(aws_client._client_config)
     data = []
     output = []
@@ -240,6 +241,7 @@ def list_functions(aws_client):
 
 
 def list_aliases(args, aws_client):
+
     data = []
     output = []
     kwargs = {'FunctionName': args.get('functionName')}
@@ -265,6 +267,7 @@ def list_aliases(args, aws_client):
 
 
 def invoke(args, aws_client):
+
     obj = vars(aws_client._client_config)
     kwargs = {'FunctionName': args.get('functionName')}
     if args.get('invocationType') is not None:
@@ -300,6 +303,7 @@ def invoke(args, aws_client):
 
 
 def remove_permission(args, aws_client):
+
     kwargs = {
         'FunctionName': args.get('functionName'),
         'StatementId': args.get('StatementId')
@@ -315,6 +319,7 @@ def remove_permission(args, aws_client):
 
 
 def get_account_settings(args, aws_client):
+
     obj = vars(aws_client._client_config)
     response = aws_client.get_account_settings()
     account_limit = response['AccountLimit']
@@ -398,7 +403,6 @@ def list_versions_by_function_command(args: dict[str, str], aws_client) -> Comma
         list[CommandResults]: A list of CommandResults objects, containing the parsed versions as outputs,
                               a readable output in Markdown format, and relevant metadata.
     """
-
     def parse_version(version: dict[str, Any]) -> dict[str, str | None]:
         return {
             "Function Name": version.get('FunctionName'),
@@ -448,7 +452,6 @@ def get_function_url_config_command(args: dict[str, str], aws_client) -> Command
         CommandResults: An object containing the URL configuration as outputs, a readable output in Markdown format,
                         and relevant metadata.
     """
-
     def parse_url_config(data: dict[str, Any]) -> dict[str, str | None]:
         return {
             "Function Url": data.get('FunctionUrl'),
@@ -491,7 +494,6 @@ def get_function_configuration_command(args: dict[str, str], aws_client) -> Comm
         CommandResults: An object containing the function configuration as outputs, a readable output in Markdown format,
                         and relevant metadata.
     """
-
     def parse_function_configuration(data: dict[str, Any]) -> dict[str, str | None]:
         return {
             "Function Name": data.get('FunctionName'),
@@ -721,6 +723,7 @@ def test_function(aws_client):
 
 
 def main():
+
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
