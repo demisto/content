@@ -9,7 +9,6 @@ def redmine_client(url: str = 'url', verify_certificate: bool = True, proxy: boo
 
 ''' COMMAND FUNCTIONS TESTS '''
 
-
 def test_create_issue_command(mocker, redmine_client):
     """
     Given:
@@ -503,7 +502,6 @@ def test_get_users_command_status_invalid(mocker, redmine_client):
 
 ''' HELPER FUNCTIONS TESTS '''
 
-
 @pytest.mark.parametrize('page_size, page_number, expected_output',
                          [(1, 10, '#### Showing 1 results from page 10:\n')])
 def test_create_paging_header(page_size, page_number, expected_output):
@@ -533,22 +531,6 @@ def test_adjust_paging_to_request(args, expected_output):
     from Redmine import adjust_paging_to_request
     assert adjust_paging_to_request(args['page_number'], args['page_size'], None) == expected_output
 
-
-@pytest.mark.parametrize('header_name, expected_output',
-                         [('id', '#### Showing 1 results from page 10:\n')])
-def test_map_header(header_name, expected_output):
-    """
-    Given:
-        - All relevant arguments for the command that is executed
-    When:
-        - map_header command is executed
-    Then:
-        - The header is being converted
-    """
-    from Redmine import map_header
-    assert map_header(header_name) == 'ID'
-
-
 def test_convert_args_to_request_format():
     """
     Given:
@@ -559,6 +541,6 @@ def test_convert_args_to_request_format():
         - The key or value is being converted
     """
     from Redmine import convert_args_to_request_format
-    args = {}
-    convert_args_to_request_format('Bug', None, None, None, args)
+    args = {'tracker_id':'Bug'}
+    convert_args_to_request_format(args)
     assert args['tracker_id'] == '1'

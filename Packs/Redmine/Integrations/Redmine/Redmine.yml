@@ -163,11 +163,12 @@ script:
       - Support
     - name: status_id
       auto: PREDEFINED
-      description: Specify a status ID to display issues of this status ID (* means all).
+      description: Specify a status ID to display issues of this status ID.
+      defaultValue: Open
       predefined:
-      - open
-      - closed
-      - '*'
+      - Open
+      - Closed
+      - All
     - name: assigned_to_id
       description: Specify an assigned-to ID to display issues assigned to this user ID.
     - name: parent_id
@@ -300,7 +301,7 @@ script:
       description: The ID of the issue you want to delete.
       required: true
   - name: redmine-issue-watcher-add
-    description: Add a watcher to the specified issue.
+    description: Add a watcher to the specified issue. Ensure that the watcher_id is accurate, as the Redmine API does not raise an exception for an incorrect watcher_id.
     arguments:
     - name: issue_id
       description: The ID of the issue to which you want to add a watcher.

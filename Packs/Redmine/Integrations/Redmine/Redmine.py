@@ -6,15 +6,17 @@ from CommonServerUserPython import *
 from typing import Any
 
 ''' CONSTANTS '''
-PAGE_SIZE_DEFAULT = '50'
 PAGE_SIZE_DEFAULT_INT = 50
 DEFAULT_LIMIT_NUMBER = 25
-PAGE_NUMBER_DEFAULT = '1'
 BASE_DEFAULT_PAGE_NUMBER_INT = 1
 BASE_DEFAULT_OFFSET_NUMBER = 0
+MAX_LIMIT = 100
+MIN_LIMIT = 0
 
 INVALID_ID_DEMISTO_ERROR = "Invalid ID for one or more fields that request IDs. Please make sure all IDs are correct."
 RESPONSE_NOT_IN_FORMAT_ERROR = "Request Succeeded, Response not in correct format."
+
+HR_SHOW_ONLY_NAME=JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', ''))
 
 USER_STATUS_DICT = {
     'Active': '1',
@@ -34,9 +36,12 @@ ISSUE_STATUS_DICT = {
     'Feedback': '4',
     'Closed': '5',
     'Rejected': '6',
-    'open': 'open',
-    'closed': 'closed',
-    '*': '*'
+}
+
+ISSUE_STATUS_FOR_LIST_COMMAND = {
+    'Open': 'open',
+    'Closed': 'closed',
+    'All': '*'
 }
 
 ISSUE_PRIORITY_DICT = {
@@ -66,7 +71,7 @@ class Client(BaseClient):
                                       data=file_content)
         return response
 
-    def create_issue_request(self, args, watcher_user_ids, project_id=None):
+    def create_issue_request(self, args, watcher_user_ids, project_id):
         args['project_id'] = project_id
         args['watcher_user_ids'] = watcher_user_ids
         remove_nulls_from_dictionary(args)
@@ -161,48 +166,21 @@ def adjust_paging_to_request(page_number, page_size, limit):
         generated_offset = (page_number - 1) * page_size
         return generated_offset, page_size, page_number
     limit = arg_to_number(limit) or DEFAULT_LIMIT_NUMBER
-    if limit > 100 or limit <= 0:
+    if limit > MAX_LIMIT or limit <= MIN_LIMIT:
         raise DemistoException(f"Maximum limit is 100 and Minimum limit is 0, you provided {limit}")
     return BASE_DEFAULT_OFFSET_NUMBER, limit, BASE_DEFAULT_PAGE_NUMBER_INT
 
-
-def map_header(header_string: str) -> str:
-    header_mapping = {
-        'id': 'ID',
-        'author': 'Author',
-        'project': 'Project',
-        'status': 'Status',
-        'priority': ' Priority',
-        'login': 'Login',
-        'admin': 'Admin',
-        'firstname': 'First Name',
-        'lastname': 'Last Name',
-        'mail': 'Email',
-        'created_on': 'Created On',
-        'last_login_on': 'Last Login On',
-        'estimated_hours': 'Estimated Hours',
-        'start_date': 'Start Date',
-        'custom_fields': 'Custom Fields',
-        'description': 'Description',
-        'subject': 'Subject',
-        'update_on': 'Updated On',
-        'is_private': 'Is Private',
-        'tracker': 'Tracker',
-    }
-    return header_mapping.get(header_string, header_string)
-
-
-def convert_args_to_request_format(tracker_id, status_id, priority_id, custom_fields, args):
+def convert_args_to_request_format(args: Dict[str,Any]):
     try:
-        if tracker_id:
+        if tracker_id:=args.pop('tracker_id', None):
             args['tracker_id'] = ISSUE_TRACKER_DICT[tracker_id]
-        if status_id:
+        if status_id:=args.pop('status_id', None):
             args['status_id'] = ISSUE_STATUS_DICT[status_id]
-        if priority_id:
+        if priority_id:=args.pop('priority_id', None):
             args['priority_id'] = ISSUE_PRIORITY_DICT[priority_id]
     except DemistoException as e:
         raise DemistoException(f"Predefined value is not in format for {e.message}.")
-    if custom_fields:
+    if custom_fields:=args.pop('custom_fields', None):
         custom_fields = argToList(custom_fields)
         try:
             args['custom_fields'] = [{'id': field.split(':')[0], 'value': field.split(':')[1]} for field in custom_fields]
@@ -228,7 +206,7 @@ def get_file_content(entry_id: str) -> bytes:
     return file_bytes
 
 
-def handle_file_attachment(client: Client, args: Dict[str, Any]):
+def handle_file_attachment(client: Client, args: Dict[str, Any], entry_id: str):
     """If a file was provided create a token and add to args
 
     Args:
@@ -239,20 +217,18 @@ def handle_file_attachment(client: Client, args: Dict[str, Any]):
         DemistoException: response not in format or could not create a token
     """
     try:
-        entry_id = args.pop('file_entry_id', None)
-        if entry_id:
-            file_name = args.pop('file_name', '')
-            file_description = args.pop('file_description', '')
-            content_type = args.pop('file_content_type', '')
-            args_for_file = assign_params(file_name=file_name, content_type=content_type)
-            token_response = client.create_file_token_request(args_for_file, entry_id)
-            if 'upload' not in token_response or 'token' not in token_response['upload']:
-                raise DemistoException(f"Could not upload file with entry id {entry_id}")
-            uploads = assign_params(token=token_response['upload'].get('token', ''),
-                                    content_type=content_type,
-                                    filename=file_name,
-                                    description=file_description)
-            args['uploads'] = [uploads]
+        file_name = args.pop('file_name', '')
+        file_description = args.pop('file_description', '')
+        content_type = args.pop('file_content_type', '')
+        args_for_file = assign_params(file_name=file_name, content_type=content_type)
+        token_response = client.create_file_token_request(args_for_file, entry_id)
+        if 'upload' not in token_response or 'token' not in token_response['upload']:
+            raise DemistoException(f"Could not upload file with entry id {entry_id}")
+        uploads = assign_params(token=token_response['upload'].get('token', ''),
+                                content_type=content_type,
+                                filename=file_name,
+                                description=file_description)
+        args['uploads'] = [uploads]
     except Exception as e:
         raise DemistoException("Could not create a token for your file- please try again."
                                f"With error {e}.")
@@ -276,20 +252,16 @@ def test_module(client: Client):
 
 
 def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    if not args.get('project_id', None) and not client._project_id:
+    project_id = args.pop('project_id', client._project_id)
+    if not project_id:
         raise DemistoException('project_id field is missing in order to create an issue')
     # Checks if a file needs to be added
-    handle_file_attachment(client, args)
+    entry_id = args.pop('file_entry_id', None)
+    if entry_id:
+        handle_file_attachment(client, args, entry_id)
     # Change predefined values to id
-    tracker_id = args.pop('tracker_id', None)
-    status_id = args.pop('status_id', None)
-    priority_id = args.pop('priority_id', None)
-    custom_fields = args.pop('custom_fields', None)
-    convert_args_to_request_format(tracker_id, status_id, priority_id, custom_fields, args)
-    watcher_user_ids = args.pop('watcher_user_ids', None)
-    if watcher_user_ids:
-        watcher_user_ids = argToList(watcher_user_ids)
-    project_id = args.pop('project_id', client._project_id)
+    convert_args_to_request_format(args)
+    watcher_user_ids = argToList(args.pop('watcher_user_ids', None))
     try:
         response = client.create_issue_request(args, watcher_user_ids, project_id)
     except DemistoException as e:
@@ -311,27 +283,27 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
         outputs=issue_response,
         raw_response=issue_response,
         readable_output=tableToMarkdown('The issue you created:', issue_response, headers=headers,
-                                        removeNull=True, headerTransform=map_header,
+                                        removeNull=True, headerTransform=string_to_table_header,
                                         json_transform_mapping={
-                                            "tracker": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                            "status": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                            "priority": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                            "author": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
-                                            "project": JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', '')),
+                                            "tracker": HR_SHOW_ONLY_NAME,
+                                            "status": HR_SHOW_ONLY_NAME,
+                                            "priority": HR_SHOW_ONLY_NAME,
+                                            "author": HR_SHOW_ONLY_NAME,
+                                            "project": HR_SHOW_ONLY_NAME,
                                             "custom_fields": JsonTransformer(keys=["name", "value"]),
                                         })
     )
+    
     return command_results
 
 
 def update_issue_command(client: Client, args: dict[str, Any]):
     issue_id = args.get('issue_id')
-    handle_file_attachment(client, args)
-    tracker_id = args.pop('tracker_id', None)
-    status_id = args.pop('status_id', None)
-    priority_id = args.pop('priority_id', None)
-    custom_fields = args.pop('custom_fields', None)
-    convert_args_to_request_format(tracker_id, status_id, priority_id, custom_fields, args)
+    # Checks if a file needs to be added
+    entry_id = args.pop('file_entry_id', None)
+    if entry_id:
+        handle_file_attachment(client, args, entry_id)
+    convert_args_to_request_format(args)
     watcher_user_ids = args.pop('watcher_user_ids', None)
     if watcher_user_ids:
         watcher_user_ids = argToList(watcher_user_ids)
@@ -345,13 +317,16 @@ def update_issue_command(client: Client, args: dict[str, Any]):
             raise DemistoException(e.message)
     command_results = CommandResults(
         readable_output=f'Issue with id {issue_id} was successfully updated.')
-    return (command_results)
+    return command_results
 
 
 def get_issues_list_command(client: Client, args: dict[str, Any]):
     def check_args_validity_and_convert_to_id(status_id: str, tracker_id: str, custom_field: str):
-        if status_id and status_id not in ['open', 'closed', '*']:
-            raise DemistoException("Invalid status ID, please use only predefined values.")
+        if status_id:
+            if status_id in ISSUE_STATUS_FOR_LIST_COMMAND:
+                status_id = ISSUE_STATUS_FOR_LIST_COMMAND[status_id]
+            else:
+                raise DemistoException("Invalid status ID, please use only predefined values.")
         if tracker_id:
             if tracker_id in ISSUE_TRACKER_DICT:
                 tracker_id = ISSUE_TRACKER_DICT[tracker_id]
@@ -369,7 +344,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
     page_size = args.pop('page_size', None)
     limit = args.pop('limit', None)
     offset_to_dict, limit_to_dict, page_number_for_header = adjust_paging_to_request(page_number, page_size, limit)
-    status_id = args.pop('status_id', 'open')
+    status_id = args.pop('status_id', 'Open')
     tracker_id = args.pop('tracker_id', None)
     custom_field = args.pop('custom_field', None)
     status_id, tracker_id = check_args_validity_and_convert_to_id(status_id, tracker_id, custom_field)
@@ -390,7 +365,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
         raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
     page_header = create_paging_header(len(issues_response), page_number_for_header)
 
-    '''Issue id is a number and tableToMarkdown can't transform it'''
+    '''Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True'''
     for issue in issues_response:
         issue['id'] = str(issue['id'])
 
@@ -407,17 +382,13 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
                                                       issues_response,
                                                       headers=headers,
                                                       removeNull=True,
-                                                      headerTransform=map_header,
+                                                      headerTransform=string_to_table_header,
                                                       is_auto_json_transform=True,
                                                       json_transform_mapping={
-                                                          "tracker": JsonTransformer(keys=['name'],
-                                                                                     func=lambda hdr: hdr.get('name', '')),
-                                                          "status": JsonTransformer(keys=['name'],
-                                                                                    func=lambda hdr: hdr.get('name', '')),
-                                                          "priority": JsonTransformer(keys=['name'],
-                                                                                      func=lambda hdr: hdr.get('name', '')),
-                                                          "author": JsonTransformer(keys=['name'],
-                                                                                    func=lambda hdr: hdr.get('name', '')),
+                                                          "tracker": HR_SHOW_ONLY_NAME,
+                                                          "status": HR_SHOW_ONLY_NAME,
+                                                          "priority": HR_SHOW_ONLY_NAME,
+                                                          "author": HR_SHOW_ONLY_NAME,
                                                           "custom_fields": JsonTransformer(keys=["name", "value"]),
                                                       }
                                                       )
@@ -450,7 +421,8 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
         headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date',
                    'due_date', 'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'closed_on',
                    'attachments', 'watchers', 'children', 'relations', 'changesets', 'journals', 'allowed_statuses']
-        '''Issue id is a number and tableToMarkdown can't transform it'''
+        
+        '''Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True'''
         response_issue['id'] = str(response_issue['id'])
         command_results = CommandResults(outputs_prefix='Redmine.Issue',
                                          outputs_key_field='id',
@@ -462,21 +434,11 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                                                                          headerTransform=underscoreToCamelCase,
                                                                          is_auto_json_transform=True,
                                                                          json_transform_mapping={
-                                                                             "tracker": JsonTransformer(keys=['name'],
-                                                                                                        func=lambda hdr:
-                                                                                                            hdr.get('name', '')),
-                                                                             "project": JsonTransformer(keys=['name'],
-                                                                                                        func=lambda hdr:
-                                                                                                            hdr.get('name', '')),
-                                                                             "status": JsonTransformer(keys=['name'],
-                                                                                                       func=lambda hdr:
-                                                                                                           hdr.get('name', '')),
-                                                                             "priority": JsonTransformer(keys=['name'],
-                                                                                                         func=lambda hdr:
-                                                                                                             hdr.get('name', '')),
-                                                                             "author": JsonTransformer(keys=['name'],
-                                                                                                       func=lambda hdr:
-                                                                                                           hdr.get('name', '')),
+                                                                             "tracker": HR_SHOW_ONLY_NAME,
+                                                                             "project": HR_SHOW_ONLY_NAME,
+                                                                             "status": HR_SHOW_ONLY_NAME,
+                                                                             "priority": HR_SHOW_ONLY_NAME,
+                                                                             "author": HR_SHOW_ONLY_NAME,
                                                                              "custom_fields":
                                                                                  JsonTransformer(keys=["name", "value"]),
                                                                              "watchers": JsonTransformer(keys=["name"]),
@@ -507,7 +469,7 @@ def delete_issue_by_id_command(client: Client, args: dict[str, Any]):
             raise DemistoException(e.message)
     command_results = CommandResults(
         readable_output=f'Issue with id {issue_id} was deleted successfully.')
-    return (command_results)
+    return command_results
 
 
 def add_issue_watcher_command(client: Client, args: dict[str, Any]):
@@ -525,7 +487,7 @@ def add_issue_watcher_command(client: Client, args: dict[str, Any]):
             raise DemistoException(e.message)
     command_results = CommandResults(
         readable_output=f'Watcher with id {watcher_id} was added successfully to issue with id {issue_id}.')
-    return (command_results)
+    return command_results
 
 
 def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
@@ -538,7 +500,7 @@ def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
             raise DemistoException(INVALID_ID_DEMISTO_ERROR)
         elif 'Error in API call [403]' in e.message:
             raise DemistoException(f"{e.message} It can be due to Invalid ID for one or more fields that request IDs, "
-                                   "Please make sure all IDs are correct")
+                                   "Please make sure all IDs are correct.")
         else:
             raise DemistoException(e.message)
     command_results = CommandResults(
@@ -586,7 +548,7 @@ def get_custom_fields_command(client: Client, args):
     headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter',
                'searchable', 'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities',
                'issue_custom_fields']
-    # Some custom fields are numbers and tableToMarkdown can't transform it
+    # Some custom fields are numbers and tableToMarkdown can't transform it if is_auto_json_transform is True
     for custom_field in custom_fields_response:
         custom_field['id'] = str(custom_field['id'])
         custom_field['is_required'] = str(custom_field['is_required'])
@@ -613,7 +575,7 @@ def get_users_command(client: Client, args: dict[str, Any]):
             args['status'] = USER_STATUS_DICT[status_string]
         except Exception:
             raise DemistoException("Invalid status value- please use the predefined options only.")
-        response = client.get_users_request(args)
+    response = client.get_users_request(args)
     try:
         users_response = response['users']
     except Exception:
@@ -628,7 +590,7 @@ def get_users_command(client: Client, args: dict[str, Any]):
                                      outputs=users_response,
                                      raw_response=users_response,
                                      readable_output=tableToMarkdown('Users List:', users_response, headers=headers,
-                                                                     removeNull=True, headerTransform=map_header,
+                                                                     removeNull=True, headerTransform=string_to_table_header,
                                                                      is_auto_json_transform=True))
     return command_results
 
