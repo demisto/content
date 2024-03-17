@@ -1,12 +1,12 @@
 {
-    "id": "Phishing Domain Hunting New Suspicious Domain",
+    "id": "Suspicious Domain Hunting New Suspicious Domain",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Phishing Domain Hunting New Suspicious Domain",
+    "name": "Suspicious Domain Hunting New Suspicious Domain",
     "prevName": "New Suspicious Domain",
     "color": "#F8E7A5",
-    "playbookId": "New Suspicious Domain Check",
+    "playbookId": "Suspicious Domain Hunting Incident Handling",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -25,7 +25,7 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {
-            "phishingdomainhuntingfingerprint": {
+            "suspiciousdomainhuntingfingerprint": {
                 "extractAsIsIndicatorTypeId": "136fd66a-e220-4241-8c3a-78a1e6a25add",
                 "isExtractingAllIndicatorTypes": false,
                 "extractIndicatorTypesIDs": []

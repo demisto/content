@@ -15,7 +15,7 @@
 ---
 This script is used in the following playbooks and scripts.
 
-* New Suspicious Domain Check
+* Suspicious Domain Hunting Incident Handling
 
 ## Inputs
 

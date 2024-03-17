@@ -376,7 +376,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "phishingdomainhuntinguserasset",
+                                "fieldId": "suspiciousdomainhuntinguserasset",
                                 "height": 22,
                                 "id": "9ea58bd0-6d98-11ee-9354-5589491ef700",
                                 "index": 2,
@@ -385,7 +385,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "phishingdomainhuntingfingerprint",
+                                "fieldId": "suspiciousdomainhuntingfingerprint",
                                 "height": 22,
                                 "id": "90a14a10-6d98-11ee-9354-5589491ef700",
                                 "index": 3,
@@ -412,7 +412,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "phishingdomainhuntinglevenshteindistance",
+                                "fieldId": "suspiciousdomainhuntinglevenshteindistance",
                                 "height": 22,
                                 "id": "98c97460-6d98-11ee-9354-5589491ef700",
                                 "index": 5,
@@ -508,7 +508,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "phishingdomainhuntingdomainupdateddate",
+                                "fieldId": "suspiciousdomainhuntingdomainupdateddate",
                                 "height": 22,
                                 "id": "6de260a0-7eef-11ee-8db9-f7e15ed8d3db",
                                 "index": 2,
@@ -517,7 +517,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "phishingdomainhuntingregistrationemail",
+                                "fieldId": "suspiciousdomainhuntingregistrationemail",
                                 "height": 22,
                                 "id": "73b6d6f0-7eef-11ee-8db9-f7e15ed8d3db",
                                 "index": 4,
@@ -526,7 +526,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "phishingdomainhuntingdomainregistrarabuseemail",
+                                "fieldId": "suspiciousdomainhuntingdomainregistrarabuseemail",
                                 "height": 22,
                                 "id": "e37ad770-8205-11ee-b8c9-e9c6a8687c1a",
                                 "index": 6,
@@ -1069,7 +1069,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_phishingdomainhuntingfingerprint",
+                        "fieldId": "incident_suspiciousdomainhuntingfingerprint",
                         "isVisible": true
                     },
                     {
@@ -1121,7 +1121,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_phishingdomainhuntinglevenshteindistance",
+                        "fieldId": "incident_suspiciousdomainhuntinglevenshteindistance",
                         "isVisible": true
                     },
                     {
@@ -1545,7 +1545,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_phishingdomainhuntinguserasset",
+                        "fieldId": "incident_suspiciousdomainhuntinguserasset",
                         "isVisible": true
                     },
                     {

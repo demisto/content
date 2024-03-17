@@ -1,6 +1,6 @@
 Phishing domains impersonating an organization's brand are a persistent threat that often slip through defenses. Analysts struggle to manually monitor certificate transparency logs and WHOIS registrations to catch phishing domains early.  
 
-The Phishing Domain Hunting pack equips analysts with automation to proactively hunt for phishing domains targeting their organization. CertStream integration ingests newly issued SSL certificates in real-time, while WHOIS data and threat intel feeds are checked for domain registrations using the company brand. Analysts save hours of manual effort and can disrupt phishing campaigns before emails reach users.
+The Suspicious Domain Hunting pack equips analysts with automation to proactively hunt for phishing domains targeting their organization. CertStream integration ingests newly issued SSL certificates in real-time, while WHOIS data and threat intel feeds are checked for domain registrations using the company brand. Analysts save hours of manual effort and can disrupt phishing campaigns before emails reach users.
 
 This pack includes playbooks that:
 
@@ -10,7 +10,7 @@ This pack includes playbooks that:
 - Prioritize incidents for high risk domains impersonating the organization.
 - Enable quick suspensions or takedowns of phishing domains.
 
-Analysts also get out-of-the-box incident views and layouts tailored for phishing domain hunting, enabling efficient workflows to take action on high severity events.
+Analysts also get out-of-the-box incident views and layouts tailored for Suspicious Domain Hunting, enabling efficient workflows to take action on high severity events.
 
 ##### What does this pack do?
 
