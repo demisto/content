@@ -6,7 +6,6 @@ from CommonServerUserPython import *  # noqa
 from AWSApiModule import *  # noqa: E402
 
 import urllib3
-from typing import Dict, Any  # noqa: UP035
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -21,16 +20,35 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 def datetime_to_str(data: dict, param_name: str):
     """
-    Updates an Amazon EKS cluster configuration.
+    Update a datetime parameter to it's string value.
     Args:
         data: a dictionary with the response data
         param_name: the name of the parameter that should be converted from datetime object to string.
+    """
+    if param_value := data.get(param_name):
+        data[param_name] = param_value.strftime(DATE_FORMAT)
+
+
+def validate_args(resources_vpc_config: dict, logging_arg: dict, authentication_mode: str):
+    """
+    Check that exactly one argument is passed, and if not raise a value error
+    Args:
+        resources_vpc_config: An object representing the VPC configuration to use for an Amazon EKS cluster.
+        logging_arg: The cluster control plane logging configuration.
+        authentication_mode: The desired authentication mode for the cluster.
 
     Returns:
         A Command Results object
     """
-    if param_value := data.get(param_name):
-        data[param_name] = param_value.strftime(DATE_FORMAT)
+    arr = [resources_vpc_config, logging_arg, authentication_mode]
+    arg_num = 0
+    for arg in arr:
+        arg_num = arg_num + 1 if arg else arg_num
+    if arg_num != 1:
+        raise ValueError("Please provide exactly one of the following arguments: resources_vpc_config, logging or "
+                         "authentication_mode.")
+    else:
+        return 'ok'
 
 
 ''' COMMAND FUNCTIONS '''
@@ -50,18 +68,19 @@ def list_clusters_command(aws_client: AWSClient, args: dict) -> CommandResults:
     limit = arg_to_number(args.get('limit')) or 50
     next_token = args.get('next_token', '')
     list_clusters = []
-    while limit > 0:
+    flag = True  # Do we want to enter the while loop? -> in the first time, yes. After that only if next_token!=None & limit>0
+    while limit > 0 and flag:
         if limit > 100:
             response = client.list_clusters(maxResults=100,
                                             nextToken=next_token)
             limit -= 100
-            list_clusters.extend(response.get('clusters', []))
         else:
             response = client.list_clusters(maxResults=limit,
                                             nextToken=next_token)
             limit = 0
-            list_clusters.extend(response.get('clusters', []))
+        list_clusters.extend(response.get('clusters', []))
         next_token = response.get('next_token')
+        flag = bool(next_token)
 
     md_table = {
         'ClustersNames': list_clusters,
@@ -81,7 +100,7 @@ def list_clusters_command(aws_client: AWSClient, args: dict) -> CommandResults:
     )
 
 
-def update_cluster_config_command(aws_client: AWSClient, args: dict)-> CommandResults:
+def update_cluster_config_command(aws_client: AWSClient, args: dict) -> CommandResults:
     """
     Updates an Amazon EKS cluster configuration.
     Args:
@@ -97,14 +116,29 @@ def update_cluster_config_command(aws_client: AWSClient, args: dict)-> CommandRe
     logging_arg = args.get('logging', '').replace('\'', '"')
     resources_vpc_config = json.loads(resources_vpc_config) if resources_vpc_config else {}
     logging_arg = json.loads(logging_arg) if logging_arg else {}
-    demisto.debug(f'{resources_vpc_config=}')
-    demisto.debug(f'{logging_arg=}')
+    authentication_mode = args.get('authentication_mode', '')
+    access_config = {
+        'authenticationMode': authentication_mode
+    } if authentication_mode else {}
 
-    response = client.update_cluster_config(
-        name=cluster_name,
-        resourcesVpcConfig=resources_vpc_config,
-        logging=logging_arg
-    )
+    validate_args(resources_vpc_config, logging_arg, authentication_mode)
+
+    if resources_vpc_config:
+        response = client.update_cluster_config(
+            name=cluster_name,
+            resourcesVpcConfig=resources_vpc_config
+        )
+    elif logging_arg:
+        response = client.update_cluster_config(
+            name=cluster_name,
+            logging=logging_arg,
+        )
+    else:  # access_config
+        response = client.update_cluster_config(
+            name=cluster_name,
+            accessConfig=access_config
+        )
+
     response_data = response.get('update', {})
     response_data['name'] = cluster_name
     datetime_to_str(response_data, 'createdAt')
@@ -125,7 +159,7 @@ def update_cluster_config_command(aws_client: AWSClient, args: dict)-> CommandRe
     )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AWS.EKS.Cluster.Update',
+        outputs_prefix='AWS.EKS.UpdateCluster',
         outputs=response_data,
         raw_response=response_data,
         outputs_key_field='id'
@@ -166,7 +200,7 @@ def describe_cluster_command(aws_client: AWSClient, args: dict) -> CommandResult
     )
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AWS.EKS.Cluster',
+        outputs_prefix='AWS.EKS.DescribeCluster',
         outputs=response_data,
         raw_response=response_data,
         outputs_key_field='name'
@@ -192,7 +226,7 @@ def create_access_entry_command(aws_client: AWSClient, args: dict) -> CommandRes
     client_request_token = args.get('client_request_token', '')
     username = args.get('username', '')
     type_arg = args.get('type', '').upper()
-    
+
     if not username:
         response = client.create_access_entry(
             clusterName=cluster_name,
@@ -235,7 +269,7 @@ def create_access_entry_command(aws_client: AWSClient, args: dict) -> CommandRes
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='AWS.EKS.Cluster.AccessEntry',
+        outputs_prefix='AWS.EKS.CreateAccessEntry',
         outputs=response,
         raw_response=response,
         outputs_key_field='ClusterName'
@@ -272,16 +306,80 @@ def associate_access_entry_command(aws_client: AWSClient, args: dict) -> Command
         policyArn=policy_arn,
         accessScope=access_scope
     )
+    response_data = response.get('associatedAccessPolicy', {})
+    response_data['clusterName'] = response.get('clusterName')
+    response_data['principalArn'] = response.get('principalArn')
 
-    datetime_to_str(response.get('associatedAccessPolicy', {}), 'associatedAt')
-    datetime_to_str(response.get('associatedAccessPolicy', {}), 'modifiedAt')
+    datetime_to_str(response, 'associatedAt')
+    datetime_to_str(response, 'modifiedAt')
 
     return CommandResults(
         readable_output='The access policy was associated to the access entry successfully.',
-        outputs_prefix='AWS.EKS.Cluster.Association',
-        outputs=response,
+        outputs_prefix='AWS.EKS.AssociatedAccessPolicy',
+        outputs=response_data,
         raw_response=response,
         outputs_key_field='clusterName'
+    )
+
+
+def update_access_entry_command(aws_client: AWSClient, args: dict) -> CommandResults:
+    """
+    Updates an access entry.
+    Args:
+        aws_client: AWS client
+        args: command arguments
+
+    Returns:
+        A Command Results object
+    """
+    client = aws_client.aws_session(service='eks')
+    cluster_name = args.get('cluster_name')
+    principal_arn = args.get('principal_arn')
+    kubernetes_groups = argToList(args.get('kubernetes_groups'))
+    client_request_token = args.get('client_request_token', '')
+    username = args.get('username')
+
+    if username:
+        response = client.update_access_entry(
+            clusterName=cluster_name,
+            principalArn=principal_arn,
+            kubernetesGroups=kubernetes_groups,
+            clientRequestToken=client_request_token,
+            username=username
+        ).get('accessEntry', {})
+    else:
+        response = client.update_access_entry(
+            clusterName=cluster_name,
+            principalArn=principal_arn,
+            kubernetesGroups=kubernetes_groups,
+            clientRequestToken=client_request_token
+        ).get('accessEntry', {})
+
+    datetime_to_str(response, 'createdAt')
+    datetime_to_str(response, 'modifiedAt')
+
+    md_table = {
+        'Cluster Name': response.get('clusterName'),
+        'Principal Arn': response.get('principalArn'),
+        'Username': response.get('username'),
+        'Type': response.get('type'),
+        'Modified At': response.get('modifiedAt')
+    }
+
+    headers = ['Cluster Name', 'Principal Arn', 'Username', 'Type', 'Modified At']
+    readable_output = tableToMarkdown(
+        name='The updated access entry',
+        t=md_table,
+        removeNull=True,
+        headers=headers
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AWS.EKS.UpdateAccessEntry',
+        outputs=response,
+        raw_response=response,
+        outputs_key_field='ClusterName'
     )
 
 
@@ -321,7 +419,7 @@ def main():
     aws_access_key_id = params.get('credentials', {}).get('identifier')
     aws_secret_access_key = params.get('credentials', {}).get('password')
     verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -353,9 +451,11 @@ def main():
         elif demisto.command() == 'aws-eks-associate-access-policy':
             return_results(associate_access_entry_command(aws_client, args))
 
+        elif demisto.command() == 'aws-eks-update-access-entry':
+            return_results(update_access_entry_command(aws_client, args))
+
         else:
             return_error(f"The command {demisto.command()} isn't implemented")
-
 
     # Log exceptions and return errors
     except Exception as e:
