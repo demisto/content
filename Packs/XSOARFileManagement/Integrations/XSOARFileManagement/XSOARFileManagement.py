@@ -192,7 +192,7 @@ def get_incident_id(entry_id: str) -> str:
     Returns:
         str -- incident id
     """
-    res = re.findall("(\d+)@(\d+)", entry_id)
+    res = re.findall("(.*?)@(\d+)", entry_id)
     if len(res) <= 0:
         return_error("EntryID unknow or malformatted !")
     return res[0][1]
