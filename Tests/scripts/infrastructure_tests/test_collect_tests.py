@@ -141,6 +141,8 @@ def _test(mocker, monkeypatch, case_mocker: CollectTestsMocker, collector_class:
     :param expected_machines: the expected machines. (pass None to not check)
     :param expected_modeling_rules_to_test: the expected modeling rules directory names. (pass None to not check)
     :param collector_class_args: with which to instantiate the collector class.
+    :param disable_collect_packs_diff_master_bucket: For branch collectors and diffs between buckets and masters,
+                                                     set to False for checking this functionality, in the other case set to True.
     :return: Nothing: only calls assert.
     """
     monkeypatch.chdir(case_mocker.path_manager.content_path)
