@@ -827,7 +827,9 @@ class BranchTestCollector(TestCollector):
         collected_packs: list[CollectionResult | None] = []
 
         # diff between master and the last upload
-        for file_path in self._get_git_diff(upload_delta_from_last_upload=True).changed_files:
+        collect_from = self._get_git_diff(upload_delta_from_last_upload=True)
+
+        for file_path in collect_from.changed_files:
 
             full_path = PATHS.content_path / file_path
 
