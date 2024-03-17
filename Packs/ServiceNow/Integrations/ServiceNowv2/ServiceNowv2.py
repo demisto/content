@@ -10,6 +10,8 @@ import mimetypes
 import urllib3
 urllib3.disable_warnings()
 
+DEFAULT_FETCH_TIME = '10 minutes'
+
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
 
@@ -23,7 +25,8 @@ DATE_FORMAT_OPTIONS = {
     'dd/MM/yyyy': '%d/%m/%Y %H:%M:%S',
     'dd-MM-yyyy': '%d-%m-%Y %H:%M:%S',
     'dd.MM.yyyy': '%d.%m.%Y %H:%M:%S',
-    'yyyy-MM-dd': '%Y-%m-%d %H:%M:%S'
+    'yyyy-MM-dd': '%Y-%m-%d %H:%M:%S',
+    'mmm-dd-yyyy': '%b-%d-%Y %H:%M:%S'
 }
 
 TICKET_STATES = {
@@ -544,12 +547,12 @@ def split_notes(raw_notes, note_type, time_info):
     return notes
 
 
-def convert_to_notes_result(full_response, time_info):
+def convert_to_notes_result(full_response, time_info) -> dict:
     """
     Converts the response of a ticket to the response format when making a query for notes only.
     """
     if not full_response or 'result' not in full_response or not full_response.get('result'):
-        return []
+        return {}
 
     timezone_offset = get_timezone_offset(full_response, time_info.get('display_date_format'))
     time_info['timezone_offset'] = timezone_offset
@@ -1192,7 +1195,11 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     """
     fields_delimiter = args.get('fields_delimiter', ';')
     custom_fields = split_fields(str(args.get('custom_fields', '')), fields_delimiter)
-    ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
+    ticket_type_value = args.get('ticket_type')
+    if not ticket_type_value:
+        ticket_type_value = demisto.params().get('ticket_type')
+    ticket_type = client.get_table_name(str(ticket_type_value))
+    demisto.debug(f'Using ticket_type: {ticket_type}, from {ticket_type_value}')
     ticket_id = str(args.get('id', ''))
     additional_fields = split_fields(str(args.get('additional_fields', '')), fields_delimiter)
     additional_fields_keys = list(additional_fields.keys())
@@ -1481,7 +1488,7 @@ def add_tag_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     return human_readable, entry_context, result, True
 
 
-def get_ticket_notes_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def get_ticket_notes_command(client: Client, args: dict, params: dict,) -> list[CommandResults | dict]:
     """Get the ticket's note.
 
     Args:
@@ -1494,8 +1501,11 @@ def get_ticket_notes_command(client: Client, args: dict) -> tuple[str, dict, dic
     ticket_id = args.get('id')
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
+    add_as_entry = argToBoolean(args.get('add_as_entry', False))
 
     use_display_value = argToBoolean(args.get('use_display_value', client.use_display_value))
+
+    return_results: list = []
 
     if use_display_value:  # make query using sysparm_display_value=all (requires less permissions)
         assert client.display_date_format, 'A display date format must be selected in the instance configuration when' \
@@ -1510,7 +1520,10 @@ def get_ticket_notes_command(client: Client, args: dict) -> tuple[str, dict, dic
         result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
 
     if not result or 'result' not in result:
-        return f'No comment found on ticket {ticket_id}.', {}, {}, True
+        return [CommandResults(raw_response=f'No comment found on ticket {ticket_id}.')]
+
+    if add_as_entry:
+        return_results.extend(get_entries_for_notes(result['result'], params))
 
     headers = ['Value', 'CreatedOn', 'CreatedBy', 'Type']
 
@@ -1522,7 +1535,7 @@ def get_ticket_notes_command(client: Client, args: dict) -> tuple[str, dict, dic
     } for note in result['result']]
 
     if not mapped_notes:
-        return f'No comment found on ticket {ticket_id}.', {}, {}, True
+        return [CommandResults(raw_response=f'No comment found on ticket {ticket_id}.')]
 
     ticket = {
         'ID': ticket_id,
@@ -1531,9 +1544,50 @@ def get_ticket_notes_command(client: Client, args: dict) -> tuple[str, dict, dic
 
     human_readable = tableToMarkdown(f'ServiceNow notes for ticket {ticket_id}', t=mapped_notes, headers=headers,
                                      headerTransform=pascalToSpace, removeNull=True)
-    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': createContext(ticket, removeNull=True)}
 
-    return human_readable, entry_context, result, True
+    return_results.append(
+        CommandResults(
+            outputs_prefix="ServiceNow.Ticket",
+            outputs_key_field="ID",
+            outputs=createContext(ticket, removeNull=True),
+            readable_output=human_readable,
+            raw_response=result
+        )
+    )
+    return return_results
+
+
+def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
+    entries = []
+    for note in notes:
+        if 'Mirrored from Cortex XSOAR' not in note.get('value', ''):
+            comments_context = {'comments_and_work_notes': note.get('value')}
+
+            if (tagsstr := note.get('tags', 'none')) == 'none':
+                if note.get('element') == 'comments':
+                    tags = [params.get('comment_tag_from_servicenow', 'CommentFromServiceNow')]
+                else:
+                    tags = [params.get('work_notes_tag_from_servicenow', 'WorkNoteFromServiceNow')]
+            else:
+                if str(note.get('element')) == 'comments':
+                    tags = tagsstr + params.get('comment_tag_from_servicenow', 'CommentFromServiceNow')
+                    tags = argToList(tags)
+                else:
+                    tags = tagsstr + params.get('work_notes_tag_from_servicenow', 'WorkNoteFromServiceNow')
+                    tags = argToList(tags)
+
+            entries.append({
+                'Type': note.get('type', 1),
+                'Category': note.get('category'),
+                'Contents': f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
+                            f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
+                'ContentsFormat': note.get('format'),
+                'Tags': tags,
+                'Note': True,
+                'EntryContext': comments_context
+            })
+
+    return entries
 
 
 def get_record_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
@@ -2135,6 +2189,33 @@ def get_mirroring():
     }
 
 
+def format_incidents_response_with_display_values(incidents_res: dict) -> list[dict]:
+    """Format the incidents response to use display values by key.
+
+    Args:
+        incidents_res (dict): The original incidents response
+
+    Returns:
+        list[dict]: The formatted incidents.
+    """
+    format_incidents = []
+
+    for incident in incidents_res:
+        format_incident = {}
+
+        for item in incident:
+            if item in ("opened_by", "sys_domain", "assignment_group"):
+                format_incident[item] = incident[item]
+            elif item == "opened_at":
+                format_incident[item] = incident[item]["value"]
+            else:
+                format_incident[item] = incident[item]["display_value"]
+
+        format_incidents.append(format_incident)
+
+    return format_incidents
+
+
 def fetch_incidents(client: Client) -> list:
     query_params = {}
     incidents = []
@@ -2159,7 +2240,7 @@ def fetch_incidents(client: Client) -> list:
         query_params['sysparm_query'] = query
     query_params['sysparm_limit'] = fetch_limit  # type: ignore[assignment]
     if client.use_display_value:
-        query_params['sysparm_display_value'] = True  # type: ignore[assignment]
+        query_params['sysparm_display_value'] = "all"
 
     demisto.debug(f"ServiceNowV2 - Last run: {json.dumps(last_run)}")
     demisto.debug(f"ServiceNowV2 - Query sent to the server: {str(query_params)}")
@@ -2168,6 +2249,9 @@ def fetch_incidents(client: Client) -> list:
     skipped_incidents = 0
 
     severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
+
+    if client.use_display_value:
+        tickets_response = format_incidents_response_with_display_values(incidents_res=tickets_response)
 
     # remove duplicate incidents which were already fetched
     tickets_response = filter_incidents_by_duplicates_and_limit(
@@ -2466,33 +2550,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         demisto.debug(f'Pull result is {ticket}')
         return [ticket] + entries
 
-    for note in comments_result.get('result', []):
-        if 'Mirrored from Cortex XSOAR' not in note.get('value'):
-            comments_context = {'comments_and_work_notes': note.get('value')}
-
-            if (tagsstr := note.get('tags', 'none')) == 'none':
-                if note.get('element') == 'comments':
-                    tags = [params.get('comment_tag_from_servicenow', 'CommentFromServiceNow')]
-                else:
-                    tags = [params.get('work_notes_tag_from_servicenow', 'WorkNoteFromServiceNow')]
-            else:
-                if str(note.get('element')) == 'comments':
-                    tags = tagsstr + params.get('comment_tag_from_servicenow', 'CommentFromServiceNow')
-                    tags = argToList(tags)
-                else:
-                    tags = tagsstr + params.get('work_notes_tag_from_servicenow', 'WorkNoteFromServiceNow')
-                    tags = argToList(tags)
-
-            entries.append({
-                'Type': note.get('type', 1),
-                'Category': note.get('category'),
-                'Contents': f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
-                            f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
-                'ContentsFormat': note.get('format'),
-                'Tags': tags,
-                'Note': True,
-                'EntryContext': comments_context
-            })
+    entries.extend(get_entries_for_notes(comments_result.get('result', []), params))
 
     # Handle closing ticket/incident in XSOAR
     close_incident = params.get('close_incident')
@@ -3028,7 +3086,7 @@ def main():
     cr_server_url = f'{get_server_url(server_url)}{cr_api}'
     server_url = f'{get_server_url(server_url)}{api}'
 
-    fetch_time = params.get('fetch_time', '10 minutes').strip()
+    fetch_time = (params.get('fetch_time') or DEFAULT_FETCH_TIME).strip()
     sysparm_query = params.get('sysparm_query')
     sysparm_limit = int(params.get('fetch_limit', 10))
     timestamp_field = params.get('timestamp_field', 'opened_at')
@@ -3092,7 +3150,6 @@ def main():
             'servicenow-add-comment': add_comment_command,
             'servicenow-upload-file': upload_file_command,
             'servicenow-add-tag': add_tag_command,
-            'servicenow-get-ticket-notes': get_ticket_notes_command,
             'servicenow-get-record': get_record_command,
             'servicenow-update-record': update_record_command,
             'servicenow-create-record': create_record_command,
@@ -3128,6 +3185,8 @@ def main():
             return_results(create_co_from_template_command(client, demisto.args()))
         elif demisto.command() == 'servicenow-get-tasks-for-co':
             return_results(get_tasks_for_co_command(client, demisto.args()))
+        elif demisto.command() == 'servicenow-get-ticket-notes':
+            return_results(get_ticket_notes_command(client, args, params))
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
