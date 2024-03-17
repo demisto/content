@@ -75,7 +75,7 @@ function checkCommandSanitized(cmd) {
         if ((cmd_lower.match(regex) || []).length > 1) {
             throw new Error('Error, The value of ' + SANITIZED_ARG_NAMES[i] + ' is malformed.');
         }
-        cmd_lower.replace(current_arg_name_lower, '')
+        cmd_lower.replaceAll(current_arg_name_lower, '')
     }
 }
 
