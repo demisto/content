@@ -4,10 +4,9 @@ This pack includes Cortex XSIAM content.
 
 Notes: 
  - The logs will be stored in the dataset named *microsoft_windows_raw*.
- - The pack currently supports the following data source: **Security (Provider "Microsoft-Windows-Security-*)**, **Firewall**, **System**, **Application**, **Sysmon** and **Powershell**.
+ - The pack currently supports the following data source: **Security (Provider "Microsoft-Windows-Security-*)**, **Firewall**, **System**, **Application** and **Powershell**.
 
 To view logs only from the Windows Event log, apply any of the following filters to your datamodel query:
-* `| filter xdm.observer.type="Microsoft-Windows-Sysmon"`
 * `| filter xdm.observer.type="Microsoft-Windows-Security-*"`
 * `| filter xdm.observer.type="Microsoft-Windows-TaskScheduler"`
 * `| filter xdm.observer.type="Microsoft-Windows-Windows Firewall With Advanced Security"`
