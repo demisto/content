@@ -7,7 +7,7 @@ category: Utilities
 description: 'A project management and issue tracking system that provides a web-based platform for managing projects, tracking tasks, and handling various types of project-related activities. '
 configuration:
 - section: Connect
-  display: Server URL (e.g. https://1.1.1.1)
+  display: Server URL (e.g., https://1.1.1.1)
   name: url
   type: 0
   required: true
