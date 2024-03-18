@@ -33,21 +33,21 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* SetAndHandleEmpty
 * IsIntegrationAvailable
+* SetAndHandleEmpty
 
 ### Commands
 
 * iam-disable-user
-* ad-disable-account
-* pan-os-register-user-tag
 * gsuite-user-update
-* ad-get-user
 * identityiq-disable-account
-* msgraph-user-get
-* identityiq-get-accounts
-* msgraph-user-account-disable
 * pingone-deactivate-user
+* msgraph-user-account-disable
+* pan-os-register-user-tag
+* ad-get-user
+* msgraph-user-get
+* ad-disable-account
+* identityiq-get-accounts
 
 ## Playbook Inputs
 

@@ -1551,7 +1551,7 @@ tasks:
     scriptarguments:
       username:
         complex:
-          root: ActiveDirectory.Users
+          root: UserAD.attributes
           accessor: sAMAccountName
     separatecontext: false
     continueonerrortype: ""
@@ -2129,8 +2129,8 @@ tasks:
     scriptarguments:
       user:
         complex:
-          root: MSGraphUser
-          accessor: ID
+          root: UserMSGraph
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2380,6 +2380,10 @@ tasks:
       '#none#':
       - "77"
     scriptarguments:
+      extend-context:
+        simple: UserAD=
+      ignore-outputs:
+        simple: "true"
       username:
         complex:
           root: Blocklist
@@ -2424,8 +2428,10 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: ActiveDirectory.Users.sAMAccountName
+              simple: UserAD.attributes.sAMAccountName
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -2460,6 +2466,10 @@ tasks:
       '#none#':
       - "79"
     scriptarguments:
+      extend-context:
+        simple: UserMSGraph=
+      ignore-outputs:
+        simple: "true"
       user:
         complex:
           root: Blocklist
@@ -2504,8 +2514,10 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: ActiveDirectory.Users.sAMAccountName
+              simple: UserMSGraph.id
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -2561,7 +2573,6 @@ view: |-
       "72_2_#default#": 0.1,
       "72_74_yes": 0.44,
       "77_48_yes": 0.54,
-      "79_69_yes": 0.53,
       "8_38_yes": 0.65,
       "8_39_#default#": 0.13
     },
