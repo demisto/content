@@ -11,7 +11,8 @@ from concurrent.futures import ThreadPoolExecutor
 PARAMS = demisto.params()
 MAX_WORKERS = arg_to_number(PARAMS.get('max_workers'))
 ROLE_NAME: str = PARAMS.get('access_role_name', '')
-IS_ARN_PROVIDED = bool(demisto.getArg('roleArn'))
+# You don't check if the roleArn is set in the params
+IS_ARN_PROVIDED = bool(demisto.getArg('roleArn')) | bool(demisto.getParam('roleArn'))
 
 
 """HELPER FUNCTIONS"""
@@ -140,8 +141,11 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
 
         def run_command(account_id: str) -> CommandResults:
             new_args = args | {
+                # I see a roleArn with ::user insteadof ::role is this wrong?
                 #  the role ARN must be of the format: arn:aws:iam::<account_id>:role/<role_name>
+                # Why you go over the roleArn the customer configured
                 'roleArn': f'arn:aws:iam::{account_id}:role/{role_name}',
+                # Why changing this two lines? if you don't set the roleArun you will always run on 900 duration?
                 'roleSessionName': args.get('roleSessionName', f'account_{account_id}'),
                 'roleSessionDuration': args.get('roleSessionDuration', 900),
             }
@@ -386,34 +390,33 @@ def describe_addresses_command(args: dict) -> CommandResults:
     if args.get('allocationIds') is not None:
         kwargs.update({'AllocationIds': parse_resource_ids(args.get('allocationIds'))})
 
-    paginator = client.get_paginator('describe_addresses')
+    response = client.describe_addresses(**kwargs)
 
-    for response in paginator.paginate(**kwargs):
-        if len(response['Addresses']) == 0:
-            return CommandResults(readable_output='No addresses were found.')
+    if len(response['Addresses']) == 0:
+        return CommandResults(readable_output='No addresses were found.')
 
-        for i, address in enumerate(response['Addresses']):
-            data.append({
-                'PublicIp': address['PublicIp'],
-                'AllocationId': address['AllocationId'],
-                'Domain': address['Domain'],
-                'Region': obj['_user_provided_options']['region_name'],
-            })
-            if 'InstanceId' in address:
-                data[i].update({'InstanceId': address['InstanceId']})
-            if 'AssociationId' in address:
-                data[i].update({'AssociationId': address['AssociationId']})
-            if 'NetworkInterfaceId' in address:
-                data[i].update({'NetworkInterfaceId': address['NetworkInterfaceId']})
-            if 'PrivateIpAddress' in address:
-                data[i].update({'PrivateIpAddress': address['PrivateIpAddress']})
-            if 'Tags' in address:
-                for tag in address['Tags']:
-                    data[i].update({
-                        tag['Key']: tag['Value']
-                    })
-        raw = response['Addresses']
-        raw[0].update({'Region': obj['_user_provided_options']['region_name']})
+    for i, address in enumerate(response['Addresses']):
+        data.append({
+            'PublicIp': address['PublicIp'],
+            'AllocationId': address['AllocationId'],
+            'Domain': address['Domain'],
+            'Region': obj['_user_provided_options']['region_name'],
+        })
+        if 'InstanceId' in address:
+            data[i].update({'InstanceId': address['InstanceId']})
+        if 'AssociationId' in address:
+            data[i].update({'AssociationId': address['AssociationId']})
+        if 'NetworkInterfaceId' in address:
+            data[i].update({'NetworkInterfaceId': address['NetworkInterfaceId']})
+        if 'PrivateIpAddress' in address:
+            data[i].update({'PrivateIpAddress': address['PrivateIpAddress']})
+        if 'Tags' in address:
+            for tag in address['Tags']:
+                data[i].update({
+                    tag['Key']: tag['Value']
+                })
+    raw = response['Addresses']
+    raw[0].update({'Region': obj['_user_provided_options']['region_name']})
 
     return CommandResults(
         outputs=raw,
