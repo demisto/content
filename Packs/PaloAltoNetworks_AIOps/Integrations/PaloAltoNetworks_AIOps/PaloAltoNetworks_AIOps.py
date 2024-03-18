@@ -109,8 +109,8 @@ class Client(BaseClient):
                                  full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/requests',
                                  headers=headers,
                                  json_data=body)
-        upload_url = res.get('upload-url')
-        report_id = res.get('id')
+        upload_url = res.get('upload-url', None)
+        report_id = res.get('id', None)
         if upload_url and report_id:
             return upload_url, report_id
         else:
@@ -166,26 +166,24 @@ class Client(BaseClient):
 
 def adjust_xml_format(xml_string, new_root_tag):
     root = ET.fromstring(xml_string)
-    # Find the new_root_tag tag element
     sub_tags = root.find(f'.//{new_root_tag}')
     if sub_tags is not None:
-        # Extract the attributes of the new_root_tag tag
-        attributes = ' '.join(['{}="{}"'.format(k, v) for k, v in sub_tags.attrib.items()])
-    
-    # Constructing the new XML string
-    new_xml = "<{} {}>".format(new_root_tag, attributes)
+        attributes = ' '.join([f'{k}="{v}"' for k, v in sub_tags.attrib.items()])
+    new_xml = f"<{new_root_tag} {attributes}>"
     for child in sub_tags:
         new_xml += ET.tostring(child, encoding="unicode")
     new_xml += f"</{new_root_tag}>"
     return new_xml
 
-
 def get_values_from_xml(xml_string, tags):
-    result = []
-    root = ET.fromstring(xml_string)
-    for tag in tags:
-        result.append(root.find(tag).text)  # type: ignore
-    return result
+    try:
+        result = []
+        root = ET.fromstring(xml_string)
+        for tag in tags:
+            result.append(root.find(tag).text)
+        return result
+    except Exception:
+        raise DemistoException("Could not find the required tags from the System file of the configured pan-os/panorama.")
 
 def convert_config_to_bytes(config_file, origin_flag):
     if origin_flag == 'User':
