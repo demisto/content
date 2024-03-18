@@ -881,7 +881,7 @@ def rasterize_command():  # pragma: no cover
         file_extension = "pdf"
 
     file_name = f'{file_name}.{file_extension}'  # type: ignore
-    demisto.debug(f'path type is: {type(path)}')
+    demisto.debug(f'file_name type is: {type(file_name)}')
     if type(file_name) == list:
         demisto.debug('file_name type is list')
         file_names = argToList(file_name)
@@ -901,7 +901,8 @@ def rasterize_command():  # pragma: no cover
             return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {url}"))
         else:
             res = []
-            current_res = fileResult(filename=get_list_item(file_names, index, 'url'), data=current_rasterize_output[0], file_type=entryTypes['entryInfoFile'])
+            current_res = fileResult(filename=get_list_item(file_names, index, 'url'),
+                                     data=current_rasterize_output[0], file_type=entryTypes['entryInfoFile'])
 
             if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
                 current_res['Type'] = entryTypes['image']
