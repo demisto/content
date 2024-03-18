@@ -720,10 +720,10 @@ class XSOAR2STIXParser:
             Stix object entry for given indicator
         """
         if self.server_version == TAXII_VER_2_1 and "CustomFields" in xsoar_indicator:
-            if stix_object['type'] == 'malware':
-                stix_object['is_family'] = xsoar_indicator["CustomFields"].get('ismalwarefamily', False)
-            elif stix_object['type'] == 'report':
-                stix_object['published'] = xsoar_indicator["CustomFields"].get('published')
+            if stix_object['type'] == 'malware' and (is_family := xsoar_indicator["CustomFields"].get('ismalwarefamily', False)):
+                stix_object['is_family'] = is_family
+            elif stix_object['type'] == 'report' and (published := xsoar_indicator["CustomFields"].get('published')):
+                stix_object['published'] = published
         return stix_object
 
     def add_sdo_required_field_2_0(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
@@ -737,8 +737,8 @@ class XSOAR2STIXParser:
         if self.server_version == TAXII_VER_2_0 and "CustomFields" in xsoar_indicator:
             if stix_object['type'] in {"indicator", "malware", "report", "threat-actor", "tool"}:
                 stix_object['labels'] = xsoar_indicator["CustomFields"].get('tags', [])
-            if stix_object['type'] == 'identity':
-                stix_object['identity_class'] = xsoar_indicator["CustomFields"].get('identityclass')
+            if stix_object['type'] == 'identity' and (identity_class := xsoar_indicator["CustomFields"].get('identityclass')):
+                stix_object['identity_class'] = identity_class
         return stix_object
 
     def build_sco_object(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:

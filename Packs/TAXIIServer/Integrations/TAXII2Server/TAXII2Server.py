@@ -260,7 +260,6 @@ class TAXII2Server:
         """
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get('query')
-
         iocs, extensions, total = find_indicators(
             query=query,
             types=types,
@@ -491,7 +490,7 @@ def create_query(query: str, types: list[str], added_after: str) -> str:
     """
     new_query = ''
     if types:
-        demisto.debug(f'raw query: {query}')
+        demisto.info(f'{INTEGRATION_NAME}: raw query: {query}')
         xsoar_types: list = []
         for t in types:
             xsoar_type = STIX2_TYPES_TO_XSOAR.get(t, t)
@@ -503,7 +502,7 @@ def create_query(query: str, types: list[str], added_after: str) -> str:
         if or_part := (' or '.join(f'type:"{x}"' for x in xsoar_types)):
             new_query += f' and ({or_part})'
 
-        demisto.debug(f'modified query, after adding types: {new_query}')
+        demisto.info(f'{INTEGRATION_NAME}: modified query, after adding types: {new_query}')
         query = new_query
     return f'{query} and modified:>="{added_after}"' if added_after else f'{query}'
 
@@ -522,7 +521,6 @@ def set_field_filters(is_manifest: bool = False) -> Optional[str]:
             set.union(SERVER.fields_to_present, TAXII_REQUIRED_FILTER_FIELDS))  # type: ignore[arg-type]
     else:
         field_filters = None
-    demisto.debug(f'filter fields: {field_filters}')
     return field_filters
 
 
@@ -560,6 +558,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
     new_query = create_query(query, types, added_after)
     new_limit = offset + limit
     field_filters = set_field_filters(is_manifest)
+    demisto.info(f"{INTEGRATION_NAME}: search indicators parameters is {field_filters=}, {new_query=}, {new_limit=}")
     indicator_searcher = search_indicators(field_filters, new_query, new_limit)
 
     XSOAR2STIXParser_client = XSOAR2STIXParser(server_version=SERVER.version, namespace_uuid=SERVER.namespace_uuid,
