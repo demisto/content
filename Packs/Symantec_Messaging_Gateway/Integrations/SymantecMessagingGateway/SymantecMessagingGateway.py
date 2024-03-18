@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import urllib3
-import requests
 from bs4 import BeautifulSoup
 
 # disable insecure warnings
@@ -19,6 +18,7 @@ TOKEN: str
 BAD_DOMAINS_EMAILS_GROUP = 'Local Bad Sender Domains'
 BAD_IPS_GROUP = 'Local Bad Sender IPs'
 
+client = BaseClient(base_url=BASE_URL, verify=USE_SSL)
 ''' HELPER FUNCTIONS '''
 
 
@@ -26,7 +26,7 @@ def http_request(method, url_suffix, cookies=COOKIES, data=None, headers=None):
     LOG('running request with url={}\tdata={}\theaders={}'.format(BASE_URL + url_suffix,
                                                                   data, headers))
     try:
-        res = requests.request(
+        res = client._session.request(
             method,
             BASE_URL + url_suffix,
             verify=USE_SSL,
