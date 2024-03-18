@@ -1380,7 +1380,7 @@ def test_group_delete_command(gsuite_client, mocker):
     assert response == f'Policy has been deleted for the customer {args["customer_id"]}'
 
 
-def test_gsuite_reset_password(gsuite_client, mocker):
+def test_gsuite_reset_password2(gsuite_client, mocker):
     """
     Scenario: User reset password command successful execution.
 
@@ -1409,7 +1409,7 @@ def test_gsuite_reset_password(gsuite_client, mocker):
     assert command_result.outputs_prefix == 'GSuite.User'
 
 
-def test_chromebrowser_move_ou_command(gsuite_client, mocker):
+def test_chromebrowser_move_ou_command2(gsuite_client, mocker):
     """
         Scenario: chromebrowserdevice move successful execution.
 
@@ -1429,7 +1429,7 @@ def test_chromebrowser_move_ou_command(gsuite_client, mocker):
     assert response == f'Chrome browser devices have been moved to the new organization unit {args["org_unit_path"]}'
 
 
-def test_chromebrowser_list_command(gsuite_client, mocker):
+def test_chromebrowser_list_command2(gsuite_client, mocker):
     """
         Scenario: chromebrowserdevice list successful execution.
 
@@ -1457,7 +1457,7 @@ def test_chromebrowser_list_command(gsuite_client, mocker):
     assert command_result.outputs_prefix == 'GSuite.ChromeBrowserDevices'
 
 
-def test_modify_policy_command(gsuite_client, mocker):
+def test_modify_policy_command2(gsuite_client, mocker):
     """
         Scenario: Policy Modify command successful execution.
 
@@ -1480,7 +1480,7 @@ def test_modify_policy_command(gsuite_client, mocker):
     assert response == f'Policy has been modified for the customer {args["customer_id"]}'
 
 
-def test_policy_schemas_command(gsuite_client, mocker):
+def test_policy_schemas_command2(gsuite_client, mocker):
     """
         Scenario: Policy Schema list command successful execution.
 
@@ -1508,7 +1508,7 @@ def test_policy_schemas_command(gsuite_client, mocker):
     assert command_result.outputs_prefix == 'GSuite.PolicySchema'
 
 
-def test_policy_resolve_command(gsuite_client, mocker):
+def test_policy_resolve_command2(gsuite_client, mocker):
     """
         Scenario: Policy resolve command successful execution.
 
@@ -1536,7 +1536,7 @@ def test_policy_resolve_command(gsuite_client, mocker):
     assert command_result.outputs_prefix == 'GSuite.Policy'
 
 
-def test_group_delete_command(gsuite_client, mocker):
+def test_group_delete_command2(gsuite_client, mocker):
     """
         Scenario: Delete group command successful execution.
 
