@@ -181,9 +181,9 @@ script:
         - Make sure the custom field id you entered is valid, or the request won't fail but will not be filtered correctly.
     outputs:
     - contextPath: Redmine.Issue
-      description: Display a list of issues.
+      description: A list of issues.
     - contextPath: Redmine.Issue.id
-      description: Display a list of issues.
+      description: A list of issues.
   - name: redmine-issue-update
     description: Update an existing issue When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created To create a custom field, navigate to the server URL with administrative privileges, click on 'Administration' (located at the top left), select 'Custom fields,' then proceed to create a new custom field. Once created, you can add values as needed.
     arguments:
