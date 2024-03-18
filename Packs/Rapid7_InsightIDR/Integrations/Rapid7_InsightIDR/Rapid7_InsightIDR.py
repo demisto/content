@@ -19,7 +19,7 @@ class Constants:
 
     IS_V1 = False
     IS_V2 = False
-    INVESTIGATIONS_HEADERS = ()
+    INVESTIGATIONS_HEADERS: tuple = ()
     INVESTIGATION_KEY_FIELD = ""
     DEFAULT_KEY_FIELD = ""
 
@@ -32,7 +32,7 @@ class ConstantsV1(Constants):
 
     IS_V1 = True
     IS_V2 = False
-    INVESTIGATIONS_HEADERS = (
+    INVESTIGATIONS_HEADERS: tuple = (
         "title",
         "id",
         "status",
@@ -53,7 +53,7 @@ class ConstantsV2(Constants):
 
     IS_V1 = False
     IS_V2 = True
-    INVESTIGATIONS_HEADERS = (
+    INVESTIGATIONS_HEADERS: tuple = (
         "title",
         "rrn",
         "status",
@@ -1726,7 +1726,7 @@ def main():
         api_version = (
             "V2"
             if argToBoolean(demisto.params().get("is_v2"))
-            else demisto.args().get("api_version", "V1")
+            else (demisto.args().get("api_version", "V1") or "V1")
         )
 
         headers_class: Constants = {"V1": ConstantsV1, "V2": ConstantsV2}.get(api_version, "V1")
