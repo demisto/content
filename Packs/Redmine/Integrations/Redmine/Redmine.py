@@ -14,7 +14,7 @@ MAX_LIMIT = 100
 MIN_LIMIT = 0
 
 INVALID_ID_DEMISTO_ERROR = "Invalid ID for one or more fields that request IDs. Please make sure all IDs are correct."
-RESPONSE_NOT_IN_FORMAT_ERROR = "Request Succeeded, Parse Error."
+RESPONSE_NOT_IN_FORMAT_ERROR = "The request succeeded, but a parse error occurred."
 
 HR_SHOW_ONLY_NAME = JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', ''))
 
@@ -224,13 +224,15 @@ def handle_file_attachment(client: Client, args: Dict[str, Any], entry_id: str):
         args_for_file = assign_params(file_name=file_name, content_type=content_type)
         token_response = client.create_file_token_request(args_for_file, entry_id)
         if 'upload' not in token_response or 'token' not in token_response['upload']:
-            raise DemistoException(f"Could not upload file with entry id {entry_id}")
+            raise DemistoException(f"Could not upload file with entry id {entry_id}, please try again.")
         uploads = assign_params(token=token_response['upload'].get('token', ''),
                                 content_type=content_type,
                                 filename=file_name,
                                 description=file_description)
         args['uploads'] = [uploads]
-    except Exception as e:
+    except DemistoException as e:
+        if "Could not upload file with entry id" in e.message:
+            raise DemistoException(e.message)
         raise DemistoException("Could not create a token for your file- please try again."
                                f"With error {e}.")
 
@@ -438,7 +440,7 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                                                                              "author": HR_SHOW_ONLY_NAME,
                                                                              "custom_fields":
                                                                                  JsonTransformer(keys=["name", "value"]),
-                                                                             "watchers": JsonTransformer(keys=["name"]),
+                                                                             "watchers": HR_SHOW_ONLY_NAME,
                                                                              "attachments":
                                                                                  JsonTransformer(keys=["filename",
                                                                                                        "content_url",
@@ -538,7 +540,10 @@ def get_project_list_command(client: Client, args: dict[str, Any]):
 
 def get_custom_fields_command(client: Client, args):
     response = client.get_custom_fields_request()
-    custom_fields_response = response['custom_fields']
+    try:
+        custom_fields_response = response['custom_fields']
+    except Exception as e:
+        raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
     headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter',
                'searchable', 'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities',
                'issue_custom_fields']
