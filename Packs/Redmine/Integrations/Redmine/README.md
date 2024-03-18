@@ -665,13 +665,13 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.Users | dict | Display a list of users. | 
-| Redmine.Users.id | str | Display a list of users ids. | 
-| Redmine.Users.login | str | Display a list of users login usernames. | 
-| Redmine.Users.admin | str | Display a list of users admins permission. | 
-| Redmine.Users.firstname | str | Display a list of users first name. | 
-| Redmine.Users.lastname | str | Display a list of users last name. | 
-| Redmine.Users.mail | str | Display a list of users mails. | 
+| Redmine.Users | dict |A list of users. | 
+| Redmine.Users.id | str | A list of users IDs. | 
+| Redmine.Users.login | str | A list of users login usernames. | 
+| Redmine.Users.admin | str | A list of users admins permission. | 
+| Redmine.Users.firstname | str | A list of users first name. | 
+| Redmine.Users.lastname | str | A list of users last name. | 
+| Redmine.Users.mail | str | A list of users mails. | 
 
 #### Command example
 ```!redmine-user-id-list```
