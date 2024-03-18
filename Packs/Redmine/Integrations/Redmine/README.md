@@ -9,7 +9,7 @@ This integration was integrated and tested with version 5.1.2 of Redmine.
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. <https://1.1.1.1>) | True |
+    | Server URL (e.g., <https://1.1.1.1>) | True |
     | Trust any certificate (not secure) | False |
     | API Key | True |
     | Project id | False |
