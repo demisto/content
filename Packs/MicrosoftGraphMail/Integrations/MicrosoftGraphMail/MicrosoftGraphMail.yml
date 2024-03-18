@@ -53,18 +53,25 @@ configuration:
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
   required: false
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self deployed Azure application
+  name: self_deployed
+  type: 8
+  required: false
+  section: Connect
+  advanced: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
-  display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8
   required: false
-- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
-  displaypassword: Azure Managed Identities Client ID
-  name: managed_identities_client_id
-  hiddenusername: true
+  display: Use Azure Managed Identities
+- name: managed_identities_client_id
   type: 9
   section: Connect
   required: false
+  additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -76,113 +83,106 @@ configuration:
   type: 0
   section: Collect
   required: false
-- defaultvalue: Inbox
+- additionalinfo: Supports folder ID and sub-folders, for example Inbox/Phishing.
+  defaultvalue: 'Inbox'
   display: Name of the folder or sub-folder from which to fetch incidents
-  additionalinfo: Supports folder ID and sub-folders, for example Inbox/Phishing.
   name: folder_to_fetch
   type: 0
   section: Collect
   required: false
-- additionalinfo: <number> <time unit>, for example 12 hours, 7 days.
-  defaultvalue: '15 minutes'
+- defaultvalue: '15 minutes'
   display: First fetch timestamp
   name: first_fetch
   type: 0
   section: Collect
+  additionalinfo: <number> <time unit>, for example 12 hours, 7 days.
   required: false
-- defaultvalue: '10'
-  display: HTTP Timeout
+- display: HTTP Timeout
   name: timeout
   type: 0
   section: Connect
+  defaultvalue: '10'
+  required: false
   additionalinfo: The timeout of the HTTP requests sent to Microsoft Graph API (in seconds).
   advanced: true
-  required: false
 - display: Maximum number of emails to pull per fetch
   name: fetch_limit
   type: 0
   section: Collect
+  required: false
   defaultvalue: '50'
-  required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
-- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-  display: Use a self deployed Azure application
-  name: self_deployed
-  type: 8
-  section: Connect
-  advanced: false
-  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
   required: false
-- display: ID or Client ID - see Detailed Instructions (?)
-  hidden: true
+- display: ID or Client ID
   name: _auth_id
   type: 0
   section: Connect
   required: false
-- display: Token or Tenant ID - see Detailed Instructions (?)
   hidden: true
+- display: Token or Tenant ID
   name: _tenant_id
   type: 0
   section: Connect
   required: false
+  hidden: true
 - display: Key or Client Secret (Deprecated)
   hidden: true
   name: enc_key
   type: 4
   section: Connect
-  advanced: true
   required: false
+  advanced: true
 - display: ID or Client ID - see Detailed Instructions (?) (Deprecated)
   hidden: true
   name: auth_id
   type: 4
   section: Connect
-  advanced: true
   required: false
+  advanced: true
 - display: Token or Tenant ID - see Detailed Instructions (?) (Deprecated)
+  hidden: true
   name: tenant_id
   type: 4
   section: Connect
   advanced: true
-  hidden: true
   required: false
-- additionalinfo: If not active, only a preview of the email will be fetched.
-  defaultvalue: 'false'
-  display: 'Display full email body'
+- display: 'Display full email body'
   name: display_full_email_body
   type: 8
   section: Collect
   advanced: true
   required: false
-- additionalinfo: Relevant only if fetch incidents is active.
+  additionalinfo: If not active, only a preview of the email will be fetched.
   defaultvalue: 'false'
-  display: 'Mark fetched emails as read'
+- display: 'Mark fetched emails as read'
   name: mark_fetched_read
   type: 8
   section: Collect
   advanced: true
   required: false
+  additionalinfo: Relevant only if fetch incidents is active.
+  defaultvalue: 'false'
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 0
   display: 'Advanced: Time in minutes to look back when fetching emails'
   name: look_back
   type: 0
   section: Collect
+  advanced: true
+  required: false
+- display: 'Trust any certificate (not secure)'
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: 'Use system proxy settings'
+  name: proxy
+  type: 8
+  section: Connect
   advanced: true
   required: false
 description: Microsoft Graph lets your app get authorized access to a user's Outlook mail data in a personal or organization account.
@@ -1141,7 +1141,7 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.86361
+  dockerimage: demisto/crypto:1.0.0.89294
   isfetch: true
   runonce: false
   script: '-'
