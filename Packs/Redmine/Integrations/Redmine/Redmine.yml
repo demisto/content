@@ -362,7 +362,7 @@ script:
     - name: name
       description: Search for users matching a specific name (searches in first name, last name, and email).
     - name: group_id
-      description: Specify the group ID to filter users by.
+      description: The group ID to filter users by.
     outputs:
     - contextPath: Redmine.Users
       description: A list of users.
