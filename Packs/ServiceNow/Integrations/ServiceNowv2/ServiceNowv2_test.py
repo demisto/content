@@ -576,7 +576,7 @@ def test_delete_attachment_command_failed(mocker):
     mocker.patch.object(client, 'delete_attachment', return_value="Error")
     with pytest.raises(DemistoException) as e:
         delete_attachment_command(client=client, args={"file_sys_id": "1234"})
-    assert 'No Record found.' in str(e)
+    assert "Error: No record found. Record doesn't exist or ACL restricts the record retrieval." in str(e)
 
 
 @freeze_time('2022-05-01 12:52:29')
