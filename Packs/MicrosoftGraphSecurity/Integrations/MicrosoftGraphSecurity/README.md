@@ -2174,3 +2174,106 @@ You will be automatically redirected to a link with the following structure:
 >```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
+
+
+
+### msg-advanced-hunting
+
+***
+Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft Graph Security. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.
+
+#### Base Command
+
+`msg-advanced-hunting`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Advanced hunting query. | Required | 
+| limit | Number of entries.  Enter -1 for unlimited query. Default is 50. | Optional | 
+| timeout | The time limit in seconds for the http request to run. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.Hunt.query | String | The query used, also acted as a key. | 
+| MsGraph.Hunt.results | Unknown | The results of the query. | 
+| Microsoft365Defender.Hunt.query | String | The query used, also acted as a key. | 
+| Microsoft365Defender.Hunt.results | Unknown | The results of the query. | 
+
+
+### msg-list-security-incident
+
+***
+
+#### Base Command
+
+`msg-list-security-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident's ID. | Optional | 
+| limit | Number of incidents in the list. Maximum is 50. Default is 50. | Optional | 
+| timeout | The time limit in seconds for the http request to run. Default is 50. | Optional | 
+| status | The status of the incident. Possible values are: active, redirected, resolved, inProgress, unknownFutureValue, awaitingAction. | Optional | 
+| assigned_to | Owner of the incident. | Optional | 
+| severity | Indicates the possible impact on assets. The higher the severity, the bigger the impact. Typically higher severity items require the most immediate attention. Possible values are: unknown, informational, low, medium, high, unknownFutureValue. | Optional | 
+| classification | The specification for the incident. | Optional | 
+| odata | Filter incidents using 'odata' query. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.Incident.incidentId | number | Incident's ID. | 
+| MsGraph.Incident.redirectIncidentId | unknown | Only populated in case an incident is grouped together with another incident, as part of the incident processing logic. | 
+| MsGraph.Incident.incidentName | string | The name of the incident. | 
+| MsGraph.Incident.createdTime | date | The date and time \(in UTC\) the incident was created. | 
+| MsGraph.Incident.lastUpdateTime | date | The date and time \(in UTC\) the incident was last updated. | 
+| MsGraph.Incident.assignedTo | string | Owner of the incident. | 
+| MsGraph.Incident.classification | string | Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive. | 
+| MsGraph.Incident.determination | string | The determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other. | 
+| MsGraph.Incident.severity | string | Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
+| MsGraph.Incident.status | string | The current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
+| MsGraph.Incident.alerts | unknown | List of alerts relevant for the incidents. | 
+
+### msg-update-security-incident
+
+***
+Update the incident with the given ID.
+
+#### Base Command
+
+`msg-update-security-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident's ID. | Required | 
+| status | Categorize incidents (as Active, Resolved, or Redirected). Possible values are: active, resolved, redirected, unknownFutureValue. | Optional | 
+| assigned_to | Owner of the incident. | Optional | 
+| determination | Determination of the incident. Possible values are: unknown, apt, malware, securityPersonnel, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, notMalicious. | Optional | 
+| classification | The specification for the incident. Possible values are: unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | Optional | 
+| custom_tags | Array of custom tags associated with an incident. | Optional | 
+| timeout | The time limit in seconds for the http request to run. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.Incident.incidentId | Number | Incident's ID. | 
+| MsGraph.Incident.redirectIncidentId | Unknown | Only populated in case an incident is grouped together with another incident, as part of the incident processing logic. | 
+| MsGraph.Incident.incidentName | String | The name of the incident. | 
+| MsGraph.Incident.createdTime | Date | The date and time \(in UTC\) the incident was created. | 
+| MsGraph.Incident.lastUpdateTime | Date | The date and time \(in UTC\) the incident was last updated. | 
+| MsGraph.Incident.assignedTo | String | Owner of the incident. | 
+| MsGraph.Incident.classification | String | Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive. | 
+| MsGraph.Incident.determination | String | The determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other. | 
+| MsGraph.Incident.severity | String | Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
+| MsGraph.Incident.status | String | The current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
+| MsGraph.Incident.alerts | unknown |  | 
