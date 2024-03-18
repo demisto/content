@@ -1600,9 +1600,9 @@ def chromebrowser_list_command(client: Client, args: dict[str, str]) -> CommandR
         else:
             while len(cb_list_resp) < int(limit):
                 if int(limit) - len(cb_list_resp) > API_LIMIT:
-                    page_size = API_LIMIT
+                    page_size = str(API_LIMIT)
                 else:
-                    page_size = int(limit) - len(cb_list_resp)
+                    page_size = str(int(limit) - len(cb_list_resp))
                 params_for_command = assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path,
                                                                       page_token, page_size)
                 response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
@@ -1733,9 +1733,9 @@ def policy_resolve_command(client: Client, args: dict[str, str]) -> CommandResul
         else:
             while len(policy_resolved_resp) < int(limit):
                 if int(limit) - len(policy_resolved_resp) > API_LIMIT:
-                    page_size = API_LIMIT
+                    page_size = str(API_LIMIT)
                 else:
-                    page_size = int(limit) - len(policy_resolved_resp)
+                    page_size = str(int(limit) - len(policy_resolved_resp))
                 app_payload['pageSize'] = page_size
                 app_payload['pageToken'] = page_token
                 response = client.http_request(full_url=full_url, method='POST', body=app_payload)
@@ -1810,9 +1810,9 @@ def policy_schemas_command(client: Client, args: dict[str, str]) -> CommandResul
         else:
             while len(policy_schemas_resp) < int(limit):
                 if int(limit) - len(policy_schemas_resp) > API_LIMIT:
-                    page_size = API_LIMIT
+                    page_size = str(API_LIMIT)
                 else:
-                    page_size = int(limit) - len(policy_schemas_resp)
+                    page_size = str(int(limit) - len(policy_schemas_resp))
                 params_for_command = assign_params_policy_schemas(filter, page_size, page_token)
                 response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
                 page_token = response.get('nextPageToken', '')
