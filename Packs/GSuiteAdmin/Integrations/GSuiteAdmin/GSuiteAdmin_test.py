@@ -1265,7 +1265,7 @@ def test_chromebrowser_list_command(gsuite_client, mocker):
         - Ensure no error returns
     """
     from GSuiteAdmin import chromebrowser_list_command
-    args = {"customer_id": "test", "limit": "10000"}
+    args = {"customer_id": "test", "limit": "1"}
     with open('test_data/chromebrowser_list_response.json') as file:
         api_response = json.load(file)
     with open('test_data/chromebrowser_list_context.json') as file:
@@ -1278,6 +1278,33 @@ def test_chromebrowser_list_command(gsuite_client, mocker):
     assert command_result.outputs_key_field == ['deviceId']
     assert command_result.outputs_prefix == 'GSuite.ChromeBrowserDevices'
 
+
+def test_chromebrowser_list_command_high_limit(gsuite_client, mocker):
+    """
+        Scenario: chromebrowserdevice list successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command chromebrowser_list_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import chromebrowser_list_command
+    args = {"customer_id": "test", "limit": "10000"}
+    with open('test_data/chromebrowser_list_response.json') as file:
+        api_response = json.load(file)
+    with open('test_data/chromebrowser_list_context.json') as file:
+        expected_entry_context = json.load(file)
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
+    command_result = chromebrowser_list_command(gsuite_client, args)
+    assert command_result.readable_output == expected_entry_context['readable_output']
+    assert command_result.outputs == expected_entry_context['outputs']
+    assert command_result.raw_response == expected_entry_context['raw_response']
+    assert command_result.outputs_key_field == ['deviceId']
+    assert command_result.outputs_prefix == 'GSuite.ChromeBrowserDevices'
 
 def test_modify_policy_command(gsuite_client, mocker):
     """
@@ -1385,6 +1412,33 @@ def test_policy_resolve_command(gsuite_client, mocker):
     assert command_result.outputs_key_field == ['deviceId']
     assert command_result.outputs_prefix == 'GSuite.Policy'
 
+
+def test_policy_resolve_command_high_limit(gsuite_client, mocker):
+    """
+        Scenario: Policy resolve command successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command policy_resolve_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import policy_resolve_command
+    args = {"customer_id": "test", "limit": "10000"}
+    with open('test_data/policy_resolve_response.json') as file:
+        api_response = json.load(file)
+    with open('test_data/policy_resolve_context.json') as file:
+        expected_entry_context = json.load(file)
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
+    command_result = policy_resolve_command(gsuite_client, args)
+    assert command_result.readable_output == expected_entry_context['readable_output']
+    assert command_result.outputs == expected_entry_context['outputs']
+    assert command_result.raw_response == expected_entry_context['raw_response']
+    assert command_result.outputs_key_field == ['deviceId']
+    assert command_result.outputs_prefix == 'GSuite.Policy'
 
 def test_group_delete_command(gsuite_client, mocker):
     """
