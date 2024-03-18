@@ -542,7 +542,7 @@ def get_custom_fields_command(client: Client, args):
     response = client.get_custom_fields_request()
     try:
         custom_fields_response = response['custom_fields']
-    except Exception as e:
+    except Exception:
         raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
     headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter',
                'searchable', 'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities',
