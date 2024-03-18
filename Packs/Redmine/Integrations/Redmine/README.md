@@ -17,7 +17,7 @@ This integration was integrated and tested with version 5.1.2 of Redmine.
     - Use your **server URL** to enter your Redmine instance.
     - Authenticate with your username and password.
     - Navigate to **My Account** (at the top right corner).
-    - Click on API **Access key** > **Show** - This is your API key
+    - Click API **Access key** > **Show** - This is your API key
 5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
