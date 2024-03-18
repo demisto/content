@@ -95,15 +95,15 @@ script:
       - 'True'
       - 'False'
     - name: estimated_hours
-      description: Enter the number of hours estimated for this issue.
+      description: The number of hours estimated for this issue.
     - name: file_entry_id
-      description: Enter the entry ID of the file to upload.
+      description: The entry ID of the file to upload.
     - name: file_name
-      description: Enter the name of the file to attach. Make sure the file name ends with .jpg/png/txt.
+      description: The name of the file to attach. Make sure the file name ends with .jpg/png/txt.
     - name: file_description
-      description: Enter the description of the file you attached.
+      description: The description of the file you attached.
     - name: file_content_type
-      description: Enter the file content type of the file you attached.
+      description: The file content type of the file you attached.
     outputs:
     - contextPath: Redmine.Issue.id
       description: The ID of the new issue.
