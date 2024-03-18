@@ -5646,6 +5646,11 @@
             "integrations": "AWS-SNS-Listener",
             "playbookID": "AWS SNS Listener - Test",
             "instance_names": "AWS-SNS-Listener"
+        },
+        {
+            "integrations": "Rapid7 InsightIDR",
+            "playbookID": "InsightIDREnhancement-TestPlaybook",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
