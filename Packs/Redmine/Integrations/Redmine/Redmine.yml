@@ -146,17 +146,17 @@ script:
             2. relations.
       isArray: true
     - name: issue_id
-      description: Specify an array of issue IDs to display -> 1,2,3.
+      description: An array of issue IDs to display -> 1,2,3.
       isArray: true
     - name: project_id
-      description: Specify a project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed.
+      description: A project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed.
     - name: subproject_id
-      description: Specify a subproject ID to display issues of this subproject (you can't use both subproject_id and exclude).
+      description: A subproject ID to display issues of this subproject (you can't use both subproject_id and exclude).
     - name: exclude
-      description: Specify a subproject ID to exclude from the list (you can't use both subproject_id and exclude), you need to add a project_id for this field to be included.
+      description: A subproject ID to exclude from the list (you can't use both subproject_id and exclude), you need to add a project_id for this field to be included.
     - name: tracker_id
       auto: PREDEFINED
-      description: Specify a tracker ID to display issues of this tracker ID.
+      description: A tracker ID to display issues of this tracker ID.
       predefined:
       - Bug
       - Feature
