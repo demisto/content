@@ -30,7 +30,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 - Create a new issue
 - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
-- To create a custom field, navigate to the server URL with administrative privileges, click on 'Administration' (located at the top left), select 'Custom fields,' then proceed to create a new custom field. Once created, you can add values as needed
+- To create a custom field, navigate to the server URL with administrative privileges, click **Administration** (located at the top left), select **Custom fields**, and then proceed to create a new custom field. Once created, you can add values as needed
 - To create a category/version, navigate to the server URL > click **Settings** (top bar) > **Versions** tab and **Issue categories** tab.
 
 
@@ -42,24 +42,24 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | Enter the project ID for this issue. If not specified, the value from integration configuration will be taken. | Optional | 
-| tracker_id | Enter the tracker ID for this issue. Possible values are: Bug, Feature, Support. | Required | 
-| status_id | Enter the status ID for this issue. Possible values are: New, In progress, Resolved, Feedback, Closed, Rejected. | Required | 
-| priority_id | Enter the priority ID for this issue. Possible values are: Low, Normal, High, Urgent, Immediate. | Required | 
-| subject | Enter the subject for this issue. | Required | 
-| description | Enter a description for this issue. | Optional | 
-| category_id | Enter the category ID for this issue. | Optional | 
-| fixed_version_id | Enter the target version ID for this issue. | Optional | 
-| assigned_to_id | Enter the ID of the user to assign the issue to. | Optional | 
-| parent_issue_id | Enter the ID of the parent issue. | Optional | 
-| custom_fields | Insert the custom field to update, THE FORMAT is costumFieldID:Value,costumFieldID:Value etc... | Optional | 
-| watcher_user_ids | Add an array with watcher user IDs for this issue -&gt; 1,2,3. | Optional | 
+| project_id | The project ID for this issue. If not specified, the value from integration configuration will be taken. | Optional | 
+| tracker_id | The tracker ID for this issue. Possible values are: Bug, Feature, Support. | Required | 
+| status_id | The status ID for this issue. Possible values are: New, In progress, Resolved, Feedback, Closed, Rejected. | Required | 
+| priority_id | The priority ID for this issue. Possible values are: Low, Normal, High, Urgent, Immediate. | Required | 
+| subject | The subject for this issue. | Required | 
+| description | A description for this issue. | Optional | 
+| category_id | The category ID for this issue. | Optional | 
+| fixed_version_id | The target version ID for this issue. | Optional | 
+| assigned_to_id | The ID of the user to assign the issue to. | Optional | 
+| parent_issue_id | The ID of the parent issue. | Optional | 
+| custom_fields | The custom field to update. The format is costumFieldID:Value,costumFieldID:Value, etc. | Optional | 
+| watcher_user_ids | An array with watcher user IDs for this issue -&gt; 1,2,3. | Optional | 
 | is_private | Is the issue private?. Possible values are: True, False. | Optional | 
-| estimated_hours | Enter the number of hours estimated for this issue. | Optional | 
-| file_entry_id | Enter the entry ID of the file to upload. | Optional | 
-| file_name | Enter the name of the file to attach. Make sure the file name ends with .jpg/png/txt. | Optional | 
-| file_description | Enter the description of the file you attached. | Optional | 
-| file_content_type | Enter the file content type of the file you attached. | Optional | 
+| estimated_hours | The number of hours estimated for this issue. | Optional | 
+| file_entry_id | The entry ID of the file to upload. | Optional | 
+| file_name | The name of the file to attach. Make sure the file name ends with .jpg/png/txt. | Optional | 
+| file_description | The description of the file you attached. | Optional | 
+| file_content_type | The file content type of the file you attached. | Optional | 
 
 #### Context Output
 
@@ -163,8 +163,8 @@ Display a list of issues
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.Issue | dict | Display a list of issues | 
-| Redmine.Issue.id | str | Display a list of issues | 
+| Redmine.Issue | dict | A list of issues. | 
+| Redmine.Issue.id | str | A list of issues. | 
 
 #### Command example
 ```!redmine-issue-list limit=2```
@@ -279,7 +279,7 @@ Display a list of issues
 ### redmine-issue-update
 
 ***
-Update an existing issue When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created To create a custom field, navigate to the server URL with administrative privileges, click on 'Administration' (located at the top left), select 'Custom fields,' then proceed to create a new custom field. Once created, you can add values as needed
+Update an existing issue. When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created. To create a custom field, navigate to the server URL with administrative privileges, click **'Administration** (located at the top left), select **Custom fields**, and proceed to create a new custom field. Once created, you can add values as needed.
 
 #### Base Command
 
@@ -300,13 +300,13 @@ Update an existing issue When attaching a file to an issue, include the entry ID
 | fixed_version_id | The ID of the fixed version for the issue. | Optional | 
 | assigned_to_id | The ID of the user to whom the issue is assigned. | Optional | 
 | parent_issue_id | The ID of the parent issue, if applicable. | Optional | 
-| custom_fields | Insert the custom field to update, THE FORMAT is costumFieldID:Value,costumFieldID:Value etc... | Optional | 
-| watcher_user_ids | Add an array of watcher ids seperated with comma -&gt; 1,2,3. | Optional | 
+| custom_fields | The custom field to update. The format is costumFieldID:Value,costumFieldID:Value etc. | Optional | 
+| watcher_user_ids | A comma-separated list of watcher IDs. -&gt; 1,2,3. | Optional | 
 | is_private | Is the issue private?. Possible values are: True, False. | Optional | 
 | estimated_hours | The estimated number of hours to complete the issue. | Optional | 
 | notes | Additional comments about the update. | Optional | 
 | private_notes | Specifies if the notes are private. Possible values are: True, False. | Optional | 
-| file_entry_id | Required if uploading a file- The entry ID of the file to upload. | Optional | 
+| file_entry_id | The entry ID of the file to upload. Required if uploading a file.  | Optional | 
 | file_name | The name of the file to upload (should end with .jpg/.png/.txt etc...). | Optional | 
 | file_description | The description of the attached file. | Optional | 
 | file_content_type | The content type of the attached file (image/jpg or image/png or text/txt etc...). | Optional | 
@@ -665,13 +665,13 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.Users | dict | Display a list of users. | 
-| Redmine.Users.id | str | Display a list of users ids. | 
-| Redmine.Users.login | str | Display a list of users login usernames. | 
-| Redmine.Users.admin | str | Display a list of users admins permission. | 
-| Redmine.Users.firstname | str | Display a list of users first name. | 
-| Redmine.Users.lastname | str | Display a list of users last name. | 
-| Redmine.Users.mail | str | Display a list of users mails. | 
+| Redmine.Users | dict |A list of users. | 
+| Redmine.Users.id | str | A list of users IDs. | 
+| Redmine.Users.login | str | A list of users login usernames. | 
+| Redmine.Users.admin | str | A list of users admins permission. | 
+| Redmine.Users.firstname | str | A list of users first name. | 
+| Redmine.Users.lastname | str | A list of users last name. | 
+| Redmine.Users.mail | str | A list of users mails. | 
 
 #### Command example
 ```!redmine-user-id-list```
