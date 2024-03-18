@@ -422,13 +422,13 @@ def test_get_issue_by_id_command_response(mocker, redmine_client):
                                                            "status": {"name": "new", "id": "1"},
                                                            "priority": {"name": "High", "id": "1"},
                                                            "subject": "helloTest",
-                                                           "watchers": {"name": "testingWatch", "id": "1"}
+                                                           "watchers": [{"name": "testingWatch", "id": "1"}]
                                                            }
                                                  }
     args = {'issue_id': '1', 'include': 'watchers,attachments'}
     result = get_issue_by_id_command(redmine_client, args)
     assert result.readable_output == ("### Issues List:\n|Id|Tracker|Status|Priority|Subject|Watchers|\n|---|---|---|---|---|---|"
-                                      "\n| 1 | Bug | new | High | helloTest | testingWatch |\n")
+                                      "\n| 1 | Bug | new | High | helloTest | **-**	***name***: testingWatch |\n")
 
 
 def test_get_issue_by_id_command_invalid_response(mocker, redmine_client):
