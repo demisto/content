@@ -42,7 +42,7 @@ script:
       required: false
     - name: tracker_id
       auto: PREDEFINED
-      description: Enter the tracker ID for this issue.
+      description: The tracker ID for this issue.
       predefined:
       - Bug
       - Feature
