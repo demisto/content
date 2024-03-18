@@ -163,7 +163,7 @@ script:
       - Support
     - name: status_id
       auto: PREDEFINED
-      description: Specify a status ID to display issues of this status ID.
+      description: The status ID to display issues of this status ID.
       defaultValue: Open
       predefined:
       - Open
