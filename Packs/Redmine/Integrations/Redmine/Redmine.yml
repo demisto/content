@@ -140,7 +140,7 @@ script:
         - For example: sort=tracker:desc.
     - name: include
       description: |
-        - Specify an array of extra fields to retrieve.
+        - An array of extra fields to retrieve.
         - Possible values:
             1. attachments.
             2. relations.
