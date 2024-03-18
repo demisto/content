@@ -8,7 +8,7 @@
 1. Navigate to your server URL to access your account.
 2. Enter your username and password.
 3. Go to "My Account" located at the top right corner of the page.
-4. Click on "API access key" and select "Show" to reveal your API key.
+4. Click **API access key** and select **Show** to reveal your API key.
 5. Input the API key into the Redmine integration authentication window.
 
 ## General notes
