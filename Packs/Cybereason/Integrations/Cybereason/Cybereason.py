@@ -1964,6 +1964,7 @@ def query_malop_management_command(client: Client, args: dict):
     if dict_safe_get(response, ['data', 'data']) == []:
         raise DemistoException(f"Could not find details for the provided MalopGuid {malop_guid}")
     else:
+        outputs = []
         for single_malop in response["data"]["data"]:
             guid = single_malop.get("guid", "")
             creation_time = single_malop.get("creationTime", "")
@@ -1974,8 +1975,6 @@ def query_malop_management_command(client: Client, args: dict):
                 link = SERVER + '/#/malop/' + guid
             else:
                 link = SERVER + '/#/detection-malop/' + guid
-
-            outputs = []
             malop_output = {
                 'GUID': guid,
                 'Link': link,
