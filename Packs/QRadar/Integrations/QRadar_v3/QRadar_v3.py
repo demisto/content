@@ -382,7 +382,8 @@ class Client(BaseClient):
 
     def http_request(self, method: str, url_suffix: str, params: Optional[dict] = None,
                      json_data: Optional[dict] = None, additional_headers: Optional[dict] = None,
-                     timeout: Optional[int] = None, resp_type: str = 'json'):
+                     timeout: Optional[int] = None, resp_type: str = 'json', retries=0,
+                     backoff_factor=0):
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
         for _time in range(1, CONNECTION_ERRORS_RETRIES + 1):
             try:
@@ -394,7 +395,9 @@ class Client(BaseClient):
                     headers=headers,
                     error_handler=self.qradar_error_handler,
                     timeout=timeout or self.timeout,
-                    resp_type=resp_type
+                    resp_type=resp_type,
+                    retries=retries,
+                    backoff_factor=backoff_factor
                 )
             except (DemistoException, requests.ReadTimeout) as error:
                 demisto.error(f'Error {error} in time {_time}')
@@ -653,7 +656,9 @@ class Client(BaseClient):
             method='POST',
             url_suffix=f'/reference_data/sets/bulk_load/{parse.quote(ref_name, safe="")}',
             json_data=indicators,
-            additional_headers=headers
+            additional_headers=headers,
+            backoff_factor=5,
+            retries=5
         )
 
     def reference_set_entries(
