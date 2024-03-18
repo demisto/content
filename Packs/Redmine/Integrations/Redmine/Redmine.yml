@@ -170,7 +170,7 @@ script:
       - Closed
       - All
     - name: assigned_to_id
-      description: Specify an assigned-to ID to display issues assigned to this user ID.
+      description: An assigned-to ID to display issues assigned to this user ID.
     - name: parent_id
       description: Specify a parent ID to display issues that are under this parent ID.
     - name: custom_field
