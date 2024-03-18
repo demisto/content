@@ -330,7 +330,7 @@ script:
           3. enabled_modules 
           4. time_entry_activities
           5. issue_custom_fields
-        - Separate multiple values with comma ONLY.
+        - Separate multiple values with commas ONLY.
       isArray: true
     outputs:
     - contextPath: Redmine.Project
