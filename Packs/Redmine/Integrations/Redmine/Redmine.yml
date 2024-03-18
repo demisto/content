@@ -277,7 +277,7 @@ script:
           5.journals.
           6.watchers.
           7.allowed_statuses.
-        - Separate multiple values with comma ONLY.
+        - Separate multiple values with commas ONLY.
       isArray: true
     outputs:
     - contextPath: Redmine.Issue.id
