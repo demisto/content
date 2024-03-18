@@ -55,7 +55,7 @@ Make sure the application password is not expired by logging in TOPdesk and view
 ### Finding the Default Incident Caller ID
 The TOPdesk incident caller is the TOPdesk person who requested a specific TOPdesk incident and is the contact person for all activities related to this incident.  
 To find the incident caller ID which should be used as the default caller when creating a new TOPdesk incident, first configure the integration instance *without* providing the **Default Incident Caller ID**. Then run the command `!topdesk-persons-list` in the *Playground - War Room*.  
-You will be returned a list of persons and their IDs. Copy the ID of the desired person and edit the integration instance to set the **Default Incident Caller ID**.
+You will receive a list of people and their IDs. Copy the ID of the desired person and edit the integration instance to set the **Default Incident Caller ID**.
 
 ### Incident Mirroring
 
