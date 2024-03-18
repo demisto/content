@@ -350,7 +350,7 @@ tasks:
       investigation_id:
         simple: ${Rapid7InsightIDR.Investigation.rrn}
       user_email_address:
-        simple: ronh@qmasters.co
+        simple: test@test.com
       api_version:
         simple: V2
     separatecontext: false

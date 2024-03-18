@@ -27,7 +27,7 @@
       "disposition": "UNDECIDED",
       "assignee": {
         "name": "test",
-        "email": "test@test.co"
+        "email": "test@test.com"
       },
       "first_alert_time": null,
       "latest_alert_time": null,
