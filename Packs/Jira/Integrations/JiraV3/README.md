@@ -73,7 +73,7 @@ Locate permissions for the tasks listed below:
 
 
 ### OAuth 2.0
-For both instances (Cloud ID & OnPrem), it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The OProxy URL is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally, if you don't want to use the OProxy URL, you can use a localhost URL on a port that is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the URL address bar in the response (see [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar)).
+For both instances (Cloud ID & OnPrem), it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The OProxy URL is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally, if you don't want to use the OProxy URL, you can use a localhost URL on a port that is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the URL address bar in the response (see [OAuth 2.0 authorization Flow In Cortex XSOAR](#oauth20-authorization-flow-in-cortex-xsoar)).
 
 #### Cloud authentication
 
@@ -123,7 +123,7 @@ The integration uses the *offline_access* scope, in order to retrieve refresh to
 
 Write
 
-#### Authorization Flow In Cortex XSOAR
+#### OAuth 2.0 authorization Flow In Cortex XSOAR
 
 1. Create the authentication application as explained in the [OAuth 2.0](#oauth-20) section.
 2. Run the command `!jira-oauth-start`, where you will be presented with a URL to authenticate yourself.
