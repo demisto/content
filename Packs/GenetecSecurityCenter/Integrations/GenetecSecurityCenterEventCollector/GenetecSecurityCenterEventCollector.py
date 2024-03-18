@@ -77,7 +77,7 @@ def fetch_events_command(
     client: Client,
     args: dict[str, str],
     last_run: dict,
-) -> list[dict]:
+) -> tuple[list[dict], dict]:
     """
     Args:
         client (Client): The client for api calls.
@@ -94,13 +94,10 @@ def fetch_events_command(
     if args.get("start_time"):
         start_time_str = args.get("start_time", "")
     elif not last_run:
-        demisto.info("Starting a new iteration, didn't receive last run.")
-        start_time = datetime.strptime("2024-02-21T23:00:00", DATE_FORMAT_EVENT)
-        # start_time = time_now - timedelta(minutes=1)
+        start_time = time_now - timedelta(minutes=1)
         start_time_str = start_time.strftime(DATE_FORMAT_EVENT)
     else:
         start_time_str = last_run.get("start_time", "")
-        demisto.info(f"Starting a new iteration with last_run = {start_time_str}.")
     time_now_str = time_now.strftime(DATE_FORMAT_EVENT)
     time_range = f"TimeRange.SetTimeRange({start_time_str},{time_now_str})"
     limit: int = int(args.get('limit') or client.limit)
@@ -108,12 +105,15 @@ def fetch_events_command(
     url_suffix = f"{AUDIT_TRAIL_ENDPOINT}?q={query}"
     demisto.info(f"executing fetch events with the following query: {query}")
     response = client.http_request(url_suffix=url_suffix)
-    demisto.info(f"got {len(response)} events, truncating.")
     results = response[:limit]
     for result in results:
         result["Value"] = parse(result.get("Value"))
-    return results
-
+        result['_time'] = result["ModificationTimeStamp"]
+    if results:
+        last_run["start_time"] = datetime.strptime(results[-1]["ModificationTimeStamp"], "%Y-%m-%dT%H:%M:%S.%fZ")
+    else:
+        demisto.info("No new events were fetched. Therefore, the last_run object won't be updated.")
+    return results, last_run
 
 def main() -> None:  # pragma: no cover
     params = demisto.params()
@@ -126,8 +126,8 @@ def main() -> None:  # pragma: no cover
     max_fetch = params.get("max_fetch", "1000")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-
     should_push_events = argToBoolean(args.get("should_push_events", False))
+    should_save_last_run = False
 
     command = demisto.command()
     try:
@@ -145,23 +145,17 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
 
         elif command == "genetec-security-center-get-events":
-            events = fetch_events_command(client, args, {})
+            events, _ = fetch_events_command(client, args, {})
             return_results(
                 CommandResults(readable_output=tableToMarkdown("Events:", events, headers=GET_EVENTS_HEADERS))
             )
 
         elif command == "fetch-events":
-            should_push_events = True
+            should_push_events, should_save_last_run = True, True
             last_run = demisto.getLastRun()
-            events = fetch_events_command(
+            events, last_run = fetch_events_command(
                 client, params, last_run=last_run
             )
-            last_run_time = datetime.strptime(events[-1]["ModificationTimeStamp"],
-                                              "%Y-%m-%dT%H:%M:%S.%fZ").strftime(DATE_FORMAT_EVENT)
-            last_run = {"start_time": last_run_time}
-            demisto.setLastRun(last_run)
-            demisto.info(f"set {last_run=}")
-
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
@@ -169,9 +163,13 @@ def main() -> None:  # pragma: no cover
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.info(f"{len(events)} events were pushed to XSIAM")
 
+        if should_save_last_run:
+            demisto.setLastRun(last_run)
+            demisto.info(f"set {last_run=}")
+
     except Exception as e:
         return_error(
-            f"Failed to execute {command} command. Error in Genetec Security Center Event Collector Integration: {e}."
+            f"Failed to execute {command} command. Error in Genetec Security Center Event Collector Integration [{e}]."
         )
 
 
