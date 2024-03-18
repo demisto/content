@@ -163,8 +163,8 @@ Display a list of issues
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.Issue | dict | Display a list of issues | 
-| Redmine.Issue.id | str | Display a list of issues | 
+| Redmine.Issue | dict | A list of issues. | 
+| Redmine.Issue.id | str | A list of issues. | 
 
 #### Command example
 ```!redmine-issue-list limit=2```
