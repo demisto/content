@@ -6,7 +6,7 @@ configuration:
 - display: AWS Default Region
   name: defaultRegion
   type: 0
-  required: false
+  required: true
 - additionalinfo: When using Access Key and Secret Key, there is no need to use Role Arn
   display: Role Arn
   name: roleArn
@@ -225,7 +225,7 @@ script:
     outputs:
     - contextPath: AWS.SNS.Subscriptions.SubscriptionArn
       description: The Subscription Arn.
-  dockerimage: demisto/boto3py3:1.0.0.87537
+  dockerimage: demisto/boto3py3:1.0.0.88855
   script: ''
   subtype: python3
   type: python

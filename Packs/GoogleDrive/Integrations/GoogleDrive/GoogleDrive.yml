@@ -2115,6 +2115,13 @@ script:
       description: The file's Entry ID.
     - name: parent
       description: The ID of the parent folder which contains the file. If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: 'Whether the requesting application supports both My Drives and shared drives.'
+      name: supports_all_drives
+      predefined:
+      - "true"
+      - "false"
     outputs:
     - contextPath: GoogleDrive.File.File.id
       description: The ID of the file.
@@ -3103,7 +3110,7 @@ script:
     - contextPath: GoogleDrive.File.Parents
       description: The IDs of the parent folders which contain the file.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.86179
+  dockerimage: demisto/googleapi-python3:1.0.0.89487
   isfetch: true
   runonce: false
   script: "-"

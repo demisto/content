@@ -371,9 +371,60 @@ script:
     - contextPath: AWS.CloudTrail.Events.CloudTrailEvent
       description: A JSON string that contains a representation of the event returned.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.86958
+  - arguments:
+    - description: Specifies the names of multiple trails.
+      name: trailNameList
+    - description: Specifies the region of the trail.
+      name: region
+      required: true
+    - description: The The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    - description: Specifies the name of the trail.
+      name: name
+      required: true
+    description: Returns a JSON-formatted list of information about the specified trail. Fields include information on delivery errors, Amazon SNS and Amazon S3 errors, and start and stop logging times for each trail.
+    name: aws-cloudtrail-get-trail-status
+    outputs:
+    - contextPath: AWS.CloudTrail.TrailStatus.IsLogging
+      description: Whether the CloudTrail trail is currently logging Amazon Web Services API calls.
+      type: boolean
+    - contextPath: AWS.CloudTrail.TrailStatus.LatestDeliveryError
+      description: Displays any Amazon S3 error that CloudTrail encountered when attempting to deliver log files to the designated bucket.
+      type: string
+    - contextPath: AWS.CloudTrail.TrailStatus.LatestNotificationError
+      description: Displays any Amazon SNS error that CloudTrail encountered when attempting to send a notification.
+      type: string
+    - contextPath: AWS.CloudTrail.TrailStatus.LatestDeliveryTime
+      description: Specifies the date and time that CloudTrail last delivered log files to an account’s Amazon S3 bucket.
+      type: date
+    - contextPath: AWS.CloudTrail.TrailStatus.LatestNotificationTime
+      description: Specifies the date and time of the most recent Amazon SNS notification that CloudTrail has written a new log file to an account’s Amazon S3 bucket.
+      type: date
+    - contextPath: AWS.CloudTrail.TrailStatus.StartLoggingTime
+      description: Specifies the most recent date and time when CloudTrail started recording API calls for an Amazon Web Services account.
+      type: date
+    - contextPath: AWS.CloudTrail.TrailStatus.StopLoggingTime
+      description: Specifies the most recent date and time when CloudTrail stopped recording API calls for an Amazon Web Services account.
+      type: date
+    - contextPath: AWS.CloudTrail.TrailStatus.LatestCloudWatchLogsDeliveryError
+      description: Displays any CloudWatch Logs error that CloudTrail encountered when attempting to deliver logs to CloudWatch Logs.
+      type: string
+    - contextPath: AWS.CloudTrail.TrailStatus.LatestCloudWatchLogsDeliveryTime
+      description: Displays the most recent date and time when CloudTrail delivered logs to CloudWatch Logs.
+      type: date
+    - contextPath: AWS.CloudTrail.TrailStatus.LatestDigestDeliveryTime
+      description: Specifies the date and time that CloudTrail last delivered a digest file to an account’s Amazon S3 bucket.
+      type: date
+    - contextPath: AWS.CloudTrail.TrailStatus.LatestDigestDeliveryError
+      description: Displays any Amazon S3 error that CloudTrail encountered when attempting to deliver a digest file to the designated bucket.
+      type: string
+  dockerimage: demisto/boto3py3:1.0.0.89556
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

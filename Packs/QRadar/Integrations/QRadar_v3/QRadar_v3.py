@@ -8,7 +8,7 @@ import pytz
 import urllib3
 from CommonServerUserPython import *  # noqa
 
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -93,6 +93,7 @@ ASCENDING_ID_ORDER = '+id'
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
 DEFAULT_EVENTS_COLUMNS = """QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime"""  # noqa: E501
+DEFAULT_ASSETS_LIMIT = 100
 
 ''' OUTPUT FIELDS REPLACEMENT MAPS '''
 OFFENSE_OLD_NEW_NAMES_MAP = {
@@ -586,8 +587,8 @@ class Client(BaseClient):
     def reference_sets_list(self, range_: Optional[str] = None, ref_name: Optional[str] = None,
                             filter_: Optional[str] = None, fields: Optional[str] = None):
         name_suffix = f'/{parse.quote(ref_name, safe="")}' if ref_name else ''
-        params = assign_params(fields=fields) if ref_name else assign_params(filter=filter_, fields=fields)
-        additional_headers = {'Range': range_} if not ref_name else None
+        params = assign_params(filter=filter_, fields=fields)
+        additional_headers = {'Range': range_}
         return self.http_request(
             method='GET',
             url_suffix=f'/reference_data/sets{name_suffix}',
@@ -1331,7 +1332,7 @@ def create_single_asset_for_offense_enrichment(asset: dict) -> dict:
     return add_iso_entries_to_asset(dict(offense_without_properties, **properties, **interfaces))
 
 
-def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[dict]:
+def enrich_offense_with_assets(client: Client, offense_ips: List[str], assets_limit: int | None = 100) -> List[dict]:
     """
     Receives list of offense's IPs, and performs API call to QRadar service to retrieve assets correlated to IPs given.
     Args:
@@ -1352,14 +1353,18 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[d
 
     offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
-    assets = [asset for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))
-              for asset in get_assets_for_ips_batch(b)]
+    assets: List = []
+    for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE)):
+        assets.extend(get_assets_for_ips_batch(b))
+        if assets_limit and len(assets) >= assets_limit:
+            assets = assets[:assets_limit]
+            break
 
     return [create_single_asset_for_offense_enrichment(asset) for asset in assets]
 
 
 def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: bool,
-                           enrich_assets: bool) -> List[dict]:
+                           enrich_assets: bool, assets_limit: int | None = None) -> List[dict]:
     """
     Receives list of offenses, and enriches the offenses with the following:
     - Changes offense_type value from the offense type ID to the offense type name.
@@ -1374,6 +1379,7 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
         offenses (Any): List of all of the offenses to enrich.
         enrich_ip_addresses (bool): Whether to enrich the offense source/destination IP addresses.
         enrich_assets (bool): Whether to enrich the offense with assets.
+        assets_limit (int): The limit of assets to enrich the offense with.
 
     Returns:
         (List[Dict]): The enriched offenses.
@@ -1428,7 +1434,7 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
             source_ips: List = source_addresses_enrich.get('source_address_ids', [])
             destination_ips: List = destination_addresses_enrich.get('local_destination_address_ids', [])
             all_ips: List = source_ips + destination_ips
-            asset_enrich = {'assets': enrich_offense_with_assets(client, all_ips)}
+            asset_enrich = {'assets': enrich_offense_with_assets(client, all_ips, assets_limit)}
         else:
             asset_enrich = {}
 
@@ -1631,21 +1637,27 @@ def print_debug_msg(msg: str):
     demisto.debug(f'QRadarMsg - {msg}')
 
 
-def is_reset_triggered():
+def is_reset_triggered(ctx: dict | None = None, version: Any = None):
     """
     Checks if reset of integration context have been made by the user.
     Because fetch is long running execution, user communicates with us
     by calling 'qradar-reset-last-run' command which sets reset flag in
     context.
 
+    Args:
+        ctx (dict | None): The context data to check. If it is None it will get the context from the platform.
+        version: The context data version.
     Returns:
         (bool):
         - True if reset flag was set. If 'handle_reset' is true, also resets integration context.
         - False if reset flag was not found in integration context.
     """
-    ctx, version = get_integration_context_with_version()
+    if not ctx or not version:
+        ctx, version = get_integration_context_with_version()
     if ctx and RESET_KEY in ctx:
+        # if we need to reset we have to get the version of the context
         print_debug_msg('Reset fetch-incidents.')
+        demisto.setLastRun({LAST_FETCH_KEY: 0})
         context_data: dict[str, Any] = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                                         MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
                                         'samples': []}
@@ -2004,7 +2016,7 @@ def is_all_events_fetched(client: Client, fetch_mode: FetchMode, offense_id: str
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
                                          events_columns: str, events_limit: int, ip_enrich: bool, asset_enrich: bool,
                                          last_highest_id: int, incident_type: Optional[str], mirror_direction: Optional[str],
-                                         first_fetch: str, mirror_options: str) \
+                                         first_fetch: str, mirror_options: str, assets_limit: int) \
         -> tuple[Optional[List[dict]], Optional[int]]:
     """
     Gets offenses from QRadar service, and transforms them to incidents in a long running execution.
@@ -2074,7 +2086,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
         dict(offense, mirror_direction=mirror_direction, mirror_instance=demisto.integrationInstance())
         for offense in offenses] if mirror_direction else offenses
 
-    enriched_offenses = enrich_offenses_result(client, offenses_with_mirror, ip_enrich, asset_enrich)
+    enriched_offenses = enrich_offenses_result(client, offenses_with_mirror, ip_enrich, asset_enrich, assets_limit)
     final_offenses = sanitize_outputs(enriched_offenses)
     incidents = create_incidents_from_offenses(final_offenses, incident_type)
     return incidents, new_highest_offense_id
@@ -2153,9 +2165,13 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
 def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mode: str,
                               user_query: str, events_columns: str, events_limit: int, ip_enrich: bool,
                               asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str],
-                              first_fetch: str, mirror_options: str):
-    is_reset_triggered()
-    context_data, _ = get_integration_context_with_version()
+                              first_fetch: str, mirror_options: str, assets_limit: int):
+    context_data, version = get_integration_context_with_version()
+
+    if is_reset_triggered(context_data, version):
+        last_highest_id = 0
+    else:
+        last_highest_id = int(context_data.get(LAST_FETCH_KEY, 0))
     print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
     incidents, new_highest_id = get_incidents_long_running_execution(
         client=client,
@@ -2166,11 +2182,12 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
         events_limit=events_limit,
         ip_enrich=ip_enrich,
         asset_enrich=asset_enrich,
-        last_highest_id=int(context_data.get(LAST_FETCH_KEY, '0')),
+        last_highest_id=last_highest_id,
         incident_type=incident_type,
         mirror_direction=mirror_direction,
         first_fetch=first_fetch,
         mirror_options=mirror_options,
+        assets_limit=assets_limit,
     )
     print_debug_msg(f'Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}')
     context_data, ctx_version = get_integration_context_with_version()
@@ -2181,13 +2198,34 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
             context_data.update({'samples': incident_batch_for_sample, LAST_FETCH_KEY: int(new_highest_id)})
 
         # if incident creation fails, it'll drop the data and try again in the next iteration
-        demisto.createIncidents(incidents)
+        demisto.createIncidents(incidents, {LAST_FETCH_KEY: str(new_highest_id)})
         safely_update_context_data(context_data=context_data,
                                    version=ctx_version,
                                    should_update_last_fetch=True)
 
         print_debug_msg(
             f'Successfully Created {len(incidents)} incidents. Incidents created: {[incident["name"] for incident in incidents]}')
+
+
+def recover_from_last_run(ctx: dict | None = None, version: Any = None):
+    """
+    This recovers the integration context from the last run, if there is inconsistency between last run and context.
+    It happens when the container crashes after `demisto.createIncidents` and the integration context is not updated.
+    """
+    if not ctx or not version:
+        ctx, version = get_integration_context_with_version()
+    assert isinstance(ctx, dict)
+    last_run = demisto.getLastRun() or {}
+    last_highest_id_last_run = int(last_run.get(LAST_FETCH_KEY, 0))
+    print_debug_msg(f'Last highest ID from last run: {last_highest_id_last_run}')
+    last_highest_id_context = int(ctx.get(LAST_FETCH_KEY, 0))
+    if last_highest_id_last_run != last_highest_id_context and last_highest_id_last_run > 0:
+        # if there is inconsistency between last run and context, we need to update the context
+        print_debug_msg(
+            f'Updating context data with last highest ID from last run: {last_highest_id_last_run}.'
+            f'ID from context: {last_highest_id_context}')
+        safely_update_context_data(ctx | {LAST_FETCH_KEY: int(last_highest_id_last_run)},
+                                   version, should_update_last_fetch=True)
 
 
 def long_running_execution_command(client: Client, params: dict):
@@ -2216,8 +2254,12 @@ def long_running_execution_command(client: Client, params: dict):
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
     mirror_options = params.get('mirror_options', '')
+    assets_limit = int(params.get('assets_limit', DEFAULT_ASSETS_LIMIT))
     if not argToBoolean(params.get('retry_events_fetch', True)):
         EVENTS_SEARCH_TRIES = 1
+    context_data, version = get_integration_context_with_version()
+    is_reset_triggered(context_data, version)
+    recover_from_last_run(context_data, version)
     while True:
         try:
             perform_long_running_loop(
@@ -2233,6 +2275,7 @@ def long_running_execution_command(client: Client, params: dict):
                 mirror_direction=mirror_direction,
                 first_fetch=first_fetch,
                 mirror_options=mirror_options,
+                assets_limit=assets_limit,
             )
             demisto.updateModuleHealth('')
 
@@ -4228,7 +4271,6 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'long-running-execution':
             validate_integration_context()
-            support_multithreading()
             long_running_execution_command(client, params)
 
         elif command in [

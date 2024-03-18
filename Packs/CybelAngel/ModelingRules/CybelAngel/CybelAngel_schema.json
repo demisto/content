@@ -1,0 +1,88 @@
+{
+    "cybelangel_platform_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "report_content": {
+            "type": "string",
+            "is_array": false
+        },
+        "abstract": {
+            "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "incident_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "liveness": {
+            "type": "string",
+            "is_array": false
+        },
+        "machine_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "malware_location": {
+            "type": "string",
+            "is_array": false
+        },
+        "malware_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "port": {
+            "type": "int",
+            "is_array": false
+        },
+        "report_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "risks": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "int",
+            "is_array": false
+        },
+        "threat": {
+            "type": "string",
+            "is_array": false
+        },
+        "title":{
+            "type": "string",
+            "is_array": false
+        },
+        "city": {
+            "type": "string",
+            "is_array": false
+        },
+        "location": {
+            "type": "string",
+            "is_array": false
+        },
+        "hostnames": {
+            "type": "string",
+            "is_array": false
+        },
+        "tags": {
+            "type": "string",
+            "is_array": false
+        },
+        "asset_urls": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
