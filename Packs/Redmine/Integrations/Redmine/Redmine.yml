@@ -71,22 +71,22 @@ script:
       - Immediate
     - name: subject
       required: true
-      description: Enter the subject for this issue.
+      description: The subject for this issue.
     - name: description
-      description: Enter a description for this issue.
+      description: A description for this issue.
     - name: category_id
-      description: Enter the category ID for this issue.
+      description: The category ID for this issue.
     - name: fixed_version_id
-      description: Enter the target version ID for this issue.
+      description: The target version ID for this issue.
     - name: assigned_to_id
-      description: Enter the ID of the user to assign the issue to.
+      description: The ID of the user to assign the issue to.
     - name: parent_issue_id
-      description: Enter the ID of the parent issue.
+      description: The ID of the parent issue.
     - name: custom_fields
-      description: Insert the custom field to update, THE FORMAT is costumFieldID:Value,costumFieldID:Value etc...
+      description: The custom field to update. The format is costumFieldID:Value,costumFieldID:Value, etc.
       isArray: true
     - name: watcher_user_ids
-      description: Add an array with watcher user IDs for this issue -> 1,2,3.
+      description: An array with watcher user IDs for this issue -> 1,2,3.
       isArray: true
     - name: is_private
       description: Is the issue private?
