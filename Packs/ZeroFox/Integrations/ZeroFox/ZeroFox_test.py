@@ -1238,32 +1238,3 @@ def test_send_alert_attachment_command(requests_mock, mocker):
     assert alert_id == alert_id_called_in_fetch
     assert isinstance(results.outputs, dict)
     assert results.outputs_prefix == "ZeroFox.Alert"
-
-
-def test_get_alert_attachments_command(requests_mock, mocker):
-    """
-    Given
-        There is an alert id
-    When
-        Calling get_alert_attachments_command
-    Then
-        It should call the get alert attachments with the alert id
-        And return the alert as output
-        And with the correct output prefix
-    """
-    alert_id = "123"
-    attachments_response = load_json("test_data/alerts/attachments.json")
-    requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
-    requests_mock.get(
-        f"/1.0/alerts/{alert_id}/attachments/", json=attachments_response)
-    client = build_zf_client()
-    spy_get_attachments = mocker.spy(client, "get_alert_attachments")
-    args = {"alert_id": alert_id}
-
-    results = get_alert_attachments_command(client, args)
-
-    spy_get_attachments.assert_called_once()
-    alert_id_called, = spy_get_attachments.call_args[0]
-    assert alert_id == alert_id_called
-    assert isinstance(results.outputs, list)
-    assert results.outputs_prefix == "ZeroFox.AlertAttachments"

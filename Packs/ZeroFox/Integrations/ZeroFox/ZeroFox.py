@@ -1706,35 +1706,6 @@ def send_alert_attachment_command(
         outputs_key_field="ID",
     )
 
-
-def get_alert_attachments_command(
-    client: ZFClient,
-    args: dict[str, Any]
-) -> CommandResults:
-    alert_id: int = args.get("alert_id", "")
-    response_content = client.get_alert_attachments(alert_id)
-    attachments: list[dict[str, Any]] = response_content.get("attachments", [])
-    human_readable = []
-    for attachment in attachments:
-        attachment_id: int = attachment.get("id", "")
-        attachment_name: str = attachment.get("name", "")
-        human_readable.append({
-            "ID": attachment_id,
-            "Name": attachment_name,
-        })
-    headers = ["ID", "Name"]
-    return CommandResults(
-        outputs=attachments,
-        readable_output=tableToMarkdown(
-            "ZeroFox Alert Attachments",
-            human_readable,
-            headers=headers,
-            removeNull=True,
-        ),
-        outputs_prefix="ZeroFox.AlertAttachments",
-    )
-
-
 def compromised_domain_command(
     client: ZFClient,
     args: dict[str, Any]
