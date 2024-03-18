@@ -354,7 +354,7 @@ script:
     arguments:
     - auto: PREDEFINED
       name: status
-      description: Specify the status of users to retrieve.
+      description: The status of users to retrieve.
       predefined:
       - 'Active'
       - 'Registered'
