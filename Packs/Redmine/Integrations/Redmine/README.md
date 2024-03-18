@@ -279,7 +279,7 @@ Display a list of issues
 ### redmine-issue-update
 
 ***
-Update an existing issue When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created To create a custom field, navigate to the server URL with administrative privileges, click on 'Administration' (located at the top left), select 'Custom fields,' then proceed to create a new custom field. Once created, you can add values as needed
+Update an existing issue. When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created. To create a custom field, navigate to the server URL with administrative privileges, click **'Administration** (located at the top left), select **Custom fields**, and proceed to create a new custom field. Once created, you can add values as needed.
 
 #### Base Command
 
