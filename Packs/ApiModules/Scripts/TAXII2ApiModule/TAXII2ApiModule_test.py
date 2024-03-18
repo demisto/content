@@ -1845,6 +1845,16 @@ def test_get_tlp(indicator_json, expected_result):
      {'published': "some_date", 'type': 'report'}),
 ])
 def test_add_sdo_required_field_2_1(stix_object, xsoar_indicator, expected_stix_object):
+    """
+    Given
+        - Case 1: A STIX indicator of type 'malware', and an XSOAR indicator.
+        - Case 2: A STIX indicator of type 'report' and an XSOAR indicator.
+        - Case 3: A STIX indicator of type 'report' and an XSOAR indicator.
+    When
+    - call the test_add_sdo_required_field_2_1 method
+    Then
+    - Validates that the method properly set the required fields.
+    """
     cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present={'name', 'type'},
                               types_for_indicator_sdo=[], namespace_uuid=PAWN_UUID)
     stix_object = cilent.add_sdo_required_field_2_1(stix_object, xsoar_indicator)
@@ -1859,6 +1869,19 @@ def test_add_sdo_required_field_2_1(stix_object, xsoar_indicator, expected_stix_
     ({"type": "tool"}, {"CustomFields": {'tags': []}}, {'type': 'tool', 'labels': []}),
 ])
 def test_add_sdo_required_field_2_0(stix_object, xsoar_indicator, expected_stix_object):
+    """
+    Given
+        - Case 1: A STIX indicator of type 'indicator', and an XSOAR indicator.
+        - Case 2: A STIX indicator of type 'malware' and an XSOAR indicator.
+        - Case 3: A STIX indicator of type 'report' and an XSOAR indicator.
+        - Case 4: A STIX indicator of type 'malware' and an XSOAR indicator.
+        - Case 5: A STIX indicator of type 'threat-actor' and an XSOAR indicator.
+        - Case 5: A STIX indicator of type 'tool', and an XSOAR indicator.
+    When
+    - call the add_sdo_required_field_2_0 method
+    Then
+    - Validates that the method properly set the required fields.
+    """
     cilent = XSOAR2STIXParser(server_version='2.0', fields_to_present={'name', 'type'},
                               types_for_indicator_sdo=[], namespace_uuid=PAWN_UUID)
     stix_object = cilent.add_sdo_required_field_2_0(stix_object, xsoar_indicator)
@@ -1882,6 +1905,21 @@ def test_add_sdo_required_field_2_0(stix_object, xsoar_indicator, expected_stix_
     ],
 )
 def test_get_stix_object_value(stix_ioc, expected_value):
+    """
+    Given
+        - Case 1: A STIX indicator with a type.
+        - Case 2: A STIX indicator of type 'malware', with a stix name and value.
+        - Case 3: A STIX indicator of type 'malware', with a stix name.
+        - Case 4: A STIX indicator of type 'malware', with a stix value.
+        - Case 5: A STIX indicator of type 'file', with SHA-256 hashes.
+        - Case 5: A STIX indicator of type 'file', with MD5 hashes.
+        - Case 5: A STIX indicator of type 'file', with SHA-1 hashes.
+        - Case 5: A STIX indicator of type 'file', with SHA-512 hashes.
+    When
+    - call the get_stix_object_value method
+    Then
+    - Validates that the method properly get the stix object value.
+    """
     cilent = XSOAR2STIXParser(
         server_version="2.0",
         fields_to_present={"name", "type"},

@@ -43,25 +43,6 @@ SDOs: dict[str, Callable] = {  # pragma: no cover
     "course of action": CourseOfAction
 }
 
-# SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
-# PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
-
-# XSOAR_TYPES_TO_STIX_SCO = {   # pragma: no cover
-#     FeedIndicatorType.CIDR: 'ipv4-addr',
-#     FeedIndicatorType.DomainGlob: 'domain-name',
-#     FeedIndicatorType.IPv6: 'ipv6-addr',
-#     FeedIndicatorType.IPv6CIDR: 'ipv6-addr',
-#     FeedIndicatorType.Account: 'user-account',
-#     FeedIndicatorType.Domain: 'domain-name',
-#     FeedIndicatorType.Email: 'email-addr',
-#     FeedIndicatorType.IP: 'ipv4-addr',
-#     FeedIndicatorType.Registry: 'windows-registry-key',
-#     FeedIndicatorType.File: 'file',
-#     FeedIndicatorType.URL: 'url',
-#     FeedIndicatorType.Software: 'software',
-#     FeedIndicatorType.AS: 'autonomous-system',
-# }
-
 
 def search_related_indicators(value: str) -> list[dict]:    # pragma: no cover
     relationships = demisto.searchRelationships({"entities": [value]}).get("data", [])
@@ -132,65 +113,6 @@ def guess_indicator_type(type_: str, val: str) -> str:
 
     # try to auto_detect by value
     return (auto_detect_indicator_type(val) or type_).lower()
-
-
-# def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str], value: str) -> str:
-#     """
-#     Create uuid for SCO objects.
-#     Args:
-#         xsoar_indicator: dict - The XSOAR representation of the indicator.
-#         stix_type: Optional[str] - The indicator type according to STIX.
-#         value: str - The value of the indicator.
-#     Returns:
-#         The uuid that represents the indicator according to STIX.
-#     """
-#     if stixid := xsoar_indicator.get('CustomFields', {}).get('stixid'):
-#         return stixid
-#     if stix_type == 'user-account':
-#         account_type = xsoar_indicator.get('CustomFields', {}).get('accounttype')
-#         user_id = xsoar_indicator.get('CustomFields', {}).get('userid')
-#         unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE,
-#                                f'{{"account_login":"{value}","account_type":"{account_type}","user_id":"{user_id}"}}')
-#     elif stix_type == 'windows-registry-key':
-#         unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"key":"{value}"}}')
-#     elif stix_type == 'file':
-#         if get_hash_type(value) == 'md5':
-#             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"MD5":"{value}"}}}}')
-#         elif get_hash_type(value) == 'sha1':
-#             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-1":"{value}"}}}}')
-#         elif get_hash_type(value) == 'sha256':
-#             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-256":"{value}"}}}}')
-#         elif get_hash_type(value) == 'sha512':
-#             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-512":"{value}"}}}}')
-#         else:
-#             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
-#     else:
-#         unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
-
-#     return f'{stix_type}--{unique_id}'
-
-
-# def create_sdo_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str], value: str) -> str:
-#     """
-#     Create uuid for SDO objects.
-#     Args:
-#         xsoar_indicator: dict - The XSOAR representation of the indicator.
-#         stix_type: Optional[str] - The indicator type according to STIX.
-#         value: str - The value of the indicator.
-#     Returns:
-#         The uuid that represents the indicator according to STIX.
-#     """
-#     if stixid := xsoar_indicator.get('CustomFields', {}).get('stixid'):
-#         return stixid
-#     if stix_type == 'attack-pattern':
-#         if mitre_id := xsoar_indicator.get('CustomFields', {}).get('mitreid'):
-#             unique_id = uuid.uuid5(PAWN_UUID, f'{stix_type}:{mitre_id}')
-#         else:
-#             unique_id = uuid.uuid5(PAWN_UUID, f'{stix_type}:{value}')
-#     else:
-#         unique_id = uuid.uuid5(PAWN_UUID, f'{stix_type}:{value}')
-
-#     return f'{stix_type}--{unique_id}'
 
 
 def add_file_fields_to_indicator(xsoar_indicator: Dict, value: str) -> Dict:
