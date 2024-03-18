@@ -2142,13 +2142,16 @@ tasks:
       brand: ''
       id: 744e13c3-655a-4e93-80b6-21453fd9b70d
       iscommand: false
-      name: Done
+      name: Security Profile groups
       type: title
       version: -1
       description: ''
     taskid: 744e13c3-655a-4e93-80b6-21453fd9b70d
     timertriggers: []
     type: title
+    nexttasks:
+      '#none#':
+      - "138"
     view: |-
       {
         "position": {
@@ -2928,6 +2931,363 @@ tasks:
         "position": {
           "x": 680,
           "y": 5830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "138":
+    id: "138"
+    taskid: 12c44bd9-950e-4223-85c3-489bd3b61e24
+    type: regular
+    task:
+      id: 12c44bd9-950e-4223-85c3-489bd3b61e24
+      version: -1
+      name: pan-os-create-security-profile-group
+      description: Creates a new security profile group in Panorama.
+      script: Panorama|||pan-os-create-security-profile-group
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "139"
+    scriptarguments:
+      antivirus_profile:
+        simple: default
+      group_name:
+        simple: test-group
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 7420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "139":
+    id: "139"
+    taskid: a725ef9e-4fe3-469e-8cc1-1855c1f854d3
+    type: regular
+    task:
+      id: a725ef9e-4fe3-469e-8cc1-1855c1f854d3
+      version: -1
+      name: pan-os-list-security-profile-group
+      description: Returns a list of security profile groups from Panorama.
+      script: Panorama|||pan-os-list-security-profile-group
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "140"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 7580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "140":
+    id: "140"
+    taskid: 93361dfe-e35a-4824-8556-d652e91b0cfd
+    type: condition
+    task:
+      id: 93361dfe-e35a-4824-8556-d652e91b0cfd
+      version: -1
+      name: Check new SPG exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "141"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Panorama.ProfileGroup.name
+            iscontext: true
+          right:
+            value:
+              simple: test-group
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.ProfileGroup
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.ProfileGroup.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test-group
+                accessor: virus
+            iscontext: true
+          right:
+            value:
+              simple: default
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: Panorama.ProfileGroup
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.ProfileGroup.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test-group
+                accessor: spyware
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 7745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "141":
+    id: "141"
+    taskid: 8cf693b2-7d38-429e-8808-a678ea8c8027
+    type: regular
+    task:
+      id: 8cf693b2-7d38-429e-8808-a678ea8c8027
+      version: -1
+      name: pan-os-edit-security-profile-group
+      description: Edits the security profile group in Panorama.
+      script: Panorama|||pan-os-edit-security-profile-group
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "142"
+    scriptarguments:
+      group_name:
+        simple: test-group
+      profile_to_change:
+        simple: Anti-Spyware Profile
+      profile_value:
+        simple: default
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 7920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: 63674b1a-89de-4dd5-8cf4-35f6dccb6111
+    type: regular
+    task:
+      id: 63674b1a-89de-4dd5-8cf4-35f6dccb6111
+      version: -1
+      name: pan-os-list-security-profile-group
+      description: Returns a list of security profile groups from Panorama.
+      script: Panorama|||pan-os-list-security-profile-group
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "143"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 8080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "143":
+    id: "143"
+    taskid: 81ad89ff-efab-4ce5-88ab-f7f133b66b72
+    type: condition
+    task:
+      id: 81ad89ff-efab-4ce5-88ab-f7f133b66b72
+      version: -1
+      name: Check edited SPG exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "144"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Panorama.ProfileGroup.name
+            iscontext: true
+          right:
+            value:
+              simple: test-group
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.ProfileGroup
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.ProfileGroup.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test-group
+                accessor: virus
+            iscontext: true
+          right:
+            value:
+              simple: default
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.ProfileGroup
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.ProfileGroup.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test-group
+                accessor: spyware
+            iscontext: true
+          right:
+            value:
+              simple: default
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 8245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "144":
+    id: "144"
+    taskid: 1c5ac46b-0cc7-4a5b-8565-0aa961a6903a
+    type: regular
+    task:
+      id: 1c5ac46b-0cc7-4a5b-8565-0aa961a6903a
+      version: -1
+      name: pan-os-delete-security-profile-group
+      description: Deletes a security profile group from Panorama.
+      script: Panorama|||pan-os-delete-security-profile-group
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "145"
+    scriptarguments:
+      group_name:
+        simple: test-group
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 8410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "145":
+    id: "145"
+    taskid: 22961b86-bcd9-4280-8143-31563dddccbe
+    type: title
+    task:
+      id: 22961b86-bcd9-4280-8143-31563dddccbe
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 8580
         }
       }
     note: false
