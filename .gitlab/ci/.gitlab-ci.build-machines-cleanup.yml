@@ -48,6 +48,7 @@ build-machines-cleanup:
     - exit "${EXIT_CODE}"
   after_script:
     - source .gitlab/helper_functions.sh
+    - git branch --list
     - !reference [ .unlock-machine ]
   timeout: 4 hours
   variables:
