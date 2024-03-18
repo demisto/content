@@ -253,7 +253,7 @@ script:
       - 'True'
       - 'False'
     - name: file_entry_id
-      description: Required if uploading a file- The entry ID of the file to upload.
+      description: The entry ID of the file to upload. Required if uploading a file.
     - name: file_name
       description: The name of the file to upload (should end with .jpg/.png/.txt etc...)
     - name: file_description
