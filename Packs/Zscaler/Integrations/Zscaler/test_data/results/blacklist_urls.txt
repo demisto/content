@@ -1,0 +1,1 @@
+"Added the following URLs to the blacklist successfully:\n- www.demisto22.com\n- www.demisto33.com\n"

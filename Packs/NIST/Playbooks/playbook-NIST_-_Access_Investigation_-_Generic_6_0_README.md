@@ -15,8 +15,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 * Account Enrichment - Generic v2.1
 * IP Enrichment - Generic v2
-* NIST - Lessons Learned
 * Block IP - Generic v3
+* NIST - Lessons Learned
 
 ### Integrations
 
@@ -28,12 +28,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* setIncident
-* ad-get-user
 * closeInvestigation
 * send-mail
+* ad-get-user
 * ad-expire-password
 * ad-disable-account
+* setIncident
 
 ## Playbook Inputs
 
@@ -46,6 +46,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Username | The email address of the account that was used to access the DstIP. |  | Optional |
 | NotifyEmail | Email addresses to notify about the incident. |  | Optional |
 | RemediationSLA | The Remediation SLA for the 'Containment, Eradication, and Recovery' stage \(in minutes\). |  | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 
 ## Playbook Outputs
 

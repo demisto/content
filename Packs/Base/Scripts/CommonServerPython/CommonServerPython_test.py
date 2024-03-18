@@ -2974,10 +2974,19 @@ class TestBaseClient:
         with raises(DemistoException, match="Proxy Error"):
             self.client._http_request('get', 'event', resp_type='response')
 
-    def test_http_request_connection_error(self, requests_mock):
+    def test_http_request_connection_error_with_errno(self, requests_mock):
         from CommonServerPython import DemistoException
-        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError)
-        with raises(DemistoException, match="Verify that the server URL parameter"):
+        err = requests.exceptions.ConnectionError()
+        err.errno = 104
+        err.strerror = "Connection reset by peer test"
+        requests_mock.get('http://example.com/api/v2/event', exc=err)
+        with raises(DemistoException, match="Error Number: \[104\]\\nMessage: Connection reset by peer test"):
+            self.client._http_request('get', 'event', resp_type='response')
+
+    def test_http_request_connection_error_without_errno(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError("Generic error"))
+        with raises(DemistoException, match="Generic error"):
             self.client._http_request('get', 'event', resp_type='response')
 
     def test_text_exception_parsing(self, requests_mock):
