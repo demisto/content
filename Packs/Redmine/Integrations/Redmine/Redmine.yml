@@ -191,7 +191,7 @@ script:
       description: The ID of the issue to be updated.
       required: true
     - name: project_id
-      description: The ID of the project to associate with the issue. If not specified, the value from integration configuration will be taken if specified.
+      description: The ID of the project to associate with the issue. If not specified, the value from the integration configuration will be used if specified.
     - name: tracker_id
       auto: PREDEFINED
       description: The ID of the tracker type.
