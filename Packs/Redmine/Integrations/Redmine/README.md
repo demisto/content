@@ -31,7 +31,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 - Create a new issue
 - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
 - To create a custom field, navigate to the server URL with administrative privileges, click on 'Administration' (located at the top left), select 'Custom fields,' then proceed to create a new custom field. Once created, you can add values as needed
-- To create a category/version, navigate to the server URL -> Click on the Settings (top bar) -> Versions tab and Issue categories tab
+- To create a category/version, navigate to the server URL > click **Settings** (top bar) > **Versions** tab and **Issue categories** tab.
 
 
 #### Base Command
