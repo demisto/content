@@ -145,19 +145,19 @@ Display a list of issues
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_number | Enter the page number. | Optional | 
-| page_size | Enter the page size (default value is 50, if limit not specified). | Optional | 
-| limit | Specify the number of issues to display in the response (maximum is 100). If page_number or page_size are specified, this field will be ignored. Default is 25. | Optional | 
-| sort | - Specify a field to sort according to. Append ":desc" to invert the order.<br/>- Possible values:<br/>1. tracker.<br/>2. status.<br/>3. priority.<br/>4. project.<br/>5. subproject.<br/>6. assigned_to.<br/>- For example: sort=tracker:desc.<br/> | Optional | 
-| include | - Specify an array of extra fields to fetch.<br/>- Possible values:<br/>    1. attachments.<br/>    2. relations.<br/> | Optional | 
-| issue_id | Specify an array of issue IDs to display -&gt; 1,2,3. | Optional | 
-| project_id | Specify a project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed. | Optional | 
-| subproject_id | Specify a subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!name_of_subproject" to exclude subprojects). | Optional | 
-| tracker_id | Specify a tracker ID to display issues of this tracker ID. Possible values are: Bug, Feature, Support. | Optional | 
-| status_id | Specify a status ID to display issues of this status ID (* means all). Possible values are: open, closed, *. | Optional | 
-| assigned_to_id | Specify an assigned-to ID to display issues assigned to this user ID. | Optional | 
-| parent_id | Specify a parent ID to display issues that are under this parent ID. | Optional | 
-| custom_field | - Insert the custom field to filter with, THE FORMAT is costumFieldID:Value.<br/>- To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  <br/>- You can only filter one custom field at a time. <br/>- Make sure the custom field id you entered is valid, or the request won't fail but will not be filtered correctly   <br/>| Optional | 
+| page_number | The page number. | Optional | 
+| page_size | The page size. Default value is 50, if limit is not specified. | Optional | 
+| limit | The number of issues to display in the response (maximum is 100). If page_number or page_size are specified, this field will be ignored. Default is 25. | Optional | 
+| sort | A field by which to sort the results. Append ":desc" to invert the order.<br/>- Possible values:<br/>1. tracker.<br/>2. status.<br/>3. priority.<br/>4. project.<br/>5. subproject.<br/>6. assigned_to.<br/>- For example: sort=tracker:desc.<br/> | Optional | 
+| include | An array of extra fields to fetch.<br/>- Possible values:<br/>    1. attachments.<br/>    2. relations.<br/> | Optional | 
+| issue_id | An array of issue IDs to display -&gt; 1,2,3. | Optional | 
+| project_id | Aa project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed. | Optional | 
+| subproject_id | A subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!name_of_subproject" to exclude subprojects). | Optional | 
+| tracker_id | A tracker ID to display issues of this tracker ID. Possible values are: Bug, Feature, Support. | Optional | 
+| status_id | A status ID to display issues of this status ID (* means all). Possible values are: open, closed, *. | Optional | 
+| assigned_to_id | An assigned-to ID to display issues assigned to this user ID. | Optional | 
+| parent_id | A parent ID to display issues that are under this parent ID. | Optional | 
+| custom_field | - The custom field to filter by. The format is costumFieldID:Value.<br/>- To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  <br/>- You can only filter one custom field at a time. <br/>- Make sure the custom field ID you entered is valid, or the request won't fail but will not be filtered correctly.   <br/>| Optional | 
 
 #### Context Output
 
