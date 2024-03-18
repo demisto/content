@@ -23,7 +23,7 @@ class ObjectMocker(dict):
 
 
 def run_command_test(command_func, args, response_path, expected_result_path, mocker, result_validator=None):
-    with open(response_path, 'r') as response_f:
+    with open(response_path) as response_f:
         response = ResponseMock(json.load(response_f))
     mocker.patch('Zscaler.http_request', return_value=response)
     if command_func.__name__ in ['url_lookup', 'get_users_command', 'set_user_command',
@@ -36,7 +36,7 @@ def run_command_test(command_func, args, response_path, expected_result_path, mo
     if result_validator:
         assert result_validator(res)
     else:
-        with open(expected_result_path, 'r') as ex_f:
+        with open(expected_result_path) as ex_f:
             expected_result = json.load(ex_f)
             if isinstance(res, CommonServerPython.CommandResults):
                 assert expected_result == res.to_context()
@@ -147,16 +147,26 @@ def test_undo_blacklist_url_command(mocker):
     run_command_test(command_func=Zscaler.unblacklist_url,
                      args={'url': 'www.demisto22.com, www.demisto33.com'},
                      response_path='test_data/responses/blacklist_urls.json',
-                     expected_result_path='test_data/results/blacklist_urls.json',
+                     expected_result_path='test_data/results/undo_blacklist_urls.txt',
+                     mocker=mocker)
+
+
+def test_blacklist_url_command(mocker):
+    """zscaler-blacklist-url"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.blacklist_url,
+                     args={'url': 'www.demisto22.com, www.demisto33.com'},
+                     response_path='test_data/responses/blacklist_urls.json',
+                     expected_result_path='test_data/results/blacklist_urls.txt',
                      mocker=mocker)
 
 
 def test_category_remove_url(mocker):
     """zscaler-category-remove-url"""
     import Zscaler
-    run_command_test(command_func=Zscaler.category_remove_url,
-                     args={'url': "demisto.com, dbot.com,www.demisto22.com",
-                           'category_id': 'CUSTOM_1', 'retaining_parent_category_url': None},
+    run_command_test(command_func=Zscaler.category_remove,
+                     args={'data': "demisto.com, dbot.com,www.demisto22.com",
+                           'category_id': 'CUSTOM_1', 'retaining_parent_category_data': None, "data_type": "url"},
                      response_path='test_data/responses/categories.json',
                      expected_result_path='test_data/results/remove_url.json',
                      mocker=mocker)
@@ -165,8 +175,9 @@ def test_category_remove_url(mocker):
 def test_category_remove_ip(mocker):
     """zscaler-category-remove-ip"""
     import Zscaler
-    run_command_test(command_func=Zscaler.category_remove_ip,
-                     args={'ip': "1.2.3.4,8.8.8.8", 'category_id': 'CUSTOM_1', 'retaining_parent_category_ip': None},
+    run_command_test(command_func=Zscaler.category_remove,
+                     args={'data': "1.2.3.4,8.8.8.8", 'category_id': 'CUSTOM_1', 'retaining_parent_category_data': None,
+                           "data_type": "ip"},
                      response_path='test_data/responses/categories2.json',
                      expected_result_path='test_data/results/remove_ip.json',
                      mocker=mocker)
@@ -686,12 +697,12 @@ def test_category_add_url(mocker):
     Then:
         - The URL should be added to the category
     """
-    from Zscaler import category_add_url
+    from Zscaler import category_add
     mocker.patch('Zscaler.get_category_by_id', return_value={'urls': []})
     mocker.patch('Zscaler.argToList', side_effect=[['test1.com'], ['test2.com']])
     mocker.patch('Zscaler.add_or_remove_urls_from_category', return_value=None)
 
-    result = category_add_url('1', 'test1.com', 'test2.com')
+    result = category_add('1', 'test1.com', 'test2.com', "url")
 
     assert result['HumanReadable'].startswith('Added the following URL addresses to category 1')
 
@@ -705,8 +716,8 @@ def test_category_add_ip(mocker):
     Then:
         - The IP address should be added to the category
     """
-    from Zscaler import category_add_ip
+    from Zscaler import category_add
     mocker.patch('Zscaler.get_categories', return_value=[{'id': 1, 'urls': [], 'customCategory': 'true'}])
-    mocker.patch('Zscaler.category_ioc_update', return_value={})
-    result = category_add_ip(1, '1.1.1.1', '1.1.1.1')
+    mocker.patch('Zscaler.add_or_remove_urls_from_category', return_value={})
+    result = category_add(1, '1.1.1.1', '1.1.1.1', "ip")
     assert result['HumanReadable'].startswith('Added the following IP addresses to category 1')
