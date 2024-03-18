@@ -385,7 +385,7 @@ upload-packs-to-marketplace:
 
     - section_start "Dry Run Sync For Testing"
     - |
-      gsutil -m rsync -n -r gs://${GCS_MARKET_BUCKET} gs://marketplace-dist-dev/upload-flow/builds/${CI_COMMIT_BRANCH}-dev/$CI_PIPELINE_ID
+      gsutil -m rsync -r -n gs://${GCS_MARKET_BUCKET} gs://marketplace-dist-dev/upload-flow/builds/${CI_COMMIT_BRANCH}-dev/$CI_PIPELINE_ID
     - section_end "Dry Run Sync For Testing"
 
     - section_start "Download packs from GCP"
