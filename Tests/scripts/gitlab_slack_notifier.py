@@ -669,9 +669,7 @@ def main():
                                                        pipeline_to_compare=previous_pipeline)
 
                     logging.info(
-                        f"Checking pipeline id: {current_pipeline.id}, of commit: {current_commit.title}, "
-                        f"after comparing with pipeline id: {previous_pipeline.id},"
-                        f"the change status is: {pipeline_changed_status}")
+                        "comparing current pipeline status with nearest older pipeline status")
 
                     if pipeline_changed_status is None and current_commit_index > 0:
                         # looking_forward until we find a commit with a pipeline to compare with
@@ -682,8 +680,7 @@ def main():
                             pipeline_changed_status = is_pivot(current_pipeline=next_pipeline,
                                                                pipeline_to_compare=current_pipeline)
                             logging.info(
-                                f" after comparing with pipeline id: {next_pipeline.id},"
-                                f"the change status is: {pipeline_changed_status}")
+                                "comparing current pipeline status with nearest newer pipeline status")
 
                     if pipeline_changed_status is not None:
                         shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,  # type: ignore
