@@ -261,7 +261,7 @@ script:
     - name: file_content_type
       description: The content type of the attached file (image/jpg or image/png or text/txt, etc.).
   - name: redmine-issue-get
-    description: Show an issue by id.
+    description: Show an issue by ID.
     arguments:
     - name: issue_id
       description: Add the id of the issue you want to show.
