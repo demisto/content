@@ -535,7 +535,7 @@ def main():
                  f"triggering workflow:'{triggering_workflow}' allowing failure:{options.allow_failure} "
                  f"slack channel:{computed_slack_channel}")
     pull_request = None
-    if True:
+    if options.current_branch != DEFAULT_BRANCH:
         try:
             branch = options.current_branch
             if triggering_workflow == BUCKET_UPLOAD and BUCKET_UPLOAD_BRANCH_SUFFIX in branch:
@@ -562,17 +562,14 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
-    if True:
-        logging.info("starttttinnggggg")
+    if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
         computed_slack_channel = "dmst-build-test"
         # Check if the current commit's pipeline differs from the previous one. If the previous pipeline is still running,
         # compare the next build. For commits without pipelines, compare the current one to the nearest commit with a
         # pipeline and all those in between, marking them as suspicious.
         list_of_pipelines, list_of_commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
                                                                        project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
-        logging.info(f"current commit is {commit_sha}")
         current_commit = get_commit_by_sha(commit_sha, list_of_commits)
-        logging.info(f"current commit is {current_commit}")
         if current_commit:
             current_commit_index = list_of_commits.index(current_commit)
 
@@ -581,14 +578,12 @@ def main():
             # or if we already sent a shame message for newer commits, we don't want to send another one for older commits.
             if (current_commit_index != len(list_of_commits) - 1
                     and not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)):
-                logging.info(f"current commit index is {current_commit_index}")
                 current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
 
                 # looking backwards until we find a commit with a pipeline to compare with
                 previous_pipeline, suspicious_commits = get_nearest_older_commit_with_pipeline(
                     list_of_pipelines, list_of_commits, current_commit_index)
                 if previous_pipeline and suspicious_commits and current_pipeline:
-                    logging.info(f"previous pipeline is {previous_pipeline}")
                     pipeline_changed_status = is_pivot(current_pipeline=current_pipeline,
                                                        pipeline_to_compare=previous_pipeline)
 
@@ -622,22 +617,21 @@ def main():
         logging.info(f'Successfully wrote Slack message to {output_file}')
 
     try:
-        # response = slack_client.chat_postMessage(
-        #     channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
-        #)
+        response = slack_client.chat_postMessage(
+            channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
+        )
 
-        # if threaded_messages:
-        #     data: dict = response.data  # type: ignore[assignment]
-        #     thread_ts: str = data['ts']
-        #     for slack_msg in threaded_messages:
-        #         slack_client.chat_postMessage(
-        #             channel=computed_slack_channel, attachments=[slack_msg], username=SLACK_USERNAME,
-        #             thread_ts=thread_ts
-        #         )
+        if threaded_messages:
+            data: dict = response.data  # type: ignore[assignment]
+            thread_ts: str = data['ts']
+            for slack_msg in threaded_messages:
+                slack_client.chat_postMessage(
+                    channel=computed_slack_channel, attachments=[slack_msg], username=SLACK_USERNAME,
+                    thread_ts=thread_ts
+                )
 
-        #link = build_link_to_message(response)
-        #logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
-        pass
+        link = build_link_to_message(response)
+        logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
     except Exception:
         if strtobool(options.allow_failure):
             logging.warning(f'Failed to send Slack message to channel {computed_slack_channel} not failing build')
