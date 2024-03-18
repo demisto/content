@@ -393,7 +393,8 @@ class XSOAR2STIXParser:
             'modified': modified_parsed,
         }
         if xsoar_type == ThreatIntel.ObjectsNames.REPORT:
-            stix_object['object_refs'] = []
+            stix_object['object_refs'] = [ref['objectstixid']
+                                          for ref in xsoar_indicator['CustomFields'].get('reportobjectreferences', [])]
         if is_sdo:
             stix_object['name'] = xsoar_indicator.get('value')
             stix_object = self.add_sdo_required_field_2_1(stix_object, xsoar_indicator)
@@ -436,7 +437,6 @@ class XSOAR2STIXParser:
             stix_ioc.get('id'): stix_ioc
             for stix_ioc in stix_iocs
             if stix_ioc.get('type') == 'report'}
-
         for relationship in relationships:
             if source_report := id_to_report_objects.get(relationship.get('source_ref')):
                 object_refs = source_report.get('object_refs', [])
@@ -449,6 +449,7 @@ class XSOAR2STIXParser:
                 object_refs.extend(
                     [relationship.get('source_ref'), relationship.get('id')]
                 )
+                demisto.info("handle_report_relationships: sorting_2")
                 target_report['object_refs'] = sorted(object_refs)
 
     @staticmethod
@@ -720,9 +721,11 @@ class XSOAR2STIXParser:
             Stix object entry for given indicator
         """
         if self.server_version == TAXII_VER_2_1 and "CustomFields" in xsoar_indicator:
-            if stix_object['type'] == 'malware' and (is_family := xsoar_indicator["CustomFields"].get('ismalwarefamily', False)):
-                stix_object['is_family'] = is_family
-            elif stix_object['type'] == 'report' and (published := xsoar_indicator["CustomFields"].get('published')):
+            custom_fields = xsoar_indicator["CustomFields"]
+            stix_type = stix_object['type']
+            if stix_type == 'malware':
+                stix_object['is_family'] = custom_fields.get('ismalwarefamily', False)
+            elif stix_type == 'report' and (published := custom_fields.get('published')):
                 stix_object['published'] = published
         return stix_object
 
@@ -735,9 +738,11 @@ class XSOAR2STIXParser:
             Stix object entry for given indicator
         """
         if self.server_version == TAXII_VER_2_0 and "CustomFields" in xsoar_indicator:
-            if stix_object['type'] in {"indicator", "malware", "report", "threat-actor", "tool"}:
-                stix_object['labels'] = xsoar_indicator["CustomFields"].get('tags', [])
-            if stix_object['type'] == 'identity' and (identity_class := xsoar_indicator["CustomFields"].get('identityclass')):
+            custom_fields = xsoar_indicator["CustomFields"]
+            stix_type = stix_object['type']
+            if stix_type in {"indicator", "malware", "report", "threat-actor", "tool"}:
+                stix_object['labels'] = [x.lower().replace(" ", "-") for x in custom_fields.get('tags', [stix_object['type']])]
+            if stix_type == 'identity' and (identity_class := custom_fields.get('identityclass')):
                 stix_object['identity_class'] = identity_class
         return stix_object
 
@@ -1985,14 +1990,6 @@ class Taxii2FeedClient(STIX2XSOARParser):
         self.field_map = field_map if field_map else {}
         self.tags = tags if tags else []
         self.tlp_color = tlp_color
-        # self.indicator_regexes = [
-        #     re.compile(INDICATOR_EQUALS_VAL_PATTERN),
-        #     re.compile(HASHES_EQUALS_VAL_PATTERN),
-        # ]
-        # self.cidr_regexes = [
-        #     re.compile(CIDR_ISSUBSET_VAL_PATTERN),
-        #     re.compile(CIDR_ISUPPERSET_VAL_PATTERN),
-        # ]
         self.id_to_object: dict[str, Any] = {}
         self.objects_to_fetch = objects_to_fetch
         self.default_api_root = default_api_root

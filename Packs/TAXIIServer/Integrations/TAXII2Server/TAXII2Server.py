@@ -33,7 +33,9 @@ UTC_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 TAXII_V20_CONTENT_LEN = 9765625
 TAXII_V21_CONTENT_LEN = 104857600
 TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'description',
-                                'accounttype', 'userid', 'mitreid', 'stixid'}
+                                'accounttype', 'userid', 'mitreid', 'stixid', 'reportobjectreferences'}
+TAXII_V20_REQUIRED_FILTER_FIELDS = {"tags", "identity_class"}
+TAXII_V21_REQUIRED_FILTER_FIELDS = {"ismalwarefamily", "published"}
 PAGE_SIZE = 2000
 
 from TAXII2ApiModule import *  # noqa: E402
@@ -517,10 +519,13 @@ def set_field_filters(is_manifest: bool = False) -> Optional[str]:
     if is_manifest:
         field_filters: Optional[str] = ','.join(TAXII_REQUIRED_FILTER_FIELDS)
     elif SERVER.fields_to_present:
-        field_filters = ','.join(
-            set.union(SERVER.fields_to_present, TAXII_REQUIRED_FILTER_FIELDS))  # type: ignore[arg-type]
+        fields_by_version = (TAXII_V20_REQUIRED_FILTER_FIELDS if SERVER.version
+                             == TAXII_VER_2_0 else TAXII_V21_REQUIRED_FILTER_FIELDS)
+        set_fields = set.union(SERVER.fields_to_present, TAXII_REQUIRED_FILTER_FIELDS, fields_by_version)
+        field_filters = ','.join(set_fields)  # type: ignore[arg-type]
     else:
         field_filters = None
+
     return field_filters
 
 
