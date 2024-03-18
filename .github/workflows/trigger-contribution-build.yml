@@ -24,7 +24,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
           CONTRIB_BRANCH: ${{ github.event.pull_request.head.label }}
-          CONTRIB_REPO: ${{ github.event.repository.name }}
+          CONTRIB_REPO: ${{ github.event.pull_request.head.repo.name }}
           USERNAME: ${{ secrets.SECRET_CHECK_USER_NG }}
           PASSWORD: ${{ secrets.SECRET_CHECK_PASS_NG }}
           GOLD_SERVER_URL: ${{ secrets.GOLD_SERVER_URL_NG }}

@@ -96,6 +96,12 @@ demisto-sdk-nightly:run-validations:
     - .run-validations
     - .sdk-nightly-schedule-rule
 
+demisto-sdk-nightly:run-validations-new-validate-flow:
+  extends:
+    - .run-validations-new-validate-flow
+    - .sdk-nightly-schedule-rule
+  allow_failure: true
+
 demisto_sdk_nightly:check_idset_dependent_commands:
   tags:
     - gke
@@ -108,7 +114,6 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     variables: true
   variables:
     IS_NIGHTLY: "false"
-    KUBERNETES_CPU_REQUEST: 1000m
     PRODUCT_TYPE: "XSOAR"
     SERVER_TYPE: "XSOAR"
     INSTANCE_ROLE: "Server Master"
@@ -165,7 +170,6 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     IFRA_ENV_TYPE: "Server Master"
-    KUBERNETES_CPU_REQUEST: 2000m
     MARKETPLACE_VERSION: "xsoar"
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
   cache:
@@ -173,7 +177,6 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
@@ -194,13 +197,11 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
     PRODUCT_NAME: "Cortex XSIAM"
     IFRA_ENV_TYPE: "Server Master"
-    KUBERNETES_CPU_REQUEST: 2000m
   cache:
     policy: pull-push
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
@@ -219,13 +220,11 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
     PRODUCT_NAME: "Cortex XPANSE"
     MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
     IFRA_ENV_TYPE: "Server Master"
-    KUBERNETES_CPU_REQUEST: 2000m
   cache:
     policy: pull-push
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
@@ -237,7 +236,6 @@ demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
     - .sdk-nightly-schedule-rule
   variables:
     IFRA_ENV_TYPE: "Server Master"
-    KUBERNETES_CPU_REQUEST: 2000m
     PRODUCT_TYPE: "XSOAR"
     SERVER_TYPE: "XSOAR SAAS"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
@@ -249,7 +247,6 @@ demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 

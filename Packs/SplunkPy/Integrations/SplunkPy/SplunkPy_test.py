@@ -357,6 +357,61 @@ def test_splunk_submit_event_hec_command(mocker):
     assert err_msg == f"Could not send event to Splunk {text}"
 
 
+def check_request_channel(args: dict):
+    """
+    Check if args contains a request_channel, return the proper text.
+    Args:
+        args: A dict of args.
+    Returns: A MockResRequestChannel with the correct text value.
+    """
+    if args.get('request_channel'):
+        return MockResRequestChannel('{"text":"Success","code":0,"ackId":1}')
+    else:
+        return MockResRequestChannel('{"text":"Data channel is missing","code":10}')
+
+
+class MockResRequestChannel:
+    def __init__(self, text):
+        self.text = text
+
+
+def test_splunk_submit_event_hec_command_request_channel(mocker):
+    """
+    Given
+    - An args dict that contains a request_channel and a dummy params.
+    When
+    - Executing splunk_submit_event_hec_command function
+    Then
+    - The return result object contains the correct message.
+    """
+    args = {"request_channel": "11111111-1111-1111-1111-111111111111"}
+    mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=check_request_channel(args))
+    moc = mocker.patch.object(demisto, 'results')
+    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
+                                           args=args)
+    readable_output = moc.call_args[0][0]
+    assert readable_output == "The event was sent successfully to Splunk. AckID: 1"
+
+
+def test_splunk_submit_event_hec_command_without_request_channel(mocker):
+    """
+    Given
+    - An args dict that doesn't contain a request_channel and a dummy params.
+    When
+    - Executing splunk_submit_event_hec_command function
+    Then
+    - The return result object contains the correct message.
+    """
+    args = {}
+    mocker.patch.object(splunk, "splunk_submit_event_hec", return_value=check_request_channel(args))
+
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    splunk.splunk_submit_event_hec_command(params={"hec_url": "mock_url"},
+                                           args=args)
+    err_msg = return_error_mock.call_args[0][0]
+    assert err_msg == 'Could not send event to Splunk {"text":"Data channel is missing","code":10}'
+
+
 def test_parse_time_to_minutes_invalid_time_unit(mocker):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
@@ -572,6 +627,83 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     output = splunk.get_kv_store_config(Name())
     expected_output = f'{START_OUTPUT}{expected_output}'
     assert output == expected_output
+
+
+class TestFetchRemovingIrrelevantIncidents:
+
+    notable1 = {'status': '5', 'event_id': '3'}
+    notable2 = {'status': '6', 'event_id': '4'}
+
+    # In order to mock the service.jobs.oneshot() call in the fetch_notables function, we need to create
+    # the following two classes
+    class Jobs:
+        def __init__(self):
+            self.oneshot = lambda x, **kwargs: TestFetchForLateIndexedEvents.notable1
+
+    class Service:
+        def __init__(self):
+            self.jobs = TestFetchForLateIndexedEvents.Jobs()
+
+    def test_backwards_compatible(self, mocker: MockerFixture):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round with the epoch time of their occurrence
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that the last fetched IDs now hold the start of the fetch window, and not the epoch time
+        """
+        from SplunkPy import UserMappingObject
+
+        mocker.patch.object(demisto, 'setLastRun')
+        mock_last_run = {'time': '2024-02-12T10:00:00', 'latest_time': '2024-02-19T10:00:00',
+                         'found_incidents_ids': {'1': 1700497516}}
+        mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
+        mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+        mocker.patch('demistomock.params', return_value=mock_params)
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
+                                                                          self.notable2])
+        service = self.Service()
+        set_last_run_mocker = mocker.patch('demistomock.setLastRun')
+        mapper = UserMappingObject(service, False)
+        splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
+        last_fetched_ids = set_last_run_mocker.call_args_list[0][0][0]['found_incidents_ids']
+        assert last_fetched_ids == {'1': {'occurred_time': '2024-02-19T10:00:00'},
+                                    '3': {'occurred_time': '2024-02-19T10:00:00'},
+                                    '4': {'occurred_time': '2024-02-19T10:00:00'}}
+
+    def test_remove_irrelevant_fetched_incident_ids(self, mocker: MockerFixture):
+        """
+        Given
+        - Incident IDs that were fetched in the last fetch round
+
+        When
+        - Fetching notables
+
+        Then
+        - Make sure that the fetched IDs that are no longer in the fetch window are removed
+        """
+        from SplunkPy import UserMappingObject
+
+        mocker.patch.object(demisto, 'setLastRun')
+        mock_last_run = {'time': '2024-02-12T10:00:00', 'latest_time': '2024-02-19T10:00:00',
+                         'found_incidents_ids': {'1': {'occurred_time': '2024-02-12T09:59:59'},
+                                                 '2': {'occurred_time': '2024-02-18T10:00:00'}}}
+        mock_params = {'fetchQuery': '`notable` is cool', 'fetch_limit': 2}
+        mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+        mocker.patch('demistomock.params', return_value=mock_params)
+        mocker.patch('splunklib.results.JSONResultsReader', return_value=[self.notable1,
+                                                                          self.notable2])
+        service = self.Service()
+        set_last_run_mocker = mocker.patch('demistomock.setLastRun')
+        mapper = UserMappingObject(service, False)
+        splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
+        last_fetched_ids = set_last_run_mocker.call_args_list[0][0][0]['found_incidents_ids']
+        assert last_fetched_ids == {'2': {'occurred_time': '2024-02-18T10:00:00'},
+                                    '3': {'occurred_time': '2024-02-19T10:00:00'},
+                                    '4': {'occurred_time': '2024-02-19T10:00:00'}}
 
 
 class TestFetchForLateIndexedEvents:

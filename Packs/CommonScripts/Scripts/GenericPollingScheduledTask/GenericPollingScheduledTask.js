@@ -65,7 +65,7 @@ function finish(playbookId, tag, err, entryGUID) {
 }
 
 
-function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pendingIds, interval, timeout, tag, additionalArgNames, additionalArgValues) {
+function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pendingIds, interval, timeout, tag, additionalArgNames, additionalArgValues, extractMode) {
     var idsStr = ids.replace(/"/g, '\\"');
     var playbookIdStr = '';
     if (playbookId !== undefined) {
@@ -74,6 +74,9 @@ function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pend
     var cmd = '!GenericPollingScheduledTask pollingCommand="' + pollingCommand + '" pollingCommandArgName="' + pollingCommandArgName + '"' + playbookIdStr;
     cmd += ' ids="' + idsStr + '" pendingIds="' + pendingIds.replace(/"/g,'\\"') + '" interval="' + interval + '" timeout="' + (parseInt(timeout) - parseInt(interval)) + '" tag="' + tag + '"';
     cmd += ' additionalPollingCommandArgNames="' + additionalArgNames + '" additionalPollingCommandArgValues="' + additionalArgValues + '"';
+    if (extractMode !== undefined) {
+        cmd += ' extractMode="' + extractMode + '" auto-extract="' + extractMode + '"';
+    }
     return executeCommand("ScheduleCommand", {
         'command': cmd,
         'cron': '*/' + interval + ' * * * *',
@@ -173,7 +176,7 @@ function genericPollingScheduled(){
 
         if (!shouldRunWithGuid) {
             // Schedule the next iteration, old version.
-            var scheduleTaskRes = setNextRun(args.ids, args.playbookId, args.pollingCommand, args.pollingCommandArgName, args.pendingIds, args.interval, args.timeout, args.tag, args.additionalPollingCommandArgNames, args.additionalPollingCommandArgValues);
+            var scheduleTaskRes = setNextRun(args.ids, args.playbookId, args.pollingCommand, args.pollingCommandArgName, args.pendingIds, args.interval, args.timeout, args.tag, args.additionalPollingCommandArgNames, args.additionalPollingCommandArgValues, args.extractMode);
             if (isError(scheduleTaskRes[0])) {
                 res.push(scheduleTaskRes);
             }

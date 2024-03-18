@@ -290,7 +290,7 @@ script:
     - contextPath: IP.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.13.89009
   isfetch: true
   runonce: false
   script: '-'

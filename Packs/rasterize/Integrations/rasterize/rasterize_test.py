@@ -28,6 +28,17 @@ def test_rasterize_email_image(caplog, capfd, mocker):
         caplog.clear()
 
 
+def test_rasterize_email_image_array(caplog, capfd, mocker):
+    with capfd.disabled() and NamedTemporaryFile('w+') as f:
+        f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
+                '</head><body><br>---------- TEST FILE ----------<br></body></html>')
+        path = os.path.realpath(f.name)
+        f.flush()
+        mocker.patch.object(rasterize, 'support_multithreading')
+        perform_rasterize(path=[f'file://{path}'], width=250, height=250, rasterize_type=RasterizeType.PNG)
+        caplog.clear()
+
+
 def test_rasterize_email_pdf(caplog, capfd, mocker):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
@@ -317,3 +328,9 @@ def test_log_warning():
     from rasterize import pypdf_logger
     assert pypdf_logger.level == logging.ERROR
     assert pypdf_logger.level == logging.ERROR
+
+
+def test_poppler_version():
+    import pdf2image
+    poppler_version = pdf2image.pdf2image._get_poppler_version("pdftoppm")
+    assert poppler_version[0] > 20

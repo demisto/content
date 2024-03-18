@@ -201,7 +201,7 @@
 .get_last_upload_commit: &get_last_upload_commit
   - section_start "Getting last bucket upload commit" --collapsed
   - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-  - gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
+  - gsutil cp "gs://$GCS_PRODUCTION_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
   - export LAST_UPLOAD_COMMIT=$(cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json" | jq -r ".\"commit\"")
   - section_end "Getting last bucket upload commit"
 
@@ -501,8 +501,6 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
-  variables:
-    KUBERNETES_CPU_REQUEST: 1000m
   artifacts:
     expire_in: 30 days
     paths:
@@ -542,6 +540,25 @@
     - section_start "Revoking GCP Auth"
     - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - section_end "Revoking GCP Auth"
+    - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
+    - job-done
+
+.run-validations-new-validate-flow:
+  stage: unittests-and-validations
+  extends:
+    - .default-job-settings
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+    when: always
+  script:
+    - section_start "Validate Files and Yaml"
+    - |
+      ./Tests/scripts/linters_runner.sh
+      ./Tests/scripts/new_validate.sh
+    - section_end "Validate Files and Yaml"
     - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
     - job-done
 
