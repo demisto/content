@@ -234,7 +234,7 @@ script:
       description: The custom field to update. The format is costumFieldID:Value,costumFieldID:Value etc. 
       isArray: true
     - name: watcher_user_ids
-      description: Add an array of watcher ids seperated with comma -> 1,2,3.
+      description: A comma-separated list of watcher IDs. -> 1,2,3.
       isArray: true
     - name: is_private
       auto: PREDEFINED
