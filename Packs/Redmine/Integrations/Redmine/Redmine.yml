@@ -231,7 +231,7 @@ script:
     - name: parent_issue_id
       description: The ID of the parent issue, if applicable.
     - name: custom_fields
-      description: Insert the custom field to update, THE FORMAT is costumFieldID:Value,costumFieldID:Value etc...
+      description: The custom field to update. The format is costumFieldID:Value,costumFieldID:Value etc. 
       isArray: true
     - name: watcher_user_ids
       description: Add an array of watcher ids seperated with comma -> 1,2,3.
