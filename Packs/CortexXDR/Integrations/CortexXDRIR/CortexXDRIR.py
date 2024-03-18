@@ -389,7 +389,7 @@ class Client(CoreClient):
                 'operator': 'eq',
                 'value': status
             })
-        if fields_to_exclude:
+        if demisto.command() == 'fetch-incidents' and fields_to_exclude:
             request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE  # type: ignore
 
         if starred and starred_incidents_fetch_window:
@@ -582,9 +582,7 @@ def get_incident_extra_data_command(client, args):
         context_output['Account(val.Username==obj.Username)'] = account_context_output
     if endpoint_context_output:
         context_output['Endpoint(val.Hostname==obj.Hostname)'] = endpoint_context_output
-
     file_context, process_context, domain_context, ip_context = get_indicators_context(incident)
-
     if file_context:
         context_output[Common.File.CONTEXT_PATH] = file_context
     if domain_context:
