@@ -1172,7 +1172,7 @@ class BranchTestCollector(TestCollector):
         if upload_delta_from_last_upload:
             logger.info('bucket upload: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
-            current_commit = 'origin/master'
+            current_commit = self.branch_name
 
         elif os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
             logger.info('bucket upload: getting last commit from index')
