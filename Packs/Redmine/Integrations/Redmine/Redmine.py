@@ -440,7 +440,7 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                                                                              "author": HR_SHOW_ONLY_NAME,
                                                                              "custom_fields":
                                                                                  JsonTransformer(keys=["name", "value"]),
-                                                                             "watchers": HR_SHOW_ONLY_NAME,
+                                                                             "watchers": JsonTransformer(keys=["name"]),
                                                                              "attachments":
                                                                                  JsonTransformer(keys=["filename",
                                                                                                        "content_url",
