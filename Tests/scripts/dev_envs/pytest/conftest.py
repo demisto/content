@@ -71,4 +71,4 @@ def pytest_configure(config):
         if image:
             config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(image.replace("/", "_")))
         else:
-            config.option.xmlpath = junit_xml.replace(".xml", f"-{str(uuid4())}.xml")
+            config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(str(uuid4())))
