@@ -866,18 +866,6 @@ script:
     - contextPath: EWS.Folders.unreadCount
       description: Number of unread emails in the folder.
       type: number
-  - arguments:
-    - default: true
-      description: The name of the compliance search.
-      name: search-name
-      required: true
-    deprecated: true
-    description: This command is deprecated. Use the o365-sc-get-search-action command from Security And Compliance V2 instead .Checks the status of the purge operation on the compliance search.
-    name: ews-o365-get-compliance-search-purge-status
-    outputs:
-    - contextPath: EWS.ComplianceSearch.Status
-      description: The status of the compliance search.
-      type: Unknown
   - description: Returns the auto-discovery information. Can be used to manually configure the Exchange Server.
     name: ews-get-autodiscovery-config
   - arguments:
