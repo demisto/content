@@ -224,7 +224,7 @@ def describe_log_streams(args, aws_client):
         for i, logStream in enumerate(response['logStreams']):
             data.append({
                 'LogGroupName': args.get('logGroupName'),
-                'LogStreamName': logStream['creationTime'],
+                'LogStreamName': logStream['logStreamName'],
                 'CreationTime': logStream['creationTime'],
                 'Arn': logStream['arn'],
             })
