@@ -42,24 +42,24 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | Enter the project ID for this issue. If not specified, the value from integration configuration will be taken. | Optional | 
-| tracker_id | Enter the tracker ID for this issue. Possible values are: Bug, Feature, Support. | Required | 
-| status_id | Enter the status ID for this issue. Possible values are: New, In progress, Resolved, Feedback, Closed, Rejected. | Required | 
-| priority_id | Enter the priority ID for this issue. Possible values are: Low, Normal, High, Urgent, Immediate. | Required | 
-| subject | Enter the subject for this issue. | Required | 
-| description | Enter a description for this issue. | Optional | 
-| category_id | Enter the category ID for this issue. | Optional | 
-| fixed_version_id | Enter the target version ID for this issue. | Optional | 
-| assigned_to_id | Enter the ID of the user to assign the issue to. | Optional | 
-| parent_issue_id | Enter the ID of the parent issue. | Optional | 
-| custom_fields | Insert the custom field to update, THE FORMAT is costumFieldID:Value,costumFieldID:Value etc... | Optional | 
-| watcher_user_ids | Add an array with watcher user IDs for this issue -&gt; 1,2,3. | Optional | 
+| project_id | The project ID for this issue. If not specified, the value from integration configuration will be taken. | Optional | 
+| tracker_id | The tracker ID for this issue. Possible values are: Bug, Feature, Support. | Required | 
+| status_id | The status ID for this issue. Possible values are: New, In progress, Resolved, Feedback, Closed, Rejected. | Required | 
+| priority_id | The priority ID for this issue. Possible values are: Low, Normal, High, Urgent, Immediate. | Required | 
+| subject | The subject for this issue. | Required | 
+| description | A description for this issue. | Optional | 
+| category_id | The category ID for this issue. | Optional | 
+| fixed_version_id | The target version ID for this issue. | Optional | 
+| assigned_to_id | The ID of the user to assign the issue to. | Optional | 
+| parent_issue_id | The ID of the parent issue. | Optional | 
+| custom_fields | The custom field to update. The format is costumFieldID:Value,costumFieldID:Value, etc. | Optional | 
+| watcher_user_ids | An array with watcher user IDs for this issue -&gt; 1,2,3. | Optional | 
 | is_private | Is the issue private?. Possible values are: True, False. | Optional | 
-| estimated_hours | Enter the number of hours estimated for this issue. | Optional | 
-| file_entry_id | Enter the entry ID of the file to upload. | Optional | 
-| file_name | Enter the name of the file to attach. Make sure the file name ends with .jpg/png/txt. | Optional | 
-| file_description | Enter the description of the file you attached. | Optional | 
-| file_content_type | Enter the file content type of the file you attached. | Optional | 
+| estimated_hours | The number of hours estimated for this issue. | Optional | 
+| file_entry_id | The entry ID of the file to upload. | Optional | 
+| file_name | The name of the file to attach. Make sure the file name ends with .jpg/png/txt. | Optional | 
+| file_description | The description of the file you attached. | Optional | 
+| file_content_type | The file content type of the file you attached. | Optional | 
 
 #### Context Output
 
