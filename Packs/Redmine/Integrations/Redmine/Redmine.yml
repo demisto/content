@@ -365,19 +365,19 @@ script:
       description: Specify the group ID to filter users by.
     outputs:
     - contextPath: Redmine.Users
-      description: Display a list of users.
+      description: A list of users.
     - contextPath: Redmine.Users.id
-      description: Display a list of users ids.
+      description: A list of users IDs.
     - contextPath: Redmine.Users.login
-      description: Display a list of users login usernames.
+      description: A list of users login usernames.
     - contextPath: Redmine.Users.admin
-      description: Display a list of users admins permission.
+      description: A list of users admins permission.
     - contextPath: Redmine.Users.firstname
-      description: Display a list of users first name.
+      description: A list of users first name.
     - contextPath: Redmine.Users.lastname
-      description: Display a list of users last name.
+      description: A list of users last name.
     - contextPath: Redmine.Users.mail
-      description: Display a list of users mails.
+      description: A list of users mails.
   dockerimage: demisto/python3:3.10.13.89873
   isfetch: false
   runonce: false
