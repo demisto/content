@@ -20,7 +20,7 @@ This integration was integrated and tested with 10.08.008-on-premises-release3-b
     | Fetch incidents |  | False |
     | Maximum number of incidents per fetch |  | False |
     | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
-    | Default Incident Caller ID | The default caller ID which is added when creating new TOPdesk incidents and no explicit caller ID is provided. See section *Finding the Default Incident Caller ID* below. | False |
+    | Default Incident Caller ID | The default caller ID which is added when creating new TOPdesk incidents and no explicit caller ID is provided. See See [Finding the Default Incident Caller ID](#finding-the-default-incident-caller-id). | False |
     | The query to use when fetching incidents | Getting incidents with new style FIQL query is available only from TOPdeskRestAPI version 3.4.0. For earlier versions this field will be used as additional inline params as supported. | False |
     | Incident type | Use *TOPdesk Incident* for some predefined layouts | False |
     | Trust any certificate (not secure) |  | False |
@@ -54,7 +54,7 @@ Make sure the application password is not expired by logging in TOPdesk and view
 
 ### Finding the Default Incident Caller ID
 The TOPdesk incident caller is the TOPdesk person who requested a specific TOPdesk incident and is the contact person for all activities related to this incident.  
-To find the incident caller ID which should be used as default caller when creating a new TOPdesk incident, you can first configurate the integration instance *without* providing the **Default Incident Caller ID**. Then run the command `!topdesk-persons-list` in the *Playground - War Room*.  
+To find the incident caller ID which should be used as the default caller when creating a new TOPdesk incident, first configure the integration instance *without* providing the **Default Incident Caller ID**. Then run the command `!topdesk-persons-list` in the *Playground - War Room*.  
 You will be returned a list of persons and their IDs. Copy the ID of the desired person and edit the integration instance to set the **Default Incident Caller ID**.
 
 ### Incident Mirroring
