@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The script ReadPDFFileV2 now uses the argument *unescape*, with a default value of *True*. This update will change the default behavior of the script. System playbooks such as: *Extract Indicators From File - Generic v2*, and custom playbooks that use this script will be affected."
+}

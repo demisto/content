@@ -229,7 +229,7 @@ def get_pdf_text(file_path: str, pdf_text_output_path: str) -> str:
     return text
 
 
-def get_pdf_htmls_content(pdf_path: str, output_folder: str, unescape: bool = False) -> str:
+def get_pdf_htmls_content(pdf_path: str, output_folder: str, unescape: bool = True) -> str:
     """Creates an html file and images from the pdf in output_folder and returns the text content of the html files"""
     pdf_html_output_path = f'{output_folder}/PDF_html'
     try:
@@ -357,7 +357,7 @@ def get_urls_from_binary_file(file_path: str) -> set:
 
 
 def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder: str,
-                                              unescape: bool = False) -> tuple[set, set]:
+                                              unescape: bool = True) -> tuple[set, set]:
     """
     Extract the URLs and emails from the pdf html content.
 
@@ -519,7 +519,7 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> tuple[set, set]:
 
 
 def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str,
-                                          unescape: bool = False) -> tuple[list, list]:
+                                          unescape: bool = True) -> tuple[list, list]:
     """
     Extract URLs and Emails from the PDF file.
     Args:
@@ -621,7 +621,7 @@ def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, encrypted: 
 
 
 def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_images: int | None, working_dir: str,
-                          unescape: bool = False) -> None:
+                          unescape: bool = True) -> None:
     max_images = max_images if max_images else DEFAULT_NUM_IMAGES
     if path:
         cpy_file_path = f'{working_dir}/WorkingReadPDF.pdf'
@@ -662,8 +662,8 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
 
 def main():  # pragma: no cover
     args = demisto.args()
-    # Handling cases where content of file contained escaping characters, with regarding to BC.
-    unescape: bool = argToBoolean(args.get("unescape") or False)
+    unescape: bool = argToBoolean(args.get("unescape", "true"))
+    print(f"{unescape=}")
     working_dir = 'ReadPDFTemp'
     try:
         if not os.path.exists(working_dir):
