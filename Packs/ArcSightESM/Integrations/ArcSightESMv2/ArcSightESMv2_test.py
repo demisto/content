@@ -1,9 +1,11 @@
+from pathlib import Path
+
 import demistomock as demisto
 import pytest
 import requests_mock
 
 PARAMS = {
-    'server': 'https://server',
+    'server': 'https://server.local',
     'credentials': {},
     'proxy': True}
 
@@ -543,3 +545,39 @@ def test_get_all_query_viewers_command(mocker, requests_mock):
     output = results['Contents']
     assert len(output) == 3
     assert output[2] == "56789py4BABCN9NYml6MSoA=="
+
+
+def test_invalid_json_response(mocker, requests_mock):
+    """
+    Given:
+        - The servers responds with a response that is not a valid json
+
+    When:
+        - Running as-get-security-events command
+
+    Then:
+        - Ensure the response data is fixed and parsed.
+    """
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={'auth_token': 'token'})
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'command', return_value='as-get-security-events')
+    mocker.patch.object(demisto, 'params', return_value=PARAMS)
+    mocker.patch.object(demisto, 'args', return_value={"ids": "X"})
+    mock_data_path = Path.cwd() / 'test_data' / 'QueryViewerService_getMatrixData_invalid_api_response.txt'
+
+    debug_logs_mock = mocker.patch.object(demisto, 'debug')
+
+    import ArcSightESMv2
+    from requests.models import Response
+    mock_response = Response()
+    mock_response._content = mock_data_path.read_bytes()
+    mock_response.status_code = 200
+    mocker.patch.object(ArcSightESMv2, 'send_request', return_value=mock_response)
+    debug_logs_mock = mocker.patch.object(ArcSightESMv2.demisto, 'debug')
+
+    ArcSightESMv2.main()
+    assert debug_logs_mock.call_args_list[0].startswith('Failed to parse response to JSON.\n')
+    assert debug_logs_mock.call_args_list[1].startswith('Response successfully parsed after fixing invalid escape sequences')
+
+    results = demisto.results.call_args[0][0]
+    assert results['Contents']  # assert that the response was parsed successfully
