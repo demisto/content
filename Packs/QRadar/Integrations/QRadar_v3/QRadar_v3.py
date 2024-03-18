@@ -2436,12 +2436,8 @@ def create_incidents_from_offenses(
     """
     incidents = []
     print_debug_msg(f'Creating {len(offenses)} incidents')
-
-
     for offense in offenses:
-        print_debug_msg(f'Creating {len(offenses)} incidents')
         if map_raw_to_labels:
-            print_debug_msg('Mapping raw incidents to labels')
             keys = list(offense.keys())
             labels = []
             for i in range(len(keys)):
@@ -2454,7 +2450,6 @@ def create_incidents_from_offenses(
                 'type': incident_type
             })
         else:
-            print_debug_msg('Not mapping raw incidents to labels')
             incidents.append({
                 'name': f'''{offense.get('id')} {offense.get('description', '')}''',
                 'rawJSON': json.dumps(offense),

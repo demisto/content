@@ -234,7 +234,7 @@ def test_add_iso_entries_to_dict():
      - All 'usecs' keys in the dict are replaced with 'iso time' entries with correct iso values.
      - The dict is cloned and its values are not changed, and a new one is created
     """
-    tested_dict = {usec_entry: 1600000000000 for usec_entry in USECS_ENTRIES}
+    tested_dict  = {usec_entry: 1600000000000 for usec_entry in USECS_ENTRIES}
     tested_dict['host_name'] = 'QRadar Host'
     output_dict = add_iso_entries_to_dict([tested_dict])[0]
     assert tested_dict['host_name'] == 'QRadar Host'
@@ -423,7 +423,7 @@ def test_poll_offense_events_with_retry(mocker, requests_mock, status_exception,
         f'{client.server}/api/ariel/searches/{search_id}/results',
         json=results_response
     )
-    assert poll_offense_events(client, search_id, 16, 1) == expected
+    assert poll_offense_events(client, search_id, True, 16) == expected
 
 
 @pytest.mark.parametrize('search_exception, fetch_mode, search_response',
@@ -525,7 +525,7 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, search_r
          3,
          ),
     ])
-def test_enrich_offense_with_events(mocker, offense: dict, fetch_mode, mock_search_response: dict,
+def test_enrich_offense_with_events(mocker, offense: dict, fetch_mode: FetchMode, mock_search_response: dict,
                                     poll_events_response, events_limit):
     """
     Given:
@@ -568,7 +568,7 @@ def test_enrich_offense_with_events(mocker, offense: dict, fetch_mode, mock_sear
     if poll_events and num_events >= min(events_limit, offense.get('event_count')):
         events = poll_events[:min(events_limit, len(poll_events))] if poll_events else []
         num_events = sum(event.get('eventcount', 1) for event in poll_events)
-        expected_offense = dict(offense, events=events,
+        expected_offense: dict[str, list | int] = dict(offense, events=events,
                                 events_fetched=num_events,
                                 )
     else:
@@ -883,16 +883,16 @@ def test_commands(mocker, command_func: Callable[[Client, dict], CommandResults]
     )
     mocker.patch.object(client, command_name, return_value=response)
     if command_func == qradar_search_create_command:
-        results = command_func(client, {}, args)
+        results = command_func(client, args)
     elif command_func == qradar_reference_set_value_upsert_command:
-        results = command_func(args, client, {"api_version": "14"})
+        results = command_func(client, args)
     elif command_func == qradar_indicators_upload_command:
         mocker.patch.object(IndicatorsSearcher, "search_indicators_by_version", return_value={
             "iocs": [{"value": "test1", "indicator_type": "ip"},
                      {"value": "test2", "indicator_type": "ip"},
                      {"value": "test3", "indicator_type": "ip"}]})
         mocker.patch.object(client, "reference_sets_list")
-        results = command_func(args, client, {"api_version": "14"})
+        results = command_func(client, args)
 
     else:
         results = command_func(client, args)
@@ -1389,7 +1389,8 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
         mirror_direction=mirror_direction,
         first_fetch='3 days',
         mirror_options=mirror_options,
-        assets_limit=100
+        assets_limit=100,
+        map_raw_to_labels=False
     )
     expected_ctx_first_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY:
                                 {'15': QueryStatus.WAIT.value} if mirror_options and is_offenses_first_loop else {},
@@ -1428,7 +1429,8 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
         mirror_direction=mirror_direction,
         first_fetch='3 days',
         mirror_options=mirror_options,
-        assets_limit=100
+        assets_limit=100,
+        map_raw_to_labels=False
     )
     second_loop_ctx_not_default_values = test_case_data.get('second_loop_ctx_not_default_values', {})
     for k, v in second_loop_ctx_not_default_values.items():
