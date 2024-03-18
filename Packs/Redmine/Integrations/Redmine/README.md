@@ -300,8 +300,8 @@ Update an existing issue. When attaching a file to an issue, include the entry I
 | fixed_version_id | The ID of the fixed version for the issue. | Optional | 
 | assigned_to_id | The ID of the user to whom the issue is assigned. | Optional | 
 | parent_issue_id | The ID of the parent issue, if applicable. | Optional | 
-| custom_fields | Insert the custom field to update, THE FORMAT is costumFieldID:Value,costumFieldID:Value etc... | Optional | 
-| watcher_user_ids | Add an array of watcher ids seperated with comma -&gt; 1,2,3. | Optional | 
+| custom_fields | The custom field to update. The format is costumFieldID:Value,costumFieldID:Value etc. | Optional | 
+| watcher_user_ids | A comma-separated list of watcher IDs. -&gt; 1,2,3. | Optional | 
 | is_private | Is the issue private?. Possible values are: True, False. | Optional | 
 | estimated_hours | The estimated number of hours to complete the issue. | Optional | 
 | notes | Additional comments about the update. | Optional | 
