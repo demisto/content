@@ -333,8 +333,8 @@ Show an issue by id
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | Add the id of the issue you want to show. | Required | 
-| include | - fields to add to the response.<br/>- Possible values:<br/>  1.children.<br/>  2.attachments.<br/>  3.relations.<br/>  4.changesets.<br/>  5.journals.<br/>  6.watchers.<br/>  7.allowed_statuses.<br/>- Separate multiple values with comma ONLY.<br/> | Optional | 
+| issue_id | The ID of the issue you want to display. | Required | 
+| include | - Fields to add to the response.<br/>- Possible values:<br/>  1.children.<br/>  2.attachments.<br/>  3.relations.<br/>  4.changesets.<br/>  5.journals.<br/>  6.watchers.<br/>  7.allowed_statuses.<br/>- Separate multiple values with comma ONLY.<br/> | Optional | 
 
 #### Context Output
 
