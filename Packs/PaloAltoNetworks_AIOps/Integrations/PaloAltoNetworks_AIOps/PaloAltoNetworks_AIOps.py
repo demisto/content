@@ -7,13 +7,12 @@ from typing import Any
 
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+''' GLOBAL VARIABLES '''
 INTERVAL_FOR_POLLING = 30
 TIMEOUT_FOR_POLLING = 600
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
-
 
 class Client(BaseClient):
     def __init__(self, base_url, api_key, tsg_id, client_id, client_secret, verify=True, proxy=False, headers=None):
@@ -306,6 +305,7 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
             ),
             continue_to_poll=False,
         )
+        
     elif upload_status == 'UPLOAD_INITIATED':
         results = CommandResults(readable_output="Polling job failed.")
         return PollResult(
@@ -316,6 +316,7 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
                 readable_output=f'The report with id {report_id} was sent successfully. Download in progress...'
                 )
         )
+        
     elif upload_status == 'COMPLETED_WITH_ERROR':
         return PollResult(
             response=CommandResults(
@@ -323,6 +324,7 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
                 ),
             continue_to_poll=False,
         )
+        
     else:
         results = CommandResults(readable_output="Polling job failed.")
         return PollResult(
@@ -330,6 +332,7 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
             args_for_next_run={'report_id':report_id},
             response=results,
         )
+        
 ''' MAIN FUNCTION '''
 
 def main() -> None:
