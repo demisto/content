@@ -618,14 +618,14 @@ slack-notify-on-merge:
     - section_end "Are there tests to run?"
 
     - !reference [.lock-machine]
-   # - !reference [.uninstall-packs-and-reset-bucket-cloud]
+    - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
     - section_start "Install Packs and run Test-Module"
-   # - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
+    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - section_end "Install Packs and run Test-Module"
-   # - !reference [.run_tests]
+    - !reference [.run_tests]
     - section_start "Test Modeling Rules"
-   # - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
+    - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
     - section_start "Packs re-installation test"
