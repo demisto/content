@@ -578,7 +578,6 @@ def test_insight_idr_query_log_with_pagination(
         ("logs"),
     ],
 )
-
 def test_insight_idr_query_log_with_callback(mocker: mocker, requests_mock, end_point) -> None:
     """
     Given:
