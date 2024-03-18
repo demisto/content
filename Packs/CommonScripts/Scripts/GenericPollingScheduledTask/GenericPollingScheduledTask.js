@@ -68,7 +68,7 @@ function finish(playbookId, tag, err, entryGUID) {
 
 
 //replace all occurences of textToReplace with replaceWith string
-String.prototype.replaceAll = function(textToReplace,replaceWith) {
+String.prototype.replaceAll = function(textToReplace, replaceWith) {
     return this.split(textToReplace).join(replaceWith);
 };
 
@@ -81,7 +81,7 @@ function checkCommandSanitized(cmd) {
         if ((cmd_lower.match(regex) || []).length > 1) {
             throw new Error('Error, The value of ' + SANITIZED_ARG_NAMES[i] + ' is malformed.');
         }
-        cmd_lower.replaceAll(current_arg_name_lower, '')
+        cmd_lower = cmd_lower.replaceAll(current_arg_name_lower, '')
     }
 }
 
