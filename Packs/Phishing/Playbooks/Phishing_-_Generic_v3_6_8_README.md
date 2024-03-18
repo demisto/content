@@ -10,21 +10,21 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Process Email - Generic v2
-* Process Microsoft's Anti-Spam Headers
-* TIM - Indicator Relationships Analysis
-* Email Address Enrichment - Generic v2.1
-* Search And Delete Emails - Generic v2
-* Entity Enrichment - Phishing v2
 * Calculate Severity - Generic v2
-* Spear Phishing Investigation
-* Detonate File - Generic
-* Phishing - Machine Learning Analysis
-* Phishing - Indicators Hunting
-* Block Indicators - Generic v3
+* Process Microsoft's Anti-Spam Headers
 * Detonate URL - Generic v1.5
 * Extract Indicators From File - Generic v2
 * Detect & Manage Phishing Campaigns
+* TIM - Indicator Relationships Analysis
+* Phishing - Machine Learning Analysis
+* Process Email - Generic v2
+* Phishing - Indicators Hunting
+* Detonate File - Generic
+* Email Address Enrichment - Generic v2.1
+* Block Indicators - Generic v3
+* Search And Delete Emails - Generic v2
+* Spear Phishing Investigation
+* Entity Enrichment - Phishing v2
 
 ### Integrations
 
@@ -32,17 +32,17 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
-* AssignAnalystToIncident
 * SetAndHandleEmpty
+* Set
 * CheckEmailAuthenticity
+* AssignAnalystToIncident
 
 ### Commands
 
-* closeInvestigation
-* setIndicator
 * send-mail
+* closeInvestigation
 * setIncident
+* setIndicator
 
 ## Playbook Inputs
 
@@ -63,7 +63,7 @@ This playbook does not use any integrations.
 | CheckMicrosoftHeaders | Whether to check Microsoft headers for BCL/PCL/SCL scores and set the "Severity" and "Email Classification" accordingly. | True | Optional |
 | InternalDomains | A CSV list of internal domains. The list is used to determine whether an email address is internal or external. |  | Optional |
 | DetonateURL | Determines whether to use the "URL Detonation" playbook. Detonating a URL may take a few minutes. | False | Optional |
-| InternalRange | This input is used in the "Entity Enrichment - Phishing v2" playbook.<br/>A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, uses the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
+| InternalRange | This input is used in the "Entity Enrichment - Phishing v2" playbook.<br/>A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 | PhishingModelName | Optional - the name of a pre-trained phishing model to predict phishing type using machine learning. |  | Optional |
 | GetOriginalEmail | For forwarded emails. When "True", retrieves the original email in the thread.<br/><br/>You must have the necessary permissions in your email service to execute global search.<br/><br/>- For EWS: eDiscovery<br/>- For Gmail: Google Apps Domain-Wide Delegation of Authority<br/>- For MSGraph: As described in these links<br/>https://docs.microsoft.com/en-us/graph/api/message-get<br/>https://docs.microsoft.com/en-us/graph/api/user-list-messages | False | Optional |
 | DBotPredictURLPhishingURLsNumber | The number of URLs to extract from the email HTML and analyze in the "DBotPredictURLPhishing" automation.<br/>This automation runs several checks to determine the score of the URLs found in the email, sets a verdict for URLs found as "Suspicious" or "Malicious", and adds these URLs as indicators. Based on the verdict, the incident severity is set \(Medium for "Suspicious" and High for "Malicious"\).<br/>Note:<br/>- You need to install the "Phishing URL" pack to use this automation.<br/>- False/True positives are possible.<br/>- This automation may take a few minutes to run.<br/>- To increase result accuracy, it is recommended to install and enable the "Whois" pack \(optional\). | 3 | Optional |
