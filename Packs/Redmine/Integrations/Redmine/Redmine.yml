@@ -38,7 +38,7 @@ script:
       - To create a category/version, navigate to the server URL -> Click on the Settings (top bar) -> Versions tab and Issue categories tab.
     arguments:
     - name: project_id
-      description: Enter the project ID for this issue. If not specified, the value from integration configuration will be taken.
+      description: The project ID for this issue. If not specified, the value from the integration configuration will be used.
       required: false
     - name: tracker_id
       auto: PREDEFINED
