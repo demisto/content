@@ -101,6 +101,12 @@ demisto-sdk-nightly:run-validations:
     - .run-validations
     - .sdk-nightly-schedule-rule
 
+demisto-sdk-nightly:run-validations-new-validate-flow:
+  extends:
+    - .run-validations-new-validate-flow
+    - .sdk-nightly-schedule-rule
+  allow_failure: true
+
 demisto_sdk_nightly:check_idset_dependent_commands:
   tags:
     - gke
@@ -176,7 +182,6 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
@@ -202,7 +207,6 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
@@ -226,7 +230,6 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
@@ -249,7 +252,6 @@ demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
   needs: []
   stage: prepare-testing-bucket
   script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 

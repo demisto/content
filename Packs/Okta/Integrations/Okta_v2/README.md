@@ -622,27 +622,27 @@ Searches for Okta users.
 >|---|---|---|---|---|---|
 >| bartest@test.com | bar | test | bartest@test.com |  |  |
 
- ### Additional Data
+ ##### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2020-02-12T14:03:51.000Z | 2020-02-12T14:03:50.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00uppjeleqJQ2kkN80h7 |  | 2020-02-12T14:03:51.000Z |  | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uppjeleqJQ2kkN80h7"} |
-### User:test@that.com
-### Profile
+##### User:test@that.com
+##### Profile
 |Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 |---|---|---|---|---|---|
 | test@that.com | test | that | test@that.com |  | test@that.com |
 
- ### Additional Data
+ ##### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2020-02-19T12:33:20.000Z | 2018-07-31T12:48:33.000Z | provider: {"type": "OKTA", "name": "OKTA"} | 00ufufhqits3y78Ju0h7 |  | 2020-02-19T12:33:20.000Z | 2020-02-06T13:32:56.000Z | PROVISIONED |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00ufufhqits3y78Ju0h7"} |
-### User:testForDocs@test.com
-### Profile
+##### User:testForDocs@test.com
+##### Profile
 |Email|First Name|Last Name|Login|Mobile Phone|Second Email|
 |---|---|---|---|---|---|
 | testForDocs@test.com | test | that | testForDocs@test.com |  |  |
 
- ### Additional Data
+ ##### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}recovery_question: {"question": "whats is your favourite integration"}provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uqk1qesl3k0SRbH0h7"} |
@@ -710,7 +710,7 @@ Fetches information for a single user. You must enter one or more parameters for
 >|---|---|---|---|---|---|---|---|
 >| testForDocs@test.com | test | that | testForDocs@test.com | manager@test.com |  |  |  |
 
- ### Additional Data
+ ##### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:49.000Z | password: {}recovery_question: {"question": "whats is your favourite integration"} provider: {"type": "OKTA", "name": "OKTA"} | 00uqk1qesl3k0SRbH0h7 |  | 2020-03-26T13:56:52.000Z | 2020-03-26T13:56:50.000Z | ACTIVE |  | id: oty66lckcvDyVcGzS0h7 | links|
@@ -972,7 +972,7 @@ Enumerates all users that are members of a group.
 >|---|---|---|---|---|---|
 >| XSOAR@demisto.com | Test | Demisto | XSOAR@demisto.com |  |  |
 
- ### Additional Data
+ ##### Additional Data
 |Activated|Created|Credentials|ID|Last Login|Last Updated|Password Changed|Status|Status Changed|Type|_links|
 |---|---|---|---|---|---|---|---|---|---|---|
 |  | 2016-04-12T15:01:52.000Z | password: {} recovery_question: {"question": "born city"} provider: {"type": "OKTA", "name": "OKTA"} | 00u66lckd7lpjidYi0h7 | 2020-03-12T09:54:36.000Z | 2020-02-24T11:42:22.000Z | 2020-02-24T11:40:08.000Z | ACTIVE |  | id: oty66lckcyVcGzS0h7 | self: {"href": "https://yourdomain.okta.com/api/v1/users/00uclpjidYi0h7"} |

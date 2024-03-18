@@ -52,12 +52,16 @@ ignore=RM106
 [file:README.md]
 ignore=RM106
 
+[file:Entity_Enrichment_-_Phishing_v2.yml]
+ignore=PB118
+
 [known_words]
 CheckEmailAuthenticity
 DeleteReportedEmail
 GetBrandDeleteReportedEmail
 CommonTypes
 UseOldHTMLFields
+QR
 
 [file:LinkToPhishingCampaign.yml]
 ignore=BA124

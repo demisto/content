@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - Utility
-comment: Create indicators to the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
+comment: Create indicators to the Threat Intel database only if they are not registered. All submitted indicators will be associated with the parent incident. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
 enabled: true
 args:
 - name: indicator_values
@@ -69,7 +69,7 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.13.89009
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
