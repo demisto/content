@@ -79,7 +79,7 @@ def list_clusters_command(aws_client: AWSClient, args: dict) -> CommandResults:
                                             nextToken=next_token)
             limit = 0
         list_clusters.extend(response.get('clusters', []))
-        next_token = response.get('next_token')
+        next_token = response.get('nextToken')
         flag = bool(next_token)
 
     md_table = {
