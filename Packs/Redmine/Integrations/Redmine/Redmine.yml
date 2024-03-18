@@ -172,7 +172,7 @@ script:
     - name: assigned_to_id
       description: An assigned-to ID to display issues assigned to this user ID.
     - name: parent_id
-      description: Specify a parent ID to display issues that are under this parent ID.
+      description: A parent ID to display issues that are under this parent ID.
     - name: custom_field
       description: |-
         - Insert the custom field to filter with, THE FORMAT is costumFieldID:Value.
