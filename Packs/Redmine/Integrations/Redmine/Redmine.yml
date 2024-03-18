@@ -175,7 +175,7 @@ script:
       description: A parent ID to display issues that are under this parent ID.
     - name: custom_field
       description: |-
-        - Insert the custom field to filter with, THE FORMAT is costumFieldID:Value.
+        - The custom field to filter by. The format is costumFieldID:Value.
         - To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  
         - You can only filter one custom field at a time. 
         - Make sure the custom field id you entered is valid, or the request won't fail but will not be filtered correctly.
