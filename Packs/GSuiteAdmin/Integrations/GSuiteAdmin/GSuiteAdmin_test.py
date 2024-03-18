@@ -1355,7 +1355,7 @@ def test_policy_resolve_command(gsuite_client, mocker):
     assert command_result.outputs == expected_entry_context['outputs']
     assert command_result.raw_response == expected_entry_context['raw_response']
     assert command_result.outputs_key_field == ['deviceId']
-    assert command_result.outputs_prefix == 'GSuite.PolicySchema'
+    assert command_result.outputs_prefix == 'GSuite.Policy'
 
 
 def test_group_delete_command(gsuite_client, mocker):

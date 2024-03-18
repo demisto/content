@@ -1693,7 +1693,7 @@ def policy_resolve_command(client: Client, args: dict[str, str]) -> CommandResul
 
         :return: Command Result.
     """
-    API_LIMIT = '1000'
+    API_LIMIT = 1000
     client.set_authorized_http(scopes=SCOPES['POLICY_MANAGEMENT'])
     customer_id = args.get('customer_id', '')
     target_type = args.get('target_type', '')
