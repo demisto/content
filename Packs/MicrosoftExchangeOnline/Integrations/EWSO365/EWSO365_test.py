@@ -18,8 +18,9 @@ from EWSO365 import (
     get_expanded_group,
     get_item_as_eml,
     get_searchable_mailboxes,
-    handle_attached_email_with_incorrect_id,
+    handle_attached_email_with_incorrect_message_id,
     handle_html,
+    handle_incorrect_message_id,
     handle_transient_files,
     parse_incident_from_item,
     parse_item_as_dict,
@@ -864,4 +865,29 @@ def test_handle_attached_email_with_incorrect_id(mocker, headers, expected_forma
     email_policy = SMTP
     attached_email = email.message_from_bytes(mime_content, policy=email_policy)
     attached_email._headers = headers
-    assert handle_attached_email_with_incorrect_id(attached_email)._headers == expected_formatted_headers
+    assert handle_attached_email_with_incorrect_message_id(attached_email)._headers == expected_formatted_headers
+
+
+@pytest.mark.parametrize("message_id, expected_message_id_output", [
+    pytest.param('<message_id>', '<message_id>', id="valid message_id 1"),
+    pytest.param('<mess<[age_id>', '<mess<[age_id>', id="valid message_id 2"),
+    pytest.param('<>]message_id>', '<>]message_id>', id="valid message_id 3"),
+    pytest.param('<[message_id]>', '<message_id>', id="invalid message_id"),
+    pytest.param('\r\n\t<message_id>', '\r\n\t<message_id>', id="valid message_id with escape chars"),
+    pytest.param('\r\n\t<[message_id]>', '\r\n\t<message_id>', id="invalid message_id with escape chars"),
+])
+def test_handle_incorrect_message_id(message_id, expected_message_id_output):
+    """
+    Given:
+        - case 1: valid Message-ID header value in attached email object
+        - case 1: invalid Message-ID header value in attached email object
+        - case 3: a Message-ID header value format which is not tested in the context of handle_attached_email_with_incorrect_id
+    When:
+        - fetching email which have an attached email with Message-ID header
+    Then:
+        - case 1: verify the header in the correct format
+        - case 2: correct the invalid Message-ID header value
+        - case 3: return the header value without without further handling
+
+    """
+    assert handle_incorrect_message_id(message_id) == expected_message_id_output

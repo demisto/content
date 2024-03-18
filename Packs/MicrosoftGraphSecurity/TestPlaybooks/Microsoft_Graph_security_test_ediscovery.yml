@@ -1598,7 +1598,7 @@ tasks:
       purge_areas:
         simple: teamsMessages
       purge_type:
-        simple: permanentlyDelete
+        simple: permanentlydeleted
       search_id:
         simple: ${SearchID}
     separatecontext: false

@@ -54,6 +54,11 @@ run-validations-upload-flow:
     - .run-validations
     - .bucket-upload-rule
 
+run-validations-upload-flow-new-validate-flow:
+  extends:
+    - .run-validations-new-validate-flow
+    - .bucket-upload-rule
+  allow_failure: true
 
 run-unittests-and-lint-upload-flow:
   cache:
@@ -352,7 +357,7 @@ upload-packs-to-marketplace:
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
         
         gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-        if [[ $TEST_UPLOAD == "false" ]]; then
+        if [[ $TEST_UPLOAD == "false" ]] && [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" ]]; then
           gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" "gs://xsoar-ci-artifacts/content/$CI_COMMIT_SHA/$MARKETPLACE_VERSION/packs_results_upload.json"
           echo "packs_results_upload.json upload successfully"
         fi
@@ -445,7 +450,8 @@ upload-packs-to-marketplace-v2:
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_V2_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace marketplacev2
         
         gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-        if [[ $TEST_UPLOAD == "false" ]]; then  
+      
+        if [[ $TEST_UPLOAD == "false" ]] && [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" ]]; then
           gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" "gs://xsoar-ci-artifacts/content/$CI_COMMIT_SHA/$MARKETPLACE_VERSION/packs_results_upload.json"
           echo "packs_results_upload.json upload successfully"
         fi
@@ -536,7 +542,7 @@ upload-packs-to-xpanse-marketplace:
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XPANSE_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xpanse
         
         gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-        if [[ $TEST_UPLOAD == "false" ]]; then
+        if [[ $TEST_UPLOAD == "false" ]] && [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" ]]; then
           gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" "gs://xsoar-ci-artifacts/content/$CI_COMMIT_SHA/$MARKETPLACE_VERSION/packs_results_upload.json"
           echo "packs_results_upload.json upload successfully"
         fi
@@ -627,7 +633,7 @@ upload-packs-to-xsoar-saas-marketplace:
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XSOAR_SAAS_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar_saas
         
         gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-        if [[ $TEST_UPLOAD == "false" ]]; then
+        if [[ $TEST_UPLOAD == "false" ]] && [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" ]]; then
           gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" "gs://xsoar-ci-artifacts/content/$CI_COMMIT_SHA/$MARKETPLACE_VERSION/packs_results_upload.json"
           echo "packs_results_upload.json upload successfully"
         fi

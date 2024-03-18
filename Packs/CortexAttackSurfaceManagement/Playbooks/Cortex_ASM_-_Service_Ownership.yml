@@ -43,10 +43,10 @@ tasks:
       version: -1
       name: Normalize and rank likely service owners
       description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
-      scriptName: RankServiceOwners
       type: regular
       iscommand: false
       brand: ""
+      script: RankServiceOwners
     nexttasks:
       '#none#':
       - "10"
@@ -99,10 +99,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "17"
@@ -169,55 +169,71 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 82e4d1d4-d7bc-4a1a-894a-698786adcdc5
+    taskid: 5505de94-3fde-4947-86d2-7e95c050fa14
     type: condition
     task:
-      id: 82e4d1d4-d7bc-4a1a-894a-698786adcdc5
+      id: 5505de94-3fde-4947-86d2-7e95c050fa14
       version: -1
-      name: Is asmserviceowner populated?
-      description: Determines if the asmserviceowner field exists and if the common fields within it also exists.
+      name: Is asmserviceowner or asmserviceownerunrankedraw populated?
+      description: Determines if the asmserviceowner or asmserviceownerunrankedraw fields have been populated to continue.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "10"
-      "yes":
+      service owner:
       - "7"
+      unranked raw:
+      - "17"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "service owner"
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              complex:
-                root: alert
-                accessor: asmserviceowner
+              simple: alert.asmserviceowner
             iscontext: true
           right:
             value: {}
       - - operator: isNotEmpty
           left:
             value:
-              complex:
-                root: alert.asmserviceowner
-                accessor: email
+              simple: alert.asmserviceowner.email
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              complex:
-                root: alert.asmserviceowner
-                accessor: name
+              simple: alert.asmserviceowner.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              complex:
-                root: alert.asmserviceowner
-                accessor: source
+              simple: alert.asmserviceowner.source
             iscontext: true
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmserviceownerunrankedraw
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmserviceownerunrankedraw.email
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmserviceownerunrankedraw.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmserviceownerunrankedraw.source
+          operator: isNotEmpty
+      label: unranked raw
     continueonerrortype: ""
     view: |-
       {
@@ -410,17 +426,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 6b8a094c-a54f-4678-86c6-6baf66e29721
+    taskid: d1039ef2-c791-4853-8367-d50fe11c8517
     type: regular
     task:
-      id: 6b8a094c-a54f-4678-86c6-6baf66e29721
+      id: d1039ef2-c791-4853-8367-d50fe11c8517
       version: -1
       name: Look up project owners for service account
       description: Parse a GCP service account email for the project name, then lookup project owners and add them to a list of potential service owners for ranking.
-      scriptName: GetProjectOwners
       type: regular
       iscommand: false
       brand: ""
+      script: GetProjectOwners
     nexttasks:
       '#none#':
       - "6"
@@ -429,8 +445,7 @@ tasks:
         complex:
           root: ASM.ExternalService.externally_detected_providers
       owners:
-        complex:
-          root: alert.asmserviceownerunrankedraw
+        simple: ${alert.asmserviceownerunrankedraw}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -453,7 +468,7 @@ view: |-
       "15_10_#default#": 0.2,
       "17_10_#default#": 0.2,
       "9_10_#default#": 0.33,
-      "9_7_yes": 0.55
+      "9_7_service owner": 0.55
     },
     "paper": {
       "dimensions": {

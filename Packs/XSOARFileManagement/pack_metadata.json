@@ -2,15 +2,19 @@
     "name": "XSOAR File Management",
     "description": "This pack let user manipulate file inside XSOAR more easily than with the builtin functions.",
     "support": "community",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.1.1",
     "author": "Pierre",
     "url": "",
     "email": "",
     "created": "2023-02-07T13:03:55Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
-    "keywords": ["File"],
+    "keywords": [
+        "File"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

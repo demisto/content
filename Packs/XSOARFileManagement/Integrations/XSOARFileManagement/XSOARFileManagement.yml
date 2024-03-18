@@ -22,6 +22,12 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: ''
+  displaypassword: XSOAR Server API Key ID
+  hiddenusername: true
+  name: creds_apikey_id
+  required: false
+  type: 9
 description: This integration uses the XSOAR API to perform basic but essentials actions on files.
 display: XSOAR File Management
 name: XSOAR File Management
@@ -85,7 +91,7 @@ script:
       required: true
     description: 'Rename a file. Warning: use this only if necessary, it''s HEAVY to run, this will delete and recreate the file with another name.'
     name: file-management-rename-file
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.89009
   runonce: false
   script: ''
   subtype: python3

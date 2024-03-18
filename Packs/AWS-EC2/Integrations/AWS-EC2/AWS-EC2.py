@@ -170,26 +170,29 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
 
 
 def test_module() -> str:
-    if ROLE_NAME:
-        if not PARAMS.get('accounts_to_access'):
-            raise DemistoException("'AWS organization accounts to access' must not be empty when an access role is provided.")
-
-        def test_account(args: dict) -> CommandResults:
-            build_client(args)
-            return CommandResults(readable_output='ok')
-        fails = [
-            result.readable_output.split('`')[1]
-            for result in run_on_all_accounts(test_account)({})  # type: ignore
-            if result.entry_type == EntryType.ERROR
-        ]
-        if fails:
-            raise DemistoException(
-                f'AssumeRole with role name {ROLE_NAME!r} failed for the following accounts: {", ".join(fails)}'
-            )
     client = build_client({})
     response = client.describe_regions()
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise DemistoException(f'Test Module failed. Response: {response}')
+    if ROLE_NAME:
+        if not PARAMS.get('accounts_to_access'):
+            raise DemistoException("'AWS organization accounts' must not be empty when an access role is provided.")
+
+        def test_account(args: dict) -> CommandResults:
+            build_client(args)
+            return CommandResults()
+        fails = [
+            result.readable_output
+            for result in run_on_all_accounts(test_account)({})  # type: ignore
+            if result.entry_type == EntryType.ERROR
+        ]
+        if fails:
+            demisto.debug('\n\n'.join(fails))
+            #  extract the account ID form the readable_output encased in backticks
+            fail_ids = ', '.join(res.split('`')[1] for res in fails)
+            raise DemistoException(
+                f'AssumeRole with role name {ROLE_NAME!r} failed for the following accounts: {fail_ids}.'
+            )
     return 'ok'
 
 
