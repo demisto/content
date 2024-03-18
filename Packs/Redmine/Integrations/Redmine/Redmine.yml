@@ -268,7 +268,7 @@ script:
       required: true
     - name: include
       description: |
-        - fields to add to the response.
+        - Fields to add to the response.
         - Possible values:
           1.children.
           2.attachments.
