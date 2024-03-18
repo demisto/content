@@ -14,7 +14,7 @@ This integration was integrated and tested with version 5.1.2 of Redmine.
     | API Key | True |
     | Project id | False |
 4. Getting your API key:
-    - Use your **server URL** to enter to your Redmine instance.
+    - Use your **server URL** to enter your Redmine instance.
     - Authenticate with your username and password.
     - Navigate to **My Account** (at the top right corner).
     - Click on API **Access key** > **Show** - This is your API key
