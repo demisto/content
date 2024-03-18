@@ -34,12 +34,6 @@ configuration:
   required: false
   section: Connect
   advanced: true
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-  section: Connect
-  advanced: true
 description: 'Code42 Insider Risk software solutions provide the right balance of transparency, technology and training to detect and appropriately respond to data risk. Use the Code42EventCollector integration to fetch file events and audit events.'
 display: Code42EventCollector
 name: Code42EventCollector
