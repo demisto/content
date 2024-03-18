@@ -1634,7 +1634,7 @@ def remove_member_from_group(default_base_dn):
     if not success:
         raise Exception("Failed to remove {} from group {}".format(
             args.get('username') or args.get('computer-name'),
-            args.get('group_name')
+            args.get('group-cn')
         ))
 
     demisto_entry = {
