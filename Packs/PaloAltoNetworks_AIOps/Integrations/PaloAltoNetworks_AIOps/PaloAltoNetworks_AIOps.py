@@ -9,7 +9,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 INTERVAL_FOR_POLLING = 30
-TIMEOUR_FOR_POLLING = 600
+TIMEOUT_FOR_POLLING = 600
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
@@ -265,9 +265,9 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     requester_email = args.get('requester_email')
     requester_name = args.get('requester_name')
     global INTERVAL_FOR_POLLING
-    INTERVAL_FOR_POLLING = args.get('interval_in_seconds') or INTERVAL_FOR_POLLING
-    global TIMEOUR_FOR_POLLING
-    TIMEOUR_FOR_POLLING = args.get('timeout') or TIMEOUR_FOR_POLLING
+    INTERVAL_FOR_POLLING = args.get('interval_in_seconds', None) or INTERVAL_FOR_POLLING
+    global TIMEOUT_FOR_POLLING
+    TIMEOUT_FOR_POLLING = args.get('timeout', None) or TIMEOUT_FOR_POLLING
     
     # Get info about device - system info
     system_info_xml = client.get_info_about_device_request()
@@ -291,7 +291,7 @@ def generate_report_command(client: Client, args: dict[str, Any]):
 @polling_function(
 name="pan-aiops-polling-upload-report",
 interval=INTERVAL_FOR_POLLING,
-timeout=TIMEOUR_FOR_POLLING,
+timeout=TIMEOUT_FOR_POLLING,
 requires_polling_arg=False,
 )
 def polling_until_upload_report_command(args: dict[str, Any], client: Client) -> PollResult:
@@ -312,7 +312,9 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
             response=results,
             continue_to_poll=True,
             args_for_next_run={'report_id':report_id},
-            partial_result=CommandResults(readable_output=f'The report with id {report_id} was sent successfully. In progress...')
+            partial_result=CommandResults(
+                readable_output=f'The report with id {report_id} was sent successfully. Download in progress...'
+                )
         )
     elif upload_status == 'COMPLETED_WITH_ERROR':
         return PollResult(
@@ -355,6 +357,8 @@ def main() -> None:
             proxy=proxy)
           
         # Generate an access token for pan-OS/panorama
+        client.generate_access_token_request()
+        
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'pan-aiops-bpa-report-generate':
