@@ -264,7 +264,7 @@ script:
     description: Show an issue by ID.
     arguments:
     - name: issue_id
-      description: Add the id of the issue you want to show.
+      description: The ID of the issue you want to display.
       required: true
     - name: include
       description: |
