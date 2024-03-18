@@ -1,7 +1,7 @@
 import json
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Union, Type
 
 import dateparser
 import demistomock as demisto
@@ -586,7 +586,7 @@ class Client(BaseClient):
 def insight_idr_list_investigations_command(
     client: Client,
     args: dict[str, Any],
-    constants: Constants,
+    constants: Type[Constants],
 ) -> CommandResults:
     """
     List investigations.
@@ -646,7 +646,7 @@ def insight_idr_list_investigations_command(
 def insight_idr_get_investigation_command(
     client: Client,
     args: dict[str, Any],
-    constants: Constants,
+    constants: Type[Constants],
 ) -> CommandResults:
     """
     Get investigation.
@@ -730,7 +730,7 @@ def insight_idr_close_investigations_command(
 def insight_idr_assign_user_command(
     client: Client,
     args: dict[str, Any],
-    constants: Constants,
+    constants: Type[Constants],
 ) -> CommandResults:
     """
     Assigning user, by email, to investigation or investigations.
@@ -768,7 +768,7 @@ def insight_idr_assign_user_command(
 def insight_idr_set_status_command(
     client: Client,
     args: dict[str, Any],
-    constants: Constants,
+    constants: Type[Constants],
 ) -> CommandResults:
     """
     Change the status of investigation or investigations.
@@ -1731,7 +1731,10 @@ def main():
             else (demisto.args().get("api_version", "V1") or "V1")
         )
 
-        headers_class: Constants = ConstantsV2 if api_version == "V2" else ConstantsV1
+        headers_class: Type[Constants] = {
+            "V1": ConstantsV1,
+            "V2": ConstantsV2,
+        }.get(api_version, ConstantsV1) or ConstantsV1
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
