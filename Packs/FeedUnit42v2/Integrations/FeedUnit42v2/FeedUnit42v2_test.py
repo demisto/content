@@ -358,13 +358,6 @@ def test_get_ioc_value_from_ioc_name():
     assert extract_ioc_value(name) == "4f75622c2dd839f"
 
 
-# def test_change_attack_pattern_to_stix_attack_pattern():
-#     assert STIX2XSOARParser.change_attack_pattern_to_stix_attack_pattern({"type": "ind", "fields":
-#                                                                           {"killchainphases": "kill chain",
-#                                                                            "description": "des"}}) == \
-#         {"type": "STIX ind", "fields": {"stixkillchainphases": "kill chain", "stixdescription": "des"}}
-
-
 def test_fetch_indicators_command_with_relationship(mocker):
     """
     Given
