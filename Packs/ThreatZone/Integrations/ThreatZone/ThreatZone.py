@@ -232,7 +232,12 @@ def generate_indicator(indicator, report, type_of_indicator, score=None):
     else:
         dbot_score = generate_dbotscore(indicator, report, report.get("LEVEL"), type_of_indicator)
     if type_of_indicator == "file":
-        return Common.File(dbot_score=dbot_score, sha256=indicator)
+        return Common.File(
+            dbot_score,
+            md5=report.get("MD5"),
+            sha1=report.get("SHA1"),
+            sha256=report.get("SHA256"),
+        )
     elif type_of_indicator == "ip":
         return Common.IP(ip=indicator, dbot_score=dbot_score)
     elif type_of_indicator == "url":
@@ -260,24 +265,23 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
     levels = {0: "Not Measured", 1: "Informative", 2: "Suspicious", 3: "Malicious"}
 
     def create_res(readable_dict, output, exception=None):
-        if not exception:
-            base_readable_output = tableToMarkdown("Submission Result", readable_dict)
-        else:
-            raise exception
 
-        def indicator_creator(output: dict) -> list:
-            indicators = []
-            if output["REPORT"].get("ioc", {}).get("url", []):
-                for url in output["REPORT"].get("ioc", {}).get("url", []):
-                    indicators.append(["url", url, generate_indicator(url, output, "url", score=0)])
-                for domain in output["REPORT"].get("ioc", {}).get("domain", []):
-                    indicators.append(["domain", domain, generate_indicator(domain, output, "domain", score=0)])
-                for email in output["REPORT"].get("ioc", {}).get("email", []):
-                    indicators.append(["email", email, generate_indicator(email, output, "email", score=0)])
-                for ip in output["REPORT"].get("ioc", {}).get("ip", []):
-                    indicators.append(["ip", ip, generate_indicator(ip, output, "ip", score=0)])
+        def indicator_creator(output: dict) -> dict:
+            indicators = {"URL": [], "DOMAIN": [], "EMAIL": [], "IP": []}
+            if output["REPORT"].get("ioc", {}):
+                if output["REPORT"].get("ioc", {}).get("url", []):
+                    indicators["URL"] = output["REPORT"].get("ioc", {}).get("url", [])
+                if output["REPORT"].get("ioc", {}).get("domain", []):
+                    indicators["DOMAIN"] = output["REPORT"].get("ioc", {}).get("domain", [])
+                if output["REPORT"].get("ioc", {}).get("email", []):
+                    indicators["EMAIL"] = output["REPORT"].get("ioc", {}).get("email", [])
+                if output["REPORT"].get("ioc", {}).get("ip", []):
+                    indicators["IP"] = output["REPORT"].get("ioc", {}).get("ip", [])
             return indicators
 
+        ioc_data = indicator_creator(output)
+        base_readable_output = tableToMarkdown("Submission Result", readable_dict)
+        ioc_readable_output = tableToMarkdown("Extracted IOCs", ioc_data)
         command_result_list = [
             CommandResults(
                 outputs_prefix="ThreatZone.Analysis",
@@ -285,18 +289,14 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
                 outputs_key_field="UUID",
                 outputs=output,
                 indicator=generate_indicator(output["SHA256"], output, "file"),
-            )
+            ),
+            CommandResults(
+                outputs_prefix="ThreatZone.Indicators",
+                readable_output=ioc_readable_output,
+                outputs_key_field="UUID",
+                outputs=ioc_data,
+            ),
         ]
-        for ind in indicator_creator(output):
-            command_result_list.append(
-                CommandResults(
-                    outputs_prefix="ThreatZone.Indicators",
-                    readable_output=tableToMarkdown(f"{ind[0].upper()} Indicator created: {ind[1]}", t={}),
-                    indicator=ind[2],
-                    outputs=output,
-                    outputs_key_field="UUID",
-                )
-            )
         return command_result_list
 
     try:
