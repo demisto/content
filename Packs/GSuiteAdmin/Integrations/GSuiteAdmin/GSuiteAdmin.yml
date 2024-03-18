@@ -2570,13 +2570,13 @@ script:
       - description: 'List of unique device IDs (comma separated) of Chrome Browser Devices to move. A maximum of 600 browsers may be moved per request.'
         name: resource_ids
         required: true
-      - description: "Destination organization unit to move devices to. Full path of the organizational unit or its ID prefixed with 'id:'"
+      - description: "Destination organization unit to move devices to. Full path of the organizational unit or its ID prefixed with 'id:'."
         name: org_unit_path
         required: true
     description: To move Chrome Browser devices assigned to an account from one organization unit to another, use the following POST request and include the access token obtained by following the "Authorization" section.
     name: gsuite-chromebrowserdevice-move-ou
   - arguments:
-      - description: The customerId is a unique identifier of the customer's Google account
+      - description: The customerId is a unique identifier of the customer's Google account.
         name: customer_id
         required: true
       - description: The unique ID of the device.
@@ -2607,7 +2607,7 @@ script:
       - description: The full path of the organizational unit or its unique ID.
         name: org_unit_path
       - auto: PREDEFINED
-        description: Restrict information returned to a set of selected fields. "BASIC" - Includes only the basic metadata fields (i.e., the ones found in the columns of the admin console browser list as enumerated above). "FULL" - Includes all metadata fields (as enumerated above)
+        description: Restrict information returned to a set of selected fields. "BASIC" - Includes only the basic metadata fields (i.e., the ones found in the columns of the admin console browser list as enumerated above). "FULL" - Includes all metadata fields (as enumerated above).
         name: projection
         predefined:
           - BASIC
@@ -2620,7 +2620,7 @@ script:
         predefined:
           - ASCENDING
           - DESCENDING
-      - description: 'The maximum number of policy schemas to return, default and maximum are 100'
+      - description: 'The maximum number of policy schemas to return, default and maximum are 100.'
         name: page_size
         defaultValue: 100
       - description: Page Token.
@@ -2698,15 +2698,14 @@ script:
                   }
              ]
           }
-
         name: policy_raw_json
-      - description: Entry Id of the file that contains JSON representation of the ModifyGroupPolicyRequest
+      - description: Entry Id of the file that contains JSON representation of the ModifyGroupPolicyRequest.
         name: policy_field_json_entry_id
       - description: |-
           The target resource on which this policy is applied. The following resources are supported:
 
           Organizational Unit ("orgunits/{orgunit_id}")
-          Group ("groups/{groupId}")
+          Group ("groups/{groupId}").
 
         name: target_resource
       - description: |-
@@ -2717,12 +2716,12 @@ script:
         name: additional_target_keys
       - description: "The fully qualified name of the policy schema that is being inherited."
         name: policy_schema
-      - description: "The value of the policy that is compatible with the schema that it is associated with Struct format"
+      - description: "The value of the policy that is compatible with the schema that it is associated with Struct format."
         name: policy_value
       - description: |-
           Policy fields to update. Only fields in this mask will be updated; other fields in policyValue will be ignored (even if they have values). If a field is in this list it must have a value in 'policyValue'.
           This is a comma-separated list of fully qualified names of fields. Example: "user.displayName,photo".
-          Field mask format
+          Field mask format.
         name: update_mask
     description:  Delete multiple policy values that are applied to a specific group. All targets must have the same target format. That is to say that they must point to the same target resource and must have the same keys specified in additionalTargetKeyNames, though the values for those keys may be different. On failure the request will return the error details as part of the google.rpc.Status.
     name: gsuite-policy-modify
@@ -2745,10 +2744,10 @@ script:
     name: gsuite-policy-schemas-list
     outputs:
       - contextPath: GSuite.PolicySchema.name
-        description: Policy Name
+        description: Policy Name.
         type: String
       - contextPath: GSuite.PolicySchema.policyDescription
-        description: Policy Description
+        description: Policy Description.
         type: String
       - contextPath: GSuite.PolicySchema.definition
         description: Policy Definition.
@@ -2785,13 +2784,13 @@ script:
         name: policy_schema_filter
         required: true
       - auto: PREDEFINED
-        description: Type of target, can be Group or Organizational Unit
+        description: Type of target, can be Group or Organizational Unit.
         name: target_type
         required: true
         predefined:
           - Group
           - OrgUnit
-      - description: 'The target resource on which this policy is applied. The following resources are supported: Organizational Unit ("orgunits/{orgunit_id}") or Group ("groups/{groupId}")'
+      - description: 'The target resource on which this policy is applied. The following resources are supported: Organizational Unit ("orgunits/{orgunit_id}") or Group ("groups/{groupId}").'
         name: target_resource
         required: true
       - description: 'Map (key: string, value: string) containing the additional target key name and value pairs used to further identify the target of the policy.'
@@ -2807,13 +2806,13 @@ script:
     name: gsuite-policy-resolve
     outputs:
       - contextPath: GSuite.Policy.targetKey
-        description: Policy Target Key
+        description: Policy Target Key.
       - contextPath: GSuite.Policy.value
-        description: Policy Value
+        description: Policy Value.
       - contextPath: GSuite.Policy.sourceKey
-        description: Policy Source Key
+        description: Policy Source Key.
       - contextPath: GSuite.Policy.addedSourceKey
-        description: Policy Added Source Key
+        description: Policy Added Source Key.
   - arguments:
       - description: 'ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.'
         name: customer_id
@@ -2841,7 +2840,7 @@ script:
           The target resource on which this policy is applied. The following resources are supported:
 
           Organizational Unit ("orgunits/{orgunit_id}")
-          Group ("groups/{groupId}")
+          Group ("groups/{groupId}").
         name: target_resource
       - description: |-
           Map containing the additional target key name and value pairs used to further identify the target of the policy.
