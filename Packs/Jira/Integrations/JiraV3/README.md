@@ -93,7 +93,7 @@ Go to your [Developer console](https://developer.atlassian.com/console/myapps/) 
 
 The integration uses the *offline_access* scope, in order to retrieve refresh tokens.
 
-###### Classic Scopes
+##### Classic Scopes
 
 * read:jira-work
 * read:jira-user
@@ -119,7 +119,7 @@ The integration uses the *offline_access* scope, in order to retrieve refresh to
 4. Fill in the required details as explained in the page, by inserting a Callback URL, and choosing the permission Write.
 5. Once the link is created, you will be able to see `Client ID`, and the `Client secret`, which are required in the configuration screen. Copy these values and paste them into the respective fields in the configuration screen.
 
-#### OnPrem Scopes
+##### OnPrem Scopes
 
 Write
 
