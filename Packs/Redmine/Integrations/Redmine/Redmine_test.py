@@ -51,7 +51,8 @@ def test_create_issue_command_response(mocker, redmine_client):
                                                         }
                                               }
     result = create_issue_command(redmine_client, args)
-    assert result.readable_output == '### The issue you created:\n|Id|Project|Tracker|Subject|\n|---|---|---|---|\n| 789 | testing | Bug | testResponse |\n'
+    assert result.readable_output == ("### The issue you created:\n|Id|Project|Tracker|Subject|\n|---|---|---|---|\n"
+                                      "| 789 | testing | Bug | testResponse |\n")
 
 
 def test_create_issue_command_invalid_custom_fields(redmine_client):
@@ -145,7 +146,8 @@ def test_create_issue_command_with_file_response(mocker, redmine_client):
     result = create_issue_command(redmine_client, args)
     assert args.get('uploads', {})[0].get('token') == '111111'
     assert args.get('uploads', {})[0].get('filename') == 'test file response'
-    assert result.readable_output == '### The issue you created:\n|Id|Project|Tracker|Subject|\n|---|---|---|---|\n| 789 | testing | Bug | testResponse |\n'
+    assert result.readable_output == ("### The issue you created:\n|Id|Project|Tracker|Subject|\n"
+                                      "|---|---|---|---|\n| 789 | testing | Bug | testResponse |\n")
 
 
 def test_create_issue_command_with_file_invalid_token_response(mocker, redmine_client):
@@ -309,7 +311,8 @@ def test_get_issues_list_command_response(mocker, redmine_client):
     args = {'sort': 'priority:desc', 'limit': '1'}
     result = get_issues_list_command(redmine_client, args)
     assert result.readable_output == ("#### Showing 1 results from page 1:\n### Issues Results:\n"
-                                      "|Id|Tracker|Status|Priority|Subject|\n|---|---|---|---|---|\n| 1 | Bug | new | High | helloTest |\n")
+                                      "|Id|Tracker|Status|Priority|Subject|\n|---|---|---|---|---|\n"
+                                      "| 1 | Bug | new | High | helloTest |\n")
 
 
 def test_get_issues_list_command_invalid_response(mocker, redmine_client):
@@ -665,7 +668,8 @@ def test_get_project_list_command_response(mocker, redmine_client):
     from Redmine import get_project_list_command
     get_project_list_request_mock = mocker.patch.object(redmine_client, 'get_project_list_request')
     get_project_list_request_mock.return_value = {"projects": [{"id": "1", "name": "testProject", "issue_custom_fields":
-                                                                {"id": "1", "name": "custom"}, "status": "open", "is_public": True}]}
+                                                                {"id": "1", "name": "custom"}, "status": "open",
+                                                                "is_public": True}]}
     args = {"include": "issue_custom_fields"}
     result = get_project_list_command(redmine_client, args)
     assert result.readable_output == ("### Projects List:\n|Id|Name|Status|IsPublic|IssueCustomFields|\n|---|---|---|---|---|"
@@ -736,7 +740,10 @@ def test_get_custom_fields_command_response(mocker, redmine_client):
     from Redmine import get_custom_fields_command
     get_custom_fields_request_mocker = mocker.patch.object(redmine_client, 'get_custom_fields_request')
     get_custom_fields_request_mocker.return_value = {"custom_fields": [{"id": "1", "name": "custom_test", "is_required": False,
-                                                                       "is_filter": True, "trackers": {"name": "Bug", "id": "1"}}]}
+                                                                       "is_filter": True, "trackers": {"name": "Bug", "id": "1"}
+                                                                        }
+                                                                       ]
+                                                     }
     result = get_custom_fields_command(redmine_client, {})
     assert result.readable_output == ("### Custom Fields List:\n|Id|Name|IsRequired|IsFilter|Trackers|\n|---|---|---|---|---|\n"
                                       "| 1 | custom_test | False | True | ***name***: Bug<br>***id***: 1 |\n")
@@ -755,7 +762,10 @@ def test_get_custom_fields_command_invalid_response(mocker, redmine_client):
     from CommonServerPython import DemistoException
     get_custom_fields_request_mocker = mocker.patch.object(redmine_client, 'get_custom_fields_request')
     get_custom_fields_request_mocker.return_value = {"custom_fieldsss": [{"id": "1", "name": "custom_test", "is_required": False,
-                                                                         "is_filter": True, "trackers": {"name": "Bug", "id": "1"}}]}
+                                                                         "is_filter": True, "trackers": {"name": "Bug", "id": "1"}
+                                                                          }
+                                                                         ]
+                                                     }
     args = {}
     with pytest.raises(DemistoException) as e:
         get_custom_fields_command(redmine_client, args)
@@ -791,7 +801,8 @@ def test_get_users_command_response(mocker, redmine_client):
     get_users_request_mock.return_value = {"users": [{"id": "1", "login": "admin", "admin": True, "firstname": "test",
                                                       "lastname": "response"}]}
     result = get_users_command(redmine_client, {})
-    assert result.readable_output == "### Users List:\n|Id|Login|Admin|Firstname|Lastname|\n|---|---|---|---|---|\n| 1 | admin | True | test | response |\n"
+    assert result.readable_output == ("### Users List:\n|Id|Login|Admin|Firstname|Lastname|\n|---|---|---|---|---|\n"
+                                      "| 1 | admin | True | test | response |\n")
 
 
 def test_get_users_command_invalid_response(mocker, redmine_client):
