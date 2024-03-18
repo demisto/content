@@ -62,7 +62,7 @@ script:
     - name: priority_id
       auto: PREDEFINED
       required: true
-      description: Enter the priority ID for this issue.
+      description: The priority ID for this issue.
       predefined:
       - Low
       - Normal
