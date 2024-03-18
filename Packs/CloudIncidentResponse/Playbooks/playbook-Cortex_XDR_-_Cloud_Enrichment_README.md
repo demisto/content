@@ -24,15 +24,15 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* IsInCidrRanges
 * Set
+* IsInCidrRanges
 * CopyContextToField
 * If-Then-Else
 
 ### Commands
 
-* setIncident
 * ip
+* setIncident
 
 ## Playbook Inputs
 
@@ -41,7 +41,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. \\nFor IP Enrichment - Generic v2 playbook. |  | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. \\nFor IP Enrichment - Generic v2 playbook. | lists.PrivateIPs | Optional |
 
 ## Playbook Outputs
 

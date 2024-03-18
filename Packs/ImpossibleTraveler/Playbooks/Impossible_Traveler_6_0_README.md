@@ -5,31 +5,37 @@ The playbook then measures the time difference between the multiple login attemp
 in the amount of time determined. Also, it takes steps to remediate the incident by blocking the offending IPs and disabling the user account, if chosen to do so.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * Block IP - Generic v3
 * IP Enrichment - Generic v2
 * Active Directory - Get User Manager Details
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
-* CalculateTimeDifference
+
 * Set
-* CalculateGeoDistance
 * EmailAskUser
+* CalculateTimeDifference
+* CalculateGeoDistance
 
 ### Commands
-* setIncident
-* ip
-* ad-get-user
+
 * rasterize
+* ip
+* setIncident
+* ad-get-user
 * ad-disable-account
 * closeInvestigation
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -40,8 +46,10 @@ This playbook does not use any integrations.
 | DefaultMapLink | The default link from which to create a travel map. The "SOURCE" and "DESTINATION" words are replaced with the previous coordinates and current coordinates of the traveler, respectively. | https://bing.com/maps/default.aspx?rtp=pos.SOURCE~pos.DESTINATION | Optional |
 | AutomaticallyDisableUser | Whether to automatically disable the impossible traveler account using Active Directory. | False | Optional |
 | ContactUserManager | Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler. | False | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -69,5 +77,7 @@ This playbook does not use any integrations.
 | Endpoint.Domain | Endpoint domain name | string |
 
 ## Playbook Image
+
 ---
+
 ![Impossible Traveler](../doc_files/Impossible_Traveler.png)
