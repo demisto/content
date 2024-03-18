@@ -468,8 +468,12 @@ def ping_broker_command(broker_instance: BrokerClient):
 
 def list_organizations_broker_command(broker_instance: BrokerClient):
     result = broker_instance.organizations()
+    if result:
+        readable_output=tableToMarkdown('Organizations', result)
+    else:
+        readable_output="No broker organizations found."
     return CommandResults(
-        readable_output=tableToMarkdown('Organizations', result),
+        readable_output=readable_output,
         outputs_prefix='FESBroker.Org',
         outputs_key_field='ID',
         outputs=result
@@ -529,7 +533,7 @@ def main():
             if portal_result is True and broker_result is True:
                 return_results('ok')
             else:
-                return_results(f'Portal Check:{portal_result}, Broker Check:{broker_result}')
+                return DemistoException(f'Portal Check:{portal_result}, Broker Check:{broker_result}')
 
         elif command == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
@@ -593,9 +597,6 @@ def main():
             return_results(endpoint_action_by_aro_broker_command(broker_instance, args))
         elif command == 'cov-mgsec-broker-cloud-action-by-aro':
             return_results(cloud_action_by_aro_broker_command(broker_instance, args))
-        else:
-            msg = f'Unknown command {command}'
-            demisto.error(msg)
     except HTTPError as e:
         demisto.error(traceback.format_exc())
         http_text = None
