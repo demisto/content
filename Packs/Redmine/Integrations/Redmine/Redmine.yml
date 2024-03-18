@@ -340,13 +340,13 @@ script:
     arguments: []
     outputs:
     - contextPath: Redmine.CustomField
-      description: Retrieve details of all custom fields.
+      description: The details of all custom fields.
     - contextPath: Redmine.CustomField.id
-      description: Display ids of custom fields.
+      description: The IDs of custom fields.
     - contextPath: Redmine.CustomField.name
-      description: Display names of custom fields.
+      description: The names of custom fields.
     - contextPath: Redmine.CustomField.customized_type
-      description: Display customized_type of custom fields.
+      description: The customized_type of custom fields.
   - name: redmine-user-id-list
     description: |
       - Retrieve a list of users with optional filtering options.
