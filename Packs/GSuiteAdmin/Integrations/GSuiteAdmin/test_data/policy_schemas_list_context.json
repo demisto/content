@@ -506,8 +506,7 @@
                     "CHROME_OS"
                 ]
             }
-        ],
-        "nextPageToken": "AMfFvQsEav-7TwF4vE7A-jGeqWVwpAY-z9RQK_r2xnluS_miEVH9nsXaKqVA1nm2bsOmisP7_FSpN-aMMA=="
+        ]
     },
     "readable_output": "### Policy Schemas List\n|Name|Policy Description|Schema Name|\n|---|---|---|\n| customers/C02f0zfqw/policySchemas/chrome.devices.kiosk.appsconfig.AutoLaunchApp | Allows setting of the auto-launch app. | chrome.devices.kiosk.appsconfig.AutoLaunchApp |\n| customers/C02f0zfqw/policySchemas/chrome.users.appsconfig.AndroidAppsEnabled | Android apps on Chrome devices. | chrome.users.appsconfig.AndroidAppsEnabled |\n",
     "replace_existing": "False"
