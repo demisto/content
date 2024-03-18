@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d7a15a3f-1244-4368-89ef-1f71ccdd03cc
+    taskid: a21bae17-c296-443c-85f0-67fd303d8863
     type: start
     task:
-      id: d7a15a3f-1244-4368-89ef-1f71ccdd03cc
+      id: a21bae17-c296-443c-85f0-67fd303d8863
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b891229e-c97c-4c08-818f-36297fd407ef
+    taskid: f0c2daad-d010-48eb-884d-98a225f1d14d
     type: regular
     task:
-      id: b891229e-c97c-4c08-818f-36297fd407ef
+      id: f0c2daad-d010-48eb-884d-98a225f1d14d
       version: -1
       name: Delete Context
       description: |-
@@ -47,10 +47,10 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
+      script: DeleteContext
     nexttasks:
       '#none#':
       - "16"
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: c19632c9-036f-4eaa-8f76-04f32be72264
+    taskid: f3dc2819-a2ae-4a92-8b25-b8095e40230f
     type: title
     task:
-      id: c19632c9-036f-4eaa-8f76-04f32be72264
+      id: f3dc2819-a2ae-4a92-8b25-b8095e40230f
       version: -1
       name: Test Success
       type: title
@@ -86,86 +86,6 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: a5ec4291-79c3-4671-8265-6e06ceb23c9e
-    type: regular
-    task:
-      id: a5ec4291-79c3-4671-8265-6e06ceb23c9e
-      version: -1
-      name: Run IsINotnCidrRanges
-      description: Checks whether an IPv4 address is not contained in one or more comma-delimited CIDR ranges.
-      scriptName: IsNotInCidrRanges
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      extend-context:
-        simple: scriptResult=.
-      left:
-        simple: 11.1.1.1
-      right:
-        simple: 192.168.1.0/24
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 556ec2a7-24ee-434e-81db-bbf31aaeea9b
-    type: condition
-    task:
-      id: 556ec2a7-24ee-434e-81db-bbf31aaeea9b
-      version: -1
-      name: Verify Output Is True
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "8"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${scriptResult}
-            iscontext: true
-          right:
-            value:
-              simple: "True"
     continueonerrortype: ""
     view: |-
       {
@@ -183,17 +103,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 5b3c401e-4193-4365-8ff8-2bb05367ec82
+    taskid: 710bd57d-5b5d-44dc-8e24-e5adc0f5a1d6
     type: regular
     task:
-      id: 5b3c401e-4193-4365-8ff8-2bb05367ec82
+      id: 710bd57d-5b5d-44dc-8e24-e5adc0f5a1d6
       version: -1
       name: Set IPs
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "17"
@@ -201,7 +121,7 @@ tasks:
       key:
         simple: ips
       value:
-        simple: '["192.168.1.10","11.1.1.1"]'
+        simple: '["11.1.1.1"]'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -220,25 +140,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: b6529f09-5ba8-4e77-8f86-8a54a45c965e
+    taskid: 0f38ac46-e0a7-4504-8fa4-9adf1fad6cd0
     type: regular
     task:
-      id: b6529f09-5ba8-4e77-8f86-8a54a45c965e
+      id: 0f38ac46-e0a7-4504-8fa4-9adf1fad6cd0
       version: -1
       name: Set CIDR ranges
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
-      - "14"
+      - "18"
     scriptarguments:
       key:
         simple: cidrs
       value:
-        simple: '["192.168.1.0/24","192.168.1.0/287"]'
+        simple: '["192.168.1.0/24"]'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -255,12 +175,54 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "18":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ips
+          operator: IsNotInCidrRanges
+          right:
+            iscontext: true
+            value:
+              simple: cidrs
+      label: "yes"
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8921485d-938a-40ce-88b2-dd43e3794b2f
+      iscommand: false
+      name: IsNotInCIDRRanges?
+      type: condition
+      version: -1
+    taskid: 8921485d-938a-40ce-88b2-dd43e3794b2f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 910,
         "width": 380,
         "x": 50,
         "y": 50
