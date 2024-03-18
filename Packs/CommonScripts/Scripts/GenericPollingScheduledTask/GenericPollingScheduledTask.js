@@ -67,8 +67,17 @@ function finish(playbookId, tag, err, entryGUID) {
 }
 
 
-function checkCommandSanitized(cmd) {
-    var cmd_lower = cmd.toLowerCase()
+function flatten_cmd_args(cmd_args = {}) {
+    var ret_value = '';
+    for(var current_key in cmd_args){
+        ret_value += current_key + " " + cmd_args[current_key] + " ";
+    }
+    return ret_value.trim();
+}
+
+
+function checkCommandSanitized(cmd = '', cmd_args = {}) {
+        var cmd_lower = cmd.toLowerCase() + ' ' + flatten_cmd_args(cmd_args)
     for (var i = 0; i < SANITIZED_ARG_NAMES.length; i++) {
         var current_arg_name_lower = SANITIZED_ARG_NAMES[i].toLowerCase();
         var regex = new RegExp(current_arg_name_lower, "g");
@@ -178,6 +187,7 @@ function genericPollingScheduled(){
             pollingCommandArgs[names[index]] = values[index];
 
         pollingCommandArgs[args.pollingCommandArgName] = idsToPoll.join(',');
+        checkCommandSanitized(args.pollingCommand, pollingCommandArgs);
         var res = executeCommand(args.pollingCommand, pollingCommandArgs);
 
         // Change the context output of the polling results to the local playbook context
