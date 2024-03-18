@@ -76,6 +76,12 @@ function flatten_cmd_args(cmd_args = {}) {
 }
 
 
+//replace all occurences of textToReplace with replaceWith string
+String.prototype.replaceAll = function(textToReplace, replaceWith) {
+    return this.split(textToReplace).join(replaceWith);
+};
+
+
 function checkCommandSanitized(cmd = '', cmd_args = {}) {
         var cmd_lower = cmd.toLowerCase() + ' ' + flatten_cmd_args(cmd_args)
     for (var i = 0; i < SANITIZED_ARG_NAMES.length; i++) {
