@@ -321,6 +321,90 @@ class MsGraphClient:
         return self.ms_client.http_request(method='GET', url_suffix=THREAT_ASSESSMENT_URL_PREFIX,
                                            params=params, retries=1, status_list_to_retry=[405])
 
+    def advanced_hunting_request(self, query: str, timeout: int):
+        """
+        POST request to the advanced hunting API:
+        Args:
+            query (str): query advanced hunting query language
+            timeout (int): The amount of time (in seconds) that a request will wait for a client to
+                     establish a connection to a remote machine before a timeout occurs.
+
+        Returns:
+            The response object contains three top-level properties:
+
+                Stats - A dictionary of query performance statistics.
+                Schema - The schema of the response, a list of Name-Type pairs for each column.
+                Results - A list of advanced hunting events.
+        """
+        return self.ms_client.http_request(method='POST', url_suffix='security/runHuntingQuery', json_data={"Query": query},
+                                           timeout=timeout)
+
+    def get_incidents_request(self, incident_id: Optional[int], limit: int, timeout: int, args_for_filter: dict) -> dict:
+        """
+        GET request to get single incident.
+        Args:
+            incident_id (int): incident's id
+            timeout (int): waiting time for command execution
+
+
+       Returns( Dict): request results as dict:
+                    { '@odata.context',
+                      'value': updated incident,
+                    }
+
+        """
+
+        if incident_id:
+            url_suffix = f'security/incidents/{incident_id}'
+        else:
+            url_suffix = 'security/incidents?$count=true'
+            if limit:
+                url_suffix += f'&$top={str(limit)}'
+            if args_for_filter['status']:
+                url_suffix += f'&$filter=status+eq+\'{args_for_filter["status"]}\''
+            if args_for_filter['assigned_to']:
+                url_suffix += f'&$filter=assigned_to+eq+\'{args_for_filter["assigned_to"]}\''
+            if args_for_filter['severity']:
+                url_suffix += f'&$filter=severity+eq+\'{args_for_filter["severity"]}\''
+            if args_for_filter['classification']:
+                url_suffix += f'&$filter=classification+eq+\'{args_for_filter["classification"]}\''
+            if args_for_filter['odata']:
+                url_suffix += f'&$filter=odata+eq+\'{args_for_filter["odata"]}\''
+
+        incident = self.ms_client.http_request(
+            method='GET', url_suffix=url_suffix, timeout=timeout)
+        return incident
+
+    def update_incident_request(self, incident_id: int, status: Optional[str], assigned_to: Optional[str],
+                                classification: Optional[str],
+                                determination: Optional[str], custom_tags: Optional[List[str]], timeout: int) -> dict:
+        """
+        PATCH request to update single incident.
+        Args:
+            incident_id (int): incident's id
+            status (str): Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
+            assigned_to (str): Owner of the incident.
+            classification (str): Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
+            determination (str):  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
+                                 Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.
+            tags (list): Custom tags associated with an incident. Separated by commas without spaces (CSV)
+                 for example: tag1,tag2,tag3.
+            timeout (int): The amount of time (in seconds) that a request will wait for a client to
+                establish a connection to a remote machine before a timeout occurs.
+            comment (str): Comment to be added to the incident
+       Returns( Dict): request results as dict:
+                    { '@odata.context',
+                      'value': updated incident,
+                    }
+
+        """
+        body = assign_params(status=status, assignedTo=assigned_to, classification=classification,
+                             determination=determination, customTags=custom_tags)
+
+        updated_incident = self.ms_client.http_request(method='PATCH', url_suffix=f'security/incidents/{incident_id}',
+                                                       json_data=body, timeout=timeout)
+        return updated_incident
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -657,6 +741,81 @@ def ediscovery_source_command_results(raw_case_list: list, source_type, raw_res=
                                                  'CreatedDateTime', 'CreatedByName', 'CreatedByUPN', 'CreatedByAppName',
                                                  'SiteWebUrl'] + source_type['unique_table_headers'],
                                   to_hr=created_by_fields_to_hr)
+
+
+def query_set_limit(query: str, limit: int) -> str:
+    """
+    Add limit to given query. If the query has limit, changes it.
+    Args:
+        query: the original query
+        limit: new limit value, if the value is negative return the original query.
+    Returns: query with limit parameters
+    """
+    if limit < 0:
+        return query
+
+    # the query has the structure of "section | section | section ..."
+    query_list = re.split(r'(?<!\|)\|(?!\|)', query)
+
+    # split the query to sections and find limit sections
+    for section in query_list:
+        section_list = section.split()
+        # 'take' and 'limit' are synonyms.
+        if section_list and section_list[0] == 'limit' or section_list[0] == 'take':
+            return query
+
+    # if the query has no limit, than limit is added to the query
+    query_list.append(f"limit {limit} ")
+
+    fixed_query = ' | '.join(query_list)
+    return fixed_query
+
+
+def convert_list_incidents_to_readable(raw_incidents: dict) -> dict:
+    """
+    Convert a list of raw incidents to a list of readable incidents.
+
+    Args:
+        raw_incidents (dict): The raw incidents to convert, expected to be in the format {'value': [incident1, incident2, ...]}.
+
+    Returns:
+        dict: A dictionary containing the converted readable incidents in the format {'value': [readable_incident1, ...]}.
+    """
+    if not raw_incidents:
+        raw_incidents = {}
+
+    list_incidents = raw_incidents.get('value', {})
+
+    for i in range(len(list_incidents)):
+        list_incidents[i] = convert_single_incident_to_readable(list_incidents[i])
+    return list_incidents
+
+
+def convert_single_incident_to_readable(raw_incident: dict) -> dict:
+    """
+    Converts incident received from Microsoft Graph Security to readable format
+    Args:
+        raw_incident (Dict): The incident as received from Microsoft Graph Security
+
+    Returns: new dictionary with keys mapping.
+
+    """
+    if not raw_incident:
+        raw_incident = {}
+
+    return {
+        'Display name': raw_incident.get('displayName'),
+        'id': raw_incident.get('id'),
+        'Severity': raw_incident.get('severity'),
+        'Status': raw_incident.get('status'),
+        'Assigned to': raw_incident.get('assignedTo', 'Unassigned'),
+        'Custom tags': ', '.join(raw_incident.get('customTags', [])),
+        'System tags': ', '.join(raw_incident.get('systemTags', [])),
+        'Classification': raw_incident.get('classification'),
+        'Determination': raw_incident.get('determination'),
+        'Created date time': raw_incident.get('createdDateTime'),
+        'Updated date time': raw_incident.get('lastUpdateDateTime'),
+    }
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1289,6 +1448,121 @@ def test_auth_code_command(client: MsGraphClient, args):
     return CommandResults(readable_output='Authentication was successful.')
 
 
+def advanced_hunting_command(client: MsGraphClient, args: dict) -> list[CommandResults]:
+    """
+    Sends a query for the advanced hunting tool.
+    Args:
+        client(Client): Microsoft Graph Security's client to preform the API calls.
+        args(Dict): Demisto arguments:
+              - query (str) - The query to run (required)
+              - limit (int) - number of entries in the result, -1 for no limit.
+              - timeout (int) - waiting time for command execution.
+    Returns:
+
+    """
+    query = args['query']  # required argument
+    limit = arg_to_number(args['limit'])  # default value is defined
+    timeout = arg_to_number(args['timeout'])  # default value is defined
+
+    query = query_set_limit(query, limit)  # type:ignore[arg-type]
+
+    response = client.advanced_hunting_request(query=query, timeout=timeout)  # type:ignore[arg-type]
+    results = response.get('results')
+    schema = response.get('schema', {})
+    headers = [item.get('name') for item in schema]
+    context_result = {'query': query, 'results': results}
+    human_readable_table = tableToMarkdown(name=f" Result of query: {query}:", t=results,
+                                           headers=headers)
+
+    return [CommandResults(outputs_prefix='MsGraph.Hunt', outputs_key_field='query', outputs=context_result,
+                           readable_output=human_readable_table),
+            CommandResults(outputs_prefix='Microsoft365Defender.Hunt', outputs_key_field='query', outputs=context_result,
+                           readable_output="See Results Above")]
+
+
+def get_list_security_incident_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Get an incident.
+    Args:
+        client(Client): Microsoft Graph Security's client to preform the API calls.
+        args(Dict): Demisto arguments:
+              - id (int)        - incident's id.
+              - timeout (int)   - waiting time for command execution
+
+    Returns: CommandResults
+    """
+    incident_id = arg_to_number(args.get('incident_id'))
+    limit = arg_to_number(args['limit'])
+    timeout = arg_to_number(args['timeout'])
+    args_for_filter = {
+        'status': args.get('status'),
+        'assigned_to': args.get('assigned_to'),
+        'severity': args.get('severity'),
+        'classification': args.get('classification'),
+        'odata': args.get('odata')
+    }
+
+    incidents = client.get_incidents_request(incident_id=incident_id, limit=limit, timeout=timeout,  # type:ignore[arg-type]
+                                             args_for_filter=args_for_filter)
+    if incidents.get('@odata.context'):
+        del incidents['@odata.context']
+
+    # Case of single incident
+    if incident_id:
+        name = f'Incident No. {incident_id}:'
+        readable_incident = convert_single_incident_to_readable(incidents)
+        headers = list(readable_incident)
+
+    # Case of incidents list
+    else:
+        name = 'Incidents:'
+        readable_incident = convert_list_incidents_to_readable(incidents)
+        headers = list(readable_incident[0])
+
+    human_readable_table = tableToMarkdown(name=name, t=readable_incident, headers=headers)
+    return CommandResults(outputs_prefix='MsGraph.Incident', outputs_key_field='incident_id',
+                          outputs=incidents, readable_output=human_readable_table)
+
+
+def update_incident_command(client: MsGraphClient, args: dict) -> CommandResults:
+    """
+    Update an incident.
+    Args:
+        client(Client): Microsoft Graph Security's client to preform the API calls.
+        args(Dict): Demisto arguments:
+              - incident_id (int) - incident's id (required)
+              - status (str) - Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
+              - assigned_to (str) - Owner of the incident.
+              - classification (str) - Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
+              - determination (str) -  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
+                                 Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.
+              - custom_tags - Custom tags associated with an incident. Separated by commas without spaces (CSV)
+                       for example: tag1,tag2,tag3.
+
+    Returns: CommandResults
+    """
+    incident_id = arg_to_number(args['incident_id'])  # required argument
+    status = args.get('status')
+    assigned_to = args.get('assigned_to')
+    determination = args.get('determination')
+    classification = args.get('classification')
+    custom_tags = argToList(args.get('custom_tags'))
+    timeout = arg_to_number(args['timeout'])  # default value is defined
+    updated_incident = client.update_incident_request(incident_id=incident_id, status=status,  # type:ignore[arg-type]
+                                                      assigned_to=assigned_to, classification=classification,
+                                                      determination=determination, custom_tags=custom_tags,
+                                                      timeout=timeout)  # type:ignore[arg-type]
+
+    if updated_incident.get('@odata.context'):
+        del updated_incident['@odata.context']
+
+    readable_incident = convert_single_incident_to_readable(updated_incident)
+    human_readable_table = tableToMarkdown(name=f"Updated incident No. {incident_id}:",
+                                           t=readable_incident, headers=list(readable_incident))
+    return CommandResults(outputs_prefix='MsGraph.Incident', outputs_key_field='incident_id',
+                          outputs=updated_incident, readable_output=human_readable_table)
+
+
 def test_function(client: MsGraphClient, args, has_access_to_context=False):    # pragma: no cover
     """
     Args:
@@ -1656,6 +1930,9 @@ def main():
         'msg-list-ediscovery-searchs': list_ediscovery_search_command,
         'msg-delete-ediscovery-search': delete_ediscovery_search_command,
         'msg-purge-ediscovery-data': purge_ediscovery_data_command,
+        'msg-advanced-hunting': advanced_hunting_command,
+        'msg-list-security-incident': get_list_security_incident_command,
+        'msg-update-security-incident': update_incident_command,
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
@@ -1704,11 +1981,16 @@ def main():
             return_results(reset_auth())
         elif demisto.command() == 'msg-generate-login-url':
             return_results(generate_login_url(client.ms_client))
+        elif demisto.command() == 'msg-advanced-hunting':
+            return_results(advanced_hunting_command(client, args))
+        elif demisto.command() == 'msg-list-security-incident':
+            return_results(get_list_security_incident_command(client, args))
+
         else:
             if command not in commands:
                 raise NotImplementedError(f'The provided command {command} was not implemented.')
             command_res = commands[command](client, args)  # type: ignore
-            if isinstance(command_res, CommandResults):
+            if isinstance(command_res, CommandResults or list[CommandResults]):
                 return_results(command_res)
             else:
                 human_readable, entry_context, raw_response = command_res  # pylint: disable=E0633  # type: ignore
