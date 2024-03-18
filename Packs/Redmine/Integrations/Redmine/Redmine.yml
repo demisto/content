@@ -51,7 +51,7 @@ script:
     - name: status_id
       auto: PREDEFINED
       required: true
-      description: Enter the status ID for this issue.
+      description: The status ID for this issue.
       predefined:
       - New
       - In progress
