@@ -307,7 +307,7 @@ Update an existing issue. When attaching a file to an issue, include the entry I
 | notes | Additional comments about the update. | Optional | 
 | private_notes | Specifies if the notes are private. Possible values are: True, False. | Optional | 
 | file_entry_id | The entry ID of the file to upload. Required if uploading a file.  | Optional | 
-| file_name | The name of the file to upload (should end with .jpg/.png/.txt etc...). | Optional | 
+| file_name | The name of the file to upload (should end with .jpg/.png/.txt, etc.). | Optional | 
 | file_description | The description of the attached file. | Optional | 
 | file_content_type | The content type of the attached file (image/jpg or image/png or text/txt etc...). | Optional | 
 
