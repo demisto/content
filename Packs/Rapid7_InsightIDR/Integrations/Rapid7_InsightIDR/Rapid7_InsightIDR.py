@@ -19,7 +19,7 @@ class Constants:
 
     IS_V1 = False
     IS_V2 = False
-    INVESTIGATIONS_HEADERS: List[str] = field(default_factory=list)
+    INVESTIGATIONS_HEADERS = ()
     INVESTIGATION_KEY_FIELD = ""
     DEFAULT_KEY_FIELD = ""
 
@@ -32,7 +32,7 @@ class ConstantsV1(Constants):
 
     IS_V1 = True
     IS_V2 = False
-    INVESTIGATIONS_HEADERS = [
+    INVESTIGATIONS_HEADERS = (
         "title",
         "id",
         "status",
@@ -40,7 +40,7 @@ class ConstantsV1(Constants):
         "source",
         "assignee",
         "alerts",
-    ]
+    )
     INVESTIGATION_KEY_FIELD = "id"
     DEFAULT_KEY_FIELD = "id"
 
@@ -53,7 +53,7 @@ class ConstantsV2(Constants):
 
     IS_V1 = False
     IS_V2 = True
-    INVESTIGATIONS_HEADERS = [
+    INVESTIGATIONS_HEADERS = (
         "title",
         "rrn",
         "status",
@@ -61,10 +61,7 @@ class ConstantsV2(Constants):
         "source",
         "assignee",
         "priority",
-    ]
-    ALERTS_HEADERS = ["alert_source", "created_time", "alert_type", "title", "id"]
-    PRODUCT_ALERTS_HEADERS = ["name", "alert_type", "alert_id"]
-    USERS_HEADERS = ["rrn", "name", "first_name", "last_name", "domain"]
+    )
     DEFAULT_KEY_FIELD = "rrn"
 
 
@@ -95,6 +92,9 @@ INVESTIGATION_SEARCH = [
     ("title", SEARCH_CONTAINS_OPERATOR),
 ]
 USER_SEARCH = ["first_name", "last_name", "name"]
+ALERTS_HEADERS = ["alert_source", "created_time", "alert_type", "title", "id"]
+PRODUCT_ALERTS_HEADERS = ["name", "alert_type", "alert_id"]
+USERS_HEADERS = ["rrn", "name", "first_name", "last_name", "domain"]
 
 
 class Client(BaseClient):
@@ -637,7 +637,7 @@ def insight_idr_list_investigations_command(
         title="Investigations",
         outputs_prefix="Investigation",
         outputs_key_field=constants.DEFAULT_KEY_FIELD,
-        headers=constants.INVESTIGATIONS_HEADERS,
+        headers=list(constants.INVESTIGATIONS_HEADERS),
         outputs=data_for_output,
         raw_response=results,
     )
@@ -682,7 +682,7 @@ def insight_idr_get_investigation_command(
         title=f'Investigation "{investigation_id}" Information',
         outputs_prefix="Investigation",
         outputs_key_field=constants.DEFAULT_KEY_FIELD,
-        headers=constants.INVESTIGATIONS_HEADERS,
+        headers=list(constants.INVESTIGATIONS_HEADERS),
         outputs=investigation_data,
         raw_response=investigation_data,
     )
@@ -759,7 +759,7 @@ def insight_idr_assign_user_command(
         title=f"Investigation '{investigation_ids}' was successfully assigned to {user_email_address}.",
         outputs_prefix="Investigation",
         outputs_key_field=constants.DEFAULT_KEY_FIELD,
-        headers=constants.INVESTIGATIONS_HEADERS,
+        headers=list(constants.INVESTIGATIONS_HEADERS),
         outputs=outputs,
         raw_response=outputs,
     )
@@ -809,7 +809,7 @@ def insight_idr_set_status_command(
         title=f"Investigation '{investigation_ids}' status was successfully updated to {status}.",
         outputs_prefix="Investigation",
         outputs_key_field=constants.DEFAULT_KEY_FIELD,
-        headers=constants.INVESTIGATIONS_HEADERS,
+        headers=list(constants.INVESTIGATIONS_HEADERS),
         outputs=data_for_readable_output,
         raw_response=results,
     )
@@ -1213,7 +1213,7 @@ def insight_idr_create_investigation_command(
         title=f"Investigation '{investigation_id}' was successfully created.",
         outputs_prefix="Investigation",
         outputs_key_field=ConstantsV2.DEFAULT_KEY_FIELD,
-        headers=ConstantsV2.INVESTIGATIONS_HEADERS,
+        headers=list(ConstantsV2.INVESTIGATIONS_HEADERS),
         outputs=results,
         raw_response=results,
     )
@@ -1249,7 +1249,7 @@ def insight_idr_update_investigation_command(
         title=f"Investigation '{investigation_id}' was successfully updated.",
         outputs_prefix="Investigation",
         outputs_key_field=ConstantsV2.DEFAULT_KEY_FIELD,
-        headers=ConstantsV2.INVESTIGATIONS_HEADERS,
+        headers=list(ConstantsV2.INVESTIGATIONS_HEADERS),
         outputs=results,
         raw_response=results,
     )
@@ -1284,7 +1284,7 @@ def insight_idr_list_investigation_alerts_command(
         title=f'Investigation "{investigation_id}" alerts:',
         outputs_prefix="Investigation",
         outputs_key_field=ConstantsV2.DEFAULT_KEY_FIELD,
-        headers=ConstantsV2.ALERTS_HEADERS,
+        headers=ALERTS_HEADERS,
         outputs=data_for_output,
         raw_response=results,
         readable_outputs=data_for_output.get("alert", []),
@@ -1320,7 +1320,7 @@ def insight_idr_list_investigation_product_alerts_command(
         title=f'Investigation "{investigation_id}" product alerts',
         outputs_prefix="Investigation",
         outputs_key_field=ConstantsV2.DEFAULT_KEY_FIELD,
-        headers=ConstantsV2.PRODUCT_ALERTS_HEADERS,
+        headers=PRODUCT_ALERTS_HEADERS,
         outputs=data_for_output,
         raw_response=results,
         readable_outputs=data_for_output.get("ProductAlert", []),
@@ -1381,7 +1381,7 @@ def insight_idr_list_users_command(
         title="Users",
         outputs_prefix="User",
         outputs_key_field=ConstantsV2.DEFAULT_KEY_FIELD,
-        headers=ConstantsV2.USERS_HEADERS,
+        headers=USERS_HEADERS,
         outputs=results,
         raw_response=results,
     )
@@ -1422,7 +1422,7 @@ def insight_idr_search_investigation_command(
         title="Investigations",
         outputs_prefix="Investigation",
         outputs_key_field=ConstantsV2.DEFAULT_KEY_FIELD,
-        headers=ConstantsV2.INVESTIGATIONS_HEADERS,
+        headers=list(ConstantsV2.INVESTIGATIONS_HEADERS),
         outputs=results.get("data", []),
         raw_response=results,
     )

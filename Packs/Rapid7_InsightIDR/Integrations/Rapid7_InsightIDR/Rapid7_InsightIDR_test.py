@@ -2,7 +2,6 @@
 
 import io
 import json
-from urllib import response
 
 import pytest
 from CommonServerPython import *
