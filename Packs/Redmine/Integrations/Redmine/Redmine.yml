@@ -323,7 +323,7 @@ script:
     arguments:
     - name: include
       description: |
-        - Specify which additional fields to include in the response.
+        - The additional fields to include in the response.
         - Choose from the following options:
           1. trackers.
           2. issue_categories
