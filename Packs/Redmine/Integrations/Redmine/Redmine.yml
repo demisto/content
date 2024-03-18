@@ -281,7 +281,7 @@ script:
       isArray: true
     outputs:
     - contextPath: Redmine.Issue.id
-      description: The ID of the found issue.
+      description: The ID of the issue.
     - contextPath: Redmine.Issue.priority.id
       description: The ID of the priority of the issue.
     - contextPath: Redmine.Issue.tracker.id
