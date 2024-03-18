@@ -115,6 +115,7 @@ def fetch_events_command(
         demisto.info("No new events were fetched. Therefore, the last_run object won't be updated.")
     return results, last_run
 
+
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
