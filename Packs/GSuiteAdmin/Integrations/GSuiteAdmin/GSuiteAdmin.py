@@ -1536,7 +1536,8 @@ def chromebrowser_move_ou_command(client: Client, args: dict[str, str]) -> str:
     resource_ids = args.get('resource_ids', '')
     resource_ids_list = resource_ids.split(',')
     org_unit_path = args.get('org_unit_path', '')
-    full_url = f'https://www.googleapis.com/admin/directory/v1.1beta1/customer/{customer_id}/devices/chromebrowsers/moveChromeBrowsersToOu'
+    full_url = f'https://www.googleapis.com/admin/directory/v1.1beta1/customer/{customer_id}' \
+               f'/devices/chromebrowsers/moveChromeBrowsersToOu'
     body = {"resource_ids": resource_ids_list, "org_unit_path": org_unit_path}
     client.http_request(full_url=full_url, method='POST', body=body)
 
@@ -1544,15 +1545,15 @@ def chromebrowser_move_ou_command(client: Client, args: dict[str, str]) -> str:
     return f'Chrome browser devices have been moved to the new organization unit {org_unit_path}'
 
 
-def assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path, page_token, page_size): # pragma: no cover
+def assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_u_path, page_t, page_s):  # pragma: no cover
     return GSuiteClient.remove_empty_entities({
         'projection': projection,
         'query': query,
         'orderBy': order_by,
         'sortOrder': sort_order,
-        'orgUnitPath': org_unit_path,
-        'pageToken': page_token,
-        'maxResults': page_size
+        'orgUnitPath': org_u_path,
+        'pageToken': page_t,
+        'maxResults': page_s
     })
 
 
@@ -1765,7 +1766,7 @@ def policy_resolve_command(client: Client, args: dict[str, str]) -> CommandResul
                           raw_response=response)
 
 
-def assign_params_policy_schemas(filter, page_size, page_token): # pragma: no cover
+def assign_params_policy_schemas(filter, page_size, page_token):  # pragma: no cover
     return GSuiteClient.remove_empty_entities({
         'filter': filter,
         'pageSize': page_size,
