@@ -469,9 +469,9 @@ def ping_broker_command(broker_instance: BrokerClient):
 def list_organizations_broker_command(broker_instance: BrokerClient):
     result = broker_instance.organizations()
     if result:
-        readable_output=tableToMarkdown('Organizations', result)
+        readable_output = tableToMarkdown('Organizations', result)
     else:
-        readable_output="No broker organizations found."
+        readable_output = "No broker organizations found."
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='FESBroker.Org',
