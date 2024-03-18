@@ -334,3 +334,15 @@ def test_poppler_version():
     import pdf2image
     poppler_version = pdf2image.pdf2image._get_poppler_version("pdftoppm")
     assert poppler_version[0] > 20
+
+
+def test_get_list_item():
+    from rasterize import get_list_item
+
+    my_list = ['a', 'b', 'c']
+
+    assert get_list_item(my_list, 0, "FOO") == 'a'
+    assert get_list_item(my_list, 1, "FOO") == 'b'
+    assert get_list_item(my_list, 2, "FOO") == 'c'
+    assert get_list_item(my_list, 3, "FOO") == 'FOO'
+    assert get_list_item(my_list, 4, "FOO") == 'FOO'
