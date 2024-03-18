@@ -80,14 +80,21 @@ class Client(BaseClient):
             formated_xml = adjust_xml_format(response.text, 'system')
             return formated_xml
         except DemistoException as e:
+            if e.message == 'Request Succeeded, A parse error occurred.':
+                raise e
             raise DemistoException("Could not get info about device.")
 
     def get_config_file_request(self):
-        headers = {'Content-Type': 'application/xml'}
-        params = assign_params(type='config', action='show', key=self._api_key)
-        response = self._http_request('GET', '/api', params=params, headers=headers, resp_type='xml')
-        formated_xml = adjust_xml_format(response.text, 'config')
-        return formated_xml
+        try:
+            headers = {'Content-Type': 'application/xml'}
+            params = assign_params(type='config', action='show', key=self._api_key)
+            response = self._http_request('GET', '/api', params=params, headers=headers, resp_type='xml')
+            formated_xml = adjust_xml_format(response.text, 'config')
+            return formated_xml
+        except DemistoException as e:
+            if e.message == 'Request Succeeded, A parse error occurred.':
+                raise e
+            raise DemistoException("Could not get config file.")
 
     def generate_bpa_report_request(self, requester_email, requester_name, system_info):
         body = {
@@ -164,22 +171,25 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 def adjust_xml_format(xml_string, new_root_tag):
-    root = ET.fromstring(xml_string)
-    sub_tags = root.find(f'.//{new_root_tag}')
-    if sub_tags is not None:
-        attributes = ' '.join([f'{k}="{v}"' for k, v in sub_tags.attrib.items()])
-    new_xml = f"<{new_root_tag} {attributes}>"
-    for child in sub_tags:
-        new_xml += ET.tostring(child, encoding="unicode")
-    new_xml += f"</{new_root_tag}>"
-    return new_xml
+    try:
+        root = ET.fromstring(xml_string)
+        sub_tags = root.find(f'.//{new_root_tag}')
+        if sub_tags is not None:
+            attributes = ' '.join([f'{k}="{v}"' for k, v in sub_tags.attrib.items()])
+        new_xml = f"<{new_root_tag} {attributes}>"
+        for child in sub_tags: #type: ignore
+            new_xml += ET.tostring(child, encoding="unicode")
+        new_xml += f"</{new_root_tag}>"
+        return new_xml
+    except Exception as e:
+        raise DemistoException("Request Succeeded, A parse error occurred.")
 
 def get_values_from_xml(xml_string, tags):
     try:
         result = []
         root = ET.fromstring(xml_string)
         for tag in tags:
-            result.append(root.find(tag).text)
+            result.append(root.find(tag).text) #type: ignore
         return result
     except Exception:
         raise DemistoException("Could not find the required tags from the System file of the configured pan-os/panorama.")
@@ -191,18 +201,13 @@ def convert_config_to_bytes(config_file, origin_flag):
         file_bytes: bytes = b''
         with open(file_path, 'rb') as f:
             file_bytes = f.read()
-        # print(f'{file_bytes=}')
         return file_bytes
     else:
         try:
-            # Add tag to xml
+            # Add xml tag to xml
             xml_header = '<?xml version="1.0"?>'
+            
             result = f'{xml_header}\n {config_file}'
-            # with open("output.xml", 'w') as binary_file:
-            #     binary_file.write(result)
-            # file_bytes: bytes = b''
-            # with open("output.xml", 'rb') as binary_file:
-            #     file_bytes = binary_file.read()
             sio_xml = io.StringIO(result)
             xml_in_bytes = sio_xml.read().encode()
             return xml_in_bytes
@@ -362,6 +367,8 @@ def main() -> None:
         # Generate an access token for pan-OS/panorama
         client.generate_access_token_request()
         
+        #to delete
+        return_results(generate_report_command(client, args))
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'pan-aiops-bpa-report-generate':
