@@ -137,7 +137,7 @@ repos:
     copy_files:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
-    isolate_container: true
+    run_isolated: true
 
   - id: pwsh-analyze-in-docker
     name: pwsh-analyze-in-docker
@@ -156,7 +156,7 @@ repos:
     copy_files:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
-    isolate_container: true
+    run_isolated: true
 
   - id: is-circle-changed
     name: is-circle-changed
@@ -337,7 +337,7 @@ repos:
     pass_docker_extra_args:ci: --rm=false --network=none
     pass_docker_extra_args:nightly: --rm=false --network=none
     pass_docker_extra_args: --network=none
-    
+
   - id: pytest-network-in-docker
     name: pytest-network-in-docker
     description: Run pytest with network enabled on the code in content packs
