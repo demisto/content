@@ -129,7 +129,7 @@ script:
       defaultValue: '25'
     - name: sort
       description: |
-        - Specify a field to sort according to. Append ":desc" to invert the order.
+        - A field by which to sort the results. Append ":desc" to invert the order.
         - Possible values:
         1. tracker.
         2. status.
