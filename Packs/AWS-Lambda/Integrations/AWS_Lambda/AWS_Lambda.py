@@ -654,7 +654,7 @@ def publish_layer_version_command(args: dict[str, str], aws_client) -> CommandRe
     return CommandResults(
         outputs=remove_empty_elements(outputs),
         raw_response=res,
-        outputs_prefix='AWS.Lambda.Layers.LayerVersions',
+        outputs_prefix='AWS.Lambda.Layers',
         outputs_key_field='LayerVersionArn',
         readable_output=readable_output
     )
@@ -698,16 +698,16 @@ def list_layer_version_command(args, aws_client):
     kwargs = {
         'LayerName': args.get('layer-name'),
         'CompatibleRuntime': args.get('compatible-runtime'),
-        'Marker': args.get('marker'),
-        'MaxItems': arg_to_number(args.get('max-items')),
+        'Marker': args.get('token'),
+        'MaxItems': arg_to_number(args.get('limit')),
         'CompatibleArchitecture': args.get('compatible-architecture')
     }
 
     res = aws_client.list_layer_versions(**remove_empty_elements(kwargs))
     outputs = {
-        'AWS.Lambda.Layers.LayerVersions(val.LayerVersionArn && val.LayerVersionArn == obj.LayerVersionArn)':
+        'AWS.Lambda.Layers(val.LayerVersionArn && val.LayerVersionArn == obj.LayerVersionArn)':
             res.get('LayerVersions'),
-        'AWS.Lambda.Layers.NextMarker(true)': res.get('NextMarker')
+        'AWS.Lambda(true)': {f'LayerVersionsNextToken': res.get("NextMarker")}
     }
 
     readable_output = tableToMarkdown(name='Layer Version List', t=res.get('LayerVersions'), headerTransform=pascalToSpace)

@@ -1052,7 +1052,7 @@ script:
       - "True"
       - "False"
     - name: vpcConfig
-      description: For network connectivity to Amazon Web Services resources in a VPC, specify a list of security groups and subnets in the VPC. A list of VPC subnet IDs.
+      description: Json string contains SubnetIds - list of VPC subnet IDs, SecurityGroupIds - A list of VPC security group IDs,  and boolean Ipv6AllowedForDualStack - allows outbound IPv6 traffic.
       required: false
       isArray: false
       defaultValue: ""
@@ -1068,14 +1068,14 @@ script:
       - "Image"
       - "Zip"
     - name: environment
-      description: The environment variables for the function. Should be given as key-value pairs.
+      description: The environment variables for the function. Should be given as key-value pairs in a json string.
       required: false
       isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: tracingConfig
-      description: The tracing configuration for the function.
+      description: The tracing configuration for the function. Set to Active to sample and trace a subset of incoming requests with X-Ray.
       required: false
       isArray: false
       defaultValue: "Active"
@@ -1293,14 +1293,14 @@ script:
       defaultValue: ""
       predefined:
       - ""
-    - name: marker
+    - name: token
       description: A pagination token returned by a previous call.
       required: false
       isArray: false
       defaultValue: ""
       predefined:
       - ""
-    - name: max-items
+    - name: limit
       description: The maximum number of versions to return.
       required: false
       isArray: false
@@ -1341,28 +1341,28 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     outputs:
-    - contextPath: AWS.Lambda.Layers.NextMarker
+    - contextPath: AWS.Lambda.LayerVersionsNextToken
       description: A pagination token returned when the response doesn’t contain all versions.
       type: string
-    - contextPath: AWS.Lambda.Layers.LayerVersions.LayerVersionArn
+    - contextPath: AWS.Lambda.Layers.LayerVersionArn
       description: The ARN of the layer version.
       type: string
-    - contextPath: AWS.Lambda.Layers.LayerVersions.Version
+    - contextPath: AWS.Lambda.Layers.Version
       description: The version number.
       type: number
-    - contextPath: AWS.Lambda.Layers.LayerVersions.Description
+    - contextPath: AWS.Lambda.Layers.Description
       description: The description of the version.
       type: string
-    - contextPath: AWS.Lambda.Layers.LayerVersions.CreatedDate
+    - contextPath: AWS.Lambda.Layers.CreatedDate
       description: The date that the version was created, in ISO 8601 format. For example, 2018-11-27T15:10:45.123+0000.
       type: string
-    - contextPath: AWS.Lambda.Layers.LayerVersions.CompatibleRuntimes
+    - contextPath: AWS.Lambda.Layers.CompatibleRuntimes
       description: The layer’s compatible runtimes.
       type: list
-    - contextPath: AWS.Lambda.Layers.LayerVersions.LicenseInfo
+    - contextPath: AWS.Lambda.Layers.LicenseInfo
       description: The layer’s open-source license.
       type: string
-    - contextPath: AWS.Lambda.Layers.LayerVersions.CompatibleArchitectures
+    - contextPath: AWS.Lambda.Layers.CompatibleArchitectures
       description: A list of compatible instruction set architectures.
       type: list
   - name: aws-lambda-delete-layer-version
