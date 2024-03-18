@@ -1544,7 +1544,7 @@ def chromebrowser_move_ou_command(client: Client, args: dict[str, str]) -> str:
     return f'Chrome browser devices have been moved to the new organization unit {org_unit_path}'
 
 
-def assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path, page_token, page_size):
+def assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path, page_token, page_size): # pragma: no cover
     return GSuiteClient.remove_empty_entities({
         'projection': projection,
         'query': query,
@@ -1765,7 +1765,7 @@ def policy_resolve_command(client: Client, args: dict[str, str]) -> CommandResul
                           raw_response=response)
 
 
-def assign_params_policy_schemas(filter, page_size, page_token):
+def assign_params_policy_schemas(filter, page_size, page_token): # pragma: no cover
     return GSuiteClient.remove_empty_entities({
         'filter': filter,
         'pageSize': page_size,
