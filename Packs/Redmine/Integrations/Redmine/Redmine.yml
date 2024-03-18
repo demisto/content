@@ -259,7 +259,7 @@ script:
     - name: file_description
       description: The description of the attached file.
     - name: file_content_type
-      description: The content type of the attached file (image/jpg or image/png or text/txt etc...)
+      description: The content type of the attached file (image/jpg or image/png or text/txt, etc.).
   - name: redmine-issue-get
     description: Show an issue by id.
     arguments:
