@@ -663,7 +663,6 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
 def main():  # pragma: no cover
     args = demisto.args()
     unescape: bool = argToBoolean(args.get("unescape", "true"))
-    print(f"{unescape=}")
     working_dir = 'ReadPDFTemp'
     try:
         if not os.path.exists(working_dir):
