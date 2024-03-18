@@ -1,44 +1,44 @@
 id: InsightIDREnhancement
 name: InsightIDREnhancement
 version: -1
-fromversion: 4.5.0
-starttaskid: '0'
+fromversion: 5.0.0
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: '0'
+  "0":
+    id: "0"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca00"
     type: start
     task:
-      id: '0'
+      id: "85400c83-8664-4380-a027-e2b5e434ca00"
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
+      description: ""
     nexttasks:
-      '#none#':
-      - '1'
+      "#none#":
+        - "1"
     separatecontext: false
     view: '{"position":{"x":50,"y":50}}'
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
+  "1":
     id: 1
-    taskid: '1'
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca01"
     type: regular
     task:
-      id: '1'
+      id: "85400c83-8664-4380-a027-e2b5e434ca01"
       version: -1
       name: DeleteContext
-      description: ''
+      description: ""
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '2'
+      "#none#":
+        - "2"
     scriptarguments:
       all:
         simple: yes
@@ -48,22 +48,22 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '2':
+  "2":
     id: 2
-    taskid: '2'
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca02"
     type: regular
     task:
-      id: '2'
+      id: "85400c83-8664-4380-a027-e2b5e434ca02"
       version: -1
       name: rapid7-insight-idr-list-investigations
-      description: ''
+      description: ""
       script: Rapid7 InsightIDR|||rapid7-insight-idr-list-investigations
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '3'
+      "#none#":
+        - "3"
     scriptarguments:
       time_range:
         simple: 27 days
@@ -77,91 +77,91 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '3':
-    id: '3'
-    taskid: '3'
+  "3":
+    id: "3"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca03"
     type: condition
     task:
-      id: '3'
+      id: "85400c83-8664-4380-a027-e2b5e434ca03"
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      description: ""
+      brand: ""
     nexttasks:
       yes:
-      - '201'
+        - "201"
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.disposition
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.created_time
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.last_accessed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.priority
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.source
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.title
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.organization_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.rrn
-            iscontext: true
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
     view: '{"position":{"x":50,"y":600}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '201':
+  "201":
     id: 201
-    taskid: '201'
+    taskid: "85400c83-8664-4380-a027-e2b5e434c201"
     type: regular
     task:
-      id: '201'
+      id: "85400c83-8664-4380-a027-e2b5e434c201"
       version: -1
       name: rapid7-insight-idr-list-users
-      description: ''
+      description: ""
       script: Rapid7 InsightIDR|||rapid7-insight-idr-list-users
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '202'
+      "#none#":
+        - "202"
     scriptarguments:
       limit:
         simple: 1
@@ -171,56 +171,56 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '202':
-    id: '202'
-    taskid: '202'
+  "202":
+    id: "202"
+    taskid: "85400c83-8664-4380-a027-e2b5e434c202"
     type: condition
     task:
-      id: '202'
+      id: "85400c83-8664-4380-a027-e2b5e434c202"
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      description: ""
+      brand: ""
     nexttasks:
       yes:
-      - '4'
+        - "4"
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.User.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.User.rrn
-            iscontext: true
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.User.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.User.rrn
+                iscontext: true
     view: '{"position":{"x":650,"y":600}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '4':
+  "4":
     id: 4
-    taskid: '4'
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca04"
     type: regular
     task:
-      id: '4'
+      id: "85400c83-8664-4380-a027-e2b5e434ca04"
       version: -1
       name: rapid7-insight-idr-get-investigation
-      description: ''
+      description: ""
       script: Rapid7 InsightIDR|||rapid7-insight-idr-get-investigation
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '5'
+      "#none#":
+        - "5"
     scriptarguments:
       investigation_id:
         simple: ${Rapid7InsightIDR.Investigation.rrn}
@@ -232,120 +232,120 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '5':
-    id: '5'
-    taskid: '5'
+  "5":
+    id: "5"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca05"
     type: condition
     task:
-      id: '5'
+      id: "85400c83-8664-4380-a027-e2b5e434ca05"
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      description: ""
+      brand: ""
     nexttasks:
       yes:
-      - '6'
+        - "6"
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.disposition
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.created_time
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.last_accessed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.priority
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.source
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.title
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.organization_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.rrn
-            iscontext: true
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
     view: '{"position":{"x":50,"y":1000}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '6':
+  "6":
     id: 6
-    taskid: '6'
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca06"
     type: regular
     task:
-      id: '6'
+      id: "85400c83-8664-4380-a027-e2b5e434ca06"
       version: -1
       name: rapid7-insight-idr-close-investigations
-      description: ''
+      description: ""
       script: Rapid7 InsightIDR|||rapid7-insight-idr-close-investigations
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '7'
+      "#none#":
+        - "7"
     scriptarguments:
       source:
         simple: HUNT
       start_time:
-        simple: '2020-12-04T10:00:00.515Z'
+        simple: "2020-12-04T10:00:00.515Z"
       end_time:
-        simple: '2020-12-29T10:00:00.526Z'
+        simple: "2020-12-29T10:00:00.526Z"
     separatecontext: false
     view: '{"position":{"x":50,"y":1200}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '7':
+  "7":
     id: 7
-    taskid: '7'
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca07"
     type: regular
     task:
-      id: '7'
+      id: "85400c83-8664-4380-a027-e2b5e434ca07"
       version: -1
       name: rapid7-insight-idr-assign-user
-      description: ''
+      description: ""
       script: Rapid7 InsightIDR|||rapid7-insight-idr-assign-user
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '8'
+      "#none#":
+        - "8"
     scriptarguments:
       investigation_id:
         simple: ${Rapid7InsightIDR.Investigation.rrn}
@@ -359,101 +359,101 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '8':
-    id: '8'
-    taskid: '8'
+  "8":
+    id: "8"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca08"
     type: condition
     task:
-      id: '8'
+      id: "85400c83-8664-4380-a027-e2b5e434ca08"
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      description: ""
+      brand: ""
     nexttasks:
       yes:
-      - '9'
+        - "9"
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.assignee.email
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.assignee.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.disposition
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.created_time
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.last_accessed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.priority
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.source
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.title
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.organization_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.rrn
-            iscontext: true
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.assignee.email
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.assignee.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
     view: '{"position":{"x":50,"y":1600}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '9':
+  "9":
     id: 9
-    taskid: '9'
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca09"
     type: regular
     task:
-      id: '9'
+      id: "85400c83-8664-4380-a027-e2b5e434ca09"
       version: -1
       name: rapid7-insight-idr-set-status
-      description: ''
+      description: ""
       script: Rapid7 InsightIDR|||rapid7-insight-idr-set-status
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '10'
+      "#none#":
+        - "10"
     scriptarguments:
       status:
         simple: open
@@ -467,187 +467,187 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '10':
-    id: '10'
-    taskid: '10'
+  "10":
+    id: "10"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca10"
     type: condition
     task:
-      id: '10'
+      id: "85400c83-8664-4380-a027-e2b5e434ca10"
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      description: ""
+      brand: ""
     nexttasks:
       yes:
-      - '11'
+        - "11"
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.disposition
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.created_time
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.last_accessed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.priority
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.source
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.title
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.organization_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.rrn
-            iscontext: true
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
     view: '{"position":{"x":50,"y":2000}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '11':
+  "11":
     id: 11
-    taskid: '11'
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca11"
     type: regular
     task:
-      id: '11'
+      id: "85400c83-8664-4380-a027-e2b5e434ca11"
       version: -1
       name: rapid7-insight-idr-create-investigation
-      description: ''
+      description: ""
       script: Rapid7 InsightIDR|||rapid7-insight-idr-create-investigation
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '12'
+      "#none#":
+        - "12"
     scriptarguments:
       title:
         simple: test
       limit:
-        simple: '1'
+        simple: "1"
     separatecontext: false
     view: '{"position":{"x":50,"y":2200}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '12':
-    id: '12'
-    taskid: '12'
+  "12":
+    id: "12"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca12"
     type: condition
     task:
-      id: '12'
+      id: "85400c83-8664-4380-a027-e2b5e434ca12"
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      description: ""
+      brand: ""
     nexttasks:
       yes:
-      - '13'
+        - "13"
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.disposition
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.created_time
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.last_accessed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.priority
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.source
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.title
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.organization_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.rrn
-            iscontext: true
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
     view: '{"position":{"x":50,"y":2400}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '13':
+  "13":
     id: 13
-    taskid: '13'
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca13"
     type: regular
     task:
-      id: '13'
+      id: "85400c83-8664-4380-a027-e2b5e434ca13"
       version: -1
       name: rapid7-insight-idr-update-investigation
-      description: ''
+      description: ""
       script: Rapid7 InsightIDR|||rapid7-insight-idr-update-investigation
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '14'
+      "#none#":
+        - "14"
     scriptarguments:
       investigation_id:
         simple: ${Rapid7InsightIDR.Investigation.rrn}
@@ -659,185 +659,185 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '14':
-    id: '14'
-    taskid: '14'
+  "14":
+    id: "14"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca14"
     type: condition
     task:
-      id: '14'
+      id: "85400c83-8664-4380-a027-e2b5e434ca14"
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      description: ""
+      brand: ""
     nexttasks:
       yes:
-      - '15'
+        - "15"
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.disposition
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.created_time
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.last_accessed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.priority
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.source
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.title
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.organization_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.rrn
-            iscontext: true
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
     view: '{"position":{"x":50,"y":2800}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '15':
+  "15":
     id: 15
-    taskid: '15'
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca15"
     type: regular
     task:
-      id: '15'
+      id: "85400c83-8664-4380-a027-e2b5e434ca15"
       version: -1
       name: rapid7-insight-idr-search-investigation
-      description: ''
+      description: ""
       script: Rapid7 InsightIDR|||rapid7-insight-idr-search-investigation
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '16'
+      "#none#":
+        - "16"
     scriptarguments:
       limit:
-        simple: '1'
+        simple: "1"
     separatecontext: false
     view: '{"position":{"x":50,"y":3000}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '16':
-    id: '16'
-    taskid: '16'
+  "16":
+    id: "16"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca16"
     type: condition
     task:
-      id: '16'
+      id: "85400c83-8664-4380-a027-e2b5e434ca16"
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      description: ""
+      brand: ""
     nexttasks:
       yes:
-      - '17'
+        - "17"
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.disposition
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.created_time
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.last_accessed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.priority
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.status
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.source
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.title
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.organization_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.rrn
-            iscontext: true
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
     view: '{"position":{"x":50,"y":3200}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '17':
+  "17":
     id: 17
-    taskid: '17'
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca17"
     type: regular
     task:
-      id: '17'
+      id: "85400c83-8664-4380-a027-e2b5e434ca17"
       version: -1
       name: rapid7-insight-idr-list-investigation-alerts
-      description: ''
+      description: ""
       script: Rapid7 InsightIDR|||rapid7-insight-idr-list-investigation-alerts
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '18'
+      "#none#":
+        - "18"
     scriptarguments:
       investigation_id:
         simple: ${Rapid7InsightIDR.Investigation.rrn}
@@ -847,56 +847,56 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '18':
-    id: '18'
-    taskid: '18'
+  "18":
+    id: "18"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca18"
     type: condition
     task:
-      id: '18'
+      id: "85400c83-8664-4380-a027-e2b5e434ca18"
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      description: ""
+      brand: ""
     nexttasks:
       yes:
-      - '19'
+        - "19"
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.alert
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.rrn
-            iscontext: true
+      - label: yes
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.alert
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
     view: '{"position":{"x":50,"y":3600}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '19':
+  "19":
     id: 19
-    taskid: '19'
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca19"
     type: regular
     task:
-      id: '19'
+      id: "85400c83-8664-4380-a027-e2b5e434ca19"
       version: -1
       name: rapid7-insight-idr-list-investigation-product-alerts
-      description: ''
+      description: ""
       script: Rapid7 InsightIDR|||rapid7-insight-idr-list-investigation-product-alerts
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '20'
+      "#none#":
+        - "20"
     scriptarguments:
       investigation_id:
         simple: ${Rapid7InsightIDR.Investigation.rrn}
@@ -906,52 +906,52 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '20':
-    id: '20'
-    taskid: '20'
+  "20":
+    id: "20"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca20"
     type: condition
     task:
-      id: '20'
+      id: "85400c83-8664-4380-a027-e2b5e434ca20"
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      description: ""
+      brand: ""
     nexttasks:
       yes:
-      - '21'
+        - "21"
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.[0].alert
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Rapid7InsightIDR.Investigation.[0].rrn
-            iscontext: true
+      - label: yes
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.[0].alert
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.[0].rrn
+                iscontext: true
     view: '{"position":{"x":50,"y":4000}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '21':
-    id: '21'
-    taskid: '21'
+  "21":
+    id: "21"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca21"
     type: title
     task:
-      id: '21'
+      id: "85400c83-8664-4380-a027-e2b5e434ca21"
       version: -1
       name: Test Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
+      description: ""
     separatecontext: false
     view: '{"position":{"x":50,"y":4200}}'
     note: false
