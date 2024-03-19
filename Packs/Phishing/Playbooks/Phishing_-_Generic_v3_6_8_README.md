@@ -10,21 +10,21 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Calculate Severity - Generic v2
-* Process Microsoft's Anti-Spam Headers
-* Detonate URL - Generic v1.5
 * Extract Indicators From File - Generic v2
-* Detect & Manage Phishing Campaigns
-* TIM - Indicator Relationships Analysis
-* Phishing - Machine Learning Analysis
-* Process Email - Generic v2
-* Phishing - Indicators Hunting
-* Detonate File - Generic
+* Process Microsoft's Anti-Spam Headers
+* Spear Phishing Investigation
 * Email Address Enrichment - Generic v2.1
 * Block Indicators - Generic v3
 * Search And Delete Emails - Generic v2
-* Spear Phishing Investigation
+* Detect & Manage Phishing Campaigns
+* Phishing - Machine Learning Analysis
 * Entity Enrichment - Phishing v2
+* TIM - Indicator Relationships Analysis
+* Detonate URL - Generic v1.5
+* Calculate Severity - Generic v2
+* Phishing - Indicators Hunting
+* Detonate File - Generic
+* Process Email - Generic v2
 
 ### Integrations
 
@@ -32,17 +32,17 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SetAndHandleEmpty
 * Set
+* SetAndHandleEmpty
 * CheckEmailAuthenticity
 * AssignAnalystToIncident
 
 ### Commands
 
-* send-mail
-* closeInvestigation
 * setIncident
+* closeInvestigation
 * setIndicator
+* send-mail
 
 ## Playbook Inputs
 
@@ -76,6 +76,7 @@ This playbook does not use any integrations.
 | UserEngagement | Specify whether to engage with the user via email for investigation updates.<br/>Set the value to 'True' to allow user engagement, or 'False' to avoid user engagement. | True | Optional |
 | TakeManualActions | Specify whether to stop the playbook to take additional action before closing the incident.<br/>Set the value to 'True' to stop the playbook before closing the incidents, or "False" to close the incident once the playbook flow is done. | False | Optional |
 | KeyWordsToSearch | A comma-separated list of keywords to search in the email body.<br/>For example: name of the organization finance app that the attacker might impersonate.<br/>This input is used in the "Spear Phishing Investigation" sub-playbook. |  | Optional |
+| NonMaliciousEmailReview | In case of an incident with non malicious email it possible either to close the incident or to review and approve by analyst.<br/>Set the value "True" for review the incident by analyst. Set the value "False" to close incidents with non malicious emails. | False | Optional |
 
 ## Playbook Outputs
 
