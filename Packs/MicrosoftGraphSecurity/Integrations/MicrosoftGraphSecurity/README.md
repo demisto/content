@@ -2213,7 +2213,7 @@ Advanced hunting is a threat-hunting tool that uses specially constructed querie
             "query": "AlertInfo | limit 1 ",
             "results": [
                 {
-                    "AlertId": "dlcc6c6fab-0202-be70-be00-08dc47c0ce49",
+                    "AlertId": "abc123",
                     "AttackTechniques": "",
                     "Category": "Exfiltration",
                     "DetectionSource": "Microsoft Data Loss Prevention",
@@ -2230,7 +2230,7 @@ Advanced hunting is a threat-hunting tool that uses specially constructed querie
             "query": "AlertInfo | limit 1 ",
             "results": [
                 {
-                    "AlertId": "dlcc6c6fab-0202-be70-be00-08dc47c0ce49",
+                    "AlertId": "abc123",
                     "AttackTechniques": "",
                     "Category": "Exfiltration",
                     "DetectionSource": "Microsoft Data Loss Prevention",
@@ -2313,7 +2313,7 @@ Get a list of incident objects that Microsoft 365 Defender created to track atta
                     "Status": "active",
                     "System tags": "",
                     "Updated date time": "2024-03-19T08:08:33.36Z",
-                    "id": "54811"
+                    "id": "12345"
                 }
             ]
         }
@@ -2326,7 +2326,7 @@ Get a list of incident objects that Microsoft 365 Defender created to track atta
 >### Incidents:
 >|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min) involving one user | 54811 | medium | active |  |  |  | unknown | unknown | 2024-03-19T08:08:33.2533333Z | 2024-03-19T08:08:33.36Z |
+>| DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min) involving one user | 12345 | medium | active |  |  |  | unknown | unknown | 2024-03-19T08:08:33.2533333Z | 2024-03-19T08:08:33.36Z |
 
 
 ### msg-update-security-incident
@@ -2373,7 +2373,7 @@ Update the incident with the given ID.
 | MsGraph.Incident.systemTags | String collection | The system tags associated with the incident. | 
 
 #### Command example
-```!msg-update-security-incident incident_id=54577```
+```!msg-update-security-incident incident_id=12345```
 #### Context Example
 ```json
 {
@@ -2387,15 +2387,15 @@ Update the incident with the given ID.
             "description": null,
             "determination": "unknown",
             "displayName": "Exfiltration incident involving one user",
-            "id": "54577",
-            "incidentWebUrl": "https://security.microsoft.com/incidents/54577?tid=ebac1a16-81bf-449b-8d43-5732c3c1d999",
+            "id": "12345",
+            "incidentWebUrl": "https://security.microsoft.com/incidents/12345?tid=abc123",
             "lastModifiedBy": "Microsoft 365 Defender-AlertCorrelation",
             "lastUpdateDateTime": "2024-03-19T07:24:34.7066667Z",
             "redirectIncidentId": null,
             "severity": "medium",
             "status": "active",
             "systemTags": [],
-            "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+            "tenantId": "abc123"
         }
     }
 }
@@ -2403,8 +2403,8 @@ Update the incident with the given ID.
 
 #### Human Readable Output
 
->### Updated incident No. 54577:
+>### Updated incident No. 12345:
 >|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| Exfiltration incident involving one user | 54577 | medium | active | test5 |  |  | unknown | unknown | 2024-03-17T15:50:31.9033333Z | 2024-03-19T07:24:34.7066667Z |
+>| Exfiltration incident involving one user | 12345 | medium | active | test5 |  |  | unknown | unknown | 2024-03-17T15:50:31.9033333Z | 2024-03-19T07:24:34.7066667Z |
 
