@@ -2472,7 +2472,7 @@ script:
       default: true
       required: true
     - name: headers
-      description: Table headers to use the human readable output (if none provided, will show all table headers).
+      description: Table headers to use in the human readable output (if none provided, will show all table headers).
     - name: date_value
       description: If set to true will try to convert the data values to ISO-8601 string.
       auto: PREDEFINED
