@@ -1,0 +1,419 @@
+id: 71bde6c0-7bd6-4332-872a-f7f5b55cb7c9
+version: 3
+vcShouldKeepItemLegacyProdMachine: false
+name: AIOps-BPA
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 40e81e0c-bdf4-4c94-86bc-9aba38f43638
+    type: start
+    task:
+      id: 40e81e0c-bdf4-4c94-86bc-9aba38f43638
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c2fc71e5-48dd-47f8-8c9d-766e096fcaae
+    type: regular
+    task:
+      id: c2fc71e5-48dd-47f8-8c9d-766e096fcaae
+      version: -1
+      name: Generate report
+      description: Generates a bpa
+      script: '|||pan-aiops-bpa-report-generate'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      requester_email:
+        simple: test@gmail.com
+      requester_name:
+        simple: tal
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9676a73d-82b4-410d-8638-12265965c34e
+    type: regular
+    task:
+      id: 9676a73d-82b4-410d-8638-12265965c34e
+      version: -1
+      name: Upload file to warroom
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      data:
+        simple: $1$rwxksjeb$EwDvyN2ksCaDQQreifeiK/ yes yes $1$fovcbcfh$Y80CQiuL.Kj5agk7YU2sg1
+          yes 8 yes 5 yes 5 yes 5 yes 10 yes 5 yes 10 10 100 50 10 10 100 50 100 yes
+          a97fe41b a97fe41b Jan 2 09:11:01 2024 GMT /C=AS/CN=Test Jan 1 09:11:01 2025
+          GMT Test 1735722661 yes /C=AS/CN=Test -----BEGIN CERTIFICATE----- MIIC2DCCAcCgAwIBAgIJANKVSsEDEfONMA0GCSqGSIb3DQEBCwUAMBwxCzAJBgNV
+          BAYTAkFTMQ0wCwYDVQQDEwRUZXN0MB4XDTI0MDEwMjA5MTEwMVoXDTI1MDEwMTA5 MTEwMVowHDELMAkGA1UEBhMCQVMxDTALBgNVBAMTBFRlc3QwggEiMA0GCSqGSIb3
+          DQEBAQUAA4IBDwAwggEKAoIBAQCouugSMggCi01A7Di+ZA5wgy4wfE6ZSHaMY2ev NsIV1nnKR5P9Q712GHhHlzh6/nX1vEQWkYaA2eK/ZV/3hrT+QR50GF1hSg1hFD0D
+          2ej/R4nR3kGXZXEyHl/SwHQ4dANqN9Am+w0AgXTHut+hxte8Y9SE7TssUf7ESig5 ChjqW1tQB8fo9SZMeOhMip6xMEn9+hkWLnGEIWDpwsuzC7V0h3Tpq8uXG2aO9rba
+          7fPPX8SCCgTpPNL0v8nRqsFDoZvRSJCIsqjoSOrFRcNTZrlh721pjwJBGoA6JSCG PR9u8vQmzp09/Km0PZ9xJQLUv+Gg+qfbvSDZuR57bmDQbwIDAgMBAAGjHTAbMAwG
+          A1UdEwQFMAMBAf8wCwYDVR0PBAQDAgIEMA0GCSqGSIb3DQEBCwUAA4IBAQAtP0BE Ajy2OOlGhfsLKfWiW90pQgG5OK6dBh2FgBcenrrmasWsqfL63mhWTZc81Gm2kM4/
+          c/r5NirstKQlnu3aa0q7Wpn/13XUSCR+D4sZvmG7LvwXG8PHtRWBAx8E+zhVKaa/ kzVaQw66PRTd2+RpnM0TbOZX+Z0IqsjjHthKeeLjqXpnvj/vp76R/Ko0QrUuzBQq
+          gqP+e+hFow8WpBDjMWjFS2CxZS2XdXv85Te+ss94bB42s8pcw7L7a0QtdesSd+xS tUTEcC3CsGQXsBG+wbP15q1wtnJpqXNXHGHMwf80iHgLtkzmZKFqsI0BNyQp4QRM
+          O1baXo8G8qt1En7y -----END CERTIFICATE----- RSA -AQ==YPSg60N9F8S+TiWFnHROf3eWeZI=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
+          $5$cgabyuln$8F.poY8RSavXZEEZdYVW8Hp4K4KtB8oyvhAdVsLAlK1 All Logs yes All
+          Logs yes All Logs yes All Logs yes All Logs yes All Logs yes 192.168.1.112
+          389 active-directory administrator@ferrum.local -AQ==cMzZAHM41tgd07YnFiG5z5qX6gA=cTjqRTs8fmRBf1HytUttsQ==
+          yes DC=ferrum,DC=local business-systems ics-protocols client-server The
+          CODESYS Edge Gateway allows the CODESYS Automation Server and all clients
+          that establish a connection via the Automation Server full access to all
+          services provided by the runtime system via communication interfaces. It
+          can be operated on a controller or on a stand-alone device in the local
+          network. This App-ID covers messages between a client and a CODESYS Gateway.
+          yes yes no no no no yes no no no no drop-reset no yes https://www.codesys.com/
+          1 yes business-systems ics-protocols client-server Delta DCISoft software
+          is an integrated configuration tool used for monitoring and configuring
+          Delta PLCs. This App-ID covers discovery messages sent via broadcast from
+          the DCISoft application to Delta PLCs residing on an internal network. yes
+          yes no no no no no no no no no drop-reset no yes yes https://www.deltaww.com/en-US/index
+          1 yes business-systems ics-protocols client-server Delta's human machine
+          interface (HMI) is a platform which permits interaction between users and
+          automation equipment. The color touchscreen enables intuitive parameter
+          entry and a variety of ways to display variable data, including trend graphs
+          and alarm elements. This App-ID covers device discovery traffic initiated
+          from a workstation running Delta's DIAView software to Delta HMI devices
+          on a local network yes yes no no no no no no no no no drop-reset no yes
+          https://www.deltaww.com/en-US/Products/Touch-Panel-HMI-Human-Machine-Interfaces/ALL/
+          1 yes saas artificial-intelligence client-server Ghostwriter is an OpenAI
+          ChatGPT writing assistant add-in for Microsoft Office. This App-ID covers
+          the traffic for Ghostwriter application. yes yes no no no no yes no no no
+          no drop-reset no yes yes yes no no no no [Generative AI] [Web App] https://ghostwriter-ai.com/
+          ssl web-browsing ssl web-browsing 1 azure-openai-studio yes networking encrypted-tunnel
+          client-server HA Tunnel Plus is a free VPN app that allows users to create
+          their own custom VPN configurations. This App-ID covers the traffic for
+          HA Tunnel Plus application. yes yes yes no no yes yes yes yes no no drop-reset
+          no yes yes yes yes no no no no [Web App] https://play.google.com/store/apps/details?id=com.hatunnel.plus&amp;hl=en_US
+          ssl ssl 4 web20_parrent_app yes business-systems office-programs browser-based
+          Microsoft Power Apps is a suite of apps, services, connectors and data platforms
+          that provides a development environment to build custom apps for business
+          needs. This App-ID covers the traffic of Microsoft Power Apps. yes yes no
+          no no yes yes no no no no drop-reset no yes yes yes no no no no [Generative
+          AI] [Office 365] [Web App] https://learn.microsoft.com/en-us/power-apps/powerapps-overview
+          microsoft-dynamics-crm 2 office365-enterprise-access yes general-internet
+          internet-utility client-server Stretchoid is a platform that helps identify
+          an organization's online services. This App-ID covers the scanning traffic
+          of Stretchoid. yes no no no no no no no no no drop-reset no yes https://stretchoid.com/
+          1 yes no no no no Allow Ping 3 5 wait-recover yes aes-128-cbc 3des sha1
+          group2 8 aes-128-cbc sha256 group19 8 aes-256-cbc sha384 group20 8 aes-128-cbc
+          3des sha1 group2 1 aes-128-gcm none group19 1 aes-256-gcm none group20 1
+          aes-128-cbc sha1 real-time high high medium medium low low low no 1.25 0.5
+          900 300 900 yes yes no no no ethernet1/1 192.168.1.1 None ethernet1/1 10
+          0.0.0.0/0 updates.paloaltonetworks.com wednesday 01:02 download-only US/Pacific
+          yes yes PA-VM 192.168.1.238 255.255.255.0 192.168.1.1 8.8.8.8 yes yes yes
+          Americas yes FQDN yes clear drop americas no yes yes ethernet1/1 yes yes
+          ethernet1/2 yes 7770 5555 service-http service-https fun 00:40-00:45 External
+          External any any service-http ethernet1/1 External External any any service-http
+          ethernet1/1 TAP TAP any any any any any any any any allow yes IoT Security
+          Default Profile deny any any Sinkhole Address any any any any no no no no
+          fun any any any any any any 10.4.4.1 Internal address any any any dns application-default
+          any any allow DO NOT DELETE. Ido Van DIjk is using this for the DNS Sinkhole
+          use-case, allowing DNS traffic from the internal DNS servers to the public
+          DNS server. DO_NOT_DELETE IoT Security Default Profile Internal External
+          1.1.1.1 192.168.1.255 any any snmp application-default any any allow universal
+          Allowing SMTP traffic. Moishy Internal External 8.8.8.8 192.168.1.2 any
+          any any application-default any any allow Moishy External External any any
+          any any any application-default any any allow yes any any any any any any
+          any application-default any any allow no IoT Security Default Profile any
+          External 192.168.1.1 any any any any application-default any any allow any
+          any any any any any any application-default any any allow any any any any
+          any any any application-default any any allow any any any any any any any
+          application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          any any any any any any any application-default any any allow any any any
+          any any any any application-default any any allow any any any any any any
+          any application-default any any allow any any any any any any any application-default
+          any any allow any any any any any any any application-default any any allow
+          External Internal any any any any any application-default any any fun nasih
+          allow fdvcvcv External Internal any any any any any application-default
+          any any fun nasih allow fdvcvcv External Internal any any any any any application-default
+          any any fun nasih allow edited description default ethernet1/1 External
+          no any any any any any default ethernet1/1 External no any any any any any
+          ethernet1/1 ethernet1/2 192.168.1.237/24 192.168.1.237 10.4.4.1/24 Moishy
+          nasih fun new 192.168.1.1 10.4.4.5 192.168.1.0-192.168.1.20 Servers 192.168.1.255
+          raw.githubusercontent.com sinkhole.paloaltonetworks.com hehe 8.8.8.8 DO_NOT_DELETE
+          dcsdfcfdf 192.168.1.1 192.168.1.237 Servers lan Servers Servers lan default
+          default default default default default default default default default
+          default default default default default default default default default
+          default default yes disable disable disable disable disable disable any
+          any any any any any extended-capture aip-encrypted-docx panav-rsp-office-dlp-msip-label
+          adasd garbage any any both 0 0 garbage informational garbage https://raw.githubusercontent.com/opendns/public-domain-lists/master/opendns-random-domains.txt
+          Test threat-pcap default default basic file blocking rubbish default threat-pcap
+          strict default basic file blocking rubbish default Ido is a prince A tag
+          used by XSOAR to verify that sinkholing is configured in PAN-OS. Android
+          10 IoT ArubaOS 3D Printer 3D Systems Device 00-881188-01 3Leaf Systems long_description
+          Android 10.0 Avaya NOS ATM Machine 3DR Laboratories Imaging Device 00-888169-01
+          3DR Laboratories aaaaaaaa argh traffic All Logs no no very good description
+          192.168.1.112 ferrum\administrator -AQ==cMzZAHM41tgd07YnFiG5z5qX6gA=cTjqRTs8fmRBf1HytUttsQ==
+          ferrum.local no include 192.168.1.0/24 group person ferrum.local sAMAccountName
+          mail userPrincipalName name member mail
+      filename:
+        simple: testFile.xml
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: fe286e0e-7990-4fc2-8ed1-594f02756894
+    type: regular
+    task:
+      id: fe286e0e-7990-4fc2-8ed1-594f02756894
+      version: -1
+      name: Generate report with entryID
+      description: Generates a bpa
+      script: '|||pan-aiops-bpa-report-generate'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      entry_id:
+        simple: ${File.EntryID}
+      requester_email:
+        simple: test@gmail.com
+      requester_name:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 595,
+        "width": 380,
+        "x": 50,
+        "y": 20
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true

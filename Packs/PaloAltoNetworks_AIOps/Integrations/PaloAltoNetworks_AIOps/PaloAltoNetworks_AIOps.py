@@ -14,6 +14,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
 
+
 class Client(BaseClient):
     def __init__(self, base_url, api_key, tsg_id, client_id, client_secret, verify=True, proxy=False, headers=None):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
@@ -42,9 +43,9 @@ class Client(BaseClient):
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Accept': 'application/json',
                 }
-                #Trying to be as accurate as possible with the time of the request
+                # Trying to be as accurate as possible with the time of the request
                 expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
-                
+
                 res = self._http_request(method='POST',
                                          full_url='https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token',
                                          auth=(self._client_id, self._client_secret),
@@ -58,7 +59,7 @@ class Client(BaseClient):
                                            f'Error: {exception}')
 
                 if access_token := res.get('access_token'):
-                    expiry_time += (res.get('expires_in', 0) *1000)
+                    expiry_time += (res.get('expires_in', 0) * 1000)
                     new_token = {
                         tsg_access_token: access_token,
                         tsg_expiry_time: expiry_time
@@ -125,57 +126,59 @@ class Client(BaseClient):
 
     def config_file_to_report_request(self, upload_url, config_in_binary):
         headers = {
-        'Content-Type': 'application/octet-stream',
-        'Accept': '*/*',
-        'Authorization': f'Bearer {self._access_token}'
+            'Content-Type': 'application/octet-stream',
+            'Accept': '*/*',
+            'Authorization': f'Bearer {self._access_token}'
         }
         res = self._http_request(method='PUT',
-                            full_url=upload_url,
-                            headers=headers,
-                            data=config_in_binary,
-                            empty_valid_codes=[200],
-                            return_empty_response=True)
+                                 full_url=upload_url,
+                                 headers=headers,
+                                 data=config_in_binary,
+                                 empty_valid_codes=[200],
+                                 return_empty_response=True)
         return res
-    
+
     def check_upload_status_request(self, report_id):
         headers = {
             'Accept': '*/*',
             'Authorization': f'Bearer {self._access_token}'
         }
         res = self._http_request(method='GET',
-                    full_url=f'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/jobs/{report_id}',
-                    headers=headers
-                    )
+                                 full_url=f'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/jobs/{report_id}',
+                                 headers=headers
+                                 )
         status = res.get('status')
         if not status:
             raise DemistoException("Missing upload status, Error: parse Error.")
         return status
-    
+
     def download_bpa_request(self, report_id):
         headers = {
             'Accept': 'application/json',
             'Authorization': f'Bearer {self._access_token}'
         }
         res = self._http_request(method='GET',
-            full_url=f'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/reports/{report_id}',
-            headers=headers
-            )
+                                 full_url=f'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/reports/{report_id}',
+                                 headers=headers
+                                 )
         url = res.get('download-url')
         if not url:
             raise DemistoException("Missing download-url, Error: parse Error.")
         return url
-    
+
     def data_of_download_bpa_request(self, downloaded_BPA_url):
         headers = {
             'Authorization': f'Bearer {self._access_token}'
         }
         res = self._http_request(method='GET',
-            full_url=downloaded_BPA_url,
-            headers=headers
-            )
+                                 full_url=downloaded_BPA_url,
+                                 headers=headers
+                                 )
         return res
-    
+
+
 ''' HELPER FUNCTIONS '''
+
 
 def adjust_xml_format(xml_string, new_root_tag):
     try:
@@ -184,22 +187,24 @@ def adjust_xml_format(xml_string, new_root_tag):
         if sub_tags is not None:
             attributes = ' '.join([f'{k}="{v}"' for k, v in sub_tags.attrib.items()])
         new_xml = f"<{new_root_tag} {attributes}>"
-        for child in sub_tags: #type: ignore
+        for child in sub_tags:  # type: ignore
             new_xml += ET.tostring(child, encoding="unicode")
         new_xml += f"</{new_root_tag}>"
         return new_xml
-    except Exception as e:
+    except Exception:
         raise DemistoException("Request Succeeded, A parse error occurred.")
+
 
 def get_values_from_xml(xml_string, tags):
     try:
         result = []
         root = ET.fromstring(xml_string)
         for tag in tags:
-            result.append(root.find(tag).text) #type: ignore
+            result.append(root.find(tag).text)  # type: ignore
         return result
-    except Exception as e:
+    except Exception:
         raise DemistoException("Could not find the required tags in the System file.")
+
 
 def convert_config_to_bytes(config_file, origin_flag):
     if origin_flag == 'User':
@@ -210,7 +215,7 @@ def convert_config_to_bytes(config_file, origin_flag):
             with open(file_path, 'rb') as f:
                 file_bytes = f.read()
             return file_bytes
-        except Exception as e:
+        except Exception:
             raise DemistoException("The config file upload was unsuccessful or the file could not be converted.")
     else:
         try:
@@ -220,17 +225,18 @@ def convert_config_to_bytes(config_file, origin_flag):
             sio_xml = io.StringIO(result)
             xml_in_bytes = sio_xml.read().encode()
             return xml_in_bytes
-        except Exception as e:
+        except Exception:
             raise DemistoException("The downloaded config file could not be converted.")
-    
+
+
 def create_readable_output(response_json):
     try:
         dict_to_markdown = []
         headers = ['check_id', 'check_category', 'check_feature', 'check_message', 'check_name', 'check_passed', 'check_type',
-                'check_severity']
-        check_category_options =['device', 'service_health', 'objects', 'network', 'policies']
-        # Get best_practices elements (warnings and notes)
-        best_practices= response_json.get('best_practices',{})
+                   'check_severity']
+        check_category_options = ['device', 'service_health', 'objects', 'network', 'policies']
+        # Get best_practices elements (only warnings and notes)
+        best_practices = response_json.get('best_practices', {})
         for category in check_category_options:
             category_objects = best_practices.get(category, None)
             if category_objects:
@@ -250,14 +256,16 @@ def create_readable_output(response_json):
                             dict_to_markdown.append(note)
 
         markdown_table = tableToMarkdown('BPA results:', dict_to_markdown,
-                            headers=headers, removeNull=True, headerTransform=string_to_table_header
-                            )
-        
+                                         headers=headers, removeNull=True, headerTransform=string_to_table_header
+                                         )
+
         return markdown_table
-    except Exception as e:
+    except Exception:
         raise DemistoException("BPA was created but was unsuccessfully converted. Error: parse error.")
-        
+
+
 ''' COMMAND FUNCTIONS '''
+
 
 def test_module(client: Client) -> str:
     message: str = ''
@@ -271,8 +279,8 @@ def test_module(client: Client) -> str:
     try:
         client.get_info_about_device_request()
         message = 'ok'
-    except Exception as e:
-        raise DemistoException ("Authorization Error: make sure your servel_url and API_key are correctly set.")
+    except Exception:
+        raise DemistoException("Authorization Error: make sure your servel_url and API_key are correctly set.")
     return message
 
 
@@ -285,14 +293,14 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     INTERVAL_FOR_POLLING = args.get('interval_in_seconds', None) or INTERVAL_FOR_POLLING
     global TIMEOUT_FOR_POLLING
     TIMEOUT_FOR_POLLING = args.get('timeout', None) or TIMEOUT_FOR_POLLING
-    
+
     # Get info about device - system info
     system_info_xml = client.get_info_about_device_request()
     config_file = None
     # Get info configurations
     if not config_file_from_user:
         config_file = client.get_config_file_request()
-    
+
     tags = ['family', 'model', 'serial', 'sw-version']
     xml_tags_values = get_values_from_xml(system_info_xml, tags)
     upload_url, report_id = client.generate_bpa_report_request(requester_email, requester_name, dict(zip(tags, xml_tags_values)))
@@ -303,13 +311,14 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     else:
         raise DemistoException("Can not uplaod a config file since it was not provided.")
     client.config_file_to_report_request(upload_url, config_in_binary)
-    return_results(polling_until_upload_report_command({'report_id':report_id}, client))
-    
+    return_results(polling_until_upload_report_command({'report_id': report_id}, client))
+
+
 @polling_function(
-name="pan-aiops-polling-upload-report",
-interval=INTERVAL_FOR_POLLING,
-timeout=TIMEOUT_FOR_POLLING,
-requires_polling_arg=False,
+    name="pan-aiops-polling-upload-report",
+    interval=INTERVAL_FOR_POLLING,
+    timeout=TIMEOUT_FOR_POLLING,
+    requires_polling_arg=False,
 )
 def polling_until_upload_report_command(args: dict[str, Any], client: Client) -> PollResult:
     report_id = args.get('report_id')
@@ -318,40 +327,42 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
         downloaded_BPA_url = client.download_bpa_request(report_id)
         downloaded_BPA_json = client.data_of_download_bpa_request(downloaded_BPA_url)
         return PollResult(
-                response = CommandResults(
-                    readable_output=create_readable_output(downloaded_BPA_json)
+            response=CommandResults(
+                readable_output=create_readable_output(downloaded_BPA_json)
             ),
             continue_to_poll=False,
         )
-        
+
     elif upload_status == 'UPLOAD_INITIATED':
         results = CommandResults(readable_output="Polling job failed.")
         return PollResult(
             response=results,
             continue_to_poll=True,
-            args_for_next_run={'report_id':report_id},
+            args_for_next_run={'report_id': report_id},
             partial_result=CommandResults(
                 readable_output=f'The report with id {report_id} was sent successfully. Download in progress...'
-                )
+            )
         )
-        
+
     elif upload_status == 'COMPLETED_WITH_ERROR':
         return PollResult(
             response=CommandResults(
                 readable_output=f'The report with id {report_id} could not be uploaded- finished with an error.'
-                ),
+            ),
             continue_to_poll=False,
         )
-        
+
     else:
         results = CommandResults(readable_output="Polling job failed.")
         return PollResult(
             continue_to_poll=True,
-            args_for_next_run={'report_id':report_id},
+            args_for_next_run={'report_id': report_id},
             response=results,
         )
-        
+
+
 ''' MAIN FUNCTION '''
+
 
 def main() -> None:
     command = demisto.command()
@@ -366,7 +377,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {command}')
-    
+
     try:
         client = Client(
             base_url=base_url,
@@ -376,10 +387,10 @@ def main() -> None:
             client_secret=client_secret,
             verify=verify_certificate,
             proxy=proxy)
-          
+
         # Generate an access token for pan-OS/panorama
         client.generate_access_token_request()
-                           
+
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'pan-aiops-bpa-report-generate':
@@ -390,6 +401,7 @@ def main() -> None:
             raise NotImplementedError(f"command {command} is not implemented.")
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+
 
 ''' ENTRY POINT '''
 
