@@ -6,7 +6,7 @@ This pack includes Cortex XSIAM content.
  
 ## Configuration on Server Side
 
-To configure Fortinet FortiManager to forward logs to Cortex XSIAM Broker VM via syslog follow the steps below
+To configure Fortinet FortiManager to forward logs to Cortex XSIAM Broker VM via syslog follow the steps below.
 1. Go to System Settings &rarr Advanced &rarr Syslog Server
 2. On the top pane, select Syslog Server tab 
 3. A new Syslog server window will be open
