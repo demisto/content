@@ -6,9 +6,9 @@ alter // Extractions & Initializations
     client_application = arrayindex(regextract(SourceApplicationAsString, "(?:\S+\s*\-\s*)?(\S+)"), 0),
     event_type_id = to_string(AuditTrailModificationType), 
     entity_type = arrayindex(regextract(Description, "\S+:\s*(.+?)\s+modified\."), 0),
-    group_name = ltrim(arrayindex(regextract(value, "groupName\>([^\<]+)"), 0), ";"),
-    operation_type = ltrim(arrayindex(regextract(value, "ChType\>([^\<]+)"), 0), ";"),
-    role_name = ltrim(arrayindex(regextract(value, "roleName\>([^\<]+)"), 0), ";"),
+    group_name = arrayindex(regextract(value, "groupName\>([^\<]+)"), 0),
+    operation_type = arrayindex(regextract(value, "ChType\>([^\<]+)"), 0),
+    role_name = arrayindex(regextract(value, "roleName\>([^\<]+)"), 0),
     resource_type_id = to_string(Type)
 | alter resource_type = coalesce(entity_type, changed_property)
 | alter event_name = if( // Construct event name according to AuditTrailModificationType value & Description format 
