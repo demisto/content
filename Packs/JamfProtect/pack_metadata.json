@@ -1,20 +1,19 @@
 {
-    "name": "Microsoft Teams",
-    "description": "Send messages and notifications to your team members.",
+    "name": "JamfProtect",
+    "description": "Apple Mobile and Mac endpoint protection",
     "support": "xsoar",
-    "currentVersion": "1.4.55",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "created": "2024-03-12T00:00:00Z",
     "categories": [
-        "Messaging and Conferencing"
+        "IT Services"
     ],
     "tags": [],
-    "created": "2020-04-14T00:00:00Z",
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar",
         "marketplacev2"
     ]
 }
