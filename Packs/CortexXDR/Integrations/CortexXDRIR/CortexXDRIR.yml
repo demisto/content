@@ -72,7 +72,7 @@ configuration:
 - display: API Key ID
   name: apikey_id
   type: 4
-  hidden: true
+  hidden: false
   section: Connect
   required: false
 - display: API Key
@@ -80,7 +80,7 @@ configuration:
   type: 4
   section: Connect
   required: false
-  hidden: true
+  hidden: false
 - additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
